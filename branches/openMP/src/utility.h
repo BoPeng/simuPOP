@@ -1679,7 +1679,7 @@ public:
 
 
 	/// CPPONLY
-	unsigned long generateRandomSeed();
+	static unsigned long generateRandomSeed();
 
 
 	/** Generate a random number following a rng_uniform [0, 1) distribution.

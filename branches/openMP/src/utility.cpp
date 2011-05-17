@@ -431,10 +431,13 @@ UINT g_numThreads;
 
 // random number generator. a global variable.
 #ifdef _OPENMP
-vector<RNG> g_RNGs;
-RNG * g_RNG = NULL;
-// each thread has its own g_RNG
-#  pragma omp threadprivate(g_RNG)
+#  ifdef _MSC_VER 
+     vector<RNG *> g_RNGs;
+#  else
+     RNG *g_RNG;
+     // each thread has its own g_RNG
+#    pragma omp threadprivate(g_RNG)
+#  endif
 #else
 RNG g_RNG;
 #endif
@@ -449,13 +452,18 @@ void setOptions(const int numThreads, const char * name, unsigned long seed)
 		omp_set_num_threads(numThreads);
 		g_numThreads = numThreads;
 	}
+#  ifdef _MSC_VER
 	g_RNGs.resize(g_numThreads);
-	g_RNGs[0].set(name, seed);
-	for (size_t i = 1; i < g_RNGs.size(); i++)
-		// GSL RNG only accept unsigned long seed
-		g_RNGs[i].set(name, static_cast<ULONG>(g_RNGs[0].seed() + i));
-#pragma omp parallel
-	g_RNG = &g_RNGs[omp_get_thread_num()];	
+	seed = g_RNGs[0] == NULL? RNG::generateRandomSeed() : g_RNGs[0]->seed();
+	for(size_t i = 0; i < g_RNGs.size(); i++)
+		if(g_RNGs[i] == NULL)
+			g_RNGs[i] = new RNG(name,seed + i);
+#  else
+	seed = g_RNG == NULL? RNG::generateRandomSeed() : g_RNG->seed();
+#       pragma omp parallel
+	if(g_RNG == NULL)
+		g_RNG = new RNG(name,seed + omp_get_thread_num());
+#  endif
 #else
 	(void)numThreads;  // avoid an unused parameter warning
 	g_RNG.set(name, seed);
@@ -494,7 +502,11 @@ ATOMICLONG fetchAndIncrement(ATOMICLONG * val)
 RNG & getRNG()
 {
 #ifdef _OPENMP
+#  ifdef _MSC_VER
+	return *g_RNGs[omp_get_thread_num()];
+#  else
 	return *g_RNG;
+#  endif
 #else
 	return g_RNG;
 #endif
@@ -2853,7 +2865,7 @@ typedef BOOL (WINAPI * CRYPTACQUIRECONTEXTA)(HCRYPTPROV * phProv, \
 typedef BOOL (WINAPI * CRYPTGENRANDOM)(HCRYPTPROV hProv, DWORD dwLen, \
                                        BYTE * pbBuffer);
 
-unsigned long RNG::generateRandomSeed()
+static unsigned long RNG::generateRandomSeed()
 {
 	unsigned long seed;
 
