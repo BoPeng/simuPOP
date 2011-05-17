@@ -455,7 +455,7 @@ void setOptions(const int numThreads, const char * name, unsigned long seed)
 #  ifdef _MSC_VER
 	g_RNGs.resize(g_numThreads);
 	seed = g_RNGs[0] == NULL? RNG::generateRandomSeed() : g_RNGs[0]->seed();
-	for(size_t i = 0; i < g_RNGs.size(); i++)
+	for(unsigned long i = 0; i < g_RNGs.size(); i++)
 		if(g_RNGs[i] == NULL)
 			g_RNGs[i] = new RNG(name,seed + i);
 #  else
@@ -2865,7 +2865,7 @@ typedef BOOL (WINAPI * CRYPTACQUIRECONTEXTA)(HCRYPTPROV * phProv, \
 typedef BOOL (WINAPI * CRYPTGENRANDOM)(HCRYPTPROV hProv, DWORD dwLen, \
                                        BYTE * pbBuffer);
 
-static unsigned long RNG::generateRandomSeed()
+unsigned long RNG::generateRandomSeed()
 {
 	unsigned long seed;
 
