@@ -431,11 +431,11 @@ UINT g_numThreads;
 
 // random number generator. a global variable.
 #ifdef _OPENMP
-#  ifdef _MSC_VER 
-     vector<RNG *> g_RNGs;
+#  if THREADPRIVATE_SUPPORT == 0
+vector<RNG *> g_RNGs;
 #  else
-     RNG *g_RNG;
-     // each thread has its own g_RNG
+RNG * g_RNG;
+// each thread has its own g_RNG
 #    pragma omp threadprivate(g_RNG)
 #  endif
 #else
@@ -452,17 +452,17 @@ void setOptions(const int numThreads, const char * name, unsigned long seed)
 		omp_set_num_threads(numThreads);
 		g_numThreads = numThreads;
 	}
-#  ifdef _MSC_VER
+#  if THREADPRIVATE_SUPPORT == 0
 	g_RNGs.resize(g_numThreads);
 	seed = g_RNGs[0] == NULL? RNG::generateRandomSeed() : g_RNGs[0]->seed();
 	for(unsigned long i = 0; i < g_RNGs.size(); i++)
 		if(g_RNGs[i] == NULL)
 			g_RNGs[i] = new RNG(name,seed + i);
 #  else
-	seed = g_RNG == NULL? RNG::generateRandomSeed() : g_RNG->seed();
-#       pragma omp parallel
-	if(g_RNG == NULL)
-		g_RNG = new RNG(name,seed + omp_get_thread_num());
+	seed = g_RNG == NULL ? RNG::generateRandomSeed() : g_RNG->seed();
+#    pragma omp parallel
+	if (g_RNG == NULL)
+		g_RNG = new RNG(name, seed + omp_get_thread_num());
 #  endif
 #else
 	(void)numThreads;  // avoid an unused parameter warning
@@ -502,7 +502,7 @@ ATOMICLONG fetchAndIncrement(ATOMICLONG * val)
 RNG & getRNG()
 {
 #ifdef _OPENMP
-#  ifdef _MSC_VER
+#  if THREADPRIVATE_SUPPORT == 0
 	return *g_RNGs[omp_get_thread_num()];
 #  else
 	return *g_RNG;
@@ -1273,7 +1273,7 @@ PyObject * SharedVariables::setVar(const string & name, const PyObject * val)
 	size_t curIdx = 0;
 	PyObject * curChild = NULL;
 
-	next :
+next:
 	// get par[1] (dict), curChild can be null, or borrow ref
 	if (curType == 1)
 		curChild = PyDict_GetItem(curParent, curKey);
@@ -1432,7 +1432,7 @@ PyObject * SharedVariables::getVar(const string & name, bool nameError) const
 	int curIdx = 0;
 	PyObject * curChild;
 
-	next :
+next:
 	if (curType == 1)
 		curChild = PyDict_GetItem(curParent, curKey);
 	else

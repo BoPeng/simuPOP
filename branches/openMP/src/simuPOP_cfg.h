@@ -45,6 +45,9 @@
 // For the handling of binary modules and for the use of unordered_map in tr1
 #ifdef _MSC_VER
 
+// Visual C++ does not support threadprivate in DLL
+#  define THREADPRIVATE_SUPPORT 0
+
 #  define WORDBIT (8 * sizeof(unsigned))
 #  define WORDTYPE unsigned
 #  define BITPTR(ref) ref._Myptr
@@ -77,6 +80,13 @@
 #  define WORDTYPE std::_Bit_type
 #  define BITPTR(ref) ref._M_p
 #  define BITOFF(ref) ref._M_offset
+
+// Gcc 4.2 does not support threadprivate
+#  if GCC_VERSION > 43000 || defined(__INTEL_COMPILER)
+#    define THREADPRIVATE_SUPPORT 1
+#  else
+#    define THREAFPRIVATE_SUPPORT 0
+#  endif
 #endif
 
 #ifdef _WIN64
@@ -98,8 +108,8 @@
 #endif
 
 /*
- * size_t string format of MSVC, GCC, and Intel compiler is different. The format of MSVC 
- * is %lu, and others are %zu. 
+ * size_t string format of MSVC, GCC, and Intel compiler is different. The format of MSVC
+ * is %lu, and others are %zu.
  */
 #if defined (_WIN32) || defined (_WIN64)
 #  define SIZE_T_FORMAT "%lu"
