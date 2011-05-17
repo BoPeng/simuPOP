@@ -454,15 +454,30 @@ void setOptions(const int numThreads, const char * name, unsigned long seed)
 	}
 #  if THREADPRIVATE_SUPPORT == 0
 	g_RNGs.resize(g_numThreads);
-	seed = g_RNGs[0] == NULL? RNG::generateRandomSeed() : g_RNGs[0]->seed();
+	seed = g_RNGs[0] == NULL ? RNG::generateRandomSeed() : g_RNGs[0]->seed();
 	for(unsigned long i = 0; i < g_RNGs.size(); i++)
-		if(g_RNGs[i] == NULL)
+	{
+		if(g_RNGs[i] == NULL){
 			g_RNGs[i] = new RNG(name,seed + i);
+		}
+		else
+		{
+			g_RNGs[i]->set(name, seed + i);
+		}
+	}
 #  else
 	seed = g_RNG == NULL ? RNG::generateRandomSeed() : g_RNG->seed();
-#    pragma omp parallel
-	if (g_RNG == NULL)
-		g_RNG = new RNG(name, seed + omp_get_thread_num());
+#       pragma omp parallel
+	{
+		if(g_RNG == NULL)
+		{
+			g_RNG = new RNG(name,seed + omp_get_thread_num());
+		}
+		else
+		{
+			g_RNG->set(name, seed + omp_get_thread_num());
+		}
+	}
 #  endif
 #else
 	(void)numThreads;  // avoid an unused parameter warning
