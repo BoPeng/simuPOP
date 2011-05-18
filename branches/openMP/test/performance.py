@@ -642,9 +642,9 @@ if __name__ == '__main__':
         info = moduleInfo()
         compiler = 'gcc'
         if info['compiler'].find("Intel") > -1: 
-            compiler = 'icc'
+            compiler = 'intel'
         elif info['compiler'].find("MSC") > -1:
-            compiler = 'cl'
+            compiler = 'vc'
         summaryFile.setFormatter(logging.Formatter('%%(name)s, %%(asctime)s, %s, %s-%dthreads, python%s, simuPOP-%s, rev%d-%s, %s, %%(message)s' % \
             (uname[1], uname[4], info['threads'], info['python'], info['version'], info['revision'], compiler, info['alleleType'])))
         #
