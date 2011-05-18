@@ -455,26 +455,20 @@ void setOptions(const int numThreads, const char * name, unsigned long seed)
 #  if THREADPRIVATE_SUPPORT == 0
 	g_RNGs.resize(g_numThreads);
 	seed = g_RNGs[0] == NULL ? RNG::generateRandomSeed() : g_RNGs[0]->seed();
-	for(unsigned long i = 0; i < g_RNGs.size(); i++)
-	{
-		if(g_RNGs[i] == NULL){
-			g_RNGs[i] = new RNG(name,seed + i);
-		}
-		else
-		{
+	for (unsigned long i = 0; i < g_RNGs.size(); i++) {
+		if (g_RNGs[i] == NULL) {
+			g_RNGs[i] = new RNG(name, seed + i);
+		}else  {
 			g_RNGs[i]->set(name, seed + i);
 		}
 	}
 #  else
 	seed = g_RNG == NULL ? RNG::generateRandomSeed() : g_RNG->seed();
-#       pragma omp parallel
+#    pragma omp parallel
 	{
-		if(g_RNG == NULL)
-		{
-			g_RNG = new RNG(name,seed + omp_get_thread_num());
-		}
-		else
-		{
+		if (g_RNG == NULL) {
+			g_RNG = new RNG(name, seed + omp_get_thread_num());
+		}else  {
 			g_RNG->set(name, seed + omp_get_thread_num());
 		}
 	}
@@ -1288,7 +1282,7 @@ PyObject * SharedVariables::setVar(const string & name, const PyObject * val)
 	size_t curIdx = 0;
 	PyObject * curChild = NULL;
 
-next:
+	next :
 	// get par[1] (dict), curChild can be null, or borrow ref
 	if (curType == 1)
 		curChild = PyDict_GetItem(curParent, curKey);
@@ -1447,7 +1441,7 @@ PyObject * SharedVariables::getVar(const string & name, bool nameError) const
 	int curIdx = 0;
 	PyObject * curChild;
 
-next:
+	next :
 	if (curType == 1)
 		curChild = PyDict_GetItem(curParent, curKey);
 	else
