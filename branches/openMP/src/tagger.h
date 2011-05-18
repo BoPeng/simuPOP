@@ -167,6 +167,12 @@ public:
 	}
 
 
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return true;
+	}
+
 private:
 	const int m_mode;
 };
@@ -284,7 +290,8 @@ public:
 	 */
 	bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
-
+	
+	/// CPPONLY
 	bool parallelizable() const
 	{
 		return true;
@@ -373,6 +380,13 @@ public:
 	bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
 
+
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return noOutput();
+	}
+
 private:
 	void outputIndividual(ostream & out, const Individual * ind,
 		const vectorf & IDs) const;
@@ -438,6 +452,15 @@ public:
 	 */
 	virtual bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
+
+	/** CPPONLY
+	 *  PyTagger can't be parallelizable because it call external functions
+	 *  from Python which don't support multi-thread
+	 */
+	bool parallelizable() const
+	{
+		return false;
+	}
 
 private:
 	const pyFunc m_func;

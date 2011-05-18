@@ -5036,3 +5036,81 @@ TestBasicRandomMating : loci=100000, size=10000: 1165
 TestBasicRandomMating : loci=100000, size=100000: 0
 TestBasicRandomMating : 718248, 72852, 6736, 734263, 70342, 6136, 287223, 10273, 924, 12288, 1165, 0
 TestBasicRandomMating : End of test TestBasicRandomMating
+TestPedigreeTagger : Host: bp9 (Linux, x86_64, x86_64)
+TestPedigreeTagger : Time: Wed May 18 15:51:16 2011
+TestPedigreeTagger : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPedigreeTagger : simuPOP: 1.0.6svn (rev 4172, module short, optimized, 4 threads)
+TestPedigreeTagger : Test: Test PedigreeTagger, results are number of generations in 30 seconds.
+TestPedigreeTagger : loci=10, size=10000: 4213
+TestPedigreeTagger : loci=10, size=100000: 366
+TestPedigreeTagger : loci=100, size=10000: 2878
+TestPedigreeTagger : loci=100, size=100000: 267
+TestPedigreeTagger : loci=10000, size=10000: 76
+TestPedigreeTagger : loci=10000, size=100000: 3
+TestPedigreeTagger : 4213, 366, 2878, 267, 76, 3
+TestPedigreeTagger : End of test TestPedigreeTagger
+TestPedigreeTagger : Host: bp9 (Linux, x86_64, x86_64)
+TestPedigreeTagger : Time: Wed May 18 15:54:29 2011
+TestPedigreeTagger : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPedigreeTagger : simuPOP: 1.0.6svn (rev 4172, module long, optimized, 4 threads)
+TestPedigreeTagger : Test: Test PedigreeTagger, results are number of generations in 30 seconds.
+TestPedigreeTagger : loci=10, size=10000: 4300
+TestPedigreeTagger : loci=10, size=100000: 360
+TestPedigreeTagger : loci=100, size=10000: 2885
+TestPedigreeTagger : loci=100, size=100000: 255
+TestPedigreeTagger : loci=10000, size=10000: 78
+TestPedigreeTagger : loci=10000, size=100000: 0
+TestPedigreeTagger : 4300, 360, 2885, 255, 78, 0
+TestPedigreeTagger : End of test TestPedigreeTagger
+TestPedigreeTagger : Host: bp9 (Linux, x86_64, x86_64)
+TestPedigreeTagger : Time: Wed May 18 15:57:06 2011
+TestPedigreeTagger : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPedigreeTagger : simuPOP: 1.0.6svn (rev 4172, module binary, optimized, 4 threads)
+TestPedigreeTagger : Test: Test PedigreeTagger, results are number of generations in 30 seconds.
+TestPedigreeTagger : loci=10, size=10000: 4096
+TestPedigreeTagger : loci=10, size=100000: 385
+TestPedigreeTagger : loci=100, size=10000: 4335
+TestPedigreeTagger : loci=100, size=100000: 381
+TestPedigreeTagger : loci=10000, size=10000: 1659
+TestPedigreeTagger : loci=10000, size=100000: 163
+TestPedigreeTagger : 4096, 385, 4335, 381, 1659, 163
+TestPedigreeTagger : End of test TestPedigreeTagger
+TestInheritTagger : Host: bp9 (Linux, x86_64, x86_64)
+TestInheritTagger : Time: Wed May 18 16:01:00 2011
+TestInheritTagger : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInheritTagger : simuPOP: 1.0.6svn (rev 4172, module short, optimized, 4 threads)
+TestInheritTagger : Test: Test InheritTagger, results are number of generations in 30 seconds.
+TestInheritTagger : loci=10, size=10000: 9553
+TestInheritTagger : loci=10, size=100000: 737
+TestInheritTagger : loci=100, size=10000: 8427
+TestInheritTagger : loci=100, size=100000: 519
+TestInheritTagger : loci=10000, size=10000: 552
+TestInheritTagger : loci=10000, size=100000: 52
+TestInheritTagger : 9553, 737, 8427, 519, 552, 52
+TestInheritTagger : End of test TestInheritTagger
+TestInheritTagger : Host: bp9 (Linux, x86_64, x86_64)
+TestInheritTagger : Time: Wed May 18 16:04:11 2011
+TestInheritTagger : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInheritTagger : simuPOP: 1.0.6svn (rev 4172, module long, optimized, 4 threads)
+TestInheritTagger : Test: Test InheritTagger, results are number of generations in 30 seconds.
+TestInheritTagger : loci=10, size=10000: 9275
+TestInheritTagger : loci=10, size=100000: 594
+TestInheritTagger : loci=100, size=10000: 6226
+TestInheritTagger : loci=100, size=100000: 411
+TestInheritTagger : loci=10000, size=10000: 161
+TestInheritTagger : loci=10000, size=100000: 0
+TestInheritTagger : 9275, 594, 6226, 411, 161, 0
+TestInheritTagger : End of test TestInheritTagger
+TestInheritTagger : Host: bp9 (Linux, x86_64, x86_64)
+TestInheritTagger : Time: Wed May 18 16:06:47 2011
+TestInheritTagger : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInheritTagger : simuPOP: 1.0.6svn (rev 4172, module binary, optimized, 4 threads)
+TestInheritTagger : Test: Test InheritTagger, results are number of generations in 30 seconds.
+TestInheritTagger : loci=10, size=10000: 7806
+TestInheritTagger : loci=10, size=100000: 671
+TestInheritTagger : loci=100, size=10000: 8336
+TestInheritTagger : loci=100, size=100000: 676
+TestInheritTagger : loci=10000, size=10000: 2046
+TestInheritTagger : loci=10000, size=100000: 178
+TestInheritTagger : 7806, 671, 8336, 676, 2046, 178
+TestInheritTagger : End of test TestInheritTagger

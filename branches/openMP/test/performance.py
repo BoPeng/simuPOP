@@ -261,6 +261,58 @@ class TestIdTagger(PerformanceTest):
         )
         return gens
 
+class TestPedigreeTagger(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'Test PedigreeTagger, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci, infoFields=['ind_id', 'father_id', 'ped_id'], ancGen=1)
+        tagID(pop, reset=True)
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=RandomSelection(ops=[ 
+                CloneGenoTransmitter(), IdTagger(),
+                PedigreeTagger(infoFields='father_id')]),
+        )
+        return gens
+
+class TestInheritTagger(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'Test InheritTagger, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci, infoFields='x')
+        for sp in range(pop.numSubPop()):
+            pop.individual(0,sp).x = 1
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=RandomMating(ops=[ 
+                MendelianGenoTransmitter(),
+                InheritTagger(mode=MAXIMUM, infoFields='x')]),
+        )
+        return gens
+
+
 
 class TestSelfMating(PerformanceTest):
     def __init__(self, logger, time=30):
