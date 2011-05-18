@@ -319,3 +319,9 @@ TestPedigreeTagger, 2011-05-18 16:00:12,944, bp9, x86_64-4threads, python2.7.1, 
 TestInheritTagger, 2011-05-18 16:04:11,267, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4172-intel, short, 9553, 737, 8427, 519, 552, 52
 TestInheritTagger, 2011-05-18 16:06:47,346, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4172-intel, long, 9275, 594, 6226, 411, 161, 0
 TestInheritTagger, 2011-05-18 16:09:53,416, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4172-intel, binary, 7806, 671, 8336, 676, 2046, 178
+TestPedigreeTagger, 2011-05-18 16:37:20,935, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4173-intel, short, 5638, 551, 3666, 370, 77, 5
+TestPedigreeTagger, 2011-05-18 16:39:56,790, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4173-intel, long, 5546, 570, 4627, 401, 80, 0
+TestPedigreeTagger, 2011-05-18 16:43:04,122, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4173-intel, binary, 6060, 594, 6508, 618, 2533, 245
+TestInheritTagger, 2011-05-18 17:01:51,673, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4173-intel, short, 26678, 2174, 23119, 1588, 677, 64
+TestInheritTagger, 2011-05-18 17:04:27,692, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4173-intel, long, 25909, 1801, 15852, 1144, 179, 0
+TestInheritTagger, 2011-05-18 17:07:35,036, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4173-intel, binary, 22938, 2168, 24949, 2026, 4616, 398
