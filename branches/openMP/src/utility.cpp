@@ -458,7 +458,7 @@ void setOptions(const int numThreads, const char * name, unsigned long seed)
 	for (unsigned long i = 0; i < g_RNGs.size(); i++) {
 		if (g_RNGs[i] == NULL) {
 			g_RNGs[i] = new RNG(name, seed + i);
-		}else  {
+		} else {
 			g_RNGs[i]->set(name, seed + i);
 		}
 	}
@@ -468,7 +468,7 @@ void setOptions(const int numThreads, const char * name, unsigned long seed)
 	{
 		if (g_RNG == NULL) {
 			g_RNG = new RNG(name, seed + omp_get_thread_num());
-		}else  {
+		} else {
 			g_RNG->set(name, seed + omp_get_thread_num());
 		}
 	}
