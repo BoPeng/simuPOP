@@ -8,11 +8,21 @@
 # $LastChangedDate$
 #
 
-import simuOpt
-simuOpt.setOptions(quiet=True)
+import unittest, os, sys
+from simuOpt import setOptions
+setOptions(quiet=True)
+new_argv = []
+for arg in sys.argv:
+    if arg in ['short', 'long', 'binary']:
+        setOptions(alleleType = arg)
+    elif arg.startswith('-j'):
+        setOptions(numThreads = int(arg[2:]))
+    else:
+        new_argv.append(arg) 
+
+sys.argv=new_argv
 
 from simuPOP import *
-import unittest, os, sys
 
 # record active generations in pop.dvars().hist
 def genRecorder(pop):

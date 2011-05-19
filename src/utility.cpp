@@ -120,7 +120,7 @@ extern "C" bool is_defdict(PyTypeObject * type);
 extern "C" int initCustomizedTypes(void);
 
 #else
-PyObject * newcarrayobject(GenoIterator, GenoIterator )
+PyObject * newcarrayobject(GenoIterator, GenoIterator)
 {
 	return NULL;
 }
@@ -132,7 +132,7 @@ PyObject * PyDefDict_New()
 }
 
 
-bool is_defdict(PyTypeObject * )
+bool is_defdict(PyTypeObject *)
 {
 	return true;
 }
@@ -426,14 +426,19 @@ int simuPOP_getch(void)
 #endif
 
 
-//thread number, global variable
+// thread number, global variable
 UINT g_numThreads;
 
-#ifdef _OPENMP
-// random number generators for each thread
-vector<RNG> g_RNGs;
-#else
 // random number generator. a global variable.
+#ifdef _OPENMP
+#  if THREADPRIVATE_SUPPORT == 0
+vector<RNG *> g_RNGs;
+#  else
+RNG * g_RNG;
+// each thread has its own g_RNG
+#    pragma omp threadprivate(g_RNG)
+#  endif
+#else
 RNG g_RNG;
 #endif
 
@@ -447,13 +452,29 @@ void setOptions(const int numThreads, const char * name, unsigned long seed)
 		omp_set_num_threads(numThreads);
 		g_numThreads = numThreads;
 	}
-	// Initialize g_RNGs
+#  if THREADPRIVATE_SUPPORT == 0
 	g_RNGs.resize(g_numThreads);
-	g_RNGs[0].set(name, seed);
-	for (size_t i = 1; i < g_RNGs.size(); i++)
-		// GSL RNG only accept unsigned long seed
-		g_RNGs[i].set(name, static_cast<ULONG>(g_RNGs[0].seed() + i));
+	seed = g_RNGs[0] == NULL ? RNG::generateRandomSeed() : g_RNGs[0]->seed();
+	for (unsigned long i = 0; i < g_RNGs.size(); i++) {
+		if (g_RNGs[i] == NULL) {
+			g_RNGs[i] = new RNG(name, seed + i);
+		} else {
+			g_RNGs[i]->set(name, seed + i);
+		}
+	}
+#  else
+	seed = g_RNG == NULL ? RNG::generateRandomSeed() : g_RNG->seed();
+#    pragma omp parallel
+	{
+		if (g_RNG == NULL) {
+			g_RNG = new RNG(name, seed + omp_get_thread_num());
+		} else {
+			g_RNG->set(name, seed + omp_get_thread_num());
+		}
+	}
+#  endif
 #else
+	(void)numThreads;  // avoid an unused parameter warning
 	g_RNG.set(name, seed);
 #endif
 }
@@ -490,7 +511,11 @@ ATOMICLONG fetchAndIncrement(ATOMICLONG * val)
 RNG & getRNG()
 {
 #ifdef _OPENMP
-	return g_RNGs[omp_get_thread_num()];
+#  if THREADPRIVATE_SUPPORT == 0
+	return *g_RNGs[omp_get_thread_num()];
+#  else
+	return *g_RNG;
+#  endif
 #else
 	return g_RNG;
 #endif
@@ -1257,7 +1282,7 @@ PyObject * SharedVariables::setVar(const string & name, const PyObject * val)
 	size_t curIdx = 0;
 	PyObject * curChild = NULL;
 
-	next :
+next:
 	// get par[1] (dict), curChild can be null, or borrow ref
 	if (curType == 1)
 		curChild = PyDict_GetItem(curParent, curKey);
@@ -1416,7 +1441,7 @@ PyObject * SharedVariables::getVar(const string & name, bool nameError) const
 	int curIdx = 0;
 	PyObject * curChild;
 
-	next :
+next:
 	if (curType == 1)
 		curChild = PyDict_GetItem(curParent, curKey);
 	else
@@ -3590,26 +3615,34 @@ vectoru WeightedSampler::drawSamples(ULONG num)
 // this is used for Bernullitrials and copyGenotype
 WORDTYPE g_bitMask[WORDBIT];
 
-Bernullitrials::Bernullitrials(RNG & rng)
-	: m_RNG(&rng), m_N(0), m_prob(0), m_table(0), m_pointer(0),
+Bernullitrials::Bernullitrials(RNG & /* rng */)
+	: m_N(0), m_prob(0), m_table(0), m_pointer(0),
 	m_cur(npos)
 {
 }
 
 
-Bernullitrials::Bernullitrials(RNG & rng, const vectorf & prob, ULONG trials)
-	: m_RNG(&rng), m_N(trials), m_prob(prob), m_table(prob.size()), m_pointer(prob.size()),
+Bernullitrials::Bernullitrials(RNG & /* rng */, const vectorf & prob, ULONG trials)
+	: m_N(0), m_prob(prob), m_table(prob.size()), m_pointer(prob.size()),
 	m_cur(npos)
 {
-	DBG_FAILIF(trials <= 0, ValueError, "trial number can not be zero.");
+	//DBG_FAILIF(trials <= 0, ValueError, "trial number can not be zero.");
 	DBG_FAILIF(prob.empty(), ValueError, "probability table can not be empty.");
+
+	if (trials == 0)
+		if (*min_element(prob.begin(), prob.end()) < 0.0000001)
+			m_N = 1024 * 4;
+		else
+			m_N = 1024;
+	else
+		m_N = trials;
 
 	// initialize the table
 	for (size_t i = 0; i < probSize(); ++i) {
 		DBG_FAILIF(m_prob[i] < 0 || m_prob[i] > 1, ValueError,
 			"Probability for a Bernulli trail should be between 0 and 1 (value "
 			+ toStr(m_prob[i]) + " at index " + toStr(i) + ")");
-		m_table[i].resize(trials);
+		m_table[i].resize(m_N);
 		m_pointer[i] = BITPTR(m_table[i].begin());
 	}
 }
@@ -3623,20 +3656,26 @@ Bernullitrials::~Bernullitrials()
 
 void Bernullitrials::setParameter(const vectorf & prob, size_t trials)
 {
-	m_N = trials;
+	if (trials == 0)
+		if (*min_element(prob.begin(), prob.end()) < 0.0000001)
+			m_N = 1024 * 4;
+		else
+			m_N = 1024;
+	else
+		m_N = trials;
 	m_prob = prob;
 	m_table.resize(m_prob.size());
 	m_pointer.resize(m_prob.size());
 	m_cur = npos;                                                             // will trigger doTrial.
 
-	DBG_FAILIF(trials <= 0, ValueError, "trial number can not be zero.");
+	//DBG_FAILIF(trials <= 0, ValueError, "trial number can not be zero.");
 	DBG_FAILIF(prob.empty(), ValueError, "probability table can not be empty.");
 
 	for (size_t i = 0; i < probSize(); ++i) {
 		DBG_FAILIF(m_prob[i] < 0 || m_prob[i] > 1, ValueError,
 			"Probability for a Bernulli trail should be between 0 and 1 (value "
 			+ toStr(m_prob[i]) + " at index " + toStr(i) + ")");
-		m_table[i].resize(trials);
+		m_table[i].resize(m_N);
 		m_pointer[i] = BITPTR(m_table[i].begin());
 	}
 }
@@ -3678,173 +3717,173 @@ void Bernullitrials::setAll(size_t idx, bool v)
 
 void Bernullitrials::doTrial()
 {
-    DBG_ASSERT(m_N != 0, ValueError, "number of trials should be positive");
+	DBG_ASSERT(m_N != 0, ValueError, "number of trials should be positive");
 
-    DBG_DO(DBG_UTILITY, cerr << "n=" << m_N << " doTrial, cur trial: " << m_cur << endl);
+	DBG_DO(DBG_UTILITY, cerr << "n=" << m_N << " doTrial, cur trial: " << m_cur << endl);
 
-    // for each column
-    for (size_t cl = 0, clEnd = probSize(); cl < clEnd; ++cl) {
-        WORDTYPE * ptr = m_pointer[cl];
-        double prob = m_prob[cl];
-        if (prob == 0.) {
-            setAll(cl, false);
+	// for each column
+	for (size_t cl = 0, clEnd = probSize(); cl < clEnd; ++cl) {
+		WORDTYPE * ptr = m_pointer[cl];
+		double prob = m_prob[cl];
+		if (prob == 0.) {
+			setAll(cl, false);
 		} else if (prob == 0.5) {                                 // random 0,1 bit, this will be quicker
-            // set to 0..
-            setAll(cl, false);
-            // treat a randInt as random bits and set them directly.
-            // I.e., we will call 1/16 or 1/32 times of rng for this specifal case.
-            // first several blocks
-            // WORDTYPE * ptr = BITPTR(succ.begin());
-            WORDTYPE tmp;
-            size_t blk = m_N / WORDBIT;
-            size_t rest = m_N - blk * WORDBIT;
-            for (size_t i = 0; i < blk; ++i) {
-                // even if the block size is large (I can not set it to int16_t)
-                // I only take the last 16 bit of a rng
-                // for the quality of random bits.
-                *ptr = 0;
-                for (size_t b = 0; b < WORDBIT / 16; ++b) {
-                    // blocks[i] = static_cast<int16_t>(getRNG().randGet());
-                    tmp = getRNG().randInt(0xFFFF);
-                    *ptr |= (0xFFFF & tmp) << (b * 16);
+			// set to 0..
+			setAll(cl, false);
+			// treat a randInt as random bits and set them directly.
+			// I.e., we will call 1/16 or 1/32 times of rng for this specifal case.
+			// first several blocks
+			// WORDTYPE * ptr = BITPTR(succ.begin());
+			WORDTYPE tmp;
+			size_t blk = m_N / WORDBIT;
+			size_t rest = m_N - blk * WORDBIT;
+			for (size_t i = 0; i < blk; ++i) {
+				// even if the block size is large (I can not set it to int16_t)
+				// I only take the last 16 bit of a rng
+				// for the quality of random bits.
+				*ptr = 0;
+				for (size_t b = 0; b < WORDBIT / 16; ++b) {
+					// blocks[i] = static_cast<int16_t>(getRNG().randGet());
+					tmp = getRNG().randInt(0xFFFF);
+					*ptr |= (0xFFFF & tmp) << (b * 16);
 				}
-                ptr++;
+				ptr++;
 			}
-            // last block
-            if (rest != 0) {
-                size_t b = 0;
-                for (b = 0; b < rest / 16; ++b) {
-                    tmp = getRNG().randInt(0xFFFF);
-                    *ptr |= (0xFFFF & tmp) << (b * 16);
+			// last block
+			if (rest != 0) {
+				size_t b = 0;
+				for (b = 0; b < rest / 16; ++b) {
+					tmp = getRNG().randInt(0xFFFF);
+					*ptr |= (0xFFFF & tmp) << (b * 16);
 				}
-                // last bits
-                rest -= b * 16;
-                if (rest != 0) {
-                    tmp = getRNG().randInt(0xFFFF);
-                    *ptr |= (g_bitMask[rest] & tmp) << b * 16;
+				// last bits
+				rest -= b * 16;
+				if (rest != 0) {
+					tmp = getRNG().randInt(0xFFFF);
+					*ptr |= (g_bitMask[rest] & tmp) << b * 16;
 				}
 			}
 		}
-        // algorithm i Sheldon Ross' book simulation (4ed), page 54
-        else if (prob < 0.5) {
-            // set all to 0, then set some to 1
-            setAll(cl, false);
-            // it may make sense to limit the use of this method to low p,
-            size_t i = 0;
-            while (true) {
-                // i moves at least one. (# trails until the first success)
-                // 6,3 means (0 0 0 0 0 1) (0 0 1)
-                ULONG step = m_RNG->randGeometric(prob);
-                if (step == 0)
+		// algorithm i Sheldon Ross' book simulation (4ed), page 54
+		else if (prob < 0.5) {
+			// set all to 0, then set some to 1
+			setAll(cl, false);
+			// it may make sense to limit the use of this method to low p,
+			size_t i = 0;
+			while (true) {
+				// i moves at least one. (# trails until the first success)
+				// 6,3 means (0 0 0 0 0 1) (0 0 1)
+				ULONG step = getRNG().randGeometric(prob);
+				if (step == 0)
 					// gsl_ran_geometric sometimes return 0 when prob is really small.
 					break;
-                // i moves to 6 and 9
-                i += step;
-                if (i <= m_N)
+				// i moves to 6 and 9
+				i += step;
+				if (i <= m_N)
 					// set the 5th and 8th element to 1.
 					setBit(ptr, i - 1);
-                else
+				else
 					break;
 			}
 		} else if (prob == 1.) {
-            setAll(cl, true);
+			setAll(cl, true);
 		} else {                                                                  // 1 > m_proc[cl] > 0.5
-            // set all to 1, and then unset some.
-            setAll(cl, true);
-            // it may make sense to limit the use of this method to low p,
-            size_t i = 0;
-            prob = 1. - prob;
-            while (true) {
-                ULONG step = m_RNG->randGeometric(prob);
-                if (step == 0)
+			// set all to 1, and then unset some.
+			setAll(cl, true);
+			// it may make sense to limit the use of this method to low p,
+			size_t i = 0;
+			prob = 1. - prob;
+			while (true) {
+				ULONG step = getRNG().randGeometric(prob);
+				if (step == 0)
 					// gsl_ran_geometric sometimes return 0 when prob is really small.
 					break;
-                i += step;
-                if (i <= m_N)
+				i += step;
+				if (i <= m_N)
 					unsetBit(ptr, i - 1);
-                else
+				else
 					break;
 			}
 		}
 	}
-    m_cur = 0;
+	m_cur = 0;
 }
 
 
 size_t Bernullitrials::curTrial()
 {
-    DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
-    return m_cur;
+	DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
+	return m_cur;
 }
 
 
 // get a trial corresponding to m_prob.
 void Bernullitrials::trial()
 {
-    if (m_cur == npos || m_cur == m_N - 1)  // reach the last trial
+	if (m_cur == npos || m_cur == m_N - 1)  // reach the last trial
 		doTrial();
-    else
+	else
 		m_cur++;
-    DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
+	DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
 }
 
 
 bool Bernullitrials::trialSucc(size_t idx) const
 {
-    DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
-    return getBit(m_pointer[idx], m_cur);
+	DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
+	return getBit(m_pointer[idx], m_cur);
 }
 
 
 bool Bernullitrials::trialSucc(size_t idx, size_t cur) const
 {
-    return getBit(m_pointer[idx], cur);
+	return getBit(m_pointer[idx], cur);
 }
 
 
 size_t Bernullitrials::probFirstSucc() const
 {
-    DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
-    size_t i = 0;
-    const size_t sz = probSize();
-    while (i < sz && !getBit(m_pointer[i], m_cur))
+	DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
+	size_t i = 0;
+	const size_t sz = probSize();
+	while (i < sz && !getBit(m_pointer[i], m_cur))
 		++i;
-    return i >= sz ? npos : i;
+	return i >= sz ? npos : i;
 }
 
 
 size_t Bernullitrials::probNextSucc(size_t pos) const
 {
-    DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
-    const size_t sz = probSize();
-    if (pos >= (sz - 1) || sz == 0)
+	DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
+	const size_t sz = probSize();
+	if (pos >= (sz - 1) || sz == 0)
 		return npos;
 
-    ++pos;
-    while (pos < sz && !getBit(m_pointer[pos], m_cur))
+	++pos;
+	while (pos < sz && !getBit(m_pointer[pos], m_cur))
 		++pos;
-    return pos >= sz ? npos : pos;
+	return pos >= sz ? npos : pos;
 }
 
 
 size_t Bernullitrials::trialFirstSucc(size_t idx) const
 {
-    size_t blk = m_N / WORDBIT;
-    WORDTYPE * ptr = m_pointer[idx];
+	size_t blk = m_N / WORDBIT;
+	WORDTYPE * ptr = m_pointer[idx];
 
-    size_t i = 0;
+	size_t i = 0;
 
-    while (i < blk && *ptr++ == 0)
+	while (i < blk && *ptr++ == 0)
 		++i;
 
-    if (i < blk) {                                                                          // not at the last blk
-        return i * WORDBIT + lowest_bit(*(ptr - 1));
+	if (i < blk) {                                                                          // not at the last blk
+		return i * WORDBIT + lowest_bit(*(ptr - 1));
 	} else {                                                                                // last block?
-        size_t rest = m_N - blk * WORDBIT;
-        size_t tmp = *ptr & g_bitMask[rest];
-        if (tmp == 0)
+		size_t rest = m_N - blk * WORDBIT;
+		size_t tmp = *ptr & g_bitMask[rest];
+		if (tmp == 0)
 			return npos;
-        else
+		else
 			return blk * WORDBIT + lowest_bit(tmp);
 	}
 }
@@ -3852,44 +3891,44 @@ size_t Bernullitrials::trialFirstSucc(size_t idx) const
 
 size_t Bernullitrials::trialNextSucc(size_t idx, size_t pos) const
 {
-    const BitSet & bs = m_table[idx];
+	const BitSet & bs = m_table[idx];
 
-    if (pos >= (m_N - 1) || m_N == 0)
+	if (pos >= (m_N - 1) || m_N == 0)
 		return npos;
 
-    ++pos;
+	++pos;
 
-    // first block
-    BitSet::const_iterator it = bs.begin() + pos;
-    WORDTYPE * ptr = BITPTR(it);
-    size_t offset = BITOFF(it);
-    size_t i = ptr - BITPTR(bs.begin());
+	// first block
+	BitSet::const_iterator it = bs.begin() + pos;
+	WORDTYPE * ptr = BITPTR(it);
+	size_t offset = BITOFF(it);
+	size_t i = ptr - BITPTR(bs.begin());
 
-    // mask out bits before pos
-    WORDTYPE tmp = *ptr & ~g_bitMask[offset];
+	// mask out bits before pos
+	WORDTYPE tmp = *ptr & ~g_bitMask[offset];
 
-    size_t blk = m_N / WORDBIT;
-    if (tmp != 0)
+	size_t blk = m_N / WORDBIT;
+	if (tmp != 0)
 		return i * WORDBIT + lowest_bit(tmp);
-    else if (blk == i)
+	else if (blk == i)
 		// if i is the last block, return no.
 		return npos;
 
-    // now, go from next block
-    ++ptr;
-    ++i;
-    while (i < blk && *ptr++ == 0)
+	// now, go from next block
+	++ptr;
+	++i;
+	while (i < blk && *ptr++ == 0)
 		++i;
 
-    if (i < blk)                                                                            // not at the last blk
+	if (i < blk)                                                                            // not at the last blk
 		return i * WORDBIT + lowest_bit(*(ptr - 1));
-    else {                                                                                  // last block?
-        size_t rest = m_N - blk * WORDBIT;
-        // mask out bits after rest
-        tmp = *ptr & g_bitMask[rest];
-        if (tmp == 0)
+	else {                                                                                  // last block?
+		size_t rest = m_N - blk * WORDBIT;
+		// mask out bits after rest
+		tmp = *ptr & g_bitMask[rest];
+		if (tmp == 0)
 			return npos;
-        else
+		else
 			return blk * WORDBIT + lowest_bit(tmp);
 	}
 }
@@ -3897,33 +3936,33 @@ size_t Bernullitrials::trialNextSucc(size_t idx, size_t pos) const
 
 void Bernullitrials::setTrialSucc(size_t idx, bool succ)
 {
-    DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
-    if (succ)
+	DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
+	if (succ)
 		setBit(m_pointer[idx], m_cur);
-    else
+	else
 		unsetBit(m_pointer[idx], m_cur);
 }
 
 
 double Bernullitrials::trialSuccRate(UINT index) const
 {
-    // efficiency is not considered here
-    size_t count = 0;
+	// efficiency is not considered here
+	size_t count = 0;
 
-    for (size_t i = 0; i < trialSize(); ++i)
+	for (size_t i = 0; i < trialSize(); ++i)
 		if (getBit(m_pointer[index], i))
 			count++;
-    return double(count) / static_cast<double>(m_table[index].size());
+	return double(count) / static_cast<double>(m_table[index].size());
 }
 
 
 double Bernullitrials::probSuccRate() const
 {
-    DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
-    UINT count = 0;
-    for (size_t cl = 0, clEnd = probSize(); cl < clEnd; ++cl)
+	DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
+	UINT count = 0;
+	for (size_t cl = 0, clEnd = probSize(); cl < clEnd; ++cl)
 		count += getBit(m_pointer[cl], m_cur) ? 1 : 0;
-    return count / static_cast<double>(probSize());
+	return count / static_cast<double>(probSize());
 }
 
 
@@ -3937,7 +3976,7 @@ double Bernullitrials::probSuccRate() const
 void gsl_error_handler(const char * reason, const char *,
                        int, int gsl_errno)
 {
-    throw SystemError("GSL Error " + toStr(gsl_errno) + ":\t"
+	throw SystemError("GSL Error " + toStr(gsl_errno) + ":\t"
 		+ reason);
 }
 
@@ -3948,56 +3987,56 @@ void gsl_error_handler(const char * reason, const char *,
 class PythonStdBuf : public streambuf
 {
 public:
-    enum PythonBufType {
-        StdOut = 1,
-        StdErr = 2
+	enum PythonBufType {
+		StdOut = 1,
+		StdErr = 2
 	};
 
 public:
-    PythonStdBuf(PythonBufType type) : m_type(type)
-    {
+	PythonStdBuf(PythonBufType type) : m_type(type)
+	{
 	}
 
 
 protected:
-    int overflow(int c)
-    {
-        // write out current buffer
-        if (pbase() != pptr()) {
-            // the end of string might not be \0
-            char_type * endPtr = pptr();
-            char_type endChar = *endPtr;
-            *endPtr = '\0';
-            //          int len = pptr() - pbase();
-            //          char * str = new char[len+1];
-            //          strncpy(str, pbase(), len);
-            //          str[len] = '\0';
-            if (m_type == StdOut)
+	int overflow(int c)
+	{
+		// write out current buffer
+		if (pbase() != pptr()) {
+			// the end of string might not be \0
+			char_type * endPtr = pptr();
+			char_type endChar = *endPtr;
+			*endPtr = '\0';
+			//          int len = pptr() - pbase();
+			//          char * str = new char[len+1];
+			//          strncpy(str, pbase(), len);
+			//          str[len] = '\0';
+			if (m_type == StdOut)
 				PySys_WriteStdout("%s", pbase());
-            else
+			else
 				PySys_WriteStderr("%s", pbase());
-            // put original end character back, whatever it is.
-            *endPtr = endChar;
-            //          delete[] str;
-            setp(pbase(), epptr());
+			// put original end character back, whatever it is.
+			*endPtr = endChar;
+			//          delete[] str;
+			setp(pbase(), epptr());
 		}
-        // push character c in
-        if (c != EOF) {
-            // unbuffered, write out this character, do not put into buffer
-            if (pbase() == epptr()) {
-                if (m_type == StdOut)
+		// push character c in
+		if (c != EOF) {
+			// unbuffered, write out this character, do not put into buffer
+			if (pbase() == epptr()) {
+				if (m_type == StdOut)
 					PySys_WriteStdout("%c", c);
-                else
+				else
 					PySys_WriteStderr("%c", c);
 			} else
 				sputc(static_cast<char>(c));
 		}
-        return 0;
+		return 0;
 	}
 
 
 protected:
-    PythonBufType m_type;
+	PythonBufType m_type;
 };
 
 // create a null stream buf that discard everything
@@ -4005,15 +4044,15 @@ protected:
 class NullStreamBuf : public streambuf
 {
 public:
-    NullStreamBuf()
-    {
+	NullStreamBuf()
+	{
 	}
 
 
 protected:
-    int overflow(int)
-    {
-        return 0;
+	int overflow(int)
+	{
+		return 0;
 	}
 
 
@@ -4034,57 +4073,57 @@ ostream g_cnull(&g_nullStreamBuf);
 // return null stream
 ostream & cnull()
 {
-    return g_cnull;
+	return g_cnull;
 }
 
 
 PyObject * moduleInfo()
 {
-    // output a dictionary with many keys
-    PyObject * dict = PyDict_New();
+	// output a dictionary with many keys
+	PyObject * dict = PyDict_New();
 
-    // these macros will be passed from commandline, if not, use the default
+	// these macros will be passed from commandline, if not, use the default
 #ifndef SIMUPOP_REV
 #  define REVISION "9999"
 #else
-    // make passed macro to a real string
+	// make passed macro to a real string
 #  define REVISION MacroQuote(SIMUPOP_REV)
 #endif
 
-    // Revision
-    const char * rev = REVISION;
-    int num;
-    // XX:XX or XX:XXM, or XX
-    if (sscanf(rev, "%*d:%d", &num) != 1 && sscanf(rev, "%d", &num) != 1)
+	// Revision
+	const char * rev = REVISION;
+	int num;
+	// XX:XX or XX:XXM, or XX
+	if (sscanf(rev, "%*d:%d", &num) != 1 && sscanf(rev, "%d", &num) != 1)
 		num = 9999;
-    PyDict_SetItem(dict, PyString_FromString("revision"), PyInt_FromLong(num));
+	PyDict_SetItem(dict, PyString_FromString("revision"), PyInt_FromLong(num));
 
-    // Version
+	// Version
 #ifndef SIMUPOP_VER
-    const char * ver = "snapshot";
+	const char * ver = "snapshot";
 #else
-    // convert name to a string
-    const char * ver = MacroQuote(SIMUPOP_VER);
+	// convert name to a string
+	const char * ver = MacroQuote(SIMUPOP_VER);
 #endif
-    PyDict_SetItem(dict, PyString_FromString("version"), PyString_FromString(ver));
+	PyDict_SetItem(dict, PyString_FromString("version"), PyString_FromString(ver));
 
-    // optimized
+	// optimized
 #ifdef OPTIMIZED
-    Py_INCREF(Py_True);
-    PyDict_SetItem(dict, PyString_FromString("optimized"), Py_True);
+	Py_INCREF(Py_True);
+	PyDict_SetItem(dict, PyString_FromString("optimized"), Py_True);
 #else
-    Py_INCREF(Py_False);
-    PyDict_SetItem(dict, PyString_FromString("optimized"), Py_False);
+	Py_INCREF(Py_False);
+	PyDict_SetItem(dict, PyString_FromString("optimized"), Py_False);
 #endif
 
-    // AlleleType
+	// AlleleType
 #ifdef LONGALLELE
-    PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("long"));
+	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("long"));
 #else
 #  ifdef BINARYALLELE
-    PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("binary"));
+	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("binary"));
 #  else
-    PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("short"));
+	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("short"));
 #  endif
 #endif
 
@@ -4106,79 +4145,79 @@ PyObject * moduleInfo()
 #  define PLATFORM ""
 #endif
 
-    // compiler
-    PyDict_SetItem(dict, PyString_FromString("compiler"), PyString_FromString(COMPILER));
+	// compiler
+	PyDict_SetItem(dict, PyString_FromString("compiler"), PyString_FromString(COMPILER));
 
-    // date
-    PyDict_SetItem(dict, PyString_FromString("date"), PyString_FromString(__DATE__));
+	// date
+	PyDict_SetItem(dict, PyString_FromString("date"), PyString_FromString(__DATE__));
 
-    // version of python
-    PyDict_SetItem(dict, PyString_FromString("python"), PyString_FromString(PY_VERSION));
+	// version of python
+	PyDict_SetItem(dict, PyString_FromString("python"), PyString_FromString(PY_VERSION));
 
-    // platform
-    PyDict_SetItem(dict, PyString_FromString("platform"), PyString_FromString(PLATFORM));
+	// platform
+	PyDict_SetItem(dict, PyString_FromString("platform"), PyString_FromString(PLATFORM));
 
-    // Number of Threads in openMP
+	// Number of Threads in openMP
 #ifdef _OPENMP
-    PyDict_SetItem(dict, PyString_FromString("threads"), PyLong_FromLong(numThreads()));
+	PyDict_SetItem(dict, PyString_FromString("threads"), PyLong_FromLong(numThreads()));
 #else
-    PyDict_SetItem(dict, PyString_FromString("threads"), PyLong_FromLong(0));
+	PyDict_SetItem(dict, PyString_FromString("threads"), PyLong_FromLong(0));
 #endif
 
-    // 32 or 64 bits
+	// 32 or 64 bits
 #ifdef _WIN64
-    PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(64));
+	PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(64));
 #else
 #  ifdef _WIN32
-    PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(32));
+	PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(32));
 #  else
-    PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(__WORDSIZE));
+	PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(__WORDSIZE));
 #  endif
 #endif
 
 #ifdef BINARYALLELE
-    // bits for each allele
-    PyDict_SetItem(dict, PyString_FromString("alleleBits"), PyLong_FromLong(1));
+	// bits for each allele
+	PyDict_SetItem(dict, PyString_FromString("alleleBits"), PyLong_FromLong(1));
 #else
-    PyDict_SetItem(dict, PyString_FromString("alleleBits"), PyLong_FromLong(sizeof(Allele) * 8));
+	PyDict_SetItem(dict, PyString_FromString("alleleBits"), PyLong_FromLong(sizeof(Allele) * 8));
 #endif
 
-    // maxAllele
-    PyDict_SetItem(dict, PyString_FromString("maxAllele"), PyLong_FromUnsignedLong(ModuleMaxAllele));
+	// maxAllele
+	PyDict_SetItem(dict, PyString_FromString("maxAllele"), PyLong_FromUnsignedLong(ModuleMaxAllele));
 
-    // limits
-    PyDict_SetItem(dict, PyString_FromString("maxIndex"), PyLong_FromUnsignedLong(static_cast<ULONG>(MaxIndexSize)));
+	// limits
+	PyDict_SetItem(dict, PyString_FromString("maxIndex"), PyLong_FromUnsignedLong(static_cast<ULONG>(MaxIndexSize)));
 
-    // debug (code)
-    PyObject * codes = PyDict_New();
-    for (size_t i = 0; g_debugCodes[i][0]; ++i) {
-        if (g_dbgCode[i]) {
-            Py_INCREF(Py_True);
-            PyDict_SetItemString(codes, g_debugCodes[i], Py_True);
+	// debug (code)
+	PyObject * codes = PyDict_New();
+	for (size_t i = 0; g_debugCodes[i][0]; ++i) {
+		if (g_dbgCode[i]) {
+			Py_INCREF(Py_True);
+			PyDict_SetItemString(codes, g_debugCodes[i], Py_True);
 		} else {
-            Py_INCREF(Py_False);
-            PyDict_SetItemString(codes, g_debugCodes[i], Py_False);
+			Py_INCREF(Py_False);
+			PyDict_SetItemString(codes, g_debugCodes[i], Py_False);
 		}
 	}
-    PyDict_SetItem(dict, PyString_FromString("debug"), codes);
+	PyDict_SetItem(dict, PyString_FromString("debug"), codes);
 
-    // availableRNGs
-    PyObject * rngs = PyList_New(0);
-    const gsl_rng_type ** t, ** t0;
-    gsl_rng * rng;
+	// availableRNGs
+	PyObject * rngs = PyList_New(0);
+	const gsl_rng_type ** t, ** t0;
+	gsl_rng * rng;
 
-    t0 = gsl_rng_types_setup();
+	t0 = gsl_rng_types_setup();
 
-    for (t = t0; *t != 0; t++) {
-        rng = gsl_rng_alloc(*t);
-        if (gsl_rng_min(rng) == 0 && gsl_rng_max(rng) >= MaxRandomNumber)
+	for (t = t0; *t != 0; t++) {
+		rng = gsl_rng_alloc(*t);
+		if (gsl_rng_min(rng) == 0 && gsl_rng_max(rng) >= MaxRandomNumber)
 			PyList_Append(rngs, PyString_FromString((*t)->name));
-        gsl_rng_free(rng);
+		gsl_rng_free(rng);
 	}
-    PyDict_SetItem(dict, PyString_FromString("availableRNGs"), rngs);
+	PyDict_SetItem(dict, PyString_FromString("availableRNGs"), rngs);
 
-    //
-    return dict;
+	//
+	return dict;
 }
 
 
@@ -4187,201 +4226,201 @@ PyObject * moduleInfo()
 // define a good way to copy long genotype sequence
 void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
 {
-    DBG_ASSERT(BITOFF(fr) < WORDBIT, SystemError,
+	DBG_ASSERT(BITOFF(fr) < WORDBIT, SystemError,
 		"Your vector<bool> implementation is different...");
 
-    WORDTYPE * fr_p = BITPTR(fr);
-    WORDTYPE * to_p = BITPTR(to);
-    size_t fr_off = BITOFF(fr);
-    size_t to_off = BITOFF(to);
+	WORDTYPE * fr_p = BITPTR(fr);
+	WORDTYPE * to_p = BITPTR(to);
+	size_t fr_off = BITOFF(fr);
+	size_t to_off = BITOFF(to);
 
-    // if offset is different, can not copy in block.
-    if (n < WORDBIT) {
-        for (size_t i = 0; i < n; ++i) {
-            // set bit according to from bit
-            if (*fr_p & (1UL << fr_off))
+	// if offset is different, can not copy in block.
+	if (n < WORDBIT) {
+		for (size_t i = 0; i < n; ++i) {
+			// set bit according to from bit
+			if (*fr_p & (1UL << fr_off))
 				*to_p |= (1UL << to_off);
-            else
+			else
 				*to_p &= ~(1UL << to_off);
-            // next location
-            if (fr_off++ == WORDBIT - 1) {
-                fr_off = 0;
-                ++fr_p;
+			// next location
+			if (fr_off++ == WORDBIT - 1) {
+				fr_off = 0;
+				++fr_p;
 			}
-            if (to_off++ == WORDBIT - 1) {
-                to_off = 0;
-                ++to_p;
+			if (to_off++ == WORDBIT - 1) {
+				to_off = 0;
+				++to_p;
 			}
 		}
 	} else if (fr_off == to_off) {
-        // copy first block, fr_off + 1 bits
-        // ABCDxxxx for off=4
-        // what I am doing is
-        // mask[4] = xxxx1111 <==== NOTICE mask[4] has four 1s
-        //
-        //  off = 4,
-        //  from:  ABCDxxxx
-        //  to:    EFGHxxxx
-        // from & ~mask =  ABCD0000
-        // to &    mask  = 0000xxxx
-        // (from & mask) | (to & ~mask) = ABCDxxxx
-        WORDTYPE mask = g_bitMask[fr_off];
-        *to_p = (*fr_p & ~mask) | (*to_p & mask);
+		// copy first block, fr_off + 1 bits
+		// ABCDxxxx for off=4
+		// what I am doing is
+		// mask[4] = xxxx1111 <==== NOTICE mask[4] has four 1s
+		//
+		//  off = 4,
+		//  from:  ABCDxxxx
+		//  to:    EFGHxxxx
+		// from & ~mask =  ABCD0000
+		// to &    mask  = 0000xxxx
+		// (from & mask) | (to & ~mask) = ABCDxxxx
+		WORDTYPE mask = g_bitMask[fr_off];
+		*to_p = (*fr_p & ~mask) | (*to_p & mask);
 
-        size_t rest = n - (WORDBIT - fr_off);
-        size_t blks = rest / WORDBIT;
-        for (size_t i = 0; i < blks; ++i)
+		size_t rest = n - (WORDBIT - fr_off);
+		size_t blks = rest / WORDBIT;
+		for (size_t i = 0; i < blks; ++i)
 			*++to_p = *++fr_p;
-        // the rest of the bits?
-        rest -= blks * WORDBIT;
-        if (rest != 0) {
-            // rest = 3
-            // from:   xxxxxABC
-            // to:     xxxxxCDE
-            // mask:   00000111
-            //    &:   00000ABC
-            //    & :  xxxxx000
-            //    |:   xxxxxABC
-            to_p++;
-            fr_p++;
-            // mask has top rest zeros.
-            mask = g_bitMask[rest];
-            *to_p = (*fr_p & mask) | (*to_p & ~mask);
+		// the rest of the bits?
+		rest -= blks * WORDBIT;
+		if (rest != 0) {
+			// rest = 3
+			// from:   xxxxxABC
+			// to:     xxxxxCDE
+			// mask:   00000111
+			//    &:   00000ABC
+			//    & :  xxxxx000
+			//    |:   xxxxxABC
+			to_p++;
+			fr_p++;
+			// mask has top rest zeros.
+			mask = g_bitMask[rest];
+			*to_p = (*fr_p & mask) | (*to_p & ~mask);
 		}
 	} else if (fr_off < to_off) {
-        WORDTYPE maskFrom = g_bitMask[fr_off];
-        WORDTYPE maskTo = g_bitMask[to_off];
-        WORDTYPE maskFrom1;
-        size_t shift;
+		WORDTYPE maskFrom = g_bitMask[fr_off];
+		WORDTYPE maskTo = g_bitMask[to_off];
+		WORDTYPE maskFrom1;
+		size_t shift;
 
-        shift = to_off - fr_off;
-        // fr_off=5, to_off=7, shift=3
-        // from:    ABCxxxxx,  maskFrom: 00011111
-        // to:      Dxxxxxxx,  maskTo:   01111111
-        //   (from & ~maskFrom) = ABC00000
-        //   <<                   C0000000
-        //   to & maskTo        = 0xxxxxxx
-        //   |                  = Cxxxxxxx
-        *to_p = ((*fr_p & ~maskFrom) << shift) |
-                (*to_p & maskTo);
-        // now. for other block bits
-        // to other bits
-        size_t rest = n - (WORDBIT - to_off);
-        size_t blks = rest / WORDBIT;
-        //
-        //  already copied to_off+1 bits
-        // from:   ABxxxxxx, maskFrom:    00111111
-        // from1:  xxCDEFGH, maskFrom:    00111111
-        // from & ~maskFrom            =  AB000000
-        // >>                          =  000000AB
-        // from1 & maskFrom            =  00CDEFGH
-        // <<                          =  CDEFGHxx
-        // |                           =  CDEFGHAB
-        maskFrom = g_bitMask[WORDBIT - shift];
-        for (size_t i = 0; i < blks; ++i) {
-            to_p++;
-            *to_p = ((*fr_p & ~maskFrom) >> (WORDBIT - shift)) |
-                    ( (*(fr_p + 1) & maskFrom) << shift);
-            fr_p++;
+		shift = to_off - fr_off;
+		// fr_off=5, to_off=7, shift=3
+		// from:    ABCxxxxx,  maskFrom: 00011111
+		// to:      Dxxxxxxx,  maskTo:   01111111
+		//   (from & ~maskFrom) = ABC00000
+		//   <<                   C0000000
+		//   to & maskTo        = 0xxxxxxx
+		//   |                  = Cxxxxxxx
+		*to_p = ((*fr_p & ~maskFrom) << shift) |
+		        (*to_p & maskTo);
+		// now. for other block bits
+		// to other bits
+		size_t rest = n - (WORDBIT - to_off);
+		size_t blks = rest / WORDBIT;
+		//
+		//  already copied to_off+1 bits
+		// from:   ABxxxxxx, maskFrom:    00111111
+		// from1:  xxCDEFGH, maskFrom:    00111111
+		// from & ~maskFrom            =  AB000000
+		// >>                          =  000000AB
+		// from1 & maskFrom            =  00CDEFGH
+		// <<                          =  CDEFGHxx
+		// |                           =  CDEFGHAB
+		maskFrom = g_bitMask[WORDBIT - shift];
+		for (size_t i = 0; i < blks; ++i) {
+			to_p++;
+			*to_p = ((*fr_p & ~maskFrom) >> (WORDBIT - shift)) |
+			        ( (*(fr_p + 1) & maskFrom) << shift);
+			fr_p++;
 		}
-        // the rest of the bits?
-        rest -= blks * WORDBIT;
-        if (rest != 0) {
-            to_p++;
-            if (rest <= shift) {
-                // rest = 2, shift = 5
-                // from:  ABCEDxxx, maskfrom: 00000111
-                // to:    xxxxxxAB, maskto:   00000011
-                // & ~                        ABCDE000
-                // >>                         000ABCDE
-                // & naskTo                   000000DE
-                // & ~                        xxxxxx00
-                // |                          xxxxxxDE
-                maskFrom = g_bitMask[WORDBIT - shift];
-                maskTo = g_bitMask[rest];
-                *to_p = (((*(fr_p) & ~maskFrom) >> (WORDBIT - shift)) & maskTo)
-                        | (*to_p & ~maskTo);
+		// the rest of the bits?
+		rest -= blks * WORDBIT;
+		if (rest != 0) {
+			to_p++;
+			if (rest <= shift) {
+				// rest = 2, shift = 5
+				// from:  ABCEDxxx, maskfrom: 00000111
+				// to:    xxxxxxAB, maskto:   00000011
+				// & ~                        ABCDE000
+				// >>                         000ABCDE
+				// & naskTo                   000000DE
+				// & ~                        xxxxxx00
+				// |                          xxxxxxDE
+				maskFrom = g_bitMask[WORDBIT - shift];
+				maskTo = g_bitMask[rest];
+				*to_p = (((*(fr_p) & ~maskFrom) >> (WORDBIT - shift)) & maskTo)
+				        | (*to_p & ~maskTo);
 			} else {
-                // rest = 5, shift = 2
-                // from:     ABxxxxxx, maskFrom: 00111111
-                // from:     xxxxxCDE, maskFrom1:00000111
-                // to:       xxxCDEAB, maskTo:   00011111
-                //   from & ~ mask  =  AB000000
-                //     >>           =  000000AB .
-                //   from 1 & mask1 =  00000CDE
-                //     <<           =  000CDE00 .
-                //  to * ~mask      =  xxx00000
-                //  |               =  xxxCDEAB
-                maskFrom = g_bitMask[WORDBIT - shift];
-                maskFrom1 = g_bitMask[rest - shift];
-                maskTo = g_bitMask[rest];
+				// rest = 5, shift = 2
+				// from:     ABxxxxxx, maskFrom: 00111111
+				// from:     xxxxxCDE, maskFrom1:00000111
+				// to:       xxxCDEAB, maskTo:   00011111
+				//   from & ~ mask  =  AB000000
+				//     >>           =  000000AB .
+				//   from 1 & mask1 =  00000CDE
+				//     <<           =  000CDE00 .
+				//  to * ~mask      =  xxx00000
+				//  |               =  xxxCDEAB
+				maskFrom = g_bitMask[WORDBIT - shift];
+				maskFrom1 = g_bitMask[rest - shift];
+				maskTo = g_bitMask[rest];
 
-                *to_p = ((*(fr_p) & ~maskFrom) >> (WORDBIT - shift)) |
-                        ((*(fr_p + 1) & maskFrom1) << shift) |
-                        (*to_p & ~maskTo);
+				*to_p = ((*(fr_p) & ~maskFrom) >> (WORDBIT - shift)) |
+				        ((*(fr_p + 1) & maskFrom1) << shift) |
+				        (*to_p & ~maskTo);
 			}
 		}
 	} else {                                                                          // fr_off > to_off
-        size_t shift = fr_off - to_off;
-        WORDTYPE maskFrom = g_bitMask[fr_off];
-        WORDTYPE maskFrom1 = g_bitMask[shift];
-        WORDTYPE maskTo = g_bitMask[to_off];
-        // from:   ABCxxxxx, maskFrom: 00011111
-        // from1:  xxxxxxDE, maskFrom1:00000011
-        // to:     DEABCxxx, maskTo:   00011111
-        //
-        *to_p = ((*fr_p & ~maskFrom) >> shift) |
-                ( (*(fr_p + 1) & maskFrom1) << (WORDBIT - shift)) |
-                (*to_p & maskTo);
-        to_p++;
-        fr_p++;
-        //
-        // to other bits
-        size_t rest = n - (WORDBIT - to_off);
-        size_t blks = rest / WORDBIT;
-        //
-        // already copied shift bits
-        // from:   ABCDEFxx, maskFrom:   00000011
-        // from1:  xxxxxxGH, maskFrom:   00000011
-        // to:     GHABCDEF
-        maskFrom = g_bitMask[shift];
-        for (size_t i = 0; i < blks; ++i) {
-            *to_p = ((*fr_p & ~maskFrom) >> shift) |
-                    ( (*(fr_p + 1) & maskFrom) << (WORDBIT - shift));
-            fr_p++;
-            to_p++;
+		size_t shift = fr_off - to_off;
+		WORDTYPE maskFrom = g_bitMask[fr_off];
+		WORDTYPE maskFrom1 = g_bitMask[shift];
+		WORDTYPE maskTo = g_bitMask[to_off];
+		// from:   ABCxxxxx, maskFrom: 00011111
+		// from1:  xxxxxxDE, maskFrom1:00000011
+		// to:     DEABCxxx, maskTo:   00011111
+		//
+		*to_p = ((*fr_p & ~maskFrom) >> shift) |
+		        ( (*(fr_p + 1) & maskFrom1) << (WORDBIT - shift)) |
+		        (*to_p & maskTo);
+		to_p++;
+		fr_p++;
+		//
+		// to other bits
+		size_t rest = n - (WORDBIT - to_off);
+		size_t blks = rest / WORDBIT;
+		//
+		// already copied shift bits
+		// from:   ABCDEFxx, maskFrom:   00000011
+		// from1:  xxxxxxGH, maskFrom:   00000011
+		// to:     GHABCDEF
+		maskFrom = g_bitMask[shift];
+		for (size_t i = 0; i < blks; ++i) {
+			*to_p = ((*fr_p & ~maskFrom) >> shift) |
+			        ( (*(fr_p + 1) & maskFrom) << (WORDBIT - shift));
+			fr_p++;
+			to_p++;
 		}
-        // the rest of the bits
-        rest -= blks * WORDBIT;
-        if (rest != 0) {
-            if (rest < WORDBIT - shift) {
-                // rest = 2, shift = 3,
-                // from:     ABCDExxx, maskFrom: 00000111
-                // to:       xxxxxxDE, maskTo:   00000011
-                maskFrom = g_bitMask[shift];
-                maskTo = g_bitMask[rest];
-                *to_p = (((*fr_p & ~maskFrom) >> shift) & maskTo) |
-                        (*to_p & ~maskTo) ;
+		// the rest of the bits
+		rest -= blks * WORDBIT;
+		if (rest != 0) {
+			if (rest < WORDBIT - shift) {
+				// rest = 2, shift = 3,
+				// from:     ABCDExxx, maskFrom: 00000111
+				// to:       xxxxxxDE, maskTo:   00000011
+				maskFrom = g_bitMask[shift];
+				maskTo = g_bitMask[rest];
+				*to_p = (((*fr_p & ~maskFrom) >> shift) & maskTo) |
+				        (*to_p & ~maskTo) ;
 			} else {
-                // rest = 5, shift = 6
-                // from:   ABxxxxxx, maskFrom: 00111111
-                // from1:  xxxxxCDE, maskFrom1:00000111
-                // rest:   xxxCDEAB, maskTo:   00011111
-                maskFrom = g_bitMask[shift];
-                maskFrom1 = g_bitMask[rest - (WORDBIT - shift)];
-                maskTo = g_bitMask[rest];
-                *to_p = ((*fr_p & ~maskFrom) >> shift) |
-                        ((*(fr_p + 1) & maskFrom1) << (WORDBIT - shift)) |
-                        (*to_p & ~maskTo);
+				// rest = 5, shift = 6
+				// from:   ABxxxxxx, maskFrom: 00111111
+				// from1:  xxxxxCDE, maskFrom1:00000111
+				// rest:   xxxCDEAB, maskTo:   00011111
+				maskFrom = g_bitMask[shift];
+				maskFrom1 = g_bitMask[rest - (WORDBIT - shift)];
+				maskTo = g_bitMask[rest];
+				*to_p = ((*fr_p & ~maskFrom) >> shift) |
+				        ((*(fr_p + 1) & maskFrom1) << (WORDBIT - shift)) |
+				        (*to_p & ~maskTo);
 			}
 		}
 	}
 #  ifndef OPTIMIZED
-    if (debug(DBG_UTILITY)) {
-        if (vectora(fr, fr + n) != vectora(to, to + n)) {
-            cerr	<< "Copy from " << vectora(fr, fr + n)
-                    << " to " << vectora(to, to + n) << " failed " << endl;
-            cerr << "Offsets are " << BITOFF(fr) << " and " << BITOFF(to) << endl;
+	if (debug(DBG_UTILITY)) {
+		if (vectora(fr, fr + n) != vectora(to, to + n)) {
+			cerr	<< "Copy from " << vectora(fr, fr + n)
+			        << " to " << vectora(to, to + n) << " failed " << endl;
+			cerr << "Offsets are " << BITOFF(fr) << " and " << BITOFF(to) << endl;
 		}
 	}
 #  endif
@@ -4390,20 +4429,20 @@ void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
 
 void clearGenotype(GenoIterator to, size_t n)
 {
-    WORDTYPE * to_p = BITPTR(to);
-    size_t to_off = BITOFF(to);
+	WORDTYPE * to_p = BITPTR(to);
+	size_t to_off = BITOFF(to);
 
-    // This can be made more efficient.
-    for (size_t i = 0; i < n; ++i) {
-        // set bit according to from bit
-        *to_p &= ~(1UL << to_off);
-        if (to_off++ == WORDBIT - 1) {
-            while (i + WORDBIT < n) {
-                *++to_p = 0;
-                i += WORDBIT;
+	// This can be made more efficient.
+	for (size_t i = 0; i < n; ++i) {
+		// set bit according to from bit
+		*to_p &= ~(1UL << to_off);
+		if (to_off++ == WORDBIT - 1) {
+			while (i + WORDBIT < n) {
+				*++to_p = 0;
+				i += WORDBIT;
 			}
-            ++to_p;
-            to_off = 0;
+			++to_p;
+			to_off = 0;
 		}
 	}
 }
@@ -4418,118 +4457,118 @@ bool initialize()
 {
 
 #ifdef STANDALONE_EXECUTABLE
-    setOptions(0);
+	setOptions(0);
 #else
-    setOptions(1);
-    // tie python stdout to cerr
-    std::cout.rdbuf(&g_pythonStdoutBuf);
-    std::cerr.rdbuf(&g_pythonStderrBuf);
+	setOptions(1);
+	// tie python stdout to cerr
+	std::cout.rdbuf(&g_pythonStdoutBuf);
+	std::cerr.rdbuf(&g_pythonStderrBuf);
 
-    /* Ctrl-C under windows still does not work... :-(
-	 #if  defined (_WIN32) || defined (__WIN32__)
+	/* Ctrl-C under windows still does not work... :-(
+	   #if  defined (_WIN32) || defined (__WIN32__)
 	    if (SetConsoleCtrlHandler((PHANDLER_ROUTINE)(InterruptHandler), TRUE) == FALSE)
 	        cerr << "Warning: Unable to install keyboard interruption handler" << endl;
-	 #endif
+	   #endif
 	 */
 #  if __WORDSIZE == 32
-    DBG_ASSERT(WORDBIT == 32, SystemError,
+	DBG_ASSERT(WORDBIT == 32, SystemError,
 		"We are assuming 32 bit word size for this system but we are wrong."
 		"Please report this problem to the simuPOP mailinglist.");
 #  endif
-    // for example, if WORDBIT is 8 (most likely 32), we define
-    // 0x0, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F, 0xFF
-    for (size_t i = 0; i < WORDBIT; ++i) {
-        // g_bitMask[i] is the number of 1 count from right.
-        for (size_t j = 0; j < i; ++j)
+	// for example, if WORDBIT is 8 (most likely 32), we define
+	// 0x0, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F, 0xFF
+	for (size_t i = 0; i < WORDBIT; ++i) {
+		// g_bitMask[i] is the number of 1 count from right.
+		for (size_t j = 0; j < i; ++j)
 			g_bitMask[i] |= (1UL << j);
 	}
 
-    // give at most 100 ref count warnings.
+	// give at most 100 ref count warnings.
 #  ifdef Py_REF_DEBUG
-    g_refWarningCount = 100;
+	g_refWarningCount = 100;
 #  endif
 
-    // SIMUPOP_MODULE is passed as name, but we need it to be quoted.
-    // Note that under gcc, I could pass the macro from command line
-    // using \" \" but this trick does not work under VC.
-    // the following process is safer.
+	// SIMUPOP_MODULE is passed as name, but we need it to be quoted.
+	// Note that under gcc, I could pass the macro from command line
+	// using \" \" but this trick does not work under VC.
+	// the following process is safer.
 #  define SimuPOP_Module_Name "##SIMUPOP_MODULE##"
 
-    // set global dictionary/variable
-    PyObject * mm = PyImport_AddModule(SimuPOP_Module_Name);
-    g_module_vars = SharedVariables(PyModule_GetDict(mm), false);
+	// set global dictionary/variable
+	PyObject * mm = PyImport_AddModule(SimuPOP_Module_Name);
+	g_module_vars = SharedVariables(PyModule_GetDict(mm), false);
 
-    // main dictionary
-    mm = PyImport_AddModule("__main__");
-    g_main_vars = SharedVariables(PyModule_GetDict(mm), false);
+	// main dictionary
+	mm = PyImport_AddModule("__main__");
+	g_main_vars = SharedVariables(PyModule_GetDict(mm), false);
 
 #  ifndef STANDALONE_EXECUTABLE
-    // get population and Individual type pointer
-    g_swigPopType = SWIG_TypeQuery(PopSWIGType);
-    g_swigIndividual = SWIG_TypeQuery(IndSWIGType);
-    //
-    // g_swigOperator = SWIG_TypeQuery(OperatorSWIGType);
-    if (g_swigPopType == NULL || g_swigIndividual == NULL)
+	// get population and Individual type pointer
+	g_swigPopType = SWIG_TypeQuery(PopSWIGType);
+	g_swigIndividual = SWIG_TypeQuery(IndSWIGType);
+	//
+	// g_swigOperator = SWIG_TypeQuery(OperatorSWIGType);
+	if (g_swigPopType == NULL || g_swigIndividual == NULL)
 		throw SystemError("Can not get population and Individual type pointer, your SWIG version may be run.");
 #  endif
 
-    // load carray function and type
-    if (initCustomizedTypes() < 0)
+	// load carray function and type
+	if (initCustomizedTypes() < 0)
 		throw SystemError("Failed to initialize carray and defdict types");
 
-    // set gsl error handler
-    gsl_set_error_handler(&gsl_error_handler);
+	// set gsl error handler
+	gsl_set_error_handler(&gsl_error_handler);
 
 #  ifndef OPTIMIZED
 #    ifdef BINARYALLELE
-    // binary level genotype copy is compiler dependent and may
-    // fail on some systems. Such a test will make sure the binary
-    testCopyGenotype();
+	// binary level genotype copy is compiler dependent and may
+	// fail on some systems. Such a test will make sure the binary
+	testCopyGenotype();
 #    endif
 #  endif
 #endif
-    return true;
+	return true;
 }
 
 
 bool intList::match(ssize_t rep, const vector<bool> * activeRep) const
 {
-    if (m_elems.empty())
+	if (m_elems.empty())
 		return m_allAvail;
-    vectori::const_iterator it = m_elems.begin();
-    vectori::const_iterator it_end = m_elems.end();
-    for (; it != it_end; ++it) {
-        // positive index is easy
-        if (*it >= 0) {
-            if (*it == rep)
+	vectori::const_iterator it = m_elems.begin();
+	vectori::const_iterator it_end = m_elems.end();
+	for (; it != it_end; ++it) {
+		// positive index is easy
+		if (*it >= 0) {
+			if (*it == rep)
 				return true;
-            else
+			else
 				continue;
 		}
-        // do not check active rep if it is not provided.
-        if (activeRep == NULL)
+		// do not check active rep if it is not provided.
+		if (activeRep == NULL)
 			return true;
-        // negative index
-        DBG_ASSERT(!activeRep->empty() && (*activeRep)[rep], SystemError,
+		// negative index
+		DBG_ASSERT(!activeRep->empty() && (*activeRep)[rep], SystemError,
 			"Check is avtive should only be done for active replicates");
-        // check the simple and most used case
-        if (*it == -1 && activeRep->back() && static_cast<size_t>(rep + 1) == activeRep->size())
+		// check the simple and most used case
+		if (*it == -1 && activeRep->back() && static_cast<size_t>(rep + 1) == activeRep->size())
 			return true;
-        // find what exactly an negative index refer to
-        long cnt = -*it;
-        ssize_t curRep = activeRep->size() - 1;
-        for (; curRep >= 0; --curRep) {
-            if ((*activeRep)[curRep])
+		// find what exactly an negative index refer to
+		long cnt = -*it;
+		ssize_t curRep = activeRep->size() - 1;
+		for (; curRep >= 0; --curRep) {
+			if ((*activeRep)[curRep])
 				--cnt;
-            if (cnt == 0)
+			if (cnt == 0)
 				break;
 		}
-        if (cnt != 0)
+		if (cnt != 0)
 			continue;
-        if (curRep == static_cast<int>(rep))
+		if (curRep == static_cast<int>(rep))
 			return true;
 	}
-    return false;
+	return false;
 }
 
 
@@ -4538,29 +4577,29 @@ bool intList::match(ssize_t rep, const vector<bool> * activeRep) const
 #  ifdef BINARYALLELE
 void testCopyGenotype()
 {
-    vectora from(1000);
-    vectora to(1000);
+	vectora from(1000);
+	vectora to(1000);
 
-    for (size_t i = 0; i < 100; ++i) {
-        for (size_t j = 0; j < 1000; ++j) {
-            // use != 0 to reduce compiler warning
-            from[j] = getRNG().randInt(2) != 0;
-            to[j] = 0;
+	for (size_t i = 0; i < 100; ++i) {
+		for (size_t j = 0; j < 1000; ++j) {
+			// use != 0 to reduce compiler warning
+			from[j] = getRNG().randInt(2) != 0;
+			to[j] = 0;
 		}
-        size_t from_idx = getRNG().randInt(300);
-        size_t to_idx = getRNG().randInt(300);
-        if (from_idx > to_idx)
+		size_t from_idx = getRNG().randInt(300);
+		size_t to_idx = getRNG().randInt(300);
+		if (from_idx > to_idx)
 			continue;
-        size_t length = getRNG().randInt(500);
-        copyGenotype(from.begin() + from_idx,
+		size_t length = getRNG().randInt(500);
+		copyGenotype(from.begin() + from_idx,
 			to.begin() + to_idx, length);
-        if (vectora(from.begin() + from_idx, from.begin() + from_idx + length) !=
-            vectora(to.begin() + to_idx, to.begin() + to_idx + length)) {
-            cerr	<< "Copying: " << vectora(from.begin() + from_idx, from.begin() + from_idx + length) << '\n'
-                    << "Obtain:  " << vectora(to.begin() + to_idx, to.begin() + to_idx + length) << '\n'
-                    << "Index From: " << from_idx << " to: " << to_idx << " length: " << length << endl;
-            // the error message can not be shown
-            throw SystemError("Allele copy test for your system fails.\n"
+		if (vectora(from.begin() + from_idx, from.begin() + from_idx + length) !=
+		    vectora(to.begin() + to_idx, to.begin() + to_idx + length)) {
+			cerr	<< "Copying: " << vectora(from.begin() + from_idx, from.begin() + from_idx + length) << '\n'
+			        << "Obtain:  " << vectora(to.begin() + to_idx, to.begin() + to_idx + length) << '\n'
+			        << "Index From: " << from_idx << " to: " << to_idx << " length: " << length << endl;
+			// the error message can not be shown
+			throw SystemError("Allele copy test for your system fails.\n"
 				              "Please email simuPOP mailing list with detailed os and compiler information");
 		}
 	}

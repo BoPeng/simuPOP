@@ -10,11 +10,20 @@
 # $LastChangedDate$
 #
 
-import simuOpt
-simuOpt.setOptions(quiet=True)
-
-from simuPOP import *
 import unittest, os, sys
+from simuOpt import setOptions
+setOptions(quiet=True)
+new_argv = []
+for arg in sys.argv:
+    if arg in ['short', 'long', 'binary']:
+        setOptions(alleleType = arg)
+    elif arg.startswith('-j'):
+        setOptions(numThreads = int(arg[2:]))
+    else:
+        new_argv.append(arg) 
+
+sys.argv=new_argv
+from simuPOP import *
 
 class TestTerminator(unittest.TestCase):
 
@@ -65,4 +74,4 @@ class TestTerminator(unittest.TestCase):
 
 
 if __name__ == '__main__':
-  unittest.main()
+    unittest.main()

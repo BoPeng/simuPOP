@@ -172,3 +172,156 @@ TestBasicRandomMating, 2011-04-20 13:53:43,094, bp9.mdanderson.edu, x86_64-4thre
 TestBasicRandomMating, 2011-04-20 16:34:36,205, bp9.mdanderson.edu, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4138, short, 420568, 42124, 4051, 387985, 39779, 3289, 14935, 1399, 124, 1469, 128, 0
 TestBasicRandomMating, 2011-04-20 16:43:47,062, bp9.mdanderson.edu, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4138, long, 405678, 42883, 3871, 378386, 31366, 2366, 3832, 363, 0, 367, 0, 0
 TestBasicRandomMating, 2011-04-20 17:01:57,554, bp9.mdanderson.edu, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4138, binary, 430659, 44058, 4193, 482045, 47339, 4196, 227853, 9882, 790, 11036, 1, 0
+TestBasicRandomMating, 2011-04-21 10:09:07,331, bp8.mdacc.tmc.edu, x86_64-4threads, python2.7, simuPOP-1.0.6svn, rev4137, short, 241406, 27765, 2584, 214616, 23662, 2139, 20385, 2000, 1, 2113, 199, 0
+TestBasicRandomMating, 2011-04-21 10:18:17,957, bp8.mdacc.tmc.edu, x86_64-4threads, python2.7, simuPOP-1.0.6svn, rev4137, long, 222240, 24730, 2404, 199884, 20184, 1788, 5039, 483, 0, 456, 0, 0
+TestBasicRandomMating, 2011-04-21 10:29:31,223, bp8.mdacc.tmc.edu, x86_64-4threads, python2.7, simuPOP-1.0.6svn, rev4137, binary, 219492, 24503, 2382, 217425, 24033, 2301, 113687, 8021, 692, 14601, 1516, 0
+TestBasicRandomMating, 2011-04-22 09:55:51,750, bp9.mdanderson.edu, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4150, short, 401627, 43733, 4179, 390183, 42496, 3442, 15399, 1452, 133, 1511, 117, 0
+TestBasicRandomMating, 2011-04-22 10:05:01,168, bp9.mdanderson.edu, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4150, long, 397031, 43200, 3771, 345375, 31164, 2480, 3609, 356, 0, 356, 0, 0
+TestBasicRandomMating, 2011-04-22 10:16:12,693, bp9.mdanderson.edu, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4150, binary, 336851, 43283, 4105, 377740, 44801, 4126, 195563, 9363, 869, 11967, 1145, 0
+TestBasicRandomMating, 2011-04-22 12:19:18,692, bp9.mdanderson.edu, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4151, short, 461037, 47052, 4348, 428076, 46068, 3544, 14999, 1422, 119, 1459, 132, 0
+TestBasicRandomMating, 2011-04-22 12:28:29,023, bp9.mdanderson.edu, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4151, long, 423552, 41941, 3811, 377598, 30571, 2382, 3646, 359, 0, 367, 0, 0
+TestBasicRandomMating, 2011-04-22 12:39:40,209, bp9.mdanderson.edu, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4151, binary, 369229, 39136, 3657, 394516, 39275, 3645, 219889, 9943, 882, 12262, 1121, 0
+TestBasicRandomMating, 2011-04-22 14:13:55,863, bp8.mdacc.tmc.edu, x86_64-4threads, python2.7, simuPOP-1.0.6svn, rev4152, short, 240433, 28592, 2657, 212011, 25764, 2447, 22865, 2276, 197, 2111, 209, 0
+TestBasicRandomMating, 2011-04-22 14:23:06,611, bp8.mdacc.tmc.edu, x86_64-4threads, python2.7, simuPOP-1.0.6svn, rev4152, long, 230125, 26233, 2308, 204373, 24058, 1849, 5263, 522, 0, 524, 0, 0
+TestBasicRandomMating, 2011-04-22 14:34:17,055, bp8.mdacc.tmc.edu, x86_64-4threads, python2.7, simuPOP-1.0.6svn, rev4152, binary, 218473, 26602, 2257, 225819, 24872, 2228, 112366, 8192, 690, 16346, 1448, 0
+TestBasicRandomMating, 2011-04-22 17:21:02,105, bp8.mdacc.tmc.edu, x86_64-4threads, python2.7, simuPOP-1.0.6svn, rev4152, short, 241931, 27596, 2731, 205426, 25934, 2552, 22045, 2000, 196, 2103, 209, 0
+TestBasicRandomMating, 2011-04-22 17:30:13,519, bp8.mdacc.tmc.edu, x86_64-4threads, python2.7, simuPOP-1.0.6svn, rev4152, long, 220802, 26332, 2903, 204864, 20042, 1822, 5559, 444, 0, 622, 0, 0
+TestBasicRandomMating, 2011-04-22 17:41:24,582, bp8.mdacc.tmc.edu, x86_64-4threads, python2.7, simuPOP-1.0.6svn, rev4152, binary, 210076, 26051, 2592, 212498, 26687, 2329, 111942, 8431, 682, 15677, 1642, 0
+TestBasicRandomMating, 2011-04-22 18:13:58,297, bp8.mdacc.tmc.edu, x86_64-8threads, python2.7, simuPOP-1.0.6svn, rev4152, short, 283650, 38359, 3961, 262600, 36506, 3411, 24104, 2352, 234, 2418, 241, 0
+TestBasicRandomMating, 2011-04-22 18:23:08,247, bp8.mdacc.tmc.edu, x86_64-8threads, python2.7, simuPOP-1.0.6svn, rev4152, long, 273171, 37377, 3702, 247813, 30552, 2824, 5956, 596, 0, 600, 0, 0
+TestBasicRandomMating, 2011-04-22 18:34:21,162, bp8.mdacc.tmc.edu, x86_64-8threads, python2.7, simuPOP-1.0.6svn, rev4152, binary, 258522, 34464, 3397, 254208, 34665, 3345, 153408, 12981, 1130, 19025, 1858, 0
+TestBasicRandomMating, 2011-04-22 18:51:17,435, bp8.mdacc.tmc.edu, x86_64-8threads, python2.7, simuPOP-1.0.6svn, rev4152, short, 285049, 40410, 4012, 263476, 36400, 3439, 24103, 2352, 234, 2407, 239, 0
+TestBasicRandomMating, 2011-04-22 19:00:27,181, bp8.mdacc.tmc.edu, x86_64-8threads, python2.7, simuPOP-1.0.6svn, rev4152, long, 268257, 37785, 3700, 246486, 30714, 2797, 5976, 596, 0, 601, 0, 0
+TestBasicRandomMating, 2011-04-22 19:11:38,209, bp8.mdacc.tmc.edu, x86_64-8threads, python2.7, simuPOP-1.0.6svn, rev4152, binary, 257432, 34748, 3379, 252384, 34212, 3350, 154605, 12891, 1121, 18843, 1871, 0
+TestPolygamousMating, 2011-04-27 18:26:15,015, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4155, short, 13544, 1082, 11866, 722, 645, 48
+TestPolygamousMating, 2011-04-27 18:28:51,155, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4155, long, 13502, 912, 8423, 602, 174, 0
+TestPolygamousMating, 2011-04-27 18:31:58,061, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4155, binary, 10960, 989, 11526, 956, 2925, 246
+TestPolygamousMating, 2011-04-27 18:35:08,054, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4155, short, 14149, 1167, 12639, 768, 667, 19
+TestPolygamousMating, 2011-04-27 18:37:46,459, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4155, long, 13960, 927, 8623, 616, 177, 0
+TestPolygamousMating, 2011-04-27 18:40:53,766, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4155, binary, 10878, 972, 11785, 957, 3040, 255
+TestPolygamousMating, 2011-04-27 18:44:05,374, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4155, short, 14260, 1144, 12609, 772, 660, 57
+TestPolygamousMating, 2011-04-27 18:46:40,515, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4155, long, 13822, 928, 8308, 618, 174, 0
+TestPolygamousMating, 2011-04-27 18:49:46,881, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4155, binary, 10722, 985, 11574, 985, 2907, 244
+TestPolygamousMating, 2011-04-27 18:52:55,965, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4155, short, 13846, 1144, 12302, 750, 637, 58
+TestPolygamousMating, 2011-04-27 18:55:32,354, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4155, long, 13897, 959, 8335, 615, 171, 0
+TestPolygamousMating, 2011-04-27 18:58:38,355, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4155, binary, 11052, 989, 11966, 928, 2972, 245
+TestPolygamousMating, 2011-04-29 16:16:37,098, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4157, short, 15621, 1466, 15153, 1124, 784, 70
+TestPolygamousMating, 2011-04-29 16:19:14,516, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4157, long, 19740, 1506, 12670, 957, 198, 0
+TestPolygamousMating, 2011-04-29 16:22:22,012, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4157, binary, 12635, 1226, 12788, 1181, 4057, 370
+TestPolygamousMating, 2011-04-29 16:25:33,556, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4157, short, 22706, 2134, 21570, 1854, 772, 71
+TestPolygamousMating, 2011-04-29 16:28:09,788, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4157, long, 23894, 2114, 17011, 1356, 205, 0
+TestPolygamousMating, 2011-04-29 16:31:18,106, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4157, binary, 22892, 2105, 22902, 2070, 5575, 504
+TestPolygamousMating, 2011-04-29 16:34:28,353, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4157, short, 30058, 3078, 30346, 2501, 755, 68
+TestPolygamousMating, 2011-04-29 16:37:04,199, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4157, long, 31353, 2818, 18420, 1455, 192, 0
+TestPolygamousMating, 2011-04-29 16:40:11,385, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4157, binary, 25534, 2533, 28403, 2567, 5547, 521
+TestPolygamousMating, 2011-05-02 11:35:45,450, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4157_ParentTagger, short, 10972, 980, 10682, 832, 740, 62
+TestPolygamousMating, 2011-05-02 11:38:22,596, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4157_ParentTagger, long, 11512, 920, 8563, 739, 195, 0
+TestPolygamousMating, 2011-05-02 11:41:30,055, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4157_ParentTagger, binary, 10067, 954, 10368, 928, 3797, 342
+TestPolygamousMating, 2011-05-02 12:11:56,346, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4157_ParentTagger, short, 14629, 1380, 16365, 1325, 756, 67
+TestPolygamousMating, 2011-05-02 12:14:31,486, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4157_ParentTagger, long, 14749, 1344, 13044, 1089, 197, 0
+TestPolygamousMating, 2011-05-02 12:17:39,387, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4157_ParentTagger, binary, 16078, 1488, 16702, 1500, 5196, 475
+TestPyParentChooser, 2011-05-02 15:33:19,933, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4157, short, 257, 27, 276, 27, 184, 14
+TestPyParentChooser, 2011-05-02 15:35:56,795, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4157, long, 272, 28, 264, 27, 97, 0
+TestPyParentChooser, 2011-05-02 15:39:04,440, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4157, binary, 281, 29, 291, 28, 274, 27
+TestPyParentChooser, 2011-05-02 15:42:16,782, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4157, short, 296, 30, 296, 29, 196, 17
+TestPyParentChooser, 2011-05-02 15:44:52,231, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4157, long, 274, 28, 273, 27, 97, 0
+TestPyParentChooser, 2011-05-02 15:47:58,269, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4157, binary, 277, 28, 264, 26, 255, 26
+TestPyParentChooser, 2011-05-02 15:51:10,415, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4157, short, 284, 28, 272, 28, 195, 17
+TestPyParentChooser, 2011-05-02 15:53:45,403, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4157, long, 272, 28, 277, 28, 96, 0
+TestPyParentChooser, 2011-05-02 15:56:51,009, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4157, binary, 272, 28, 284, 27, 266, 25
+TestPyParentChooser, 2011-05-02 16:00:01,147, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4157, short, 286, 29, 295, 29, 191, 17
+TestPyParentChooser, 2011-05-02 16:02:36,436, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4157, long, 273, 28, 274, 27, 97, 0
+TestPyParentChooser, 2011-05-02 16:05:43,116, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4157, binary, 282, 29, 293, 29, 267, 27
+TestSelfMating, 2011-05-04 19:46:22,669, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4160, short, 18034, 1539, 16709, 1081, 722, 67
+TestSelfMating, 2011-05-04 19:48:59,061, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4160, long, 17719, 1297, 10261, 863, 192, 0
+TestSelfMating, 2011-05-04 19:52:07,069, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4160, binary, 13214, 1268, 14782, 1299, 3673, 342
+TestSelfMating, 2011-05-04 19:55:18,110, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4160, short, 23989, 2199, 22542, 1699, 862, 77
+TestSelfMating, 2011-05-04 19:57:53,591, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4160, long, 21920, 1855, 14499, 1297, 225, 0
+TestSelfMating, 2011-05-04 20:01:01,863, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4160, binary, 17240, 1732, 19006, 1732, 5493, 522
+TestSelfMating, 2011-05-04 20:04:13,693, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4160, short, 33991, 3345, 32608, 2792, 861, 77
+TestSelfMating, 2011-05-04 20:06:49,102, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4160, long, 32399, 3094, 20745, 1764, 212, 0
+TestSelfMating, 2011-05-04 20:09:56,486, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4160, binary, 24838, 2476, 24733, 2506, 6082, 585
+TestSelfMating, 2011-05-04 20:13:07,279, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4160, short, 47806, 4829, 43563, 3653, 791, 72
+TestSelfMating, 2011-05-04 20:15:43,453, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4160, long, 43147, 4023, 20828, 1749, 205, 0
+TestSelfMating, 2011-05-04 20:18:51,155, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4160, binary, 37246, 3772, 40477, 3761, 6253, 565
+TestHaplodiploidMating, 2011-05-04 20:22:01,544, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4160, short, 15587, 1330, 14624, 922, 866, 78
+TestHaplodiploidMating, 2011-05-04 20:24:37,415, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4160, long, 15188, 1077, 10351, 679, 230, 0
+TestHaplodiploidMating, 2011-05-04 20:27:44,161, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4160, binary, 12444, 1174, 13753, 1140, 3154, 256
+TestHaplodiploidMating, 2011-05-04 20:30:55,126, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4160, short, 20546, 1912, 19864, 1473, 1008, 93
+TestHaplodiploidMating, 2011-05-04 20:33:30,931, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4160, long, 25436, 1947, 16674, 1174, 273, 0
+TestHaplodiploidMating, 2011-05-04 20:36:37,052, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4160, binary, 22514, 2106, 24612, 1995, 5358, 428
+TestHaplodiploidMating, 2011-05-04 20:39:47,557, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4160, short, 29196, 2938, 29028, 2443, 1012, 91
+TestHaplodiploidMating, 2011-05-04 20:42:23,345, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4160, long, 36386, 2839, 23310, 1638, 264, 0
+TestHaplodiploidMating, 2011-05-04 20:45:30,073, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4160, binary, 31956, 3036, 34497, 3030, 6751, 591
+TestHaplodiploidMating, 2011-05-04 20:48:40,871, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4160, short, 41095, 3935, 38848, 3252, 959, 86
+TestHaplodiploidMating, 2011-05-04 20:51:16,028, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4160, long, 37989, 3315, 22692, 1792, 242, 0
+TestHaplodiploidMating, 2011-05-04 20:54:22,039, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4160, binary, 34334, 3249, 35080, 3438, 6690, 620
+TestMitochondrialGenoTransmitter, 2011-05-04 20:57:33,726, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4160, short, 25288, 2384, 25257, 2347, 25317, 2132
+TestMitochondrialGenoTransmitter, 2011-05-04 21:00:10,011, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4160, long, 25104, 2384, 25507, 2339, 25560, 0
+TestMitochondrialGenoTransmitter, 2011-05-04 21:03:18,860, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4160, binary, 25771, 2351, 24546, 2291, 25587, 2317
+TestMitochondrialGenoTransmitter, 2011-05-04 21:06:29,581, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4160, short, 26090, 2444, 25950, 2433, 26038, 2116
+TestMitochondrialGenoTransmitter, 2011-05-04 21:09:07,017, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4160, long, 26315, 2373, 26528, 2454, 26665, 0
+TestMitochondrialGenoTransmitter, 2011-05-04 21:12:14,754, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4160, binary, 27191, 2444, 26157, 2380, 25813, 2471
+TestMitochondrialGenoTransmitter, 2011-05-04 21:15:27,741, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4160, short, 26501, 2415, 26341, 2460, 26238, 2181
+TestMitochondrialGenoTransmitter, 2011-05-04 21:18:03,013, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4160, long, 26116, 2443, 25631, 2444, 25535, 0
+TestMitochondrialGenoTransmitter, 2011-05-04 21:21:09,026, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4160, binary, 25322, 2351, 25174, 2322, 25600, 2309
+TestMitochondrialGenoTransmitter, 2011-05-04 21:24:19,861, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4160, short, 25605, 2420, 26499, 2382, 26249, 2163
+TestMitochondrialGenoTransmitter, 2011-05-04 21:26:55,017, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4160, long, 25930, 2413, 25691, 2381, 25543, 0
+TestMitochondrialGenoTransmitter, 2011-05-04 21:30:02,058, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4160, binary, 26099, 2352, 25660, 2349, 25098, 2318
+TestRecombinator, 2011-05-04 21:33:13,019, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4160, short, 5787, 566, 3496, 282, 76, 7
+TestRecombinator, 2011-05-04 21:35:50,022, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4160, long, 6091, 505, 2989, 255, 82, 0
+TestRecombinator, 2011-05-04 21:39:08,534, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4160, binary, 4147, 414, 1206, 118, 15, 2
+TestRecombinator, 2011-05-04 21:42:21,375, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4160, short, 5851, 555, 3439, 293, 77, 7
+TestRecombinator, 2011-05-04 21:44:57,012, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4160, long, 5839, 504, 3067, 255, 80, 0
+TestRecombinator, 2011-05-04 21:48:15,323, bp9, x86_64-2threads, python2.7.1, simuPOP-1.0.6svn, rev4160, binary, 4150, 415, 1199, 118, 15, 2
+TestRecombinator, 2011-05-04 21:51:27,185, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4160, short, 5916, 556, 3355, 285, 76, 7
+TestRecombinator, 2011-05-04 21:54:04,000, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4160, long, 6030, 505, 3032, 246, 84, 0
+TestRecombinator, 2011-05-04 21:57:22,211, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4160, binary, 4155, 414, 1204, 118, 15, 2
+TestRecombinator, 2011-05-04 22:00:33,164, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4160, short, 5886, 543, 3465, 293, 75, 7
+TestRecombinator, 2011-05-04 22:03:10,913, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4160, long, 5861, 504, 3072, 255, 84, 0
+TestRecombinator, 2011-05-04 22:06:28,262, bp9, x86_64-8threads, python2.7.1, simuPOP-1.0.6svn, rev4160, binary, 4145, 414, 1162, 118, 15, 2
+TestBasicRandomMating, 2011-05-13 11:50:06,074, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4163, short, 481604, 49704, 4753, 472652, 47105, 3687, 15306, 1369, 88, 1457, 127, 0
+TestBasicRandomMating, 2011-05-13 11:59:17,099, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4163, long, 420832, 42208, 3758, 368720, 32047, 2432, 3756, 366, 0, 381, 0, 0
+TestBasicRandomMating, 2011-05-13 12:10:28,485, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4163, binary, 446257, 43454, 4019, 439070, 42359, 4014, 222686, 10026, 862, 12335, 1132, 0
+TestBasicRandomMating, 2011-05-13 13:21:55,028, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4164, short, 720625, 68017, 6050, 641298, 61715, 4002, 15372, 1489, 115, 1511, 144, 0
+TestBasicRandomMating, 2011-05-13 13:31:04,007, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4164, long, 672634, 67866, 4775, 550742, 36730, 2680, 3806, 378, 0, 384, 0, 0
+TestBasicRandomMating, 2011-05-13 13:42:15,435, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4164, binary, 576454, 57782, 5357, 566747, 48285, 4262, 198805, 9159, 852, 11840, 1148, 0
+TestBasicRandomMating, 2011-05-16 17:00:04,514, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4163_gcc, short, 580906, 53900, 5174, 519189, 53657, 3967, 15950, 1472, 144, 1507, 145, 0
+TestBasicRandomMating, 2011-05-16 17:09:15,075, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4163_gcc, long, 540156, 55921, 4663, 469101, 34562, 2558, 3733, 373, 0, 381, 0, 0
+TestBasicRandomMating, 2011-05-16 17:20:27,043, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4163_gcc, binary, 502690, 50906, 4756, 486997, 50088, 4487, 262948, 10280, 922, 11794, 1169, 0
+TestRecombinator, 2011-05-13 14:32:38,252, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4163, short, 10554, 975, 6738, 550, 166, 13
+TestRecombinator, 2011-05-13 14:43:05,605, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4163, long, 11759, 1103, 6951, 591, 1, 0
+TestRecombinator, 2011-05-13 14:46:14,391, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4163, binary, 9494, 989, 2779, 268, 41, 5
+TestBasicRandomMating, 2011-05-13 16:37:20,643, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4164, short, 726033, 68986, 6006, 630892, 63518, 4023, 14410, 1370, 133, 1468, 143, 0
+TestBasicRandomMating, 2011-05-13 16:46:30,381, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4164, long, 656768, 64039, 4633, 542676, 34318, 2523, 3763, 367, 0, 385, 0, 0
+TestBasicRandomMating, 2011-05-13 16:57:42,307, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4164, binary, 554879, 56255, 4776, 595437, 57127, 4705, 255253, 9440, 883, 12232, 1174, 0
+TestBasicRandomMating, 2011-05-16 10:57:36,499, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4165, short, 426389, 42582, 4205, 409938, 42051, 3402, 15626, 1460, 97, 1512, 140, 0
+TestBasicRandomMating, 2011-05-16 11:06:47,445, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4165, long, 498220, 49880, 4116, 409115, 24864, 2009, 3378, 340, 0, 343, 0, 0
+TestBasicRandomMating, 2011-05-16 11:17:59,100, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4165, binary, 315441, 32327, 2888, 335452, 33693, 2727, 150820, 8252, 742, 10521, 1048, 0
+TestMitochondrialGenoTransmitter, 2011-05-16 13:19:59,471, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4165, short, 22712, 2648, 48781, 4861, 47952, 4203
+TestMitochondrialGenoTransmitter, 2011-05-16 13:22:37,987, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4165, long, 52930, 5140, 53233, 4826, 52372, 0
+TestMitochondrialGenoTransmitter, 2011-05-16 13:25:46,639, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4165, binary, 51995, 5171, 50682, 5113, 52163, 5201
+TestBasicRandomMating, 2011-05-17 13:10:10,700, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4166_icc, short, 637506, 61619, 5091, 541412, 53134, 3533, 14525, 1409, 133, 1327, 127, 0
+TestBasicRandomMating, 2011-05-17 13:19:22,372, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4166_icc, long, 534370, 61229, 4367, 471790, 28876, 2293, 3466, 356, 0, 355, 0, 0
+TestBasicRandomMating, 2011-05-17 13:30:34,220, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4166_icc, binary, 506286, 50510, 4744, 553549, 53676, 4489, 217118, 9570, 862, 11298, 1115, 0
+TestBasicRandomMating, 2011-05-17 14:27:59,943, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4166_gcc, short, 750215, 71385, 6466, 639016, 63971, 4052, 15082, 1413, 137, 1445, 147, 0
+TestBasicRandomMating, 2011-05-17 14:37:09,050, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4166_gcc, long, 755064, 75629, 5256, 536097, 34208, 2548, 3756, 369, 0, 375, 0, 0
+TestBasicRandomMating, 2011-05-17 14:48:20,221, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4166_gcc, binary, 673409, 69348, 6272, 671850, 67594, 5733, 267138, 9995, 908, 12010, 1118, 0
+TestBasicRandomMating, 2011-05-17 22:46:22,261, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4169_icc, short, 689986, 64365, 5853, 620229, 60137, 3997, 15462, 1449, 129, 1513, 141, 0
+TestBasicRandomMating, 2011-05-17 22:55:33,031, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4169_icc, long, 655777, 64554, 4725, 536694, 35620, 2632, 3837, 374, 0, 371, 0, 0
+TestBasicRandomMating, 2011-05-17 23:06:46,028, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4169_icc, binary, 549150, 55461, 5233, 576319, 58935, 5132, 248285, 10267, 902, 12431, 1164, 0
+TestBasicRandomMating, 2011-05-18 00:40:01,859, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4169_gcc, short, 845408, 66789, 5547, 576282, 68804, 4215, 15723, 1462, 136, 1518, 150, 0
+TestBasicRandomMating, 2011-05-18 00:49:11,085, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4169_gcc, long, 802339, 79772, 5459, 598146, 36057, 2648, 3821, 374, 0, 381, 0, 0
+TestBasicRandomMating, 2011-05-18 01:00:23,165, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4169_gcc, binary, 718248, 72852, 6736, 734263, 70342, 6136, 287223, 10273, 924, 12288, 1165, 0
+TestPedigreeTagger, 2011-05-18 15:54:28,066, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4172-intel, short, 4213, 366, 2878, 267, 76, 3
+TestPedigreeTagger, 2011-05-18 15:57:05,526, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4172-intel, long, 4300, 360, 2885, 255, 78, 0
+TestPedigreeTagger, 2011-05-18 16:00:12,944, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4172-intel, binary, 4096, 385, 4335, 381, 1659, 163
+TestInheritTagger, 2011-05-18 16:04:11,267, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4172-intel, short, 9553, 737, 8427, 519, 552, 52
+TestInheritTagger, 2011-05-18 16:06:47,346, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4172-intel, long, 9275, 594, 6226, 411, 161, 0
+TestInheritTagger, 2011-05-18 16:09:53,416, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4172-intel, binary, 7806, 671, 8336, 676, 2046, 178
+TestPedigreeTagger, 2011-05-18 16:37:20,935, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4173-intel, short, 5638, 551, 3666, 370, 77, 5
+TestPedigreeTagger, 2011-05-18 16:39:56,790, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4173-intel, long, 5546, 570, 4627, 401, 80, 0
+TestPedigreeTagger, 2011-05-18 16:43:04,122, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4173-intel, binary, 6060, 594, 6508, 618, 2533, 245
+TestInheritTagger, 2011-05-18 17:01:51,673, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4173-intel, short, 26678, 2174, 23119, 1588, 677, 64
+TestInheritTagger, 2011-05-18 17:04:27,692, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4173-intel, long, 25909, 1801, 15852, 1144, 179, 0
+TestInheritTagger, 2011-05-18 17:07:35,036, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4173-intel, binary, 22938, 2168, 24949, 2026, 4616, 398

@@ -107,6 +107,7 @@ MatingScheme * RandomMating(int numOffspring = 1, int sexMode = RANDOM_SEX,
 	OffspringGenerator og(duringOps, no, sm);
 	uintListFunc sp(subPopSize);
 
+	delete mendelian;
 	return new HomoMating(pc, og, sp);
 }
 
@@ -144,6 +145,9 @@ bool basicRandomMating(UINT size = 1000, UINT loci = 10, UINT gen = 10)
 		cerr << e.message() << endl;
 	}
 	cout << "Done" << endl;
+
+	delete iSex;
+	delete ms;
 	return true;
 }
 
