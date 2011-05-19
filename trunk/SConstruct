@@ -65,7 +65,7 @@ for i in range(len(vars)):
         vars[i] = ""
 (cc, cxx, opt, basicflags, ccshared, ldshared, so_ext, lib_dest, python_inc_dir) = vars
 # C++ does not need this option, remove it to avoid annoying warning messages.
-opt = opt.replace('-Wstrict-prototypes', '')
+opt = opt.replace('-Wstrict-prototypes', '').replace('-Wall', '')
 
 # get compiler and hack options
 from distutils.ccompiler import new_compiler
@@ -115,14 +115,13 @@ if os.name == 'nt':
     extra_path = [os.path.join(sys.exec_prefix, 'libs'), 'win32']
     # treat warning as error. This is only set for development builds (scons)
     # because setup.py builds might be built by imcompatible version of compilers
-    extra_flags = ['/WX']
+    extra_flags = ['/Zi', '/WX']
 else:
     wrapper_flags = ['-Wno-unused-parameter', '-Wno-missing-field-initializers']
     extra_path = [os.path.join(os.path.split(lib_dest)[:-1])]
     # during development, output symbols (for profiling and debugging)
-    extra_flags = ['-g']
     # treat warning as error...
-    extra_flags.append('-Werror')
+    extra_flags = ['-g', '-Werror']
     #
     # GNU gcc:
     #
@@ -138,13 +137,15 @@ else:
     # -Wcheck and -Weffc++ give more warnings about coding style etc. They
     # also should not be turned on by default.
     #
+    # -vec-report2 reports loops that are automatically vectorized, and remarks
+    # for loops that cannot be vectorized.
+    #
     #if USE_ICC:
-    #    extra_flags.extend(['-Wcheck', '-Weffc++'])
+    #    extra_flags.extend(['-Wcheck', '-Weffc++', '-vec-report2'])
     #else:
     #    extra_flags.append('-Wconversion')
     #
 
-#
 def convert_def(defines):
     new_list = []
     for d in defines:

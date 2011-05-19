@@ -1679,7 +1679,7 @@ public:
 
 
 	/// CPPONLY
-	unsigned long generateRandomSeed();
+	static unsigned long generateRandomSeed();
 
 
 	/** Generate a random number following a rng_uniform [0, 1) distribution.
@@ -1965,10 +1965,10 @@ class Bernullitrials
 {
 public:
 	/// CPPONLY
-	Bernullitrials(RNG & rng);
+	Bernullitrials(RNG & /* rng */);
 
 	///
-	Bernullitrials(RNG & rng, const vectorf & prob, ULONG trials);
+	Bernullitrials(RNG & /* rng */, const vectorf & prob, ULONG trials = 0);
 
 	///
 	~Bernullitrials();
@@ -1989,7 +1989,7 @@ public:
 
 
 	/// CPPONLY
-	void setParameter(const vectorf & prob, size_t trials);
+	void setParameter(const vectorf & prob, size_t trials = 0);
 
 	/// generate the trial table, reset m_cur
 	void doTrial();
@@ -2036,9 +2036,9 @@ private:
 	void setAll(size_t idx, bool v);
 
 private:
-	/// pointer to a random number generator.
-	/// this is in preparation for multiple thread/RNG.
-	RNG * m_RNG;
+	// We cannot cache m_RNG because differenct m_RNG will be used for
+	// different threads
+	//RNG * m_RNG;
 
 	/// number of trials.
 	size_t m_N;

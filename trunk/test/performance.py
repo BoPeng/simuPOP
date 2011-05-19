@@ -181,6 +181,60 @@ class TestRandomSelection(PerformanceTest):
         )
         return gens
 
+class TestPolygamousMating(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'Polygamous mating scheme, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+ 
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci, infoFields=['father_idx','mother_idx'])
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=PolygamousMating(polySex=MALE, polyNum=2, ops=[MendelianGenoTransmitter(), ParentsTagger()]),
+        )
+        return gens
+
+class TestPyParentChooser(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'HomoMating scheme with PyParentChooser , results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+ 
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        def retInd(pop, subPop):
+            while True:
+                yield pop.individual(random.randint(0, pop.subPopSize(subPop) - 1)), pop.individual(random.randint(0, pop.subPopSize(subPop) - 1))
+        pop = Population(size=size, loci=loci)
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=HomoMating(
+                chooser=PyParentsChooser(retInd),
+                generator=OffspringGenerator(
+                    ops=[CloneGenoTransmitter()],
+                    numOffspring=1,
+                    sexMode=RANDOM_SEX),
+            ),
+        )
+        return gens
+
 
 class TestIdTagger(PerformanceTest):
     def __init__(self, logger, time=30):
@@ -204,6 +258,150 @@ class TestIdTagger(PerformanceTest):
             ],
             preOps=TicToc(output='', stopAfter=self.time),
             matingScheme=RandomMating(ops=IdTagger()),
+        )
+        return gens
+
+class TestPedigreeTagger(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'Test PedigreeTagger, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci, infoFields=['ind_id', 'father_id', 'ped_id'], ancGen=1)
+        tagID(pop, reset=True)
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=RandomSelection(ops=[ 
+                CloneGenoTransmitter(), IdTagger(),
+                PedigreeTagger(infoFields='father_id')]),
+        )
+        return gens
+
+class TestInheritTagger(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'Test InheritTagger, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci, infoFields='x')
+        for sp in range(pop.numSubPop()):
+            pop.individual(0,sp).x = 1
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=RandomMating(ops=[ 
+                MendelianGenoTransmitter(),
+                InheritTagger(mode=MAXIMUM, infoFields='x')]),
+        )
+        return gens
+
+
+
+class TestSelfMating(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'Self mating scheme, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci)
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=SelfMating(ops=SelfingGenoTransmitter()),
+        )
+        return gens
+
+
+class TestHaplodiploidMating(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'Haplodiploid mating scheme, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci)
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=HaplodiploidMating(ops=HaplodiploidGenoTransmitter()),
+        )
+        return gens
+
+
+class TestMitochondrialGenoTransmitter(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'MitochondrialGenoTransmitter, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci)
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=RandomMating(ops=MitochondrialGenoTransmitter()),
+        )
+        return gens
+
+
+class TestRecombinator(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'Recombinator, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci)
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=RandomMating(ops=Recombinator(rates = 0.4, loci=[1,3,8])),
         )
         return gens
 
@@ -415,13 +613,15 @@ def analyze(test):
             print 'STAT %2d' % (stat - 8),
             # each stat, for different revisions, and type
             for type in ['short', 'long', 'binary']:
-                print '|',
+                print '|' if len(revs) < 4 else '\n %3s|' % type[0],
                 for rev in revs:
                     one = [rec for rec in pfRecords if rec[8] == type and rec[7] == rev]
-                    if len(one) > 0:
-                        print '%10s' % (one[0][stat]),
+                    if len(one) == 0:
+                        print '     ??',
+                    elif len(one) == 1:
+                        print '%7s' % (one[0][stat]),
                     else:
-                        print '        ??',
+                        print '%17s' % ('(%d - %d)' % (min([int(x[stat]) for x in one]), max([int(x[stat]) for x in one]))),
             print
         print
       
@@ -492,8 +692,13 @@ if __name__ == '__main__':
         summaryFile.setLevel(logging.INFO)
         uname = platform.uname()
         info = moduleInfo()
-        summaryFile.setFormatter(logging.Formatter('%%(name)s, %%(asctime)s, %s, %s-%dthreads, python%s, simuPOP-%s, rev%d, %s, %%(message)s' % \
-            (uname[1], uname[4], info['threads'], info['python'], info['version'], info['revision'], info['alleleType'])))
+        compiler = 'gcc'
+        if info['compiler'].find("Intel") > -1: 
+            compiler = 'intel'
+        elif info['compiler'].find("MSC") > -1:
+            compiler = 'vc'
+        summaryFile.setFormatter(logging.Formatter('%%(name)s, %%(asctime)s, %s, %s-%dthreads, python%s, simuPOP-%s, rev%d-%s, %s, %%(message)s' % \
+            (uname[1], uname[4], info['threads'], info['python'], info['version'], info['revision'], compiler, info['alleleType'])))
         #
         logger.addHandler(logFile)
         logger.addHandler(summaryFile)

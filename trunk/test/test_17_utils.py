@@ -9,16 +9,23 @@
 # $LastChangedDate$
 #
 
+import random
+import unittest, os, sys
+from simuOpt import setOptions
+setOptions(quiet=True)
+new_argv = []
+for arg in sys.argv:
+    if arg in ['short', 'long', 'binary']:
+        setOptions(alleleType = arg)
+    elif arg.startswith('-j'):
+        setOptions(numThreads = int(arg[2:]))
+    else:
+        new_argv.append(arg) 
 
-import simuOpt
-simuOpt.setOptions(quiet=True)
-
+sys.argv=new_argv
 from simuPOP import *
 from simuPOP.utils import *
 from simuPOP.gsl import *
-
-import unittest, os, sys
-import random
 
 # for memory leak testing.
 

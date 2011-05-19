@@ -437,18 +437,18 @@ bool PointMutator::apply(Population & pop) const
 					for (size_t i = 0; i < pop.totNumLoci(); ++i) {
 						ind->setAllele(m_allele, i, static_cast<int>(m_ploidy[p]));
 						DBG_DO(DBG_MUTATOR,
-							cerr << "Mutate locus " << i << " at ploidy " << m_ploidy[p]
-							<< " to allele " << int(m_allele) << " at generation "
-							<< pop.gen() << endl);
+							cerr	<< "Mutate locus " << i << " at ploidy " << m_ploidy[p]
+							        << " to allele " << int(m_allele) << " at generation "
+							        << pop.gen() << endl);
 					}
 				} else {
 					const vectoru & loci = m_loci.elems(&pop);
 					for (size_t i = 0; i < loci.size(); ++i) {
 						ind->setAllele(m_allele, loci[i], static_cast<int>(m_ploidy[p]));
 						DBG_DO(DBG_MUTATOR,
-							cerr << "Mutate locus " << loci[i]	<< " at ploidy " << m_ploidy[p]
-							                                    << " to allele " << int(m_allele) << " at generation "
-							                                    << pop.gen() << endl);
+							cerr	<< "Mutate locus " << loci[i] << " at ploidy " << m_ploidy[p]
+							        << " to allele " << int(m_allele) << " at generation "
+							        << pop.gen() << endl);
 					}
 				}
 			}   // ploidy

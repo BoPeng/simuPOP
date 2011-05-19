@@ -418,6 +418,13 @@ public:
 		Individual * dad = NULL,
 		Individual * mom = NULL) const;
 
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return true;
+	}
+
+
 private:
 	// this is user input.
 	const uintList m_chroms;
@@ -590,6 +597,13 @@ public:
 		RawIndIterator offspring,
 		Individual * dad, Individual * mom) const;
 
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return true;
+	}
+
+
 private:
 	/// determine number of markers to convert
 	size_t markersConverted(size_t index, const Individual & ind) const;
@@ -610,8 +624,7 @@ private:
 	const vectorf m_convMode;
 
 	/// bernulli trials
-	//  vector<Bernullitrials*> m_bt;
-	mutable Bernullitrials m_bt;
+	mutable vector<Bernullitrials> m_bt;
 
 	// locataion of special chromosomes
 	mutable int m_chromX;
@@ -623,8 +636,6 @@ private:
 	mutable int m_algorithm;
 
 	mutable ostream * m_debugOutput;
-
-	mutable size_t m_intendedSize;
 
 };
 
