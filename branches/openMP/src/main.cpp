@@ -106,6 +106,7 @@ MatingScheme * RandomMating(int numOffspring = 1, int sexMode = RANDOM_SEX,
 	RandomParentsChooser pc(true, "fitness");
 	OffspringGenerator og(duringOps, no, sm);
 	uintListFunc sp(subPopSize);
+
 	delete mendelian;
 	return new HomoMating(pc, og, sp);
 }

@@ -1282,7 +1282,7 @@ PyObject * SharedVariables::setVar(const string & name, const PyObject * val)
 	size_t curIdx = 0;
 	PyObject * curChild = NULL;
 
-	next :
+next:
 	// get par[1] (dict), curChild can be null, or borrow ref
 	if (curType == 1)
 		curChild = PyDict_GetItem(curParent, curKey);
@@ -1441,7 +1441,7 @@ PyObject * SharedVariables::getVar(const string & name, bool nameError) const
 	int curIdx = 0;
 	PyObject * curChild;
 
-	next :
+next:
 	if (curType == 1)
 		curChild = PyDict_GetItem(curParent, curKey);
 	else

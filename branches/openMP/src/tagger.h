@@ -173,6 +173,7 @@ public:
 		return true;
 	}
 
+
 private:
 	const int m_mode;
 };
@@ -290,7 +291,7 @@ public:
 	 */
 	bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 		Individual * dad = NULL, Individual * mom = NULL) const;
-	
+
 	/// CPPONLY
 	bool parallelizable() const
 	{
@@ -387,6 +388,7 @@ public:
 		return noOutput();
 	}
 
+
 private:
 	void outputIndividual(ostream & out, const Individual * ind,
 		const vectorf & IDs) const;
@@ -461,6 +463,7 @@ public:
 	{
 		return false;
 	}
+
 
 private:
 	const pyFunc m_func;

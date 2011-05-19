@@ -343,8 +343,8 @@ void GenoStruTrait::setGenoStructure(const GenoStructure & rhs)
 	if (s_genoStruRepository.size() + 1 == MaxTraitIndex) {
 		throw SystemError("This simuPOP library only allows " + toStr(MaxTraitIndex - 1)
 			+ " different genotype structures. \n" +
-			+ "If you do need more structures, modify individual.h/TraitMaxType and " +
-			+ "recompile simuPOP.");
+			+"If you do need more structures, modify individual.h/TraitMaxType and " +
+			+"recompile simuPOP.");
 	}
 
 	if (m_genoStruIdx != MaxTraitIndex)
