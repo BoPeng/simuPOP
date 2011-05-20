@@ -405,6 +405,128 @@ class TestRecombinator(PerformanceTest):
         )
         return gens
 
+class TestStatHaploFreq(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'Stat HaploFreq, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci)
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme = RandomMating(ops = Recombinator(rates = 0.1)),
+            postOps = Stat( haploFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]),
+        )
+        return gens
+
+class TestStatHaploHomoFreq(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'Stat HaploHomoFreq, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci)
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme = RandomMating(ops = Recombinator(rates = 0.1)),
+            postOps = Stat( haploHomoFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]),
+        )
+        return gens
+
+class TestStatAlleleFreq(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'Stat AlleleFreq, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci)
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=RandomMating(ops=[
+                MendelianGenoTransmitter(),
+            ]),
+            postOps=Stat(alleleFreq=range(100)),
+        )
+        return gens
+
+class TestStatNumOfMales(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'Stat NumOfMales, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci)
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=RandomMating(ops=[
+                MendelianGenoTransmitter(),
+            ]),
+            postOps=Stat(numOfMales=True),
+        )
+        return gens
+
+class TestStatNumOfAffected(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'Stat NumOfAffected, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci)
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=RandomMating(ops=[
+                MendelianGenoTransmitter(),
+            ]),
+            postOps=Stat(numOfAffected=True),
+        )
+        return gens
+
+
 
 class TestRandomMatingWithSelection(PerformanceTest):
     def __init__(self, logger, time=60):
