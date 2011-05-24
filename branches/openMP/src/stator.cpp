@@ -651,7 +651,6 @@ statAlleleFreq::statAlleleFreq(const lociList & loci, const subPopList & subPops
 	m_vars.obtainFrom(vars, allowedVars, defaultVars);
 }
 
-
 string statAlleleFreq::describe(bool /* format */) const
 {
 	ostringstream desc;
@@ -688,6 +687,10 @@ bool statAlleleFreq::apply(Population & pop) const
 
 		pop.activateVirtualSubPop(*it);
 
+#ifdef _OPENMP
+		
+#		pragma omp parallel for
+#endif
 		for (size_t idx = 0; idx < loci.size(); ++idx) {
 			size_t loc = loci[idx];
 
@@ -726,13 +729,20 @@ bool statAlleleFreq::apply(Population & pop) const
 			allAllelesCnt[idx] += allAlleles;
 			// output variable.
 #ifdef LONGALLELE
-			if (m_vars.contains(AlleleNum_sp_String))
+			if (m_vars.contains(AlleleNum_sp_String)) {
+#  ifdef _OPENMP
+#				pragma omp critical
+#  endif
 				pop.getVars().setVar(subPopVar_String(*it, AlleleNum_String) + m_suffix + "{" + toStr(loc) + "}", alleles);
+			}
 			if (m_vars.contains(AlleleFreq_sp_String)) {
 				intDict::iterator cnt = alleles.begin();
 				intDict::iterator cntEnd = alleles.end();
 				for ( ; cnt != cntEnd; ++cnt)
 					cnt->second /= static_cast<double>(allAlleles);
+#  ifdef _OPENMP
+#				pragma omp critical
+#  endif
 				pop.getVars().setVar(subPopVar_String(*it, AlleleFreq_String) + m_suffix + "{" + toStr(loc) + "}", alleles);
 			}
 #else
@@ -741,6 +751,9 @@ bool statAlleleFreq::apply(Population & pop) const
 				for (size_t i = 0; i < alleles.size(); ++i)
 					if (alleles[i] != 0)
 						d[i] = static_cast<double>(alleles[i]);
+#  ifdef _OPENMP
+#				pragma omp critical
+#  endif
 				pop.getVars().setVar(subPopVar_String(*it, AlleleNum_String) + m_suffix + "{" + toStr(loc) + "}", d);
 			}
 			if (m_vars.contains(AlleleFreq_sp_String)) {
@@ -748,6 +761,9 @@ bool statAlleleFreq::apply(Population & pop) const
 				for (size_t i = 0; i < alleles.size(); ++i)
 					if (alleles[i] != 0)
 						d[i] = alleles[i] / static_cast<double>(allAlleles);
+#  ifdef _OPENMP
+#				pragma omp critical
+#  endif
 				pop.getVars().setVar(subPopVar_String(*it, AlleleFreq_String) + m_suffix + "{" + toStr(loc) + "}", d);
 			}
 #endif

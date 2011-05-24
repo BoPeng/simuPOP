@@ -5193,197 +5193,197 @@ TestInheritTagger : loci=10000, size=100000: 398
 TestInheritTagger : 22938, 2168, 24949, 2026, 4616, 398
 TestInheritTagger : End of test TestInheritTagger
 TestStatHaploFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatHaploFreq : Time: Fri May 20 15:29:47 2011
+TestStatHaploFreq : Time: Mon May 23 10:18:51 2011
 TestStatHaploFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4177, module short, optimized, 4 threads)
+TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4178, module short, optimized, 4 threads)
 TestStatHaploFreq : Test: Stat HaploFreq, results are number of generations in 30 seconds.
-TestStatHaploFreq : loci=10, size=10000: 4126
-TestStatHaploFreq : loci=10, size=100000: 396
-TestStatHaploFreq : loci=100, size=10000: 1883
-TestStatHaploFreq : loci=100, size=100000: 177
-TestStatHaploFreq : loci=10000, size=10000: 27
-TestStatHaploFreq : loci=10000, size=100000: 3
-TestStatHaploFreq : 4126, 396, 1883, 177, 27, 3
+TestStatHaploFreq : loci=10, size=10000: 4020
+TestStatHaploFreq : loci=10, size=100000: 386
+TestStatHaploFreq : loci=100, size=10000: 3834
+TestStatHaploFreq : loci=100, size=100000: 353
+TestStatHaploFreq : loci=10000, size=10000: 567
+TestStatHaploFreq : loci=10000, size=100000: 36
+TestStatHaploFreq : 4020, 386, 3834, 353, 567, 36
 TestStatHaploFreq : End of test TestStatHaploFreq
 TestStatHaploFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatHaploFreq : Time: Fri May 20 15:33:02 2011
+TestStatHaploFreq : Time: Mon May 23 10:23:34 2011
 TestStatHaploFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4177, module long, optimized, 4 threads)
+TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4178, module long, optimized, 4 threads)
 TestStatHaploFreq : Test: Stat HaploFreq, results are number of generations in 30 seconds.
-TestStatHaploFreq : loci=10, size=10000: 3819
-TestStatHaploFreq : loci=10, size=100000: 370
-TestStatHaploFreq : loci=100, size=10000: 1702
-TestStatHaploFreq : loci=100, size=100000: 142
-TestStatHaploFreq : loci=10000, size=10000: 26
+TestStatHaploFreq : loci=10, size=10000: 4021
+TestStatHaploFreq : loci=10, size=100000: 366
+TestStatHaploFreq : loci=100, size=10000: 3032
+TestStatHaploFreq : loci=100, size=100000: 226
+TestStatHaploFreq : loci=10000, size=10000: 171
 TestStatHaploFreq : loci=10000, size=100000: 0
-TestStatHaploFreq : 3819, 370, 1702, 142, 26, 0
+TestStatHaploFreq : 4021, 366, 3032, 226, 171, 0
 TestStatHaploFreq : End of test TestStatHaploFreq
 TestStatHaploFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatHaploFreq : Time: Fri May 20 15:35:37 2011
+TestStatHaploFreq : Time: Mon May 23 10:26:19 2011
 TestStatHaploFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4177, module binary, optimized, 4 threads)
+TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4178, module binary, optimized, 4 threads)
 TestStatHaploFreq : Test: Stat HaploFreq, results are number of generations in 30 seconds.
-TestStatHaploFreq : loci=10, size=10000: 2874
-TestStatHaploFreq : loci=10, size=100000: 286
-TestStatHaploFreq : loci=100, size=10000: 1343
-TestStatHaploFreq : loci=100, size=100000: 130
-TestStatHaploFreq : loci=10000, size=10000: 21
-TestStatHaploFreq : loci=10000, size=100000: 3
-TestStatHaploFreq : 2874, 286, 1343, 130, 21, 3
+TestStatHaploFreq : loci=10, size=10000: 2940
+TestStatHaploFreq : loci=10, size=100000: 297
+TestStatHaploFreq : loci=100, size=10000: 2900
+TestStatHaploFreq : loci=100, size=100000: 307
+TestStatHaploFreq : loci=10000, size=10000: 1732
+TestStatHaploFreq : loci=10000, size=100000: 140
+TestStatHaploFreq : 2940, 297, 2900, 307, 1732, 140
 TestStatHaploFreq : End of test TestStatHaploFreq
 TestStatHaploHomoFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatHaploHomoFreq : Time: Fri May 20 15:38:56 2011
+TestStatHaploHomoFreq : Time: Mon May 23 10:31:20 2011
 TestStatHaploHomoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4177, module short, optimized, 4 threads)
+TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4178, module short, optimized, 4 threads)
 TestStatHaploHomoFreq : Test: Stat HaploHomoFreq, results are number of generations in 30 seconds.
-TestStatHaploHomoFreq : loci=10, size=10000: 9079
-TestStatHaploHomoFreq : loci=10, size=100000: 861
-TestStatHaploHomoFreq : loci=100, size=10000: 2502
-TestStatHaploHomoFreq : loci=100, size=100000: 238
-TestStatHaploHomoFreq : loci=10000, size=10000: 27
-TestStatHaploHomoFreq : loci=10000, size=100000: 3
-TestStatHaploHomoFreq : 9079, 861, 2502, 238, 27, 3
+TestStatHaploHomoFreq : loci=10, size=10000: 14158
+TestStatHaploHomoFreq : loci=10, size=100000: 1328
+TestStatHaploHomoFreq : loci=100, size=10000: 13043
+TestStatHaploHomoFreq : loci=100, size=100000: 913
+TestStatHaploHomoFreq : loci=10000, size=10000: 663
+TestStatHaploHomoFreq : loci=10000, size=100000: 56
+TestStatHaploHomoFreq : 14158, 1328, 13043, 913, 663, 56
 TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
 TestStatHaploHomoFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatHaploHomoFreq : Time: Fri May 20 15:42:10 2011
+TestStatHaploHomoFreq : Time: Mon May 23 10:35:51 2011
 TestStatHaploHomoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4177, module long, optimized, 4 threads)
+TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4178, module long, optimized, 4 threads)
 TestStatHaploHomoFreq : Test: Stat HaploHomoFreq, results are number of generations in 30 seconds.
-TestStatHaploHomoFreq : loci=10, size=10000: 9104
-TestStatHaploHomoFreq : loci=10, size=100000: 866
-TestStatHaploHomoFreq : loci=100, size=10000: 2375
-TestStatHaploHomoFreq : loci=100, size=100000: 206
-TestStatHaploHomoFreq : loci=10000, size=10000: 26
+TestStatHaploHomoFreq : loci=10, size=10000: 12891
+TestStatHaploHomoFreq : loci=10, size=100000: 1104
+TestStatHaploHomoFreq : loci=100, size=10000: 7927
+TestStatHaploHomoFreq : loci=100, size=100000: 527
+TestStatHaploHomoFreq : loci=10000, size=10000: 182
 TestStatHaploHomoFreq : loci=10000, size=100000: 0
-TestStatHaploHomoFreq : 9104, 866, 2375, 206, 26, 0
+TestStatHaploHomoFreq : 12891, 1104, 7927, 527, 182, 0
 TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
 TestStatHaploHomoFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatHaploHomoFreq : Time: Fri May 20 15:44:46 2011
+TestStatHaploHomoFreq : Time: Mon May 23 10:38:35 2011
 TestStatHaploHomoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4177, module binary, optimized, 4 threads)
+TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4178, module binary, optimized, 4 threads)
 TestStatHaploHomoFreq : Test: Stat HaploHomoFreq, results are number of generations in 30 seconds.
-TestStatHaploHomoFreq : loci=10, size=10000: 4987
-TestStatHaploHomoFreq : loci=10, size=100000: 494
-TestStatHaploHomoFreq : loci=100, size=10000: 1638
-TestStatHaploHomoFreq : loci=100, size=100000: 169
-TestStatHaploHomoFreq : loci=10000, size=10000: 21
-TestStatHaploHomoFreq : loci=10000, size=100000: 3
-TestStatHaploHomoFreq : 4987, 494, 1638, 169, 21, 3
+TestStatHaploHomoFreq : loci=10, size=10000: 6779
+TestStatHaploHomoFreq : loci=10, size=100000: 677
+TestStatHaploHomoFreq : loci=100, size=10000: 7180
+TestStatHaploHomoFreq : loci=100, size=100000: 672
+TestStatHaploHomoFreq : loci=10000, size=10000: 2884
+TestStatHaploHomoFreq : loci=10000, size=100000: 227
+TestStatHaploHomoFreq : 6779, 677, 7180, 672, 2884, 227
 TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
-TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatAlleleFreq : Time: Fri May 20 15:48:05 2011
-TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4177, module short, optimized, 4 threads)
-TestStatAlleleFreq : Test: Stat AlleleFreq, results are number of generations in 30 seconds.
-TestStatAlleleFreq : loci=10, size=10000: 1422
-TestStatAlleleFreq : loci=10, size=100000: 153
-TestStatAlleleFreq : loci=100, size=10000: 1381
-TestStatAlleleFreq : loci=100, size=100000: 118
-TestStatAlleleFreq : loci=10000, size=10000: 358
-TestStatAlleleFreq : loci=10000, size=100000: 16
-TestStatAlleleFreq : 1422, 153, 1381, 118, 358, 16
-TestStatAlleleFreq : End of test TestStatAlleleFreq
-TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatAlleleFreq : Time: Fri May 20 15:51:18 2011
-TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4177, module long, optimized, 4 threads)
-TestStatAlleleFreq : Test: Stat AlleleFreq, results are number of generations in 30 seconds.
-TestStatAlleleFreq : loci=10, size=10000: 1597
-TestStatAlleleFreq : loci=10, size=100000: 157
-TestStatAlleleFreq : loci=100, size=10000: 1234
-TestStatAlleleFreq : loci=100, size=100000: 76
-TestStatAlleleFreq : loci=10000, size=10000: 161
-TestStatAlleleFreq : loci=10000, size=100000: 0
-TestStatAlleleFreq : 1597, 157, 1234, 76, 161, 0
-TestStatAlleleFreq : End of test TestStatAlleleFreq
-TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatAlleleFreq : Time: Fri May 20 15:53:55 2011
-TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4177, module binary, optimized, 4 threads)
-TestStatAlleleFreq : Test: Stat AlleleFreq, results are number of generations in 30 seconds.
-TestStatAlleleFreq : loci=10, size=10000: 1017
-TestStatAlleleFreq : loci=10, size=100000: 109
-TestStatAlleleFreq : loci=100, size=10000: 1019
-TestStatAlleleFreq : loci=100, size=100000: 107
-TestStatAlleleFreq : loci=10000, size=10000: 759
-TestStatAlleleFreq : loci=10000, size=100000: 40
-TestStatAlleleFreq : 1017, 109, 1019, 107, 759, 40
-TestStatAlleleFreq : End of test TestStatAlleleFreq
-TestStatNumOfMales : Host: bp9 (Linux, x86_64, x86_64)
-TestStatNumOfMales : Time: Fri May 20 15:57:01 2011
-TestStatNumOfMales : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatNumOfMales : simuPOP: 1.0.6svn (rev 4177, module short, optimized, 4 threads)
-TestStatNumOfMales : Test: Stat NumOfMales, results are number of generations in 30 seconds.
-TestStatNumOfMales : loci=10, size=10000: 38032
-TestStatNumOfMales : loci=10, size=100000: 3342
-TestStatNumOfMales : loci=100, size=10000: 34373
-TestStatNumOfMales : loci=100, size=100000: 2163
-TestStatNumOfMales : loci=10000, size=10000: 699
-TestStatNumOfMales : loci=10000, size=100000: 63
-TestStatNumOfMales : 38032, 3342, 34373, 2163, 699, 63
-TestStatNumOfMales : End of test TestStatNumOfMales
-TestStatNumOfMales : Host: bp9 (Linux, x86_64, x86_64)
-TestStatNumOfMales : Time: Fri May 20 16:00:11 2011
-TestStatNumOfMales : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatNumOfMales : simuPOP: 1.0.6svn (rev 4177, module long, optimized, 4 threads)
-TestStatNumOfMales : Test: Stat NumOfMales, results are number of generations in 30 seconds.
-TestStatNumOfMales : loci=10, size=10000: 37136
-TestStatNumOfMales : loci=10, size=100000: 2596
-TestStatNumOfMales : loci=100, size=10000: 17481
-TestStatNumOfMales : loci=100, size=100000: 1307
-TestStatNumOfMales : loci=10000, size=10000: 183
-TestStatNumOfMales : loci=10000, size=100000: 0
-TestStatNumOfMales : 37136, 2596, 17481, 1307, 183, 0
-TestStatNumOfMales : End of test TestStatNumOfMales
-TestStatNumOfMales : Host: bp9 (Linux, x86_64, x86_64)
-TestStatNumOfMales : Time: Fri May 20 16:02:46 2011
-TestStatNumOfMales : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatNumOfMales : simuPOP: 1.0.6svn (rev 4177, module binary, optimized, 4 threads)
-TestStatNumOfMales : Test: Stat NumOfMales, results are number of generations in 30 seconds.
-TestStatNumOfMales : loci=10, size=10000: 30165
-TestStatNumOfMales : loci=10, size=100000: 2968
-TestStatNumOfMales : loci=100, size=10000: 33428
-TestStatNumOfMales : loci=100, size=100000: 2876
-TestStatNumOfMales : loci=10000, size=10000: 5060
-TestStatNumOfMales : loci=10000, size=100000: 461
-TestStatNumOfMales : 30165, 2968, 33428, 2876, 5060, 461
-TestStatNumOfMales : End of test TestStatNumOfMales
 TestStatNumOfAffected : Host: bp9 (Linux, x86_64, x86_64)
-TestStatNumOfAffected : Time: Fri May 20 16:05:53 2011
+TestStatNumOfAffected : Time: Mon May 23 10:48:51 2011
 TestStatNumOfAffected : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatNumOfAffected : simuPOP: 1.0.6svn (rev 4177, module short, optimized, 4 threads)
+TestStatNumOfAffected : simuPOP: 1.0.6svn (rev 4178, module short, optimized, 4 threads)
 TestStatNumOfAffected : Test: Stat NumOfAffected, results are number of generations in 30 seconds.
-TestStatNumOfAffected : loci=10, size=10000: 38607
-TestStatNumOfAffected : loci=10, size=100000: 3342
-TestStatNumOfAffected : loci=100, size=10000: 33699
-TestStatNumOfAffected : loci=100, size=100000: 2168
-TestStatNumOfAffected : loci=10000, size=10000: 711
-TestStatNumOfAffected : loci=10000, size=100000: 65
-TestStatNumOfAffected : 38607, 3342, 33699, 2168, 711, 65
+TestStatNumOfAffected : loci=10, size=10000: 9102
+TestStatNumOfAffected : loci=10, size=100000: 1370
+TestStatNumOfAffected : loci=100, size=10000: 6128
+TestStatNumOfAffected : loci=100, size=100000: 651
+TestStatNumOfAffected : loci=10000, size=10000: 627
+TestStatNumOfAffected : loci=10000, size=100000: 1
+TestStatNumOfAffected : 9102, 1370, 6128, 651, 627, 1
 TestStatNumOfAffected : End of test TestStatNumOfAffected
 TestStatNumOfAffected : Host: bp9 (Linux, x86_64, x86_64)
-TestStatNumOfAffected : Time: Fri May 20 16:09:03 2011
+TestStatNumOfAffected : Time: Mon May 23 10:54:02 2011
 TestStatNumOfAffected : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatNumOfAffected : simuPOP: 1.0.6svn (rev 4177, module long, optimized, 4 threads)
+TestStatNumOfAffected : simuPOP: 1.0.6svn (rev 4178, module long, optimized, 4 threads)
 TestStatNumOfAffected : Test: Stat NumOfAffected, results are number of generations in 30 seconds.
-TestStatNumOfAffected : loci=10, size=10000: 36175
-TestStatNumOfAffected : loci=10, size=100000: 2621
-TestStatNumOfAffected : loci=100, size=10000: 17519
-TestStatNumOfAffected : loci=100, size=100000: 1386
-TestStatNumOfAffected : loci=10000, size=10000: 184
+TestStatNumOfAffected : loci=10, size=10000: 35199
+TestStatNumOfAffected : loci=10, size=100000: 2476
+TestStatNumOfAffected : loci=100, size=10000: 16603
+TestStatNumOfAffected : loci=100, size=100000: 1279
+TestStatNumOfAffected : loci=10000, size=10000: 179
 TestStatNumOfAffected : loci=10000, size=100000: 0
-TestStatNumOfAffected : 36175, 2621, 17519, 1386, 184, 0
+TestStatNumOfAffected : 35199, 2476, 16603, 1279, 179, 0
 TestStatNumOfAffected : End of test TestStatNumOfAffected
 TestStatNumOfAffected : Host: bp9 (Linux, x86_64, x86_64)
-TestStatNumOfAffected : Time: Fri May 20 16:11:39 2011
+TestStatNumOfAffected : Time: Mon May 23 10:56:47 2011
 TestStatNumOfAffected : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatNumOfAffected : simuPOP: 1.0.6svn (rev 4177, module binary, optimized, 4 threads)
+TestStatNumOfAffected : simuPOP: 1.0.6svn (rev 4178, module binary, optimized, 4 threads)
 TestStatNumOfAffected : Test: Stat NumOfAffected, results are number of generations in 30 seconds.
-TestStatNumOfAffected : loci=10, size=10000: 30187
-TestStatNumOfAffected : loci=10, size=100000: 2907
-TestStatNumOfAffected : loci=100, size=10000: 34000
-TestStatNumOfAffected : loci=100, size=100000: 2860
-TestStatNumOfAffected : loci=10000, size=10000: 5081
-TestStatNumOfAffected : loci=10000, size=100000: 453
-TestStatNumOfAffected : 30187, 2907, 34000, 2860, 5081, 453
+TestStatNumOfAffected : loci=10, size=10000: 28288
+TestStatNumOfAffected : loci=10, size=100000: 2407
+TestStatNumOfAffected : loci=100, size=10000: 30994
+TestStatNumOfAffected : loci=100, size=100000: 2687
+TestStatNumOfAffected : loci=10000, size=10000: 5026
+TestStatNumOfAffected : loci=10000, size=100000: 425
+TestStatNumOfAffected : 28288, 2407, 30994, 2687, 5026, 425
 TestStatNumOfAffected : End of test TestStatNumOfAffected
+TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatAlleleFreq : Time: Mon May 23 11:07:42 2011
+TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4178, module short, optimized, 4 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are number of generations in 30 seconds.
+TestStatAlleleFreq : loci=10, size=10000: 1447
+TestStatAlleleFreq : loci=10, size=100000: 156
+TestStatAlleleFreq : loci=100, size=10000: 1370
+TestStatAlleleFreq : loci=100, size=100000: 115
+TestStatAlleleFreq : loci=10000, size=10000: 339
+TestStatAlleleFreq : loci=10000, size=100000: 16
+TestStatAlleleFreq : 1447, 156, 1370, 115, 339, 16
+TestStatAlleleFreq : End of test TestStatAlleleFreq
+TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatAlleleFreq : Time: Mon May 23 11:12:19 2011
+TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4178, module long, optimized, 4 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are number of generations in 30 seconds.
+TestStatAlleleFreq : loci=10, size=10000: 1054
+TestStatAlleleFreq : loci=10, size=100000: 113
+TestStatAlleleFreq : loci=100, size=10000: 860
+TestStatAlleleFreq : loci=100, size=100000: 53
+TestStatAlleleFreq : loci=10000, size=10000: 144
+TestStatAlleleFreq : loci=10000, size=100000: 0
+TestStatAlleleFreq : 1054, 113, 860, 53, 144, 0
+TestStatAlleleFreq : End of test TestStatAlleleFreq
+TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatAlleleFreq : Time: Mon May 23 11:15:03 2011
+TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4178, module binary, optimized, 4 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are number of generations in 30 seconds.
+TestStatAlleleFreq : loci=10, size=10000: 769
+TestStatAlleleFreq : loci=10, size=100000: 80
+TestStatAlleleFreq : loci=100, size=10000: 755
+TestStatAlleleFreq : loci=100, size=100000: 82
+TestStatAlleleFreq : loci=10000, size=10000: 551
+TestStatAlleleFreq : loci=10000, size=100000: 33
+TestStatAlleleFreq : 769, 80, 755, 82, 551, 33
+TestStatAlleleFreq : End of test TestStatAlleleFreq
+TestStatNumOfMales : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNumOfMales : Time: Mon May 23 11:20:02 2011
+TestStatNumOfMales : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNumOfMales : simuPOP: 1.0.6svn (rev 4178, module short, optimized, 4 threads)
+TestStatNumOfMales : Test: Stat NumOfMales, results are number of generations in 30 seconds.
+TestStatNumOfMales : loci=10, size=10000: 36202
+TestStatNumOfMales : loci=10, size=100000: 3098
+TestStatNumOfMales : loci=100, size=10000: 31847
+TestStatNumOfMales : loci=100, size=100000: 2043
+TestStatNumOfMales : loci=10000, size=10000: 673
+TestStatNumOfMales : loci=10000, size=100000: 64
+TestStatNumOfMales : 36202, 3098, 31847, 2043, 673, 64
+TestStatNumOfMales : End of test TestStatNumOfMales
+TestStatNumOfMales : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNumOfMales : Time: Mon May 23 11:24:34 2011
+TestStatNumOfMales : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNumOfMales : simuPOP: 1.0.6svn (rev 4178, module long, optimized, 4 threads)
+TestStatNumOfMales : Test: Stat NumOfMales, results are number of generations in 30 seconds.
+TestStatNumOfMales : loci=10, size=10000: 35117
+TestStatNumOfMales : loci=10, size=100000: 2444
+TestStatNumOfMales : loci=100, size=10000: 15921
+TestStatNumOfMales : loci=100, size=100000: 1196
+TestStatNumOfMales : loci=10000, size=10000: 178
+TestStatNumOfMales : loci=10000, size=100000: 0
+TestStatNumOfMales : 35117, 2444, 15921, 1196, 178, 0
+TestStatNumOfMales : End of test TestStatNumOfMales
+TestStatNumOfMales : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNumOfMales : Time: Mon May 23 11:27:18 2011
+TestStatNumOfMales : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNumOfMales : simuPOP: 1.0.6svn (rev 4178, module binary, optimized, 4 threads)
+TestStatNumOfMales : Test: Stat NumOfMales, results are number of generations in 30 seconds.
+TestStatNumOfMales : loci=10, size=10000: 26934
+TestStatNumOfMales : loci=10, size=100000: 2313
+TestStatNumOfMales : loci=100, size=10000: 30904
+TestStatNumOfMales : loci=100, size=100000: 2457
+TestStatNumOfMales : loci=10000, size=10000: 4276
+TestStatNumOfMales : loci=10000, size=100000: 429
+TestStatNumOfMales : 26934, 2313, 30904, 2457, 4276, 429
+TestStatNumOfMales : End of test TestStatNumOfMales

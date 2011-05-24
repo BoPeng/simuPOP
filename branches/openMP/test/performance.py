@@ -421,9 +421,9 @@ class TestStatHaploFreq(PerformanceTest):
             return 0
         pop = Population(size=size, loci=loci)
         gens = pop.evolve(
-            initOps=InitSex(),
+            initOps=[InitSex(),InitGenotype(freq=[0.5,0.5])],
             preOps=TicToc(output='', stopAfter=self.time),
-            matingScheme = RandomMating(ops = Recombinator(rates = 0.1)),
+            matingScheme = RandomMating(),
             postOps = Stat( haploFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]),
         )
         return gens
@@ -444,9 +444,9 @@ class TestStatHaploHomoFreq(PerformanceTest):
             return 0
         pop = Population(size=size, loci=loci)
         gens = pop.evolve(
-            initOps=InitSex(),
+            initOps=[InitSex(),InitGenotype(freq=[0.5,0.5])],
             preOps=TicToc(output='', stopAfter=self.time),
-            matingScheme = RandomMating(ops = Recombinator(rates = 0.1)),
+            matingScheme = RandomMating(),
             postOps = Stat( haploHomoFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]),
         )
         return gens
@@ -467,11 +467,9 @@ class TestStatAlleleFreq(PerformanceTest):
             return 0
         pop = Population(size=size, loci=loci)
         gens = pop.evolve(
-            initOps=InitSex(),
+            initOps=[InitSex(),InitGenotype(freq=[0.5,0.5])],
             preOps=TicToc(output='', stopAfter=self.time),
-            matingScheme=RandomMating(ops=[
-                MendelianGenoTransmitter(),
-            ]),
+            matingScheme=RandomMating(),
             postOps=Stat(alleleFreq=range(100)),
         )
         return gens
@@ -492,11 +490,9 @@ class TestStatNumOfMales(PerformanceTest):
             return 0
         pop = Population(size=size, loci=loci)
         gens = pop.evolve(
-            initOps=InitSex(),
+            initOps=[InitSex(),InitGenotype(freq=[0.5,0.5])],
             preOps=TicToc(output='', stopAfter=self.time),
-            matingScheme=RandomMating(ops=[
-                MendelianGenoTransmitter(),
-            ]),
+            matingScheme=RandomMating(),
             postOps=Stat(numOfMales=True),
         )
         return gens
@@ -517,11 +513,9 @@ class TestStatNumOfAffected(PerformanceTest):
             return 0
         pop = Population(size=size, loci=loci)
         gens = pop.evolve(
-            initOps=InitSex(),
+            initOps=[InitSex(),InitGenotype(freq=[0.5,0.5])],
             preOps=TicToc(output='', stopAfter=self.time),
-            matingScheme=RandomMating(ops=[
-                MendelianGenoTransmitter(),
-            ]),
+            matingScheme=RandomMating(),
             postOps=Stat(numOfAffected=True),
         )
         return gens
