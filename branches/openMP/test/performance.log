@@ -5387,3 +5387,81 @@ TestStatNumOfMales : loci=10000, size=10000: 4276
 TestStatNumOfMales : loci=10000, size=100000: 429
 TestStatNumOfMales : 26934, 2313, 30904, 2457, 4276, 429
 TestStatNumOfMales : End of test TestStatNumOfMales
+TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatAlleleFreq : Time: Tue May 24 12:03:31 2011
+TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4179, module short, optimized, 4 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are number of generations in 30 seconds.
+TestStatAlleleFreq : loci=10, size=10000: 4023
+TestStatAlleleFreq : loci=10, size=100000: 403
+TestStatAlleleFreq : loci=100, size=10000: 3515
+TestStatAlleleFreq : loci=100, size=100000: 302
+TestStatAlleleFreq : loci=10000, size=10000: 481
+TestStatAlleleFreq : loci=10000, size=100000: 24
+TestStatAlleleFreq : 4023, 403, 3515, 302, 481, 24
+TestStatAlleleFreq : End of test TestStatAlleleFreq
+TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatAlleleFreq : Time: Tue May 24 12:08:16 2011
+TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4179, module long, optimized, 4 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are number of generations in 30 seconds.
+TestStatAlleleFreq : loci=10, size=10000: 2662
+TestStatAlleleFreq : loci=10, size=100000: 273
+TestStatAlleleFreq : loci=100, size=10000: 2002
+TestStatAlleleFreq : loci=100, size=100000: 128
+TestStatAlleleFreq : loci=10000, size=10000: 153
+TestStatAlleleFreq : loci=10000, size=100000: 0
+TestStatAlleleFreq : 2662, 273, 2002, 128, 153, 0
+TestStatAlleleFreq : End of test TestStatAlleleFreq
+TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatAlleleFreq : Time: Tue May 24 12:11:00 2011
+TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4179, module binary, optimized, 4 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are number of generations in 30 seconds.
+TestStatAlleleFreq : loci=10, size=10000: 2192
+TestStatAlleleFreq : loci=10, size=100000: 217
+TestStatAlleleFreq : loci=100, size=10000: 2226
+TestStatAlleleFreq : loci=100, size=100000: 226
+TestStatAlleleFreq : loci=10000, size=10000: 1325
+TestStatAlleleFreq : loci=10000, size=100000: 103
+TestStatAlleleFreq : 2192, 217, 2226, 226, 1325, 103
+TestStatAlleleFreq : End of test TestStatAlleleFreq
+TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatAlleleFreq : Time: Tue May 24 12:28:20 2011
+TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4179, module short, optimized, 1 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are number of generations in 30 seconds.
+TestStatAlleleFreq : loci=10, size=10000: 1470
+TestStatAlleleFreq : loci=10, size=100000: 148
+TestStatAlleleFreq : loci=100, size=10000: 1390
+TestStatAlleleFreq : loci=100, size=100000: 107
+TestStatAlleleFreq : loci=10000, size=10000: 339
+TestStatAlleleFreq : loci=10000, size=100000: 16
+TestStatAlleleFreq : 1470, 148, 1390, 107, 339, 16
+TestStatAlleleFreq : End of test TestStatAlleleFreq
+TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatAlleleFreq : Time: Tue May 24 12:32:52 2011
+TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4179, module long, optimized, 1 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are number of generations in 30 seconds.
+TestStatAlleleFreq : loci=10, size=10000: 994
+TestStatAlleleFreq : loci=10, size=100000: 99
+TestStatAlleleFreq : loci=100, size=10000: 783
+TestStatAlleleFreq : loci=100, size=100000: 48
+TestStatAlleleFreq : loci=10000, size=10000: 139
+TestStatAlleleFreq : loci=10000, size=100000: 0
+TestStatAlleleFreq : 994, 99, 783, 48, 139, 0
+TestStatAlleleFreq : End of test TestStatAlleleFreq
+TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatAlleleFreq : Time: Tue May 24 12:35:35 2011
+TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4179, module binary, optimized, 1 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are number of generations in 30 seconds.
+TestStatAlleleFreq : loci=10, size=10000: 787
+TestStatAlleleFreq : loci=10, size=100000: 78
+TestStatAlleleFreq : loci=100, size=10000: 787
+TestStatAlleleFreq : loci=100, size=100000: 79
+TestStatAlleleFreq : loci=10000, size=10000: 552
+TestStatAlleleFreq : loci=10000, size=100000: 30
+TestStatAlleleFreq : 787, 78, 787, 79, 552, 30
+TestStatAlleleFreq : End of test TestStatAlleleFreq

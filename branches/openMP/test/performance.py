@@ -459,7 +459,7 @@ class TestStatAlleleFreq(PerformanceTest):
 
     def run(self):
         # overall running case
-        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+        return self.productRun(size=[10000, 100000, [10000]*10], loci=[10, 100, 10000])
 
     def _run(self, size, loci):
         # single test case
@@ -470,7 +470,7 @@ class TestStatAlleleFreq(PerformanceTest):
             initOps=[InitSex(),InitGenotype(freq=[0.5,0.5])],
             preOps=TicToc(output='', stopAfter=self.time),
             matingScheme=RandomMating(),
-            postOps=Stat(alleleFreq=range(100)),
+            postOps=Stat(alleleFreq=ALL_AVAIL, vars=['alleleFreq', 'alleleFreq_sp']),
         )
         return gens
 
