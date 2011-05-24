@@ -334,15 +334,12 @@ TestStatHaploHomoFreq, 2011-05-23 10:43:41,018, bp9, x86_64-4threads, python2.7.
 TestStatNumOfAffected, 2011-05-23 10:54:00,783, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4178-intel, short, 9102, 1370, 6128, 651, 627, 1
 TestStatNumOfAffected, 2011-05-23 10:56:46,815, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4178-intel, long, 35199, 2476, 16603, 1279, 179, 0
 TestStatNumOfAffected, 2011-05-23 11:01:47,056, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4178-intel, binary, 28288, 2407, 30994, 2687, 5026, 425
-TestStatAlleleFreq, 2011-05-23 11:12:18,822, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4178-intel, short, 1447, 156, 1370, 115, 339, 16
-TestStatAlleleFreq, 2011-05-23 11:15:03,333, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4178-intel, long, 1054, 113, 860, 53, 144, 0
-TestStatAlleleFreq, 2011-05-23 11:20:01,830, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4178-intel, binary, 769, 80, 755, 82, 551, 33
 TestStatNumOfMales, 2011-05-23 11:24:34,230, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4178-intel, short, 36202, 3098, 31847, 2043, 673, 64
 TestStatNumOfMales, 2011-05-23 11:27:18,206, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4178-intel, long, 35117, 2444, 15921, 1196, 178, 0
 TestStatNumOfMales, 2011-05-23 11:32:20,570, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4178-intel, binary, 26934, 2313, 30904, 2457, 4276, 429
-TestStatAlleleFreq, 2011-05-24 12:08:14,106, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4179-intel, short, 4023, 403, 3515, 302, 481, 24
-TestStatAlleleFreq, 2011-05-24 12:11:00,038, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4179-intel, long, 2662, 273, 2002, 128, 153, 0
-TestStatAlleleFreq, 2011-05-24 12:16:10,525, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4179-intel, binary, 2192, 217, 2226, 226, 1325, 103
-TestStatAlleleFreq, 2011-05-24 12:32:51,787, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4179-intel, short, 1470, 148, 1390, 107, 339, 16
-TestStatAlleleFreq, 2011-05-24 12:35:34,400, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4179-intel, long, 994, 99, 783, 48, 139, 0
-TestStatAlleleFreq, 2011-05-24 12:40:34,246, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4179-intel, binary, 787, 78, 787, 79, 552, 30
+TestStatAlleleFreq, 2011-05-24 14:02:49,952, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4180-intel, short, 7322, 653, 724, 1320, 105, 133, 7, 1, 1
+TestStatAlleleFreq, 2011-05-24 14:14:54,069, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4180-intel, long, 6350, 460, 583, 800, 49, 77, 8, 1, 1
+TestStatAlleleFreq, 2011-05-24 14:24:26,655, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4180-intel, binary, 4523, 429, 439, 801, 82, 82, 7, 1, 1
+TestStatAlleleFreq, 2011-05-24 14:32:20,449, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4180-intel, short, 21868, 2100, 2098, 4546, 322, 443, 24, 1, 3
+TestStatAlleleFreq, 2011-05-24 14:43:03,042, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4180-intel, long, 18616, 1451, 1700, 2647, 158, 264, 24, 1, 1
+TestStatAlleleFreq, 2011-05-24 14:51:52,653, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4180-intel, binary, 14959, 1330, 1435, 2823, 285, 277, 24, 2, 3

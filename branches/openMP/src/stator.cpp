@@ -1144,6 +1144,9 @@ bool statHaploFreq::apply(Population & pop) const
 
 		pop.activateVirtualSubPop(*it);
 
+#ifdef _OPENMP
+#	pragma omp parallel for
+#endif
 		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
 			const vectori & loci = m_loci[idx];
 			size_t nLoci = loci.size();
@@ -1187,9 +1190,13 @@ bool statHaploFreq::apply(Population & pop) const
 				haplotypeCnt[idx][dct->first] += dct->second;
 			allHaplotypeCnt[idx] += allHaplotypes;
 			// output variable.
-			if (m_vars.contains(HaplotypeNum_sp_String))
+			if (m_vars.contains(HaplotypeNum_sp_String)) {
+#ifdef _OPENMP
+#				pragma omp critical
+#endif
 				pop.getVars().setVar(subPopVar_String(*it, HaplotypeNum_String) + m_suffix + "{"
 					+ key + "}", haplotypes);
+			}
 			// note that genotyeps is changed in place.
 			if (m_vars.contains(HaplotypeFreq_sp_String)) {
 				if (allHaplotypes != 0) {
@@ -1198,6 +1205,9 @@ bool statHaploFreq::apply(Population & pop) const
 					for (; dct != dctEnd; ++dct)
 						dct->second /= allHaplotypes;
 				}
+#ifdef _OPENMP
+#				pragma omp critical
+#endif
 				pop.getVars().setVar(subPopVar_String(*it, HaplotypeFreq_String) + m_suffix + "{"
 					+ key + "}", haplotypes);
 			}

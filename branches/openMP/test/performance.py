@@ -463,8 +463,6 @@ class TestStatAlleleFreq(PerformanceTest):
 
     def _run(self, size, loci):
         # single test case
-        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
-            return 0
         pop = Population(size=size, loci=loci)
         gens = pop.evolve(
             initOps=[InitSex(),InitGenotype(freq=[0.5,0.5])],

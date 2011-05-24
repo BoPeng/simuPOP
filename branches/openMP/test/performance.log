@@ -5309,45 +5309,6 @@ TestStatNumOfAffected : loci=10000, size=10000: 5026
 TestStatNumOfAffected : loci=10000, size=100000: 425
 TestStatNumOfAffected : 28288, 2407, 30994, 2687, 5026, 425
 TestStatNumOfAffected : End of test TestStatNumOfAffected
-TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatAlleleFreq : Time: Mon May 23 11:07:42 2011
-TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4178, module short, optimized, 4 threads)
-TestStatAlleleFreq : Test: Stat AlleleFreq, results are number of generations in 30 seconds.
-TestStatAlleleFreq : loci=10, size=10000: 1447
-TestStatAlleleFreq : loci=10, size=100000: 156
-TestStatAlleleFreq : loci=100, size=10000: 1370
-TestStatAlleleFreq : loci=100, size=100000: 115
-TestStatAlleleFreq : loci=10000, size=10000: 339
-TestStatAlleleFreq : loci=10000, size=100000: 16
-TestStatAlleleFreq : 1447, 156, 1370, 115, 339, 16
-TestStatAlleleFreq : End of test TestStatAlleleFreq
-TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatAlleleFreq : Time: Mon May 23 11:12:19 2011
-TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4178, module long, optimized, 4 threads)
-TestStatAlleleFreq : Test: Stat AlleleFreq, results are number of generations in 30 seconds.
-TestStatAlleleFreq : loci=10, size=10000: 1054
-TestStatAlleleFreq : loci=10, size=100000: 113
-TestStatAlleleFreq : loci=100, size=10000: 860
-TestStatAlleleFreq : loci=100, size=100000: 53
-TestStatAlleleFreq : loci=10000, size=10000: 144
-TestStatAlleleFreq : loci=10000, size=100000: 0
-TestStatAlleleFreq : 1054, 113, 860, 53, 144, 0
-TestStatAlleleFreq : End of test TestStatAlleleFreq
-TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatAlleleFreq : Time: Mon May 23 11:15:03 2011
-TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4178, module binary, optimized, 4 threads)
-TestStatAlleleFreq : Test: Stat AlleleFreq, results are number of generations in 30 seconds.
-TestStatAlleleFreq : loci=10, size=10000: 769
-TestStatAlleleFreq : loci=10, size=100000: 80
-TestStatAlleleFreq : loci=100, size=10000: 755
-TestStatAlleleFreq : loci=100, size=100000: 82
-TestStatAlleleFreq : loci=10000, size=10000: 551
-TestStatAlleleFreq : loci=10000, size=100000: 33
-TestStatAlleleFreq : 769, 80, 755, 82, 551, 33
-TestStatAlleleFreq : End of test TestStatAlleleFreq
 TestStatNumOfMales : Host: bp9 (Linux, x86_64, x86_64)
 TestStatNumOfMales : Time: Mon May 23 11:20:02 2011
 TestStatNumOfMales : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
@@ -5388,80 +5349,98 @@ TestStatNumOfMales : loci=10000, size=100000: 429
 TestStatNumOfMales : 26934, 2313, 30904, 2457, 4276, 429
 TestStatNumOfMales : End of test TestStatNumOfMales
 TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatAlleleFreq : Time: Tue May 24 12:03:31 2011
+TestStatAlleleFreq : Time: Tue May 24 13:53:23 2011
 TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4179, module short, optimized, 4 threads)
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4180, module short, optimized, 1 threads)
 TestStatAlleleFreq : Test: Stat AlleleFreq, results are number of generations in 30 seconds.
-TestStatAlleleFreq : loci=10, size=10000: 4023
-TestStatAlleleFreq : loci=10, size=100000: 403
-TestStatAlleleFreq : loci=100, size=10000: 3515
-TestStatAlleleFreq : loci=100, size=100000: 302
-TestStatAlleleFreq : loci=10000, size=10000: 481
-TestStatAlleleFreq : loci=10000, size=100000: 24
-TestStatAlleleFreq : 4023, 403, 3515, 302, 481, 24
+TestStatAlleleFreq : loci=10, size=10000: 7322
+TestStatAlleleFreq : loci=10, size=100000: 653
+TestStatAlleleFreq : loci=10, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 724
+TestStatAlleleFreq : loci=100, size=10000: 1320
+TestStatAlleleFreq : loci=100, size=100000: 105
+TestStatAlleleFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 133
+TestStatAlleleFreq : loci=10000, size=10000: 7
+TestStatAlleleFreq : loci=10000, size=100000: 1
+TestStatAlleleFreq : loci=10000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1
+TestStatAlleleFreq : 7322, 653, 724, 1320, 105, 133, 7, 1, 1
 TestStatAlleleFreq : End of test TestStatAlleleFreq
 TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatAlleleFreq : Time: Tue May 24 12:08:16 2011
+TestStatAlleleFreq : Time: Tue May 24 14:02:50 2011
 TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4179, module long, optimized, 4 threads)
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4180, module long, optimized, 1 threads)
 TestStatAlleleFreq : Test: Stat AlleleFreq, results are number of generations in 30 seconds.
-TestStatAlleleFreq : loci=10, size=10000: 2662
-TestStatAlleleFreq : loci=10, size=100000: 273
-TestStatAlleleFreq : loci=100, size=10000: 2002
-TestStatAlleleFreq : loci=100, size=100000: 128
-TestStatAlleleFreq : loci=10000, size=10000: 153
-TestStatAlleleFreq : loci=10000, size=100000: 0
-TestStatAlleleFreq : 2662, 273, 2002, 128, 153, 0
+TestStatAlleleFreq : loci=10, size=10000: 6350
+TestStatAlleleFreq : loci=10, size=100000: 460
+TestStatAlleleFreq : loci=10, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 583
+TestStatAlleleFreq : loci=100, size=10000: 800
+TestStatAlleleFreq : loci=100, size=100000: 49
+TestStatAlleleFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 77
+TestStatAlleleFreq : loci=10000, size=10000: 8
+TestStatAlleleFreq : loci=10000, size=100000: 1
+TestStatAlleleFreq : loci=10000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1
+TestStatAlleleFreq : 6350, 460, 583, 800, 49, 77, 8, 1, 1
 TestStatAlleleFreq : End of test TestStatAlleleFreq
 TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatAlleleFreq : Time: Tue May 24 12:11:00 2011
+TestStatAlleleFreq : Time: Tue May 24 14:14:58 2011
 TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4179, module binary, optimized, 4 threads)
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4180, module binary, optimized, 1 threads)
 TestStatAlleleFreq : Test: Stat AlleleFreq, results are number of generations in 30 seconds.
-TestStatAlleleFreq : loci=10, size=10000: 2192
-TestStatAlleleFreq : loci=10, size=100000: 217
-TestStatAlleleFreq : loci=100, size=10000: 2226
-TestStatAlleleFreq : loci=100, size=100000: 226
-TestStatAlleleFreq : loci=10000, size=10000: 1325
-TestStatAlleleFreq : loci=10000, size=100000: 103
-TestStatAlleleFreq : 2192, 217, 2226, 226, 1325, 103
+TestStatAlleleFreq : loci=10, size=10000: 4523
+TestStatAlleleFreq : loci=10, size=100000: 429
+TestStatAlleleFreq : loci=10, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 439
+TestStatAlleleFreq : loci=100, size=10000: 801
+TestStatAlleleFreq : loci=100, size=100000: 82
+TestStatAlleleFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 82
+TestStatAlleleFreq : loci=10000, size=10000: 7
+TestStatAlleleFreq : loci=10000, size=100000: 1
+TestStatAlleleFreq : loci=10000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1
+TestStatAlleleFreq : 4523, 429, 439, 801, 82, 82, 7, 1, 1
 TestStatAlleleFreq : End of test TestStatAlleleFreq
 TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatAlleleFreq : Time: Tue May 24 12:28:20 2011
+TestStatAlleleFreq : Time: Tue May 24 14:24:43 2011
 TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4179, module short, optimized, 1 threads)
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4180, module short, optimized, 4 threads)
 TestStatAlleleFreq : Test: Stat AlleleFreq, results are number of generations in 30 seconds.
-TestStatAlleleFreq : loci=10, size=10000: 1470
-TestStatAlleleFreq : loci=10, size=100000: 148
-TestStatAlleleFreq : loci=100, size=10000: 1390
-TestStatAlleleFreq : loci=100, size=100000: 107
-TestStatAlleleFreq : loci=10000, size=10000: 339
-TestStatAlleleFreq : loci=10000, size=100000: 16
-TestStatAlleleFreq : 1470, 148, 1390, 107, 339, 16
+TestStatAlleleFreq : loci=10, size=10000: 21868
+TestStatAlleleFreq : loci=10, size=100000: 2100
+TestStatAlleleFreq : loci=10, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 2098
+TestStatAlleleFreq : loci=100, size=10000: 4546
+TestStatAlleleFreq : loci=100, size=100000: 322
+TestStatAlleleFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 443
+TestStatAlleleFreq : loci=10000, size=10000: 24
+TestStatAlleleFreq : loci=10000, size=100000: 1
+TestStatAlleleFreq : loci=10000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 3
+TestStatAlleleFreq : 21868, 2100, 2098, 4546, 322, 443, 24, 1, 3
 TestStatAlleleFreq : End of test TestStatAlleleFreq
 TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatAlleleFreq : Time: Tue May 24 12:32:52 2011
+TestStatAlleleFreq : Time: Tue May 24 14:32:21 2011
 TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4179, module long, optimized, 1 threads)
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4180, module long, optimized, 4 threads)
 TestStatAlleleFreq : Test: Stat AlleleFreq, results are number of generations in 30 seconds.
-TestStatAlleleFreq : loci=10, size=10000: 994
-TestStatAlleleFreq : loci=10, size=100000: 99
-TestStatAlleleFreq : loci=100, size=10000: 783
-TestStatAlleleFreq : loci=100, size=100000: 48
-TestStatAlleleFreq : loci=10000, size=10000: 139
-TestStatAlleleFreq : loci=10000, size=100000: 0
-TestStatAlleleFreq : 994, 99, 783, 48, 139, 0
+TestStatAlleleFreq : loci=10, size=10000: 18616
+TestStatAlleleFreq : loci=10, size=100000: 1451
+TestStatAlleleFreq : loci=10, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1700
+TestStatAlleleFreq : loci=100, size=10000: 2647
+TestStatAlleleFreq : loci=100, size=100000: 158
+TestStatAlleleFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 264
+TestStatAlleleFreq : loci=10000, size=10000: 24
+TestStatAlleleFreq : loci=10000, size=100000: 1
+TestStatAlleleFreq : loci=10000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1
+TestStatAlleleFreq : 18616, 1451, 1700, 2647, 158, 264, 24, 1, 1
 TestStatAlleleFreq : End of test TestStatAlleleFreq
 TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatAlleleFreq : Time: Tue May 24 12:35:35 2011
+TestStatAlleleFreq : Time: Tue May 24 14:43:14 2011
 TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4179, module binary, optimized, 1 threads)
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4180, module binary, optimized, 4 threads)
 TestStatAlleleFreq : Test: Stat AlleleFreq, results are number of generations in 30 seconds.
-TestStatAlleleFreq : loci=10, size=10000: 787
-TestStatAlleleFreq : loci=10, size=100000: 78
-TestStatAlleleFreq : loci=100, size=10000: 787
-TestStatAlleleFreq : loci=100, size=100000: 79
-TestStatAlleleFreq : loci=10000, size=10000: 552
-TestStatAlleleFreq : loci=10000, size=100000: 30
-TestStatAlleleFreq : 787, 78, 787, 79, 552, 30
+TestStatAlleleFreq : loci=10, size=10000: 14959
+TestStatAlleleFreq : loci=10, size=100000: 1330
+TestStatAlleleFreq : loci=10, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1435
+TestStatAlleleFreq : loci=100, size=10000: 2823
+TestStatAlleleFreq : loci=100, size=100000: 285
+TestStatAlleleFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 277
+TestStatAlleleFreq : loci=10000, size=10000: 24
+TestStatAlleleFreq : loci=10000, size=100000: 2
+TestStatAlleleFreq : loci=10000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 3
+TestStatAlleleFreq : 14959, 1330, 1435, 2823, 285, 277, 24, 2, 3
 TestStatAlleleFreq : End of test TestStatAlleleFreq
