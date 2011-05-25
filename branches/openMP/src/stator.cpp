@@ -515,12 +515,19 @@ bool statNumOfMales::apply(Population & pop) const
 		size_t totalCnt = 0;
 		pop.activateVirtualSubPop(*sp);
 
-		IndIterator it = pop.indIterator(sp->subPop());
-		for (; it.valid(); ++it)
-			if (it->sex() == MALE)
-				maleCnt++;
-			else
-				femaleCnt++;
+#pragma omp parallel reduction (+ : maleCnt,femaleCnt)
+		{
+#ifdef _OPENMP
+			IndIterator it = pop.indIterator(sp->subPop(), omp_get_thread_num());
+#else
+			IndIterator it = pop.indIterator(sp->subPop());
+#endif
+			for (; it.valid(); ++it)
+				if (it->sex() == MALE)
+					maleCnt++;
+				else
+					femaleCnt++;
+		}
 
 		pop.deactivateVirtualSubPop(sp->subPop());
 
@@ -595,12 +602,19 @@ bool statNumOfAffected::apply(Population & pop) const
 		size_t totalCnt = 0;
 		pop.activateVirtualSubPop(*sp);
 
-		IndIterator it = pop.indIterator(sp->subPop());
-		for (; it.valid(); ++it)
-			if (it->affected())
-				affectedCnt++;
-			else
-				unaffectedCnt++;
+#pragma omp parallel reduction (+ : affectedCnt,unaffectedCnt)
+		{
+#ifdef _OPENMP
+			IndIterator it = pop.indIterator(sp->subPop(), omp_get_thread_num());
+#else
+			IndIterator it = pop.indIterator(sp->subPop());
+#endif
+			for (; it.valid(); ++it)
+				if (it->affected())
+					affectedCnt++;
+				else
+					unaffectedCnt++;
+		}
 
 		pop.deactivateVirtualSubPop(sp->subPop());
 
@@ -651,6 +665,7 @@ statAlleleFreq::statAlleleFreq(const lociList & loci, const subPopList & subPops
 	m_vars.obtainFrom(vars, allowedVars, defaultVars);
 }
 
+
 string statAlleleFreq::describe(bool /* format */) const
 {
 	ostringstream desc;
@@ -687,11 +702,12 @@ bool statAlleleFreq::apply(Population & pop) const
 
 		pop.activateVirtualSubPop(*it);
 
-#ifdef _OPENMP
-		
-#		pragma omp parallel for
-#endif
+#pragma omp parallel for
+#if defined (_OPENMP) && defined (_MSC_VER)
+		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
+#else
 		for (size_t idx = 0; idx < loci.size(); ++idx) {
+#endif
 			size_t loc = loci[idx];
 
 #ifdef LONGALLELE
@@ -730,9 +746,7 @@ bool statAlleleFreq::apply(Population & pop) const
 			// output variable.
 #ifdef LONGALLELE
 			if (m_vars.contains(AlleleNum_sp_String)) {
-#  ifdef _OPENMP
-#				pragma omp critical
-#  endif
+#  pragma omp critical
 				pop.getVars().setVar(subPopVar_String(*it, AlleleNum_String) + m_suffix + "{" + toStr(loc) + "}", alleles);
 			}
 			if (m_vars.contains(AlleleFreq_sp_String)) {
@@ -740,9 +754,7 @@ bool statAlleleFreq::apply(Population & pop) const
 				intDict::iterator cntEnd = alleles.end();
 				for ( ; cnt != cntEnd; ++cnt)
 					cnt->second /= static_cast<double>(allAlleles);
-#  ifdef _OPENMP
-#				pragma omp critical
-#  endif
+#  pragma omp critical
 				pop.getVars().setVar(subPopVar_String(*it, AlleleFreq_String) + m_suffix + "{" + toStr(loc) + "}", alleles);
 			}
 #else
@@ -751,9 +763,7 @@ bool statAlleleFreq::apply(Population & pop) const
 				for (size_t i = 0; i < alleles.size(); ++i)
 					if (alleles[i] != 0)
 						d[i] = static_cast<double>(alleles[i]);
-#  ifdef _OPENMP
-#				pragma omp critical
-#  endif
+#  pragma omp critical
 				pop.getVars().setVar(subPopVar_String(*it, AlleleNum_String) + m_suffix + "{" + toStr(loc) + "}", d);
 			}
 			if (m_vars.contains(AlleleFreq_sp_String)) {
@@ -761,9 +771,7 @@ bool statAlleleFreq::apply(Population & pop) const
 				for (size_t i = 0; i < alleles.size(); ++i)
 					if (alleles[i] != 0)
 						d[i] = alleles[i] / static_cast<double>(allAlleles);
-#  ifdef _OPENMP
-#				pragma omp critical
-#  endif
+#  pragma omp critical
 				pop.getVars().setVar(subPopVar_String(*it, AlleleFreq_String) + m_suffix + "{" + toStr(loc) + "}", d);
 			}
 #endif
@@ -1144,10 +1152,12 @@ bool statHaploFreq::apply(Population & pop) const
 
 		pop.activateVirtualSubPop(*it);
 
-#ifdef _OPENMP
-#	pragma omp parallel for
-#endif
+#pragma omp parallel for
+#if defined (_OPENMP) && defined (_MSC_VER)
+		for (ssize_t idx = 0; idx < static_cast<ssize_t>(m_loci.size()); ++idx) {
+#else
 		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+#endif
 			const vectori & loci = m_loci[idx];
 			size_t nLoci = loci.size();
 			if (nLoci == 0)
@@ -1191,9 +1201,7 @@ bool statHaploFreq::apply(Population & pop) const
 			allHaplotypeCnt[idx] += allHaplotypes;
 			// output variable.
 			if (m_vars.contains(HaplotypeNum_sp_String)) {
-#ifdef _OPENMP
-#				pragma omp critical
-#endif
+#pragma omp critical
 				pop.getVars().setVar(subPopVar_String(*it, HaplotypeNum_String) + m_suffix + "{"
 					+ key + "}", haplotypes);
 			}
@@ -1205,9 +1213,7 @@ bool statHaploFreq::apply(Population & pop) const
 					for (; dct != dctEnd; ++dct)
 						dct->second /= allHaplotypes;
 				}
-#ifdef _OPENMP
-#				pragma omp critical
-#endif
+#pragma omp critical
 				pop.getVars().setVar(subPopVar_String(*it, HaplotypeFreq_String) + m_suffix + "{"
 					+ key + "}", haplotypes);
 			}
@@ -1310,7 +1316,12 @@ bool statHaploHomoFreq::apply(Population & pop) const
 		tupleDict heteroCnt;
 		tupleDict homoCnt;
 
+#pragma omp parallel for
+#if defined (_OPENMP) && defined (_MSC_VER)
+		for (ssize_t idx = 0; idx < static_cast<ssize_t>(m_loci.size()); ++idx) {
+#else
 		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+#endif
 			const vectori & loci = m_loci[idx];
 			size_t nLoci = loci.size();
 			if (nLoci == 0)
@@ -1344,11 +1355,14 @@ bool statHaploHomoFreq::apply(Population & pop) const
 				else
 					++homo;
 			}
-			heteroCnt[loci] = static_cast<double>(hetero);
-			homoCnt[loci] = static_cast<double>(homo);
+#pragma omp critical
+			{
+				heteroCnt[loci] = static_cast<double>(hetero);
+				homoCnt[loci] = static_cast<double>(homo);
 
-			allHeteroCnt[loci] += hetero;
-			allHomoCnt[loci] += homo;
+				allHeteroCnt[loci] += hetero;
+				allHomoCnt[loci] += homo;
+			}
 		}
 		pop.deactivateVirtualSubPop(it->subPop());
 		// output subpopulation variable?
