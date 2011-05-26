@@ -5612,3 +5612,81 @@ TestGenoFreq : loci=1000, size=100000: 21.1599271297
 TestGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 19.6372129917
 TestGenoFreq : 1.89334607124, 18.6318368912, 18.7467119694, 1.92588806152, 21.1599271297, 19.6372129917
 TestGenoFreq : End of test TestGenoFreq
+TestHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestHeteroFreq : Time: Thu May 26 13:04:51 2011
+TestHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module short, optimized, 1 threads)
+TestHeteroFreq : Test: Stat HeteroFreq, results are time (not processor time) to apply operator for 20 times.
+TestHeteroFreq : loci=100, size=10000: 0.441030979156
+TestHeteroFreq : loci=100, size=100000: 5.07090187073
+TestHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 4.35444688797
+TestHeteroFreq : loci=1000, size=10000: 5.11432695389
+TestHeteroFreq : loci=1000, size=100000: 117.634579182
+TestHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 51.200012207
+TestHeteroFreq : 0.441030979156, 5.07090187073, 4.35444688797, 5.11432695389, 117.634579182, 51.200012207
+TestHeteroFreq : End of test TestHeteroFreq
+TestHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestHeteroFreq : Time: Thu May 26 13:08:14 2011
+TestHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module long, optimized, 1 threads)
+TestHeteroFreq : Test: Stat HeteroFreq, results are time (not processor time) to apply operator for 20 times.
+TestHeteroFreq : loci=100, size=10000: 0.556185007095
+TestHeteroFreq : loci=100, size=100000: 9.46308708191
+TestHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 5.34688615799
+TestHeteroFreq : loci=1000, size=10000: 6.48223590851
+TestHeteroFreq : loci=1000, size=100000: 162.691661835
+TestHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 63.0534501076
+TestHeteroFreq : 0.556185007095, 9.46308708191, 5.34688615799, 6.48223590851, 162.691661835, 63.0534501076
+TestHeteroFreq : End of test TestHeteroFreq
+TestHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestHeteroFreq : Time: Thu May 26 13:12:41 2011
+TestHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module binary, optimized, 1 threads)
+TestHeteroFreq : Test: Stat HeteroFreq, results are time (not processor time) to apply operator for 20 times.
+TestHeteroFreq : loci=100, size=10000: 0.831079959869
+TestHeteroFreq : loci=100, size=100000: 8.2782459259
+TestHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 8.30177307129
+TestHeteroFreq : loci=1000, size=10000: 8.63011312485
+TestHeteroFreq : loci=1000, size=100000: 93.6239349842
+TestHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 84.6393620968
+TestHeteroFreq : 0.831079959869, 8.2782459259, 8.30177307129, 8.63011312485, 93.6239349842, 84.6393620968
+TestHeteroFreq : End of test TestHeteroFreq
+TestHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestHeteroFreq : Time: Thu May 26 13:17:16 2011
+TestHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module short, optimized, 4 threads)
+TestHeteroFreq : Test: Stat HeteroFreq, results are time (not processor time) to apply operator for 20 times.
+TestHeteroFreq : loci=100, size=10000: 0.127473115921
+TestHeteroFreq : loci=100, size=100000: 1.61057591438
+TestHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.26040196419
+TestHeteroFreq : loci=1000, size=10000: 1.40715408325
+TestHeteroFreq : loci=1000, size=100000: 33.8272380829
+TestHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 13.8213179111
+TestHeteroFreq : 0.127473115921, 1.61057591438, 1.26040196419, 1.40715408325, 33.8272380829, 13.8213179111
+TestHeteroFreq : End of test TestHeteroFreq
+TestHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestHeteroFreq : Time: Thu May 26 13:18:28 2011
+TestHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module long, optimized, 4 threads)
+TestHeteroFreq : Test: Stat HeteroFreq, results are time (not processor time) to apply operator for 20 times.
+TestHeteroFreq : loci=100, size=10000: 0.136440992355
+TestHeteroFreq : loci=100, size=100000: 2.69143199921
+TestHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.42887401581
+TestHeteroFreq : loci=1000, size=10000: 1.70447492599
+TestHeteroFreq : loci=1000, size=100000: 45.7699849606
+TestHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 17.6911768913
+TestHeteroFreq : 0.136440992355, 2.69143199921, 1.42887401581, 1.70447492599, 45.7699849606, 17.6911768913
+TestHeteroFreq : End of test TestHeteroFreq
+TestHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestHeteroFreq : Time: Thu May 26 13:19:57 2011
+TestHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module binary, optimized, 4 threads)
+TestHeteroFreq : Test: Stat HeteroFreq, results are time (not processor time) to apply operator for 20 times.
+TestHeteroFreq : loci=100, size=10000: 0.234434127808
+TestHeteroFreq : loci=100, size=100000: 2.50543117523
+TestHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 2.3329770565
+TestHeteroFreq : loci=1000, size=10000: 2.43857598305
+TestHeteroFreq : loci=1000, size=100000: 26.4068300724
+TestHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 23.9802000523
+TestHeteroFreq : 0.234434127808, 2.50543117523, 2.3329770565, 2.43857598305, 26.4068300724, 23.9802000523
+TestHeteroFreq : End of test TestHeteroFreq

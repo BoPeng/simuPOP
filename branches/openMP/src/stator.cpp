@@ -870,7 +870,8 @@ bool statHeteroFreq::apply(Population & pop) const
 		uintDict heteroCnt;
 		uintDict homoCnt;
 
-		for (size_t idx = 0; idx < loci.size(); ++idx) {
+#pragma omp parallel for
+		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
 			size_t loc = loci[idx];
 
 #ifndef OPTIMIZED
@@ -889,11 +890,14 @@ bool statHeteroFreq::apply(Population & pop) const
 				else
 					homo += 1;
 			}
-			heteroCnt[loc] = static_cast<double>(hetero);
-			homoCnt[loc] = static_cast<double>(homo);
-			//
-			allHeteroCnt[loc] += heteroCnt[loc];
-			allHomoCnt[loc] += homoCnt[loc];
+#pragma omp critical
+			{
+				heteroCnt[loc] = static_cast<double>(hetero);
+				homoCnt[loc] = static_cast<double>(homo);
+				//
+				allHeteroCnt[loc] += heteroCnt[loc];
+				allHomoCnt[loc] += homoCnt[loc];
+			}
 		}
 		pop.deactivateVirtualSubPop(it->subPop());
 		// output subpopulation variable?

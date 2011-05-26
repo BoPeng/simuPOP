@@ -491,6 +491,26 @@ class TestGenoFreq(PerformanceTest):
                 "pop.vars().clear()")
         return t.timeit(number=self.repeats)
 
+class TestHeteroFreq(PerformanceTest):
+    def __init__(self, logger, repeats=20):
+        PerformanceTest.__init__(self, 'Stat HeteroFreq, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000, [10000]*10], loci=[100, 1000])
+
+    def _run(self, size, loci):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import createPop, stat, ALL_AVAIL\n'
+                'pop = createPop(size=%s, loci=%s)' % (size, loci),
+            stmt = "stat(pop, heteroFreq=ALL_AVAIL, vars=['heteroFreq', 'heteroFreq_sp'])\n"
+                "pop.vars().clear()")
+        return t.timeit(number=self.repeats)
+
+
 class TestStatNumOfMales(PerformanceTest):
     def __init__(self, logger, repeats=5000):
         PerformanceTest.__init__(self, 'Stat NumOfMales, results are time (not processor time) to apply operator for %d times.' % int(repeats),
