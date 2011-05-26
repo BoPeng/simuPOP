@@ -703,11 +703,7 @@ bool statAlleleFreq::apply(Population & pop) const
 		pop.activateVirtualSubPop(*it);
 
 #pragma omp parallel for
-#if defined (_OPENMP) && defined (_MSC_VER)
 		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
-#else
-		for (size_t idx = 0; idx < loci.size(); ++idx) {
-#endif
 			size_t loc = loci[idx];
 
 #ifdef LONGALLELE
@@ -1005,7 +1001,8 @@ bool statGenoFreq::apply(Population & pop) const
 
 		pop.activateVirtualSubPop(*it);
 
-		for (size_t idx = 0; idx < loci.size(); ++idx) {
+#pragma omp parallel for
+		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
 			size_t loc = loci[idx];
 
 			tupleDict genotypes;
@@ -1046,9 +1043,11 @@ bool statGenoFreq::apply(Population & pop) const
 				genotypeCnt[idx][dct->first] += dct->second;
 			allGenotypeCnt[idx] += allGenotypes;
 			// output variable.
-			if (m_vars.contains(GenotypeNum_sp_String))
+			if (m_vars.contains(GenotypeNum_sp_String)) {
+#pragma omp critical
 				pop.getVars().setVar(subPopVar_String(*it, GenotypeNum_String)
 					+ m_suffix + "{" + toStr(loc) + "}", genotypes);
+			}
 			// note that genotyeps is changed in place.
 			if (m_vars.contains(GenotypeFreq_sp_String)) {
 				if (allGenotypes != 0) {
@@ -1057,6 +1056,7 @@ bool statGenoFreq::apply(Population & pop) const
 					for (; dct != dctEnd; ++dct)
 						dct->second /= allGenotypes;
 				}
+#pragma omp critical
 				pop.getVars().setVar(subPopVar_String(*it, GenotypeFreq_String)
 					+ m_suffix + "{" + toStr(loc) + "}", genotypes);
 			}
@@ -1153,11 +1153,7 @@ bool statHaploFreq::apply(Population & pop) const
 		pop.activateVirtualSubPop(*it);
 
 #pragma omp parallel for
-#if defined (_OPENMP) && defined (_MSC_VER)
 		for (ssize_t idx = 0; idx < static_cast<ssize_t>(m_loci.size()); ++idx) {
-#else
-		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
-#endif
 			const vectori & loci = m_loci[idx];
 			size_t nLoci = loci.size();
 			if (nLoci == 0)
@@ -1317,11 +1313,7 @@ bool statHaploHomoFreq::apply(Population & pop) const
 		tupleDict homoCnt;
 
 #pragma omp parallel for
-#if defined (_OPENMP) && defined (_MSC_VER)
 		for (ssize_t idx = 0; idx < static_cast<ssize_t>(m_loci.size()); ++idx) {
-#else
-		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
-#endif
 			const vectori & loci = m_loci[idx];
 			size_t nLoci = loci.size();
 			if (nLoci == 0)

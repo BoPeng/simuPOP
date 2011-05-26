@@ -416,7 +416,7 @@ def createPop(size, loci=100, aff=False, vsp=False):
     return pop
 
 class TestStatHaploFreq(PerformanceTest):
-    def __init__(self, logger, repeats=30):
+    def __init__(self, logger, repeats=200):
         PerformanceTest.__init__(self, 'Stat HaploFreq, results are time (not processor time) to apply operator for %d times.' % int(repeats),
             logger)
         self.repeats = repeats
@@ -435,7 +435,7 @@ class TestStatHaploFreq(PerformanceTest):
         return t.timeit(number=self.repeats)
 
 class TestStatHaploHomoFreq(PerformanceTest):
-    def __init__(self, logger, repeats=30):
+    def __init__(self, logger, repeats=200):
         PerformanceTest.__init__(self, 'Stat HaploHomoFreq, results are time (not processor time) to apply operator for %d times.' % int(repeats),
             logger)
         self.repeats = repeats
@@ -472,6 +472,25 @@ class TestStatAlleleFreq(PerformanceTest):
                 "pop.vars().clear()")
         return t.timeit(number=self.repeats)
 
+class TestGenoFreq(PerformanceTest):
+    def __init__(self, logger, repeats=500):
+        PerformanceTest.__init__(self, 'Stat GenoFreq, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000, [10000]*10], loci=[100, 1000])
+
+    def _run(self, size, loci):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import createPop, stat\n'
+                'pop = createPop(size=%s, loci=%s)' % (size, loci),
+            stmt = "stat(pop, genoFreq=[0,1,2,3], vars=['genoFreq', 'genoFreq_sp'])\n"
+                "pop.vars().clear()")
+        return t.timeit(number=self.repeats)
+
 class TestStatNumOfMales(PerformanceTest):
     def __init__(self, logger, repeats=5000):
         PerformanceTest.__init__(self, 'Stat NumOfMales, results are time (not processor time) to apply operator for %d times.' % int(repeats),
@@ -487,7 +506,7 @@ class TestStatNumOfMales(PerformanceTest):
         t = timeit.Timer(
             setup = 'from __main__ import createPop, stat, ALL_AVAIL\n'
                 'pop = createPop(size=%s,vsp=True)' % (size),
-            stmt = "stat(pop, numOfMales=True, subPops=[ALL_AVAIL, (ALL_AVAIL,0), (ALL_AVAIL, 1)], vars=['numOfMales', 'numOfMales_sp'])\n"
+            stmt = "stat(pop, numOfMales=True, subPops=[(ALL_AVAIL,ALL_AVAIL), (ALL_AVAIL,0), (ALL_AVAIL, 1)], vars=['numOfMales', 'numOfMales_sp'])\n"
                 "pop.vars().clear()")
         return t.timeit(number=self.repeats)
 
@@ -506,7 +525,7 @@ class TestStatNumOfAffected(PerformanceTest):
         t = timeit.Timer(
             setup = 'from __main__ import createPop, stat, ALL_AVAIL\n'
                 'pop = createPop(size=%s, aff=True, vsp=True)' % size,
-            stmt = "stat(pop, numOfAffected=True, subPops=[ALL_AVAIL, (ALL_AVAIL,0), (ALL_AVAIL, 1)], vars=['numOfAffected', 'numOfAffected_sp'])\n"
+            stmt = "stat(pop, numOfAffected=True, subPops=[(ALL_AVAIL,ALL_AVAIL), (ALL_AVAIL,0), (ALL_AVAIL, 1)], vars=['numOfAffected', 'numOfAffected_sp'])\n"
                 "pop.vars().clear()")
         return t.timeit(number=self.repeats)
 
