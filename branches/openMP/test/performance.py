@@ -762,9 +762,15 @@ def analyze(test):
                     if len(one) == 0:
                         print '     ??',
                     elif len(one) == 1:
-                        print '%7s' % (one[0][stat]),
+                        if '.' in one[0][stat]:
+                            print '%7.2f' % float(one[0][stat]),
+                        else:
+                            print '%7s' % (one[0][stat]),
                     else:
-                        print '%17s' % ('(%d - %d)' % (min([int(x[stat]) for x in one]), max([int(x[stat]) for x in one]))),
+                        if '.' in one[0][stat]:
+                            print '%17s' % ('(%7.2f - %7.2f)' % (min([float(x[stat]) for x in one]), max([float(x[stat]) for x in one]))),
+                        else:
+                            print '%17s' % ('(%d - %d)' % (min([int(x[stat]) for x in one]), max([int(x[stat]) for x in one]))),
             print
         print
       
@@ -772,7 +778,7 @@ if __name__ == '__main__':
     # 
     # Figure out tests to run
     #
-    if len(sys.argv) > 1:
+    if sum([not x.startswith('-') for x in sys.argv[1:]]) > 0:
         # selected test to run
         tests = []
         for test in sys.argv[1:]:
