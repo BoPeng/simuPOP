@@ -5270,162 +5270,6 @@ TestStatAlleleFreq : loci=1000, size=100000: 36.7387290001
 TestStatAlleleFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 31.7028801441
 TestStatAlleleFreq : 0.307837963104, 3.0087928772, 3.05822300911, 3.17401409149, 36.7387290001, 31.7028801441
 TestStatAlleleFreq : End of test TestStatAlleleFreq
-TestStatHaploFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatHaploFreq : Time: Wed May 25 14:35:08 2011
-TestStatHaploFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4182, module short, optimized, 1 threads)
-TestStatHaploFreq : Test: Stat HaploFreq, results are time (not processor time) to apply operator for 30 times.
-TestStatHaploFreq : loci=100, size=10000: 0.183702945709
-TestStatHaploFreq : loci=100, size=100000: 1.79868912697
-TestStatHaploFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.77979493141
-TestStatHaploFreq : loci=1000, size=10000: 0.194831132889
-TestStatHaploFreq : loci=1000, size=100000: 3.2169148922
-TestStatHaploFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 2.22337603569
-TestStatHaploFreq : 0.183702945709, 1.79868912697, 1.77979493141, 0.194831132889, 3.2169148922, 2.22337603569
-TestStatHaploFreq : End of test TestStatHaploFreq
-TestStatHaploFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatHaploFreq : Time: Wed May 25 14:35:35 2011
-TestStatHaploFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4182, module long, optimized, 1 threads)
-TestStatHaploFreq : Test: Stat HaploFreq, results are time (not processor time) to apply operator for 30 times.
-TestStatHaploFreq : loci=100, size=10000: 0.207195997238
-TestStatHaploFreq : loci=100, size=100000: 3.30583691597
-TestStatHaploFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 2.33878302574
-TestStatHaploFreq : loci=1000, size=10000: 0.216991901398
-TestStatHaploFreq : loci=1000, size=100000: 3.45946311951
-TestStatHaploFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 2.4831328392
-TestStatHaploFreq : 0.207195997238, 3.30583691597, 2.33878302574, 0.216991901398, 3.45946311951, 2.4831328392
-TestStatHaploFreq : End of test TestStatHaploFreq
-TestStatHaploFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatHaploFreq : Time: Wed May 25 14:36:05 2011
-TestStatHaploFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4182, module binary, optimized, 1 threads)
-TestStatHaploFreq : Test: Stat HaploFreq, results are time (not processor time) to apply operator for 30 times.
-TestStatHaploFreq : loci=100, size=10000: 0.262205123901
-TestStatHaploFreq : loci=100, size=100000: 2.55365896225
-TestStatHaploFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 2.58003616333
-TestStatHaploFreq : loci=1000, size=10000: 0.264834880829
-TestStatHaploFreq : loci=1000, size=100000: 2.68658018112
-TestStatHaploFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 2.61980891228
-TestStatHaploFreq : 0.262205123901, 2.55365896225, 2.58003616333, 0.264834880829, 2.68658018112, 2.61980891228
-TestStatHaploFreq : End of test TestStatHaploFreq
-TestStatHaploFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatHaploFreq : Time: Wed May 25 14:36:40 2011
-TestStatHaploFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4182, module short, optimized, 4 threads)
-TestStatHaploFreq : Test: Stat HaploFreq, results are time (not processor time) to apply operator for 30 times.
-TestStatHaploFreq : loci=100, size=10000: 0.0835800170898
-TestStatHaploFreq : loci=100, size=100000: 0.840414047241
-TestStatHaploFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 0.833526134491
-TestStatHaploFreq : loci=1000, size=10000: 0.0910410881042
-TestStatHaploFreq : loci=1000, size=100000: 1.41186094284
-TestStatHaploFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.14856600761
-TestStatHaploFreq : 0.0835800170898, 0.840414047241, 0.833526134491, 0.0910410881042, 1.41186094284, 1.14856600761
-TestStatHaploFreq : End of test TestStatHaploFreq
-TestStatHaploFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatHaploFreq : Time: Wed May 25 14:37:03 2011
-TestStatHaploFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4182, module long, optimized, 4 threads)
-TestStatHaploFreq : Test: Stat HaploFreq, results are time (not processor time) to apply operator for 30 times.
-TestStatHaploFreq : loci=100, size=10000: 0.0933248996735
-TestStatHaploFreq : loci=100, size=100000: 1.40227603912
-TestStatHaploFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.14507699013
-TestStatHaploFreq : loci=1000, size=10000: 0.0928990840912
-TestStatHaploFreq : loci=1000, size=100000: 1.45698285103
-TestStatHaploFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.18350815773
-TestStatHaploFreq : 0.0933248996735, 1.40227603912, 1.14507699013, 0.0928990840912, 1.45698285103, 1.18350815773
-TestStatHaploFreq : End of test TestStatHaploFreq
-TestStatHaploFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatHaploFreq : Time: Wed May 25 14:37:26 2011
-TestStatHaploFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4182, module binary, optimized, 4 threads)
-TestStatHaploFreq : Test: Stat HaploFreq, results are time (not processor time) to apply operator for 30 times.
-TestStatHaploFreq : loci=100, size=10000: 0.118237018585
-TestStatHaploFreq : loci=100, size=100000: 1.1461250782
-TestStatHaploFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.15778398514
-TestStatHaploFreq : loci=1000, size=10000: 0.120394945145
-TestStatHaploFreq : loci=1000, size=100000: 1.19877386093
-TestStatHaploFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.19096708298
-TestStatHaploFreq : 0.118237018585, 1.1461250782, 1.15778398514, 0.120394945145, 1.19877386093, 1.19096708298
-TestStatHaploFreq : End of test TestStatHaploFreq
-TestStatHaploHomoFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatHaploHomoFreq : Time: Wed May 25 14:37:56 2011
-TestStatHaploHomoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4182, module short, optimized, 1 threads)
-TestStatHaploHomoFreq : Test: Stat HaploHomoFreq, results are time (not processor time) to apply operator for 30 times.
-TestStatHaploHomoFreq : loci=100, size=10000: 0.0437650680542
-TestStatHaploHomoFreq : loci=100, size=100000: 0.483830213547
-TestStatHaploHomoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 0.43778014183
-TestStatHaploHomoFreq : loci=1000, size=10000: 0.0508649349213
-TestStatHaploHomoFreq : loci=1000, size=100000: 0.934783935547
-TestStatHaploHomoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 0.581805944443
-TestStatHaploHomoFreq : 0.0437650680542, 0.483830213547, 0.43778014183, 0.0508649349213, 0.934783935547, 0.581805944443
-TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
-TestStatHaploHomoFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatHaploHomoFreq : Time: Wed May 25 14:38:16 2011
-TestStatHaploHomoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4182, module long, optimized, 1 threads)
-TestStatHaploHomoFreq : Test: Stat HaploHomoFreq, results are time (not processor time) to apply operator for 30 times.
-TestStatHaploHomoFreq : loci=100, size=10000: 0.0488889217377
-TestStatHaploHomoFreq : loci=100, size=100000: 0.8784968853
-TestStatHaploHomoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 0.55390381813
-TestStatHaploHomoFreq : loci=1000, size=10000: 0.0494978427887
-TestStatHaploHomoFreq : loci=1000, size=100000: 1.07317495346
-TestStatHaploHomoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 0.702260971069
-TestStatHaploHomoFreq : 0.0488889217377, 0.8784968853, 0.55390381813, 0.0494978427887, 1.07317495346, 0.702260971069
-TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
-TestStatHaploHomoFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatHaploHomoFreq : Time: Wed May 25 14:38:38 2011
-TestStatHaploHomoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4182, module binary, optimized, 1 threads)
-TestStatHaploHomoFreq : Test: Stat HaploHomoFreq, results are time (not processor time) to apply operator for 30 times.
-TestStatHaploHomoFreq : loci=100, size=10000: 0.0942718982697
-TestStatHaploHomoFreq : loci=100, size=100000: 0.920570135117
-TestStatHaploHomoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 0.923887014389
-TestStatHaploHomoFreq : loci=1000, size=10000: 0.0957219600677
-TestStatHaploHomoFreq : loci=1000, size=100000: 1.05059599876
-TestStatHaploHomoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 0.964914083481
-TestStatHaploHomoFreq : 0.0942718982697, 0.920570135117, 0.923887014389, 0.0957219600677, 1.05059599876, 0.964914083481
-TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
-TestStatHaploHomoFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatHaploHomoFreq : Time: Wed May 25 14:39:06 2011
-TestStatHaploHomoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4182, module short, optimized, 4 threads)
-TestStatHaploHomoFreq : Test: Stat HaploHomoFreq, results are time (not processor time) to apply operator for 30 times.
-TestStatHaploHomoFreq : loci=100, size=10000: 0.0209920406342
-TestStatHaploHomoFreq : loci=100, size=100000: 0.220776081085
-TestStatHaploHomoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 0.21239900589
-TestStatHaploHomoFreq : loci=1000, size=10000: 0.0241401195526
-TestStatHaploHomoFreq : loci=1000, size=100000: 0.374583959579
-TestStatHaploHomoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 0.292165994644
-TestStatHaploHomoFreq : 0.0209920406342, 0.220776081085, 0.21239900589, 0.0241401195526, 0.374583959579, 0.292165994644
-TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
-TestStatHaploHomoFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatHaploHomoFreq : Time: Wed May 25 14:39:26 2011
-TestStatHaploHomoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4182, module long, optimized, 4 threads)
-TestStatHaploHomoFreq : Test: Stat HaploHomoFreq, results are time (not processor time) to apply operator for 30 times.
-TestStatHaploHomoFreq : loci=100, size=10000: 0.022588968277
-TestStatHaploHomoFreq : loci=100, size=100000: 0.356398105621
-TestStatHaploHomoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 0.276927947998
-TestStatHaploHomoFreq : loci=1000, size=10000: 0.0229218006134
-TestStatHaploHomoFreq : loci=1000, size=100000: 0.422868013382
-TestStatHaploHomoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 0.312757015228
-TestStatHaploHomoFreq : 0.022588968277, 0.356398105621, 0.276927947998, 0.0229218006134, 0.422868013382, 0.312757015228
-TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
-TestStatHaploHomoFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestStatHaploHomoFreq : Time: Wed May 25 14:39:45 2011
-TestStatHaploHomoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4182, module binary, optimized, 4 threads)
-TestStatHaploHomoFreq : Test: Stat HaploHomoFreq, results are time (not processor time) to apply operator for 30 times.
-TestStatHaploHomoFreq : loci=100, size=10000: 0.0433759689331
-TestStatHaploHomoFreq : loci=100, size=100000: 0.41041302681
-TestStatHaploHomoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 0.4142370224
-TestStatHaploHomoFreq : loci=1000, size=10000: 0.0436689853668
-TestStatHaploHomoFreq : loci=1000, size=100000: 0.45220708847
-TestStatHaploHomoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 0.434982061386
-TestStatHaploHomoFreq : 0.0433759689331, 0.41041302681, 0.4142370224, 0.0436689853668, 0.45220708847, 0.434982061386
-TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
 TestStatNumOfMales : Host: bp9 (Linux, x86_64, x86_64)
 TestStatNumOfMales : Time: Thu May 26 09:54:34 2011
 TestStatNumOfMales : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
@@ -5690,3 +5534,81 @@ TestStatHaploHomoFreq : loci=1000, size=100000: 3.02533006668
 TestStatHaploHomoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 2.91801309586
 TestStatHaploHomoFreq : 0.287275075912, 2.73110985756, 2.7528860569, 0.292492866516, 3.02533006668, 2.91801309586
 TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
+TestGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestGenoFreq : Time: Thu May 26 11:08:52 2011
+TestGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestGenoFreq : simuPOP: 1.0.6svn (rev 4182, module short, optimized, 4 threads)
+TestGenoFreq : Test: Stat GenoFreq, results are time (not processor time) to apply operator for 500 times.
+TestGenoFreq : loci=100, size=10000: 0.460355997086
+TestGenoFreq : loci=100, size=100000: 4.32857394218
+TestGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 4.52319002151
+TestGenoFreq : loci=1000, size=10000: 0.482565879822
+TestGenoFreq : loci=1000, size=100000: 6.7190079689
+TestGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.86939692497
+TestGenoFreq : 0.460355997086, 4.32857394218, 4.52319002151, 0.482565879822, 6.7190079689, 6.86939692497
+TestGenoFreq : End of test TestGenoFreq
+TestGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestGenoFreq : Time: Thu May 26 11:09:33 2011
+TestGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestGenoFreq : simuPOP: 1.0.6svn (rev 4182, module long, optimized, 4 threads)
+TestGenoFreq : Test: Stat GenoFreq, results are time (not processor time) to apply operator for 500 times.
+TestGenoFreq : loci=100, size=10000: 0.500542163849
+TestGenoFreq : loci=100, size=100000: 6.76568007469
+TestGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.89576387405
+TestGenoFreq : loci=1000, size=10000: 0.500433206558
+TestGenoFreq : loci=1000, size=100000: 7.35019493103
+TestGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 7.48760890961
+TestGenoFreq : 0.500542163849, 6.76568007469, 6.89576387405, 0.500433206558, 7.35019493103, 7.48760890961
+TestGenoFreq : End of test TestGenoFreq
+TestGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestGenoFreq : Time: Thu May 26 11:10:22 2011
+TestGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestGenoFreq : simuPOP: 1.0.6svn (rev 4182, module binary, optimized, 4 threads)
+TestGenoFreq : Test: Stat GenoFreq, results are time (not processor time) to apply operator for 500 times.
+TestGenoFreq : loci=100, size=10000: 0.590523004532
+TestGenoFreq : loci=100, size=100000: 5.49827694893
+TestGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 5.5768828392
+TestGenoFreq : loci=1000, size=10000: 0.637578964233
+TestGenoFreq : loci=1000, size=100000: 6.14054203033
+TestGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.18443202972
+TestGenoFreq : 0.590523004532, 5.49827694893, 5.5768828392, 0.637578964233, 6.14054203033, 6.18443202972
+TestGenoFreq : End of test TestGenoFreq
+TestGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestGenoFreq : Time: Thu May 26 11:12:40 2011
+TestGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestGenoFreq : simuPOP: 1.0.6svn (rev 4182, module short, optimized, 1 threads)
+TestGenoFreq : Test: Stat GenoFreq, results are time (not processor time) to apply operator for 500 times.
+TestGenoFreq : loci=100, size=10000: 1.43687391281
+TestGenoFreq : loci=100, size=100000: 14.7355120182
+TestGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 14.2837300301
+TestGenoFreq : loci=1000, size=10000: 1.52868509293
+TestGenoFreq : loci=1000, size=100000: 24.1452269554
+TestGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 17.648113966
+TestGenoFreq : 1.43687391281, 14.7355120182, 14.2837300301, 1.52868509293, 24.1452269554, 17.648113966
+TestGenoFreq : End of test TestGenoFreq
+TestGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestGenoFreq : Time: Thu May 26 11:14:14 2011
+TestGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestGenoFreq : simuPOP: 1.0.6svn (rev 4182, module long, optimized, 1 threads)
+TestGenoFreq : Test: Stat GenoFreq, results are time (not processor time) to apply operator for 500 times.
+TestGenoFreq : loci=100, size=10000: 1.64711523056
+TestGenoFreq : loci=100, size=100000: 25.8571681976
+TestGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 18.9256169796
+TestGenoFreq : loci=1000, size=10000: 1.66001415253
+TestGenoFreq : loci=1000, size=100000: 28.0234498978
+TestGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 19.0963768959
+TestGenoFreq : 1.64711523056, 25.8571681976, 18.9256169796, 1.66001415253, 28.0234498978, 19.0963768959
+TestGenoFreq : End of test TestGenoFreq
+TestGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestGenoFreq : Time: Thu May 26 11:16:09 2011
+TestGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestGenoFreq : simuPOP: 1.0.6svn (rev 4182, module binary, optimized, 1 threads)
+TestGenoFreq : Test: Stat GenoFreq, results are time (not processor time) to apply operator for 500 times.
+TestGenoFreq : loci=100, size=10000: 1.89334607124
+TestGenoFreq : loci=100, size=100000: 18.6318368912
+TestGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 18.7467119694
+TestGenoFreq : loci=1000, size=10000: 1.92588806152
+TestGenoFreq : loci=1000, size=100000: 21.1599271297
+TestGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 19.6372129917
+TestGenoFreq : 1.89334607124, 18.6318368912, 18.7467119694, 1.92588806152, 21.1599271297, 19.6372129917
+TestGenoFreq : End of test TestGenoFreq
