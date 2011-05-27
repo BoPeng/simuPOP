@@ -515,7 +515,7 @@ bool statNumOfMales::apply(Population & pop) const
 		size_t totalCnt = 0;
 		pop.activateVirtualSubPop(*sp);
 
-#pragma omp parallel reduction (+ : maleCnt,femaleCnt)
+#pragma omp parallel reduction (+ : maleCnt,femaleCnt) if(numThreads() > 1)
 		{
 #ifdef _OPENMP
 			IndIterator it = pop.indIterator(sp->subPop(), omp_get_thread_num());
@@ -602,7 +602,7 @@ bool statNumOfAffected::apply(Population & pop) const
 		size_t totalCnt = 0;
 		pop.activateVirtualSubPop(*sp);
 
-#pragma omp parallel reduction (+ : affectedCnt,unaffectedCnt)
+#pragma omp parallel reduction (+ : affectedCnt,unaffectedCnt) if(numThreads() > 1)
 		{
 #ifdef _OPENMP
 			IndIterator it = pop.indIterator(sp->subPop(), omp_get_thread_num());
@@ -702,7 +702,7 @@ bool statAlleleFreq::apply(Population & pop) const
 
 		pop.activateVirtualSubPop(*it);
 
-#pragma omp parallel for
+#pragma omp parallel for if(numThreads() > 1)
 		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
 			size_t loc = loci[idx];
 
@@ -870,7 +870,7 @@ bool statHeteroFreq::apply(Population & pop) const
 		uintDict heteroCnt;
 		uintDict homoCnt;
 
-#pragma omp parallel for
+#pragma omp parallel for if(numThreads() > 1)
 		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
 			size_t loc = loci[idx];
 
@@ -1005,7 +1005,7 @@ bool statGenoFreq::apply(Population & pop) const
 
 		pop.activateVirtualSubPop(*it);
 
-#pragma omp parallel for
+#pragma omp parallel for if(numThreads() > 1)
 		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
 			size_t loc = loci[idx];
 
@@ -1156,7 +1156,7 @@ bool statHaploFreq::apply(Population & pop) const
 
 		pop.activateVirtualSubPop(*it);
 
-#pragma omp parallel for
+#pragma omp parallel for if(numThreads() > 1)
 		for (ssize_t idx = 0; idx < static_cast<ssize_t>(m_loci.size()); ++idx) {
 			const vectori & loci = m_loci[idx];
 			size_t nLoci = loci.size();
@@ -1316,7 +1316,7 @@ bool statHaploHomoFreq::apply(Population & pop) const
 		tupleDict heteroCnt;
 		tupleDict homoCnt;
 
-#pragma omp parallel for
+#pragma omp parallel for if(numThreads() > 1)
 		for (ssize_t idx = 0; idx < static_cast<ssize_t>(m_loci.size()); ++idx) {
 			const vectori & loci = m_loci[idx];
 			size_t nLoci = loci.size();
@@ -2462,8 +2462,28 @@ double statNeutrality::calcPi(HAPLOLIST::const_iterator begin, HAPLOLIST::const_
 	double diffCnt = 0;
 	int numComparison = 0;
 
+#ifdef _OPENMP
+	size_t size = end - begin;
+	size_t nThreads = numThreads();
+#  pragma omp parallel reduction(+ : diffCnt, numComparison) if (nThreads > 1)
+	{
+		size_t id = omp_get_thread_num();
+		HAPLOLIST::const_iterator it = begin + id * (size / nThreads);
+		HAPLOLIST::const_iterator itEnd = id == nThreads - 1 ? end : it + (size / nThreads);
+		for (; it != itEnd; ++it) {
+			HAPLOLIST::const_iterator it1 = it;
+			for (++it1; it1 != end; ++it1) {
+				const vectora & seq1 = *it;
+				const vectora & seq2 = *it1;
+				size_t sz = seq1.size();
+				for (size_t i = 0; i < sz; ++i)
+					diffCnt += seq1[i] != seq2[i];
+				++numComparison;
+			}
+		}
+	}
+#else
 	HAPLOLIST::const_iterator it = begin;
-
 	for (; it != end; ++it) {
 		HAPLOLIST::const_iterator it1 = it;
 		for (++it1; it1 != end; ++it1) {
@@ -2475,6 +2495,7 @@ double statNeutrality::calcPi(HAPLOLIST::const_iterator begin, HAPLOLIST::const_
 			++numComparison;
 		}
 	}
+#endif
 	// return 0 if there is only one sequence
 	return numComparison == 0 ? 0 : diffCnt / numComparison;
 }
