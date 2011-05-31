@@ -382,7 +382,6 @@ class TestMitochondrialGenoTransmitter(PerformanceTest):
         )
         return gens
 
-
 class TestRecombinator(PerformanceTest):
     def __init__(self, logger, time=30):
         PerformanceTest.__init__(self, 'Recombinator, results are number of generations in %d seconds.' % int(time),
@@ -402,6 +401,34 @@ class TestRecombinator(PerformanceTest):
             initOps=InitSex(),
             preOps=TicToc(output='', stopAfter=self.time),
             matingScheme=RandomMating(ops=Recombinator(rates = 0.4, loci=[1,3,8])),
+        )
+        return gens
+
+class TestCombinedParentsChooser(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'CombinedParentsChooser, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci)
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=HomoMating(
+                chooser=CombinedParentsChooser(RandomParentChooser(MALE_ONLY),RandomParentChooser(FEMALE_ONLY)),
+                generator=OffspringGenerator(
+                    ops=MendelianGenoTransmitter(),
+                    numOffspring=2,
+                    sexMode=RANDOM_SEX),
+                ),
         )
         return gens
 
@@ -472,7 +499,7 @@ class TestStatAlleleFreq(PerformanceTest):
                 "pop.vars().clear()")
         return t.timeit(number=self.repeats)
 
-class TestGenoFreq(PerformanceTest):
+class TestStatGenoFreq(PerformanceTest):
     def __init__(self, logger, repeats=500):
         PerformanceTest.__init__(self, 'Stat GenoFreq, results are time (not processor time) to apply operator for %d times.' % int(repeats),
             logger)
@@ -491,7 +518,7 @@ class TestGenoFreq(PerformanceTest):
                 "pop.vars().clear()")
         return t.timeit(number=self.repeats)
 
-class TestHeteroFreq(PerformanceTest):
+class TestStatHeteroFreq(PerformanceTest):
     def __init__(self, logger, repeats=20):
         PerformanceTest.__init__(self, 'Stat HeteroFreq, results are time (not processor time) to apply operator for %d times.' % int(repeats),
             logger)

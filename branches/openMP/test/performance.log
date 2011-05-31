@@ -5534,162 +5534,162 @@ TestStatHaploHomoFreq : loci=1000, size=100000: 3.02533006668
 TestStatHaploHomoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 2.91801309586
 TestStatHaploHomoFreq : 0.287275075912, 2.73110985756, 2.7528860569, 0.292492866516, 3.02533006668, 2.91801309586
 TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
-TestGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestGenoFreq : Time: Thu May 26 11:08:52 2011
-TestGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestGenoFreq : simuPOP: 1.0.6svn (rev 4182, module short, optimized, 4 threads)
-TestGenoFreq : Test: Stat GenoFreq, results are time (not processor time) to apply operator for 500 times.
-TestGenoFreq : loci=100, size=10000: 0.460355997086
-TestGenoFreq : loci=100, size=100000: 4.32857394218
-TestGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 4.52319002151
-TestGenoFreq : loci=1000, size=10000: 0.482565879822
-TestGenoFreq : loci=1000, size=100000: 6.7190079689
-TestGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.86939692497
-TestGenoFreq : 0.460355997086, 4.32857394218, 4.52319002151, 0.482565879822, 6.7190079689, 6.86939692497
-TestGenoFreq : End of test TestGenoFreq
-TestGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestGenoFreq : Time: Thu May 26 11:09:33 2011
-TestGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestGenoFreq : simuPOP: 1.0.6svn (rev 4182, module long, optimized, 4 threads)
-TestGenoFreq : Test: Stat GenoFreq, results are time (not processor time) to apply operator for 500 times.
-TestGenoFreq : loci=100, size=10000: 0.500542163849
-TestGenoFreq : loci=100, size=100000: 6.76568007469
-TestGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.89576387405
-TestGenoFreq : loci=1000, size=10000: 0.500433206558
-TestGenoFreq : loci=1000, size=100000: 7.35019493103
-TestGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 7.48760890961
-TestGenoFreq : 0.500542163849, 6.76568007469, 6.89576387405, 0.500433206558, 7.35019493103, 7.48760890961
-TestGenoFreq : End of test TestGenoFreq
-TestGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestGenoFreq : Time: Thu May 26 11:10:22 2011
-TestGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestGenoFreq : simuPOP: 1.0.6svn (rev 4182, module binary, optimized, 4 threads)
-TestGenoFreq : Test: Stat GenoFreq, results are time (not processor time) to apply operator for 500 times.
-TestGenoFreq : loci=100, size=10000: 0.590523004532
-TestGenoFreq : loci=100, size=100000: 5.49827694893
-TestGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 5.5768828392
-TestGenoFreq : loci=1000, size=10000: 0.637578964233
-TestGenoFreq : loci=1000, size=100000: 6.14054203033
-TestGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.18443202972
-TestGenoFreq : 0.590523004532, 5.49827694893, 5.5768828392, 0.637578964233, 6.14054203033, 6.18443202972
-TestGenoFreq : End of test TestGenoFreq
-TestGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestGenoFreq : Time: Thu May 26 11:12:40 2011
-TestGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestGenoFreq : simuPOP: 1.0.6svn (rev 4182, module short, optimized, 1 threads)
-TestGenoFreq : Test: Stat GenoFreq, results are time (not processor time) to apply operator for 500 times.
-TestGenoFreq : loci=100, size=10000: 1.43687391281
-TestGenoFreq : loci=100, size=100000: 14.7355120182
-TestGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 14.2837300301
-TestGenoFreq : loci=1000, size=10000: 1.52868509293
-TestGenoFreq : loci=1000, size=100000: 24.1452269554
-TestGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 17.648113966
-TestGenoFreq : 1.43687391281, 14.7355120182, 14.2837300301, 1.52868509293, 24.1452269554, 17.648113966
-TestGenoFreq : End of test TestGenoFreq
-TestGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestGenoFreq : Time: Thu May 26 11:14:14 2011
-TestGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestGenoFreq : simuPOP: 1.0.6svn (rev 4182, module long, optimized, 1 threads)
-TestGenoFreq : Test: Stat GenoFreq, results are time (not processor time) to apply operator for 500 times.
-TestGenoFreq : loci=100, size=10000: 1.64711523056
-TestGenoFreq : loci=100, size=100000: 25.8571681976
-TestGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 18.9256169796
-TestGenoFreq : loci=1000, size=10000: 1.66001415253
-TestGenoFreq : loci=1000, size=100000: 28.0234498978
-TestGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 19.0963768959
-TestGenoFreq : 1.64711523056, 25.8571681976, 18.9256169796, 1.66001415253, 28.0234498978, 19.0963768959
-TestGenoFreq : End of test TestGenoFreq
-TestGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestGenoFreq : Time: Thu May 26 11:16:09 2011
-TestGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestGenoFreq : simuPOP: 1.0.6svn (rev 4182, module binary, optimized, 1 threads)
-TestGenoFreq : Test: Stat GenoFreq, results are time (not processor time) to apply operator for 500 times.
-TestGenoFreq : loci=100, size=10000: 1.89334607124
-TestGenoFreq : loci=100, size=100000: 18.6318368912
-TestGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 18.7467119694
-TestGenoFreq : loci=1000, size=10000: 1.92588806152
-TestGenoFreq : loci=1000, size=100000: 21.1599271297
-TestGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 19.6372129917
-TestGenoFreq : 1.89334607124, 18.6318368912, 18.7467119694, 1.92588806152, 21.1599271297, 19.6372129917
-TestGenoFreq : End of test TestGenoFreq
-TestHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestHeteroFreq : Time: Thu May 26 13:04:51 2011
-TestHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module short, optimized, 1 threads)
-TestHeteroFreq : Test: Stat HeteroFreq, results are time (not processor time) to apply operator for 20 times.
-TestHeteroFreq : loci=100, size=10000: 0.441030979156
-TestHeteroFreq : loci=100, size=100000: 5.07090187073
-TestHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 4.35444688797
-TestHeteroFreq : loci=1000, size=10000: 5.11432695389
-TestHeteroFreq : loci=1000, size=100000: 117.634579182
-TestHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 51.200012207
-TestHeteroFreq : 0.441030979156, 5.07090187073, 4.35444688797, 5.11432695389, 117.634579182, 51.200012207
-TestHeteroFreq : End of test TestHeteroFreq
-TestHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestHeteroFreq : Time: Thu May 26 13:08:14 2011
-TestHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module long, optimized, 1 threads)
-TestHeteroFreq : Test: Stat HeteroFreq, results are time (not processor time) to apply operator for 20 times.
-TestHeteroFreq : loci=100, size=10000: 0.556185007095
-TestHeteroFreq : loci=100, size=100000: 9.46308708191
-TestHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 5.34688615799
-TestHeteroFreq : loci=1000, size=10000: 6.48223590851
-TestHeteroFreq : loci=1000, size=100000: 162.691661835
-TestHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 63.0534501076
-TestHeteroFreq : 0.556185007095, 9.46308708191, 5.34688615799, 6.48223590851, 162.691661835, 63.0534501076
-TestHeteroFreq : End of test TestHeteroFreq
-TestHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestHeteroFreq : Time: Thu May 26 13:12:41 2011
-TestHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module binary, optimized, 1 threads)
-TestHeteroFreq : Test: Stat HeteroFreq, results are time (not processor time) to apply operator for 20 times.
-TestHeteroFreq : loci=100, size=10000: 0.831079959869
-TestHeteroFreq : loci=100, size=100000: 8.2782459259
-TestHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 8.30177307129
-TestHeteroFreq : loci=1000, size=10000: 8.63011312485
-TestHeteroFreq : loci=1000, size=100000: 93.6239349842
-TestHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 84.6393620968
-TestHeteroFreq : 0.831079959869, 8.2782459259, 8.30177307129, 8.63011312485, 93.6239349842, 84.6393620968
-TestHeteroFreq : End of test TestHeteroFreq
-TestHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestHeteroFreq : Time: Thu May 26 13:17:16 2011
-TestHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module short, optimized, 4 threads)
-TestHeteroFreq : Test: Stat HeteroFreq, results are time (not processor time) to apply operator for 20 times.
-TestHeteroFreq : loci=100, size=10000: 0.127473115921
-TestHeteroFreq : loci=100, size=100000: 1.61057591438
-TestHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.26040196419
-TestHeteroFreq : loci=1000, size=10000: 1.40715408325
-TestHeteroFreq : loci=1000, size=100000: 33.8272380829
-TestHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 13.8213179111
-TestHeteroFreq : 0.127473115921, 1.61057591438, 1.26040196419, 1.40715408325, 33.8272380829, 13.8213179111
-TestHeteroFreq : End of test TestHeteroFreq
-TestHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestHeteroFreq : Time: Thu May 26 13:18:28 2011
-TestHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module long, optimized, 4 threads)
-TestHeteroFreq : Test: Stat HeteroFreq, results are time (not processor time) to apply operator for 20 times.
-TestHeteroFreq : loci=100, size=10000: 0.136440992355
-TestHeteroFreq : loci=100, size=100000: 2.69143199921
-TestHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.42887401581
-TestHeteroFreq : loci=1000, size=10000: 1.70447492599
-TestHeteroFreq : loci=1000, size=100000: 45.7699849606
-TestHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 17.6911768913
-TestHeteroFreq : 0.136440992355, 2.69143199921, 1.42887401581, 1.70447492599, 45.7699849606, 17.6911768913
-TestHeteroFreq : End of test TestHeteroFreq
-TestHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
-TestHeteroFreq : Time: Thu May 26 13:19:57 2011
-TestHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
-TestHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module binary, optimized, 4 threads)
-TestHeteroFreq : Test: Stat HeteroFreq, results are time (not processor time) to apply operator for 20 times.
-TestHeteroFreq : loci=100, size=10000: 0.234434127808
-TestHeteroFreq : loci=100, size=100000: 2.50543117523
-TestHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 2.3329770565
-TestHeteroFreq : loci=1000, size=10000: 2.43857598305
-TestHeteroFreq : loci=1000, size=100000: 26.4068300724
-TestHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 23.9802000523
-TestHeteroFreq : 0.234434127808, 2.50543117523, 2.3329770565, 2.43857598305, 26.4068300724, 23.9802000523
-TestHeteroFreq : End of test TestHeteroFreq
+TestStatGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatGenoFreq : Time: Thu May 26 11:08:52 2011
+TestStatGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatGenoFreq : simuPOP: 1.0.6svn (rev 4182, module short, optimized, 4 threads)
+TestStatGenoFreq : Test: Stat StatGenoFreq, results are time (not processor time) to apply operator for 500 times.
+TestStatGenoFreq : loci=100, size=10000: 0.460355997086
+TestStatGenoFreq : loci=100, size=100000: 4.32857394218
+TestStatGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 4.52319002151
+TestStatGenoFreq : loci=1000, size=10000: 0.482565879822
+TestStatGenoFreq : loci=1000, size=100000: 6.7190079689
+TestStatGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.86939692497
+TestStatGenoFreq : 0.460355997086, 4.32857394218, 4.52319002151, 0.482565879822, 6.7190079689, 6.86939692497
+TestStatGenoFreq : End of test TestStatGenoFreq
+TestStatGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatGenoFreq : Time: Thu May 26 11:09:33 2011
+TestStatGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatGenoFreq : simuPOP: 1.0.6svn (rev 4182, module long, optimized, 4 threads)
+TestStatGenoFreq : Test: Stat StatGenoFreq, results are time (not processor time) to apply operator for 500 times.
+TestStatGenoFreq : loci=100, size=10000: 0.500542163849
+TestStatGenoFreq : loci=100, size=100000: 6.76568007469
+TestStatGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.89576387405
+TestStatGenoFreq : loci=1000, size=10000: 0.500433206558
+TestStatGenoFreq : loci=1000, size=100000: 7.35019493103
+TestStatGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 7.48760890961
+TestStatGenoFreq : 0.500542163849, 6.76568007469, 6.89576387405, 0.500433206558, 7.35019493103, 7.48760890961
+TestStatGenoFreq : End of test TestStatGenoFreq
+TestStatGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatGenoFreq : Time: Thu May 26 11:10:22 2011
+TestStatGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatGenoFreq : simuPOP: 1.0.6svn (rev 4182, module binary, optimized, 4 threads)
+TestStatGenoFreq : Test: Stat StatGenoFreq, results are time (not processor time) to apply operator for 500 times.
+TestStatGenoFreq : loci=100, size=10000: 0.590523004532
+TestStatGenoFreq : loci=100, size=100000: 5.49827694893
+TestStatGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 5.5768828392
+TestStatGenoFreq : loci=1000, size=10000: 0.637578964233
+TestStatGenoFreq : loci=1000, size=100000: 6.14054203033
+TestStatGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.18443202972
+TestStatGenoFreq : 0.590523004532, 5.49827694893, 5.5768828392, 0.637578964233, 6.14054203033, 6.18443202972
+TestStatGenoFreq : End of test TestStatGenoFreq
+TestStatGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatGenoFreq : Time: Thu May 26 11:12:40 2011
+TestStatGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatGenoFreq : simuPOP: 1.0.6svn (rev 4182, module short, optimized, 1 threads)
+TestStatGenoFreq : Test: Stat StatGenoFreq, results are time (not processor time) to apply operator for 500 times.
+TestStatGenoFreq : loci=100, size=10000: 1.43687391281
+TestStatGenoFreq : loci=100, size=100000: 14.7355120182
+TestStatGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 14.2837300301
+TestStatGenoFreq : loci=1000, size=10000: 1.52868509293
+TestStatGenoFreq : loci=1000, size=100000: 24.1452269554
+TestStatGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 17.648113966
+TestStatGenoFreq : 1.43687391281, 14.7355120182, 14.2837300301, 1.52868509293, 24.1452269554, 17.648113966
+TestStatGenoFreq : End of test TestStatGenoFreq
+TestStatGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatGenoFreq : Time: Thu May 26 11:14:14 2011
+TestStatGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatGenoFreq : simuPOP: 1.0.6svn (rev 4182, module long, optimized, 1 threads)
+TestStatGenoFreq : Test: Stat StatGenoFreq, results are time (not processor time) to apply operator for 500 times.
+TestStatGenoFreq : loci=100, size=10000: 1.64711523056
+TestStatGenoFreq : loci=100, size=100000: 25.8571681976
+TestStatGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 18.9256169796
+TestStatGenoFreq : loci=1000, size=10000: 1.66001415253
+TestStatGenoFreq : loci=1000, size=100000: 28.0234498978
+TestStatGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 19.0963768959
+TestStatGenoFreq : 1.64711523056, 25.8571681976, 18.9256169796, 1.66001415253, 28.0234498978, 19.0963768959
+TestStatGenoFreq : End of test TestStatGenoFreq
+TestStatGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatGenoFreq : Time: Thu May 26 11:16:09 2011
+TestStatGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatGenoFreq : simuPOP: 1.0.6svn (rev 4182, module binary, optimized, 1 threads)
+TestStatGenoFreq : Test: Stat StatGenoFreq, results are time (not processor time) to apply operator for 500 times.
+TestStatGenoFreq : loci=100, size=10000: 1.89334607124
+TestStatGenoFreq : loci=100, size=100000: 18.6318368912
+TestStatGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 18.7467119694
+TestStatGenoFreq : loci=1000, size=10000: 1.92588806152
+TestStatGenoFreq : loci=1000, size=100000: 21.1599271297
+TestStatGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 19.6372129917
+TestStatGenoFreq : 1.89334607124, 18.6318368912, 18.7467119694, 1.92588806152, 21.1599271297, 19.6372129917
+TestStatGenoFreq : End of test TestStatGenoFreq
+TestStatHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHeteroFreq : Time: Thu May 26 13:04:51 2011
+TestStatHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module short, optimized, 1 threads)
+TestStatHeteroFreq : Test: Stat StatHeteroFreq, results are time (not processor time) to apply operator for 20 times.
+TestStatHeteroFreq : loci=100, size=10000: 0.441030979156
+TestStatHeteroFreq : loci=100, size=100000: 5.07090187073
+TestStatHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 4.35444688797
+TestStatHeteroFreq : loci=1000, size=10000: 5.11432695389
+TestStatHeteroFreq : loci=1000, size=100000: 117.634579182
+TestStatHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 51.200012207
+TestStatHeteroFreq : 0.441030979156, 5.07090187073, 4.35444688797, 5.11432695389, 117.634579182, 51.200012207
+TestStatHeteroFreq : End of test TestStatHeteroFreq
+TestStatHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHeteroFreq : Time: Thu May 26 13:08:14 2011
+TestStatHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module long, optimized, 1 threads)
+TestStatHeteroFreq : Test: Stat StatHeteroFreq, results are time (not processor time) to apply operator for 20 times.
+TestStatHeteroFreq : loci=100, size=10000: 0.556185007095
+TestStatHeteroFreq : loci=100, size=100000: 9.46308708191
+TestStatHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 5.34688615799
+TestStatHeteroFreq : loci=1000, size=10000: 6.48223590851
+TestStatHeteroFreq : loci=1000, size=100000: 162.691661835
+TestStatHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 63.0534501076
+TestStatHeteroFreq : 0.556185007095, 9.46308708191, 5.34688615799, 6.48223590851, 162.691661835, 63.0534501076
+TestStatHeteroFreq : End of test TestStatHeteroFreq
+TestStatHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHeteroFreq : Time: Thu May 26 13:12:41 2011
+TestStatHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module binary, optimized, 1 threads)
+TestStatHeteroFreq : Test: Stat StatHeteroFreq, results are time (not processor time) to apply operator for 20 times.
+TestStatHeteroFreq : loci=100, size=10000: 0.831079959869
+TestStatHeteroFreq : loci=100, size=100000: 8.2782459259
+TestStatHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 8.30177307129
+TestStatHeteroFreq : loci=1000, size=10000: 8.63011312485
+TestStatHeteroFreq : loci=1000, size=100000: 93.6239349842
+TestStatHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 84.6393620968
+TestStatHeteroFreq : 0.831079959869, 8.2782459259, 8.30177307129, 8.63011312485, 93.6239349842, 84.6393620968
+TestStatHeteroFreq : End of test TestStatHeteroFreq
+TestStatHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHeteroFreq : Time: Thu May 26 13:17:16 2011
+TestStatHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module short, optimized, 4 threads)
+TestStatHeteroFreq : Test: Stat StatHeteroFreq, results are time (not processor time) to apply operator for 20 times.
+TestStatHeteroFreq : loci=100, size=10000: 0.127473115921
+TestStatHeteroFreq : loci=100, size=100000: 1.61057591438
+TestStatHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.26040196419
+TestStatHeteroFreq : loci=1000, size=10000: 1.40715408325
+TestStatHeteroFreq : loci=1000, size=100000: 33.8272380829
+TestStatHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 13.8213179111
+TestStatHeteroFreq : 0.127473115921, 1.61057591438, 1.26040196419, 1.40715408325, 33.8272380829, 13.8213179111
+TestStatHeteroFreq : End of test TestStatHeteroFreq
+TestStatHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHeteroFreq : Time: Thu May 26 13:18:28 2011
+TestStatHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module long, optimized, 4 threads)
+TestStatHeteroFreq : Test: Stat StatHeteroFreq, results are time (not processor time) to apply operator for 20 times.
+TestStatHeteroFreq : loci=100, size=10000: 0.136440992355
+TestStatHeteroFreq : loci=100, size=100000: 2.69143199921
+TestStatHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.42887401581
+TestStatHeteroFreq : loci=1000, size=10000: 1.70447492599
+TestStatHeteroFreq : loci=1000, size=100000: 45.7699849606
+TestStatHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 17.6911768913
+TestStatHeteroFreq : 0.136440992355, 2.69143199921, 1.42887401581, 1.70447492599, 45.7699849606, 17.6911768913
+TestStatHeteroFreq : End of test TestStatHeteroFreq
+TestStatHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHeteroFreq : Time: Thu May 26 13:19:57 2011
+TestStatHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module binary, optimized, 4 threads)
+TestStatHeteroFreq : Test: Stat StatHeteroFreq, results are time (not processor time) to apply operator for 20 times.
+TestStatHeteroFreq : loci=100, size=10000: 0.234434127808
+TestStatHeteroFreq : loci=100, size=100000: 2.50543117523
+TestStatHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 2.3329770565
+TestStatHeteroFreq : loci=1000, size=10000: 2.43857598305
+TestStatHeteroFreq : loci=1000, size=100000: 26.4068300724
+TestStatHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 23.9802000523
+TestStatHeteroFreq : 0.234434127808, 2.50543117523, 2.3329770565, 2.43857598305, 26.4068300724, 23.9802000523
+TestStatHeteroFreq : End of test TestStatHeteroFreq
 TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
 TestStatNeutrality : Time: Fri May 27 12:01:02 2011
 TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
@@ -5978,3 +5978,42 @@ TestStatNumOfMales : size=100000: 12.2875931758
 TestStatNumOfMales : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 14.2055386616
 TestStatNumOfMales : 12.2875931758, 14.2055386616
 TestStatNumOfMales : End of test TestStatNumOfMales
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Tue May 31 10:42:57 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4189, module short, optimized, 1 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 6.89465403557
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 6.83319497108
+TestStatNeutrality : loci=10, size=10000: 59.4530448914
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 58.7852652073
+TestStatNeutrality : loci=100, size=10000: 582.544010878
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 575.242040157
+TestStatNeutrality : 6.89465403557, 6.83319497108, 59.4530448914, 58.7852652073, 582.544010878, 575.242040157
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Tue May 31 11:04:27 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4189, module long, optimized, 1 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 6.49560403824
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 6.46290183067
+TestStatNeutrality : loci=10, size=10000: 58.2610440254
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 58.1104929447
+TestStatNeutrality : loci=100, size=10000: 580.978451014
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 588.665710926
+TestStatNeutrality : 6.49560403824, 6.46290183067, 58.2610440254, 58.1104929447, 580.978451014, 588.665710926
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Tue May 31 11:26:07 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4189, module binary, optimized, 1 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 17.2013239861
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 17.1441349983
+TestStatNeutrality : loci=10, size=10000: 66.1994318962
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 66.1883180141
+TestStatNeutrality : loci=100, size=10000: 564.6483531
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 568.191828012
+TestStatNeutrality : 17.2013239861, 17.1441349983, 66.1994318962, 66.1883180141, 564.6483531, 568.191828012
+TestStatNeutrality : End of test TestStatNeutrality
