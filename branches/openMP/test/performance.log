@@ -6017,3 +6017,81 @@ TestStatNeutrality : loci=100, size=10000: 564.6483531
 TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 568.191828012
 TestStatNeutrality : 17.2013239861, 17.1441349983, 66.1994318962, 66.1883180141, 564.6483531, 568.191828012
 TestStatNeutrality : End of test TestStatNeutrality
+TestCombinedParentsChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestCombinedParentsChooser : Time: Tue May 31 12:21:08 2011
+TestCombinedParentsChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestCombinedParentsChooser : simuPOP: 1.0.6svn (rev 4190, module short, optimized, 1 threads)
+TestCombinedParentsChooser : Test: CombinedParentsChooser, results are number of generations in 30 seconds.
+TestCombinedParentsChooser : loci=10, size=10000: 16601
+TestCombinedParentsChooser : loci=10, size=100000: 1443
+TestCombinedParentsChooser : loci=100, size=10000: 15558
+TestCombinedParentsChooser : loci=100, size=100000: 1021
+TestCombinedParentsChooser : loci=10000, size=10000: 715
+TestCombinedParentsChooser : loci=10000, size=100000: 55
+TestCombinedParentsChooser : 16601, 1443, 15558, 1021, 715, 55
+TestCombinedParentsChooser : End of test TestCombinedParentsChooser
+TestCombinedParentsChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestCombinedParentsChooser : Time: Tue May 31 12:24:18 2011
+TestCombinedParentsChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestCombinedParentsChooser : simuPOP: 1.0.6svn (rev 4190, module long, optimized, 1 threads)
+TestCombinedParentsChooser : Test: CombinedParentsChooser, results are number of generations in 30 seconds.
+TestCombinedParentsChooser : loci=10, size=10000: 17644
+TestCombinedParentsChooser : loci=10, size=100000: 1233
+TestCombinedParentsChooser : loci=100, size=10000: 9825
+TestCombinedParentsChooser : loci=100, size=100000: 804
+TestCombinedParentsChooser : loci=10000, size=10000: 183
+TestCombinedParentsChooser : loci=10000, size=100000: 0
+TestCombinedParentsChooser : 17644, 1233, 9825, 804, 183, 0
+TestCombinedParentsChooser : End of test TestCombinedParentsChooser
+TestCombinedParentsChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestCombinedParentsChooser : Time: Tue May 31 12:26:54 2011
+TestCombinedParentsChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestCombinedParentsChooser : simuPOP: 1.0.6svn (rev 4190, module binary, optimized, 1 threads)
+TestCombinedParentsChooser : Test: CombinedParentsChooser, results are number of generations in 30 seconds.
+TestCombinedParentsChooser : loci=10, size=10000: 12489
+TestCombinedParentsChooser : loci=10, size=100000: 1132
+TestCombinedParentsChooser : loci=100, size=10000: 13914
+TestCombinedParentsChooser : loci=100, size=100000: 1176
+TestCombinedParentsChooser : loci=10000, size=10000: 3589
+TestCombinedParentsChooser : loci=10000, size=100000: 338
+TestCombinedParentsChooser : 12489, 1132, 13914, 1176, 3589, 338
+TestCombinedParentsChooser : End of test TestCombinedParentsChooser
+TestCombinedParentsChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestCombinedParentsChooser : Time: Tue May 31 12:32:54 2011
+TestCombinedParentsChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestCombinedParentsChooser : simuPOP: 1.0.6svn (rev 4190, module short, optimized, 4 threads)
+TestCombinedParentsChooser : Test: CombinedParentsChooser, results are number of generations in 30 seconds.
+TestCombinedParentsChooser : loci=10, size=10000: 52566
+TestCombinedParentsChooser : loci=10, size=100000: 4674
+TestCombinedParentsChooser : loci=100, size=10000: 48309
+TestCombinedParentsChooser : loci=100, size=100000: 3269
+TestCombinedParentsChooser : loci=10000, size=10000: 788
+TestCombinedParentsChooser : loci=10000, size=100000: 70
+TestCombinedParentsChooser : 52566, 4674, 48309, 3269, 788, 70
+TestCombinedParentsChooser : End of test TestCombinedParentsChooser
+TestCombinedParentsChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestCombinedParentsChooser : Time: Tue May 31 12:36:05 2011
+TestCombinedParentsChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestCombinedParentsChooser : simuPOP: 1.0.6svn (rev 4190, module long, optimized, 4 threads)
+TestCombinedParentsChooser : Test: CombinedParentsChooser, results are number of generations in 30 seconds.
+TestCombinedParentsChooser : loci=10, size=10000: 52725
+TestCombinedParentsChooser : loci=10, size=100000: 4021
+TestCombinedParentsChooser : loci=100, size=10000: 19461
+TestCombinedParentsChooser : loci=100, size=100000: 1602
+TestCombinedParentsChooser : loci=10000, size=10000: 205
+TestCombinedParentsChooser : loci=10000, size=100000: 0
+TestCombinedParentsChooser : 52725, 4021, 19461, 1602, 205, 0
+TestCombinedParentsChooser : End of test TestCombinedParentsChooser
+TestCombinedParentsChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestCombinedParentsChooser : Time: Tue May 31 12:38:40 2011
+TestCombinedParentsChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestCombinedParentsChooser : simuPOP: 1.0.6svn (rev 4190, module binary, optimized, 4 threads)
+TestCombinedParentsChooser : Test: CombinedParentsChooser, results are number of generations in 30 seconds.
+TestCombinedParentsChooser : loci=10, size=10000: 36988
+TestCombinedParentsChooser : loci=10, size=100000: 3779
+TestCombinedParentsChooser : loci=100, size=10000: 43414
+TestCombinedParentsChooser : loci=100, size=100000: 3928
+TestCombinedParentsChooser : loci=10000, size=10000: 6050
+TestCombinedParentsChooser : loci=10000, size=100000: 554
+TestCombinedParentsChooser : 36988, 3779, 43414, 3928, 6050, 554
+TestCombinedParentsChooser : End of test TestCombinedParentsChooser
