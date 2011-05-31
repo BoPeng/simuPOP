@@ -5768,3 +5768,213 @@ TestStatNeutrality : loci=100, size=10000: 265.823650122
 TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 262.824134827
 TestStatNeutrality : 8.32187199593, 8.2234890461, 32.0274319649, 31.5282058716, 265.823650122, 262.824134827
 TestStatNeutrality : End of test TestStatNeutrality
+TestStatAlleleFreq : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatAlleleFreq : Time: Mon May 30 22:34:21 2011
+TestStatAlleleFreq : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4188, module short, optimized, 4 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are time (not processor time) to apply operator for 30 times.
+TestStatAlleleFreq : loci=100, size=10000: 0.156656771779
+TestStatAlleleFreq : loci=100, size=100000: 1.27655273963
+TestStatAlleleFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 0.772660287815
+TestStatAlleleFreq : loci=1000, size=10000: 2.37574158829
+TestStatAlleleFreq : loci=1000, size=100000: 61.8670897501
+TestStatAlleleFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 22.9204747493
+TestStatAlleleFreq : 0.156656771779, 1.27655273963, 0.772660287815, 2.37574158829, 61.8670897501, 22.9204747493
+TestStatAlleleFreq : End of test TestStatAlleleFreq
+TestStatHaploFreq : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatHaploFreq : Time: Mon May 30 22:36:02 2011
+TestStatHaploFreq : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4188, module short, optimized, 4 threads)
+TestStatHaploFreq : Test: Stat HaploFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploFreq : loci=100, size=10000: 0.516961671952
+TestStatHaploFreq : loci=100, size=100000: 5.07994453068
+TestStatHaploFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 5.05862403715
+TestStatHaploFreq : loci=1000, size=10000: 0.543532975813
+TestStatHaploFreq : loci=1000, size=100000: 8.80322124159
+TestStatHaploFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.99310467028
+TestStatHaploFreq : 0.516961671952, 5.07994453068, 5.05862403715, 0.543532975813, 8.80322124159, 6.99310467028
+TestStatHaploFreq : End of test TestStatHaploFreq
+TestStatHaploHomoFreq : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatHaploHomoFreq : Time: Mon May 30 22:36:39 2011
+TestStatHaploHomoFreq : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4188, module short, optimized, 4 threads)
+TestStatHaploHomoFreq : Test: Stat HaploHomoFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploHomoFreq : loci=100, size=10000: 0.089213063666
+TestStatHaploHomoFreq : loci=100, size=100000: 1.02716445375
+TestStatHaploHomoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 0.939058905066
+TestStatHaploHomoFreq : loci=1000, size=10000: 0.101590728388
+TestStatHaploHomoFreq : loci=1000, size=100000: 1.95475398316
+TestStatHaploHomoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.38428928569
+TestStatHaploHomoFreq : 0.089213063666, 1.02716445375, 0.939058905066, 0.101590728388, 1.95475398316, 1.38428928569
+TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
+TestStatNeutrality : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatNeutrality : Time: Mon May 30 22:36:56 2011
+TestStatNeutrality : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4188, module short, optimized, 4 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 1.63284142643
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 1.61529354731
+TestStatNeutrality : loci=10, size=10000: 9.36116640133
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 9.26592282954
+TestStatNeutrality : loci=100, size=10000: 82.7843907702
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 83.5741105317
+TestStatNeutrality : 1.63284142643, 1.61529354731, 9.36116640133, 9.26592282954, 82.7843907702, 83.5741105317
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNumOfAffected : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatNumOfAffected : Time: Mon May 30 22:40:04 2011
+TestStatNumOfAffected : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatNumOfAffected : simuPOP: 1.0.6svn (rev 4188, module short, optimized, 4 threads)
+TestStatNumOfAffected : Test: Stat NumOfAffected, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfAffected : size=100000: 12.5538024681
+TestStatNumOfAffected : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 14.0043555011
+TestStatNumOfAffected : 12.5538024681, 14.0043555011
+TestStatNumOfAffected : End of test TestStatNumOfAffected
+TestStatNumOfMales : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatNumOfMales : Time: Mon May 30 22:40:32 2011
+TestStatNumOfMales : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatNumOfMales : simuPOP: 1.0.6svn (rev 4188, module short, optimized, 4 threads)
+TestStatNumOfMales : Test: Stat NumOfMales, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfMales : size=100000: 12.1569785518
+TestStatNumOfMales : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 13.7430625612
+TestStatNumOfMales : 12.1569785518, 13.7430625612
+TestStatNumOfMales : End of test TestStatNumOfMales
+TestStatAlleleFreq : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatAlleleFreq : Time: Mon May 30 22:40:59 2011
+TestStatAlleleFreq : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4188, module long, optimized, 4 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are time (not processor time) to apply operator for 30 times.
+TestStatAlleleFreq : loci=100, size=10000: 0.220509281815
+TestStatAlleleFreq : loci=100, size=100000: 4.18473675917
+TestStatAlleleFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 2.32420848449
+TestStatAlleleFreq : loci=1000, size=10000: 2.93125649371
+TestStatAlleleFreq : loci=1000, size=100000: 61.5509994198
+TestStatAlleleFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 30.0181917411
+TestStatAlleleFreq : 0.220509281815, 4.18473675917, 2.32420848449, 2.93125649371, 61.5509994198, 30.0181917411
+TestStatAlleleFreq : End of test TestStatAlleleFreq
+TestStatHaploFreq : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatHaploFreq : Time: Mon May 30 22:42:50 2011
+TestStatHaploFreq : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4188, module long, optimized, 4 threads)
+TestStatHaploFreq : Test: Stat HaploFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploFreq : loci=100, size=10000: 0.526113989825
+TestStatHaploFreq : loci=100, size=100000: 8.50943485645
+TestStatHaploFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.82598914158
+TestStatHaploFreq : loci=1000, size=10000: 0.549702036511
+TestStatHaploFreq : loci=1000, size=100000: 9.71940961513
+TestStatHaploFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 7.44523822892
+TestStatHaploFreq : 0.526113989825, 8.50943485645, 6.82598914158, 0.549702036511, 9.71940961513, 7.44523822892
+TestStatHaploFreq : End of test TestStatHaploFreq
+TestStatHaploHomoFreq : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatHaploHomoFreq : Time: Mon May 30 22:43:34 2011
+TestStatHaploHomoFreq : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4188, module long, optimized, 4 threads)
+TestStatHaploHomoFreq : Test: Stat HaploHomoFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploHomoFreq : loci=100, size=10000: 0.0952381383606
+TestStatHaploHomoFreq : loci=100, size=100000: 1.640990672
+TestStatHaploHomoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.33187294699
+TestStatHaploHomoFreq : loci=1000, size=10000: 0.116611155082
+TestStatHaploHomoFreq : loci=1000, size=100000: 2.41424260042
+TestStatHaploHomoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.69099849011
+TestStatHaploHomoFreq : 0.0952381383606, 1.640990672, 1.33187294699, 0.116611155082, 2.41424260042, 1.69099849011
+TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
+TestStatNeutrality : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatNeutrality : Time: Mon May 30 22:43:52 2011
+TestStatNeutrality : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4188, module long, optimized, 4 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 1.76370840329
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 1.7402884912
+TestStatNeutrality : loci=10, size=10000: 9.68770733834
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 9.7137196022
+TestStatNeutrality : loci=100, size=10000: 83.7511417758
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 84.6337454895
+TestStatNeutrality : 1.76370840329, 1.7402884912, 9.68770733834, 9.7137196022, 83.7511417758, 84.6337454895
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNumOfAffected : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatNumOfAffected : Time: Mon May 30 22:47:04 2011
+TestStatNumOfAffected : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatNumOfAffected : simuPOP: 1.0.6svn (rev 4188, module long, optimized, 4 threads)
+TestStatNumOfAffected : Test: Stat NumOfAffected, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfAffected : size=100000: 12.5345379257
+TestStatNumOfAffected : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 14.0830832444
+TestStatNumOfAffected : 12.5345379257, 14.0830832444
+TestStatNumOfAffected : End of test TestStatNumOfAffected
+TestStatNumOfMales : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatNumOfMales : Time: Mon May 30 22:47:31 2011
+TestStatNumOfMales : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatNumOfMales : simuPOP: 1.0.6svn (rev 4188, module long, optimized, 4 threads)
+TestStatNumOfMales : Test: Stat NumOfMales, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfMales : size=100000: 12.1148138958
+TestStatNumOfMales : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 13.7313332862
+TestStatNumOfMales : 12.1148138958, 13.7313332862
+TestStatNumOfMales : End of test TestStatNumOfMales
+TestStatAlleleFreq : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatAlleleFreq : Time: Mon May 30 22:47:58 2011
+TestStatAlleleFreq : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4188, module binary, optimized, 4 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are time (not processor time) to apply operator for 30 times.
+TestStatAlleleFreq : loci=100, size=10000: 0.12388803262
+TestStatAlleleFreq : loci=100, size=100000: 1.45832435307
+TestStatAlleleFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.32294249434
+TestStatAlleleFreq : loci=1000, size=10000: 1.57181067984
+TestStatAlleleFreq : loci=1000, size=100000: 23.3392189499
+TestStatAlleleFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 15.4070457151
+TestStatAlleleFreq : 0.12388803262, 1.45832435307, 1.32294249434, 1.57181067984, 23.3392189499, 15.4070457151
+TestStatAlleleFreq : End of test TestStatAlleleFreq
+TestStatHaploFreq : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatHaploFreq : Time: Mon May 30 22:48:56 2011
+TestStatHaploFreq : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4188, module binary, optimized, 4 threads)
+TestStatHaploFreq : Test: Stat HaploFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploFreq : loci=100, size=10000: 0.635344730263
+TestStatHaploFreq : loci=100, size=100000: 6.14874750288
+TestStatHaploFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.11202654414
+TestStatHaploFreq : loci=1000, size=10000: 0.643167969785
+TestStatHaploFreq : loci=1000, size=100000: 6.50306445683
+TestStatHaploFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.59007939455
+TestStatHaploFreq : 0.635344730263, 6.14874750288, 6.11202654414, 0.643167969785, 6.50306445683, 6.59007939455
+TestStatHaploFreq : End of test TestStatHaploFreq
+TestStatHaploHomoFreq : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatHaploHomoFreq : Time: Mon May 30 22:49:38 2011
+TestStatHaploHomoFreq : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4188, module binary, optimized, 4 threads)
+TestStatHaploHomoFreq : Test: Stat HaploHomoFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploHomoFreq : loci=100, size=10000: 0.188049342826
+TestStatHaploHomoFreq : loci=100, size=100000: 1.7590105958
+TestStatHaploHomoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.80983161788
+TestStatHaploHomoFreq : loci=1000, size=10000: 0.201168973159
+TestStatHaploHomoFreq : loci=1000, size=100000: 2.93850409107
+TestStatHaploHomoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 2.4963571843
+TestStatHaploHomoFreq : 0.188049342826, 1.7590105958, 1.80983161788, 0.201168973159, 2.93850409107, 2.4963571843
+TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
+TestStatNeutrality : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatNeutrality : Time: Mon May 30 22:50:02 2011
+TestStatNeutrality : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4188, module binary, optimized, 4 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 11.648486698
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 11.7215078263
+TestStatNeutrality : loci=10, size=10000: 40.8976600614
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 40.9682174291
+TestStatNeutrality : loci=100, size=10000: 341.107198032
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 341.91136288
+TestStatNeutrality : 11.648486698, 11.7215078263, 40.8976600614, 40.9682174291, 341.107198032, 341.91136288
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNumOfAffected : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatNumOfAffected : Time: Mon May 30 23:03:11 2011
+TestStatNumOfAffected : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatNumOfAffected : simuPOP: 1.0.6svn (rev 4188, module binary, optimized, 4 threads)
+TestStatNumOfAffected : Test: Stat NumOfAffected, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfAffected : size=100000: 12.6815394851
+TestStatNumOfAffected : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 14.3641107189
+TestStatNumOfAffected : 12.6815394851, 14.3641107189
+TestStatNumOfAffected : End of test TestStatNumOfAffected
+TestStatNumOfMales : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatNumOfMales : Time: Mon May 30 23:03:39 2011
+TestStatNumOfMales : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatNumOfMales : simuPOP: 1.0.6svn (rev 4188, module binary, optimized, 4 threads)
+TestStatNumOfMales : Test: Stat NumOfMales, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfMales : size=100000: 12.2875931758
+TestStatNumOfMales : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 14.2055386616
+TestStatNumOfMales : 12.2875931758, 14.2055386616
+TestStatNumOfMales : End of test TestStatNumOfMales
