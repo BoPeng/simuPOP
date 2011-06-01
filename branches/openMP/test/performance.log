@@ -6095,3 +6095,96 @@ TestCombinedParentsChooser : loci=10000, size=10000: 6050
 TestCombinedParentsChooser : loci=10000, size=100000: 554
 TestCombinedParentsChooser : 36988, 3779, 43414, 3928, 6050, 554
 TestCombinedParentsChooser : End of test TestCombinedParentsChooser
+TestHeteroMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHeteroMating : Time: Tue May 31 16:52:50 2011
+TestHeteroMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHeteroMating : simuPOP: 1.0.6svn (rev 4190, module short, optimized, 1 threads)
+TestHeteroMating : Test: HeteroMating, results are number of generations in 30 seconds.
+TestHeteroMating : loci=10, size=10000: 9329
+TestHeteroMating : loci=10, size=100000: 790
+TestHeteroMating : loci=100, size=10000: failed
+TestHeteroMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHeteroMating : Time: Tue May 31 16:54:34 2011
+TestHeteroMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHeteroMating : simuPOP: 1.0.6svn (rev 4190, module short, optimized, 4 threads)
+TestHeteroMating : Test: HeteroMating, results are number of generations in 30 seconds.
+TestHeteroMating : loci=10, size=10000: 19077
+TestHeteroMating : loci=10, size=100000: failed
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Wed Jun  1 12:12:59 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4191, module short, optimized, 1 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 5.57430195808
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 5.54049086571
+TestStatNeutrality : loci=10, size=10000: 23.4916911125
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 23.5364370346
+TestStatNeutrality : loci=100, size=10000: 157.407531977
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 157.336145878
+TestStatNeutrality : 5.57430195808, 5.54049086571, 23.4916911125, 23.5364370346, 157.407531977, 157.336145878
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Wed Jun  1 12:19:12 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4191, module long, optimized, 1 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 6.09040188789
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 5.92418003082
+TestStatNeutrality : loci=10, size=10000: 19.0062968731
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 19.4905800819
+TestStatNeutrality : loci=100, size=10000: 103.946276903
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 102.977053881
+TestStatNeutrality : 6.09040188789, 5.92418003082, 19.0062968731, 19.4905800819, 103.946276903, 102.977053881
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Wed Jun  1 12:23:31 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4191, module binary, optimized, 1 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 17.0345540047
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 17.1601970196
+TestStatNeutrality : loci=10, size=10000: 66.7122030258
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 66.5635910034
+TestStatNeutrality : loci=100, size=10000: 569.442780972
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 568.384868145
+TestStatNeutrality : 17.0345540047, 17.1601970196, 66.7122030258, 66.5635910034, 569.442780972, 568.384868145
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Wed Jun  1 13:05:58 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4191, module short, optimized, 4 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 3.03625702858
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 3.06062293053
+TestStatNeutrality : loci=10, size=10000: 26.9129579067
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 26.9386310577
+TestStatNeutrality : loci=100, size=10000: 266.358695984
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 268.104444981
+TestStatNeutrality : 3.03625702858, 3.06062293053, 26.9129579067, 26.9386310577, 266.358695984, 268.104444981
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Wed Jun  1 13:15:53 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4191, module long, optimized, 4 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 3.10122394562
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 3.10917305946
+TestStatNeutrality : loci=10, size=10000: 26.9314918518
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 26.8245511055
+TestStatNeutrality : loci=100, size=10000: 270.068092108
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 268.488473892
+TestStatNeutrality : 3.10122394562, 3.10917305946, 26.9314918518, 26.8245511055, 270.068092108, 268.488473892
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Wed Jun  1 13:25:52 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4191, module binary, optimized, 4 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 7.92105603218
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 7.99158787727
+TestStatNeutrality : loci=10, size=10000: 30.9572019577
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 31.2986159325
+TestStatNeutrality : loci=100, size=10000: 261.169814825
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 262.290413141
+TestStatNeutrality : 7.92105603218, 7.99158787727, 30.9572019577, 31.2986159325, 261.169814825, 262.290413141
+TestStatNeutrality : End of test TestStatNeutrality
