@@ -406,3 +406,9 @@ TestStatNeutrality, 2011-06-01 12:45:16,569, bp9, x86_64-1threads, python2.7.1, 
 TestStatNeutrality, 2011-06-01 13:15:52,983, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4191-intel, short, 3.03625702858, 3.06062293053, 26.9129579067, 26.9386310577, 266.358695984, 268.104444981
 TestStatNeutrality, 2011-06-01 13:25:52,287, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4191-intel, long, 3.10122394562, 3.10917305946, 26.9314918518, 26.8245511055, 270.068092108, 268.488473892
 TestStatNeutrality, 2011-06-01 13:35:54,684, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4191-intel, binary, 7.92105603218, 7.99158787727, 30.9572019577, 31.2986159325, 261.169814825, 262.290413141
+TestHeteroMating, 2011-06-02 13:03:44,077, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4192-intel, short, 9574, 799, 8610, 645, 680, 1
+TestHeteroMating, 2011-06-02 13:06:20,597, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4192-intel, long, 9322, 706, 6626, 529, 182, 0
+TestHeteroMating, 2011-06-02 13:09:28,174, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4192-intel, binary, 8048, 740, 8468, 711, 2888, 256
+TestHeteroMating, 2011-06-02 13:12:52,461, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4192-intel, short, 20484, 1388, 11540, 1498, 804, 44
+TestHeteroMating, 2011-06-02 13:15:30,025, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4192-intel, long, 19089, 1637, 15357, 1357, 198, 0
+TestHeteroMating, 2011-06-02 13:18:36,396, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4192-intel, binary, 17963, 1668, 19806, 1729, 5586, 532

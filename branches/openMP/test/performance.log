@@ -6188,3 +6188,81 @@ TestStatNeutrality : loci=100, size=10000: 261.169814825
 TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 262.290413141
 TestStatNeutrality : 7.92105603218, 7.99158787727, 30.9572019577, 31.2986159325, 261.169814825, 262.290413141
 TestStatNeutrality : End of test TestStatNeutrality
+TestHeteroMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHeteroMating : Time: Thu Jun  2 12:59:39 2011
+TestHeteroMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHeteroMating : simuPOP: 1.0.6svn (rev 4192, module short, optimized, 1 threads)
+TestHeteroMating : Test: HeteroMating, results are number of generations in 30 seconds.
+TestHeteroMating : loci=10, size=10000: 9574
+TestHeteroMating : loci=10, size=100000: 799
+TestHeteroMating : loci=100, size=10000: 8610
+TestHeteroMating : loci=100, size=100000: 645
+TestHeteroMating : loci=10000, size=10000: 680
+TestHeteroMating : loci=10000, size=100000: 1
+TestHeteroMating : 9574, 799, 8610, 645, 680, 1
+TestHeteroMating : End of test TestHeteroMating
+TestHeteroMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHeteroMating : Time: Thu Jun  2 13:03:45 2011
+TestHeteroMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHeteroMating : simuPOP: 1.0.6svn (rev 4192, module long, optimized, 1 threads)
+TestHeteroMating : Test: HeteroMating, results are number of generations in 30 seconds.
+TestHeteroMating : loci=10, size=10000: 9322
+TestHeteroMating : loci=10, size=100000: 706
+TestHeteroMating : loci=100, size=10000: 6626
+TestHeteroMating : loci=100, size=100000: 529
+TestHeteroMating : loci=10000, size=10000: 182
+TestHeteroMating : loci=10000, size=100000: 0
+TestHeteroMating : 9322, 706, 6626, 529, 182, 0
+TestHeteroMating : End of test TestHeteroMating
+TestHeteroMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHeteroMating : Time: Thu Jun  2 13:06:21 2011
+TestHeteroMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHeteroMating : simuPOP: 1.0.6svn (rev 4192, module binary, optimized, 1 threads)
+TestHeteroMating : Test: HeteroMating, results are number of generations in 30 seconds.
+TestHeteroMating : loci=10, size=10000: 8048
+TestHeteroMating : loci=10, size=100000: 740
+TestHeteroMating : loci=100, size=10000: 8468
+TestHeteroMating : loci=100, size=100000: 711
+TestHeteroMating : loci=10000, size=10000: 2888
+TestHeteroMating : loci=10000, size=100000: 256
+TestHeteroMating : 8048, 740, 8468, 711, 2888, 256
+TestHeteroMating : End of test TestHeteroMating
+TestHeteroMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHeteroMating : Time: Thu Jun  2 13:09:42 2011
+TestHeteroMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHeteroMating : simuPOP: 1.0.6svn (rev 4192, module short, optimized, 4 threads)
+TestHeteroMating : Test: HeteroMating, results are number of generations in 30 seconds.
+TestHeteroMating : loci=10, size=10000: 20484
+TestHeteroMating : loci=10, size=100000: 1388
+TestHeteroMating : loci=100, size=10000: 11540
+TestHeteroMating : loci=100, size=100000: 1498
+TestHeteroMating : loci=10000, size=10000: 804
+TestHeteroMating : loci=10000, size=100000: 44
+TestHeteroMating : 20484, 1388, 11540, 1498, 804, 44
+TestHeteroMating : End of test TestHeteroMating
+TestHeteroMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHeteroMating : Time: Thu Jun  2 13:12:53 2011
+TestHeteroMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHeteroMating : simuPOP: 1.0.6svn (rev 4192, module long, optimized, 4 threads)
+TestHeteroMating : Test: HeteroMating, results are number of generations in 30 seconds.
+TestHeteroMating : loci=10, size=10000: 19089
+TestHeteroMating : loci=10, size=100000: 1637
+TestHeteroMating : loci=100, size=10000: 15357
+TestHeteroMating : loci=100, size=100000: 1357
+TestHeteroMating : loci=10000, size=10000: 198
+TestHeteroMating : loci=10000, size=100000: 0
+TestHeteroMating : 19089, 1637, 15357, 1357, 198, 0
+TestHeteroMating : End of test TestHeteroMating
+TestHeteroMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHeteroMating : Time: Thu Jun  2 13:15:30 2011
+TestHeteroMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHeteroMating : simuPOP: 1.0.6svn (rev 4192, module binary, optimized, 4 threads)
+TestHeteroMating : Test: HeteroMating, results are number of generations in 30 seconds.
+TestHeteroMating : loci=10, size=10000: 17963
+TestHeteroMating : loci=10, size=100000: 1668
+TestHeteroMating : loci=100, size=10000: 19806
+TestHeteroMating : loci=100, size=100000: 1729
+TestHeteroMating : loci=10000, size=10000: 5586
+TestHeteroMating : loci=10000, size=100000: 532
+TestHeteroMating : 17963, 1668, 19806, 1729, 5586, 532
+TestHeteroMating : End of test TestHeteroMating
