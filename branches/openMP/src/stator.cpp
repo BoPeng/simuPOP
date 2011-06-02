@@ -2462,10 +2462,12 @@ double statNeutrality::calcPi(HAPLOLIST::const_iterator begin, HAPLOLIST::const_
 	double diffCnt = 0;
 	int numComparison = 0;
 
-#ifdef _OPENMP
 	size_t size = end - begin;
 	size_t nThreads = numThreads();
-#  pragma omp parallel reduction(+ : diffCnt, numComparison) if (nThreads > 1)
+
+	if (nThreads > 1)
+#ifdef _OPENMP
+#  pragma omp parallel reduction(+ : diffCnt, numComparison)
 	{
 		size_t id = omp_get_thread_num();
 		HAPLOLIST::const_iterator it = begin + id * (size / nThreads);
@@ -2482,20 +2484,21 @@ double statNeutrality::calcPi(HAPLOLIST::const_iterator begin, HAPLOLIST::const_
 			}
 		}
 	}
-#else
-	HAPLOLIST::const_iterator it = begin;
-	for (; it != end; ++it) {
-		HAPLOLIST::const_iterator it1 = it;
-		for (++it1; it1 != end; ++it1) {
-			const vectora & seq1 = *it;
-			const vectora & seq2 = *it1;
-			size_t sz = seq1.size();
-			for (size_t i = 0; i < sz; ++i)
-				diffCnt += seq1[i] != seq2[i];
-			++numComparison;
-		}
-	}
 #endif
+		else {
+			HAPLOLIST::const_iterator it = begin;
+			for (; it != end; ++it) {
+				HAPLOLIST::const_iterator it1 = it;
+				for (++it1; it1 != end; ++it1) {
+					const vectora & seq1 = *it;
+					const vectora & seq2 = *it1;
+					size_t sz = seq1.size();
+					for (size_t i = 0; i < sz; ++i)
+						diffCnt += seq1[i] != seq2[i];
+					++numComparison;
+				}
+			}
+		}
 	// return 0 if there is only one sequence
 	return numComparison == 0 ? 0 : diffCnt / numComparison;
 }

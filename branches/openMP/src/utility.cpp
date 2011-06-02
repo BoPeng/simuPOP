@@ -3569,6 +3569,9 @@ size_t WeightedSampler::draw()
 {
 	DBG_FAILIF(m_algorithm == 0, ValueError,
 		"weighted sample is not initialized");
+#ifdef _OPENMP
+	ATOMICLONG index = 0;
+#endif
 
 	switch (m_algorithm) {
 	case 1:
@@ -3593,7 +3596,13 @@ size_t WeightedSampler::draw()
 		// return according to proportion.
 		if (m_index == m_sequence.size())
 			m_index = 0;
+#ifdef _OPENMP
+		index = fetchAndIncrement(&m_index);
+		return m_sequence[index];
+#else
+
 		return m_sequence[m_index++];
+#endif
 	default:
 		throw RuntimeError("Invalid weighted sampler (empty weight?)");
 	}

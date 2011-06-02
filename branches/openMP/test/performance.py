@@ -618,6 +618,78 @@ class TestStatNumOfAffected(PerformanceTest):
                 "pop.vars().clear()")
         return t.timeit(number=self.repeats)
 
+class TestInitGenotypeCase1(PerformanceTest):
+    def __init__(self, logger, repeats=10):
+        PerformanceTest.__init__(self, 'InitGenotype case 1, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[100000, [10000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, initGenotype\n'
+                'pop = Population(size=%s,loci=1000)' % (size),
+            stmt = 'initGenotype(pop,genotype=[1,2,3,4,5,6])') 
+        return t.timeit(number=self.repeats)
+
+class TestInitGenotypeCase2(PerformanceTest):
+    def __init__(self, logger, repeats=10):
+        PerformanceTest.__init__(self, 'InitGenotype case 2, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[100000, [10000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, initGenotype\n'
+                'pop = Population(size=%s,loci=1000)' % (size),
+            stmt = 'initGenotype(pop,prop=[.2,.8])') 
+        return t.timeit(number=self.repeats)
+
+class TestInitGenotypeCase3(PerformanceTest):
+    def __init__(self, logger, repeats=10):
+        PerformanceTest.__init__(self, 'InitGenotype case 3, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[100000, [10000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, initGenotype\n'
+                'pop = Population(size=%s,loci=1000)' % (size),
+            stmt = 'initGenotype(pop,haplotypes=[[0,0,1,1],[1,1,0,0]], prop=[.2,.8])')
+        return t.timeit(number=self.repeats)
+
+class TestInitGenotypeCase4(PerformanceTest):
+    def __init__(self, logger, repeats=10):
+        PerformanceTest.__init__(self, 'InitGenotype case 4, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[100000, [10000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, initGenotype\n'
+                'pop = Population(size=%s,loci=1000)' % (size),
+            stmt = 'initGenotype(pop,freq=[0.5,0.5])')
+        return t.timeit(number=self.repeats)
+
 class TestRandomMatingWithSelection(PerformanceTest):
     def __init__(self, logger, time=60):
         PerformanceTest.__init__(self, 'Random mating with selection, results are number of generations in %d seconds.' % int(time),
