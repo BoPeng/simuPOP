@@ -230,17 +230,10 @@ bool InitGenotype::apply(Population & pop) const
 				// initialize by allele. Gurantee proportion at each locus.
 				for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc) {
 					ws.set(m_prop.begin(), m_prop.end(), sz * ploidy.size());
-#pragma omp parallel if(numThreads() > 1)
-					{
-#ifdef _OPENMP
-						IndIterator it = pop.indIterator(sp->subPop(), omp_get_thread_num());
-#else
-						IndIterator it = pop.indIterator(sp->subPop());
-#endif
-						for (; it.valid(); ++it)
-							for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
-								it->setAllele(ToAllele(ws.draw()), *loc, static_cast<int>(*p));
-					}
+					IndIterator it = pop.indIterator(sp->subPop());
+					for (; it.valid(); ++it)
+						for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
+							it->setAllele(ToAllele(ws.draw()), *loc, static_cast<int>(*p));
 				}
 			} else {
 				ws.set(m_prop.begin(), m_prop.end(), sz * ploidy.size());
