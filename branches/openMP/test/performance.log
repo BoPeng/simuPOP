@@ -6266,3 +6266,219 @@ TestHeteroMating : loci=10000, size=10000: 5586
 TestHeteroMating : loci=10000, size=100000: 532
 TestHeteroMating : 17963, 1668, 19806, 1729, 5586, 532
 TestHeteroMating : End of test TestHeteroMating
+TestInitGenotypeCase1 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase1 : Time: Fri Jun  3 10:03:17 2011
+TestInitGenotypeCase1 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase1 : simuPOP: 1.0.6svn (rev 4195, module short, optimized, 1 threads)
+TestInitGenotypeCase1 : Test: InitGenotype case 1, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase1 : size=100000: 20.0126931667
+TestInitGenotypeCase1 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 20.2507748604
+TestInitGenotypeCase1 : 20.0126931667, 20.2507748604
+TestInitGenotypeCase1 : End of test TestInitGenotypeCase1
+TestInitGenotypeCase1 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase1 : Time: Fri Jun  3 10:03:58 2011
+TestInitGenotypeCase1 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase1 : simuPOP: 1.0.6svn (rev 4195, module long, optimized, 1 threads)
+TestInitGenotypeCase1 : Test: InitGenotype case 1, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase1 : size=100000: 20.1913919449
+TestInitGenotypeCase1 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 20.4295210838
+TestInitGenotypeCase1 : 20.1913919449, 20.4295210838
+TestInitGenotypeCase1 : End of test TestInitGenotypeCase1
+TestInitGenotypeCase1 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase1 : Time: Fri Jun  3 10:04:49 2011
+TestInitGenotypeCase1 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase1 : simuPOP: 1.0.6svn (rev 4195, module binary, optimized, 1 threads)
+TestInitGenotypeCase1 : Test: InitGenotype case 1, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase1 : size=100000: 44.585860014
+TestInitGenotypeCase1 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 44.6598989964
+TestInitGenotypeCase1 : 44.585860014, 44.6598989964
+TestInitGenotypeCase1 : End of test TestInitGenotypeCase1
+TestInitGenotypeCase1 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase1 : Time: Fri Jun  3 10:06:19 2011
+TestInitGenotypeCase1 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase1 : simuPOP: 1.0.6svn (rev 4195, module short, optimized, 4 threads)
+TestInitGenotypeCase1 : Test: InitGenotype case 1, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase1 : size=100000: 5.68694496155
+TestInitGenotypeCase1 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 5.69882082939
+TestInitGenotypeCase1 : 5.68694496155, 5.69882082939
+TestInitGenotypeCase1 : End of test TestInitGenotypeCase1
+TestInitGenotypeCase1 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase1 : Time: Fri Jun  3 10:06:31 2011
+TestInitGenotypeCase1 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase1 : simuPOP: 1.0.6svn (rev 4195, module long, optimized, 4 threads)
+TestInitGenotypeCase1 : Test: InitGenotype case 1, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase1 : size=100000: 5.97290492058
+TestInitGenotypeCase1 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.30002713203
+TestInitGenotypeCase1 : 5.97290492058, 6.30002713203
+TestInitGenotypeCase1 : End of test TestInitGenotypeCase1
+TestInitGenotypeCase1 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase1 : Time: Fri Jun  3 10:06:45 2011
+TestInitGenotypeCase1 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase1 : simuPOP: 1.0.6svn (rev 4195, module binary, optimized, 4 threads)
+TestInitGenotypeCase1 : Test: InitGenotype case 1, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase1 : size=100000: 12.9159140587
+TestInitGenotypeCase1 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 12.3552010059
+TestInitGenotypeCase1 : 12.9159140587, 12.3552010059
+TestInitGenotypeCase1 : End of test TestInitGenotypeCase1
+TestInitGenotypeCase2 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase2 : Time: Fri Jun  3 10:07:11 2011
+TestInitGenotypeCase2 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase2 : simuPOP: 1.0.6svn (rev 4195, module short, optimized, 1 threads)
+TestInitGenotypeCase2 : Test: InitGenotype case 2, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase2 : size=100000: 128.611124992
+TestInitGenotypeCase2 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 104.630683184
+TestInitGenotypeCase2 : 128.611124992, 104.630683184
+TestInitGenotypeCase2 : End of test TestInitGenotypeCase2
+TestInitGenotypeCase2 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase2 : Time: Fri Jun  3 10:11:05 2011
+TestInitGenotypeCase2 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase2 : simuPOP: 1.0.6svn (rev 4195, module long, optimized, 1 threads)
+TestInitGenotypeCase2 : Test: InitGenotype case 2, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase2 : size=100000: 128.964793921
+TestInitGenotypeCase2 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 107.590738058
+TestInitGenotypeCase2 : 128.964793921, 107.590738058
+TestInitGenotypeCase2 : End of test TestInitGenotypeCase2
+TestInitGenotypeCase2 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase2 : Time: Fri Jun  3 10:15:03 2011
+TestInitGenotypeCase2 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase2 : simuPOP: 1.0.6svn (rev 4195, module binary, optimized, 1 threads)
+TestInitGenotypeCase2 : Test: InitGenotype case 2, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase2 : size=100000: 133.749624968
+TestInitGenotypeCase2 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 116.280220985
+TestInitGenotypeCase2 : 133.749624968, 116.280220985
+TestInitGenotypeCase2 : End of test TestInitGenotypeCase2
+TestInitGenotypeCase2 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase2 : Time: Fri Jun  3 10:19:14 2011
+TestInitGenotypeCase2 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase2 : simuPOP: 1.0.6svn (rev 4195, module short, optimized, 4 threads)
+TestInitGenotypeCase2 : Test: InitGenotype case 2, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase2 : size=100000: 136.778111935
+TestInitGenotypeCase2 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 135.20889616
+TestInitGenotypeCase2 : 136.778111935, 135.20889616
+TestInitGenotypeCase2 : End of test TestInitGenotypeCase2
+TestInitGenotypeCase2 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase2 : Time: Fri Jun  3 10:23:47 2011
+TestInitGenotypeCase2 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase2 : simuPOP: 1.0.6svn (rev 4195, module long, optimized, 4 threads)
+TestInitGenotypeCase2 : Test: InitGenotype case 2, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase2 : size=100000: 137.331019163
+TestInitGenotypeCase2 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 133.9238801
+TestInitGenotypeCase2 : 137.331019163, 133.9238801
+TestInitGenotypeCase2 : End of test TestInitGenotypeCase2
+TestInitGenotypeCase2 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase2 : Time: Fri Jun  3 10:28:21 2011
+TestInitGenotypeCase2 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase2 : simuPOP: 1.0.6svn (rev 4195, module binary, optimized, 4 threads)
+TestInitGenotypeCase2 : Test: InitGenotype case 2, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase2 : size=100000: 135.631910086
+TestInitGenotypeCase2 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 132.102210045
+TestInitGenotypeCase2 : 135.631910086, 132.102210045
+TestInitGenotypeCase2 : End of test TestInitGenotypeCase2
+TestInitGenotypeCase3 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase3 : Time: Fri Jun  3 10:32:50 2011
+TestInitGenotypeCase3 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase3 : simuPOP: 1.0.6svn (rev 4195, module short, optimized, 1 threads)
+TestInitGenotypeCase3 : Test: InitGenotype case 3, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase3 : size=100000: 20.7163860798
+TestInitGenotypeCase3 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 20.7371339798
+TestInitGenotypeCase3 : 20.7163860798, 20.7371339798
+TestInitGenotypeCase3 : End of test TestInitGenotypeCase3
+TestInitGenotypeCase3 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase3 : Time: Fri Jun  3 10:33:32 2011
+TestInitGenotypeCase3 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase3 : simuPOP: 1.0.6svn (rev 4195, module long, optimized, 1 threads)
+TestInitGenotypeCase3 : Test: InitGenotype case 3, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase3 : size=100000: 21.2412390709
+TestInitGenotypeCase3 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 21.0875110626
+TestInitGenotypeCase3 : 21.2412390709, 21.0875110626
+TestInitGenotypeCase3 : End of test TestInitGenotypeCase3
+TestInitGenotypeCase3 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase3 : Time: Fri Jun  3 10:34:15 2011
+TestInitGenotypeCase3 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase3 : simuPOP: 1.0.6svn (rev 4195, module binary, optimized, 1 threads)
+TestInitGenotypeCase3 : Test: InitGenotype case 3, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase3 : size=100000: 47.2954690456
+TestInitGenotypeCase3 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 47.1605689526
+TestInitGenotypeCase3 : 47.2954690456, 47.1605689526
+TestInitGenotypeCase3 : End of test TestInitGenotypeCase3
+TestInitGenotypeCase3 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase3 : Time: Fri Jun  3 10:35:51 2011
+TestInitGenotypeCase3 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase3 : simuPOP: 1.0.6svn (rev 4195, module short, optimized, 4 threads)
+TestInitGenotypeCase3 : Test: InitGenotype case 3, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase3 : size=100000: 5.51451182365
+TestInitGenotypeCase3 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 5.6633439064
+TestInitGenotypeCase3 : 5.51451182365, 5.6633439064
+TestInitGenotypeCase3 : End of test TestInitGenotypeCase3
+TestInitGenotypeCase3 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase3 : Time: Fri Jun  3 10:36:03 2011
+TestInitGenotypeCase3 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase3 : simuPOP: 1.0.6svn (rev 4195, module long, optimized, 4 threads)
+TestInitGenotypeCase3 : Test: InitGenotype case 3, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase3 : size=100000: 5.6491651535
+TestInitGenotypeCase3 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 5.6448340416
+TestInitGenotypeCase3 : 5.6491651535, 5.6448340416
+TestInitGenotypeCase3 : End of test TestInitGenotypeCase3
+TestInitGenotypeCase3 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase3 : Time: Fri Jun  3 10:36:15 2011
+TestInitGenotypeCase3 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase3 : simuPOP: 1.0.6svn (rev 4195, module binary, optimized, 4 threads)
+TestInitGenotypeCase3 : Test: InitGenotype case 3, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase3 : size=100000: 11.493434906
+TestInitGenotypeCase3 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 11.7346558571
+TestInitGenotypeCase3 : 11.493434906, 11.7346558571
+TestInitGenotypeCase3 : End of test TestInitGenotypeCase3
+TestInitGenotypeCase4 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase4 : Time: Fri Jun  3 10:36:39 2011
+TestInitGenotypeCase4 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase4 : simuPOP: 1.0.6svn (rev 4195, module short, optimized, 1 threads)
+TestInitGenotypeCase4 : Test: InitGenotype case 4, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase4 : size=100000: 77.3453309536
+TestInitGenotypeCase4 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 78.1487438679
+TestInitGenotypeCase4 : 77.3453309536, 78.1487438679
+TestInitGenotypeCase4 : End of test TestInitGenotypeCase4
+TestInitGenotypeCase4 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase4 : Time: Fri Jun  3 10:39:16 2011
+TestInitGenotypeCase4 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase4 : simuPOP: 1.0.6svn (rev 4195, module long, optimized, 1 threads)
+TestInitGenotypeCase4 : Test: InitGenotype case 4, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase4 : size=100000: 79.8385441303
+TestInitGenotypeCase4 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 79.1435091496
+TestInitGenotypeCase4 : 79.8385441303, 79.1435091496
+TestInitGenotypeCase4 : End of test TestInitGenotypeCase4
+TestInitGenotypeCase4 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase4 : Time: Fri Jun  3 10:41:56 2011
+TestInitGenotypeCase4 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase4 : simuPOP: 1.0.6svn (rev 4195, module binary, optimized, 1 threads)
+TestInitGenotypeCase4 : Test: InitGenotype case 4, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase4 : size=100000: 105.690921068
+TestInitGenotypeCase4 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 105.673449993
+TestInitGenotypeCase4 : 105.690921068, 105.673449993
+TestInitGenotypeCase4 : End of test TestInitGenotypeCase4
+TestInitGenotypeCase4 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase4 : Time: Fri Jun  3 10:45:28 2011
+TestInitGenotypeCase4 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase4 : simuPOP: 1.0.6svn (rev 4195, module short, optimized, 4 threads)
+TestInitGenotypeCase4 : Test: InitGenotype case 4, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase4 : size=100000: 21.8644630909
+TestInitGenotypeCase4 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 22.1283450127
+TestInitGenotypeCase4 : 21.8644630909, 22.1283450127
+TestInitGenotypeCase4 : End of test TestInitGenotypeCase4
+TestInitGenotypeCase4 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase4 : Time: Fri Jun  3 10:46:13 2011
+TestInitGenotypeCase4 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase4 : simuPOP: 1.0.6svn (rev 4195, module long, optimized, 4 threads)
+TestInitGenotypeCase4 : Test: InitGenotype case 4, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase4 : size=100000: 22.5271499157
+TestInitGenotypeCase4 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 22.7279741764
+TestInitGenotypeCase4 : 22.5271499157, 22.7279741764
+TestInitGenotypeCase4 : End of test TestInitGenotypeCase4
+TestInitGenotypeCase4 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase4 : Time: Fri Jun  3 10:46:59 2011
+TestInitGenotypeCase4 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase4 : simuPOP: 1.0.6svn (rev 4195, module binary, optimized, 4 threads)
+TestInitGenotypeCase4 : Test: InitGenotype case 4, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase4 : size=100000: 29.9604380131
+TestInitGenotypeCase4 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 30.151968956
+TestInitGenotypeCase4 : 29.9604380131, 30.151968956
+TestInitGenotypeCase4 : End of test TestInitGenotypeCase4

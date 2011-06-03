@@ -412,3 +412,27 @@ TestHeteroMating, 2011-06-02 13:09:28,174, bp9, x86_64-1threads, python2.7.1, si
 TestHeteroMating, 2011-06-02 13:12:52,461, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4192-intel, short, 20484, 1388, 11540, 1498, 804, 44
 TestHeteroMating, 2011-06-02 13:15:30,025, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4192-intel, long, 19089, 1637, 15357, 1357, 198, 0
 TestHeteroMating, 2011-06-02 13:18:36,396, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4192-intel, binary, 17963, 1668, 19806, 1729, 5586, 532
+TestInitGenotypeCase1, 2011-06-03 10:03:58,047, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, short, 20.0126931667, 20.2507748604
+TestInitGenotypeCase1, 2011-06-03 10:04:48,348, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, long, 20.1913919449, 20.4295210838
+TestInitGenotypeCase1, 2011-06-03 10:06:18,425, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, binary, 44.585860014, 44.6598989964
+TestInitGenotypeCase1, 2011-06-03 10:06:31,379, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, short, 5.68694496155, 5.69882082939
+TestInitGenotypeCase1, 2011-06-03 10:06:44,668, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, long, 5.97290492058, 6.30002713203
+TestInitGenotypeCase1, 2011-06-03 10:07:10,443, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, binary, 12.9159140587, 12.3552010059
+TestInitGenotypeCase2, 2011-06-03 10:11:05,127, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, short, 128.611124992, 104.630683184
+TestInitGenotypeCase2, 2011-06-03 10:15:02,793, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, long, 128.964793921, 107.590738058
+TestInitGenotypeCase2, 2011-06-03 10:19:13,348, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, binary, 133.749624968, 116.280220985
+TestInitGenotypeCase2, 2011-06-03 10:23:46,829, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, short, 136.778111935, 135.20889616
+TestInitGenotypeCase2, 2011-06-03 10:28:20,802, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, long, 137.331019163, 133.9238801
+TestInitGenotypeCase2, 2011-06-03 10:32:49,232, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, binary, 135.631910086, 132.102210045
+TestInitGenotypeCase3, 2011-06-03 10:33:32,227, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, short, 20.7163860798, 20.7371339798
+TestInitGenotypeCase3, 2011-06-03 10:34:15,306, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, long, 21.2412390709, 21.0875110626
+TestInitGenotypeCase3, 2011-06-03 10:35:50,274, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, binary, 47.2954690456, 47.1605689526
+TestInitGenotypeCase3, 2011-06-03 10:36:02,968, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, short, 5.51451182365, 5.6633439064
+TestInitGenotypeCase3, 2011-06-03 10:36:15,091, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, long, 5.6491651535, 5.6448340416
+TestInitGenotypeCase3, 2011-06-03 10:36:38,723, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, binary, 11.493434906, 11.7346558571
+TestInitGenotypeCase4, 2011-06-03 10:39:15,629, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, short, 77.3453309536, 78.1487438679
+TestInitGenotypeCase4, 2011-06-03 10:41:55,561, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, long, 79.8385441303, 79.1435091496
+TestInitGenotypeCase4, 2011-06-03 10:45:27,401, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, binary, 105.690921068, 105.673449993
+TestInitGenotypeCase4, 2011-06-03 10:46:12,888, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, short, 21.8644630909, 22.1283450127
+TestInitGenotypeCase4, 2011-06-03 10:46:58,953, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, long, 22.5271499157, 22.7279741764
+TestInitGenotypeCase4, 2011-06-03 10:47:59,678, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, binary, 29.9604380131, 30.151968956
