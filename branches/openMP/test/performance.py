@@ -706,7 +706,7 @@ class TestInitSex(PerformanceTest):
         t = timeit.Timer(
             setup = 'from __main__ import Population,initSex, MALE,FEMALE\n'
                 'pop = Population(size=%s,loci=1000)' % (size),
-            stmt = 'initSex(pop,sex=[MALE,FEMALE])')
+            stmt = 'initSex(pop)')
         return t.timeit(number=self.repeats)
 
 
