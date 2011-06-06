@@ -690,6 +690,26 @@ class TestInitGenotypeCase4(PerformanceTest):
             stmt = 'initGenotype(pop,freq=[0.5,0.5])')
         return t.timeit(number=self.repeats)
 
+class TestInitSex(PerformanceTest):
+    def __init__(self, logger, repeats=1000):
+        PerformanceTest.__init__(self, 'InitSex, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[1000000, [100000]*10])
+
+    def _run(self, size):
+        # single test case
+        pop = Population(size = size)
+        t = timeit.Timer(
+            setup = 'from __main__ import Population,initSex, MALE,FEMALE\n'
+                'pop = Population(size=%s,loci=1000)' % (size),
+            stmt = 'initSex(pop,sex=[MALE,FEMALE])')
+        return t.timeit(number=self.repeats)
+
+
 class TestRandomMatingWithSelection(PerformanceTest):
     def __init__(self, logger, time=60):
         PerformanceTest.__init__(self, 'Random mating with selection, results are number of generations in %d seconds.' % int(time),

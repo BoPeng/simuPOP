@@ -63,15 +63,27 @@ bool InitSex::apply(Population & pop) const
 			ws.set(prop.begin(), prop.end());
 		}
 		pop.activateVirtualSubPop(*sp);
-		IndIterator ind = pop.indIterator(sp->subPop());
-		size_t sexSz = m_sex.size();
-		if (!m_sex.empty())
-			for (; ind.valid(); ++ind, ++idx)
-				ind->setSex(m_sex[idx % sexSz] == 1 ? MALE : FEMALE);
-		else
-			for (; ind.valid(); ++ind)
-				ind->setSex(ws.draw() == 0 ? MALE : FEMALE);
+#pragma omp parallel firstprivate(idx) if(numThreads() > 1)
+		{
+#ifdef _OPENMP
+			size_t id = omp_get_thread_num();
+			IndIterator ind = pop.indIterator(sp->subPop(), id);
+			idx = idx + id * (pop.subPopSize(sp->subPop()) / numThreads());
+#else
+			IndIterator ind = pop.indIterator(sp->subPop());
+#endif
+			size_t sexSz = m_sex.size();
+			if (!m_sex.empty())
+				for (; ind.valid(); ++ind, ++idx)
+					ind->setSex(m_sex[idx % sexSz] == 1 ? MALE : FEMALE);
+			else
+				for (; ind.valid(); ++ind)
+					ind->setSex(ws.draw() == 0 ? MALE : FEMALE);
+		}
 		pop.deactivateVirtualSubPop(sp->subPop());
+#ifdef _OPENMP
+		idx = idx + pop.subPopSize(sp->subPop());
+#endif
 	}
 	return true;
 }
