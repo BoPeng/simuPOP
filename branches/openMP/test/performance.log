@@ -6482,3 +6482,57 @@ TestInitGenotypeCase4 : size=100000: 29.9604380131
 TestInitGenotypeCase4 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 30.151968956
 TestInitGenotypeCase4 : 29.9604380131, 30.151968956
 TestInitGenotypeCase4 : End of test TestInitGenotypeCase4
+TestInitSex : Host: bp9 (Linux, x86_64, x86_64)
+TestInitSex : Time: Mon Jun  6 10:21:44 2011
+TestInitSex : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitSex : simuPOP: 1.0.6svn (rev 4197, module short, optimized, 1 threads)
+TestInitSex : Test: InitSex, results are time (not processor time) to apply operator for 1000 times.
+TestInitSex : size=1000000: 14.3448200226
+TestInitSex : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 14.728511095
+TestInitSex : 14.3448200226, 14.728511095
+TestInitSex : End of test TestInitSex
+TestInitSex : Host: bp9 (Linux, x86_64, x86_64)
+TestInitSex : Time: Mon Jun  6 10:22:21 2011
+TestInitSex : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitSex : simuPOP: 1.0.6svn (rev 4197, module long, optimized, 1 threads)
+TestInitSex : Test: InitSex, results are time (not processor time) to apply operator for 1000 times.
+TestInitSex : size=1000000: 14.6376848221
+TestInitSex : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 14.6885848045
+TestInitSex : 14.6376848221, 14.6885848045
+TestInitSex : End of test TestInitSex
+TestInitSex : Host: bp9 (Linux, x86_64, x86_64)
+TestInitSex : Time: Mon Jun  6 10:22:55 2011
+TestInitSex : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitSex : simuPOP: 1.0.6svn (rev 4197, module binary, optimized, 1 threads)
+TestInitSex : Test: InitSex, results are time (not processor time) to apply operator for 1000 times.
+TestInitSex : size=1000000: 14.1411120892
+TestInitSex : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 14.4127311707
+TestInitSex : 14.1411120892, 14.4127311707
+TestInitSex : End of test TestInitSex
+TestInitSex : Host: bp9 (Linux, x86_64, x86_64)
+TestInitSex : Time: Mon Jun  6 10:26:09 2011
+TestInitSex : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitSex : simuPOP: 1.0.6svn (rev 4197, module short, optimized, 4 threads)
+TestInitSex : Test: InitSex, results are time (not processor time) to apply operator for 1000 times.
+TestInitSex : size=1000000: 4.17382383347
+TestInitSex : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 4.48227882385
+TestInitSex : 4.17382383347, 4.48227882385
+TestInitSex : End of test TestInitSex
+TestInitSex : Host: bp9 (Linux, x86_64, x86_64)
+TestInitSex : Time: Mon Jun  6 10:26:25 2011
+TestInitSex : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitSex : simuPOP: 1.0.6svn (rev 4197, module long, optimized, 4 threads)
+TestInitSex : Test: InitSex, results are time (not processor time) to apply operator for 1000 times.
+TestInitSex : size=1000000: 4.08154797554
+TestInitSex : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 4.58521986008
+TestInitSex : 4.08154797554, 4.58521986008
+TestInitSex : End of test TestInitSex
+TestInitSex : Host: bp9 (Linux, x86_64, x86_64)
+TestInitSex : Time: Mon Jun  6 10:26:38 2011
+TestInitSex : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitSex : simuPOP: 1.0.6svn (rev 4197, module binary, optimized, 4 threads)
+TestInitSex : Test: InitSex, results are time (not processor time) to apply operator for 1000 times.
+TestInitSex : size=1000000: 4.46001601219
+TestInitSex : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 5.02257704735
+TestInitSex : 4.46001601219, 5.02257704735
+TestInitSex : End of test TestInitSex
