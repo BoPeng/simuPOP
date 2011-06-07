@@ -708,6 +708,27 @@ class TestInitSex(PerformanceTest):
                 'pop = Population(size=%s,loci=1000)' % (size),
             stmt = 'initSex(pop)')
         return t.timeit(number=self.repeats)
+    
+class TestInitInfo(PerformanceTest):
+    
+    def __init__(self, logger, repeats=1000):
+        PerformanceTest.__init__(self, 'InitInfo, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[1000000, [100000]*10])
+
+    def _run(self, size):
+        # single test case
+        pop = Population(size = size)
+        # addInfoField('a')
+        t = timeit.Timer(
+               setup = 'from __main__ import Population, initInfo\n'
+        "pop = Population(size=%s,loci=100, infoFields=['a','b'])" % (size),
+        stmt = "initInfo(pop,[1,2,3,4,5,6,7],infoFields=['a','b'])")
+        return t.timeit(number=self.repeats)
 
 
 class TestRandomMatingWithSelection(PerformanceTest):
