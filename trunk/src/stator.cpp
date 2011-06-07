@@ -515,12 +515,19 @@ bool statNumOfMales::apply(Population & pop) const
 		size_t totalCnt = 0;
 		pop.activateVirtualSubPop(*sp);
 
-		IndIterator it = pop.indIterator(sp->subPop());
-		for (; it.valid(); ++it)
-			if (it->sex() == MALE)
-				maleCnt++;
-			else
-				femaleCnt++;
+#pragma omp parallel reduction (+ : maleCnt,femaleCnt) if(numThreads() > 1)
+		{
+#ifdef _OPENMP
+			IndIterator it = pop.indIterator(sp->subPop(), omp_get_thread_num());
+#else
+			IndIterator it = pop.indIterator(sp->subPop());
+#endif
+			for (; it.valid(); ++it)
+				if (it->sex() == MALE)
+					maleCnt++;
+				else
+					femaleCnt++;
+		}
 
 		pop.deactivateVirtualSubPop(sp->subPop());
 
@@ -595,12 +602,19 @@ bool statNumOfAffected::apply(Population & pop) const
 		size_t totalCnt = 0;
 		pop.activateVirtualSubPop(*sp);
 
-		IndIterator it = pop.indIterator(sp->subPop());
-		for (; it.valid(); ++it)
-			if (it->affected())
-				affectedCnt++;
-			else
-				unaffectedCnt++;
+#pragma omp parallel reduction (+ : affectedCnt,unaffectedCnt) if(numThreads() > 1)
+		{
+#ifdef _OPENMP
+			IndIterator it = pop.indIterator(sp->subPop(), omp_get_thread_num());
+#else
+			IndIterator it = pop.indIterator(sp->subPop());
+#endif
+			for (; it.valid(); ++it)
+				if (it->affected())
+					affectedCnt++;
+				else
+					unaffectedCnt++;
+		}
 
 		pop.deactivateVirtualSubPop(sp->subPop());
 
@@ -688,7 +702,8 @@ bool statAlleleFreq::apply(Population & pop) const
 
 		pop.activateVirtualSubPop(*it);
 
-		for (size_t idx = 0; idx < loci.size(); ++idx) {
+#pragma omp parallel for if(numThreads() > 1)
+		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
 			size_t loc = loci[idx];
 
 #ifdef LONGALLELE
@@ -726,13 +741,16 @@ bool statAlleleFreq::apply(Population & pop) const
 			allAllelesCnt[idx] += allAlleles;
 			// output variable.
 #ifdef LONGALLELE
-			if (m_vars.contains(AlleleNum_sp_String))
+			if (m_vars.contains(AlleleNum_sp_String)) {
+#  pragma omp critical
 				pop.getVars().setVar(subPopVar_String(*it, AlleleNum_String) + m_suffix + "{" + toStr(loc) + "}", alleles);
+			}
 			if (m_vars.contains(AlleleFreq_sp_String)) {
 				intDict::iterator cnt = alleles.begin();
 				intDict::iterator cntEnd = alleles.end();
 				for ( ; cnt != cntEnd; ++cnt)
 					cnt->second /= static_cast<double>(allAlleles);
+#  pragma omp critical
 				pop.getVars().setVar(subPopVar_String(*it, AlleleFreq_String) + m_suffix + "{" + toStr(loc) + "}", alleles);
 			}
 #else
@@ -741,6 +759,7 @@ bool statAlleleFreq::apply(Population & pop) const
 				for (size_t i = 0; i < alleles.size(); ++i)
 					if (alleles[i] != 0)
 						d[i] = static_cast<double>(alleles[i]);
+#  pragma omp critical
 				pop.getVars().setVar(subPopVar_String(*it, AlleleNum_String) + m_suffix + "{" + toStr(loc) + "}", d);
 			}
 			if (m_vars.contains(AlleleFreq_sp_String)) {
@@ -748,6 +767,7 @@ bool statAlleleFreq::apply(Population & pop) const
 				for (size_t i = 0; i < alleles.size(); ++i)
 					if (alleles[i] != 0)
 						d[i] = alleles[i] / static_cast<double>(allAlleles);
+#  pragma omp critical
 				pop.getVars().setVar(subPopVar_String(*it, AlleleFreq_String) + m_suffix + "{" + toStr(loc) + "}", d);
 			}
 #endif
@@ -850,7 +870,8 @@ bool statHeteroFreq::apply(Population & pop) const
 		uintDict heteroCnt;
 		uintDict homoCnt;
 
-		for (size_t idx = 0; idx < loci.size(); ++idx) {
+#pragma omp parallel for if(numThreads() > 1)
+		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
 			size_t loc = loci[idx];
 
 #ifndef OPTIMIZED
@@ -869,11 +890,14 @@ bool statHeteroFreq::apply(Population & pop) const
 				else
 					homo += 1;
 			}
-			heteroCnt[loc] = static_cast<double>(hetero);
-			homoCnt[loc] = static_cast<double>(homo);
-			//
-			allHeteroCnt[loc] += heteroCnt[loc];
-			allHomoCnt[loc] += homoCnt[loc];
+#pragma omp critical
+			{
+				heteroCnt[loc] = static_cast<double>(hetero);
+				homoCnt[loc] = static_cast<double>(homo);
+				//
+				allHeteroCnt[loc] += heteroCnt[loc];
+				allHomoCnt[loc] += homoCnt[loc];
+			}
 		}
 		pop.deactivateVirtualSubPop(it->subPop());
 		// output subpopulation variable?
@@ -981,7 +1005,8 @@ bool statGenoFreq::apply(Population & pop) const
 
 		pop.activateVirtualSubPop(*it);
 
-		for (size_t idx = 0; idx < loci.size(); ++idx) {
+#pragma omp parallel for if(numThreads() > 1)
+		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
 			size_t loc = loci[idx];
 
 			tupleDict genotypes;
@@ -1022,9 +1047,11 @@ bool statGenoFreq::apply(Population & pop) const
 				genotypeCnt[idx][dct->first] += dct->second;
 			allGenotypeCnt[idx] += allGenotypes;
 			// output variable.
-			if (m_vars.contains(GenotypeNum_sp_String))
+			if (m_vars.contains(GenotypeNum_sp_String)) {
+#pragma omp critical
 				pop.getVars().setVar(subPopVar_String(*it, GenotypeNum_String)
 					+ m_suffix + "{" + toStr(loc) + "}", genotypes);
+			}
 			// note that genotyeps is changed in place.
 			if (m_vars.contains(GenotypeFreq_sp_String)) {
 				if (allGenotypes != 0) {
@@ -1033,6 +1060,7 @@ bool statGenoFreq::apply(Population & pop) const
 					for (; dct != dctEnd; ++dct)
 						dct->second /= allGenotypes;
 				}
+#pragma omp critical
 				pop.getVars().setVar(subPopVar_String(*it, GenotypeFreq_String)
 					+ m_suffix + "{" + toStr(loc) + "}", genotypes);
 			}
@@ -1128,7 +1156,8 @@ bool statHaploFreq::apply(Population & pop) const
 
 		pop.activateVirtualSubPop(*it);
 
-		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+#pragma omp parallel for if(numThreads() > 1)
+		for (ssize_t idx = 0; idx < static_cast<ssize_t>(m_loci.size()); ++idx) {
 			const vectori & loci = m_loci[idx];
 			size_t nLoci = loci.size();
 			if (nLoci == 0)
@@ -1171,9 +1200,11 @@ bool statHaploFreq::apply(Population & pop) const
 				haplotypeCnt[idx][dct->first] += dct->second;
 			allHaplotypeCnt[idx] += allHaplotypes;
 			// output variable.
-			if (m_vars.contains(HaplotypeNum_sp_String))
+			if (m_vars.contains(HaplotypeNum_sp_String)) {
+#pragma omp critical
 				pop.getVars().setVar(subPopVar_String(*it, HaplotypeNum_String) + m_suffix + "{"
 					+ key + "}", haplotypes);
+			}
 			// note that genotyeps is changed in place.
 			if (m_vars.contains(HaplotypeFreq_sp_String)) {
 				if (allHaplotypes != 0) {
@@ -1182,6 +1213,7 @@ bool statHaploFreq::apply(Population & pop) const
 					for (; dct != dctEnd; ++dct)
 						dct->second /= allHaplotypes;
 				}
+#pragma omp critical
 				pop.getVars().setVar(subPopVar_String(*it, HaplotypeFreq_String) + m_suffix + "{"
 					+ key + "}", haplotypes);
 			}
@@ -1284,7 +1316,8 @@ bool statHaploHomoFreq::apply(Population & pop) const
 		tupleDict heteroCnt;
 		tupleDict homoCnt;
 
-		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+#pragma omp parallel for if(numThreads() > 1)
+		for (ssize_t idx = 0; idx < static_cast<ssize_t>(m_loci.size()); ++idx) {
 			const vectori & loci = m_loci[idx];
 			size_t nLoci = loci.size();
 			if (nLoci == 0)
@@ -1318,11 +1351,14 @@ bool statHaploHomoFreq::apply(Population & pop) const
 				else
 					++homo;
 			}
-			heteroCnt[loci] = static_cast<double>(hetero);
-			homoCnt[loci] = static_cast<double>(homo);
+#pragma omp critical
+			{
+				heteroCnt[loci] = static_cast<double>(hetero);
+				homoCnt[loci] = static_cast<double>(homo);
 
-			allHeteroCnt[loci] += hetero;
-			allHomoCnt[loci] += homo;
+				allHeteroCnt[loci] += hetero;
+				allHomoCnt[loci] += homo;
+			}
 		}
 		pop.deactivateVirtualSubPop(it->subPop());
 		// output subpopulation variable?
@@ -2426,19 +2462,43 @@ double statNeutrality::calcPi(HAPLOLIST::const_iterator begin, HAPLOLIST::const_
 	double diffCnt = 0;
 	int numComparison = 0;
 
-	HAPLOLIST::const_iterator it = begin;
+	size_t size = end - begin;
+	size_t nThreads = numThreads();
 
-	for (; it != end; ++it) {
-		HAPLOLIST::const_iterator it1 = it;
-		for (++it1; it1 != end; ++it1) {
-			const vectora & seq1 = *it;
-			const vectora & seq2 = *it1;
-			size_t sz = seq1.size();
-			for (size_t i = 0; i < sz; ++i)
-				diffCnt += seq1[i] != seq2[i];
-			++numComparison;
+	if (nThreads > 1)
+#ifdef _OPENMP
+#  pragma omp parallel reduction(+ : diffCnt, numComparison)
+	{
+		size_t id = omp_get_thread_num();
+		HAPLOLIST::const_iterator it = begin + id * (size / nThreads);
+		HAPLOLIST::const_iterator itEnd = id == nThreads - 1 ? end : it + (size / nThreads);
+		for (; it != itEnd; ++it) {
+			HAPLOLIST::const_iterator it1 = it;
+			for (++it1; it1 != end; ++it1) {
+				const vectora & seq1 = *it;
+				const vectora & seq2 = *it1;
+				size_t sz = seq1.size();
+				for (size_t i = 0; i < sz; ++i)
+					diffCnt += seq1[i] != seq2[i];
+				++numComparison;
+			}
 		}
 	}
+#endif
+		else {
+			HAPLOLIST::const_iterator it = begin;
+			for (; it != end; ++it) {
+				HAPLOLIST::const_iterator it1 = it;
+				for (++it1; it1 != end; ++it1) {
+					const vectora & seq1 = *it;
+					const vectora & seq2 = *it1;
+					size_t sz = seq1.size();
+					for (size_t i = 0; i < sz; ++i)
+						diffCnt += seq1[i] != seq2[i];
+					++numComparison;
+				}
+			}
+		}
 	// return 0 if there is only one sequence
 	return numComparison == 0 ? 0 : diffCnt / numComparison;
 }

@@ -68,9 +68,18 @@ bool InitSex::apply(Population & pop) const
 		if (!m_sex.empty())
 			for (; ind.valid(); ++ind, ++idx)
 				ind->setSex(m_sex[idx % sexSz] == 1 ? MALE : FEMALE);
-		else
-			for (; ind.valid(); ++ind)
-				ind->setSex(ws.draw() == 0 ? MALE : FEMALE);
+		else {
+			if (numThreads() > 1) {
+#pragma omp parallel private(ind)
+				{
+					ind = pop.indIterator(sp->subPop(), omp_get_thread_num());
+					for (; ind.valid(); ++ind)
+						ind->setSex(ws.draw() == 0 ? MALE : FEMALE);
+				}
+			} else
+				for (; ind.valid(); ++ind)
+					ind->setSex(ws.draw() == 0 ? MALE : FEMALE);
+		}
 		pop.deactivateVirtualSubPop(sp->subPop());
 	}
 	return true;
@@ -113,14 +122,30 @@ bool InitInfo::apply(Population & pop) const
 
 	for (; sp != sp_end; ++sp) {
 		pop.activateVirtualSubPop(*sp);
-		IndIterator ind = pop.indIterator(sp->subPop());
 		size_t numValues = m_values.size();
-		for (; ind.valid(); ++ind, ++idx) {
-			for (size_t i = 0; i < infoIdx.size(); ++i) {
-				if (values.empty())
-					ind->setInfo(m_values.func() (PyObj_As_Double, "()"), infoIdx[i]);
-				else
-					ind->setInfo(values[idx % numValues], infoIdx[i]);
+		if (numThreads() > 1 && !values.empty()) {
+#ifdef _OPENMP
+#  pragma omp parallel firstprivate (idx)
+			{
+				size_t id = omp_get_thread_num();
+				IndIterator ind = pop.indIterator(sp->subPop(), id);
+				idx = idx + id * (pop.subPopSize(sp->subPop()) / numThreads());
+				for (; ind.valid(); ++ind, ++idx)
+					for (size_t i = 0; i < infoIdx.size(); ++i) {
+						ind->setInfo(values[idx % numValues], infoIdx[i]);
+					}
+			}
+			idx = idx + pop.subPopSize(sp->subPop());
+#endif
+		} else {
+			IndIterator ind = pop.indIterator(sp->subPop());
+			for (; ind.valid(); ++ind, ++idx) {
+				for (size_t i = 0; i < infoIdx.size(); ++i) {
+					if (values.empty())
+						ind->setInfo(m_values.func() (PyObj_As_Double, "()"), infoIdx[i]);
+					else
+						ind->setInfo(values[idx % numValues], infoIdx[i]);
+				}
 			}
 		}
 		pop.deactivateVirtualSubPop(sp->subPop());
@@ -205,11 +230,24 @@ bool InitGenotype::apply(Population & pop) const
 		// will go through virtual subpopulation if sp is virtual
 		pop.activateVirtualSubPop(*sp);
 		if (!m_genotype.empty()) {
-			IndIterator it = pop.indIterator(sp->subPop());
-			for (; it.valid(); ++it)
-				for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
-					for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++idx)
-						it->setAllele(ToAllele(m_genotype[idx % sz]), *loc, static_cast<int>(*p));
+#pragma omp parallel firstprivate(idx) if(numThreads() > 1)
+			{
+#ifdef _OPENMP
+				size_t id = omp_get_thread_num();
+				IndIterator it = pop.indIterator(sp->subPop(), id);
+				idx = idx + id * (pop.subPopSize(sp->subPop()) / numThreads()) * (ploidy.end() - ploidy.begin()) * (loci.end() - loci.begin());
+#else
+				IndIterator it = pop.indIterator(sp->subPop());
+#endif
+				for (; it.valid(); ++it)
+					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
+						for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++idx)
+							it->setAllele(ToAllele(m_genotype[idx % sz]), *loc, static_cast<int>(*p));
+
+			}
+#ifdef _OPENMP
+			idx = idx + pop.subPopSize(sp->subPop()) * (ploidy.end() - ploidy.begin()) * (loci.end() - loci.begin());
+#endif
 		} else if (!m_prop.empty()) {
 			WeightedSampler ws;
 			size_t sz = pop.subPopSize(*sp);
@@ -224,33 +262,47 @@ bool InitGenotype::apply(Population & pop) const
 				}
 			} else {
 				ws.set(m_prop.begin(), m_prop.end(), sz * ploidy.size());
-				IndIterator it = pop.indIterator(sp->subPop());
-				for (; it.valid(); ++it)
-					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) {
-						const vectori & haplotype = m_haplotypes[ws.draw()];
-						size_t hapSz = haplotype.size();
-						size_t j = 0;
-						for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++j)
-							it->setAllele(ToAllele(haplotype[j % hapSz]), *loc, static_cast<int>(*p));
-					}
+#pragma omp parallel if(numThreads() > 1)
+				{
+#ifdef _OPENMP
+					IndIterator it = pop.indIterator(sp->subPop(), omp_get_thread_num());
+#else
+					IndIterator it = pop.indIterator(sp->subPop());
+#endif
+					for (; it.valid(); ++it)
+						for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) {
+							const vectori & haplotype = m_haplotypes[ws.draw()];
+							size_t hapSz = haplotype.size();
+							size_t j = 0;
+							for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++j)
+								it->setAllele(ToAllele(haplotype[j % hapSz]), *loc, static_cast<int>(*p));
+						}
+				}
 			}
 		} else {
 			// m_freq can be empty if ....
 			WeightedSampler ws(m_freq.empty() ? vectorf(m_haplotypes.size(), 1. / m_haplotypes.size()) : m_freq);
-			IndIterator it = pop.indIterator(sp->subPop());
-			for (; it.valid(); ++it)
-				for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) {
-					if (m_haplotypes.empty()) {
-						for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc)
-							it->setAllele(ToAllele(ws.draw()), *loc, static_cast<int>(*p));
-					} else {
-						const vectori & haplotype = m_haplotypes[ws.draw()];
-						size_t hapSz = haplotype.size();
-						size_t j = 0;
-						for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++j)
-							it->setAllele(ToAllele(haplotype[j % hapSz]), *loc, static_cast<int>(*p));
+#pragma omp parallel if(numThreads() > 1)
+			{
+#ifdef _OPENMP
+				IndIterator it = pop.indIterator(sp->subPop(), omp_get_thread_num());
+#else
+				IndIterator it = pop.indIterator(sp->subPop());
+#endif
+				for (; it.valid(); ++it)
+					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) {
+						if (m_haplotypes.empty()) {
+							for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc)
+								it->setAllele(ToAllele(ws.draw()), *loc, static_cast<int>(*p));
+						} else {
+							const vectori & haplotype = m_haplotypes[ws.draw()];
+							size_t hapSz = haplotype.size();
+							size_t j = 0;
+							for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++j)
+								it->setAllele(ToAllele(haplotype[j % hapSz]), *loc, static_cast<int>(*p));
+						}
 					}
-				}
+			}
 		}
 		pop.deactivateVirtualSubPop(sp->subPop());
 	}

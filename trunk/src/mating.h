@@ -1293,6 +1293,11 @@ public:
 		return "<simuPOP.CombinedParentsChooser> chooses parents using two parent choosers";
 	}
 
+	/// CPPONLY
+	virtual bool parallelizable() const
+	{
+		return m_fatherChooser->parallelizable() && m_motherChooser->parallelizable();
+	}
 
 	/// CPPONLY
 	void initialize(Population & pop, size_t sp);

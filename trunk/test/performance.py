@@ -67,10 +67,10 @@ class PerformanceTest:
         results = self.run()
         self.logger.info(', '.join(['%s' % x for x in results]))
 
-    def serialRun(self, **kwargs):
+    def sequentialRun(self, **kwargs):
         '''
         Call self._run with a list of arguments, for example
-            self.serialRun(a=[v1, v2], b=[v1, v2])
+            self.sequentialRun(a=[v1, v2], b=[v1, v2])
         will result in
             self._run(a=v1, b=v1)
             self._run(a=v2, b=v2)
@@ -382,7 +382,6 @@ class TestMitochondrialGenoTransmitter(PerformanceTest):
         )
         return gens
 
-
 class TestRecombinator(PerformanceTest):
     def __init__(self, logger, time=30):
         PerformanceTest.__init__(self, 'Recombinator, results are number of generations in %d seconds.' % int(time),
@@ -404,6 +403,331 @@ class TestRecombinator(PerformanceTest):
             matingScheme=RandomMating(ops=Recombinator(rates = 0.4, loci=[1,3,8])),
         )
         return gens
+
+class TestCombinedParentsChooser(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'CombinedParentsChooser, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci)
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=HomoMating(
+                chooser=CombinedParentsChooser(RandomParentChooser(MALE_ONLY),RandomParentChooser(FEMALE_ONLY)),
+                generator=OffspringGenerator(
+                    ops=MendelianGenoTransmitter(),
+                    numOffspring=2,
+                    sexMode=RANDOM_SEX),
+                ),
+        )
+        return gens
+
+class TestHeteroMating(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'HeteroMating, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000], loci=[10, 100, 10000])
+
+    def _run(self, size, loci):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci, infoFields=['father_idx','mother_idx'])
+        gens = pop.evolve(
+            initOps=InitSex(),
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=HeteroMating(
+                [RandomMating(numOffspring=2, subPops=0, ops=[MendelianGenoTransmitter(), ParentsTagger()]),
+                RandomMating(numOffspring=4, subPops=1, ops=[MendelianGenoTransmitter(), ParentsTagger()])]),
+        )
+        return gens
+
+def createPop(size, loci=100, aff=False, vsp=False):
+    pop = Population(size=size, loci=loci)
+    initSex(pop)
+    initGenotype(pop, freq=[0.5,0.5])
+    if aff:
+        maPenetrance(pop, loci=0, penetrance=[0.1, 0.3, 0.4])
+    if vsp:
+        pop.setVirtualSplitter(SexSplitter())
+    return pop
+
+class TestStatHaploFreq(PerformanceTest):
+    def __init__(self, logger, repeats=200):
+        PerformanceTest.__init__(self, 'Stat HaploFreq, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000, [10000]*10], loci=[100, 1000])
+
+    def _run(self, size, loci):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import createPop, stat\n'
+                'pop = createPop(size=%s, loci=%s)' % (size, loci),
+            stmt = "stat(pop, haploFreq=[[0,1], [2,3], [3,4], [4,5], [5,6]], vars=['haploFreq', 'haploFreq_sp'])\n"
+                "pop.vars().clear()")
+        return t.timeit(number=self.repeats)
+
+class TestStatHaploHomoFreq(PerformanceTest):
+    def __init__(self, logger, repeats=200):
+        PerformanceTest.__init__(self, 'Stat HaploHomoFreq, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000, [10000]*10], loci=[100, 1000])
+
+    def _run(self, size, loci):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import createPop, stat\n'
+                'pop = createPop(size=%s, loci=%s)' % (size, loci),
+            stmt = "stat(pop, haploHomoFreq=[[0,1], [2,3], [3,4], [4,5], [5,6]], vars=['haploHomoFreq', 'haploHomoFreq_sp'])\n"
+                "pop.vars().clear()")
+        return t.timeit(number=self.repeats)
+
+class TestStatAlleleFreq(PerformanceTest):
+    def __init__(self, logger, repeats=30):
+        PerformanceTest.__init__(self, 'Stat AlleleFreq, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000, [10000]*10], loci=[100, 1000])
+
+    def _run(self, size, loci):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import createPop, stat, ALL_AVAIL\n'
+                'pop = createPop(size=%s, loci=%s)' % (size, loci),
+            stmt = "stat(pop, alleleFreq=ALL_AVAIL, vars=['allelFreq', 'alleleFreq_sp'])\n"
+                "pop.vars().clear()")
+        return t.timeit(number=self.repeats)
+
+class TestStatGenoFreq(PerformanceTest):
+    def __init__(self, logger, repeats=500):
+        PerformanceTest.__init__(self, 'Stat GenoFreq, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000, [10000]*10], loci=[100, 1000])
+
+    def _run(self, size, loci):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import createPop, stat\n'
+                'pop = createPop(size=%s, loci=%s)' % (size, loci),
+            stmt = "stat(pop, genoFreq=[0,1,2,3], vars=['genoFreq', 'genoFreq_sp'])\n"
+                "pop.vars().clear()")
+        return t.timeit(number=self.repeats)
+
+class TestStatHeteroFreq(PerformanceTest):
+    def __init__(self, logger, repeats=20):
+        PerformanceTest.__init__(self, 'Stat HeteroFreq, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 100000, [10000]*10], loci=[100, 1000])
+
+    def _run(self, size, loci):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import createPop, stat, ALL_AVAIL\n'
+                'pop = createPop(size=%s, loci=%s)' % (size, loci),
+            stmt = "stat(pop, heteroFreq=ALL_AVAIL, vars=['heteroFreq', 'heteroFreq_sp'])\n"
+                "pop.vars().clear()")
+        return t.timeit(number=self.repeats)
+
+class TestStatNeutrality(PerformanceTest):
+    def __init__(self, logger, repeats=10):
+        PerformanceTest.__init__(self, 'Stat Neutrality, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, [1000]*10], loci=[1,10,100])
+
+    def _run(self, size, loci):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import createPop, stat, ALL_AVAIL\n'
+                'pop = createPop(size=%s, loci=%s)' % (size, loci),
+            stmt = "stat(pop, neutrality=ALL_AVAIL, vars=['neutrality', 'neutrality_sp'])\n"
+                "pop.vars().clear()")
+        return t.timeit(number=self.repeats)
+
+class TestStatNumOfMales(PerformanceTest):
+    def __init__(self, logger, repeats=5000):
+        PerformanceTest.__init__(self, 'Stat NumOfMales, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[100000, [10000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import createPop, stat, ALL_AVAIL\n'
+                'pop = createPop(size=%s,vsp=True)' % (size),
+            stmt = "stat(pop, numOfMales=True, subPops=[(ALL_AVAIL,ALL_AVAIL), (ALL_AVAIL,0), (ALL_AVAIL, 1)], vars=['numOfMales', 'numOfMales_sp'])\n"
+                "pop.vars().clear()")
+        return t.timeit(number=self.repeats)
+
+class TestStatNumOfAffected(PerformanceTest):
+    def __init__(self, logger, repeats=5000):
+        PerformanceTest.__init__(self, 'Stat NumOfAffected, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[100000, [10000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import createPop, stat, ALL_AVAIL\n'
+                'pop = createPop(size=%s, aff=True, vsp=True)' % size,
+            stmt = "stat(pop, numOfAffected=True, subPops=[(ALL_AVAIL,ALL_AVAIL), (ALL_AVAIL,0), (ALL_AVAIL, 1)], vars=['numOfAffected', 'numOfAffected_sp'])\n"
+                "pop.vars().clear()")
+        return t.timeit(number=self.repeats)
+
+class TestInitGenotypeCase1(PerformanceTest):
+    def __init__(self, logger, repeats=10):
+        PerformanceTest.__init__(self, 'InitGenotype case 1, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[100000, [10000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, initGenotype\n'
+                'pop = Population(size=%s,loci=1000)' % (size),
+            stmt = 'initGenotype(pop,genotype=[1,2,3,4,5,6])') 
+        return t.timeit(number=self.repeats)
+
+class TestInitGenotypeCase2(PerformanceTest):
+    def __init__(self, logger, repeats=10):
+        PerformanceTest.__init__(self, 'InitGenotype case 2, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[100000, [10000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, initGenotype\n'
+                'pop = Population(size=%s,loci=1000)' % (size),
+            stmt = 'initGenotype(pop,prop=[.2,.8])') 
+        return t.timeit(number=self.repeats)
+
+class TestInitGenotypeCase3(PerformanceTest):
+    def __init__(self, logger, repeats=10):
+        PerformanceTest.__init__(self, 'InitGenotype case 3, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[100000, [10000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, initGenotype\n'
+                'pop = Population(size=%s,loci=1000)' % (size),
+            stmt = 'initGenotype(pop,haplotypes=[[0,0,1,1],[1,1,0,0]], prop=[.2,.8])')
+        return t.timeit(number=self.repeats)
+
+class TestInitGenotypeCase4(PerformanceTest):
+    def __init__(self, logger, repeats=10):
+        PerformanceTest.__init__(self, 'InitGenotype case 4, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[100000, [10000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, initGenotype\n'
+                'pop = Population(size=%s,loci=1000)' % (size),
+            stmt = 'initGenotype(pop,freq=[0.5,0.5])')
+        return t.timeit(number=self.repeats)
+
+class TestInitSex(PerformanceTest):
+    def __init__(self, logger, repeats=1000):
+        PerformanceTest.__init__(self, 'InitSex, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[1000000, [100000]*10])
+
+    def _run(self, size):
+        # single test case
+        pop = Population(size = size)
+        t = timeit.Timer(
+            setup = 'from __main__ import Population,initSex, MALE,FEMALE\n'
+                'pop = Population(size=%s,loci=1000)' % (size),
+            stmt = 'initSex(pop)')
+        return t.timeit(number=self.repeats)
+    
+class TestInitInfo(PerformanceTest):
+    
+    def __init__(self, logger, repeats=1000):
+        PerformanceTest.__init__(self, 'InitInfo, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[1000000, [100000]*10])
+
+    def _run(self, size):
+        # single test case
+        pop = Population(size = size)
+        t = timeit.Timer(
+               setup = 'from __main__ import Population, initInfo\n'
+        "pop = Population(size=%s,loci=100, infoFields=['a','b'])" % (size),
+        stmt = "initInfo(pop,[1,2,3,4,5,6,7],infoFields=['a','b'])")
+        return t.timeit(number=self.repeats)
 
 
 class TestRandomMatingWithSelection(PerformanceTest):
@@ -557,7 +881,7 @@ class TestIteratingVSPs(PerformanceTest):
 
     def run(self):
         # overall running case
-        return self.serialRun(vsp=[
+        return self.sequentialRun(vsp=[
             'all ind',
             'all males',
             'all unaffected',
@@ -619,9 +943,15 @@ def analyze(test):
                     if len(one) == 0:
                         print '     ??',
                     elif len(one) == 1:
-                        print '%7s' % (one[0][stat]),
+                        if '.' in one[0][stat]:
+                            print '%7.2f' % float(one[0][stat]),
+                        else:
+                            print '%7s' % (one[0][stat]),
                     else:
-                        print '%17s' % ('(%d - %d)' % (min([int(x[stat]) for x in one]), max([int(x[stat]) for x in one]))),
+                        if '.' in one[0][stat]:
+                            print '%17s' % ('(%7.2f - %7.2f)' % (min([float(x[stat]) for x in one]), max([float(x[stat]) for x in one]))),
+                        else:
+                            print '%17s' % ('(%d - %d)' % (min([int(x[stat]) for x in one]), max([int(x[stat]) for x in one]))),
             print
         print
       
@@ -629,7 +959,7 @@ if __name__ == '__main__':
     # 
     # Figure out tests to run
     #
-    if len(sys.argv) > 1:
+    if sum([not x.startswith('-') for x in sys.argv[1:]]) > 0:
         # selected test to run
         tests = []
         for test in sys.argv[1:]:
