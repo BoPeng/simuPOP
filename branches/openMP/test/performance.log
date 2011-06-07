@@ -6644,3 +6644,57 @@ TestInitInfo : size=1000000: 8.06356215477
 TestInitInfo : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 8.2104408741
 TestInitInfo : 8.06356215477, 8.2104408741
 TestInitInfo : End of test TestInitInfo
+TestInitInfo : Host: EPI7-0541302 (Windows, AMD64, Intel64 Family 6 Model 30 Stepping 5, GenuineIntel)
+TestInitInfo : Time: Tue Jun 07 11:50:36 2011
+TestInitInfo : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestInitInfo : simuPOP: 1.0.6svn (rev 4205, module short, optimized, 1 threads)
+TestInitInfo : Test: InitInfo, results are time (not processor time) to apply operator for 1000 times.
+TestInitInfo : size=1000000: 42.5138275974
+TestInitInfo : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 42.0906409373
+TestInitInfo : 42.5138275974, 42.0906409373
+TestInitInfo : End of test TestInitInfo
+TestInitInfo : Host: EPI7-0541302 (Windows, AMD64, Intel64 Family 6 Model 30 Stepping 5, GenuineIntel)
+TestInitInfo : Time: Tue Jun 07 11:52:02 2011
+TestInitInfo : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestInitInfo : simuPOP: 1.0.6svn (rev 4205, module long, optimized, 1 threads)
+TestInitInfo : Test: InitInfo, results are time (not processor time) to apply operator for 1000 times.
+TestInitInfo : size=1000000: 42.7154268612
+TestInitInfo : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 43.2257380443
+TestInitInfo : 42.7154268612, 43.2257380443
+TestInitInfo : End of test TestInitInfo
+TestInitInfo : Host: EPI7-0541302 (Windows, AMD64, Intel64 Family 6 Model 30 Stepping 5, GenuineIntel)
+TestInitInfo : Time: Tue Jun 07 11:53:30 2011
+TestInitInfo : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestInitInfo : simuPOP: 1.0.6svn (rev 4205, module binary, optimized, 1 threads)
+TestInitInfo : Test: InitInfo, results are time (not processor time) to apply operator for 1000 times.
+TestInitInfo : size=1000000: 45.0157581313
+TestInitInfo : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 44.4060398472
+TestInitInfo : 45.0157581313, 44.4060398472
+TestInitInfo : End of test TestInitInfo
+TestInitInfo : Host: EPI7-0541302 (Windows, AMD64, Intel64 Family 6 Model 30 Stepping 5, GenuineIntel)
+TestInitInfo : Time: Tue Jun 07 11:55:24 2011
+TestInitInfo : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestInitInfo : simuPOP: 1.0.6svn (rev 4205, module short, optimized, 4 threads)
+TestInitInfo : Test: InitInfo, results are time (not processor time) to apply operator for 1000 times.
+TestInitInfo : size=1000000: 12.986396842
+TestInitInfo : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 14.089627703
+TestInitInfo : 12.986396842, 14.089627703
+TestInitInfo : End of test TestInitInfo
+TestInitInfo : Host: EPI7-0541302 (Windows, AMD64, Intel64 Family 6 Model 30 Stepping 5, GenuineIntel)
+TestInitInfo : Time: Tue Jun 07 11:55:52 2011
+TestInitInfo : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestInitInfo : simuPOP: 1.0.6svn (rev 4205, module long, optimized, 4 threads)
+TestInitInfo : Test: InitInfo, results are time (not processor time) to apply operator for 1000 times.
+TestInitInfo : size=1000000: 13.1444051231
+TestInitInfo : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 13.6804705765
+TestInitInfo : 13.1444051231, 13.6804705765
+TestInitInfo : End of test TestInitInfo
+TestInitInfo : Host: EPI7-0541302 (Windows, AMD64, Intel64 Family 6 Model 30 Stepping 5, GenuineIntel)
+TestInitInfo : Time: Tue Jun 07 11:56:21 2011
+TestInitInfo : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestInitInfo : simuPOP: 1.0.6svn (rev 4205, module binary, optimized, 4 threads)
+TestInitInfo : Test: InitInfo, results are time (not processor time) to apply operator for 1000 times.
+TestInitInfo : size=1000000: 12.6781480139
+TestInitInfo : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 13.7568184564
+TestInitInfo : 12.6781480139, 13.7568184564
+TestInitInfo : End of test TestInitInfo
