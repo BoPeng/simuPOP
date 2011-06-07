@@ -325,3 +325,126 @@ TestPedigreeTagger, 2011-05-18 16:43:04,122, bp9, x86_64-4threads, python2.7.1, 
 TestInheritTagger, 2011-05-18 17:01:51,673, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4173-intel, short, 26678, 2174, 23119, 1588, 677, 64
 TestInheritTagger, 2011-05-18 17:04:27,692, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4173-intel, long, 25909, 1801, 15852, 1144, 179, 0
 TestInheritTagger, 2011-05-18 17:07:35,036, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4173-intel, binary, 22938, 2168, 24949, 2026, 4616, 398
+TestStatAlleleFreq, 2011-05-25 14:16:24,057, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, short, 0.642503023148, 7.59624409676, 6.07503390312, 9.04420208931, 228.846941948, 89.078854084
+TestStatAlleleFreq, 2011-05-25 14:23:30,764, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, long, 1.01851701736, 17.1053318977, 10.8354318142, 12.6472120285, 240.113608122, 126.978461027
+TestStatAlleleFreq, 2011-05-25 14:28:33,636, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, binary, 1.08484101295, 10.7368938923, 10.8209798336, 11.4512810707, 132.637831926, 111.818598986
+TestStatAlleleFreq, 2011-05-25 14:30:39,283, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, short, 0.173316955566, 2.43554115295, 1.73279309273, 3.60566401482, 62.5272729397, 36.6046230793
+TestStatAlleleFreq, 2011-05-25 14:33:25,358, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, long, 0.287755966187, 4.98926496506, 3.02955412865, 6.11895489693, 71.2390468121, 61.2199239731
+TestStatAlleleFreq, 2011-05-25 14:35:07,703, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, binary, 0.307837963104, 3.0087928772, 3.05822300911, 3.17401409149, 36.7387290001, 31.7028801441
+TestStatNumOfMales, 2011-05-26 09:55:10,511, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, short, 16.8653411865, 17.209662199
+TestStatNumOfMales, 2011-05-26 09:55:46,138, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, long, 16.4387378693, 17.3230619431
+TestStatNumOfMales, 2011-05-26 09:56:23,810, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, binary, 17.4795110226, 17.6907908916
+TestStatNumOfMales, 2011-05-26 09:56:46,249, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, short, 9.28081488609, 10.3006439209
+TestStatNumOfMales, 2011-05-26 09:57:08,449, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, long, 9.30121707916, 10.2057070732
+TestStatNumOfMales, 2011-05-26 09:57:32,400, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, binary, 10.1437051296, 10.6698708534
+TestStatNumOfAffected, 2011-05-26 09:58:13,138, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, short, 18.7245531082, 19.554336071
+TestStatNumOfAffected, 2011-05-26 09:58:54,166, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, long, 18.9747388363, 19.5944628716
+TestStatNumOfAffected, 2011-05-26 09:59:36,526, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, binary, 19.5599150658, 20.22062397
+TestStatNumOfAffected, 2011-05-26 09:59:58,940, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, short, 9.38937807083, 10.0877468586
+TestStatNumOfAffected, 2011-05-26 10:00:20,933, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, long, 9.50907111168, 10.3536448479
+TestStatNumOfAffected, 2011-05-26 10:00:44,755, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, binary, 10.2223381996, 11.0147790909
+TestStatHaploFreq, 2011-05-26 10:21:44,402, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, short, 1.23293209076, 12.2021050453, 11.865776062, 1.29735088348, 21.6016001701, 15.2668449879
+TestStatHaploFreq, 2011-05-26 10:23:30,689, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, long, 1.41531896591, 23.2550559044, 17.4902069569, 1.51551508904, 25.3949120045, 16.8971569538
+TestStatHaploFreq, 2011-05-26 10:25:10,205, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, binary, 1.69325518608, 17.1936631203, 18.6411919594, 1.70309305191, 17.4465510845, 18.0900690556
+TestStatHaploFreq, 2011-05-26 10:26:01,853, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, short, 0.566158056259, 5.73171782494, 5.61322593689, 0.713933944702, 9.37162017822, 7.79208993912
+TestStatHaploFreq, 2011-05-26 10:26:56,395, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, long, 0.613075971603, 9.36668801308, 7.58966112137, 0.720818042755, 9.74222493172, 7.8867251873
+TestStatHaploFreq, 2011-05-26 10:27:52,943, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, binary, 0.768512964249, 7.49124717712, 7.55833601952, 0.781599998474, 7.85499882698, 7.7969429493
+TestStatHaploHomoFreq, 2011-05-26 10:28:28,350, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, short, 0.292308092117, 3.24175906181, 2.92852807045, 0.337744951248, 6.22854995728, 3.89006996155
+TestStatHaploHomoFreq, 2011-05-26 10:29:08,609, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, long, 0.31462597847, 5.88319706917, 3.6914870739, 0.325666904449, 7.17342495918, 4.69271183014
+TestStatHaploHomoFreq, 2011-05-26 10:29:59,679, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, binary, 0.631763935089, 6.12271213531, 6.13581681252, 0.631522893906, 6.96468997002, 6.4281539917
+TestStatHaploHomoFreq, 2011-05-26 10:30:26,105, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, short, 0.139616966248, 1.46904397011, 1.41087889671, 0.158464193344, 2.5026910305, 1.93978285789
+TestStatHaploHomoFreq, 2011-05-26 10:30:53,443, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, long, 0.147619009018, 2.38445401192, 1.86939907074, 0.15052485466, 2.83502817154, 2.09009408951
+TestStatHaploHomoFreq, 2011-05-26 10:31:30,481, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, binary, 0.287275075912, 2.73110985756, 2.7528860569, 0.292492866516, 3.02533006668, 2.91801309586
+TestStatGenoFreq, 2011-05-26 11:09:33,398, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, short, 0.460355997086, 4.32857394218, 4.52319002151, 0.482565879822, 6.7190079689, 6.86939692497
+TestStatGenoFreq, 2011-05-26 11:10:21,683, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, long, 0.500542163849, 6.76568007469, 6.89576387405, 0.500433206558, 7.35019493103, 7.48760890961
+TestStatGenoFreq, 2011-05-26 11:11:10,292, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, binary, 0.590523004532, 5.49827694893, 5.5768828392, 0.637578964233, 6.14054203033, 6.18443202972
+TestStatGenoFreq, 2011-05-26 11:14:14,234, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, short, 1.43687391281, 14.7355120182, 14.2837300301, 1.52868509293, 24.1452269554, 17.648113966
+TestStatGenoFreq, 2011-05-26 11:16:09,379, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, long, 1.64711523056, 25.8571681976, 18.9256169796, 1.66001415253, 28.0234498978, 19.0963768959
+TestStatGenoFreq, 2011-05-26 11:17:55,313, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4182-intel, binary, 1.89334607124, 18.6318368912, 18.7467119694, 1.92588806152, 21.1599271297, 19.6372129917
+TestStatHeteroFreq, 2011-05-26 13:08:13,920, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4184-intel, short, 0.441030979156, 5.07090187073, 4.35444688797, 5.11432695389, 117.634579182, 51.200012207
+TestStatHeteroFreq, 2011-05-26 13:12:40,530, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4184-intel, long, 0.556185007095, 9.46308708191, 5.34688615799, 6.48223590851, 162.691661835, 63.0534501076
+TestStatHeteroFreq, 2011-05-26 13:16:29,162, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4184-intel, binary, 0.831079959869, 8.2782459259, 8.30177307129, 8.63011312485, 93.6239349842, 84.6393620968
+TestStatHeteroFreq, 2011-05-26 13:18:27,983, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4184-intel, short, 0.127473115921, 1.61057591438, 1.26040196419, 1.40715408325, 33.8272380829, 13.8213179111
+TestStatHeteroFreq, 2011-05-26 13:19:57,092, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4184-intel, long, 0.136440992355, 2.69143199921, 1.42887401581, 1.70447492599, 45.7699849606, 17.6911768913
+TestStatHeteroFreq, 2011-05-26 13:21:18,570, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4184-intel, binary, 0.234434127808, 2.50543117523, 2.3329770565, 2.43857598305, 26.4068300724, 23.9802000523
+TestStatNeutrality, 2011-05-27 12:07:40,930, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4187-intel, short, 9.03047394753, 8.99528694153, 27.8919439316, 27.8793339729, 162.322354078, 161.907181978
+TestStatNeutrality, 2011-05-27 12:12:47,358, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4187-intel, long, 11.8714928627, 11.7830820084, 30.3244822025, 30.1393539906, 109.87086916, 111.744431973
+TestStatNeutrality, 2011-05-27 12:36:43,441, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4187-intel, binary, 38.0854780674, 38.7297050953, 84.4918601513, 84.3150889874, 597.092149973, 592.624132156
+TestStatNeutrality, 2011-05-27 12:47:16,722, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4187-intel, short, 3.13563299179, 3.20556497574, 27.0847280025, 27.1585049629, 267.419605017, 268.027008057
+TestStatNeutrality, 2011-05-27 12:57:26,253, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4187-intel, long, 3.10889577866, 3.15888404846, 26.967279911, 26.9330770969, 273.505503893, 275.049628019
+TestStatNeutrality, 2011-05-27 13:07:35,760, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4187-intel, binary, 8.32187199593, 8.2234890461, 32.0274319649, 31.5282058716, 265.823650122, 262.824134827
+TestStatAlleleFreq, 2011-05-30 22:36:02,049, BoPeng-PC, AMD64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4188-vc, short, 0.156656771779, 1.27655273963, 0.772660287815, 2.37574158829, 61.8670897501, 22.9204747493
+TestStatHaploFreq, 2011-05-30 22:36:39,930, BoPeng-PC, AMD64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4188-vc, short, 0.516961671952, 5.07994453068, 5.05862403715, 0.543532975813, 8.80322124159, 6.99310467028
+TestStatHaploHomoFreq, 2011-05-30 22:36:56,315, BoPeng-PC, AMD64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4188-vc, short, 0.089213063666, 1.02716445375, 0.939058905066, 0.101590728388, 1.95475398316, 1.38428928569
+TestStatNeutrality, 2011-05-30 22:40:04,670, BoPeng-PC, AMD64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4188-vc, short, 1.63284142643, 1.61529354731, 9.36116640133, 9.26592282954, 82.7843907702, 83.5741105317
+TestStatNumOfAffected, 2011-05-30 22:40:32,180, BoPeng-PC, AMD64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4188-vc, short, 12.5538024681, 14.0043555011
+TestStatNumOfMales, 2011-05-30 22:40:59,032, BoPeng-PC, AMD64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4188-vc, short, 12.1569785518, 13.7430625612
+TestStatAlleleFreq, 2011-05-30 22:42:50,881, BoPeng-PC, AMD64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4188-vc, long, 0.220509281815, 4.18473675917, 2.32420848449, 2.93125649371, 61.5509994198, 30.0181917411
+TestStatHaploFreq, 2011-05-30 22:43:34,875, BoPeng-PC, AMD64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4188-vc, long, 0.526113989825, 8.50943485645, 6.82598914158, 0.549702036511, 9.71940961513, 7.44523822892
+TestStatHaploHomoFreq, 2011-05-30 22:43:52,589, BoPeng-PC, AMD64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4188-vc, long, 0.0952381383606, 1.640990672, 1.33187294699, 0.116611155082, 2.41424260042, 1.69099849011
+TestStatNeutrality, 2011-05-30 22:47:03,999, BoPeng-PC, AMD64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4188-vc, long, 1.76370840329, 1.7402884912, 9.68770733834, 9.7137196022, 83.7511417758, 84.6337454895
+TestStatNumOfAffected, 2011-05-30 22:47:31,562, BoPeng-PC, AMD64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4188-vc, long, 12.5345379257, 14.0830832444
+TestStatNumOfMales, 2011-05-30 22:47:58,328, BoPeng-PC, AMD64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4188-vc, long, 12.1148138958, 13.7313332862
+TestStatAlleleFreq, 2011-05-30 22:48:56,724, BoPeng-PC, AMD64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4188-vc, binary, 0.12388803262, 1.45832435307, 1.32294249434, 1.57181067984, 23.3392189499, 15.4070457151
+TestStatHaploFreq, 2011-05-30 22:49:38,438, BoPeng-PC, AMD64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4188-vc, binary, 0.635344730263, 6.14874750288, 6.11202654414, 0.643167969785, 6.50306445683, 6.59007939455
+TestStatHaploHomoFreq, 2011-05-30 22:50:02,937, BoPeng-PC, AMD64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4188-vc, binary, 0.188049342826, 1.7590105958, 1.80983161788, 0.201168973159, 2.93850409107, 2.4963571843
+TestStatNeutrality, 2011-05-30 23:03:11,364, BoPeng-PC, AMD64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4188-vc, binary, 11.648486698, 11.7215078263, 40.8976600614, 40.9682174291, 341.107198032, 341.91136288
+TestStatNumOfAffected, 2011-05-30 23:03:39,740, BoPeng-PC, AMD64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4188-vc, binary, 12.6815394851, 14.3641107189
+TestStatNumOfMales, 2011-05-30 23:04:07,559, BoPeng-PC, AMD64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4188-vc, binary, 12.2875931758, 14.2055386616
+TestStatNeutrality, 2011-05-31 11:04:27,264, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4189-intel, short, 6.89465403557, 6.83319497108, 59.4530448914, 58.7852652073, 582.544010878, 575.242040157
+TestStatNeutrality, 2011-05-31 11:26:06,905, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4189-intel, long, 6.49560403824, 6.46290183067, 58.2610440254, 58.1104929447, 580.978451014, 588.665710926
+TestStatNeutrality, 2011-05-31 11:47:47,179, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4189-intel, binary, 17.2013239861, 17.1441349983, 66.1994318962, 66.1883180141, 564.6483531, 568.191828012
+TestCombinedParentsChooser, 2011-05-31 12:24:18,072, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4190-intel, short, 16601, 1443, 15558, 1021, 715, 55
+TestCombinedParentsChooser, 2011-05-31 12:26:53,397, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4190-intel, long, 17644, 1233, 9825, 804, 183, 0
+TestCombinedParentsChooser, 2011-05-31 12:30:00,590, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4190-intel, binary, 12489, 1132, 13914, 1176, 3589, 338
+TestCombinedParentsChooser, 2011-05-31 12:36:04,961, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4190-intel, short, 52566, 4674, 48309, 3269, 788, 70
+TestCombinedParentsChooser, 2011-05-31 12:38:40,375, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4190-intel, long, 52725, 4021, 19461, 1602, 205, 0
+TestCombinedParentsChooser, 2011-05-31 12:41:47,862, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4190-intel, binary, 36988, 3779, 43414, 3928, 6050, 554
+TestStatNeutrality, 2011-06-01 12:19:12,461, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4191-intel, short, 5.57430195808, 5.54049086571, 23.4916911125, 23.5364370346, 157.407531977, 157.336145878
+TestStatNeutrality, 2011-06-01 12:23:30,558, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4191-intel, long, 6.09040188789, 5.92418003082, 19.0062968731, 19.4905800819, 103.946276903, 102.977053881
+TestStatNeutrality, 2011-06-01 12:45:16,569, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4191-intel, binary, 17.0345540047, 17.1601970196, 66.7122030258, 66.5635910034, 569.442780972, 568.384868145
+TestStatNeutrality, 2011-06-01 13:15:52,983, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4191-intel, short, 3.03625702858, 3.06062293053, 26.9129579067, 26.9386310577, 266.358695984, 268.104444981
+TestStatNeutrality, 2011-06-01 13:25:52,287, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4191-intel, long, 3.10122394562, 3.10917305946, 26.9314918518, 26.8245511055, 270.068092108, 268.488473892
+TestStatNeutrality, 2011-06-01 13:35:54,684, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4191-intel, binary, 7.92105603218, 7.99158787727, 30.9572019577, 31.2986159325, 261.169814825, 262.290413141
+TestHeteroMating, 2011-06-02 13:03:44,077, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4192-intel, short, 9574, 799, 8610, 645, 680, 1
+TestHeteroMating, 2011-06-02 13:06:20,597, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4192-intel, long, 9322, 706, 6626, 529, 182, 0
+TestHeteroMating, 2011-06-02 13:09:28,174, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4192-intel, binary, 8048, 740, 8468, 711, 2888, 256
+TestHeteroMating, 2011-06-02 13:12:52,461, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4192-intel, short, 20484, 1388, 11540, 1498, 804, 44
+TestHeteroMating, 2011-06-02 13:15:30,025, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4192-intel, long, 19089, 1637, 15357, 1357, 198, 0
+TestHeteroMating, 2011-06-02 13:18:36,396, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4192-intel, binary, 17963, 1668, 19806, 1729, 5586, 532
+TestInitGenotypeCase1, 2011-06-03 10:03:58,047, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, short, 20.0126931667, 20.2507748604
+TestInitGenotypeCase1, 2011-06-03 10:04:48,348, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, long, 20.1913919449, 20.4295210838
+TestInitGenotypeCase1, 2011-06-03 10:06:18,425, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, binary, 44.585860014, 44.6598989964
+TestInitGenotypeCase1, 2011-06-03 10:06:31,379, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, short, 5.68694496155, 5.69882082939
+TestInitGenotypeCase1, 2011-06-03 10:06:44,668, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, long, 5.97290492058, 6.30002713203
+TestInitGenotypeCase1, 2011-06-03 10:07:10,443, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, binary, 12.9159140587, 12.3552010059
+TestInitGenotypeCase2, 2011-06-03 10:11:05,127, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, short, 128.611124992, 104.630683184
+TestInitGenotypeCase2, 2011-06-03 10:15:02,793, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, long, 128.964793921, 107.590738058
+TestInitGenotypeCase2, 2011-06-03 10:19:13,348, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, binary, 133.749624968, 116.280220985
+TestInitGenotypeCase2, 2011-06-03 10:23:46,829, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, short, 136.778111935, 135.20889616
+TestInitGenotypeCase2, 2011-06-03 10:28:20,802, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, long, 137.331019163, 133.9238801
+TestInitGenotypeCase2, 2011-06-03 10:32:49,232, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, binary, 135.631910086, 132.102210045
+TestInitGenotypeCase3, 2011-06-03 10:33:32,227, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, short, 20.7163860798, 20.7371339798
+TestInitGenotypeCase3, 2011-06-03 10:34:15,306, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, long, 21.2412390709, 21.0875110626
+TestInitGenotypeCase3, 2011-06-03 10:35:50,274, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, binary, 47.2954690456, 47.1605689526
+TestInitGenotypeCase3, 2011-06-03 10:36:02,968, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, short, 5.51451182365, 5.6633439064
+TestInitGenotypeCase3, 2011-06-03 10:36:15,091, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, long, 5.6491651535, 5.6448340416
+TestInitGenotypeCase3, 2011-06-03 10:36:38,723, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, binary, 11.493434906, 11.7346558571
+TestInitGenotypeCase4, 2011-06-03 10:39:15,629, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, short, 77.3453309536, 78.1487438679
+TestInitGenotypeCase4, 2011-06-03 10:41:55,561, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, long, 79.8385441303, 79.1435091496
+TestInitGenotypeCase4, 2011-06-03 10:45:27,401, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, binary, 105.690921068, 105.673449993
+TestInitGenotypeCase4, 2011-06-03 10:46:12,888, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, short, 21.8644630909, 22.1283450127
+TestInitGenotypeCase4, 2011-06-03 10:46:58,953, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, long, 22.5271499157, 22.7279741764
+TestInitGenotypeCase4, 2011-06-03 10:47:59,678, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4195-intel, binary, 29.9604380131, 30.151968956
+TestInitSex, 2011-06-06 10:22:20,721, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4197-intel, short, 14.3448200226, 14.728511095
+TestInitSex, 2011-06-06 10:22:54,606, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4197-intel, long, 14.6376848221, 14.6885848045
+TestInitSex, 2011-06-06 10:23:23,739, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4197-intel, binary, 14.1411120892, 14.4127311707
+TestInitSex, 2011-06-06 10:26:24,857, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4197-intel, short, 4.17382383347, 4.48227882385
+TestInitSex, 2011-06-06 10:26:38,022, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4197-intel, long, 4.08154797554, 4.58521986008
+TestInitSex, 2011-06-06 10:26:48,164, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4197-intel, binary, 4.46001601219, 5.02257704735
+TestInitSex, 2011-06-06 15:38:55,266, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4200-intel, short, 46.7628421783, 46.9360320568
+TestInitSex, 2011-06-06 15:40:50,926, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4200-intel, long, 47.1968901157, 47.7802641392
+TestInitSex, 2011-06-06 15:42:28,424, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4200-intel, binary, 47.520539999, 47.8896892071
+TestInitSex, 2011-06-06 15:43:11,943, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4200-intel, short, 13.1370029449, 13.5422229767
+TestInitSex, 2011-06-06 15:43:59,207, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4200-intel, long, 13.7384490967, 15.3715240955
+TestInitSex, 2011-06-06 15:44:27,405, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4200-intel, binary, 12.9587409496, 13.3092448711

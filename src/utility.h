@@ -1920,7 +1920,7 @@ private:
 	///
 	vectoru m_sequence;
 
-	ULONG m_index;
+	ATOMICLONG m_index;
 };
 
 

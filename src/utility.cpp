@@ -492,17 +492,20 @@ UINT numThreads()
 
 ATOMICLONG fetchAndIncrement(ATOMICLONG * val)
 {
+	if(g_numThreads == 1)
+		return (*val)++;
+	else
 #ifdef _WIN64
-	return InterlockedIncrement64(val) - 1;
+		return InterlockedIncrement64(val) - 1;
 #elif defined(_WIN32)
-	return InterlockedIncrement(val) - 1;
+		return InterlockedIncrement(val) - 1;
 #else
 	// for Intel C++, see page 164 of
 	// http://softwarecommunity.intel.com/isn/downloads/softwareproducts/pdfs/347603.pdf
 	//
 	// for gcc, see
 	// http://gcc.gnu.org/onlinedocs/gcc-4.1.0/gcc/Atomic-Builtins.html
-	return __sync_fetch_and_add(val, 1);
+		return __sync_fetch_and_add(val, 1);
 #endif
 }
 
@@ -3569,6 +3572,9 @@ size_t WeightedSampler::draw()
 {
 	DBG_FAILIF(m_algorithm == 0, ValueError,
 		"weighted sample is not initialized");
+#ifdef _OPENMP
+	ATOMICLONG index = 0;
+#endif
 
 	switch (m_algorithm) {
 	case 1:
@@ -3593,7 +3599,13 @@ size_t WeightedSampler::draw()
 		// return according to proportion.
 		if (m_index == m_sequence.size())
 			m_index = 0;
+#ifdef _OPENMP
+		index = fetchAndIncrement(&m_index);
+		return m_sequence[index];
+#else
+
 		return m_sequence[m_index++];
+#endif
 	default:
 		throw RuntimeError("Invalid weighted sampler (empty weight?)");
 	}

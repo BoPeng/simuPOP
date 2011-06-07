@@ -5192,3 +5192,1401 @@ TestInheritTagger : loci=10000, size=10000: 4616
 TestInheritTagger : loci=10000, size=100000: 398
 TestInheritTagger : 22938, 2168, 24949, 2026, 4616, 398
 TestInheritTagger : End of test TestInheritTagger
+TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatAlleleFreq : Time: Wed May 25 14:10:25 2011
+TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4182, module short, optimized, 1 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are time (not processor time) to apply operator for 30 times.
+TestStatAlleleFreq : loci=100, size=10000: 0.642503023148
+TestStatAlleleFreq : loci=100, size=100000: 7.59624409676
+TestStatAlleleFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.07503390312
+TestStatAlleleFreq : loci=1000, size=10000: 9.04420208931
+TestStatAlleleFreq : loci=1000, size=100000: 228.846941948
+TestStatAlleleFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 89.078854084
+TestStatAlleleFreq : 0.642503023148, 7.59624409676, 6.07503390312, 9.04420208931, 228.846941948, 89.078854084
+TestStatAlleleFreq : End of test TestStatAlleleFreq
+TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatAlleleFreq : Time: Wed May 25 14:16:25 2011
+TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4182, module long, optimized, 1 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are time (not processor time) to apply operator for 30 times.
+TestStatAlleleFreq : loci=100, size=10000: 1.01851701736
+TestStatAlleleFreq : loci=100, size=100000: 17.1053318977
+TestStatAlleleFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 10.8354318142
+TestStatAlleleFreq : loci=1000, size=10000: 12.6472120285
+TestStatAlleleFreq : loci=1000, size=100000: 240.113608122
+TestStatAlleleFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 126.978461027
+TestStatAlleleFreq : 1.01851701736, 17.1053318977, 10.8354318142, 12.6472120285, 240.113608122, 126.978461027
+TestStatAlleleFreq : End of test TestStatAlleleFreq
+TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatAlleleFreq : Time: Wed May 25 14:23:31 2011
+TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4182, module binary, optimized, 1 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are time (not processor time) to apply operator for 30 times.
+TestStatAlleleFreq : loci=100, size=10000: 1.08484101295
+TestStatAlleleFreq : loci=100, size=100000: 10.7368938923
+TestStatAlleleFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 10.8209798336
+TestStatAlleleFreq : loci=1000, size=10000: 11.4512810707
+TestStatAlleleFreq : loci=1000, size=100000: 132.637831926
+TestStatAlleleFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 111.818598986
+TestStatAlleleFreq : 1.08484101295, 10.7368938923, 10.8209798336, 11.4512810707, 132.637831926, 111.818598986
+TestStatAlleleFreq : End of test TestStatAlleleFreq
+TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatAlleleFreq : Time: Wed May 25 14:28:34 2011
+TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4182, module short, optimized, 4 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are time (not processor time) to apply operator for 30 times.
+TestStatAlleleFreq : loci=100, size=10000: 0.173316955566
+TestStatAlleleFreq : loci=100, size=100000: 2.43554115295
+TestStatAlleleFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.73279309273
+TestStatAlleleFreq : loci=1000, size=10000: 3.60566401482
+TestStatAlleleFreq : loci=1000, size=100000: 62.5272729397
+TestStatAlleleFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 36.6046230793
+TestStatAlleleFreq : 0.173316955566, 2.43554115295, 1.73279309273, 3.60566401482, 62.5272729397, 36.6046230793
+TestStatAlleleFreq : End of test TestStatAlleleFreq
+TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatAlleleFreq : Time: Wed May 25 14:30:40 2011
+TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4182, module long, optimized, 4 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are time (not processor time) to apply operator for 30 times.
+TestStatAlleleFreq : loci=100, size=10000: 0.287755966187
+TestStatAlleleFreq : loci=100, size=100000: 4.98926496506
+TestStatAlleleFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 3.02955412865
+TestStatAlleleFreq : loci=1000, size=10000: 6.11895489693
+TestStatAlleleFreq : loci=1000, size=100000: 71.2390468121
+TestStatAlleleFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 61.2199239731
+TestStatAlleleFreq : 0.287755966187, 4.98926496506, 3.02955412865, 6.11895489693, 71.2390468121, 61.2199239731
+TestStatAlleleFreq : End of test TestStatAlleleFreq
+TestStatAlleleFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatAlleleFreq : Time: Wed May 25 14:33:25 2011
+TestStatAlleleFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4182, module binary, optimized, 4 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are time (not processor time) to apply operator for 30 times.
+TestStatAlleleFreq : loci=100, size=10000: 0.307837963104
+TestStatAlleleFreq : loci=100, size=100000: 3.0087928772
+TestStatAlleleFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 3.05822300911
+TestStatAlleleFreq : loci=1000, size=10000: 3.17401409149
+TestStatAlleleFreq : loci=1000, size=100000: 36.7387290001
+TestStatAlleleFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 31.7028801441
+TestStatAlleleFreq : 0.307837963104, 3.0087928772, 3.05822300911, 3.17401409149, 36.7387290001, 31.7028801441
+TestStatAlleleFreq : End of test TestStatAlleleFreq
+TestStatNumOfMales : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNumOfMales : Time: Thu May 26 09:54:34 2011
+TestStatNumOfMales : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNumOfMales : simuPOP: 1.0.6svn (rev 4182, module short, optimized, 1 threads)
+TestStatNumOfMales : Test: Stat NumOfMales, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfMales : size=100000: 16.8653411865
+TestStatNumOfMales : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 17.209662199
+TestStatNumOfMales : 16.8653411865, 17.209662199
+TestStatNumOfMales : End of test TestStatNumOfMales
+TestStatNumOfMales : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNumOfMales : Time: Thu May 26 09:55:10 2011
+TestStatNumOfMales : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNumOfMales : simuPOP: 1.0.6svn (rev 4182, module long, optimized, 1 threads)
+TestStatNumOfMales : Test: Stat NumOfMales, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfMales : size=100000: 16.4387378693
+TestStatNumOfMales : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 17.3230619431
+TestStatNumOfMales : 16.4387378693, 17.3230619431
+TestStatNumOfMales : End of test TestStatNumOfMales
+TestStatNumOfMales : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNumOfMales : Time: Thu May 26 09:55:46 2011
+TestStatNumOfMales : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNumOfMales : simuPOP: 1.0.6svn (rev 4182, module binary, optimized, 1 threads)
+TestStatNumOfMales : Test: Stat NumOfMales, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfMales : size=100000: 17.4795110226
+TestStatNumOfMales : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 17.6907908916
+TestStatNumOfMales : 17.4795110226, 17.6907908916
+TestStatNumOfMales : End of test TestStatNumOfMales
+TestStatNumOfMales : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNumOfMales : Time: Thu May 26 09:56:24 2011
+TestStatNumOfMales : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNumOfMales : simuPOP: 1.0.6svn (rev 4182, module short, optimized, 4 threads)
+TestStatNumOfMales : Test: Stat NumOfMales, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfMales : size=100000: 9.28081488609
+TestStatNumOfMales : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 10.3006439209
+TestStatNumOfMales : 9.28081488609, 10.3006439209
+TestStatNumOfMales : End of test TestStatNumOfMales
+TestStatNumOfMales : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNumOfMales : Time: Thu May 26 09:56:47 2011
+TestStatNumOfMales : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNumOfMales : simuPOP: 1.0.6svn (rev 4182, module long, optimized, 4 threads)
+TestStatNumOfMales : Test: Stat NumOfMales, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfMales : size=100000: 9.30121707916
+TestStatNumOfMales : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 10.2057070732
+TestStatNumOfMales : 9.30121707916, 10.2057070732
+TestStatNumOfMales : End of test TestStatNumOfMales
+TestStatNumOfMales : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNumOfMales : Time: Thu May 26 09:57:09 2011
+TestStatNumOfMales : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNumOfMales : simuPOP: 1.0.6svn (rev 4182, module binary, optimized, 4 threads)
+TestStatNumOfMales : Test: Stat NumOfMales, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfMales : size=100000: 10.1437051296
+TestStatNumOfMales : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 10.6698708534
+TestStatNumOfMales : 10.1437051296, 10.6698708534
+TestStatNumOfMales : End of test TestStatNumOfMales
+TestStatNumOfAffected : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNumOfAffected : Time: Thu May 26 09:57:33 2011
+TestStatNumOfAffected : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNumOfAffected : simuPOP: 1.0.6svn (rev 4182, module short, optimized, 1 threads)
+TestStatNumOfAffected : Test: Stat NumOfAffected, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfAffected : size=100000: 18.7245531082
+TestStatNumOfAffected : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 19.554336071
+TestStatNumOfAffected : 18.7245531082, 19.554336071
+TestStatNumOfAffected : End of test TestStatNumOfAffected
+TestStatNumOfAffected : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNumOfAffected : Time: Thu May 26 09:58:14 2011
+TestStatNumOfAffected : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNumOfAffected : simuPOP: 1.0.6svn (rev 4182, module long, optimized, 1 threads)
+TestStatNumOfAffected : Test: Stat NumOfAffected, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfAffected : size=100000: 18.9747388363
+TestStatNumOfAffected : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 19.5944628716
+TestStatNumOfAffected : 18.9747388363, 19.5944628716
+TestStatNumOfAffected : End of test TestStatNumOfAffected
+TestStatNumOfAffected : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNumOfAffected : Time: Thu May 26 09:58:54 2011
+TestStatNumOfAffected : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNumOfAffected : simuPOP: 1.0.6svn (rev 4182, module binary, optimized, 1 threads)
+TestStatNumOfAffected : Test: Stat NumOfAffected, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfAffected : size=100000: 19.5599150658
+TestStatNumOfAffected : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 20.22062397
+TestStatNumOfAffected : 19.5599150658, 20.22062397
+TestStatNumOfAffected : End of test TestStatNumOfAffected
+TestStatNumOfAffected : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNumOfAffected : Time: Thu May 26 09:59:37 2011
+TestStatNumOfAffected : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNumOfAffected : simuPOP: 1.0.6svn (rev 4182, module short, optimized, 4 threads)
+TestStatNumOfAffected : Test: Stat NumOfAffected, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfAffected : size=100000: 9.38937807083
+TestStatNumOfAffected : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 10.0877468586
+TestStatNumOfAffected : 9.38937807083, 10.0877468586
+TestStatNumOfAffected : End of test TestStatNumOfAffected
+TestStatNumOfAffected : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNumOfAffected : Time: Thu May 26 09:59:59 2011
+TestStatNumOfAffected : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNumOfAffected : simuPOP: 1.0.6svn (rev 4182, module long, optimized, 4 threads)
+TestStatNumOfAffected : Test: Stat NumOfAffected, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfAffected : size=100000: 9.50907111168
+TestStatNumOfAffected : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 10.3536448479
+TestStatNumOfAffected : 9.50907111168, 10.3536448479
+TestStatNumOfAffected : End of test TestStatNumOfAffected
+TestStatNumOfAffected : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNumOfAffected : Time: Thu May 26 10:00:21 2011
+TestStatNumOfAffected : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNumOfAffected : simuPOP: 1.0.6svn (rev 4182, module binary, optimized, 4 threads)
+TestStatNumOfAffected : Test: Stat NumOfAffected, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfAffected : size=100000: 10.2223381996
+TestStatNumOfAffected : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 11.0147790909
+TestStatNumOfAffected : 10.2223381996, 11.0147790909
+TestStatNumOfAffected : End of test TestStatNumOfAffected
+TestStatHaploFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHaploFreq : Time: Thu May 26 10:20:21 2011
+TestStatHaploFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4182, module short, optimized, 1 threads)
+TestStatHaploFreq : Test: Stat HaploFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploFreq : loci=100, size=10000: 1.23293209076
+TestStatHaploFreq : loci=100, size=100000: 12.2021050453
+TestStatHaploFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 11.865776062
+TestStatHaploFreq : loci=1000, size=10000: 1.29735088348
+TestStatHaploFreq : loci=1000, size=100000: 21.6016001701
+TestStatHaploFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 15.2668449879
+TestStatHaploFreq : 1.23293209076, 12.2021050453, 11.865776062, 1.29735088348, 21.6016001701, 15.2668449879
+TestStatHaploFreq : End of test TestStatHaploFreq
+TestStatHaploFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHaploFreq : Time: Thu May 26 10:21:45 2011
+TestStatHaploFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4182, module long, optimized, 1 threads)
+TestStatHaploFreq : Test: Stat HaploFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploFreq : loci=100, size=10000: 1.41531896591
+TestStatHaploFreq : loci=100, size=100000: 23.2550559044
+TestStatHaploFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 17.4902069569
+TestStatHaploFreq : loci=1000, size=10000: 1.51551508904
+TestStatHaploFreq : loci=1000, size=100000: 25.3949120045
+TestStatHaploFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 16.8971569538
+TestStatHaploFreq : 1.41531896591, 23.2550559044, 17.4902069569, 1.51551508904, 25.3949120045, 16.8971569538
+TestStatHaploFreq : End of test TestStatHaploFreq
+TestStatHaploFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHaploFreq : Time: Thu May 26 10:23:31 2011
+TestStatHaploFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4182, module binary, optimized, 1 threads)
+TestStatHaploFreq : Test: Stat HaploFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploFreq : loci=100, size=10000: 1.69325518608
+TestStatHaploFreq : loci=100, size=100000: 17.1936631203
+TestStatHaploFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 18.6411919594
+TestStatHaploFreq : loci=1000, size=10000: 1.70309305191
+TestStatHaploFreq : loci=1000, size=100000: 17.4465510845
+TestStatHaploFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 18.0900690556
+TestStatHaploFreq : 1.69325518608, 17.1936631203, 18.6411919594, 1.70309305191, 17.4465510845, 18.0900690556
+TestStatHaploFreq : End of test TestStatHaploFreq
+TestStatHaploFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHaploFreq : Time: Thu May 26 10:25:12 2011
+TestStatHaploFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4182, module short, optimized, 4 threads)
+TestStatHaploFreq : Test: Stat HaploFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploFreq : loci=100, size=10000: 0.566158056259
+TestStatHaploFreq : loci=100, size=100000: 5.73171782494
+TestStatHaploFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 5.61322593689
+TestStatHaploFreq : loci=1000, size=10000: 0.713933944702
+TestStatHaploFreq : loci=1000, size=100000: 9.37162017822
+TestStatHaploFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 7.79208993912
+TestStatHaploFreq : 0.566158056259, 5.73171782494, 5.61322593689, 0.713933944702, 9.37162017822, 7.79208993912
+TestStatHaploFreq : End of test TestStatHaploFreq
+TestStatHaploFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHaploFreq : Time: Thu May 26 10:26:02 2011
+TestStatHaploFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4182, module long, optimized, 4 threads)
+TestStatHaploFreq : Test: Stat HaploFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploFreq : loci=100, size=10000: 0.613075971603
+TestStatHaploFreq : loci=100, size=100000: 9.36668801308
+TestStatHaploFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 7.58966112137
+TestStatHaploFreq : loci=1000, size=10000: 0.720818042755
+TestStatHaploFreq : loci=1000, size=100000: 9.74222493172
+TestStatHaploFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 7.8867251873
+TestStatHaploFreq : 0.613075971603, 9.36668801308, 7.58966112137, 0.720818042755, 9.74222493172, 7.8867251873
+TestStatHaploFreq : End of test TestStatHaploFreq
+TestStatHaploFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHaploFreq : Time: Thu May 26 10:26:57 2011
+TestStatHaploFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4182, module binary, optimized, 4 threads)
+TestStatHaploFreq : Test: Stat HaploFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploFreq : loci=100, size=10000: 0.768512964249
+TestStatHaploFreq : loci=100, size=100000: 7.49124717712
+TestStatHaploFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 7.55833601952
+TestStatHaploFreq : loci=1000, size=10000: 0.781599998474
+TestStatHaploFreq : loci=1000, size=100000: 7.85499882698
+TestStatHaploFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 7.7969429493
+TestStatHaploFreq : 0.768512964249, 7.49124717712, 7.55833601952, 0.781599998474, 7.85499882698, 7.7969429493
+TestStatHaploFreq : End of test TestStatHaploFreq
+TestStatHaploHomoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHaploHomoFreq : Time: Thu May 26 10:27:54 2011
+TestStatHaploHomoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4182, module short, optimized, 1 threads)
+TestStatHaploHomoFreq : Test: Stat HaploHomoFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploHomoFreq : loci=100, size=10000: 0.292308092117
+TestStatHaploHomoFreq : loci=100, size=100000: 3.24175906181
+TestStatHaploHomoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 2.92852807045
+TestStatHaploHomoFreq : loci=1000, size=10000: 0.337744951248
+TestStatHaploHomoFreq : loci=1000, size=100000: 6.22854995728
+TestStatHaploHomoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 3.89006996155
+TestStatHaploHomoFreq : 0.292308092117, 3.24175906181, 2.92852807045, 0.337744951248, 6.22854995728, 3.89006996155
+TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
+TestStatHaploHomoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHaploHomoFreq : Time: Thu May 26 10:28:28 2011
+TestStatHaploHomoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4182, module long, optimized, 1 threads)
+TestStatHaploHomoFreq : Test: Stat HaploHomoFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploHomoFreq : loci=100, size=10000: 0.31462597847
+TestStatHaploHomoFreq : loci=100, size=100000: 5.88319706917
+TestStatHaploHomoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 3.6914870739
+TestStatHaploHomoFreq : loci=1000, size=10000: 0.325666904449
+TestStatHaploHomoFreq : loci=1000, size=100000: 7.17342495918
+TestStatHaploHomoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 4.69271183014
+TestStatHaploHomoFreq : 0.31462597847, 5.88319706917, 3.6914870739, 0.325666904449, 7.17342495918, 4.69271183014
+TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
+TestStatHaploHomoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHaploHomoFreq : Time: Thu May 26 10:29:08 2011
+TestStatHaploHomoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4182, module binary, optimized, 1 threads)
+TestStatHaploHomoFreq : Test: Stat HaploHomoFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploHomoFreq : loci=100, size=10000: 0.631763935089
+TestStatHaploHomoFreq : loci=100, size=100000: 6.12271213531
+TestStatHaploHomoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.13581681252
+TestStatHaploHomoFreq : loci=1000, size=10000: 0.631522893906
+TestStatHaploHomoFreq : loci=1000, size=100000: 6.96468997002
+TestStatHaploHomoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.4281539917
+TestStatHaploHomoFreq : 0.631763935089, 6.12271213531, 6.13581681252, 0.631522893906, 6.96468997002, 6.4281539917
+TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
+TestStatHaploHomoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHaploHomoFreq : Time: Thu May 26 10:30:01 2011
+TestStatHaploHomoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4182, module short, optimized, 4 threads)
+TestStatHaploHomoFreq : Test: Stat HaploHomoFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploHomoFreq : loci=100, size=10000: 0.139616966248
+TestStatHaploHomoFreq : loci=100, size=100000: 1.46904397011
+TestStatHaploHomoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.41087889671
+TestStatHaploHomoFreq : loci=1000, size=10000: 0.158464193344
+TestStatHaploHomoFreq : loci=1000, size=100000: 2.5026910305
+TestStatHaploHomoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.93978285789
+TestStatHaploHomoFreq : 0.139616966248, 1.46904397011, 1.41087889671, 0.158464193344, 2.5026910305, 1.93978285789
+TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
+TestStatHaploHomoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHaploHomoFreq : Time: Thu May 26 10:30:26 2011
+TestStatHaploHomoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4182, module long, optimized, 4 threads)
+TestStatHaploHomoFreq : Test: Stat HaploHomoFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploHomoFreq : loci=100, size=10000: 0.147619009018
+TestStatHaploHomoFreq : loci=100, size=100000: 2.38445401192
+TestStatHaploHomoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.86939907074
+TestStatHaploHomoFreq : loci=1000, size=10000: 0.15052485466
+TestStatHaploHomoFreq : loci=1000, size=100000: 2.83502817154
+TestStatHaploHomoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 2.09009408951
+TestStatHaploHomoFreq : 0.147619009018, 2.38445401192, 1.86939907074, 0.15052485466, 2.83502817154, 2.09009408951
+TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
+TestStatHaploHomoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHaploHomoFreq : Time: Thu May 26 10:30:54 2011
+TestStatHaploHomoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4182, module binary, optimized, 4 threads)
+TestStatHaploHomoFreq : Test: Stat HaploHomoFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploHomoFreq : loci=100, size=10000: 0.287275075912
+TestStatHaploHomoFreq : loci=100, size=100000: 2.73110985756
+TestStatHaploHomoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 2.7528860569
+TestStatHaploHomoFreq : loci=1000, size=10000: 0.292492866516
+TestStatHaploHomoFreq : loci=1000, size=100000: 3.02533006668
+TestStatHaploHomoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 2.91801309586
+TestStatHaploHomoFreq : 0.287275075912, 2.73110985756, 2.7528860569, 0.292492866516, 3.02533006668, 2.91801309586
+TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
+TestStatGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatGenoFreq : Time: Thu May 26 11:08:52 2011
+TestStatGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatGenoFreq : simuPOP: 1.0.6svn (rev 4182, module short, optimized, 4 threads)
+TestStatGenoFreq : Test: Stat StatGenoFreq, results are time (not processor time) to apply operator for 500 times.
+TestStatGenoFreq : loci=100, size=10000: 0.460355997086
+TestStatGenoFreq : loci=100, size=100000: 4.32857394218
+TestStatGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 4.52319002151
+TestStatGenoFreq : loci=1000, size=10000: 0.482565879822
+TestStatGenoFreq : loci=1000, size=100000: 6.7190079689
+TestStatGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.86939692497
+TestStatGenoFreq : 0.460355997086, 4.32857394218, 4.52319002151, 0.482565879822, 6.7190079689, 6.86939692497
+TestStatGenoFreq : End of test TestStatGenoFreq
+TestStatGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatGenoFreq : Time: Thu May 26 11:09:33 2011
+TestStatGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatGenoFreq : simuPOP: 1.0.6svn (rev 4182, module long, optimized, 4 threads)
+TestStatGenoFreq : Test: Stat StatGenoFreq, results are time (not processor time) to apply operator for 500 times.
+TestStatGenoFreq : loci=100, size=10000: 0.500542163849
+TestStatGenoFreq : loci=100, size=100000: 6.76568007469
+TestStatGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.89576387405
+TestStatGenoFreq : loci=1000, size=10000: 0.500433206558
+TestStatGenoFreq : loci=1000, size=100000: 7.35019493103
+TestStatGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 7.48760890961
+TestStatGenoFreq : 0.500542163849, 6.76568007469, 6.89576387405, 0.500433206558, 7.35019493103, 7.48760890961
+TestStatGenoFreq : End of test TestStatGenoFreq
+TestStatGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatGenoFreq : Time: Thu May 26 11:10:22 2011
+TestStatGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatGenoFreq : simuPOP: 1.0.6svn (rev 4182, module binary, optimized, 4 threads)
+TestStatGenoFreq : Test: Stat StatGenoFreq, results are time (not processor time) to apply operator for 500 times.
+TestStatGenoFreq : loci=100, size=10000: 0.590523004532
+TestStatGenoFreq : loci=100, size=100000: 5.49827694893
+TestStatGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 5.5768828392
+TestStatGenoFreq : loci=1000, size=10000: 0.637578964233
+TestStatGenoFreq : loci=1000, size=100000: 6.14054203033
+TestStatGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.18443202972
+TestStatGenoFreq : 0.590523004532, 5.49827694893, 5.5768828392, 0.637578964233, 6.14054203033, 6.18443202972
+TestStatGenoFreq : End of test TestStatGenoFreq
+TestStatGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatGenoFreq : Time: Thu May 26 11:12:40 2011
+TestStatGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatGenoFreq : simuPOP: 1.0.6svn (rev 4182, module short, optimized, 1 threads)
+TestStatGenoFreq : Test: Stat StatGenoFreq, results are time (not processor time) to apply operator for 500 times.
+TestStatGenoFreq : loci=100, size=10000: 1.43687391281
+TestStatGenoFreq : loci=100, size=100000: 14.7355120182
+TestStatGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 14.2837300301
+TestStatGenoFreq : loci=1000, size=10000: 1.52868509293
+TestStatGenoFreq : loci=1000, size=100000: 24.1452269554
+TestStatGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 17.648113966
+TestStatGenoFreq : 1.43687391281, 14.7355120182, 14.2837300301, 1.52868509293, 24.1452269554, 17.648113966
+TestStatGenoFreq : End of test TestStatGenoFreq
+TestStatGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatGenoFreq : Time: Thu May 26 11:14:14 2011
+TestStatGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatGenoFreq : simuPOP: 1.0.6svn (rev 4182, module long, optimized, 1 threads)
+TestStatGenoFreq : Test: Stat StatGenoFreq, results are time (not processor time) to apply operator for 500 times.
+TestStatGenoFreq : loci=100, size=10000: 1.64711523056
+TestStatGenoFreq : loci=100, size=100000: 25.8571681976
+TestStatGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 18.9256169796
+TestStatGenoFreq : loci=1000, size=10000: 1.66001415253
+TestStatGenoFreq : loci=1000, size=100000: 28.0234498978
+TestStatGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 19.0963768959
+TestStatGenoFreq : 1.64711523056, 25.8571681976, 18.9256169796, 1.66001415253, 28.0234498978, 19.0963768959
+TestStatGenoFreq : End of test TestStatGenoFreq
+TestStatGenoFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatGenoFreq : Time: Thu May 26 11:16:09 2011
+TestStatGenoFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatGenoFreq : simuPOP: 1.0.6svn (rev 4182, module binary, optimized, 1 threads)
+TestStatGenoFreq : Test: Stat StatGenoFreq, results are time (not processor time) to apply operator for 500 times.
+TestStatGenoFreq : loci=100, size=10000: 1.89334607124
+TestStatGenoFreq : loci=100, size=100000: 18.6318368912
+TestStatGenoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 18.7467119694
+TestStatGenoFreq : loci=1000, size=10000: 1.92588806152
+TestStatGenoFreq : loci=1000, size=100000: 21.1599271297
+TestStatGenoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 19.6372129917
+TestStatGenoFreq : 1.89334607124, 18.6318368912, 18.7467119694, 1.92588806152, 21.1599271297, 19.6372129917
+TestStatGenoFreq : End of test TestStatGenoFreq
+TestStatHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHeteroFreq : Time: Thu May 26 13:04:51 2011
+TestStatHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module short, optimized, 1 threads)
+TestStatHeteroFreq : Test: Stat StatHeteroFreq, results are time (not processor time) to apply operator for 20 times.
+TestStatHeteroFreq : loci=100, size=10000: 0.441030979156
+TestStatHeteroFreq : loci=100, size=100000: 5.07090187073
+TestStatHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 4.35444688797
+TestStatHeteroFreq : loci=1000, size=10000: 5.11432695389
+TestStatHeteroFreq : loci=1000, size=100000: 117.634579182
+TestStatHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 51.200012207
+TestStatHeteroFreq : 0.441030979156, 5.07090187073, 4.35444688797, 5.11432695389, 117.634579182, 51.200012207
+TestStatHeteroFreq : End of test TestStatHeteroFreq
+TestStatHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHeteroFreq : Time: Thu May 26 13:08:14 2011
+TestStatHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module long, optimized, 1 threads)
+TestStatHeteroFreq : Test: Stat StatHeteroFreq, results are time (not processor time) to apply operator for 20 times.
+TestStatHeteroFreq : loci=100, size=10000: 0.556185007095
+TestStatHeteroFreq : loci=100, size=100000: 9.46308708191
+TestStatHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 5.34688615799
+TestStatHeteroFreq : loci=1000, size=10000: 6.48223590851
+TestStatHeteroFreq : loci=1000, size=100000: 162.691661835
+TestStatHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 63.0534501076
+TestStatHeteroFreq : 0.556185007095, 9.46308708191, 5.34688615799, 6.48223590851, 162.691661835, 63.0534501076
+TestStatHeteroFreq : End of test TestStatHeteroFreq
+TestStatHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHeteroFreq : Time: Thu May 26 13:12:41 2011
+TestStatHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module binary, optimized, 1 threads)
+TestStatHeteroFreq : Test: Stat StatHeteroFreq, results are time (not processor time) to apply operator for 20 times.
+TestStatHeteroFreq : loci=100, size=10000: 0.831079959869
+TestStatHeteroFreq : loci=100, size=100000: 8.2782459259
+TestStatHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 8.30177307129
+TestStatHeteroFreq : loci=1000, size=10000: 8.63011312485
+TestStatHeteroFreq : loci=1000, size=100000: 93.6239349842
+TestStatHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 84.6393620968
+TestStatHeteroFreq : 0.831079959869, 8.2782459259, 8.30177307129, 8.63011312485, 93.6239349842, 84.6393620968
+TestStatHeteroFreq : End of test TestStatHeteroFreq
+TestStatHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHeteroFreq : Time: Thu May 26 13:17:16 2011
+TestStatHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module short, optimized, 4 threads)
+TestStatHeteroFreq : Test: Stat StatHeteroFreq, results are time (not processor time) to apply operator for 20 times.
+TestStatHeteroFreq : loci=100, size=10000: 0.127473115921
+TestStatHeteroFreq : loci=100, size=100000: 1.61057591438
+TestStatHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.26040196419
+TestStatHeteroFreq : loci=1000, size=10000: 1.40715408325
+TestStatHeteroFreq : loci=1000, size=100000: 33.8272380829
+TestStatHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 13.8213179111
+TestStatHeteroFreq : 0.127473115921, 1.61057591438, 1.26040196419, 1.40715408325, 33.8272380829, 13.8213179111
+TestStatHeteroFreq : End of test TestStatHeteroFreq
+TestStatHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHeteroFreq : Time: Thu May 26 13:18:28 2011
+TestStatHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module long, optimized, 4 threads)
+TestStatHeteroFreq : Test: Stat StatHeteroFreq, results are time (not processor time) to apply operator for 20 times.
+TestStatHeteroFreq : loci=100, size=10000: 0.136440992355
+TestStatHeteroFreq : loci=100, size=100000: 2.69143199921
+TestStatHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.42887401581
+TestStatHeteroFreq : loci=1000, size=10000: 1.70447492599
+TestStatHeteroFreq : loci=1000, size=100000: 45.7699849606
+TestStatHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 17.6911768913
+TestStatHeteroFreq : 0.136440992355, 2.69143199921, 1.42887401581, 1.70447492599, 45.7699849606, 17.6911768913
+TestStatHeteroFreq : End of test TestStatHeteroFreq
+TestStatHeteroFreq : Host: bp9 (Linux, x86_64, x86_64)
+TestStatHeteroFreq : Time: Thu May 26 13:19:57 2011
+TestStatHeteroFreq : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatHeteroFreq : simuPOP: 1.0.6svn (rev 4184, module binary, optimized, 4 threads)
+TestStatHeteroFreq : Test: Stat StatHeteroFreq, results are time (not processor time) to apply operator for 20 times.
+TestStatHeteroFreq : loci=100, size=10000: 0.234434127808
+TestStatHeteroFreq : loci=100, size=100000: 2.50543117523
+TestStatHeteroFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 2.3329770565
+TestStatHeteroFreq : loci=1000, size=10000: 2.43857598305
+TestStatHeteroFreq : loci=1000, size=100000: 26.4068300724
+TestStatHeteroFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 23.9802000523
+TestStatHeteroFreq : 0.234434127808, 2.50543117523, 2.3329770565, 2.43857598305, 26.4068300724, 23.9802000523
+TestStatHeteroFreq : End of test TestStatHeteroFreq
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Fri May 27 12:01:02 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4187, module short, optimized, 1 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 9.03047394753
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 8.99528694153
+TestStatNeutrality : loci=10, size=10000: 27.8919439316
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 27.8793339729
+TestStatNeutrality : loci=100, size=10000: 162.322354078
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 161.907181978
+TestStatNeutrality : 9.03047394753, 8.99528694153, 27.8919439316, 27.8793339729, 162.322354078, 161.907181978
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Fri May 27 12:07:41 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4187, module long, optimized, 1 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 11.8714928627
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 11.7830820084
+TestStatNeutrality : loci=10, size=10000: 30.3244822025
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 30.1393539906
+TestStatNeutrality : loci=100, size=10000: 109.87086916
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 111.744431973
+TestStatNeutrality : 11.8714928627, 11.7830820084, 30.3244822025, 30.1393539906, 109.87086916, 111.744431973
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Fri May 27 12:12:47 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4187, module binary, optimized, 1 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 38.0854780674
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 38.7297050953
+TestStatNeutrality : loci=10, size=10000: 84.4918601513
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 84.3150889874
+TestStatNeutrality : loci=100, size=10000: 597.092149973
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 592.624132156
+TestStatNeutrality : 38.0854780674, 38.7297050953, 84.4918601513, 84.3150889874, 597.092149973, 592.624132156
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Fri May 27 12:37:20 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4187, module short, optimized, 4 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 3.13563299179
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 3.20556497574
+TestStatNeutrality : loci=10, size=10000: 27.0847280025
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 27.1585049629
+TestStatNeutrality : loci=100, size=10000: 267.419605017
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 268.027008057
+TestStatNeutrality : 3.13563299179, 3.20556497574, 27.0847280025, 27.1585049629, 267.419605017, 268.027008057
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Fri May 27 12:47:17 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4187, module long, optimized, 4 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 3.10889577866
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 3.15888404846
+TestStatNeutrality : loci=10, size=10000: 26.967279911
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 26.9330770969
+TestStatNeutrality : loci=100, size=10000: 273.505503893
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 275.049628019
+TestStatNeutrality : 3.10889577866, 3.15888404846, 26.967279911, 26.9330770969, 273.505503893, 275.049628019
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Fri May 27 12:57:26 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4187, module binary, optimized, 4 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 8.32187199593
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 8.2234890461
+TestStatNeutrality : loci=10, size=10000: 32.0274319649
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 31.5282058716
+TestStatNeutrality : loci=100, size=10000: 265.823650122
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 262.824134827
+TestStatNeutrality : 8.32187199593, 8.2234890461, 32.0274319649, 31.5282058716, 265.823650122, 262.824134827
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatAlleleFreq : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatAlleleFreq : Time: Mon May 30 22:34:21 2011
+TestStatAlleleFreq : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4188, module short, optimized, 4 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are time (not processor time) to apply operator for 30 times.
+TestStatAlleleFreq : loci=100, size=10000: 0.156656771779
+TestStatAlleleFreq : loci=100, size=100000: 1.27655273963
+TestStatAlleleFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 0.772660287815
+TestStatAlleleFreq : loci=1000, size=10000: 2.37574158829
+TestStatAlleleFreq : loci=1000, size=100000: 61.8670897501
+TestStatAlleleFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 22.9204747493
+TestStatAlleleFreq : 0.156656771779, 1.27655273963, 0.772660287815, 2.37574158829, 61.8670897501, 22.9204747493
+TestStatAlleleFreq : End of test TestStatAlleleFreq
+TestStatHaploFreq : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatHaploFreq : Time: Mon May 30 22:36:02 2011
+TestStatHaploFreq : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4188, module short, optimized, 4 threads)
+TestStatHaploFreq : Test: Stat HaploFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploFreq : loci=100, size=10000: 0.516961671952
+TestStatHaploFreq : loci=100, size=100000: 5.07994453068
+TestStatHaploFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 5.05862403715
+TestStatHaploFreq : loci=1000, size=10000: 0.543532975813
+TestStatHaploFreq : loci=1000, size=100000: 8.80322124159
+TestStatHaploFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.99310467028
+TestStatHaploFreq : 0.516961671952, 5.07994453068, 5.05862403715, 0.543532975813, 8.80322124159, 6.99310467028
+TestStatHaploFreq : End of test TestStatHaploFreq
+TestStatHaploHomoFreq : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatHaploHomoFreq : Time: Mon May 30 22:36:39 2011
+TestStatHaploHomoFreq : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4188, module short, optimized, 4 threads)
+TestStatHaploHomoFreq : Test: Stat HaploHomoFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploHomoFreq : loci=100, size=10000: 0.089213063666
+TestStatHaploHomoFreq : loci=100, size=100000: 1.02716445375
+TestStatHaploHomoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 0.939058905066
+TestStatHaploHomoFreq : loci=1000, size=10000: 0.101590728388
+TestStatHaploHomoFreq : loci=1000, size=100000: 1.95475398316
+TestStatHaploHomoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.38428928569
+TestStatHaploHomoFreq : 0.089213063666, 1.02716445375, 0.939058905066, 0.101590728388, 1.95475398316, 1.38428928569
+TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
+TestStatNeutrality : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatNeutrality : Time: Mon May 30 22:36:56 2011
+TestStatNeutrality : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4188, module short, optimized, 4 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 1.63284142643
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 1.61529354731
+TestStatNeutrality : loci=10, size=10000: 9.36116640133
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 9.26592282954
+TestStatNeutrality : loci=100, size=10000: 82.7843907702
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 83.5741105317
+TestStatNeutrality : 1.63284142643, 1.61529354731, 9.36116640133, 9.26592282954, 82.7843907702, 83.5741105317
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNumOfAffected : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatNumOfAffected : Time: Mon May 30 22:40:04 2011
+TestStatNumOfAffected : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatNumOfAffected : simuPOP: 1.0.6svn (rev 4188, module short, optimized, 4 threads)
+TestStatNumOfAffected : Test: Stat NumOfAffected, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfAffected : size=100000: 12.5538024681
+TestStatNumOfAffected : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 14.0043555011
+TestStatNumOfAffected : 12.5538024681, 14.0043555011
+TestStatNumOfAffected : End of test TestStatNumOfAffected
+TestStatNumOfMales : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatNumOfMales : Time: Mon May 30 22:40:32 2011
+TestStatNumOfMales : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatNumOfMales : simuPOP: 1.0.6svn (rev 4188, module short, optimized, 4 threads)
+TestStatNumOfMales : Test: Stat NumOfMales, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfMales : size=100000: 12.1569785518
+TestStatNumOfMales : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 13.7430625612
+TestStatNumOfMales : 12.1569785518, 13.7430625612
+TestStatNumOfMales : End of test TestStatNumOfMales
+TestStatAlleleFreq : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatAlleleFreq : Time: Mon May 30 22:40:59 2011
+TestStatAlleleFreq : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4188, module long, optimized, 4 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are time (not processor time) to apply operator for 30 times.
+TestStatAlleleFreq : loci=100, size=10000: 0.220509281815
+TestStatAlleleFreq : loci=100, size=100000: 4.18473675917
+TestStatAlleleFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 2.32420848449
+TestStatAlleleFreq : loci=1000, size=10000: 2.93125649371
+TestStatAlleleFreq : loci=1000, size=100000: 61.5509994198
+TestStatAlleleFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 30.0181917411
+TestStatAlleleFreq : 0.220509281815, 4.18473675917, 2.32420848449, 2.93125649371, 61.5509994198, 30.0181917411
+TestStatAlleleFreq : End of test TestStatAlleleFreq
+TestStatHaploFreq : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatHaploFreq : Time: Mon May 30 22:42:50 2011
+TestStatHaploFreq : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4188, module long, optimized, 4 threads)
+TestStatHaploFreq : Test: Stat HaploFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploFreq : loci=100, size=10000: 0.526113989825
+TestStatHaploFreq : loci=100, size=100000: 8.50943485645
+TestStatHaploFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.82598914158
+TestStatHaploFreq : loci=1000, size=10000: 0.549702036511
+TestStatHaploFreq : loci=1000, size=100000: 9.71940961513
+TestStatHaploFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 7.44523822892
+TestStatHaploFreq : 0.526113989825, 8.50943485645, 6.82598914158, 0.549702036511, 9.71940961513, 7.44523822892
+TestStatHaploFreq : End of test TestStatHaploFreq
+TestStatHaploHomoFreq : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatHaploHomoFreq : Time: Mon May 30 22:43:34 2011
+TestStatHaploHomoFreq : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4188, module long, optimized, 4 threads)
+TestStatHaploHomoFreq : Test: Stat HaploHomoFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploHomoFreq : loci=100, size=10000: 0.0952381383606
+TestStatHaploHomoFreq : loci=100, size=100000: 1.640990672
+TestStatHaploHomoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.33187294699
+TestStatHaploHomoFreq : loci=1000, size=10000: 0.116611155082
+TestStatHaploHomoFreq : loci=1000, size=100000: 2.41424260042
+TestStatHaploHomoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.69099849011
+TestStatHaploHomoFreq : 0.0952381383606, 1.640990672, 1.33187294699, 0.116611155082, 2.41424260042, 1.69099849011
+TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
+TestStatNeutrality : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatNeutrality : Time: Mon May 30 22:43:52 2011
+TestStatNeutrality : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4188, module long, optimized, 4 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 1.76370840329
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 1.7402884912
+TestStatNeutrality : loci=10, size=10000: 9.68770733834
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 9.7137196022
+TestStatNeutrality : loci=100, size=10000: 83.7511417758
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 84.6337454895
+TestStatNeutrality : 1.76370840329, 1.7402884912, 9.68770733834, 9.7137196022, 83.7511417758, 84.6337454895
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNumOfAffected : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatNumOfAffected : Time: Mon May 30 22:47:04 2011
+TestStatNumOfAffected : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatNumOfAffected : simuPOP: 1.0.6svn (rev 4188, module long, optimized, 4 threads)
+TestStatNumOfAffected : Test: Stat NumOfAffected, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfAffected : size=100000: 12.5345379257
+TestStatNumOfAffected : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 14.0830832444
+TestStatNumOfAffected : 12.5345379257, 14.0830832444
+TestStatNumOfAffected : End of test TestStatNumOfAffected
+TestStatNumOfMales : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatNumOfMales : Time: Mon May 30 22:47:31 2011
+TestStatNumOfMales : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatNumOfMales : simuPOP: 1.0.6svn (rev 4188, module long, optimized, 4 threads)
+TestStatNumOfMales : Test: Stat NumOfMales, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfMales : size=100000: 12.1148138958
+TestStatNumOfMales : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 13.7313332862
+TestStatNumOfMales : 12.1148138958, 13.7313332862
+TestStatNumOfMales : End of test TestStatNumOfMales
+TestStatAlleleFreq : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatAlleleFreq : Time: Mon May 30 22:47:58 2011
+TestStatAlleleFreq : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatAlleleFreq : simuPOP: 1.0.6svn (rev 4188, module binary, optimized, 4 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are time (not processor time) to apply operator for 30 times.
+TestStatAlleleFreq : loci=100, size=10000: 0.12388803262
+TestStatAlleleFreq : loci=100, size=100000: 1.45832435307
+TestStatAlleleFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.32294249434
+TestStatAlleleFreq : loci=1000, size=10000: 1.57181067984
+TestStatAlleleFreq : loci=1000, size=100000: 23.3392189499
+TestStatAlleleFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 15.4070457151
+TestStatAlleleFreq : 0.12388803262, 1.45832435307, 1.32294249434, 1.57181067984, 23.3392189499, 15.4070457151
+TestStatAlleleFreq : End of test TestStatAlleleFreq
+TestStatHaploFreq : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatHaploFreq : Time: Mon May 30 22:48:56 2011
+TestStatHaploFreq : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatHaploFreq : simuPOP: 1.0.6svn (rev 4188, module binary, optimized, 4 threads)
+TestStatHaploFreq : Test: Stat HaploFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploFreq : loci=100, size=10000: 0.635344730263
+TestStatHaploFreq : loci=100, size=100000: 6.14874750288
+TestStatHaploFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.11202654414
+TestStatHaploFreq : loci=1000, size=10000: 0.643167969785
+TestStatHaploFreq : loci=1000, size=100000: 6.50306445683
+TestStatHaploFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.59007939455
+TestStatHaploFreq : 0.635344730263, 6.14874750288, 6.11202654414, 0.643167969785, 6.50306445683, 6.59007939455
+TestStatHaploFreq : End of test TestStatHaploFreq
+TestStatHaploHomoFreq : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatHaploHomoFreq : Time: Mon May 30 22:49:38 2011
+TestStatHaploHomoFreq : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatHaploHomoFreq : simuPOP: 1.0.6svn (rev 4188, module binary, optimized, 4 threads)
+TestStatHaploHomoFreq : Test: Stat HaploHomoFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploHomoFreq : loci=100, size=10000: 0.188049342826
+TestStatHaploHomoFreq : loci=100, size=100000: 1.7590105958
+TestStatHaploHomoFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 1.80983161788
+TestStatHaploHomoFreq : loci=1000, size=10000: 0.201168973159
+TestStatHaploHomoFreq : loci=1000, size=100000: 2.93850409107
+TestStatHaploHomoFreq : loci=1000, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 2.4963571843
+TestStatHaploHomoFreq : 0.188049342826, 1.7590105958, 1.80983161788, 0.201168973159, 2.93850409107, 2.4963571843
+TestStatHaploHomoFreq : End of test TestStatHaploHomoFreq
+TestStatNeutrality : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatNeutrality : Time: Mon May 30 22:50:02 2011
+TestStatNeutrality : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4188, module binary, optimized, 4 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 11.648486698
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 11.7215078263
+TestStatNeutrality : loci=10, size=10000: 40.8976600614
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 40.9682174291
+TestStatNeutrality : loci=100, size=10000: 341.107198032
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 341.91136288
+TestStatNeutrality : 11.648486698, 11.7215078263, 40.8976600614, 40.9682174291, 341.107198032, 341.91136288
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNumOfAffected : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatNumOfAffected : Time: Mon May 30 23:03:11 2011
+TestStatNumOfAffected : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatNumOfAffected : simuPOP: 1.0.6svn (rev 4188, module binary, optimized, 4 threads)
+TestStatNumOfAffected : Test: Stat NumOfAffected, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfAffected : size=100000: 12.6815394851
+TestStatNumOfAffected : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 14.3641107189
+TestStatNumOfAffected : 12.6815394851, 14.3641107189
+TestStatNumOfAffected : End of test TestStatNumOfAffected
+TestStatNumOfMales : Host: BoPeng-PC (Windows, AMD64, Intel64 Family 6 Model 42 Stepping 7, GenuineIntel)
+TestStatNumOfMales : Time: Mon May 30 23:03:39 2011
+TestStatNumOfMales : Python: 2.7.1 [MSC v.1500 64 bit (AMD64)]
+TestStatNumOfMales : simuPOP: 1.0.6svn (rev 4188, module binary, optimized, 4 threads)
+TestStatNumOfMales : Test: Stat NumOfMales, results are time (not processor time) to apply operator for 5000 times.
+TestStatNumOfMales : size=100000: 12.2875931758
+TestStatNumOfMales : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 14.2055386616
+TestStatNumOfMales : 12.2875931758, 14.2055386616
+TestStatNumOfMales : End of test TestStatNumOfMales
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Tue May 31 10:42:57 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4189, module short, optimized, 1 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 6.89465403557
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 6.83319497108
+TestStatNeutrality : loci=10, size=10000: 59.4530448914
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 58.7852652073
+TestStatNeutrality : loci=100, size=10000: 582.544010878
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 575.242040157
+TestStatNeutrality : 6.89465403557, 6.83319497108, 59.4530448914, 58.7852652073, 582.544010878, 575.242040157
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Tue May 31 11:04:27 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4189, module long, optimized, 1 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 6.49560403824
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 6.46290183067
+TestStatNeutrality : loci=10, size=10000: 58.2610440254
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 58.1104929447
+TestStatNeutrality : loci=100, size=10000: 580.978451014
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 588.665710926
+TestStatNeutrality : 6.49560403824, 6.46290183067, 58.2610440254, 58.1104929447, 580.978451014, 588.665710926
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Tue May 31 11:26:07 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4189, module binary, optimized, 1 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 17.2013239861
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 17.1441349983
+TestStatNeutrality : loci=10, size=10000: 66.1994318962
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 66.1883180141
+TestStatNeutrality : loci=100, size=10000: 564.6483531
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 568.191828012
+TestStatNeutrality : 17.2013239861, 17.1441349983, 66.1994318962, 66.1883180141, 564.6483531, 568.191828012
+TestStatNeutrality : End of test TestStatNeutrality
+TestCombinedParentsChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestCombinedParentsChooser : Time: Tue May 31 12:21:08 2011
+TestCombinedParentsChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestCombinedParentsChooser : simuPOP: 1.0.6svn (rev 4190, module short, optimized, 1 threads)
+TestCombinedParentsChooser : Test: CombinedParentsChooser, results are number of generations in 30 seconds.
+TestCombinedParentsChooser : loci=10, size=10000: 16601
+TestCombinedParentsChooser : loci=10, size=100000: 1443
+TestCombinedParentsChooser : loci=100, size=10000: 15558
+TestCombinedParentsChooser : loci=100, size=100000: 1021
+TestCombinedParentsChooser : loci=10000, size=10000: 715
+TestCombinedParentsChooser : loci=10000, size=100000: 55
+TestCombinedParentsChooser : 16601, 1443, 15558, 1021, 715, 55
+TestCombinedParentsChooser : End of test TestCombinedParentsChooser
+TestCombinedParentsChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestCombinedParentsChooser : Time: Tue May 31 12:24:18 2011
+TestCombinedParentsChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestCombinedParentsChooser : simuPOP: 1.0.6svn (rev 4190, module long, optimized, 1 threads)
+TestCombinedParentsChooser : Test: CombinedParentsChooser, results are number of generations in 30 seconds.
+TestCombinedParentsChooser : loci=10, size=10000: 17644
+TestCombinedParentsChooser : loci=10, size=100000: 1233
+TestCombinedParentsChooser : loci=100, size=10000: 9825
+TestCombinedParentsChooser : loci=100, size=100000: 804
+TestCombinedParentsChooser : loci=10000, size=10000: 183
+TestCombinedParentsChooser : loci=10000, size=100000: 0
+TestCombinedParentsChooser : 17644, 1233, 9825, 804, 183, 0
+TestCombinedParentsChooser : End of test TestCombinedParentsChooser
+TestCombinedParentsChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestCombinedParentsChooser : Time: Tue May 31 12:26:54 2011
+TestCombinedParentsChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestCombinedParentsChooser : simuPOP: 1.0.6svn (rev 4190, module binary, optimized, 1 threads)
+TestCombinedParentsChooser : Test: CombinedParentsChooser, results are number of generations in 30 seconds.
+TestCombinedParentsChooser : loci=10, size=10000: 12489
+TestCombinedParentsChooser : loci=10, size=100000: 1132
+TestCombinedParentsChooser : loci=100, size=10000: 13914
+TestCombinedParentsChooser : loci=100, size=100000: 1176
+TestCombinedParentsChooser : loci=10000, size=10000: 3589
+TestCombinedParentsChooser : loci=10000, size=100000: 338
+TestCombinedParentsChooser : 12489, 1132, 13914, 1176, 3589, 338
+TestCombinedParentsChooser : End of test TestCombinedParentsChooser
+TestCombinedParentsChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestCombinedParentsChooser : Time: Tue May 31 12:32:54 2011
+TestCombinedParentsChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestCombinedParentsChooser : simuPOP: 1.0.6svn (rev 4190, module short, optimized, 4 threads)
+TestCombinedParentsChooser : Test: CombinedParentsChooser, results are number of generations in 30 seconds.
+TestCombinedParentsChooser : loci=10, size=10000: 52566
+TestCombinedParentsChooser : loci=10, size=100000: 4674
+TestCombinedParentsChooser : loci=100, size=10000: 48309
+TestCombinedParentsChooser : loci=100, size=100000: 3269
+TestCombinedParentsChooser : loci=10000, size=10000: 788
+TestCombinedParentsChooser : loci=10000, size=100000: 70
+TestCombinedParentsChooser : 52566, 4674, 48309, 3269, 788, 70
+TestCombinedParentsChooser : End of test TestCombinedParentsChooser
+TestCombinedParentsChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestCombinedParentsChooser : Time: Tue May 31 12:36:05 2011
+TestCombinedParentsChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestCombinedParentsChooser : simuPOP: 1.0.6svn (rev 4190, module long, optimized, 4 threads)
+TestCombinedParentsChooser : Test: CombinedParentsChooser, results are number of generations in 30 seconds.
+TestCombinedParentsChooser : loci=10, size=10000: 52725
+TestCombinedParentsChooser : loci=10, size=100000: 4021
+TestCombinedParentsChooser : loci=100, size=10000: 19461
+TestCombinedParentsChooser : loci=100, size=100000: 1602
+TestCombinedParentsChooser : loci=10000, size=10000: 205
+TestCombinedParentsChooser : loci=10000, size=100000: 0
+TestCombinedParentsChooser : 52725, 4021, 19461, 1602, 205, 0
+TestCombinedParentsChooser : End of test TestCombinedParentsChooser
+TestCombinedParentsChooser : Host: bp9 (Linux, x86_64, x86_64)
+TestCombinedParentsChooser : Time: Tue May 31 12:38:40 2011
+TestCombinedParentsChooser : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestCombinedParentsChooser : simuPOP: 1.0.6svn (rev 4190, module binary, optimized, 4 threads)
+TestCombinedParentsChooser : Test: CombinedParentsChooser, results are number of generations in 30 seconds.
+TestCombinedParentsChooser : loci=10, size=10000: 36988
+TestCombinedParentsChooser : loci=10, size=100000: 3779
+TestCombinedParentsChooser : loci=100, size=10000: 43414
+TestCombinedParentsChooser : loci=100, size=100000: 3928
+TestCombinedParentsChooser : loci=10000, size=10000: 6050
+TestCombinedParentsChooser : loci=10000, size=100000: 554
+TestCombinedParentsChooser : 36988, 3779, 43414, 3928, 6050, 554
+TestCombinedParentsChooser : End of test TestCombinedParentsChooser
+TestHeteroMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHeteroMating : Time: Tue May 31 16:52:50 2011
+TestHeteroMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHeteroMating : simuPOP: 1.0.6svn (rev 4190, module short, optimized, 1 threads)
+TestHeteroMating : Test: HeteroMating, results are number of generations in 30 seconds.
+TestHeteroMating : loci=10, size=10000: 9329
+TestHeteroMating : loci=10, size=100000: 790
+TestHeteroMating : loci=100, size=10000: failed
+TestHeteroMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHeteroMating : Time: Tue May 31 16:54:34 2011
+TestHeteroMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHeteroMating : simuPOP: 1.0.6svn (rev 4190, module short, optimized, 4 threads)
+TestHeteroMating : Test: HeteroMating, results are number of generations in 30 seconds.
+TestHeteroMating : loci=10, size=10000: 19077
+TestHeteroMating : loci=10, size=100000: failed
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Wed Jun  1 12:12:59 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4191, module short, optimized, 1 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 5.57430195808
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 5.54049086571
+TestStatNeutrality : loci=10, size=10000: 23.4916911125
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 23.5364370346
+TestStatNeutrality : loci=100, size=10000: 157.407531977
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 157.336145878
+TestStatNeutrality : 5.57430195808, 5.54049086571, 23.4916911125, 23.5364370346, 157.407531977, 157.336145878
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Wed Jun  1 12:19:12 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4191, module long, optimized, 1 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 6.09040188789
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 5.92418003082
+TestStatNeutrality : loci=10, size=10000: 19.0062968731
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 19.4905800819
+TestStatNeutrality : loci=100, size=10000: 103.946276903
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 102.977053881
+TestStatNeutrality : 6.09040188789, 5.92418003082, 19.0062968731, 19.4905800819, 103.946276903, 102.977053881
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Wed Jun  1 12:23:31 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4191, module binary, optimized, 1 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 17.0345540047
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 17.1601970196
+TestStatNeutrality : loci=10, size=10000: 66.7122030258
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 66.5635910034
+TestStatNeutrality : loci=100, size=10000: 569.442780972
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 568.384868145
+TestStatNeutrality : 17.0345540047, 17.1601970196, 66.7122030258, 66.5635910034, 569.442780972, 568.384868145
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Wed Jun  1 13:05:58 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4191, module short, optimized, 4 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 3.03625702858
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 3.06062293053
+TestStatNeutrality : loci=10, size=10000: 26.9129579067
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 26.9386310577
+TestStatNeutrality : loci=100, size=10000: 266.358695984
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 268.104444981
+TestStatNeutrality : 3.03625702858, 3.06062293053, 26.9129579067, 26.9386310577, 266.358695984, 268.104444981
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Wed Jun  1 13:15:53 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4191, module long, optimized, 4 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 3.10122394562
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 3.10917305946
+TestStatNeutrality : loci=10, size=10000: 26.9314918518
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 26.8245511055
+TestStatNeutrality : loci=100, size=10000: 270.068092108
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 268.488473892
+TestStatNeutrality : 3.10122394562, 3.10917305946, 26.9314918518, 26.8245511055, 270.068092108, 268.488473892
+TestStatNeutrality : End of test TestStatNeutrality
+TestStatNeutrality : Host: bp9 (Linux, x86_64, x86_64)
+TestStatNeutrality : Time: Wed Jun  1 13:25:52 2011
+TestStatNeutrality : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestStatNeutrality : simuPOP: 1.0.6svn (rev 4191, module binary, optimized, 4 threads)
+TestStatNeutrality : Test: Stat Neutrality, results are time (not processor time) to apply operator for 10 times.
+TestStatNeutrality : loci=1, size=10000: 7.92105603218
+TestStatNeutrality : loci=1, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 7.99158787727
+TestStatNeutrality : loci=10, size=10000: 30.9572019577
+TestStatNeutrality : loci=10, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 31.2986159325
+TestStatNeutrality : loci=100, size=10000: 261.169814825
+TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 262.290413141
+TestStatNeutrality : 7.92105603218, 7.99158787727, 30.9572019577, 31.2986159325, 261.169814825, 262.290413141
+TestStatNeutrality : End of test TestStatNeutrality
+TestHeteroMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHeteroMating : Time: Thu Jun  2 12:59:39 2011
+TestHeteroMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHeteroMating : simuPOP: 1.0.6svn (rev 4192, module short, optimized, 1 threads)
+TestHeteroMating : Test: HeteroMating, results are number of generations in 30 seconds.
+TestHeteroMating : loci=10, size=10000: 9574
+TestHeteroMating : loci=10, size=100000: 799
+TestHeteroMating : loci=100, size=10000: 8610
+TestHeteroMating : loci=100, size=100000: 645
+TestHeteroMating : loci=10000, size=10000: 680
+TestHeteroMating : loci=10000, size=100000: 1
+TestHeteroMating : 9574, 799, 8610, 645, 680, 1
+TestHeteroMating : End of test TestHeteroMating
+TestHeteroMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHeteroMating : Time: Thu Jun  2 13:03:45 2011
+TestHeteroMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHeteroMating : simuPOP: 1.0.6svn (rev 4192, module long, optimized, 1 threads)
+TestHeteroMating : Test: HeteroMating, results are number of generations in 30 seconds.
+TestHeteroMating : loci=10, size=10000: 9322
+TestHeteroMating : loci=10, size=100000: 706
+TestHeteroMating : loci=100, size=10000: 6626
+TestHeteroMating : loci=100, size=100000: 529
+TestHeteroMating : loci=10000, size=10000: 182
+TestHeteroMating : loci=10000, size=100000: 0
+TestHeteroMating : 9322, 706, 6626, 529, 182, 0
+TestHeteroMating : End of test TestHeteroMating
+TestHeteroMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHeteroMating : Time: Thu Jun  2 13:06:21 2011
+TestHeteroMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHeteroMating : simuPOP: 1.0.6svn (rev 4192, module binary, optimized, 1 threads)
+TestHeteroMating : Test: HeteroMating, results are number of generations in 30 seconds.
+TestHeteroMating : loci=10, size=10000: 8048
+TestHeteroMating : loci=10, size=100000: 740
+TestHeteroMating : loci=100, size=10000: 8468
+TestHeteroMating : loci=100, size=100000: 711
+TestHeteroMating : loci=10000, size=10000: 2888
+TestHeteroMating : loci=10000, size=100000: 256
+TestHeteroMating : 8048, 740, 8468, 711, 2888, 256
+TestHeteroMating : End of test TestHeteroMating
+TestHeteroMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHeteroMating : Time: Thu Jun  2 13:09:42 2011
+TestHeteroMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHeteroMating : simuPOP: 1.0.6svn (rev 4192, module short, optimized, 4 threads)
+TestHeteroMating : Test: HeteroMating, results are number of generations in 30 seconds.
+TestHeteroMating : loci=10, size=10000: 20484
+TestHeteroMating : loci=10, size=100000: 1388
+TestHeteroMating : loci=100, size=10000: 11540
+TestHeteroMating : loci=100, size=100000: 1498
+TestHeteroMating : loci=10000, size=10000: 804
+TestHeteroMating : loci=10000, size=100000: 44
+TestHeteroMating : 20484, 1388, 11540, 1498, 804, 44
+TestHeteroMating : End of test TestHeteroMating
+TestHeteroMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHeteroMating : Time: Thu Jun  2 13:12:53 2011
+TestHeteroMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHeteroMating : simuPOP: 1.0.6svn (rev 4192, module long, optimized, 4 threads)
+TestHeteroMating : Test: HeteroMating, results are number of generations in 30 seconds.
+TestHeteroMating : loci=10, size=10000: 19089
+TestHeteroMating : loci=10, size=100000: 1637
+TestHeteroMating : loci=100, size=10000: 15357
+TestHeteroMating : loci=100, size=100000: 1357
+TestHeteroMating : loci=10000, size=10000: 198
+TestHeteroMating : loci=10000, size=100000: 0
+TestHeteroMating : 19089, 1637, 15357, 1357, 198, 0
+TestHeteroMating : End of test TestHeteroMating
+TestHeteroMating : Host: bp9 (Linux, x86_64, x86_64)
+TestHeteroMating : Time: Thu Jun  2 13:15:30 2011
+TestHeteroMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestHeteroMating : simuPOP: 1.0.6svn (rev 4192, module binary, optimized, 4 threads)
+TestHeteroMating : Test: HeteroMating, results are number of generations in 30 seconds.
+TestHeteroMating : loci=10, size=10000: 17963
+TestHeteroMating : loci=10, size=100000: 1668
+TestHeteroMating : loci=100, size=10000: 19806
+TestHeteroMating : loci=100, size=100000: 1729
+TestHeteroMating : loci=10000, size=10000: 5586
+TestHeteroMating : loci=10000, size=100000: 532
+TestHeteroMating : 17963, 1668, 19806, 1729, 5586, 532
+TestHeteroMating : End of test TestHeteroMating
+TestInitGenotypeCase1 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase1 : Time: Fri Jun  3 10:03:17 2011
+TestInitGenotypeCase1 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase1 : simuPOP: 1.0.6svn (rev 4195, module short, optimized, 1 threads)
+TestInitGenotypeCase1 : Test: InitGenotype case 1, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase1 : size=100000: 20.0126931667
+TestInitGenotypeCase1 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 20.2507748604
+TestInitGenotypeCase1 : 20.0126931667, 20.2507748604
+TestInitGenotypeCase1 : End of test TestInitGenotypeCase1
+TestInitGenotypeCase1 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase1 : Time: Fri Jun  3 10:03:58 2011
+TestInitGenotypeCase1 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase1 : simuPOP: 1.0.6svn (rev 4195, module long, optimized, 1 threads)
+TestInitGenotypeCase1 : Test: InitGenotype case 1, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase1 : size=100000: 20.1913919449
+TestInitGenotypeCase1 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 20.4295210838
+TestInitGenotypeCase1 : 20.1913919449, 20.4295210838
+TestInitGenotypeCase1 : End of test TestInitGenotypeCase1
+TestInitGenotypeCase1 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase1 : Time: Fri Jun  3 10:04:49 2011
+TestInitGenotypeCase1 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase1 : simuPOP: 1.0.6svn (rev 4195, module binary, optimized, 1 threads)
+TestInitGenotypeCase1 : Test: InitGenotype case 1, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase1 : size=100000: 44.585860014
+TestInitGenotypeCase1 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 44.6598989964
+TestInitGenotypeCase1 : 44.585860014, 44.6598989964
+TestInitGenotypeCase1 : End of test TestInitGenotypeCase1
+TestInitGenotypeCase1 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase1 : Time: Fri Jun  3 10:06:19 2011
+TestInitGenotypeCase1 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase1 : simuPOP: 1.0.6svn (rev 4195, module short, optimized, 4 threads)
+TestInitGenotypeCase1 : Test: InitGenotype case 1, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase1 : size=100000: 5.68694496155
+TestInitGenotypeCase1 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 5.69882082939
+TestInitGenotypeCase1 : 5.68694496155, 5.69882082939
+TestInitGenotypeCase1 : End of test TestInitGenotypeCase1
+TestInitGenotypeCase1 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase1 : Time: Fri Jun  3 10:06:31 2011
+TestInitGenotypeCase1 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase1 : simuPOP: 1.0.6svn (rev 4195, module long, optimized, 4 threads)
+TestInitGenotypeCase1 : Test: InitGenotype case 1, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase1 : size=100000: 5.97290492058
+TestInitGenotypeCase1 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 6.30002713203
+TestInitGenotypeCase1 : 5.97290492058, 6.30002713203
+TestInitGenotypeCase1 : End of test TestInitGenotypeCase1
+TestInitGenotypeCase1 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase1 : Time: Fri Jun  3 10:06:45 2011
+TestInitGenotypeCase1 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase1 : simuPOP: 1.0.6svn (rev 4195, module binary, optimized, 4 threads)
+TestInitGenotypeCase1 : Test: InitGenotype case 1, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase1 : size=100000: 12.9159140587
+TestInitGenotypeCase1 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 12.3552010059
+TestInitGenotypeCase1 : 12.9159140587, 12.3552010059
+TestInitGenotypeCase1 : End of test TestInitGenotypeCase1
+TestInitGenotypeCase2 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase2 : Time: Fri Jun  3 10:07:11 2011
+TestInitGenotypeCase2 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase2 : simuPOP: 1.0.6svn (rev 4195, module short, optimized, 1 threads)
+TestInitGenotypeCase2 : Test: InitGenotype case 2, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase2 : size=100000: 128.611124992
+TestInitGenotypeCase2 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 104.630683184
+TestInitGenotypeCase2 : 128.611124992, 104.630683184
+TestInitGenotypeCase2 : End of test TestInitGenotypeCase2
+TestInitGenotypeCase2 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase2 : Time: Fri Jun  3 10:11:05 2011
+TestInitGenotypeCase2 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase2 : simuPOP: 1.0.6svn (rev 4195, module long, optimized, 1 threads)
+TestInitGenotypeCase2 : Test: InitGenotype case 2, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase2 : size=100000: 128.964793921
+TestInitGenotypeCase2 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 107.590738058
+TestInitGenotypeCase2 : 128.964793921, 107.590738058
+TestInitGenotypeCase2 : End of test TestInitGenotypeCase2
+TestInitGenotypeCase2 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase2 : Time: Fri Jun  3 10:15:03 2011
+TestInitGenotypeCase2 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase2 : simuPOP: 1.0.6svn (rev 4195, module binary, optimized, 1 threads)
+TestInitGenotypeCase2 : Test: InitGenotype case 2, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase2 : size=100000: 133.749624968
+TestInitGenotypeCase2 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 116.280220985
+TestInitGenotypeCase2 : 133.749624968, 116.280220985
+TestInitGenotypeCase2 : End of test TestInitGenotypeCase2
+TestInitGenotypeCase2 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase2 : Time: Fri Jun  3 10:19:14 2011
+TestInitGenotypeCase2 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase2 : simuPOP: 1.0.6svn (rev 4195, module short, optimized, 4 threads)
+TestInitGenotypeCase2 : Test: InitGenotype case 2, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase2 : size=100000: 136.778111935
+TestInitGenotypeCase2 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 135.20889616
+TestInitGenotypeCase2 : 136.778111935, 135.20889616
+TestInitGenotypeCase2 : End of test TestInitGenotypeCase2
+TestInitGenotypeCase2 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase2 : Time: Fri Jun  3 10:23:47 2011
+TestInitGenotypeCase2 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase2 : simuPOP: 1.0.6svn (rev 4195, module long, optimized, 4 threads)
+TestInitGenotypeCase2 : Test: InitGenotype case 2, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase2 : size=100000: 137.331019163
+TestInitGenotypeCase2 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 133.9238801
+TestInitGenotypeCase2 : 137.331019163, 133.9238801
+TestInitGenotypeCase2 : End of test TestInitGenotypeCase2
+TestInitGenotypeCase2 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase2 : Time: Fri Jun  3 10:28:21 2011
+TestInitGenotypeCase2 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase2 : simuPOP: 1.0.6svn (rev 4195, module binary, optimized, 4 threads)
+TestInitGenotypeCase2 : Test: InitGenotype case 2, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase2 : size=100000: 135.631910086
+TestInitGenotypeCase2 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 132.102210045
+TestInitGenotypeCase2 : 135.631910086, 132.102210045
+TestInitGenotypeCase2 : End of test TestInitGenotypeCase2
+TestInitGenotypeCase3 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase3 : Time: Fri Jun  3 10:32:50 2011
+TestInitGenotypeCase3 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase3 : simuPOP: 1.0.6svn (rev 4195, module short, optimized, 1 threads)
+TestInitGenotypeCase3 : Test: InitGenotype case 3, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase3 : size=100000: 20.7163860798
+TestInitGenotypeCase3 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 20.7371339798
+TestInitGenotypeCase3 : 20.7163860798, 20.7371339798
+TestInitGenotypeCase3 : End of test TestInitGenotypeCase3
+TestInitGenotypeCase3 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase3 : Time: Fri Jun  3 10:33:32 2011
+TestInitGenotypeCase3 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase3 : simuPOP: 1.0.6svn (rev 4195, module long, optimized, 1 threads)
+TestInitGenotypeCase3 : Test: InitGenotype case 3, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase3 : size=100000: 21.2412390709
+TestInitGenotypeCase3 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 21.0875110626
+TestInitGenotypeCase3 : 21.2412390709, 21.0875110626
+TestInitGenotypeCase3 : End of test TestInitGenotypeCase3
+TestInitGenotypeCase3 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase3 : Time: Fri Jun  3 10:34:15 2011
+TestInitGenotypeCase3 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase3 : simuPOP: 1.0.6svn (rev 4195, module binary, optimized, 1 threads)
+TestInitGenotypeCase3 : Test: InitGenotype case 3, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase3 : size=100000: 47.2954690456
+TestInitGenotypeCase3 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 47.1605689526
+TestInitGenotypeCase3 : 47.2954690456, 47.1605689526
+TestInitGenotypeCase3 : End of test TestInitGenotypeCase3
+TestInitGenotypeCase3 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase3 : Time: Fri Jun  3 10:35:51 2011
+TestInitGenotypeCase3 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase3 : simuPOP: 1.0.6svn (rev 4195, module short, optimized, 4 threads)
+TestInitGenotypeCase3 : Test: InitGenotype case 3, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase3 : size=100000: 5.51451182365
+TestInitGenotypeCase3 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 5.6633439064
+TestInitGenotypeCase3 : 5.51451182365, 5.6633439064
+TestInitGenotypeCase3 : End of test TestInitGenotypeCase3
+TestInitGenotypeCase3 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase3 : Time: Fri Jun  3 10:36:03 2011
+TestInitGenotypeCase3 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase3 : simuPOP: 1.0.6svn (rev 4195, module long, optimized, 4 threads)
+TestInitGenotypeCase3 : Test: InitGenotype case 3, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase3 : size=100000: 5.6491651535
+TestInitGenotypeCase3 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 5.6448340416
+TestInitGenotypeCase3 : 5.6491651535, 5.6448340416
+TestInitGenotypeCase3 : End of test TestInitGenotypeCase3
+TestInitGenotypeCase3 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase3 : Time: Fri Jun  3 10:36:15 2011
+TestInitGenotypeCase3 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase3 : simuPOP: 1.0.6svn (rev 4195, module binary, optimized, 4 threads)
+TestInitGenotypeCase3 : Test: InitGenotype case 3, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase3 : size=100000: 11.493434906
+TestInitGenotypeCase3 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 11.7346558571
+TestInitGenotypeCase3 : 11.493434906, 11.7346558571
+TestInitGenotypeCase3 : End of test TestInitGenotypeCase3
+TestInitGenotypeCase4 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase4 : Time: Fri Jun  3 10:36:39 2011
+TestInitGenotypeCase4 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase4 : simuPOP: 1.0.6svn (rev 4195, module short, optimized, 1 threads)
+TestInitGenotypeCase4 : Test: InitGenotype case 4, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase4 : size=100000: 77.3453309536
+TestInitGenotypeCase4 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 78.1487438679
+TestInitGenotypeCase4 : 77.3453309536, 78.1487438679
+TestInitGenotypeCase4 : End of test TestInitGenotypeCase4
+TestInitGenotypeCase4 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase4 : Time: Fri Jun  3 10:39:16 2011
+TestInitGenotypeCase4 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase4 : simuPOP: 1.0.6svn (rev 4195, module long, optimized, 1 threads)
+TestInitGenotypeCase4 : Test: InitGenotype case 4, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase4 : size=100000: 79.8385441303
+TestInitGenotypeCase4 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 79.1435091496
+TestInitGenotypeCase4 : 79.8385441303, 79.1435091496
+TestInitGenotypeCase4 : End of test TestInitGenotypeCase4
+TestInitGenotypeCase4 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase4 : Time: Fri Jun  3 10:41:56 2011
+TestInitGenotypeCase4 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase4 : simuPOP: 1.0.6svn (rev 4195, module binary, optimized, 1 threads)
+TestInitGenotypeCase4 : Test: InitGenotype case 4, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase4 : size=100000: 105.690921068
+TestInitGenotypeCase4 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 105.673449993
+TestInitGenotypeCase4 : 105.690921068, 105.673449993
+TestInitGenotypeCase4 : End of test TestInitGenotypeCase4
+TestInitGenotypeCase4 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase4 : Time: Fri Jun  3 10:45:28 2011
+TestInitGenotypeCase4 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase4 : simuPOP: 1.0.6svn (rev 4195, module short, optimized, 4 threads)
+TestInitGenotypeCase4 : Test: InitGenotype case 4, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase4 : size=100000: 21.8644630909
+TestInitGenotypeCase4 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 22.1283450127
+TestInitGenotypeCase4 : 21.8644630909, 22.1283450127
+TestInitGenotypeCase4 : End of test TestInitGenotypeCase4
+TestInitGenotypeCase4 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase4 : Time: Fri Jun  3 10:46:13 2011
+TestInitGenotypeCase4 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase4 : simuPOP: 1.0.6svn (rev 4195, module long, optimized, 4 threads)
+TestInitGenotypeCase4 : Test: InitGenotype case 4, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase4 : size=100000: 22.5271499157
+TestInitGenotypeCase4 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 22.7279741764
+TestInitGenotypeCase4 : 22.5271499157, 22.7279741764
+TestInitGenotypeCase4 : End of test TestInitGenotypeCase4
+TestInitGenotypeCase4 : Host: bp9 (Linux, x86_64, x86_64)
+TestInitGenotypeCase4 : Time: Fri Jun  3 10:46:59 2011
+TestInitGenotypeCase4 : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitGenotypeCase4 : simuPOP: 1.0.6svn (rev 4195, module binary, optimized, 4 threads)
+TestInitGenotypeCase4 : Test: InitGenotype case 4, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase4 : size=100000: 29.9604380131
+TestInitGenotypeCase4 : size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: 30.151968956
+TestInitGenotypeCase4 : 29.9604380131, 30.151968956
+TestInitGenotypeCase4 : End of test TestInitGenotypeCase4
+TestInitSex : Host: bp9 (Linux, x86_64, x86_64)
+TestInitSex : Time: Mon Jun  6 10:21:44 2011
+TestInitSex : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitSex : simuPOP: 1.0.6svn (rev 4197, module short, optimized, 1 threads)
+TestInitSex : Test: InitSex, results are time (not processor time) to apply operator for 1000 times.
+TestInitSex : size=1000000: 14.3448200226
+TestInitSex : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 14.728511095
+TestInitSex : 14.3448200226, 14.728511095
+TestInitSex : End of test TestInitSex
+TestInitSex : Host: bp9 (Linux, x86_64, x86_64)
+TestInitSex : Time: Mon Jun  6 10:22:21 2011
+TestInitSex : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitSex : simuPOP: 1.0.6svn (rev 4197, module long, optimized, 1 threads)
+TestInitSex : Test: InitSex, results are time (not processor time) to apply operator for 1000 times.
+TestInitSex : size=1000000: 14.6376848221
+TestInitSex : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 14.6885848045
+TestInitSex : 14.6376848221, 14.6885848045
+TestInitSex : End of test TestInitSex
+TestInitSex : Host: bp9 (Linux, x86_64, x86_64)
+TestInitSex : Time: Mon Jun  6 10:22:55 2011
+TestInitSex : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitSex : simuPOP: 1.0.6svn (rev 4197, module binary, optimized, 1 threads)
+TestInitSex : Test: InitSex, results are time (not processor time) to apply operator for 1000 times.
+TestInitSex : size=1000000: 14.1411120892
+TestInitSex : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 14.4127311707
+TestInitSex : 14.1411120892, 14.4127311707
+TestInitSex : End of test TestInitSex
+TestInitSex : Host: bp9 (Linux, x86_64, x86_64)
+TestInitSex : Time: Mon Jun  6 10:26:09 2011
+TestInitSex : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitSex : simuPOP: 1.0.6svn (rev 4197, module short, optimized, 4 threads)
+TestInitSex : Test: InitSex, results are time (not processor time) to apply operator for 1000 times.
+TestInitSex : size=1000000: 4.17382383347
+TestInitSex : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 4.48227882385
+TestInitSex : 4.17382383347, 4.48227882385
+TestInitSex : End of test TestInitSex
+TestInitSex : Host: bp9 (Linux, x86_64, x86_64)
+TestInitSex : Time: Mon Jun  6 10:26:25 2011
+TestInitSex : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitSex : simuPOP: 1.0.6svn (rev 4197, module long, optimized, 4 threads)
+TestInitSex : Test: InitSex, results are time (not processor time) to apply operator for 1000 times.
+TestInitSex : size=1000000: 4.08154797554
+TestInitSex : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 4.58521986008
+TestInitSex : 4.08154797554, 4.58521986008
+TestInitSex : End of test TestInitSex
+TestInitSex : Host: bp9 (Linux, x86_64, x86_64)
+TestInitSex : Time: Mon Jun  6 10:26:38 2011
+TestInitSex : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitSex : simuPOP: 1.0.6svn (rev 4197, module binary, optimized, 4 threads)
+TestInitSex : Test: InitSex, results are time (not processor time) to apply operator for 1000 times.
+TestInitSex : size=1000000: 4.46001601219
+TestInitSex : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 5.02257704735
+TestInitSex : 4.46001601219, 5.02257704735
+TestInitSex : End of test TestInitSex
+TestInitSex : Host: bp9 (Linux, x86_64, x86_64)
+TestInitSex : Time: Mon Jun  6 15:37:14 2011
+TestInitSex : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitSex : simuPOP: 1.0.6svn (rev 4200, module short, optimized, 1 threads)
+TestInitSex : Test: InitSex, results are time (not processor time) to apply operator for 1000 times.
+TestInitSex : size=1000000: 46.7628421783
+TestInitSex : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 46.9360320568
+TestInitSex : 46.7628421783, 46.9360320568
+TestInitSex : End of test TestInitSex
+TestInitSex : Host: bp9 (Linux, x86_64, x86_64)
+TestInitSex : Time: Mon Jun  6 15:38:55 2011
+TestInitSex : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitSex : simuPOP: 1.0.6svn (rev 4200, module long, optimized, 1 threads)
+TestInitSex : Test: InitSex, results are time (not processor time) to apply operator for 1000 times.
+TestInitSex : size=1000000: 47.1968901157
+TestInitSex : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 47.7802641392
+TestInitSex : 47.1968901157, 47.7802641392
+TestInitSex : End of test TestInitSex
+TestInitSex : Host: bp9 (Linux, x86_64, x86_64)
+TestInitSex : Time: Mon Jun  6 15:40:52 2011
+TestInitSex : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitSex : simuPOP: 1.0.6svn (rev 4200, module binary, optimized, 1 threads)
+TestInitSex : Test: InitSex, results are time (not processor time) to apply operator for 1000 times.
+TestInitSex : size=1000000: 47.520539999
+TestInitSex : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 47.8896892071
+TestInitSex : 47.520539999, 47.8896892071
+TestInitSex : End of test TestInitSex
+TestInitSex : Host: bp9 (Linux, x86_64, x86_64)
+TestInitSex : Time: Mon Jun  6 15:42:38 2011
+TestInitSex : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitSex : simuPOP: 1.0.6svn (rev 4200, module short, optimized, 4 threads)
+TestInitSex : Test: InitSex, results are time (not processor time) to apply operator for 1000 times.
+TestInitSex : size=1000000: 13.1370029449
+TestInitSex : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 13.5422229767
+TestInitSex : 13.1370029449, 13.5422229767
+TestInitSex : End of test TestInitSex
+TestInitSex : Host: bp9 (Linux, x86_64, x86_64)
+TestInitSex : Time: Mon Jun  6 15:43:12 2011
+TestInitSex : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitSex : simuPOP: 1.0.6svn (rev 4200, module long, optimized, 4 threads)
+TestInitSex : Test: InitSex, results are time (not processor time) to apply operator for 1000 times.
+TestInitSex : size=1000000: 13.7384490967
+TestInitSex : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 15.3715240955
+TestInitSex : 13.7384490967, 15.3715240955
+TestInitSex : End of test TestInitSex
+TestInitSex : Host: bp9 (Linux, x86_64, x86_64)
+TestInitSex : Time: Mon Jun  6 15:44:00 2011
+TestInitSex : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestInitSex : simuPOP: 1.0.6svn (rev 4200, module binary, optimized, 4 threads)
+TestInitSex : Test: InitSex, results are time (not processor time) to apply operator for 1000 times.
+TestInitSex : size=1000000: 12.9587409496
+TestInitSex : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 13.3092448711
+TestInitSex : 12.9587409496, 13.3092448711
+TestInitSex : End of test TestInitSex
