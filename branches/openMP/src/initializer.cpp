@@ -130,7 +130,6 @@ bool InitInfo::apply(Population & pop) const
 				size_t id = omp_get_thread_num();
 				IndIterator ind = pop.indIterator(sp->subPop(), id);
 				idx = idx + id * (pop.subPopSize(sp->subPop()) / numThreads());
-				printf("id %lu, idx %lu\n", id, idx);
 				for (; ind.valid(); ++ind, ++idx)
 					for (size_t i = 0; i < infoIdx.size(); ++i) {
 						ind->setInfo(values[idx % numValues], infoIdx[i]);
