@@ -723,7 +723,6 @@ class TestInitInfo(PerformanceTest):
     def _run(self, size):
         # single test case
         pop = Population(size = size)
-        # addInfoField('a')
         t = timeit.Timer(
                setup = 'from __main__ import Population, initInfo\n'
         "pop = Population(size=%s,loci=100, infoFields=['a','b'])" % (size),
