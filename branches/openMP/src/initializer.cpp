@@ -122,14 +122,31 @@ bool InitInfo::apply(Population & pop) const
 
 	for (; sp != sp_end; ++sp) {
 		pop.activateVirtualSubPop(*sp);
-		IndIterator ind = pop.indIterator(sp->subPop());
 		size_t numValues = m_values.size();
-		for (; ind.valid(); ++ind, ++idx) {
-			for (size_t i = 0; i < infoIdx.size(); ++i) {
-				if (values.empty())
-					ind->setInfo(m_values.func() (PyObj_As_Double, "()"), infoIdx[i]);
-				else
-					ind->setInfo(values[idx % numValues], infoIdx[i]);
+		if (numThreads() > 1 && !values.empty()) {
+#ifdef _OPENMP
+#  pragma omp parallel firstprivate (idx)
+			{
+				size_t id = omp_get_thread_num();
+				IndIterator ind = pop.indIterator(sp->subPop(), id);
+				idx = idx + id * (pop.subPopSize(sp->subPop()) / numThreads());
+				printf("id %lu, idx %lu\n", id, idx);
+				for (; ind.valid(); ++ind, ++idx)
+					for (size_t i = 0; i < infoIdx.size(); ++i) {
+						ind->setInfo(values[idx % numValues], infoIdx[i]);
+					}
+			}
+			idx = idx + pop.subPopSize(sp->subPop());
+#endif
+		} else {
+			IndIterator ind = pop.indIterator(sp->subPop());
+			for (; ind.valid(); ++ind, ++idx) {
+				for (size_t i = 0; i < infoIdx.size(); ++i) {
+					if (values.empty())
+						ind->setInfo(m_values.func() (PyObj_As_Double, "()"), infoIdx[i]);
+					else
+						ind->setInfo(values[idx % numValues], infoIdx[i]);
+				}
 			}
 		}
 		pop.deactivateVirtualSubPop(sp->subPop());
