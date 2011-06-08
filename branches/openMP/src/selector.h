@@ -224,6 +224,12 @@ public:
 		return "<simuPOP.MapSelector>" ;
 	}
 
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return true;
+	}
+
 
 private:
 	///
@@ -296,6 +302,11 @@ public:
 		return "<simuPOP.MaSelector>" ;
 	}
 
+	bool parallelizable() const
+	{
+		return false;
+	}
+
 
 private:
 	/// one locus
@@ -366,6 +377,12 @@ public:
 	}
 
 
+	bool parallelizable() const
+	{
+		return false;
+	}
+
+
 private:
 	/// a list of selectors
 	const opList m_selectors;
@@ -424,6 +441,11 @@ public:
 		return "<simuPOP.PySelector>" ;
 	}
 
+
+	bool parallelizable() const
+	{
+		return false;
+	}
 
 private:
 	/// user supplied python function

@@ -702,7 +702,6 @@ class TestInitSex(PerformanceTest):
 
     def _run(self, size):
         # single test case
-        pop = Population(size = size)
         t = timeit.Timer(
             setup = 'from __main__ import Population,initSex, MALE,FEMALE\n'
                 'pop = Population(size=%s,loci=1000)' % (size),
@@ -722,11 +721,30 @@ class TestInitInfo(PerformanceTest):
 
     def _run(self, size):
         # single test case
-        pop = Population(size = size)
         t = timeit.Timer(
-               setup = 'from __main__ import Population, initInfo\n'
-        "pop = Population(size=%s,loci=100, infoFields=['a','b'])" % (size),
-        stmt = "initInfo(pop,[1,2,3,4,5,6,7],infoFields=['a','b'])")
+            setup = 'from __main__ import Population, initInfo\n'
+                "pop = Population(size=%s,loci=100, infoFields=['a','b'])" % (size),
+            stmt = "initInfo(pop,[1,2,3,4,5,6,7],infoFields=['a','b'])")
+        return t.timeit(number=self.repeats)
+
+class TestMapSelector(PerformanceTest):
+    
+    def __init__(self, logger, repeats=1000):
+        PerformanceTest.__init__(self, 'MapSelector, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[1000000, [100000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, initGenotype, MapSelector\n' 
+                "pop = Population(size=%s, loci=[1], infoFields=['a', 'fitness', 'b'])\n"
+                "initGenotype(pop, freq=[.2, .8])" % (size),
+            stmt = 'MapSelector(loci=[0], fitness={(0,0):1, (0,1):0.5, (1,1):0.25}).apply(pop)')
         return t.timeit(number=self.repeats)
 
 
