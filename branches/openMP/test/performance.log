@@ -6752,3 +6752,57 @@ TestMapSelector : size=1000000: 52.5352201462
 TestMapSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 55.497841835
 TestMapSelector : 52.5352201462, 55.497841835
 TestMapSelector : End of test TestMapSelector
+TestMaSelector : Host: bp9 (Linux, x86_64, x86_64)
+TestMaSelector : Time: Wed Jun  8 14:27:17 2011
+TestMaSelector : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMaSelector : simuPOP: 1.0.6svn (rev 4214, module short, optimized, 1 threads)
+TestMaSelector : Test: MaSelector, results are time (not processor time) to apply operator for 1000 times.
+TestMaSelector : size=1000000: 25.4252510071
+TestMaSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 25.5701878071
+TestMaSelector : 25.4252510071, 25.5701878071
+TestMaSelector : End of test TestMaSelector
+TestMaSelector : Host: bp9 (Linux, x86_64, x86_64)
+TestMaSelector : Time: Wed Jun  8 14:28:08 2011
+TestMaSelector : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMaSelector : simuPOP: 1.0.6svn (rev 4214, module long, optimized, 1 threads)
+TestMaSelector : Test: MaSelector, results are time (not processor time) to apply operator for 1000 times.
+TestMaSelector : size=1000000: 27.9332430363
+TestMaSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 27.9779438972
+TestMaSelector : 27.9332430363, 27.9779438972
+TestMaSelector : End of test TestMaSelector
+TestMaSelector : Host: bp9 (Linux, x86_64, x86_64)
+TestMaSelector : Time: Wed Jun  8 14:29:05 2011
+TestMaSelector : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMaSelector : simuPOP: 1.0.6svn (rev 4214, module binary, optimized, 1 threads)
+TestMaSelector : Test: MaSelector, results are time (not processor time) to apply operator for 1000 times.
+TestMaSelector : size=1000000: 48.2308118343
+TestMaSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 48.3816211224
+TestMaSelector : 48.2308118343, 48.3816211224
+TestMaSelector : End of test TestMaSelector
+TestMaSelector : Host: bp9 (Linux, x86_64, x86_64)
+TestMaSelector : Time: Wed Jun  8 14:30:53 2011
+TestMaSelector : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMaSelector : simuPOP: 1.0.6svn (rev 4214, module short, optimized, 4 threads)
+TestMaSelector : Test: MaSelector, results are time (not processor time) to apply operator for 1000 times.
+TestMaSelector : size=1000000: 7.88334703445
+TestMaSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 8.11231207848
+TestMaSelector : 7.88334703445, 8.11231207848
+TestMaSelector : End of test TestMaSelector
+TestMaSelector : Host: bp9 (Linux, x86_64, x86_64)
+TestMaSelector : Time: Wed Jun  8 14:31:10 2011
+TestMaSelector : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMaSelector : simuPOP: 1.0.6svn (rev 4214, module long, optimized, 4 threads)
+TestMaSelector : Test: MaSelector, results are time (not processor time) to apply operator for 1000 times.
+TestMaSelector : size=1000000: 8.17427706718
+TestMaSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 8.4179918766
+TestMaSelector : 8.17427706718, 8.4179918766
+TestMaSelector : End of test TestMaSelector
+TestMaSelector : Host: bp9 (Linux, x86_64, x86_64)
+TestMaSelector : Time: Wed Jun  8 14:31:27 2011
+TestMaSelector : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMaSelector : simuPOP: 1.0.6svn (rev 4214, module binary, optimized, 4 threads)
+TestMaSelector : Test: MaSelector, results are time (not processor time) to apply operator for 1000 times.
+TestMaSelector : size=1000000: 15.1356091499
+TestMaSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 14.8043692112
+TestMaSelector : 15.1356091499, 14.8043692112
+TestMaSelector : End of test TestMaSelector
