@@ -460,3 +460,9 @@ TestInitInfo, 2011-06-07 11:55:01,380, EPI7-0541302, AMD64-1threads, python2.7.1
 TestInitInfo, 2011-06-07 11:55:52,381, EPI7-0541302, AMD64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4205-vc, short, 12.986396842, 14.089627703
 TestInitInfo, 2011-06-07 11:56:20,819, EPI7-0541302, AMD64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4205-vc, long, 13.1444051231, 13.6804705765
 TestInitInfo, 2011-06-07 11:56:49,009, EPI7-0541302, AMD64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4205-vc, binary, 12.6781480139, 13.7568184564
+TestMapSelector, 2011-06-08 12:32:43,362, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4212-intel, short, 137.560660124, 136.669243097
+TestMapSelector, 2011-06-08 12:37:05,477, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4212-intel, long, 131.439245939, 129.801275969
+TestMapSelector, 2011-06-08 12:42:04,585, bp9, x86_64-1threads, python2.7.1, simuPOP-1.0.6svn, rev4212-intel, binary, 149.361258984, 148.818060875
+TestMapSelector, 2011-06-08 12:48:18,478, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4212-intel, short, 45.7759559155, 52.9312109947
+TestMapSelector, 2011-06-08 12:49:53,758, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4212-intel, long, 46.7970941067, 47.7334721088
+TestMapSelector, 2011-06-08 12:51:42,545, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4212-intel, binary, 52.5352201462, 55.497841835

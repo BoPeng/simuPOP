@@ -6698,3 +6698,57 @@ TestInitInfo : size=1000000: 12.6781480139
 TestInitInfo : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 13.7568184564
 TestInitInfo : 12.6781480139, 13.7568184564
 TestInitInfo : End of test TestInitInfo
+TestMapSelector : Host: bp9 (Linux, x86_64, x86_64)
+TestMapSelector : Time: Wed Jun  8 12:28:08 2011
+TestMapSelector : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMapSelector : simuPOP: 1.0.6svn (rev 4212, module short, optimized, 1 threads)
+TestMapSelector : Test: MapSelector, results are time (not processor time) to apply operator for 1000 times.
+TestMapSelector : size=1000000: 137.560660124
+TestMapSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 136.669243097
+TestMapSelector : 137.560660124, 136.669243097
+TestMapSelector : End of test TestMapSelector
+TestMapSelector : Host: bp9 (Linux, x86_64, x86_64)
+TestMapSelector : Time: Wed Jun  8 12:32:43 2011
+TestMapSelector : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMapSelector : simuPOP: 1.0.6svn (rev 4212, module long, optimized, 1 threads)
+TestMapSelector : Test: MapSelector, results are time (not processor time) to apply operator for 1000 times.
+TestMapSelector : size=1000000: 131.439245939
+TestMapSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 129.801275969
+TestMapSelector : 131.439245939, 129.801275969
+TestMapSelector : End of test TestMapSelector
+TestMapSelector : Host: bp9 (Linux, x86_64, x86_64)
+TestMapSelector : Time: Wed Jun  8 12:37:06 2011
+TestMapSelector : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMapSelector : simuPOP: 1.0.6svn (rev 4212, module binary, optimized, 1 threads)
+TestMapSelector : Test: MapSelector, results are time (not processor time) to apply operator for 1000 times.
+TestMapSelector : size=1000000: 149.361258984
+TestMapSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 148.818060875
+TestMapSelector : 149.361258984, 148.818060875
+TestMapSelector : End of test TestMapSelector
+TestMapSelector : Host: bp9 (Linux, x86_64, x86_64)
+TestMapSelector : Time: Wed Jun  8 12:46:39 2011
+TestMapSelector : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMapSelector : simuPOP: 1.0.6svn (rev 4212, module short, optimized, 4 threads)
+TestMapSelector : Test: MapSelector, results are time (not processor time) to apply operator for 1000 times.
+TestMapSelector : size=1000000: 45.7759559155
+TestMapSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 52.9312109947
+TestMapSelector : 45.7759559155, 52.9312109947
+TestMapSelector : End of test TestMapSelector
+TestMapSelector : Host: bp9 (Linux, x86_64, x86_64)
+TestMapSelector : Time: Wed Jun  8 12:48:19 2011
+TestMapSelector : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMapSelector : simuPOP: 1.0.6svn (rev 4212, module long, optimized, 4 threads)
+TestMapSelector : Test: MapSelector, results are time (not processor time) to apply operator for 1000 times.
+TestMapSelector : size=1000000: 46.7970941067
+TestMapSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 47.7334721088
+TestMapSelector : 46.7970941067, 47.7334721088
+TestMapSelector : End of test TestMapSelector
+TestMapSelector : Host: bp9 (Linux, x86_64, x86_64)
+TestMapSelector : Time: Wed Jun  8 12:49:54 2011
+TestMapSelector : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMapSelector : simuPOP: 1.0.6svn (rev 4212, module binary, optimized, 4 threads)
+TestMapSelector : Test: MapSelector, results are time (not processor time) to apply operator for 1000 times.
+TestMapSelector : size=1000000: 52.5352201462
+TestMapSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 55.497841835
+TestMapSelector : 52.5352201462, 55.497841835
+TestMapSelector : End of test TestMapSelector
