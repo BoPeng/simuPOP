@@ -720,8 +720,7 @@ class TestInitInfo(PerformanceTest):
         return self.sequentialRun(size=[1000000, [100000]*10])
 
     def _run(self, size):
-        # single test case
-        t = timeit.Timer(
+        # single test case t = timeit.Timer(
             setup = 'from __main__ import Population, initInfo\n'
                 "pop = Population(size=%s,loci=100, infoFields=['a','b'])" % (size),
             stmt = "initInfo(pop,[1,2,3,4,5,6,7],infoFields=['a','b'])")
@@ -747,6 +746,25 @@ class TestMapSelector(PerformanceTest):
             stmt = 'MapSelector(loci=[0], fitness={(0,0):1, (0,1):0.5, (1,1):0.25}).apply(pop)')
         return t.timeit(number=self.repeats)
 
+class TestMaSelector(PerformanceTest):
+    
+    def __init__(self, logger, repeats=1000):
+        PerformanceTest.__init__(self, 'MaSelector, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[1000000, [100000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, initGenotype, MaSelector\n' 
+                "pop = Population(size=%s, loci=[1], infoFields=['a', 'fitness', 'b'])\n"
+                "initGenotype(pop, freq=[.2, .8])" % (size),
+            stmt = 'MaSelector(loci=[0], fitness= [1, 0.5, 0.25], wildtype = [0] ).apply(pop)')
+        return t.timeit(number=self.repeats)
 
 class TestRandomMatingWithSelection(PerformanceTest):
     def __init__(self, logger, time=60):

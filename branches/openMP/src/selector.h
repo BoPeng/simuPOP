@@ -304,7 +304,7 @@ public:
 
 	bool parallelizable() const
 	{
-		return false;
+		return true;
 	}
 
 
