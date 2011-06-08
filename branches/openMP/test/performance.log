@@ -6806,3 +6806,57 @@ TestMaSelector : size=1000000: 15.1356091499
 TestMaSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 14.8043692112
 TestMaSelector : 15.1356091499, 14.8043692112
 TestMaSelector : End of test TestMaSelector
+TestMlSelector : Host: bp9 (Linux, x86_64, x86_64)
+TestMlSelector : Time: Wed Jun  8 15:44:41 2011
+TestMlSelector : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMlSelector : simuPOP: 1.0.6svn (rev 4215, module short, optimized, 1 threads)
+TestMlSelector : Test: MlSelector, results are time (not processor time) to apply operator for 200 times.
+TestMlSelector : size=1000000: 50.193365097
+TestMlSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 50.2650611401
+TestMlSelector : 50.193365097, 50.2650611401
+TestMlSelector : End of test TestMlSelector
+TestMlSelector : Host: bp9 (Linux, x86_64, x86_64)
+TestMlSelector : Time: Wed Jun  8 15:46:22 2011
+TestMlSelector : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMlSelector : simuPOP: 1.0.6svn (rev 4215, module long, optimized, 1 threads)
+TestMlSelector : Test: MlSelector, results are time (not processor time) to apply operator for 200 times.
+TestMlSelector : size=1000000: 51.6552660465
+TestMlSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 54.0810310841
+TestMlSelector : 51.6552660465, 54.0810310841
+TestMlSelector : End of test TestMlSelector
+TestMlSelector : Host: bp9 (Linux, x86_64, x86_64)
+TestMlSelector : Time: Wed Jun  8 15:48:09 2011
+TestMlSelector : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMlSelector : simuPOP: 1.0.6svn (rev 4215, module binary, optimized, 1 threads)
+TestMlSelector : Test: MlSelector, results are time (not processor time) to apply operator for 200 times.
+TestMlSelector : size=1000000: 62.9643480778
+TestMlSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 62.9600830078
+TestMlSelector : 62.9643480778, 62.9600830078
+TestMlSelector : End of test TestMlSelector
+TestMlSelector : Host: bp9 (Linux, x86_64, x86_64)
+TestMlSelector : Time: Wed Jun  8 15:57:22 2011
+TestMlSelector : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMlSelector : simuPOP: 1.0.6svn (rev 4215, module short, optimized, 4 threads)
+TestMlSelector : Test: MlSelector, results are time (not processor time) to apply operator for 200 times.
+TestMlSelector : size=1000000: 20.2570528984
+TestMlSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 18.9420928955
+TestMlSelector : 20.2570528984, 18.9420928955
+TestMlSelector : End of test TestMlSelector
+TestMlSelector : Host: bp9 (Linux, x86_64, x86_64)
+TestMlSelector : Time: Wed Jun  8 15:58:02 2011
+TestMlSelector : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMlSelector : simuPOP: 1.0.6svn (rev 4215, module long, optimized, 4 threads)
+TestMlSelector : Test: MlSelector, results are time (not processor time) to apply operator for 200 times.
+TestMlSelector : size=1000000: 19.7100989819
+TestMlSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 20.2147932053
+TestMlSelector : 19.7100989819, 20.2147932053
+TestMlSelector : End of test TestMlSelector
+TestMlSelector : Host: bp9 (Linux, x86_64, x86_64)
+TestMlSelector : Time: Wed Jun  8 15:58:43 2011
+TestMlSelector : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMlSelector : simuPOP: 1.0.6svn (rev 4215, module binary, optimized, 4 threads)
+TestMlSelector : Test: MlSelector, results are time (not processor time) to apply operator for 200 times.
+TestMlSelector : size=1000000: 24.4318461418
+TestMlSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 25.4335269928
+TestMlSelector : 24.4318461418, 25.4335269928
+TestMlSelector : End of test TestMlSelector
