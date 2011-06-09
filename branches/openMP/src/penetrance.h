@@ -271,7 +271,7 @@ public:
 	/// CPPONLY
 	bool parallelizable() const
 	{
-		return false;
+		return true;
 	}
 
 
@@ -350,7 +350,7 @@ public:
 	/// CPPONLY
 	bool parallelizable() const
 	{
-		return false;
+		return true;
 	}
 
 
