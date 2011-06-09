@@ -224,6 +224,7 @@ public:
 		return "<simuPOP.MapSelector>" ;
 	}
 
+
 	/// CPPONLY
 	bool parallelizable() const
 	{
@@ -302,6 +303,8 @@ public:
 		return "<simuPOP.MaSelector>" ;
 	}
 
+
+	/// CPPONLY
 	bool parallelizable() const
 	{
 		return true;
@@ -377,6 +380,7 @@ public:
 	}
 
 
+	/// CPPONLY
 	bool parallelizable() const
 	{
 		return true;
@@ -442,10 +446,12 @@ public:
 	}
 
 
+	/// CPPONLY
 	bool parallelizable() const
 	{
 		return false;
 	}
+
 
 private:
 	/// user supplied python function

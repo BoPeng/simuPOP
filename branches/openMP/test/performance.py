@@ -790,6 +790,26 @@ class TestMlSelector(PerformanceTest):
                '], mode=MULTIPLICATIVE).apply(pop)')
         return t.timeit(number=self.repeats)
 
+class TestMapPenetrace(PerformanceTest):
+    
+    def __init__(self, logger, repeats=200):
+        PerformanceTest.__init__(self, 'MapPenetrace, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[1000000, [100000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, initGenotype, MapPenetrance\n' 
+                "pop = Population(%s, loci=[3,5], infoFields=['penetrance'])\n"
+                "initGenotype(pop, freq=[.3, .7])\n" % (size),
+            stmt = "MapPenetrance(loci = 1, penetrance={(0,0):0, (0,1):1, (1,1):1}).apply(pop)") 
+        return t.timeit(number=self.repeats)
+
 class TestRandomMatingWithSelection(PerformanceTest):
     def __init__(self, logger, time=60):
         PerformanceTest.__init__(self, 'Random mating with selection, results are number of generations in %d seconds.' % int(time),

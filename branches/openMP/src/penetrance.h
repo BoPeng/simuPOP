@@ -191,6 +191,13 @@ public:
 	}
 
 
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return true;
+	}
+
+
 private:
 	/// one locus
 	const lociList m_loci;
@@ -260,6 +267,13 @@ public:
 
 	/// HIDDEN
 	string describe(bool format = true) const;
+
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return false;
+	}
+
 
 private:
 	/// one locus
@@ -333,6 +347,13 @@ public:
 	}
 
 
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return false;
+	}
+
+
 private:
 	/// a list of peneOps
 	const opList m_peneOps;
@@ -392,6 +413,13 @@ public:
 	{
 		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.PyPenetrance> python penetrance>" ;
+	}
+
+
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return false;
 	}
 
 
