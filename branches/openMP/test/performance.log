@@ -6860,3 +6860,57 @@ TestMlSelector : size=1000000: 24.4318461418
 TestMlSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 25.4335269928
 TestMlSelector : 24.4318461418, 25.4335269928
 TestMlSelector : End of test TestMlSelector
+TestMapPenetrance : Host: bp9 (Linux, x86_64, x86_64)
+TestMapPenetrance : Time: Thu Jun  9 13:28:15 2011
+TestMapPenetrance : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMapPenetrance : simuPOP: 1.0.6svn (rev 4217, module short, optimized, 1 threads)
+TestMapPenetrance : Test: MapPenetrance, results are time (not processor time) to apply operator for 200 times.
+TestMapPenetrance : size=1000000: 30.1838719845
+TestMapPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 29.9526631832
+TestMapPenetrance : 30.1838719845, 29.9526631832
+TestMapPenetrance : End of test TestMapPenetrance
+TestMapPenetrance : Host: bp9 (Linux, x86_64, x86_64)
+TestMapPenetrance : Time: Thu Jun  9 13:29:17 2011
+TestMapPenetrance : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMapPenetrance : simuPOP: 1.0.6svn (rev 4217, module long, optimized, 1 threads)
+TestMapPenetrance : Test: MapPenetrance, results are time (not processor time) to apply operator for 200 times.
+TestMapPenetrance : size=1000000: 32.5619549751
+TestMapPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 32.8275830746
+TestMapPenetrance : 32.5619549751, 32.8275830746
+TestMapPenetrance : End of test TestMapPenetrance
+TestMapPenetrance : Host: bp9 (Linux, x86_64, x86_64)
+TestMapPenetrance : Time: Thu Jun  9 13:30:24 2011
+TestMapPenetrance : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMapPenetrance : simuPOP: 1.0.6svn (rev 4217, module binary, optimized, 1 threads)
+TestMapPenetrance : Test: MapPenetrance, results are time (not processor time) to apply operator for 200 times.
+TestMapPenetrance : size=1000000: 36.6352450848
+TestMapPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 36.3903110027
+TestMapPenetrance : 36.6352450848, 36.3903110027
+TestMapPenetrance : End of test TestMapPenetrance
+TestMapPenetrance : Host: bp9 (Linux, x86_64, x86_64)
+TestMapPenetrance : Time: Thu Jun  9 13:33:37 2011
+TestMapPenetrance : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMapPenetrance : simuPOP: 1.0.6svn (rev 4217, module short, optimized, 4 threads)
+TestMapPenetrance : Test: MapPenetrance, results are time (not processor time) to apply operator for 200 times.
+TestMapPenetrance : size=1000000: 13.2235410213
+TestMapPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 13.5193769932
+TestMapPenetrance : 13.2235410213, 13.5193769932
+TestMapPenetrance : End of test TestMapPenetrance
+TestMapPenetrance : Host: bp9 (Linux, x86_64, x86_64)
+TestMapPenetrance : Time: Thu Jun  9 13:34:04 2011
+TestMapPenetrance : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMapPenetrance : simuPOP: 1.0.6svn (rev 4217, module long, optimized, 4 threads)
+TestMapPenetrance : Test: MapPenetrance, results are time (not processor time) to apply operator for 200 times.
+TestMapPenetrance : size=1000000: 12.4324560165
+TestMapPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 13.0819602013
+TestMapPenetrance : 12.4324560165, 13.0819602013
+TestMapPenetrance : End of test TestMapPenetrance
+TestMapPenetrance : Host: bp9 (Linux, x86_64, x86_64)
+TestMapPenetrance : Time: Thu Jun  9 13:34:31 2011
+TestMapPenetrance : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMapPenetrance : simuPOP: 1.0.6svn (rev 4217, module binary, optimized, 4 threads)
+TestMapPenetrance : Test: MapPenetrance, results are time (not processor time) to apply operator for 200 times.
+TestMapPenetrance : size=1000000: 13.6132779121
+TestMapPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 14.0616240501
+TestMapPenetrance : 13.6132779121, 14.0616240501
+TestMapPenetrance : End of test TestMapPenetrance

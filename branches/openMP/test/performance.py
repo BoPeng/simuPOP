@@ -790,10 +790,10 @@ class TestMlSelector(PerformanceTest):
                '], mode=MULTIPLICATIVE).apply(pop)')
         return t.timeit(number=self.repeats)
 
-class TestMapPenetrace(PerformanceTest):
+class TestMapPenetrance(PerformanceTest):
     
     def __init__(self, logger, repeats=200):
-        PerformanceTest.__init__(self, 'MapPenetrace, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+        PerformanceTest.__init__(self, 'MapPenetrance, results are time (not processor time) to apply operator for %d times.' % int(repeats),
             logger)
         self.repeats = repeats
 
