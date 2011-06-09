@@ -6914,3 +6914,111 @@ TestMapPenetrance : size=1000000: 13.6132779121
 TestMapPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 14.0616240501
 TestMapPenetrance : 13.6132779121, 14.0616240501
 TestMapPenetrance : End of test TestMapPenetrance
+TestMaPenetrance : Host: bp9 (Linux, x86_64, x86_64)
+TestMaPenetrance : Time: Thu Jun  9 14:15:08 2011
+TestMaPenetrance : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMaPenetrance : simuPOP: 1.0.6svn (rev 4218, module short, optimized, 1 threads)
+TestMaPenetrance : Test: MaPenetrance, results are time (not processor time) to apply operator for 200 times.
+TestMaPenetrance : size=1000000: 9.05448889732
+TestMaPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 9.03937888145
+TestMaPenetrance : 9.05448889732, 9.03937888145
+TestMaPenetrance : End of test TestMaPenetrance
+TestMaPenetrance : Host: bp9 (Linux, x86_64, x86_64)
+TestMaPenetrance : Time: Thu Jun  9 14:15:28 2011
+TestMaPenetrance : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMaPenetrance : simuPOP: 1.0.6svn (rev 4218, module long, optimized, 1 threads)
+TestMaPenetrance : Test: MaPenetrance, results are time (not processor time) to apply operator for 200 times.
+TestMaPenetrance : size=1000000: 9.61507201195
+TestMaPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 9.80975604057
+TestMaPenetrance : 9.61507201195, 9.80975604057
+TestMaPenetrance : End of test TestMaPenetrance
+TestMaPenetrance : Host: bp9 (Linux, x86_64, x86_64)
+TestMaPenetrance : Time: Thu Jun  9 14:15:49 2011
+TestMaPenetrance : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMaPenetrance : simuPOP: 1.0.6svn (rev 4218, module binary, optimized, 1 threads)
+TestMaPenetrance : Test: MaPenetrance, results are time (not processor time) to apply operator for 200 times.
+TestMaPenetrance : size=1000000: 13.9117228985
+TestMaPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 14.0005609989
+TestMaPenetrance : 13.9117228985, 14.0005609989
+TestMaPenetrance : End of test TestMaPenetrance
+TestMaPenetrance : Host: bp9 (Linux, x86_64, x86_64)
+TestMaPenetrance : Time: Thu Jun  9 14:16:20 2011
+TestMaPenetrance : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMaPenetrance : simuPOP: 1.0.6svn (rev 4218, module short, optimized, 4 threads)
+TestMaPenetrance : Test: MaPenetrance, results are time (not processor time) to apply operator for 200 times.
+TestMaPenetrance : size=1000000: 2.95468306541
+TestMaPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 3.07803201675
+TestMaPenetrance : 2.95468306541, 3.07803201675
+TestMaPenetrance : End of test TestMaPenetrance
+TestMaPenetrance : Host: bp9 (Linux, x86_64, x86_64)
+TestMaPenetrance : Time: Thu Jun  9 14:16:27 2011
+TestMaPenetrance : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMaPenetrance : simuPOP: 1.0.6svn (rev 4218, module long, optimized, 4 threads)
+TestMaPenetrance : Test: MaPenetrance, results are time (not processor time) to apply operator for 200 times.
+TestMaPenetrance : size=1000000: 3.09952521324
+TestMaPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 3.21534013748
+TestMaPenetrance : 3.09952521324, 3.21534013748
+TestMaPenetrance : End of test TestMaPenetrance
+TestMaPenetrance : Host: bp9 (Linux, x86_64, x86_64)
+TestMaPenetrance : Time: Thu Jun  9 14:16:34 2011
+TestMaPenetrance : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMaPenetrance : simuPOP: 1.0.6svn (rev 4218, module binary, optimized, 4 threads)
+TestMaPenetrance : Test: MaPenetrance, results are time (not processor time) to apply operator for 200 times.
+TestMaPenetrance : size=1000000: 4.47951889038
+TestMaPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 4.53425717354
+TestMaPenetrance : 4.47951889038, 4.53425717354
+TestMaPenetrance : End of test TestMaPenetrance
+TestMlPenetrance : Host: bp9 (Linux, x86_64, x86_64)
+TestMlPenetrance : Time: Thu Jun  9 14:16:44 2011
+TestMlPenetrance : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMlPenetrance : simuPOP: 1.0.6svn (rev 4218, module short, optimized, 1 threads)
+TestMlPenetrance : Test: MlPenetrance, results are time (not processor time) to apply operator for 200 times.
+TestMlPenetrance : size=1000000: 59.3637518883
+TestMlPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 59.5009410381
+TestMlPenetrance : 59.3637518883, 59.5009410381
+TestMlPenetrance : End of test TestMlPenetrance
+TestMlPenetrance : Host: bp9 (Linux, x86_64, x86_64)
+TestMlPenetrance : Time: Thu Jun  9 14:18:45 2011
+TestMlPenetrance : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMlPenetrance : simuPOP: 1.0.6svn (rev 4218, module long, optimized, 1 threads)
+TestMlPenetrance : Test: MlPenetrance, results are time (not processor time) to apply operator for 200 times.
+TestMlPenetrance : size=1000000: 61.0185468197
+TestMlPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 60.5403618813
+TestMlPenetrance : 61.0185468197, 60.5403618813
+TestMlPenetrance : End of test TestMlPenetrance
+TestMlPenetrance : Host: bp9 (Linux, x86_64, x86_64)
+TestMlPenetrance : Time: Thu Jun  9 14:20:48 2011
+TestMlPenetrance : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMlPenetrance : simuPOP: 1.0.6svn (rev 4218, module binary, optimized, 1 threads)
+TestMlPenetrance : Test: MlPenetrance, results are time (not processor time) to apply operator for 200 times.
+TestMlPenetrance : size=1000000: 69.4342930317
+TestMlPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 69.1806800365
+TestMlPenetrance : 69.4342930317, 69.1806800365
+TestMlPenetrance : End of test TestMlPenetrance
+TestMlPenetrance : Host: bp9 (Linux, x86_64, x86_64)
+TestMlPenetrance : Time: Thu Jun  9 14:23:10 2011
+TestMlPenetrance : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMlPenetrance : simuPOP: 1.0.6svn (rev 4218, module short, optimized, 4 threads)
+TestMlPenetrance : Test: MlPenetrance, results are time (not processor time) to apply operator for 200 times.
+TestMlPenetrance : size=1000000: 22.7854809761
+TestMlPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 23.7821338177
+TestMlPenetrance : 22.7854809761, 23.7821338177
+TestMlPenetrance : End of test TestMlPenetrance
+TestMlPenetrance : Host: bp9 (Linux, x86_64, x86_64)
+TestMlPenetrance : Time: Thu Jun  9 14:23:57 2011
+TestMlPenetrance : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMlPenetrance : simuPOP: 1.0.6svn (rev 4218, module long, optimized, 4 threads)
+TestMlPenetrance : Test: MlPenetrance, results are time (not processor time) to apply operator for 200 times.
+TestMlPenetrance : size=1000000: 22.8191227913
+TestMlPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 24.6416099072
+TestMlPenetrance : 22.8191227913, 24.6416099072
+TestMlPenetrance : End of test TestMlPenetrance
+TestMlPenetrance : Host: bp9 (Linux, x86_64, x86_64)
+TestMlPenetrance : Time: Thu Jun  9 14:24:45 2011
+TestMlPenetrance : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMlPenetrance : simuPOP: 1.0.6svn (rev 4218, module binary, optimized, 4 threads)
+TestMlPenetrance : Test: MlPenetrance, results are time (not processor time) to apply operator for 200 times.
+TestMlPenetrance : size=1000000: 26.4700949192
+TestMlPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 28.6646509171
+TestMlPenetrance : 26.4700949192, 28.6646509171
+TestMlPenetrance : End of test TestMlPenetrance
