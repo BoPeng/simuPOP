@@ -603,8 +603,6 @@ floatList::floatList(PyObject * obj) : m_elems()
 
 stringList::stringList(PyObject * obj) : m_elems(), m_allAvail(false)
 {
-PyObject * repr = PyObject_Repr(obj);
-cerr << "GETTING OBJECT " << PyObj_AsString(repr) << endl;
 	if (obj == NULL || obj == Py_None)
 		m_allAvail = true;
 	else if (PyBool_Check(obj))
@@ -616,9 +614,7 @@ cerr << "GETTING OBJECT " << PyObj_AsString(repr) << endl;
 	}
 #if PY_VERSION_HEX >= 0x03000000
 	else if (PyBytes_Check(obj)) {
-cerr << "concerting PyBytes " << endl;
 		string value = PyBytes_AsString(obj);
-cerr << " and get " << value << endl;
 		m_elems.push_back(value);
 	}
 #endif
@@ -2267,13 +2263,7 @@ PyObject * Expression::evaluate() const
 
 	PyObject * res = NULL;
 	if (m_stmts != NULL) {
-
-#if PY_VERSION_HEX >= 0x03000000
-                //Change PyCodeOject->PyObject
-		res = PyEval_EvalCode((PyObject *)m_stmts, m_locals, m_locals);
-#else 
-                res = PyEval_EvalCode((PyCodeObject *)m_stmts, m_locals, m_locals);
-#endif
+		res = PyEval_EvalCode((PyCodeObject *)m_stmts, m_locals, m_locals);
 		if (res == NULL) {
 #ifndef OPTIMIZED
 			if (debug(DBG_GENERAL)) {
@@ -2289,12 +2279,7 @@ PyObject * Expression::evaluate() const
 	}
 
 	if (m_expr != NULL) {
-#if PY_VERSION_HEX >= 0x03000000
-                //Change PyCodeObject->PyObject
-		res = PyEval_EvalCode((PyObject *)m_expr, m_locals, m_locals);
-#else 
-                res = PyEval_EvalCode((PyCodeObject *)m_expr, m_locals, m_locals);
-#endif
+		res = PyEval_EvalCode((PyCodeObject *)m_expr, m_locals, m_locals);
 		if (res == NULL) {
 #ifndef OPTIMIZED
 			if (debug(DBG_GENERAL)) {
