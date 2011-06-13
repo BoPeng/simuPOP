@@ -128,6 +128,7 @@ def swig_version():
     #
     try:
         version = re.match('SWIG Version\s*(\d+).(\d+).(\d+).*', output).groups()
+        print (version)
     except:
         print('Can not obtain swig version, please install swig')
         sys.exit(1)
@@ -526,7 +527,7 @@ if os.name == 'nt':    # Windows
 if __name__ == '__main__':
     SIMUPOP_VER, SIMUPOP_REV = simuPOP_version()
     # create source file for each module
-    MODULES = ['std', 'op', 'la', 'laop', 'ba', 'baop']
+    MODULES = ['std'] # , 'op', 'la', 'laop', 'ba', 'baop']
     #
     # Generate Wrapping files
     #
@@ -536,6 +537,7 @@ if __name__ == '__main__':
         False in [os.path.isfile(WRAP_INFO[x][0]) for x in MODULES]) or \
         (max( [os.path.getmtime('src/' + x) for x in HEADER_FILES] ) > \
          min( [os.path.getmtime(WRAP_INFO[x][0]) for x in MODULES])):
+        #print "%s %s %s %s" % swig_version()
         (v1, v2, v3) = swig_version()
         if (v1, v2, v3) < (1, 3, 35):
             print('Swig >= 1.3.35 is required, please upgrade it.')
