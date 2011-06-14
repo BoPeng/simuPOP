@@ -7022,3 +7022,165 @@ TestMlPenetrance : size=1000000: 26.4700949192
 TestMlPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 28.6646509171
 TestMlPenetrance : 26.4700949192, 28.6646509171
 TestMlPenetrance : End of test TestMlPenetrance
+TestMigrator : Host: bp9 (Linux, x86_64, x86_64)
+TestMigrator : Time: Tue Jun 14 15:17:10 2011
+TestMigrator : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigrator : simuPOP: 1.0.6svn (rev 4226, module short, optimized, 1 threads)
+TestMigrator : Test: Migrator, results are time (not processor time) to apply operator for 10 times.
+TestMigrator : size=5000000: 25.6720509529
+TestMigrator : size=50000000: 289.408267021
+TestMigrator : 25.6720509529, 289.408267021
+TestMigrator : End of test TestMigrator
+TestMigrator : Host: bp9 (Linux, x86_64, x86_64)
+TestMigrator : Time: Tue Jun 14 15:22:26 2011
+TestMigrator : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigrator : simuPOP: 1.0.6svn (rev 4226, module long, optimized, 1 threads)
+TestMigrator : Test: Migrator, results are time (not processor time) to apply operator for 10 times.
+TestMigrator : size=5000000: 26.1059360504
+TestMigrator : size=50000000: 289.273638964
+TestMigrator : 26.1059360504, 289.273638964
+TestMigrator : End of test TestMigrator
+TestMigrator : Host: bp9 (Linux, x86_64, x86_64)
+TestMigrator : Time: Tue Jun 14 15:27:43 2011
+TestMigrator : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigrator : simuPOP: 1.0.6svn (rev 4226, module binary, optimized, 1 threads)
+TestMigrator : Test: Migrator, results are time (not processor time) to apply operator for 10 times.
+TestMigrator : size=5000000: 26.363268137
+TestMigrator : size=50000000: 292.225383997
+TestMigrator : 26.363268137, 292.225383997
+TestMigrator : End of test TestMigrator
+TestMigrator : Host: bp9 (Linux, x86_64, x86_64)
+TestMigrator : Time: Tue Jun 14 15:35:42 2011
+TestMigrator : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigrator : simuPOP: 1.0.6svn (rev 4226, module short, optimized, 2 threads)
+TestMigrator : Test: Migrator, results are time (not processor time) to apply operator for 10 times.
+TestMigrator : size=5000000: 3.85128188133
+TestMigrator : size=50000000: 37.7105200291
+TestMigrator : 3.85128188133, 37.7105200291
+TestMigrator : End of test TestMigrator
+TestMigrator : Host: bp9 (Linux, x86_64, x86_64)
+TestMigrator : Time: Tue Jun 14 15:36:26 2011
+TestMigrator : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigrator : simuPOP: 1.0.6svn (rev 4226, module long, optimized, 2 threads)
+TestMigrator : Test: Migrator, results are time (not processor time) to apply operator for 10 times.
+TestMigrator : size=5000000: 3.8537299633
+TestMigrator : size=50000000: 38.7310800552
+TestMigrator : 3.8537299633, 38.7310800552
+TestMigrator : End of test TestMigrator
+TestMigrator : Host: bp9 (Linux, x86_64, x86_64)
+TestMigrator : Time: Tue Jun 14 15:37:10 2011
+TestMigrator : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigrator : simuPOP: 1.0.6svn (rev 4226, module binary, optimized, 2 threads)
+TestMigrator : Test: Migrator, results are time (not processor time) to apply operator for 10 times.
+TestMigrator : size=5000000: 3.89192581177
+TestMigrator : size=50000000: 37.8206448555
+TestMigrator : 3.89192581177, 37.8206448555
+TestMigrator : End of test TestMigrator
+TestMigrator : Host: bp9 (Linux, x86_64, x86_64)
+TestMigrator : Time: Tue Jun 14 15:39:10 2011
+TestMigrator : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigrator : simuPOP: 1.0.6svn (rev 4226, module short, optimized, 4 threads)
+TestMigrator : Test: Migrator, results are time (not processor time) to apply operator for 10 times.
+TestMigrator : size=5000000: 3.68470191956
+TestMigrator : size=50000000: 36.2090260983
+TestMigrator : 3.68470191956, 36.2090260983
+TestMigrator : End of test TestMigrator
+TestMigrator : Host: bp9 (Linux, x86_64, x86_64)
+TestMigrator : Time: Tue Jun 14 15:39:51 2011
+TestMigrator : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigrator : simuPOP: 1.0.6svn (rev 4226, module long, optimized, 4 threads)
+TestMigrator : Test: Migrator, results are time (not processor time) to apply operator for 10 times.
+TestMigrator : size=5000000: 3.67241191864
+TestMigrator : size=50000000: 36.6956839561
+TestMigrator : 3.67241191864, 36.6956839561
+TestMigrator : End of test TestMigrator
+TestMigrator : Host: bp9 (Linux, x86_64, x86_64)
+TestMigrator : Time: Tue Jun 14 15:40:33 2011
+TestMigrator : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigrator : simuPOP: 1.0.6svn (rev 4226, module binary, optimized, 4 threads)
+TestMigrator : Test: Migrator, results are time (not processor time) to apply operator for 10 times.
+TestMigrator : size=5000000: 3.70908212662
+TestMigrator : size=50000000: 36.3693478107
+TestMigrator : 3.70908212662, 36.3693478107
+TestMigrator : End of test TestMigrator
+TestMigrator : Host: bp9 (Linux, x86_64, x86_64)
+TestMigrator : Time: Tue Jun 14 15:56:49 2011
+TestMigrator : Python: 2.7.1 [GCC 4.4.5 20110214 (Red Hat 4.4.5-6)]
+TestMigrator : simuPOP: 1.0.6svn (rev 4226, module short, optimized, 1 threads)
+TestMigrator : Test: Migrator, results are time (not processor time) to apply operator for 10 times.
+TestMigrator : size=5000000: 19.2052230835
+TestMigrator : size=50000000: 213.073572874
+TestMigrator : 19.2052230835, 213.073572874
+TestMigrator : End of test TestMigrator
+TestMigrator : Host: bp9 (Linux, x86_64, x86_64)
+TestMigrator : Time: Tue Jun 14 16:00:43 2011
+TestMigrator : Python: 2.7.1 [GCC 4.4.5 20110214 (Red Hat 4.4.5-6)]
+TestMigrator : simuPOP: 1.0.6svn (rev 4226, module long, optimized, 1 threads)
+TestMigrator : Test: Migrator, results are time (not processor time) to apply operator for 10 times.
+TestMigrator : size=5000000: 19.0889210701
+TestMigrator : size=50000000: 210.232218981
+TestMigrator : 19.0889210701, 210.232218981
+TestMigrator : End of test TestMigrator
+TestMigrator : Host: bp9 (Linux, x86_64, x86_64)
+TestMigrator : Time: Tue Jun 14 16:04:34 2011
+TestMigrator : Python: 2.7.1 [GCC 4.4.5 20110214 (Red Hat 4.4.5-6)]
+TestMigrator : simuPOP: 1.0.6svn (rev 4226, module binary, optimized, 1 threads)
+TestMigrator : Test: Migrator, results are time (not processor time) to apply operator for 10 times.
+TestMigrator : size=5000000: 19.5818870068
+TestMigrator : size=50000000: 215.983033895
+TestMigrator : 19.5818870068, 215.983033895
+TestMigrator : End of test TestMigrator
+TestMigrator : Host: bp9 (Linux, x86_64, x86_64)
+TestMigrator : Time: Tue Jun 14 16:09:06 2011
+TestMigrator : Python: 2.7.1 [GCC 4.4.5 20110214 (Red Hat 4.4.5-6)]
+TestMigrator : simuPOP: 1.0.6svn (rev 4226, module short, optimized, 2 threads)
+TestMigrator : Test: Migrator, results are time (not processor time) to apply operator for 10 times.
+TestMigrator : size=5000000: 11.753456831
+TestMigrator : size=50000000: 129.562813044
+TestMigrator : 11.753456831, 129.562813044
+TestMigrator : End of test TestMigrator
+TestMigrator : Host: bp9 (Linux, x86_64, x86_64)
+TestMigrator : Time: Tue Jun 14 16:11:28 2011
+TestMigrator : Python: 2.7.1 [GCC 4.4.5 20110214 (Red Hat 4.4.5-6)]
+TestMigrator : simuPOP: 1.0.6svn (rev 4226, module long, optimized, 2 threads)
+TestMigrator : Test: Migrator, results are time (not processor time) to apply operator for 10 times.
+TestMigrator : size=5000000: 11.34167099
+TestMigrator : size=50000000: 124.56328702
+TestMigrator : 11.34167099, 124.56328702
+TestMigrator : End of test TestMigrator
+TestMigrator : Host: bp9 (Linux, x86_64, x86_64)
+TestMigrator : Time: Tue Jun 14 16:13:45 2011
+TestMigrator : Python: 2.7.1 [GCC 4.4.5 20110214 (Red Hat 4.4.5-6)]
+TestMigrator : simuPOP: 1.0.6svn (rev 4226, module binary, optimized, 2 threads)
+TestMigrator : Test: Migrator, results are time (not processor time) to apply operator for 10 times.
+TestMigrator : size=5000000: 11.8418748379
+TestMigrator : size=50000000: 130.746499777
+TestMigrator : 11.8418748379, 130.746499777
+TestMigrator : End of test TestMigrator
+TestMigrator : Host: bp9 (Linux, x86_64, x86_64)
+TestMigrator : Time: Tue Jun 14 16:16:16 2011
+TestMigrator : Python: 2.7.1 [GCC 4.4.5 20110214 (Red Hat 4.4.5-6)]
+TestMigrator : simuPOP: 1.0.6svn (rev 4226, module short, optimized, 4 threads)
+TestMigrator : Test: Migrator, results are time (not processor time) to apply operator for 10 times.
+TestMigrator : size=5000000: 7.99957203865
+TestMigrator : size=50000000: 84.460050106
+TestMigrator : 7.99957203865, 84.460050106
+TestMigrator : End of test TestMigrator
+TestMigrator : Host: bp9 (Linux, x86_64, x86_64)
+TestMigrator : Time: Tue Jun 14 16:17:49 2011
+TestMigrator : Python: 2.7.1 [GCC 4.4.5 20110214 (Red Hat 4.4.5-6)]
+TestMigrator : simuPOP: 1.0.6svn (rev 4226, module long, optimized, 4 threads)
+TestMigrator : Test: Migrator, results are time (not processor time) to apply operator for 10 times.
+TestMigrator : size=5000000: 7.60408210754
+TestMigrator : size=50000000: 82.7148649693
+TestMigrator : 7.60408210754, 82.7148649693
+TestMigrator : End of test TestMigrator
+TestMigrator : Host: bp9 (Linux, x86_64, x86_64)
+TestMigrator : Time: Tue Jun 14 16:19:21 2011
+TestMigrator : Python: 2.7.1 [GCC 4.4.5 20110214 (Red Hat 4.4.5-6)]
+TestMigrator : simuPOP: 1.0.6svn (rev 4226, module binary, optimized, 4 threads)
+TestMigrator : Test: Migrator, results are time (not processor time) to apply operator for 10 times.
+TestMigrator : size=5000000: 8.37837600708
+TestMigrator : size=50000000: 87.1949620247
+TestMigrator : 8.37837600708, 87.1949620247
+TestMigrator : End of test TestMigrator

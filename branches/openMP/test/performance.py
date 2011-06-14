@@ -853,20 +853,20 @@ class TestMlPenetrance(PerformanceTest):
 
 class TestMigrator(PerformanceTest):
     
-    def __init__(self, logger, repeats=20):
+    def __init__(self, logger, repeats=10):
         PerformanceTest.__init__(self, 'Migrator, results are time (not processor time) to apply operator for %d times.' % int(repeats),
             logger)
         self.repeats = repeats
 
     def run(self):
         # overall running case
-        return self.sequentialRun(size=[1000000, 10000000])
+        return self.sequentialRun(size=[5000000, 50000000])
 
     def _run(self, size):
         # single test case
         t = timeit.Timer(
             setup = 'from __main__ import Population, Migrator, BY_PROBABILITY\n' 
-                "pop = Population(%s, loci=100, infoFields=['migrate_to'])\n" % (size),
+                "pop = Population(%s, loci=2, infoFields=['migrate_to'])\n" % (size),
             stmt = "Migrator(mode=BY_PROBABILITY, rate = [ [0, .05, .05]]).apply(pop)")
         return t.timeit(number=self.repeats)
 
