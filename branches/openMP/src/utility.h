@@ -1208,6 +1208,12 @@ public:
 		if (expr.empty() && stmts.empty())
 			return;
 
+	//detect leading spaces from python expressions
+		DBG_FAILIF(!expr.empty() && (expr[0] == ' ' || expr[0] == '\t'), ValueError,
+			"Can not include leading space in python expression '" + expr + "'");
+		DBG_FAILIF(!stmts.empty() && (stmts[0] == ' ' || stmts[0] == '\t'), ValueError,
+			"Can not include leading space in python statement '" + stmts + "'");
+
 		compileExpr(expr);
 		compileStmts(stmts);
 	}

@@ -279,6 +279,9 @@ class TestOperator(unittest.TestCase):
             '100\t2000\t')
         pyExec(pop, 'p=popSize+200')
         self.assertRaises(RuntimeError, pyEval, pop, 'p', subPops=ALL_AVAIL)
+        self.assertRaises(ValueError, PyEval, expr=" 1.2")        
+        self.assertRaises(ValueError, PyEval, expr="a", stmts=' a=1')
+        self.assertRaises(ValueError, PyEval, expr="\ta", stmts=' a=1')
         pyExec(pop, 'q=popSize+200', subPops=ALL_AVAIL)
         self.assertEqual(pyEval(pop, r'"%d\t" % q', subPops=ALL_AVAIL),
             '300\t2200\t')
