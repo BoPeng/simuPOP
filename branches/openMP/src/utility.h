@@ -76,6 +76,12 @@ using std::setw;
 /// for openMP
 #ifdef _OPENMP
 #  include "omp.h"
+#  if defined(__INTEL_COMPILER)
+#    include "tbb/parallel_sort.h"
+#    include "tbb/task_scheduler_init.h"
+#  elif defined(GCC_VERSION) && GCC_VERSION >= 40300
+#    include "parallel/algorithm"	
+#  endif
 #endif
 /// for bernulli trials.
 // use vector<bool> instead of dynamic_bitset since I can manipulate

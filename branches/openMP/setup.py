@@ -468,7 +468,7 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     else:
         res['libraries'] = ['stdc++', 'z']
         if USE_OPENMP:
-            res['libraries'].append('iomp5' if USE_ICC else 'gomp')
+            res['libraries'].append(['iomp5','-ltbb'] if USE_ICC else 'gomp')
     res['libraries'].extend(boost_lib_names)
     res['include_dirs'] = ['.', 'gsl', boost_inc_path]
     res['library_dirs'] = ['build']
@@ -506,6 +506,9 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
             # this one disables a lot of warnings about VC Checked iterators.
             #('_SCL_SECURE_NO_WARNINGS', None)
             ])
+    else:
+        if not USE_ICC:
+            res['define_macros'].append('-D_GLIBCXX_PARALLEL')
     res['undef_macros'] = []
     return res
 

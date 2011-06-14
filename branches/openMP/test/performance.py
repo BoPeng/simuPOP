@@ -828,7 +828,6 @@ class TestMaPenetrance(PerformanceTest):
                 "pop = Population(%s, loci=[3,5], infoFields=['penetrance'])\n"
                 "initGenotype(pop, freq=[.3, .7])\n" % (size),
             stmt = "MaPenetrance( loci = 1, wildtype=0, penetrance=[0, 1, 1]).apply(pop)")
-
         return t.timeit(number=self.repeats)
 
 class TestMlPenetrance(PerformanceTest):
@@ -850,7 +849,25 @@ class TestMlPenetrance(PerformanceTest):
                 "initGenotype(pop, freq=[.3, .7])\n" % (size),
             stmt = "MlPenetrance([MaPenetrance(loci = 0,    wildtype=0, penetrance=[0, .3, .5]),\n"
                 "    MapPenetrance(loci = 1, penetrance={(0,0):0, (0,1):1, (1,1):1}) ], mode=ADDITIVE).apply(pop)")
+        return t.timeit(number=self.repeats)
 
+class TestMigrator(PerformanceTest):
+    
+    def __init__(self, logger, repeats=20):
+        PerformanceTest.__init__(self, 'Migrator, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[1000000, 10000000])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, Migrator, BY_PROBABILITY\n' 
+                "pop = Population(%s, loci=100, infoFields=['migrate_to'])\n" % (size),
+            stmt = "Migrator(mode=BY_PROBABILITY, rate = [ [0, .05, .05]]).apply(pop)")
         return t.timeit(number=self.repeats)
 
 class TestRandomMatingWithSelection(PerformanceTest):
