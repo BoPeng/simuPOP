@@ -1,4 +1,4 @@
-#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.8 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -10422,7 +10422,20 @@ rate
 
  matrix ( a nested list in Python) that specifies migration rate from each
  source to each destination subpopulation.
- 
+ That is to say, 
+\begin_inset Formula $\mbox{rate}{}_{i,j}$
+\end_inset
+
+ specifies migration rate from 
+\begin_inset Formula $\mbox{subPops}_{i}$
+\end_inset
+
+ to 
+\begin_inset Formula $\mbox{toSubPops}_{j}$
+\end_inset
+
+.
+ Needless to say, 
 \begin_inset Formula $m$
 \end_inset
 
@@ -10776,8 +10789,22 @@ It is easy to simulate most of such complex migration models by migrating
  from virtual subpopulations.
  For example, if you define virtual subpopulations by sex, you can specify
  different migration rates for males and females and control the proportion
- of males among migrants.
- Example 
+ of males among migrants, by specifying virtual subpopulations in parameter
+ 
+\family typewriter
+subPops
+\family default
+.
+ Parameter 
+\family typewriter
+toSubPops
+\family default
+ does not accept virtual subpopulations because you cannot, for example,
+ migrate to females in a subpopulation.
+\end_layout
+
+\begin_layout Standard
+Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "migrateVSP"
@@ -10786,10 +10813,7 @@ reference "migrateVSP"
 
  demonstrate a sex-biased migration model where males dominate migrants
  from subpopulation 0.
-\end_layout
-
-\begin_layout Standard
-To avoid confusing, this example uses the proportion migration mode.
+ To avoid confusing, this example uses the proportion migration mode.
  At the beginning of the first generation, there are 500 males and 500 females
  in each subpopulation.
  A 10% male migration rate and 5% female migration rate leads to 50 male
