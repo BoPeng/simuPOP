@@ -468,7 +468,7 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     else:
         res['libraries'] = ['stdc++', 'z']
         if USE_OPENMP:
-            res['libraries'].append(['iomp5','-ltbb'] if USE_ICC else 'gomp')
+            res['libraries'].append(['iomp5','tbb'] if USE_ICC else 'gomp')
     res['libraries'].extend(boost_lib_names)
     res['include_dirs'] = ['.', 'gsl', boost_inc_path]
     res['library_dirs'] = ['build']
