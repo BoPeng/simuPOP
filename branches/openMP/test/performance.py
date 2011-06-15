@@ -851,10 +851,10 @@ class TestMlPenetrance(PerformanceTest):
                 "    MapPenetrance(loci = 1, penetrance={(0,0):0, (0,1):1, (1,1):1}) ], mode=ADDITIVE).apply(pop)")
         return t.timeit(number=self.repeats)
 
-class TestMigrator(PerformanceTest):
+class TestMigratorByProbability(PerformanceTest):
     
     def __init__(self, logger, repeats=10):
-        PerformanceTest.__init__(self, 'Migrator, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+        PerformanceTest.__init__(self, 'Migrator BY_PROBABILITY, results are time (not processor time) to apply operator for %d times.' % int(repeats),
             logger)
         self.repeats = repeats
 
@@ -868,6 +868,65 @@ class TestMigrator(PerformanceTest):
             setup = 'from __main__ import Population, Migrator, BY_PROBABILITY\n' 
                 "pop = Population(%s, loci=2, infoFields=['migrate_to'])\n" % (size),
             stmt = "Migrator(mode=BY_PROBABILITY, rate = [ [0, .05, .05]]).apply(pop)")
+        return t.timeit(number=self.repeats)
+
+class TestMigratorByIndInfo(PerformanceTest):
+    
+    def __init__(self, logger, repeats=10):
+        PerformanceTest.__init__(self, 'Migrator BY_IND_INFO, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[5000000, 50000000])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, Migrator, BY_IND_INFO\n' 
+                "pop = Population(%s, loci=2, infoFields=['migrate_to'])\n"
+                "for sp in range(1):\n"
+                "    pop.setIndInfo([sp],'migrate_to',sp)" % (size),
+            stmt = "Migrator(mode=BY_IND_INFO).apply(pop)")
+        return t.timeit(number=self.repeats)
+
+class TestMigratorProportion(PerformanceTest):
+    
+    def __init__(self, logger, repeats=10):
+        PerformanceTest.__init__(self, 'Migrator BY_PROPORTION, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[5000000, 50000000])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, Migrator, BY_PROPORTION\n' 
+                "pop = Population(%s, loci=2, infoFields=['migrate_to'])\n" % (size),
+            stmt = "Migrator(mode=BY_PROPORTION, rate = [ [0, .25, .25]]).apply(pop)")
+        return t.timeit(number=self.repeats)
+
+class TestMigratorByCount(PerformanceTest):
+    
+    def __init__(self, logger, repeats=10):
+        PerformanceTest.__init__(self, 'Migrator BY_COUNT, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[5000000, 50000000])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, Migrator, BY_COUNTS\n' 
+                "pop = Population(%s, loci=2, infoFields=['migrate_to'])\n" % (size),
+            stmt = "Migrator(mode=BY_COUNTS, rate = [ [0, 50, 50]]).apply(pop)")
         return t.timeit(number=self.repeats)
 
 class TestRandomMatingWithSelection(PerformanceTest):
