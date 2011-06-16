@@ -544,3 +544,12 @@ TestMigratorByProportion, 2011-06-16 09:42:50,875, bp9, x86_64-1threads, python2
 TestMigratorByProportion, 2011-06-16 09:43:50,063, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4230-intel, short, 4.38145494461, 53.0418229103
 TestMigratorByProportion, 2011-06-16 09:44:49,681, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4230-intel, long, 4.43273711205, 53.8642539978
 TestMigratorByProportion, 2011-06-16 09:45:50,018, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4230-intel, binary, 4.50796914101, 54.1398379803
+TestMigratorByIndInfo, 2011-06-16 12:18:46,099, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4232-intel, short, 2.966381073, 27.7702920437
+TestMigratorByIndInfo, 2011-06-16 12:19:19,834, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4232-intel, long, 2.91467499733, 28.0086240768
+TestMigratorByIndInfo, 2011-06-16 12:19:54,456, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4232-intel, binary, 3.1325969696, 28.1677310467
+TestMigratorByProportion, 2011-06-16 12:20:50,553, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4232-intel, short, 4.09359002113, 50.0307469368
+TestMigratorByProportion, 2011-06-16 12:21:45,803, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4232-intel, long, 4.10800004005, 49.5832879543
+TestMigratorByProportion, 2011-06-16 12:22:42,183, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4232-intel, binary, 4.32871103287, 50.3448860645
+TestMigratorByCount, 2011-06-16 12:23:39,026, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4232-intel, short, 4.16416311264, 50.6448938847
+TestMigratorByCount, 2011-06-16 12:24:34,253, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4232-intel, long, 4.0694630146, 49.7850799561
+TestMigratorByCount, 2011-06-16 12:25:30,668, bp9, x86_64-4threads, python2.7.1, simuPOP-1.0.6svn, rev4232-intel, binary, 4.26471400261, 50.2679200172
