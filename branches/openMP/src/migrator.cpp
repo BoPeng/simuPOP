@@ -165,8 +165,18 @@ bool Migrator::apply(Population & pop) const
 			// restore information fields set by user so that other individuals
 			// can stay at their original subpopulation.
 			if (!oldInfo.empty()) {
-				for (IndIterator ind = pop.indIterator(spFrom); ind.valid(); ++ind)
-					ind->setInfo(oldInfo[&*ind - &*pop.rawIndBegin()], info);
+				if (numThreads() > 1) {
+#ifdef _OPENMP
+#  pragma omp parallel
+					{
+						for (IndIterator ind = pop.indIterator(spFrom, omp_get_thread_num()); ind.valid(); ++ind)
+							ind->setInfo(oldInfo[&*ind - &*pop.rawIndBegin()], info);
+					}
+#endif
+				} else {
+					for (IndIterator ind = pop.indIterator(spFrom); ind.valid(); ++ind)
+						ind->setInfo(oldInfo[&*ind - &*pop.rawIndBegin()], info);
+				}
 			}
 		} else if (m_mode == BY_PROBABILITY) {
 			WeightedSampler ws(migrationRate[from]);
@@ -228,11 +238,26 @@ bool Migrator::apply(Population & pop) const
 				toIndices[k++] = spFrom;
 
 			getRNG().randomShuffle(toIndices.begin(), toIndices.end());
-			IndIterator ind = pop.indIterator(spFrom);
-			// set info
-			for (size_t i = 0; ind.valid(); ++i, ++ind)
-				// The previous migration_to value, if set by a previous vsp, will be overridden.
-				ind->setInfo(static_cast<double>(toIndices[i]), info);
+			if (numThreads() > 1) {
+#ifdef _OPENMP
+#  pragma omp parallel
+				{
+					size_t id = omp_get_thread_num();
+					size_t i = id * pop.subPopSize(spFrom) / numThreads();
+					IndIterator ind = pop.indIterator(spFrom, id);
+					// set info
+					for (; ind.valid(); ++i, ++ind)
+						// The previous migration_to value, if set by a previous vsp, will be overridden.
+						ind->setInfo(static_cast<double>(toIndices[i]), info);
+				}
+#endif
+			} else {
+				IndIterator ind = pop.indIterator(spFrom);
+				// set info
+				for (size_t i = 0; ind.valid(); ++i, ++ind)
+					// The previous migration_to value, if set by a previous vsp, will be overridden.
+					ind->setInfo(static_cast<double>(toIndices[i]), info);
+			}
 		}
 		if (fromSubPops[from].isVirtual())
 			pop.deactivateVirtualSubPop(spFrom);
