@@ -7292,3 +7292,165 @@ TestMigratorByProbability : size=5000000: 7.11267113686
 TestMigratorByProbability : size=50000000: 77.6748759747
 TestMigratorByProbability : 7.11267113686, 77.6748759747
 TestMigratorByProbability : End of test TestMigratorByProbability
+TestMigratorByIndInfo : Host: bp9 (Linux, x86_64, x86_64)
+TestMigratorByIndInfo : Time: Wed Jun 15 15:20:45 2011
+TestMigratorByIndInfo : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigratorByIndInfo : simuPOP: 1.0.6svn (rev 4230, module short, optimized, 1 threads)
+TestMigratorByIndInfo : Test: Migrator BY_IND_INFO, results are time (not processor time) to apply operator for 10 times.
+TestMigratorByIndInfo : size=5000000: 26.1453762054
+TestMigratorByIndInfo : size=50000000: 293.74267602
+TestMigratorByIndInfo : 26.1453762054, 293.74267602
+TestMigratorByIndInfo : End of test TestMigratorByIndInfo
+TestMigratorByIndInfo : Host: bp9 (Linux, x86_64, x86_64)
+TestMigratorByIndInfo : Time: Wed Jun 15 15:26:08 2011
+TestMigratorByIndInfo : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigratorByIndInfo : simuPOP: 1.0.6svn (rev 4230, module long, optimized, 1 threads)
+TestMigratorByIndInfo : Test: Migrator BY_IND_INFO, results are time (not processor time) to apply operator for 10 times.
+TestMigratorByIndInfo : size=5000000: 26.3325400352
+TestMigratorByIndInfo : size=50000000: 295.03544116
+TestMigratorByIndInfo : 26.3325400352, 295.03544116
+TestMigratorByIndInfo : End of test TestMigratorByIndInfo
+TestMigratorByIndInfo : Host: bp9 (Linux, x86_64, x86_64)
+TestMigratorByIndInfo : Time: Wed Jun 15 15:31:32 2011
+TestMigratorByIndInfo : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigratorByIndInfo : simuPOP: 1.0.6svn (rev 4230, module binary, optimized, 1 threads)
+TestMigratorByIndInfo : Test: Migrator BY_IND_INFO, results are time (not processor time) to apply operator for 10 times.
+TestMigratorByIndInfo : size=5000000: 27.2269229889
+TestMigratorByIndInfo : size=50000000: 299.873353958
+TestMigratorByIndInfo : 27.2269229889, 299.873353958
+TestMigratorByIndInfo : End of test TestMigratorByIndInfo
+TestMigratorByIndInfo : Host: bp9 (Linux, x86_64, x86_64)
+TestMigratorByIndInfo : Time: Wed Jun 15 15:37:03 2011
+TestMigratorByIndInfo : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigratorByIndInfo : simuPOP: 1.0.6svn (rev 4230, module short, optimized, 4 threads)
+TestMigratorByIndInfo : Test: Migrator BY_IND_INFO, results are time (not processor time) to apply operator for 10 times.
+TestMigratorByIndInfo : size=5000000: 2.99913883209
+TestMigratorByIndInfo : size=50000000: 27.3614680767
+TestMigratorByIndInfo : 2.99913883209, 27.3614680767
+TestMigratorByIndInfo : End of test TestMigratorByIndInfo
+TestMigratorByIndInfo : Host: bp9 (Linux, x86_64, x86_64)
+TestMigratorByIndInfo : Time: Wed Jun 15 15:37:36 2011
+TestMigratorByIndInfo : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigratorByIndInfo : simuPOP: 1.0.6svn (rev 4230, module long, optimized, 4 threads)
+TestMigratorByIndInfo : Test: Migrator BY_IND_INFO, results are time (not processor time) to apply operator for 10 times.
+TestMigratorByIndInfo : size=5000000: 3.31677007675
+TestMigratorByIndInfo : size=50000000: 31.3634848595
+TestMigratorByIndInfo : 3.31677007675, 31.3634848595
+TestMigratorByIndInfo : End of test TestMigratorByIndInfo
+TestMigratorByIndInfo : Host: bp9 (Linux, x86_64, x86_64)
+TestMigratorByIndInfo : Time: Wed Jun 15 15:38:13 2011
+TestMigratorByIndInfo : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigratorByIndInfo : simuPOP: 1.0.6svn (rev 4230, module binary, optimized, 4 threads)
+TestMigratorByIndInfo : Test: Migrator BY_IND_INFO, results are time (not processor time) to apply operator for 10 times.
+TestMigratorByIndInfo : size=5000000: 3.51236987114
+TestMigratorByIndInfo : size=50000000: 32.3257880211
+TestMigratorByIndInfo : 3.51236987114, 32.3257880211
+TestMigratorByIndInfo : End of test TestMigratorByIndInfo
+TestMigratorByCount : Host: bp9 (Linux, x86_64, x86_64)
+TestMigratorByCount : Time: Wed Jun 15 15:38:55 2011
+TestMigratorByCount : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigratorByCount : simuPOP: 1.0.6svn (rev 4230, module short, optimized, 1 threads)
+TestMigratorByCount : Test: Migrator BY_COUNT, results are time (not processor time) to apply operator for 10 times.
+TestMigratorByCount : size=5000000: 27.3829629421
+TestMigratorByCount : size=50000000: 313.405131102
+TestMigratorByCount : 27.3829629421, 313.405131102
+TestMigratorByCount : End of test TestMigratorByCount
+TestMigratorByCount : Host: bp9 (Linux, x86_64, x86_64)
+TestMigratorByCount : Time: Wed Jun 15 15:44:37 2011
+TestMigratorByCount : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigratorByCount : simuPOP: 1.0.6svn (rev 4230, module long, optimized, 1 threads)
+TestMigratorByCount : Test: Migrator BY_COUNT, results are time (not processor time) to apply operator for 10 times.
+TestMigratorByCount : size=5000000: 27.1348381042
+TestMigratorByCount : size=50000000: 312.564651012
+TestMigratorByCount : 27.1348381042, 312.564651012
+TestMigratorByCount : End of test TestMigratorByCount
+TestMigratorByCount : Host: bp9 (Linux, x86_64, x86_64)
+TestMigratorByCount : Time: Wed Jun 15 15:50:18 2011
+TestMigratorByCount : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigratorByCount : simuPOP: 1.0.6svn (rev 4230, module binary, optimized, 1 threads)
+TestMigratorByCount : Test: Migrator BY_COUNT, results are time (not processor time) to apply operator for 10 times.
+TestMigratorByCount : size=5000000: 28.0947768688
+TestMigratorByCount : size=50000000: 316.94431901
+TestMigratorByCount : 28.0947768688, 316.94431901
+TestMigratorByCount : End of test TestMigratorByCount
+TestMigratorByCount : Host: bp9 (Linux, x86_64, x86_64)
+TestMigratorByCount : Time: Wed Jun 15 15:56:05 2011
+TestMigratorByCount : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigratorByCount : simuPOP: 1.0.6svn (rev 4230, module short, optimized, 4 threads)
+TestMigratorByCount : Test: Migrator BY_COUNT, results are time (not processor time) to apply operator for 10 times.
+TestMigratorByCount : size=5000000: 4.43328809738
+TestMigratorByCount : size=50000000: 53.2696549892
+TestMigratorByCount : 4.43328809738, 53.2696549892
+TestMigratorByCount : End of test TestMigratorByCount
+TestMigratorByCount : Host: bp9 (Linux, x86_64, x86_64)
+TestMigratorByCount : Time: Wed Jun 15 15:57:04 2011
+TestMigratorByCount : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigratorByCount : simuPOP: 1.0.6svn (rev 4230, module long, optimized, 4 threads)
+TestMigratorByCount : Test: Migrator BY_COUNT, results are time (not processor time) to apply operator for 10 times.
+TestMigratorByCount : size=5000000: 4.49258899689
+TestMigratorByCount : size=50000000: 53.0905818939
+TestMigratorByCount : 4.49258899689, 53.0905818939
+TestMigratorByCount : End of test TestMigratorByCount
+TestMigratorByCount : Host: bp9 (Linux, x86_64, x86_64)
+TestMigratorByCount : Time: Wed Jun 15 15:58:04 2011
+TestMigratorByCount : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigratorByCount : simuPOP: 1.0.6svn (rev 4230, module binary, optimized, 4 threads)
+TestMigratorByCount : Test: Migrator BY_COUNT, results are time (not processor time) to apply operator for 10 times.
+TestMigratorByCount : size=5000000: 4.42320084572
+TestMigratorByCount : size=50000000: 53.5732860565
+TestMigratorByCount : 4.42320084572, 53.5732860565
+TestMigratorByCount : End of test TestMigratorByCount
+TestMigratorByProportion : Host: bp9 (Linux, x86_64, x86_64)
+TestMigratorByProportion : Time: Thu Jun 16 09:25:33 2011
+TestMigratorByProportion : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigratorByProportion : simuPOP: 1.0.6svn (rev 4230, module short, optimized, 1 threads)
+TestMigratorByProportion : Test: Migrator BY_PROPORTION, results are time (not processor time) to apply operator for 10 times.
+TestMigratorByProportion : size=5000000: 27.1460089684
+TestMigratorByProportion : size=50000000: 311.949622869
+TestMigratorByProportion : 27.1460089684, 311.949622869
+TestMigratorByProportion : End of test TestMigratorByProportion
+TestMigratorByProportion : Host: bp9 (Linux, x86_64, x86_64)
+TestMigratorByProportion : Time: Thu Jun 16 09:31:14 2011
+TestMigratorByProportion : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigratorByProportion : simuPOP: 1.0.6svn (rev 4230, module long, optimized, 1 threads)
+TestMigratorByProportion : Test: Migrator BY_PROPORTION, results are time (not processor time) to apply operator for 10 times.
+TestMigratorByProportion : size=5000000: 27.462939024
+TestMigratorByProportion : size=50000000: 316.891449928
+TestMigratorByProportion : 27.462939024, 316.891449928
+TestMigratorByProportion : End of test TestMigratorByProportion
+TestMigratorByProportion : Host: bp9 (Linux, x86_64, x86_64)
+TestMigratorByProportion : Time: Thu Jun 16 09:37:01 2011
+TestMigratorByProportion : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigratorByProportion : simuPOP: 1.0.6svn (rev 4230, module binary, optimized, 1 threads)
+TestMigratorByProportion : Test: Migrator BY_PROPORTION, results are time (not processor time) to apply operator for 10 times.
+TestMigratorByProportion : size=5000000: 28.1410610676
+TestMigratorByProportion : size=50000000: 320.35036397
+TestMigratorByProportion : 28.1410610676, 320.35036397
+TestMigratorByProportion : End of test TestMigratorByProportion
+TestMigratorByProportion : Host: bp9 (Linux, x86_64, x86_64)
+TestMigratorByProportion : Time: Thu Jun 16 09:42:51 2011
+TestMigratorByProportion : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigratorByProportion : simuPOP: 1.0.6svn (rev 4230, module short, optimized, 4 threads)
+TestMigratorByProportion : Test: Migrator BY_PROPORTION, results are time (not processor time) to apply operator for 10 times.
+TestMigratorByProportion : size=5000000: 4.38145494461
+TestMigratorByProportion : size=50000000: 53.0418229103
+TestMigratorByProportion : 4.38145494461, 53.0418229103
+TestMigratorByProportion : End of test TestMigratorByProportion
+TestMigratorByProportion : Host: bp9 (Linux, x86_64, x86_64)
+TestMigratorByProportion : Time: Thu Jun 16 09:43:50 2011
+TestMigratorByProportion : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigratorByProportion : simuPOP: 1.0.6svn (rev 4230, module long, optimized, 4 threads)
+TestMigratorByProportion : Test: Migrator BY_PROPORTION, results are time (not processor time) to apply operator for 10 times.
+TestMigratorByProportion : size=5000000: 4.43273711205
+TestMigratorByProportion : size=50000000: 53.8642539978
+TestMigratorByProportion : 4.43273711205, 53.8642539978
+TestMigratorByProportion : End of test TestMigratorByProportion
+TestMigratorByProportion : Host: bp9 (Linux, x86_64, x86_64)
+TestMigratorByProportion : Time: Thu Jun 16 09:44:50 2011
+TestMigratorByProportion : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestMigratorByProportion : simuPOP: 1.0.6svn (rev 4230, module binary, optimized, 4 threads)
+TestMigratorByProportion : Test: Migrator BY_PROPORTION, results are time (not processor time) to apply operator for 10 times.
+TestMigratorByProportion : size=5000000: 4.50796914101
+TestMigratorByProportion : size=50000000: 54.1398379803
+TestMigratorByProportion : 4.50796914101, 54.1398379803
+TestMigratorByProportion : End of test TestMigratorByProportion

@@ -891,7 +891,7 @@ class TestMigratorByIndInfo(PerformanceTest):
             stmt = "Migrator(mode=BY_IND_INFO).apply(pop)")
         return t.timeit(number=self.repeats)
 
-class TestMigratorProportion(PerformanceTest):
+class TestMigratorByProportion(PerformanceTest):
     
     def __init__(self, logger, repeats=10):
         PerformanceTest.__init__(self, 'Migrator BY_PROPORTION, results are time (not processor time) to apply operator for %d times.' % int(repeats),
