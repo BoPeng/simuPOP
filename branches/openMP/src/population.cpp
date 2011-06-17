@@ -787,7 +787,7 @@ void Population::sortIndividuals(const stringList & infoList)
 	for (size_t i = 0; i < infoFields.size(); ++i)
 		fields[i] = infoIdx(infoFields[i]);
 	for (size_t sp = 0; sp < numSubPop(); ++sp)
-		std::sort(rawIndBegin(sp), rawIndEnd(sp), indCompare(fields));
+		parallelSort(rawIndBegin(sp), rawIndEnd(sp), indCompare(fields));
 	setIndOrdered(false);
 }
 

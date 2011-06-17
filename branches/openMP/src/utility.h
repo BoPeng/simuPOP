@@ -156,13 +156,15 @@ template<class T1, class T2>
 void parallelSort(T1 start, T1 end, T2 cmp)
 {
 	if (numThreads() > 1) {
-#if defined(__INTEL_COMPILER)
+#ifdef _OPENMP
+#  if defined(__INTEL_COMPILER)
 		tbb::task_scheduler_init init(numThreads());
 		tbb::parallel_sort(start, end, cmp);
-#elif defined(GCC_VERSION) && GCC_VERSION >= 40300
+#  elif defined(GCC_VERSION) && GCC_VERSION >= 40300
 		__gnu_parallel::sort(start, end, cmp);
-#else
+#  else
 		std::sort(start, end, cmp);
+#  endif
 #endif
 	} else {
 		std::sort(start, end, cmp);

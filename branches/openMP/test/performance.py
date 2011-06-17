@@ -929,6 +929,32 @@ class TestMigratorByCount(PerformanceTest):
             stmt = "Migrator(mode=BY_COUNTS, rate = [ [0, 50, 50]]).apply(pop)")
         return t.timeit(number=self.repeats)
 
+class TestSortIndividuals(PerformanceTest):
+    
+    def __init__(self, logger, repeats=100):
+        PerformanceTest.__init__(self, 'SortIndividuals , results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[1000000, [100000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, initInfo,random,initSex \n' 
+	        "infoFields=['a','b']\n"
+                "pop = Population(size=%s, ploidy=2, loci=[1,2], infoFields=infoFields)\n"
+                "pop.setGenotype([random.randint(1, 5) for x in range(pop.popSize()*pop.ploidy())])\n"
+                "for info in infoFields:\n"
+                "    pop.setIndInfo([random.random() for x in range(pop.popSize())], info)\n"
+                "initSex(pop)\n"
+                "initInfo(pop, lambda: random.randint(1, 5), infoFields=['a', 'b'])\n" % (size),
+            stmt = "pop.sortIndividuals('a')")
+        return t.timeit(number=self.repeats)
+
+
 class TestRandomMatingWithSelection(PerformanceTest):
     def __init__(self, logger, time=60):
         PerformanceTest.__init__(self, 'Random mating with selection, results are number of generations in %d seconds.' % int(time),
