@@ -7535,3 +7535,57 @@ TestMigratorByCount : size=5000000: 4.26471400261
 TestMigratorByCount : size=50000000: 50.2679200172
 TestMigratorByCount : 4.26471400261, 50.2679200172
 TestMigratorByCount : End of test TestMigratorByCount
+TestSortIndividuals : Host: bp9 (Linux, x86_64, x86_64)
+TestSortIndividuals : Time: Fri Jun 17 14:17:56 2011
+TestSortIndividuals : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestSortIndividuals : simuPOP: 1.0.6svn (rev 4236, module short, optimized, 1 threads)
+TestSortIndividuals : Test: SortIndividuals , results are time (not processor time) to apply operator for 100 times.
+TestSortIndividuals : size=1000000: 53.682005167
+TestSortIndividuals : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 33.6767070293
+TestSortIndividuals : 53.682005167, 33.6767070293
+TestSortIndividuals : End of test TestSortIndividuals
+TestSortIndividuals : Host: bp9 (Linux, x86_64, x86_64)
+TestSortIndividuals : Time: Fri Jun 17 14:19:39 2011
+TestSortIndividuals : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestSortIndividuals : simuPOP: 1.0.6svn (rev 4236, module long, optimized, 1 threads)
+TestSortIndividuals : Test: SortIndividuals , results are time (not processor time) to apply operator for 100 times.
+TestSortIndividuals : size=1000000: 52.7289278507
+TestSortIndividuals : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 33.5573928356
+TestSortIndividuals : 52.7289278507, 33.5573928356
+TestSortIndividuals : End of test TestSortIndividuals
+TestSortIndividuals : Host: bp9 (Linux, x86_64, x86_64)
+TestSortIndividuals : Time: Fri Jun 17 14:21:20 2011
+TestSortIndividuals : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestSortIndividuals : simuPOP: 1.0.6svn (rev 4236, module binary, optimized, 1 threads)
+TestSortIndividuals : Test: SortIndividuals , results are time (not processor time) to apply operator for 100 times.
+TestSortIndividuals : size=1000000: 56.0339119434
+TestSortIndividuals : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 36.2461290359
+TestSortIndividuals : 56.0339119434, 36.2461290359
+TestSortIndividuals : End of test TestSortIndividuals
+TestSortIndividuals : Host: bp9 (Linux, x86_64, x86_64)
+TestSortIndividuals : Time: Fri Jun 17 14:23:46 2011
+TestSortIndividuals : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestSortIndividuals : simuPOP: 1.0.6svn (rev 4236, module short, optimized, 4 threads)
+TestSortIndividuals : Test: SortIndividuals , results are time (not processor time) to apply operator for 100 times.
+TestSortIndividuals : size=1000000: 1.04947304726
+TestSortIndividuals : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 1.13233399391
+TestSortIndividuals : 1.04947304726, 1.13233399391
+TestSortIndividuals : End of test TestSortIndividuals
+TestSortIndividuals : Host: bp9 (Linux, x86_64, x86_64)
+TestSortIndividuals : Time: Fri Jun 17 14:24:04 2011
+TestSortIndividuals : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestSortIndividuals : simuPOP: 1.0.6svn (rev 4236, module long, optimized, 4 threads)
+TestSortIndividuals : Test: SortIndividuals , results are time (not processor time) to apply operator for 100 times.
+TestSortIndividuals : size=1000000: 1.03604102135
+TestSortIndividuals : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 1.10664105415
+TestSortIndividuals : 1.03604102135, 1.10664105415
+TestSortIndividuals : End of test TestSortIndividuals
+TestSortIndividuals : Host: bp9 (Linux, x86_64, x86_64)
+TestSortIndividuals : Time: Fri Jun 17 14:24:21 2011
+TestSortIndividuals : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestSortIndividuals : simuPOP: 1.0.6svn (rev 4236, module binary, optimized, 4 threads)
+TestSortIndividuals : Test: SortIndividuals , results are time (not processor time) to apply operator for 100 times.
+TestSortIndividuals : size=1000000: 1.10549497604
+TestSortIndividuals : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 1.12094712257
+TestSortIndividuals : 1.10549497604, 1.12094712257
+TestSortIndividuals : End of test TestSortIndividuals

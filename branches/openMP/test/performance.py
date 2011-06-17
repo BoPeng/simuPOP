@@ -944,7 +944,7 @@ class TestSortIndividuals(PerformanceTest):
         # single test case
         t = timeit.Timer(
             setup = 'from __main__ import Population, initInfo,random,initSex \n' 
-	        "infoFields=['a','b']\n"
+                "infoFields=['a','b']\n"
                 "pop = Population(size=%s, ploidy=2, loci=[1,2], infoFields=infoFields)\n"
                 "pop.setGenotype([random.randint(1, 5) for x in range(pop.popSize()*pop.ploidy())])\n"
                 "for info in infoFields:\n"
