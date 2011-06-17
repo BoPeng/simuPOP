@@ -47,7 +47,7 @@ if sys.version_info[0] <= 2 and sys.version_info[1] <= 4:
     sys.exit(1)
 
 # Change this to False if you would like to compile simuPOP without openMP support
-USE_OPENMP = True
+USE_OPENMP = False
 
 if os.name == 'nt':
     VS9PATH =  os.environ.get('VS90COMNTOOLS')
@@ -508,7 +508,7 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
             ])
     else:
         if not USE_ICC:
-            res['define_macros'].append('-D_GLIBCXX_PARALLEL')
+            res['define_macros'].append(('_GLIBCXX_PARALLEL', None))
     res['undef_macros'] = []
     return res
 
