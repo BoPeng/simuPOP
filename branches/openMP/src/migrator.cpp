@@ -238,26 +238,11 @@ bool Migrator::apply(Population & pop) const
 				toIndices[k++] = spFrom;
 
 			getRNG().randomShuffle(toIndices.begin(), toIndices.end());
-			if (numThreads() > 1) {
-#ifdef _OPENMP
-#  pragma omp parallel
-				{
-					size_t id = omp_get_thread_num();
-					size_t i = id * pop.subPopSize(spFrom) / numThreads();
-					IndIterator ind = pop.indIterator(spFrom, id);
-					// set info
-					for (; ind.valid(); ++i, ++ind)
-						// The previous migration_to value, if set by a previous vsp, will be overridden.
-						ind->setInfo(static_cast<double>(toIndices[i]), info);
-				}
-#endif
-			} else {
-				IndIterator ind = pop.indIterator(spFrom);
-				// set info
-				for (size_t i = 0; ind.valid(); ++i, ++ind)
-					// The previous migration_to value, if set by a previous vsp, will be overridden.
-					ind->setInfo(static_cast<double>(toIndices[i]), info);
-			}
+			IndIterator ind = pop.indIterator(spFrom);
+			// set info
+			for (size_t i = 0; ind.valid(); ++i, ++ind)
+				// The previous migration_to value, if set by a previous vsp, will be overridden.
+				ind->setInfo(static_cast<double>(toIndices[i]), info);
 		}
 		if (fromSubPops[from].isVirtual())
 			pop.deactivateVirtualSubPop(spFrom);

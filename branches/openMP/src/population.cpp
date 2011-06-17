@@ -800,18 +800,7 @@ void Population::setSubPopByIndInfo(const string & field)
 	size_t info = infoIdx(field);
 	DBG_DO(DBG_POPULATION, cerr << "Sorting individuals." << endl);
 	// sort individuals first
-	if (numThreads() > 1) {
-#if defined(__INTEL_COMPILER)
-		tbb::task_scheduler_init init(numThreads());
-		tbb::parallel_sort(rawIndBegin(), rawIndEnd(), indCompare(info));
-#elif defined(GCC_VERSION) && GCC_VERSION >= 40300
-		__gnu_parallel::sort(rawIndBegin(), rawIndEnd(), indCompare(info));
-#else
-		std::sort(rawIndBegin(), rawIndEnd(), indCompare(info));
-#endif
-	} else {
-		std::sort(rawIndBegin(), rawIndEnd(), indCompare(info));
-	}
+	parallelSort(rawIndBegin(), rawIndEnd(), indCompare(info));
 	setIndOrdered(false);
 
 	// sort individuals first

@@ -151,6 +151,24 @@ UINT numThreads();
 /// CPPONLY return val and increase val by 1, ensuring thread safety
 ATOMICLONG fetchAndIncrement(ATOMICLONG * val);
 
+/// CPPONLY parallel sort by using tbb or gnu parallel
+template<class T1, class T2>
+void parallelSort(T1 start, T1 end, T2 cmp)
+{
+	if (numThreads() > 1) {
+#if defined(__INTEL_COMPILER)
+		tbb::task_scheduler_init init(numThreads());
+		tbb::parallel_sort(start, end, cmp);
+#elif defined(GCC_VERSION) && GCC_VERSION >= 40300
+		__gnu_parallel::sort(start, end, cmp);
+#else
+		std::sort(start, end, cmp);
+#endif
+	} else {
+		std::sort(start, end, cmp);
+	}
+}
+
 /// a utility function to check keyboard stroke
 /// CPPONLY
 int simuPOP_kbhit();
