@@ -456,6 +456,40 @@ class TestHeteroMating(PerformanceTest):
         )
         return gens
 
+class TestPedigreeMating(PerformanceTest):
+
+    def __init__(self, logger, repeats=5000):
+        PerformanceTest.__init__(self, 'PedigreeMating, results are time (not processor time) to apply operator for %d generations.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 20000], loci=[100])
+
+    def _run(self, size, loci):
+        t = timeit.Timer(
+            setup = 'from __main__ import Population,Migrator, Pedigree, migrSteppingStoneRates,RandomMating, UNIFORM_DISTRIBUTION, ALL_AVAIL,' 
+                'InitSex,initSex, initInfo,InitGenotype, initGenotype, IdTagger, PedigreeTagger, PedigreeMating, MendelianGenoTransmitter, ParentsTagger\n' 
+                "ped = Population(size=%d, ancGen=-1, infoFields=['ind_id', 'father_id', 'mother_id', 'migrate_to'])\n"
+                "ped.evolve(initOps=[InitSex(), IdTagger()],\n"
+                "    preOps=Migrator(rate=migrSteppingStoneRates(0.1, 1)),\n"
+                "    matingScheme=RandomMating(\n"
+                "        numOffspring=(UNIFORM_DISTRIBUTION, 2, 4),\n"
+                "        ops=[IdTagger(), PedigreeTagger(), ]),\n"
+                "        gen=%d)\n"
+                "ped.asPedigree()\n"
+                "N = ped.ancestralGens()\n"
+                "IDs = [x.ind_id for x in ped.allIndividuals(ancGens=N)]\n"
+                "sex = [x.sex() for x in ped.allIndividuals(ancGens=N)]\n"
+                "pop = Population(size=len(IDs), loci=%d, infoFields='ind_id')\n"
+                "initInfo(pop, IDs, infoFields='ind_id')\n"
+                "print len(IDs)\n"
+                "initSex(pop, sex=sex)" % (int(size), int(self.repeats),int(loci)),
+            stmt = "pop.evolve(initOps=InitGenotype(freq=[0.4, 0.6]), matingScheme=PedigreeMating(ped, ops=MendelianGenoTransmitter()), gen = %d)" % int(self.repeats))
+
+        return t.timeit(number=1)
+
 def createPop(size, loci=100, aff=False, vsp=False):
     pop = Population(size=size, loci=loci)
     initSex(pop)
@@ -954,6 +988,25 @@ class TestSortIndividuals(PerformanceTest):
             stmt = "pop.sortIndividuals('a')")
         return t.timeit(number=self.repeats)
 
+class TestMutator(PerformanceTest):
+    
+    def __init__(self, logger, repeats=10):
+        PerformanceTest.__init__(self, 'Mutator, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[5000000, 50000000])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, SNPMutator, ContextMutator\n' 
+                "pop = Population(size=%s, ploidy=2, loci=[2, 3])\n" % (size),
+            stmt = "ContextMutator(mutators=[SNPMutator(u=0.1), SNPMutator(u=1)], contexts=[(0, 0), (1, 1)], loci=[1, 4], rates=0.1).apply(pop)")
+        return t.timeit(number=self.repeats)
+
 
 class TestRandomMatingWithSelection(PerformanceTest):
     def __init__(self, logger, time=60):
@@ -1234,6 +1287,7 @@ if __name__ == '__main__':
     import simuOpt
     simuOpt.setOptions(alleleType=alleleType, quiet=True, optimized=True, numThreads=numThreads)
     from simuPOP import *
+    from simuPOP.utils import migrSteppingStoneRates
     #
     logging.basicConfig(level=logging.DEBUG, format='%(name)s: %(message)s')
     for test in tests:
