@@ -484,7 +484,6 @@ class TestPedigreeMating(PerformanceTest):
                 "sex = [x.sex() for x in ped.allIndividuals(ancGens=N)]\n"
                 "pop = Population(size=len(IDs), loci=%d, infoFields='ind_id')\n"
                 "initInfo(pop, IDs, infoFields='ind_id')\n"
-                "print len(IDs)\n"
                 "initSex(pop, sex=sex)" % (int(size), int(self.repeats),int(loci)),
             stmt = "pop.evolve(initOps=InitGenotype(freq=[0.4, 0.6]), matingScheme=PedigreeMating(ped, ops=MendelianGenoTransmitter()), gen = %d)" % int(self.repeats))
 

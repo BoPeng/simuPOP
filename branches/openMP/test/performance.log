@@ -7589,3 +7589,57 @@ TestSortIndividuals : size=1000000: 1.10549497604
 TestSortIndividuals : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 1.12094712257
 TestSortIndividuals : 1.10549497604, 1.12094712257
 TestSortIndividuals : End of test TestSortIndividuals
+TestPedigreeMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPedigreeMating : Time: Wed Jun 22 15:38:40 2011
+TestPedigreeMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPedigreeMating : simuPOP: 1.0.6svn (rev 4238, module short, optimized, 1 threads)
+TestPedigreeMating : Test: PedigreeMating, results are time (not processor time) to apply operator for 5000 generations.
+TestPedigreeMating : loci=100, size=10000: 39.6762161255
+TestPedigreeMating : loci=100, size=20000: 88.2637140751
+TestPedigreeMating : 39.6762161255, 88.2637140751
+TestPedigreeMating : End of test TestPedigreeMating
+TestPedigreeMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPedigreeMating : Time: Wed Jun 22 15:43:19 2011
+TestPedigreeMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPedigreeMating : simuPOP: 1.0.6svn (rev 4238, module long, optimized, 1 threads)
+TestPedigreeMating : Test: PedigreeMating, results are time (not processor time) to apply operator for 5000 generations.
+TestPedigreeMating : loci=100, size=10000: 46.6159968376
+TestPedigreeMating : loci=100, size=20000: 99.869631052
+TestPedigreeMating : 46.6159968376, 99.869631052
+TestPedigreeMating : End of test TestPedigreeMating
+TestPedigreeMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPedigreeMating : Time: Wed Jun 22 15:48:12 2011
+TestPedigreeMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPedigreeMating : simuPOP: 1.0.6svn (rev 4238, module binary, optimized, 1 threads)
+TestPedigreeMating : Test: PedigreeMating, results are time (not processor time) to apply operator for 5000 generations.
+TestPedigreeMating : loci=100, size=10000: 41.4395649433
+TestPedigreeMating : loci=100, size=20000: 85.7024009228
+TestPedigreeMating : 41.4395649433, 85.7024009228
+TestPedigreeMating : End of test TestPedigreeMating
+TestPedigreeMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPedigreeMating : Time: Wed Jun 22 16:00:03 2011
+TestPedigreeMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPedigreeMating : simuPOP: 1.0.6svn (rev 4238, module short, optimized, 4 threads)
+TestPedigreeMating : Test: PedigreeMating, results are time (not processor time) to apply operator for 5000 generations.
+TestPedigreeMating : loci=100, size=10000: 25.8149080276
+TestPedigreeMating : loci=100, size=20000: 61.1918590069
+TestPedigreeMating : 25.8149080276, 61.1918590069
+TestPedigreeMating : End of test TestPedigreeMating
+TestPedigreeMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPedigreeMating : Time: Wed Jun 22 16:05:06 2011
+TestPedigreeMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPedigreeMating : simuPOP: 1.0.6svn (rev 4238, module long, optimized, 4 threads)
+TestPedigreeMating : Test: PedigreeMating, results are time (not processor time) to apply operator for 5000 generations.
+TestPedigreeMating : loci=100, size=10000: 28.0662469864
+TestPedigreeMating : loci=100, size=20000: 62.3663561344
+TestPedigreeMating : 28.0662469864, 62.3663561344
+TestPedigreeMating : End of test TestPedigreeMating
+TestPedigreeMating : Host: bp9 (Linux, x86_64, x86_64)
+TestPedigreeMating : Time: Wed Jun 22 16:10:02 2011
+TestPedigreeMating : Python: 2.7.1 [GCC Intel(R) C++ g++ 4.4 mode]
+TestPedigreeMating : simuPOP: 1.0.6svn (rev 4238, module binary, optimized, 4 threads)
+TestPedigreeMating : Test: PedigreeMating, results are time (not processor time) to apply operator for 5000 generations.
+TestPedigreeMating : loci=100, size=10000: 26.5212380886
+TestPedigreeMating : loci=100, size=20000: 54.3880081177
+TestPedigreeMating : 26.5212380886, 54.3880081177
+TestPedigreeMating : End of test TestPedigreeMating
