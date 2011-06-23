@@ -2462,16 +2462,14 @@ double statNeutrality::calcPi(HAPLOLIST::const_iterator begin, HAPLOLIST::const_
 	double diffCnt = 0;
 	int numComparison = 0;
 
-	size_t size = end - begin;
-	size_t nThreads = numThreads();
-
-	if (nThreads > 1) {
+	if (numThreads() > 1) {
 #ifdef _OPENMP
+		size_t size = end - begin;
 #  pragma omp parallel reduction(+ : diffCnt, numComparison)
 		{
 			size_t id = omp_get_thread_num();
-			HAPLOLIST::const_iterator it = begin + id * (size / nThreads);
-			HAPLOLIST::const_iterator itEnd = id == nThreads - 1 ? end : it + (size / nThreads);
+			HAPLOLIST::const_iterator it = begin + id * (size / numThreads());
+			HAPLOLIST::const_iterator itEnd = id == numThreads() - 1 ? end : it + (size / numThreads());
 			for (; it != itEnd; ++it) {
 				HAPLOLIST::const_iterator it1 = it;
 				for (++it1; it1 != end; ++it1) {

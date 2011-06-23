@@ -508,7 +508,8 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
             ])
     else:
         if not USE_ICC:
-            res['define_macros'].append(('_GLIBCXX_PARALLEL', None))
+            if USE_OPENMP:
+                res['define_macros'].append(('_GLIBCXX_PARALLEL', None))
     res['undef_macros'] = []
     return res
 
