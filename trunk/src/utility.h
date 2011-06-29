@@ -76,6 +76,12 @@ using std::setw;
 /// for openMP
 #ifdef _OPENMP
 #  include "omp.h"
+#  if defined(__INTEL_COMPILER)
+#    include "tbb/parallel_sort.h"
+#    include "tbb/task_scheduler_init.h"
+#  elif defined(GCC_VERSION) && GCC_VERSION >= 40300
+#    include "parallel/algorithm"	
+#  endif
 #endif
 /// for bernulli trials.
 // use vector<bool> instead of dynamic_bitset since I can manipulate
@@ -144,6 +150,26 @@ UINT numThreads();
 
 /// CPPONLY return val and increase val by 1, ensuring thread safety
 ATOMICLONG fetchAndIncrement(ATOMICLONG * val);
+
+/// CPPONLY parallel sort by using tbb or gnu parallel
+template<class T1, class T2>
+void parallelSort(T1 start, T1 end, T2 cmp)
+{
+	if (numThreads() > 1) {
+#ifdef _OPENMP
+#  if defined(__INTEL_COMPILER)
+		tbb::task_scheduler_init init(numThreads());
+		tbb::parallel_sort(start, end, cmp);
+#  elif defined(GCC_VERSION) && GCC_VERSION >= 40300
+		__gnu_parallel::sort(start, end, cmp);
+#  else
+		std::sort(start, end, cmp);
+#  endif
+#endif
+	} else {
+		std::sort(start, end, cmp);
+	}
+}
 
 /// a utility function to check keyboard stroke
 /// CPPONLY
@@ -1201,6 +1227,12 @@ public:
 		// empty expression
 		if (expr.empty() && stmts.empty())
 			return;
+
+	//detect leading spaces from python expressions
+		DBG_FAILIF(!expr.empty() && (expr[0] == ' ' || expr[0] == '\t'), ValueError,
+			"Can not include leading space in python expression '" + expr + "'");
+		DBG_FAILIF(!stmts.empty() && (stmts[0] == ' ' || stmts[0] == '\t'), ValueError,
+			"Can not include leading space in python statement '" + stmts + "'");
 
 		compileExpr(expr);
 		compileStmts(stmts);

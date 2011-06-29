@@ -2263,7 +2263,11 @@ PyObject * Expression::evaluate() const
 
 	PyObject * res = NULL;
 	if (m_stmts != NULL) {
+#if PY_VERSION_HEX >= 0x03020000
+		res = PyEval_EvalCode((PyObject *)m_stmts, m_locals, m_locals);
+#else 
 		res = PyEval_EvalCode((PyCodeObject *)m_stmts, m_locals, m_locals);
+#endif 
 		if (res == NULL) {
 #ifndef OPTIMIZED
 			if (debug(DBG_GENERAL)) {
@@ -2279,7 +2283,11 @@ PyObject * Expression::evaluate() const
 	}
 
 	if (m_expr != NULL) {
+#if PY_VERSION_HEX >= 0x03020000
+		res = PyEval_EvalCode((PyObject *)m_expr, m_locals, m_locals);
+#else
 		res = PyEval_EvalCode((PyCodeObject *)m_expr, m_locals, m_locals);
+#endif 
 		if (res == NULL) {
 #ifndef OPTIMIZED
 			if (debug(DBG_GENERAL)) {

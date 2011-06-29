@@ -60,17 +60,37 @@ bool BasePenetrance::apply(Population & pop) const
 			if (sp->isVirtual())
 				pop.activateVirtualSubPop(*sp);
 
-			IndIterator ind = pop.indIterator(sp->subPop());
-			for (; ind.valid(); ++ind) {
-				double p = penet(&pop, &*ind);
+			if (numThreads() > 1 && parallelizable()) {
+#pragma omp parallel
+				{
+#ifdef _OPENMP
+					IndIterator ind = pop.indIterator(sp->subPop(), omp_get_thread_num());
+					for (; ind.valid(); ++ind) {
+						double p = penet(&pop, &*ind);
 
-				if (savePene)
-					ind->setInfo(p, infoIdx);
+						if (savePene)
+							ind->setInfo(p, infoIdx);
 
-				if (getRNG().randUniform() < p)
-					ind->setAffected(true);
-				else
-					ind->setAffected(false);
+						if (getRNG().randUniform() < p)
+							ind->setAffected(true);
+						else
+							ind->setAffected(false);
+					}
+#endif
+				}
+			} else {
+				IndIterator ind = pop.indIterator(sp->subPop());
+				for (; ind.valid(); ++ind) {
+					double p = penet(&pop, &*ind);
+
+					if (savePene)
+						ind->setInfo(p, infoIdx);
+
+					if (getRNG().randUniform() < p)
+						ind->setAffected(true);
+					else
+						ind->setAffected(false);
+				}
 			}
 			if (sp->isVirtual())
 				pop.deactivateVirtualSubPop(sp->subPop());

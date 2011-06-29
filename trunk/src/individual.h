@@ -515,7 +515,7 @@ public:
 
 	indCompare(const vectoru & idx) : m_fields(idx) {}
 
-	bool operator()(const Individual & lhs, const Individual & rhs)
+	bool operator()(const Individual & lhs, const Individual & rhs) const
 	{
 		for (size_t i = 0; i < m_fields.size(); ++i) {
 			double v1 = lhs.info(m_fields[i]);
