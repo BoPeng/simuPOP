@@ -41,6 +41,15 @@ http://simupop.sourceforge.net/main/GetInvolved for details.
 """
 import os, sys, platform, shutil, glob, re, tempfile, subprocess
 import distutils.sysconfig
+USE_DISTRIBUTE = False
+try:
+    from distribute_setup import use_setuptools
+    use_setuptools()
+    from setuptools import setup, find_packages, Extension
+    USE_DISTRIBUTE = True
+except ImportError:
+    from distutils.core import setup, Extension
+    print("fail to import distribute/setuptools, build the program with distutils")
 
 if sys.version_info[0] <= 2 and sys.version_info[1] <= 4:
     print("simuPOP supports Python version 2.5 or higher, including Python 3.x. Please upgrade your Python installation and try again.")
@@ -113,7 +122,6 @@ SWIG = 'swig'
 #
 ############################################################################
 
-from distutils.core import setup, Extension
 from distutils.sysconfig import get_config_var
 try:
    from distutils.command.build_py import build_py_2to3 as build_py
@@ -519,6 +527,8 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
 # Build extensions
 #
 ############################################################################
+import filecmp
+
 if os.name == 'nt':    # Windows
     # copy platform dependent dll files
     machine = platform.uname()[4].lower()
@@ -575,8 +585,8 @@ if __name__ == '__main__':
             os.mkdir('build/%s' % modu)
         for src in SOURCE_FILES:
             mod_src = 'build/%s/%s' % (modu, src)
-            shutil.copy('src/' + src, mod_src)
-            copied_files.append(mod_src)
+            if not os.path.isfile(mod_src) or not filecmp.cmp(mod_src,'src/'+src):
+                shutil.copy('src/'+src, mod_src)
     # build
     # For module simuPOP.gsl
     EXT_MODULES = [
@@ -599,6 +609,13 @@ if __name__ == '__main__':
                 undef_macros = info['undef_macros'],
             )
         )
+    if  USE_DISTRIBUTE :
+        setup_params = dict(packages = find_packages(), include_package_data = True,
+                        exclude_package_data = {'':['README.txt']}, zip_safe = False,
+                        install_requires = ['distribute'])
+    else :
+        setup_params = dict(packages = ['simuPOP'])
+
     setup(
         name = "simuPOP",
         version = SIMUPOP_VER,
@@ -625,7 +642,6 @@ if __name__ == '__main__':
         ],
         platforms = ['all'],
         #
-        packages = ['simuPOP'],
         package_dir = {'simuPOP': 'src'}, 
         package_data = {'simuPOP': PACKAGE_DATA},
         py_modules = [
@@ -637,10 +653,9 @@ if __name__ == '__main__':
             'simuPOP.sandbox',
         ] + ['simuPOP.simuPOP_%s' % x for x in MODULES],
         ext_modules = EXT_MODULES,
-        cmdclass = {'build_py': build_py}
+        cmdclass = {'build_py': build_py},
+        **setup_params
     )
-    # remove copied files
-    for file in copied_files:
-        os.remove(file)
+
 
 
