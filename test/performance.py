@@ -456,6 +456,39 @@ class TestHeteroMating(PerformanceTest):
         )
         return gens
 
+class TestPedigreeMating(PerformanceTest):
+
+    def __init__(self, logger, repeats=5000):
+        PerformanceTest.__init__(self, 'PedigreeMating, results are time (not processor time) to apply operator for %d generations.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[10000, 20000], loci=[100])
+
+    def _run(self, size, loci):
+        t = timeit.Timer(
+            setup = 'from __main__ import Population,Migrator, Pedigree, migrSteppingStoneRates,RandomMating, UNIFORM_DISTRIBUTION, ALL_AVAIL,' 
+                'InitSex,initSex, initInfo,InitGenotype, initGenotype, IdTagger, PedigreeTagger, PedigreeMating, MendelianGenoTransmitter, ParentsTagger\n' 
+                "ped = Population(size=%d, ancGen=-1, infoFields=['ind_id', 'father_id', 'mother_id', 'migrate_to'])\n"
+                "ped.evolve(initOps=[InitSex(), IdTagger()],\n"
+                "    preOps=Migrator(rate=migrSteppingStoneRates(0.1, 1)),\n"
+                "    matingScheme=RandomMating(\n"
+                "        numOffspring=(UNIFORM_DISTRIBUTION, 2, 4),\n"
+                "        ops=[IdTagger(), PedigreeTagger(), ]),\n"
+                "        gen=%d)\n"
+                "ped.asPedigree()\n"
+                "N = ped.ancestralGens()\n"
+                "IDs = [x.ind_id for x in ped.allIndividuals(ancGens=N)]\n"
+                "sex = [x.sex() for x in ped.allIndividuals(ancGens=N)]\n"
+                "pop = Population(size=len(IDs), loci=%d, infoFields='ind_id')\n"
+                "initInfo(pop, IDs, infoFields='ind_id')\n"
+                "initSex(pop, sex=sex)" % (int(size), int(self.repeats),int(loci)),
+            stmt = "pop.evolve(initOps=InitGenotype(freq=[0.4, 0.6]), matingScheme=PedigreeMating(ped, ops=MendelianGenoTransmitter()), gen = %d)" % int(self.repeats))
+
+        return t.timeit(number=1)
+
 def createPop(size, loci=100, aff=False, vsp=False):
     pop = Population(size=size, loci=loci)
     initSex(pop)
@@ -702,7 +735,6 @@ class TestInitSex(PerformanceTest):
 
     def _run(self, size):
         # single test case
-        pop = Population(size = size)
         t = timeit.Timer(
             setup = 'from __main__ import Population,initSex, MALE,FEMALE\n'
                 'pop = Population(size=%s,loci=1000)' % (size),
@@ -721,12 +753,257 @@ class TestInitInfo(PerformanceTest):
         return self.sequentialRun(size=[1000000, [100000]*10])
 
     def _run(self, size):
-        # single test case
-        pop = Population(size = size)
+        # single test case 
         t = timeit.Timer(
-               setup = 'from __main__ import Population, initInfo\n'
-        "pop = Population(size=%s,loci=100, infoFields=['a','b'])" % (size),
-        stmt = "initInfo(pop,[1,2,3,4,5,6,7],infoFields=['a','b'])")
+            setup = 'from __main__ import Population, initInfo\n'
+                "pop = Population(size=%s,loci=100, infoFields=['a','b'])" % (size),
+            stmt = "initInfo(pop,[1,2,3,4,5,6,7],infoFields=['a','b'])")
+        return t.timeit(number=self.repeats)
+
+class TestMapSelector(PerformanceTest):
+    
+    def __init__(self, logger, repeats=1000):
+        PerformanceTest.__init__(self, 'MapSelector, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[1000000, [100000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, initGenotype, MapSelector\n' 
+                "pop = Population(size=%s, loci=[1], infoFields=['a', 'fitness', 'b'])\n"
+                "initGenotype(pop, freq=[.2, .8])" % (size),
+            stmt = 'MapSelector(loci=[0], fitness={(0,0):1, (0,1):0.5, (1,1):0.25}).apply(pop)')
+        return t.timeit(number=self.repeats)
+
+class TestMaSelector(PerformanceTest):
+    
+    def __init__(self, logger, repeats=1000):
+        PerformanceTest.__init__(self, 'MaSelector, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[1000000, [100000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, initGenotype, MaSelector\n' 
+                "pop = Population(size=%s, loci=[1], infoFields=['a', 'fitness', 'b'])\n"
+                "initGenotype(pop, freq=[.2, .8])" % (size),
+            stmt = 'MaSelector(loci=[0], fitness= [1, 0.5, 0.25], wildtype = [0] ).apply(pop)')
+        return t.timeit(number=self.repeats)
+
+class TestMlSelector(PerformanceTest):
+    
+    def __init__(self, logger, repeats=200):
+        PerformanceTest.__init__(self, 'MlSelector, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[1000000, [100000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, initGenotype,MapSelector, MaSelector, MlSelector, MULTIPLICATIVE\n' 
+                "pop = Population(size=1000000, loci=[2], infoFields=['fitness', 'spare'])\n"
+                "initGenotype(pop, freq=[.2, .8])",
+            stmt = 'MlSelector([\n'
+               'MapSelector(loci=0, fitness={(0,0):1,(0,1):1,(1,1):.8}),\n'
+               'MaSelector(loci=1, fitness= [1, 0.5, 0.25], wildtype = [1] )\n'
+               '], mode=MULTIPLICATIVE).apply(pop)')
+        return t.timeit(number=self.repeats)
+
+class TestMapPenetrance(PerformanceTest):
+    
+    def __init__(self, logger, repeats=200):
+        PerformanceTest.__init__(self, 'MapPenetrance, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[1000000, [100000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, initGenotype, MapPenetrance\n' 
+                "pop = Population(%s, loci=[3,5], infoFields=['penetrance'])\n"
+                "initGenotype(pop, freq=[.3, .7])\n" % (size),
+            stmt = "MapPenetrance(loci = 1, penetrance={(0,0):0, (0,1):1, (1,1):1}).apply(pop)") 
+        return t.timeit(number=self.repeats)
+
+class TestMaPenetrance(PerformanceTest):
+    
+    def __init__(self, logger, repeats=200):
+        PerformanceTest.__init__(self, 'MaPenetrance, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[1000000, [100000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, initGenotype, MaPenetrance\n' 
+                "pop = Population(%s, loci=[3,5], infoFields=['penetrance'])\n"
+                "initGenotype(pop, freq=[.3, .7])\n" % (size),
+            stmt = "MaPenetrance( loci = 1, wildtype=0, penetrance=[0, 1, 1]).apply(pop)")
+        return t.timeit(number=self.repeats)
+
+class TestMlPenetrance(PerformanceTest):
+    
+    def __init__(self, logger, repeats=200):
+        PerformanceTest.__init__(self, 'MlPenetrance, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[1000000, [100000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, initGenotype, MlPenetrance, MaPenetrance, MapPenetrance, ADDITIVE\n' 
+                "pop = Population(%s, loci=[3,5], infoFields=['penetrance'])\n"
+                "initGenotype(pop, freq=[.3, .7])\n" % (size),
+            stmt = "MlPenetrance([MaPenetrance(loci = 0,    wildtype=0, penetrance=[0, .3, .5]),\n"
+                "    MapPenetrance(loci = 1, penetrance={(0,0):0, (0,1):1, (1,1):1}) ], mode=ADDITIVE).apply(pop)")
+        return t.timeit(number=self.repeats)
+
+class TestMigratorByProbability(PerformanceTest):
+    
+    def __init__(self, logger, repeats=10):
+        PerformanceTest.__init__(self, 'Migrator BY_PROBABILITY, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[5000000, 50000000])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, Migrator, BY_PROBABILITY\n' 
+                "pop = Population(%s, loci=2, infoFields=['migrate_to'])\n" % (size),
+            stmt = "Migrator(mode=BY_PROBABILITY, rate = [ [0, .05, .05]]).apply(pop)")
+        return t.timeit(number=self.repeats)
+
+class TestMigratorByIndInfo(PerformanceTest):
+    
+    def __init__(self, logger, repeats=10):
+        PerformanceTest.__init__(self, 'Migrator BY_IND_INFO, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[5000000, 50000000])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, Migrator, BY_IND_INFO\n' 
+                "pop = Population(%s, loci=2, infoFields=['migrate_to'])\n"
+                "for sp in range(1):\n"
+                "    pop.setIndInfo([sp],'migrate_to',sp)" % (size),
+            stmt = "Migrator(mode=BY_IND_INFO).apply(pop)")
+        return t.timeit(number=self.repeats)
+
+class TestMigratorByProportion(PerformanceTest):
+    
+    def __init__(self, logger, repeats=10):
+        PerformanceTest.__init__(self, 'Migrator BY_PROPORTION, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[5000000, 50000000])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, Migrator, BY_PROPORTION\n' 
+                "pop = Population(%s, loci=2, infoFields=['migrate_to'])\n" % (size),
+            stmt = "Migrator(mode=BY_PROPORTION, rate = [ [0, .25, .25]]).apply(pop)")
+        return t.timeit(number=self.repeats)
+
+class TestMigratorByCount(PerformanceTest):
+    
+    def __init__(self, logger, repeats=10):
+        PerformanceTest.__init__(self, 'Migrator BY_COUNT, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[5000000, 50000000])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, Migrator, BY_COUNTS\n' 
+                "pop = Population(%s, loci=2, infoFields=['migrate_to'])\n" % (size),
+            stmt = "Migrator(mode=BY_COUNTS, rate = [ [0, 50, 50]]).apply(pop)")
+        return t.timeit(number=self.repeats)
+
+class TestSortIndividuals(PerformanceTest):
+    
+    def __init__(self, logger, repeats=100):
+        PerformanceTest.__init__(self, 'SortIndividuals , results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[1000000, [100000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, initInfo,random,initSex \n' 
+                "infoFields=['a','b']\n"
+                "pop = Population(size=%s, ploidy=2, loci=[1,2], infoFields=infoFields)\n"
+                "pop.setGenotype([random.randint(1, 5) for x in range(pop.popSize()*pop.ploidy())])\n"
+                "for info in infoFields:\n"
+                "    pop.setIndInfo([random.random() for x in range(pop.popSize())], info)\n"
+                "initSex(pop)\n"
+                "initInfo(pop, lambda: random.randint(1, 5), infoFields=['a', 'b'])\n" % (size),
+            stmt = "pop.sortIndividuals('a')")
+        return t.timeit(number=self.repeats)
+
+class TestMutator(PerformanceTest):
+    
+    def __init__(self, logger, repeats=10):
+        PerformanceTest.__init__(self, 'Mutator, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[5000000, 50000000])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, SNPMutator, ContextMutator\n' 
+                "pop = Population(size=%s, ploidy=2, loci=[2, 3])\n" % (size),
+            stmt = "ContextMutator(mutators=[SNPMutator(u=0.1), SNPMutator(u=1)], contexts=[(0, 0), (1, 1)], loci=[1, 4], rates=0.1).apply(pop)")
         return t.timeit(number=self.repeats)
 
 
@@ -1009,6 +1286,7 @@ if __name__ == '__main__':
     import simuOpt
     simuOpt.setOptions(alleleType=alleleType, quiet=True, optimized=True, numThreads=numThreads)
     from simuPOP import *
+    from simuPOP.utils import migrSteppingStoneRates
     #
     logging.basicConfig(level=logging.DEBUG, format='%(name)s: %(message)s')
     for test in tests:

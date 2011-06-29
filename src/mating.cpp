@@ -627,7 +627,7 @@ ParentChooser::IndividualPair SequentialParentChooser::chooseParents(RawIndItera
 			DBG_ASSERT(m_ind.valid(), RuntimeError, "No valid individual if found.")
 		}
 		return ParentChooser::IndividualPair(&*m_ind++, NULL);
-	}else {
+	} else {
 		if (m_curInd == m_index.size())
 			m_curInd = 0;
 
@@ -1270,7 +1270,6 @@ bool MatingScheme::mate(Population & pop, Population & scratch)
 	// scrtach will have the right structure.
 	if (!prepareScratchPop(pop, scratch))
 		return false;
-
 	for (size_t sp = 0; sp < static_cast<size_t>(pop.numSubPop()); ++sp)
 		if (!mateSubPop(pop, scratch, sp, scratch.rawIndBegin(sp), scratch.rawIndEnd(sp)))
 			return false;
@@ -1431,46 +1430,64 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 	for (; it != it_end; ++it)
 		idMap[toID(it->info(idIdx))] = &*it;
 
-	it = scratch.rawIndBegin();
-	it_end = scratch.rawIndEnd();
-	for (size_t i = 0; it != it_end; ++it, ++i) {
-		const Individual & pedInd = m_ped.individual(static_cast<double>(i));
+	// initialize operator before entering parallel region in order to avoid race condition
+	opList::const_iterator iop = m_transmitters.begin();
+	opList::const_iterator iopEnd = m_transmitters.end();
+	for (; iop != iopEnd; ++iop)
+		(*iop)->initializeIfNeeded(*pop.rawIndBegin());
 
-		size_t my_id = toID(pedInd.info(m_ped.idIdx()));
-		size_t father_id = m_ped.fatherOf(my_id);
-		size_t mother_id = m_ped.motherOf(my_id);
-		Individual * dad = NULL;
-		Individual * mom = NULL;
+#pragma omp parallel private(it, it_end) if (numThreads() > 1 && parallelizable())
+	{
+#ifdef _OPENMP
+		size_t id = omp_get_thread_num();
+		size_t offPopSize = scratch.rawIndEnd() - scratch.rawIndBegin();
+		it = scratch.rawIndBegin() + id * (offPopSize / numThreads());
+		it_end = id == numThreads() - 1 ? scratch.rawIndEnd() : it + (offPopSize / numThreads());
+		size_t i = id * (offPopSize / numThreads());
+#else
+		it = scratch.rawIndBegin();
+		it_end = scratch.rawIndEnd();
+		size_t i = 0;
+#endif
+		for (; it != it_end; ++it, ++i) {
+			const Individual & pedInd = m_ped.individual(static_cast<double>(i));
 
-		if (father_id) {
-			IdMap::iterator dad_it = idMap.find(father_id);
-			DBG_FAILIF(dad_it == idMap.end(), RuntimeError,
-				"Could not locate individual with ID " + toStr(father_id));
-			dad = &*(dad_it->second);
-		}
-		if (mother_id) {
-			IdMap::iterator mom_it = idMap.find(mother_id);
-			DBG_FAILIF(mom_it == idMap.end(), RuntimeError,
-				"Could not locate individual with ID " + toStr(mother_id));
-			mom = &*(mom_it->second);
-		}
-		DBG_DO(DBG_MATING, cerr << "Choosing parents " << father_id << " and "
-			                    << mother_id << " for offspring " << my_id << endl);
+			size_t my_id = toID(pedInd.info(m_ped.idIdx()));
+			size_t father_id = m_ped.fatherOf(my_id);
+			size_t mother_id = m_ped.motherOf(my_id);
+			Individual * dad = NULL;
+			Individual * mom = NULL;
 
-		// copy sex
-		it->setSex(pedInd.sex());
-		// copy id
-		it->setInfo(static_cast<double>(my_id), m_idField);
-		//
-		opList::const_iterator iop = m_transmitters.begin();
-		opList::const_iterator iopEnd = m_transmitters.end();
-		for (; iop != iopEnd; ++iop) {
-			if ((*iop)->isActive(pop.rep(), pop.gen()))
-				(*iop)->applyDuringMating(pop, scratch, it, dad, mom);
+			if (father_id) {
+				IdMap::iterator dad_it = idMap.find(father_id);
+				DBG_FAILIF(dad_it == idMap.end(), RuntimeError,
+					"Could not locate individual with ID " + toStr(father_id));
+				dad = &*(dad_it->second);
+			}
+			if (mother_id) {
+				IdMap::iterator mom_it = idMap.find(mother_id);
+				DBG_FAILIF(mom_it == idMap.end(), RuntimeError,
+					"Could not locate individual with ID " + toStr(mother_id));
+				mom = &*(mom_it->second);
+			}
+			DBG_DO(DBG_MATING, cerr << "Choosing parents " << father_id << " and "
+				                    << mother_id << " for offspring " << my_id << endl);
+
+			// copy sex
+			it->setSex(pedInd.sex());
+			// copy id
+			it->setInfo(static_cast<double>(my_id), m_idField);
+			//
+			opList::const_iterator iop = m_transmitters.begin();
+			opList::const_iterator iopEnd = m_transmitters.end();
+			for (; iop != iopEnd; ++iop) {
+				if ((*iop)->isActive(pop.rep(), pop.gen()))
+					(*iop)->applyDuringMating(pop, scratch, it, dad, mom);
+			}
+			// copy individual ID again, just to make sure that even if during mating operators
+			// changes ID, pedigree mating could proceed normally.
+			it->setInfo(static_cast<double>(my_id), m_idField);
 		}
-		// copy individual ID again, just to make sure that even if during mating operators
-		// changes ID, pedigree mating could proceed normally.
-		it->setInfo(static_cast<double>(my_id), m_idField);
 	}
 	const_cast<Pedigree &>(m_ped).useAncestralGen(oldGen);
 	submitScratch(pop, scratch);
@@ -1489,6 +1506,19 @@ string PedigreeMating::describe(bool format) const
 		desc += "<li>" + (*iop)->describe(false) + " " + (*iop)->applicability() + "\n";
 	desc += "</ul>\n";
 	return format ? formatDescription(desc) : desc;
+}
+
+
+bool PedigreeMating::parallelizable() const
+{
+	opList::const_iterator iop = m_transmitters.begin();
+	opList::const_iterator iopEnd = m_transmitters.end();
+
+	for (; iop != iopEnd; ++iop) {
+		if (!(*iop)->parallelizable())
+			return false;
+	}
+	return true;
 }
 
 

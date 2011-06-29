@@ -225,6 +225,13 @@ public:
 	}
 
 
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return true;
+	}
+
+
 private:
 	///
 	const lociList m_loci;
@@ -297,6 +304,13 @@ public:
 	}
 
 
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return true;
+	}
+
+
 private:
 	/// one locus
 	const lociList m_loci;
@@ -366,6 +380,13 @@ public:
 	}
 
 
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return true;
+	}
+
+
 private:
 	/// a list of selectors
 	const opList m_selectors;
@@ -422,6 +443,13 @@ public:
 	{
 		(void)format;  // avoid warning about unused parameter
 		return "<simuPOP.PySelector>" ;
+	}
+
+
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return false;
 	}
 
 

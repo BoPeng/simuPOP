@@ -623,9 +623,6 @@ private:
 
 	const vectorf m_convMode;
 
-	/// bernulli trials
-	mutable vector<Bernullitrials> m_bt;
-
 	// locataion of special chromosomes
 	mutable int m_chromX;
 	mutable int m_chromY;
@@ -636,6 +633,14 @@ private:
 	mutable int m_algorithm;
 
 	mutable ostream * m_debugOutput;
+
+	/// bernulli trials
+#ifdef _OPENMP
+	mutable vector<Bernullitrials> m_bt;
+#else
+	mutable Bernullitrials m_bt; 
+#endif
+
 
 };
 

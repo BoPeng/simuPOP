@@ -42,9 +42,21 @@ bool BaseSelector::apply(Population & pop) const
 	for (; sp != spEnd; ++sp) {
 		if (sp->isVirtual())
 			pop.activateVirtualSubPop(*sp);
-		IndIterator ind = pop.indIterator(sp->subPop());
-		for (; ind.valid(); ++ind)
-			ind->setInfo(indFitness(pop, &*ind), fit_id);
+		if (numThreads() > 1 && parallelizable()) {
+#pragma omp parallel
+			{
+#ifdef _OPENMP
+				IndIterator ind = pop.indIterator(sp->subPop(), omp_get_thread_num());
+				for (; ind.valid(); ++ind)
+					ind->setInfo(indFitness(pop, &*ind), fit_id);
+#endif
+			}
+
+		} else {
+			IndIterator ind = pop.indIterator(sp->subPop());
+			for (; ind.valid(); ++ind)
+				ind->setInfo(indFitness(pop, &*ind), fit_id);
+		}
 		if (sp->isVirtual())
 			pop.deactivateVirtualSubPop(sp->subPop());
 	}
@@ -253,3 +265,5 @@ double PySelector::indFitness(Population & pop, Individual * ind) const
 
 
 }
+
+

@@ -70,9 +70,24 @@ bool Migrator::apply(Population & pop) const
 		for (size_t sp = 0; sp < pop.numSubPop(); ++sp) {
 			RawIndIterator it = pop.rawIndBegin(sp);
 			RawIndIterator it_end = pop.rawIndEnd(sp);
-			for (; it != it_end; ++it)
-				it->setInfo(static_cast<double>(sp), info);
+			if (numThreads() > 1) {
+#ifdef _OPENMP
+				size_t popSize = it_end - it;
+#  pragma omp parallel firstprivate(it, it_end)
+				{
+					size_t id = omp_get_thread_num();
+					it = it + id * (popSize / numThreads());
+					it_end = id == numThreads() - 1 ? it_end : it + popSize / numThreads();
+					for (; it != it_end; ++it)
+						it->setInfo(static_cast<double>(sp), info);
+				}
+#endif
+			} else {
+				for (; it != it_end; ++it)
+					it->setInfo(static_cast<double>(sp), info);
+			}
 		}
+
 	}
 
 	DBG_FAILIF(pop.hasActivatedVirtualSubPop(), RuntimeError,
@@ -150,26 +165,51 @@ bool Migrator::apply(Population & pop) const
 			// restore information fields set by user so that other individuals
 			// can stay at their original subpopulation.
 			if (!oldInfo.empty()) {
-				for (IndIterator ind = pop.indIterator(spFrom); ind.valid(); ++ind)
-					ind->setInfo(oldInfo[&*ind - &*pop.rawIndBegin()], info);
+				if (numThreads() > 1) {
+#ifdef _OPENMP
+#  pragma omp parallel
+					{
+						for (IndIterator ind = pop.indIterator(spFrom, omp_get_thread_num()); ind.valid(); ++ind)
+							ind->setInfo(oldInfo[&*ind - &*pop.rawIndBegin()], info);
+					}
+#endif
+				} else {
+					for (IndIterator ind = pop.indIterator(spFrom); ind.valid(); ++ind)
+						ind->setInfo(oldInfo[&*ind - &*pop.rawIndBegin()], info);
+				}
 			}
 		} else if (m_mode == BY_PROBABILITY) {
 			WeightedSampler ws(migrationRate[from]);
 
 			// for each individual, migrate according to migration probability
-			for (IndIterator ind = pop.indIterator(spFrom); ind.valid(); ++ind) {
-				//toIndex = getRNG().randIntByFreq( rateSize, &migrationRate[from][0] ) ;
-				toIndex = ws.draw();
+			if (numThreads() > 1) {
+#ifdef _OPENMP
+#  pragma omp parallel private(toIndex)
+				{
+					for (IndIterator ind = pop.indIterator(spFrom, omp_get_thread_num()); ind.valid(); ++ind) {
+						toIndex = ws.draw();
+						DBG_ASSERT(toIndex < migrationRate[from].size(), ValueError,
+							"Return index out of range.");
+						if (toIndex < toSize && toSubPops[toIndex] != spFrom)
+							ind->setInfo(static_cast<double>(toSubPops[toIndex]), info);
+					}
+				}
+#endif
+			} else {
+				for (IndIterator ind = pop.indIterator(spFrom); ind.valid(); ++ind) {
+					//toIndex = getRNG().randIntByFreq( rateSize, &migrationRate[from][0] ) ;
+					toIndex = ws.draw();
 
-				DBG_ASSERT(toIndex < migrationRate[from].size(), ValueError,
-					"Return index out of range.");
+					DBG_ASSERT(toIndex < migrationRate[from].size(), ValueError,
+						"Return index out of range.");
 
-				// rateSize == toSize (no i->i addition)
-				//     toIndex < toSize
-				// rateSize = toSize + 1, ignore i->1 (last one)
-				//     toIndex < toSize
-				if (toIndex < toSize && toSubPops[toIndex] != spFrom)
-					ind->setInfo(static_cast<double>(toSubPops[toIndex]), info);
+					// rateSize == toSize (no i->i addition)
+					//     toIndex < toSize
+					// rateSize = toSize + 1, ignore i->1 (last one)
+					//     toIndex < toSize
+					if (toIndex < toSize && toSubPops[toIndex] != spFrom)
+						ind->setInfo(static_cast<double>(toSubPops[toIndex]), info);
+				}
 			}
 		} else {
 			// 2nd, or 3rd method

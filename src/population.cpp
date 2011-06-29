@@ -787,7 +787,7 @@ void Population::sortIndividuals(const stringList & infoList)
 	for (size_t i = 0; i < infoFields.size(); ++i)
 		fields[i] = infoIdx(infoFields[i]);
 	for (size_t sp = 0; sp < numSubPop(); ++sp)
-		std::sort(rawIndBegin(sp), rawIndEnd(sp), indCompare(fields));
+		parallelSort(rawIndBegin(sp), rawIndEnd(sp), indCompare(fields));
 	setIndOrdered(false);
 }
 
@@ -798,10 +798,9 @@ void Population::setSubPopByIndInfo(const string & field)
 		"This operation is not allowed when there is an activated virtual subpopulation");
 
 	size_t info = infoIdx(field);
-
 	DBG_DO(DBG_POPULATION, cerr << "Sorting individuals." << endl);
 	// sort individuals first
-	std::sort(rawIndBegin(), rawIndEnd(), indCompare(info));
+	parallelSort(rawIndBegin(), rawIndEnd(), indCompare(info));
 	setIndOrdered(false);
 
 	// sort individuals first

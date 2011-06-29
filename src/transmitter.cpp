@@ -417,11 +417,15 @@ Recombinator::Recombinator(const floatList & rates, double intensity,
 	const stringFunc & output, int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops, const stringList & infoFields)
 	:
-	GenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields)
-	, m_intensity(intensity), m_rates(rates.elems()), m_loci(loci),
-	m_recBeforeLoci(0), m_convMode(convMode.elems()),
-	m_bt(numThreads(), getRNG()), m_chromX(-1), m_chromY(-1), m_customizedBegin(-1), m_customizedEnd(-1),
-	m_algorithm(0), m_debugOutput(NULL)
+	GenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields),
+	m_intensity(intensity), m_rates(rates.elems()), m_loci(loci),
+	m_recBeforeLoci(0), m_convMode(convMode.elems()), m_chromX(-1), m_chromY(-1),
+       	m_customizedBegin(-1), m_customizedEnd(-1), m_algorithm(0), m_debugOutput(NULL),
+#ifdef _OPENMP
+	m_bt(numThreads(), getRNG())
+#else
+	m_bt(getRNG())
+#endif
 {
 
 	DBG_FAILIF(m_convMode.empty(), ValueError,
@@ -589,9 +593,13 @@ void Recombinator::initialize(const Individual & ind) const
 
 	// if the operator is called directly, there is no way to know population size so we
 	// a variable to tell it.
+#ifdef _OPENMP
 	for (size_t i = 0; i < numThreads(); i++)
 		m_bt[i].setParameter(vecP, 0 /* obsolete m_intendedSize */);
+#else
 
+	m_bt.setParameter(vecP, 0 /* obsolete m_intendedSize */);
+#endif
 	// choose an algorithm
 	// if recombinations are dense. use the first algorithm
 	// For example 10 chromoes, regular 0.5*10=5
@@ -614,7 +622,11 @@ void Recombinator::transmitGenotype(const Individual & parent,
 	initializeIfNeeded(offspring);
 
 	//Bernullitrial for each thread
+#ifdef _OPENMP
 	Bernullitrials & bt = m_bt[omp_get_thread_num()];
+#else
+	Bernullitrials & bt = m_bt;
+#endif
 
 	// use which copy of chromosome
 	GenoIterator cp[2], off;

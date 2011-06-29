@@ -1395,11 +1395,17 @@ array_subscr(arrayobject* self, PyObject* item)
 	}
 	else if (PySlice_Check(item)) {
 		Py_ssize_t start, stop, step, slicelength;
-
+#if PY_VERSION_HEX >= 0x03020000
+		if (PySlice_GetIndicesEx((PyObject*)item, Py_SIZE(self),
+				 &start, &stop, &step, &slicelength) < 0) {
+			return NULL;
+		}
+#else
 		if (PySlice_GetIndicesEx((PySliceObject*)item, Py_SIZE(self),
 				 &start, &stop, &step, &slicelength) < 0) {
 			return NULL;
 		}
+#endif
 		if (step > 1) {
 			PyErr_SetString(PyExc_TypeError,
 					"Slice with step > 1 is not supported for type simuPOP.array");
@@ -1448,11 +1454,19 @@ array_ass_subscr(arrayobject* self, PyObject* item, PyObject* value)
 			return setarrayitem(self, i, value);
 	}
 	else if (PySlice_Check(item)) {
+#if PY_VERSION_HEX >= 0x03020000
+		if (PySlice_GetIndicesEx((PyObject *)item,
+					 Py_SIZE(self), &start, &stop,
+					 &step, &slicelength) < 0) {
+			return -1;
+		}
+#else
 		if (PySlice_GetIndicesEx((PySliceObject *)item,
 					 Py_SIZE(self), &start, &stop,
 					 &step, &slicelength) < 0) {
 			return -1;
 		}
+#endif
 	}
 	else {
 		PyErr_SetString(PyExc_TypeError,
