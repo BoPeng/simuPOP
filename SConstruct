@@ -159,11 +159,11 @@ def convert_def(defines):
 #
 gsl_env = env.Clone()
 gsl_env.VariantDir('build/gsl', '.')
-gsl_env['SWIGOUTDIR'] = 'build/gsl/src'
+gsl_env['SWIGOUTDIR'] = 'build/gsl/simuPOP'
 gsl_env['SWIGFLAGS'] = SWIG_CC_FLAGS 
 gsl = gsl_env.SharedLibrary(
     target = 'build/gsl/_gsl%s' % so_ext,
-    source = ['build/gsl/' + x for x in GSL_FILES] + ['build/gsl/src/gsl.i'],
+    source = ['build/gsl/' + x for x in GSL_FILES] + ['build/gsl/simuPOP/gsl.i'],
     SHLIBPREFIX = "",
     SHLIBSUFFIX = so_ext,
     SHLINKFLAGS = comp.ldflags_shared,
@@ -176,7 +176,7 @@ gsl = gsl_env.SharedLibrary(
 Alias('gsl', gsl)
 Alias('all', gsl)
 Alias('install', gsl_env.InstallAs(os.path.join(dest_dir, '_gsl%s' % so_ext), gsl[0]))
-Alias('install', gsl_env.InstallAs(os.path.join(dest_dir, 'gsl.py'), 'build/gsl/src/gsl.py'))
+Alias('install', gsl_env.InstallAs(os.path.join(dest_dir, 'gsl.py'), 'build/gsl/simuPOP/gsl.py'))
 #
 #
 # Building a library for common files
@@ -229,22 +229,22 @@ if 'all' in BUILD_TARGETS:
 for mod in targets:
     mod_env = env.Clone()
     mod_env.VariantDir('build/' + mod, '.')
-    mod_env['SWIGFLAGS'] = SWIG_CPP_FLAGS + ' -Isrc'  # -Isrc for %include interface files under src
-    mod_env['SWIGOUTDIR'] = 'build/%s/src' % mod
+    mod_env['SWIGFLAGS'] = SWIG_CPP_FLAGS + ' -IsimuPOP'  # -IsimuPOP for %include interface files under simuPOP
+    mod_env['SWIGOUTDIR'] = 'build/%s/simuPOP' % mod
     info = ModuInfo(mod, SIMUPOP_VER, SIMUPOP_REV)
-    mod_env.Command('build/%s/src/swigpyrun.h' % mod, None, ['swig %s $TARGET' % SWIG_RUNTIME_FLAGS])
+    mod_env.Command('build/%s/simuPOP/swigpyrun.h' % mod, None, ['swig %s $TARGET' % SWIG_RUNTIME_FLAGS])
     if 'op' in mod:
         common_lib = op_common_lib
     else:
         common_lib = std_common_lib
     mod_wrapper = mod_env.StaticLibrary(
-        target = 'build/%s/src/_simuPOP_wrap_%s' % (mod, mod),
-        source = ['build/%s/src/simuPOP_%s.i' % (mod, mod)],
+        target = 'build/%s/simuPOP/_simuPOP_wrap_%s' % (mod, mod),
+        source = ['build/%s/simuPOP/simuPOP_%s.i' % (mod, mod)],
         SHLIBPREFIX = "",
         SHLIBSUFFIX = so_ext,
         SHLINKFLAGS = comp.ldflags_shared,
         LIBPATH = info['library_dirs'] + extra_path,
-        CPPPATH = [python_inc_dir, '.', 'src', 'build'] + info['include_dirs'],
+        CPPPATH = [python_inc_dir, '.', 'simuPOP', 'build'] + info['include_dirs'],
         CPPDEFINES = convert_def(info['define_macros']),
         # No extra-flags because it can have -Werror and we cannot guarantee that there is
         # no warning coming out of the wrapper code.
@@ -253,22 +253,22 @@ for mod in targets:
     )
     mod_lib = mod_env.SharedLibrary(
         target = 'build/%s/_simuPOP_%s' % (mod, mod),
-        source = ['build/%s/src/%s' % (mod, x) for x in SOURCE_FILES],
+        source = ['build/%s/simuPOP/%s' % (mod, x) for x in SOURCE_FILES],
         LIBS = info['libraries'] + [mod_wrapper, common_lib],
         SHLIBPREFIX = "",
         SHLIBSUFFIX = so_ext,
         SHLINKFLAGS = comp.ldflags_shared,
         LIBPATH = info['library_dirs'] + extra_path,
-        CPPPATH = [python_inc_dir, '.', 'src', 'build'] + info['include_dirs'],
+        CPPPATH = [python_inc_dir, '.', 'simuPOP', 'build'] + info['include_dirs'],
         CPPDEFINES = convert_def(info['define_macros']),
         CCFLAGS = info['extra_compile_args'] + comp.compile_options + extra_flags,
         CPPFLAGS = ' '.join([basicflags, ccshared, opt])
     )
-    env.Depends('build/%s/src/swigpyrun.h' % mod, 'build/%s/src/utility.cpp' % mod)
+    env.Depends('build/%s/simuPOP/swigpyrun.h' % mod, 'build/%s/simuPOP/utility.cpp' % mod)
     Alias(mod, mod_lib)
     Alias('all', mod_lib)
     pyInstall = env.InstallAs(os.path.join(dest_dir, 'simuPOP_%s.py' % mod),
-        'build/%s/src/simuPOP_%s.py' % (mod, mod))
+        'build/%s/simuPOP/simuPOP_%s.py' % (mod, mod))
     libInstall = env.InstallAs(os.path.join(dest_dir, '_simuPOP_%s%s' % (mod, so_ext)),
         mod_lib[0])
     mod_env.Depends(pyInstall, libInstall)
@@ -285,8 +285,8 @@ for mod in exe_targets:
     mod_name = mod.split('_')[0]
     exe_env = env.Clone()
     exe_env.VariantDir('build/' + mod, '.')
-    exe_env['SWIGFLAGS'] = SWIG_CPP_FLAGS + ' -Isrc'  # -Isrc for %include interface files under src
-    exe_env['SWIGOUTDIR'] = 'build/%s/src' % mod
+    exe_env['SWIGFLAGS'] = SWIG_CPP_FLAGS + ' -IsimuPOP'  # -IsimuPOP for %include interface files under simuPOP
+    exe_env['SWIGOUTDIR'] = 'build/%s/simuPOP' % mod
     info = ModuInfo(mod_name, SIMUPOP_VER, SIMUPOP_REV)
     if 'op' in mod:
         common_lib = op_common_lib
@@ -294,10 +294,10 @@ for mod in exe_targets:
         common_lib = std_common_lib
     mod_executable = exe_env.Program(
         target = 'build/simuPOP_%s' % mod,
-        source = ['build/%s/src/%s' % (mod, x) for x in SOURCE_FILES],
+        source = ['build/%s/simuPOP/%s' % (mod, x) for x in SOURCE_FILES],
         LIBS = info['libraries'] + [common_lib] + pylibs,
         LIBPATH = info['library_dirs'] + extra_path,
-        CPPPATH = [python_inc_dir, '.', 'src', 'build'] + info['include_dirs'],
+        CPPPATH = [python_inc_dir, '.', 'simuPOP', 'build'] + info['include_dirs'],
         CPPDEFINES = convert_def(info['define_macros'] + [('STANDALONE_EXECUTABLE', None)]),
         CCFLAGS = info['extra_compile_args'] + comp.compile_options + extra_flags,
         CPPFLAGS = ' '.join([basicflags, ccshared, opt])
@@ -309,11 +309,11 @@ for mod in exe_targets:
 env.Install(pylib_dir, 'simuOpt.py')
 Alias('install', pylib_dir)
 for pyfile in ['__init__.py', 'utils.py', 'plotter.py', 'sampling.py', 'sandbox.py']:
-    env.Install(dest_dir, 'src/%s' % pyfile)
+    env.Install(dest_dir, 'simuPOP/%s' % pyfile)
     Alias('install', dest_dir)
 
 for datafile in PACKAGE_DATA:
-    env.Install(dest_dir, 'src/%s' % datafile)
+    env.Install(dest_dir, 'simuPOP/%s' % datafile)
     Alias('install', dest_dir)
 
 Default('install')
