@@ -1375,7 +1375,7 @@ if __name__ == '__main__':
         xml_file = sys.argv[1]
     # output interface file
     if len(sys.argv) < 3:
-        interface_file = os.path.join(src_path, 'src', 'simuPOP_doc.i')
+        interface_file = os.path.join(src_path, 'simuPOP', 'simuPOP_doc.i')
     else:
         interface_file = sys.argv[2]
     # output ref_single.tex file
@@ -1400,7 +1400,7 @@ if __name__ == '__main__':
     # write interface file to output interface file.
     print 'Writing SWIG interface file to', interface_file
     p.write(interface_file, type='swig')
-    sys.path = [os.path.join(src_path, 'src')] + sys.path
+    sys.path = [os.path.join(src_path, 'simuPOP')] + sys.path
     p.scan_module('simuPOP')
     p.scan_module('simuOpt')
     p.scan_module('simuPOP.utils')
