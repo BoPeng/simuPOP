@@ -1,4 +1,4 @@
-#LyX 1.6.8 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -749,7 +749,14 @@ getRNGRef
 
 
 \backslash
-setRNGRef
+simuPOPsetRNGRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+setOptionsRef
 \end_layout
 
 \begin_layout Plain Layout
