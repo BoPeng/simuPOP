@@ -4,7 +4,12 @@ Known Bugs:
   - BUG: simuPOP does not respond well to Ctrl-C under windows.
   - BUG: Textbox in Tkinter help dialog does not resize.
 
-version 1.0.6 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 1.0.7 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+version 1.0.6 - Rev 4250 (July 6, 2011)
+Major new feature:
+  - Multi-thread support that allows simuPOP to take advantage of multi-core CPUs.
+
 New features:
   - Expose function Population::virtualSplitter
   - Allow single input for parameters cutoff and values of operator InfoSplitter.
