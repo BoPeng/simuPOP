@@ -399,9 +399,9 @@ if sys.version_info[0] == 3:
     SWIG_CC_FLAGS += ' -py3'
 
 SWIG_RUNTIME_FLAGS = '-python -external-runtime'
-# python setup.py reads py_modules from src so we have to produce simuPOP_std.py
+# python setup.py reads py_modules from simuPOP so we have to produce simuPOP_std.py
 # etc to this directory.
-SWIG_OUTDIR = 'src'
+SWIG_OUTDIR = 'simuPOP'
 if not os.path.isdir('build'):
     os.mkdir('build')
                 
@@ -421,12 +421,12 @@ MACROS = {
 }
  
 WRAP_INFO = {
-    'std':    ['src/simuPOP_std_wrap.cpp', 'src/simuPOP_std.i', ''],
-    'op':     ['src/simuPOP_op_wrap.cpp', 'src/simuPOP_op.i', '-DOPTIMIZED'],
-    'la':     ['src/simuPOP_la_wrap.cpp', 'src/simuPOP_la.i', '-DLONGALLELE'],
-    'laop':   ['src/simuPOP_laop_wrap.cpp', 'src/simuPOP_laop.i', '-DLONGALLELE -DOPTIMIZED'],
-    'ba':     ['src/simuPOP_ba_wrap.cpp', 'src/simuPOP_ba.i', '-DBINARYALLELE'],
-    'baop':   ['src/simuPOP_baop_wrap.cpp', 'src/simuPOP_baop.i', '-DBINARYALLELE -DOPTIMIZED'],
+    'std':    ['simuPOP/simuPOP_std_wrap.cpp', 'simuPOP/simuPOP_std.i', ''],
+    'op':     ['simuPOP/simuPOP_op_wrap.cpp', 'simuPOP/simuPOP_op.i', '-DOPTIMIZED'],
+    'la':     ['simuPOP/simuPOP_la_wrap.cpp', 'simuPOP/simuPOP_la.i', '-DLONGALLELE'],
+    'laop':   ['simuPOP/simuPOP_laop_wrap.cpp', 'simuPOP/simuPOP_laop.i', '-DLONGALLELE -DOPTIMIZED'],
+    'ba':     ['simuPOP/simuPOP_ba_wrap.cpp', 'simuPOP/simuPOP_ba.i', '-DBINARYALLELE'],
+    'baop':   ['simuPOP/simuPOP_baop_wrap.cpp', 'simuPOP/simuPOP_baop.i', '-DBINARYALLELE -DOPTIMIZED'],
 }
 
 if os.name == 'nt':
@@ -466,7 +466,7 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     boost_lib_names = []
     boost_lib_path = None
     res = {}
-    res['src'] =  ['src/simuPOP_' + modu + '_wrap.cpp']
+    res['src'] =  ['simuPOP/simuPOP_' + modu + '_wrap.cpp']
     for src in SOURCE_FILES:
         res['src'].append('build/%s/%s' % (modu, src))
     res['src'].extend(LIB_FILES)
@@ -534,8 +534,8 @@ if os.name == 'nt':    # Windows
     machine = platform.uname()[4].lower()
     if machine == '':  # have to guess
         machine = 'x86'
-    shutil.copy('win32/%s/vcomp90.dll' % machine, 'src/vcomp90.dll')
-    shutil.copy('win32/%s/msvcr90.dll' % machine, 'src/msvcr90.dll')
+    shutil.copy('win32/%s/vcomp90.dll' % machine, 'simuPOP/vcomp90.dll')
+    shutil.copy('win32/%s/msvcr90.dll' % machine, 'simuPOP/msvcr90.dll')
 
 if __name__ == '__main__':
     SIMUPOP_VER, SIMUPOP_REV = simuPOP_version()
@@ -546,9 +546,9 @@ if __name__ == '__main__':
     #
     # if any of the wrap files does not exist
     # or if the wrap files are older than any of the source files.
-    if (not os.path.isfile('src/gsl_wrap.c') or (not os.path.isfile('src/swigpyrun.h')) or \
+    if (not os.path.isfile('simuPOP/gsl_wrap.c') or (not os.path.isfile('simuPOP/swigpyrun.h')) or \
         False in [os.path.isfile(WRAP_INFO[x][0]) for x in MODULES]) or \
-        (max( [os.path.getmtime('src/' + x) for x in HEADER_FILES] ) > \
+        (max( [os.path.getmtime('simuPOP/' + x) for x in HEADER_FILES] ) > \
          min( [os.path.getmtime(WRAP_INFO[x][0]) for x in MODULES])):
         (v1, v2, v3) = swig_version()
         if (v1, v2, v3) < (1, 3, 35):
@@ -558,8 +558,8 @@ if __name__ == '__main__':
             print('Swig >= 2.0.4 is required for Python 3.2 or higher')
             sys.exit(1)
         # generate header file 
-        print("Generating external runtime header file src/swigpyrun.h...")
-        os.system('%s %s src/swigpyrun.h' % (SWIG, SWIG_RUNTIME_FLAGS))
+        print("Generating external runtime header file simuPOP/swigpyrun.h...")
+        os.system('%s %s simuPOP/swigpyrun.h' % (SWIG, SWIG_RUNTIME_FLAGS))
         # try the first option set with the first library
         for lib in MODULES:
             print("Generating wrapper file " + WRAP_INFO[lib][0])
@@ -567,9 +567,9 @@ if __name__ == '__main__':
                 SWIG_OUTDIR, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
                 print("Calling swig failed. Please check your swig version.")
                 sys.exit(1)
-        print("Generating wrapper file src/gsl_wrap.c")
+        print("Generating wrapper file simuPOP/gsl_wrap.c")
         if os.system('%s %s -outdir %s %s -o %s %s' % (SWIG, SWIG_CC_FLAGS, \
-            SWIG_OUTDIR, '', 'src/gsl_wrap.c', 'src/gsl.i')) != 0:
+            SWIG_OUTDIR, '', 'simuPOP/gsl_wrap.c', 'simuPOP/gsl.i')) != 0:
             print("Calling swig failed. Please check your swig version.")
             sys.exit(1)
         print("\nAll wrap files are generated successfully.\n")
@@ -585,13 +585,13 @@ if __name__ == '__main__':
             os.mkdir('build/%s' % modu)
         for src in SOURCE_FILES:
             mod_src = 'build/%s/%s' % (modu, src)
-            if not os.path.isfile(mod_src) or not filecmp.cmp(mod_src,'src/'+src):
-                shutil.copy('src/'+src, mod_src)
+            if not os.path.isfile(mod_src) or not filecmp.cmp(mod_src,'simuPOP/'+src):
+                shutil.copy('simuPOP/'+src, mod_src)
     # build
     # For module simuPOP.gsl
     EXT_MODULES = [
         Extension('simuPOP._gsl',
-            sources = GSL_FILES + ['src/gsl_wrap.c'],
+            sources = GSL_FILES + ['simuPOP/gsl_wrap.c'],
             include_dirs = ['gsl', 'gsl/specfunc', 'build', '.'],
         )
     ]
@@ -602,7 +602,7 @@ if __name__ == '__main__':
                 sources = info['src'],
                 extra_compile_args = info['extra_compile_args'],
                 # src for config.h etc, build for swigpyrun.h
-                include_dirs = info['include_dirs'] + ['src', 'build'],
+                include_dirs = info['include_dirs'] + ['simuPOP', 'build'],
                 library_dirs = info['library_dirs'],
                 libraries = info['libraries'],
                 define_macros = info['define_macros'],
@@ -642,7 +642,7 @@ if __name__ == '__main__':
         ],
         platforms = ['all'],
         #
-        package_dir = {'simuPOP': 'src'}, 
+        package_dir = {'simuPOP': 'simuPOP'}, 
         package_data = {'simuPOP': PACKAGE_DATA},
         py_modules = [
             'simuOpt', 
