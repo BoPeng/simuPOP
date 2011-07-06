@@ -13,6 +13,7 @@ import os, sys, time, shutil
 release_file = 'simuPOP_version.py'
 user_guide = 'doc/userGuide.lyx'
 ref_manual = 'doc/refManual.lyx'
+download_directory = 'download'
 
 def setReleaseInManual(filename, rel, rev):
     '''Replace Release x.x.x with Rev: with proper value during release'''
@@ -258,7 +259,6 @@ actions:
 '''
 
 if __name__ == '__main__':
-    config_file = 'build.cfg' 
     release = 'snapshot'
     actions = []
     dryrun = False
@@ -274,8 +274,6 @@ if __name__ == '__main__':
             sys.exit(0)
         elif '--release' in op:
             release = op[10:]
-        elif '--config' in op:
-            config_file = op[9:]
         elif op == 'all':
             actions.extend(['src', 'doc', 'svn', 'x86_64', 'rhel4', 'mac', 'win', 'fedora5', 'suse'])
         elif op in all_actions and op not in actions:
@@ -286,12 +284,6 @@ if __name__ == '__main__':
             print "Unknown option", op
             sys.exit(1)
     # 
-    if os.path.isfile(config_file):
-        execfile(config_file)
-    else:
-        print 'Configuration file not found'
-        sys.exit(1)
-    #
     os.chdir('..')
     # get revision number and update last_revision_file
     (ver, rev, old_ver, old_rev) = setVersionRevision(release)
