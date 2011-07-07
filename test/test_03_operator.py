@@ -254,7 +254,7 @@ class TestOperator(unittest.TestCase):
             matingScheme=RandomMating(),
             gen=10000
         )
-        self.assertLess(gen, 10000)
+        self.assertTrue(gen < 10000)
         gen = pop.evolve(
             initOps=InitSex(),
             matingScheme=RandomMating(
@@ -265,7 +265,7 @@ class TestOperator(unittest.TestCase):
             ),
             gen=10000
         )
-        self.assertLess(gen, 20000)
+        self.assertTrue(gen < 20000)
     
 
     def testPyEval(self):
