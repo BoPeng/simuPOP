@@ -1151,3 +1151,9 @@ def discardIf(pop, *args, **kwargs):
     '''Apply operator ``DiscardIf`` to population *pop* to remove individuals according
     to an expression or a Python function.'''
     DiscardIf(*args, **kwargs).apply(pop)
+
+def setRNG(name='', seed=0):
+    '''Set random number generator. This function is obsolete but is provided
+    for compatibility purposes. Please use setOptions instead'''
+    setOptions(name=name, seed=seed)
+
