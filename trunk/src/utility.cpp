@@ -39,6 +39,25 @@
 #  include "omp.h"
 #endif
 
+#if PY_VERSION_HEX >= 0x03000000
+
+#  define PyString_Check PyUnicode_Check
+#  define PyString_FromStringAndSize PyUnicode_FromStringAndSize
+#  define PyString_FromString PyUnicode_FromString
+#  define PyString_Concat PyUnicode_Concat
+#  define PyString_ConcatAndDel PyUnicode_ConcatAndDel
+
+#  define PyInt_Check(x) PyLong_Check(x)
+#  define PyInt_AsLong(x) PyLong_AsLong(x)
+#  define PyInt_FromLong(x) PyLong_FromLong(x)
+#  define PyInt_FromSize_t(x) PyLong_FromSize_t(x)
+#  define PyNumber_Int(x) PyNumber_Long(x)
+#  define PyInt_FromString PyLong_FromString
+#  define PyInt_Type PyLong_Type
+#  define PyString_Type PyUnicode_Type
+
+#endif
+
 #include <sstream>
 using std::stringstream;
 using std::ostringstream;
@@ -59,27 +78,6 @@ using std::ofstream;
 #  include "swigpyrun.h"
 #  pragma GCC diagnostic warning "-Wunused-parameter"
 #  pragma GCC diagnostic warning "-Wmissing-field-initializers"
-#endif
-
-// The PyString_Check should be defined after swingpyrun.h because
-// in swingpyrun.h, the PyString_Check is defined to PyBytes_Check
-#if PY_VERSION_HEX >= 0x03000000
-
-#  define PyString_Check PyUnicode_Check
-#  define PyString_FromStringAndSize PyUnicode_FromStringAndSize
-#  define PyString_FromString PyUnicode_FromString
-#  define PyString_Concat PyUnicode_Concat
-#  define PyString_ConcatAndDel PyUnicode_ConcatAndDel
-
-#  define PyInt_Check(x) PyLong_Check(x)
-#  define PyInt_AsLong(x) PyLong_AsLong(x)
-#  define PyInt_FromLong(x) PyLong_FromLong(x)
-#  define PyInt_FromSize_t(x) PyLong_FromSize_t(x)
-#  define PyNumber_Int(x) PyNumber_Long(x)
-#  define PyInt_FromString PyLong_FromString
-#  define PyInt_Type PyLong_Type
-#  define PyString_Type PyUnicode_Type
-
 #endif
 
 // compile and eval enables compiling string to byte code
@@ -494,7 +492,7 @@ UINT numThreads()
 
 ATOMICLONG fetchAndIncrement(ATOMICLONG * val)
 {
-	if (g_numThreads == 1)
+	if(g_numThreads == 1)
 		return (*val)++;
 	else
 #ifdef _WIN64
@@ -502,11 +500,11 @@ ATOMICLONG fetchAndIncrement(ATOMICLONG * val)
 #elif defined(_WIN32)
 		return InterlockedIncrement(val) - 1;
 #else
-		    // for Intel C++, see page 164 of
-		// http://softwarecommunity.intel.com/isn/downloads/softwareproducts/pdfs/347603.pdf
-		//
-		// for gcc, see
-		// http://gcc.gnu.org/onlinedocs/gcc-4.1.0/gcc/Atomic-Builtins.html
+	// for Intel C++, see page 164 of
+	// http://softwarecommunity.intel.com/isn/downloads/softwareproducts/pdfs/347603.pdf
+	//
+	// for gcc, see
+	// http://gcc.gnu.org/onlinedocs/gcc-4.1.0/gcc/Atomic-Builtins.html
 		return __sync_fetch_and_add(val, 1);
 #endif
 }
@@ -2267,9 +2265,9 @@ PyObject * Expression::evaluate() const
 	if (m_stmts != NULL) {
 #if PY_VERSION_HEX >= 0x03020000
 		res = PyEval_EvalCode((PyObject *)m_stmts, m_locals, m_locals);
-#else
+#else 
 		res = PyEval_EvalCode((PyCodeObject *)m_stmts, m_locals, m_locals);
-#endif
+#endif 
 		if (res == NULL) {
 #ifndef OPTIMIZED
 			if (debug(DBG_GENERAL)) {
@@ -2289,7 +2287,7 @@ PyObject * Expression::evaluate() const
 		res = PyEval_EvalCode((PyObject *)m_expr, m_locals, m_locals);
 #else
 		res = PyEval_EvalCode((PyCodeObject *)m_expr, m_locals, m_locals);
-#endif
+#endif 
 		if (res == NULL) {
 #ifndef OPTIMIZED
 			if (debug(DBG_GENERAL)) {

@@ -71,13 +71,13 @@ bool InitSex::apply(Population & pop) const
 		else {
 			if (numThreads() > 1) {
 #ifdef _OPENMP
-#  pragma omp parallel private(ind)
+#pragma omp parallel private(ind)
 				{
 					ind = pop.indIterator(sp->subPop(), omp_get_thread_num());
 					for (; ind.valid(); ++ind)
 						ind->setSex(ws.draw() == 0 ? MALE : FEMALE);
 				}
-#endif
+#endif 
 			} else
 				for (; ind.valid(); ++ind)
 					ind->setSex(ws.draw() == 0 ? MALE : FEMALE);

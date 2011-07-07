@@ -740,13 +740,13 @@ Details:
 
 "; 
 
-%ignore simuPOP::Bernullitrials::Bernullitrials(RNG &);
+%ignore simuPOP::Bernullitrials::Bernullitrials(RNG &rng);
 
 %feature("docstring") simuPOP::Bernullitrials::Bernullitrials "
 
 Usage:
 
-    Bernullitrials(, prob, trials=0)
+    Bernullitrials(rng, prob, trials)
 
 "; 
 
@@ -768,7 +768,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::Bernullitrials::setParameter(const vectorf &prob, size_t trials=0);
+%ignore simuPOP::Bernullitrials::setParameter(const vectorf &prob, size_t trials);
 
 %feature("docstring") simuPOP::Bernullitrials::doTrial "
 
@@ -1031,8 +1031,6 @@ Usage:
 %feature("docstring") simuPOP::CombinedParentsChooser::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::CombinedParentsChooser::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::CombinedParentsChooser::parallelizable() const;
 
 %ignore simuPOP::CombinedParentsChooser::initialize(Population &pop, size_t sp);
 
@@ -3193,8 +3191,6 @@ Usage:
 
 %feature("docstring") simuPOP::InheritTagger::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::InheritTagger::parallelizable() const;
-
 %feature("docstring") simuPOP::InitGenotype "
 
 Details:
@@ -3551,8 +3547,6 @@ Usage:
 
 %feature("docstring") simuPOP::MaPenetrance::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::MaPenetrance::parallelizable() const;
-
 %feature("docstring") simuPOP::MapPenetrance "
 
 Details:
@@ -3600,8 +3594,6 @@ Usage:
 %ignore simuPOP::MapPenetrance::penet(Population *pop, Individual *ind) const;
 
 %feature("docstring") simuPOP::MapPenetrance::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::MapPenetrance::parallelizable() const;
 
 %feature("docstring") simuPOP::MapSelector "
 
@@ -3651,8 +3643,6 @@ Usage:
 %ignore simuPOP::MapSelector::indFitness(Population &pop, Individual *ind) const;
 
 %feature("docstring") simuPOP::MapSelector::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::MapSelector::parallelizable() const;
 
 %feature("docstring") simuPOP::MaSelector "
 
@@ -3709,8 +3699,6 @@ Usage:
 %ignore simuPOP::MaSelector::indFitness(Population &pop, Individual *ind) const;
 
 %feature("docstring") simuPOP::MaSelector::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::MaSelector::parallelizable() const;
 
 %feature("docstring") simuPOP::MatingScheme "
 
@@ -4077,8 +4065,6 @@ Details:
 
 %ignore simuPOP::MitochondrialGenoTransmitter::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
 
-%ignore simuPOP::MitochondrialGenoTransmitter::parallelizable() const;
-
 %feature("docstring") simuPOP::MixedMutator "
 
 Details:
@@ -4172,8 +4158,6 @@ Usage:
 
 %feature("docstring") simuPOP::MlPenetrance::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::MlPenetrance::parallelizable() const;
-
 %feature("docstring") simuPOP::MlSelector "
 
 Details:
@@ -4223,8 +4207,6 @@ Usage:
 %ignore simuPOP::MlSelector::indFitness(Population &pop, Individual *ind) const;
 
 %feature("docstring") simuPOP::MlSelector::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::MlSelector::parallelizable() const;
 
 %feature("docstring") simuPOP::MutSpaceMutator "
 
@@ -4856,8 +4838,6 @@ Usage:
 
 %ignore simuPOP::ParentsTagger::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
 
-%ignore simuPOP::ParentsTagger::parallelizable() const;
-
 %feature("docstring") simuPOP::Pause "
 
 Details:
@@ -5276,14 +5256,6 @@ Usage:
 
 %ignore simuPOP::PedigreeMating::mate(Population &pop, Population &scratch);
 
-%feature("docstring") simuPOP::PedigreeMating::parallelizable "
-
-Usage:
-
-    x.parallelizable()
-
-"; 
-
 %feature("docstring") simuPOP::PedigreeTagger "
 
 Details:
@@ -5357,8 +5329,6 @@ Usage:
 %feature("docstring") simuPOP::PedigreeTagger::apply "Obsolete or undocumented function."
 
 %ignore simuPOP::PedigreeTagger::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
-
-%ignore simuPOP::PedigreeTagger::parallelizable() const;
 
 %feature("docstring") simuPOP::PointMutator "
 
@@ -5474,8 +5444,6 @@ Details:
 %feature("docstring") simuPOP::PolyParentsChooser::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PolyParentsChooser::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::PolyParentsChooser::parallelizable() const;
 
 %ignore simuPOP::PolyParentsChooser::initialize(Population &pop, size_t sp);
 
@@ -7222,8 +7190,6 @@ Details:
 
 %feature("docstring") simuPOP::PyParentsChooser::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::PyParentsChooser::parallelizable() const;
-
 %ignore simuPOP::PyParentsChooser::initialize(Population &pop, size_t sp);
 
 %ignore simuPOP::PyParentsChooser::finalize(Population &pop, size_t sp);
@@ -7284,8 +7250,6 @@ Details:
 %ignore simuPOP::PyPenetrance::penet(Population *pop, Individual *ind) const;
 
 %feature("docstring") simuPOP::PyPenetrance::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::PyPenetrance::parallelizable() const;
 
 %feature("docstring") simuPOP::pyPopIterator "
 
@@ -7419,8 +7383,6 @@ Details:
 
 %feature("docstring") simuPOP::PySelector::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::PySelector::parallelizable() const;
-
 %feature("docstring") simuPOP::PyTagger "
 
 Details:
@@ -7461,8 +7423,6 @@ Details:
 %feature("docstring") simuPOP::PyTagger::describe "Obsolete or undocumented function."
 
 %ignore simuPOP::PyTagger::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
-
-%ignore simuPOP::PyTagger::parallelizable() const;
 
 %feature("docstring") simuPOP::RandomParentChooser "
 
@@ -7807,8 +7767,6 @@ Details:
 
 %ignore simuPOP::Recombinator::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad, Individual *mom) const;
 
-%ignore simuPOP::Recombinator::parallelizable() const;
-
 %feature("docstring") simuPOP::ResizeSubPops "
 
 Details:
@@ -7983,6 +7941,8 @@ Details:
     repeat a previous session.
 
 "; 
+
+%ignore simuPOP::RNG::generateRandomSeed();
 
 %feature("docstring") simuPOP::RNG::randUniform "
 
@@ -10417,8 +10377,6 @@ Details:
 %ignore simuPOP::numThreads();
 
 %ignore simuPOP::fetchAndIncrement(ATOMICLONG *val);
-
-%ignore simuPOP::parallelSort(T1 start, T1 end, T2 cmp);
 
 %ignore simuPOP::simuPOPkbhit();
 

@@ -638,7 +638,7 @@ private:
 #ifdef _OPENMP
 	mutable vector<Bernullitrials> m_bt;
 #else
-	mutable Bernullitrials m_bt;
+	mutable Bernullitrials m_bt; 
 #endif
 
 

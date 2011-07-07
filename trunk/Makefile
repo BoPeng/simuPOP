@@ -4,7 +4,7 @@
 
 
 rebuild:
-	bcpp simuPOP/*.h simuPOP/*.cpp
+	bcpp src/*.h src/*.cpp
 	doxygen
 	tools/doxy2swig.py
 	scons install -j4 std
@@ -17,7 +17,7 @@ rebuild3:
 
 clean:
 	@rm -rf build
-	@rm -f simuPOP/*wrap* simuPOP/simuPOP_*.py
+	@rm -f src/*wrap* src/simuPOP_*.py
 	@find . -name '*~' -exec rm -f {} \;
 	@find . -name '*.bak' -exec rm -f {} \;
 	@find . -name '*.py?' -exec rm -f {} \;
