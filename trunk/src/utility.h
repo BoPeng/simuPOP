@@ -80,7 +80,7 @@ using std::setw;
 #    include "tbb/parallel_sort.h"
 #    include "tbb/task_scheduler_init.h"
 #  elif defined(GCC_VERSION) && GCC_VERSION >= 40300
-#    include "parallel/algorithm"	
+#    include "parallel/algorithm"
 #  endif
 #endif
 /// for bernulli trials.
@@ -170,6 +170,7 @@ void parallelSort(T1 start, T1 end, T2 cmp)
 		std::sort(start, end, cmp);
 	}
 }
+
 
 /// a utility function to check keyboard stroke
 /// CPPONLY
@@ -1228,7 +1229,7 @@ public:
 		if (expr.empty() && stmts.empty())
 			return;
 
-	//detect leading spaces from python expressions
+		//detect leading spaces from python expressions
 		DBG_FAILIF(!expr.empty() && (expr[0] == ' ' || expr[0] == '\t'), ValueError,
 			"Can not include leading space in python expression '" + expr + "'");
 		DBG_FAILIF(!stmts.empty() && (stmts[0] == ' ' || stmts[0] == '\t'), ValueError,
