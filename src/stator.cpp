@@ -2483,7 +2483,7 @@ double statNeutrality::calcPi(HAPLOLIST::const_iterator begin, HAPLOLIST::const_
 			}
 		}
 #endif
-	}   else{
+	}   else {
 		HAPLOLIST::const_iterator it = begin;
 		for (; it != end; ++it) {
 			HAPLOLIST::const_iterator it1 = it;

@@ -420,7 +420,7 @@ Recombinator::Recombinator(const floatList & rates, double intensity,
 	GenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields),
 	m_intensity(intensity), m_rates(rates.elems()), m_loci(loci),
 	m_recBeforeLoci(0), m_convMode(convMode.elems()), m_chromX(-1), m_chromY(-1),
-	m_customizedBegin(-1), m_customizedEnd(-1), m_algorithm(0), m_debugOutput(NULL),
+       	m_customizedBegin(-1), m_customizedEnd(-1), m_algorithm(0), m_debugOutput(NULL),
 #ifdef _OPENMP
 	m_bt(numThreads(), getRNG())
 #else
