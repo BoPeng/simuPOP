@@ -495,7 +495,7 @@ UINT numThreads()
 
 ATOMICLONG fetchAndIncrement(ATOMICLONG * val)
 {
-	if(g_numThreads == 1)
+	if (g_numThreads == 1)
 		return (*val)++;
 	else
 #ifdef _WIN64
@@ -503,11 +503,11 @@ ATOMICLONG fetchAndIncrement(ATOMICLONG * val)
 #elif defined(_WIN32)
 		return InterlockedIncrement(val) - 1;
 #else
-	// for Intel C++, see page 164 of
-	// http://softwarecommunity.intel.com/isn/downloads/softwareproducts/pdfs/347603.pdf
-	//
-	// for gcc, see
-	// http://gcc.gnu.org/onlinedocs/gcc-4.1.0/gcc/Atomic-Builtins.html
+		    // for Intel C++, see page 164 of
+		// http://softwarecommunity.intel.com/isn/downloads/softwareproducts/pdfs/347603.pdf
+		//
+		// for gcc, see
+		// http://gcc.gnu.org/onlinedocs/gcc-4.1.0/gcc/Atomic-Builtins.html
 		return __sync_fetch_and_add(val, 1);
 #endif
 }
@@ -2268,9 +2268,9 @@ PyObject * Expression::evaluate() const
 	if (m_stmts != NULL) {
 #if PY_VERSION_HEX >= 0x03020000
 		res = PyEval_EvalCode((PyObject *)m_stmts, m_locals, m_locals);
-#else 
+#else
 		res = PyEval_EvalCode((PyCodeObject *)m_stmts, m_locals, m_locals);
-#endif 
+#endif
 		if (res == NULL) {
 #ifndef OPTIMIZED
 			if (debug(DBG_GENERAL)) {
@@ -2290,7 +2290,7 @@ PyObject * Expression::evaluate() const
 		res = PyEval_EvalCode((PyObject *)m_expr, m_locals, m_locals);
 #else
 		res = PyEval_EvalCode((PyCodeObject *)m_expr, m_locals, m_locals);
-#endif 
+#endif
 		if (res == NULL) {
 #ifndef OPTIMIZED
 			if (debug(DBG_GENERAL)) {
