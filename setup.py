@@ -56,7 +56,7 @@ if sys.version_info[0] <= 2 and sys.version_info[1] <= 4:
     sys.exit(1)
 
 # Change this to False if you would like to compile simuPOP without openMP support
-USE_OPENMP = False
+USE_OPENMP = True
 
 if os.name == 'nt':
     VS9PATH =  os.environ.get('VS90COMNTOOLS')
@@ -476,7 +476,11 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     else:
         res['libraries'] = ['stdc++', 'z']
         if USE_OPENMP:
-            res['libraries'].append(['iomp5','tbb'] if USE_ICC else 'gomp')
+            if USE_ICC:
+                res['libraries'].append('iomp5')
+                res['libraries'].append('tbb')
+            else:
+                res['libraries'].append('gomp')
     res['libraries'].extend(boost_lib_names)
     res['include_dirs'] = ['.', 'gsl', boost_inc_path]
     res['library_dirs'] = ['build']
