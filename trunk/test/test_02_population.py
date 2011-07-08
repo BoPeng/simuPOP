@@ -1135,9 +1135,9 @@ class TestPopulation(unittest.TestCase):
                     pass
                 self.assertEqual(pop.popSize(), 10000)
                 self.assertEqual(list(pop.indInfo('a')),
-                    [1, 2, 3, 4, 5] * (10000 / 5))
+                    [1, 2, 3, 4, 5] * int(10000 / 5))
                 self.assertEqual(pop.genotype(),
-                    ([0, 1, 1, 1, 0, 1, 1] * (10000*100*2/7+1))[:10000*100*2])
+                    ([0, 1, 1, 1, 0, 1, 1] * int(10000*100*2/7+1))[:10000*100*2])
 
 
     def testVars(self):
