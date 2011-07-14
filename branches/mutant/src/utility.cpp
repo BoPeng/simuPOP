@@ -4143,8 +4143,10 @@ PyObject * moduleInfo()
 #ifdef LONGALLELE
 	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("long"));
 #else
-#  ifdef BINARYALLELE
+#  if defined BINARYALLELE
 	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("binary"));
+#  elif defined MUTANTALLELE
+	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("mutant"));
 #  else
 	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("short"));
 #  endif
