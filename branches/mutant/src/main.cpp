@@ -87,6 +87,8 @@ void banner()
 #else
 #  ifdef BINARYALLELE
 	<< "binary"
+#  elif MUTANTALLELE
+	<< "mutant"
 #  else
 	<< "short"
 #  endif

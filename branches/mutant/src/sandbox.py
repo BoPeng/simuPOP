@@ -57,6 +57,8 @@ if simuOptions['Optimized']:
         from simuPOP_laop import *
     elif simuOptions['AlleleType'] == 'binary':
         from simuPOP_baop import *
+    elif simuOptions['AlleleType'] == 'mutant':
+        from simuPOP_muop import *
     else:
         from simuPOP_op import *
 else:
@@ -66,6 +68,8 @@ else:
         from simuPOP_la import *
     elif simuOptions['AlleleType'] == 'binary':
         from simuPOP_ba import *
+    elif simuOptions['AlleleType'] == 'mutant':
+        from simuPOP_mu import *
     else:
         from simuPOP_std import *
 
