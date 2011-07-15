@@ -1,8 +1,8 @@
 version=pmwiki-2.2.0 ordered=1 urlencoded=1
-agent=Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.8) Gecko/20100722 Firefox/3.6.8 (.NET CLR 3.5.30729)
+agent=Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13 ( .NET CLR 3.5.30729; .NET4.0E)
 ctime=1232378379
 host=127.0.0.1
 name=Site.RecentChanges
-rev=91
-text=* [[Site.OtherTools | Other forward-time simulation tools]]  . . . July 27, 2010, at 03:09 PM by ?: [==]%0a* [[Site.SideBar | SideBar]]  . . . June 10, 2010, at 09:25 PM by ?: [==]%0a* [[Site.OtherTools | Other Tools]]  . . . February 05, 2010, at 02:41 PM by ?: [==]%0a* [[Site/NotifyList]]  . . . January 21, 2009, at 05:00 PM by ?: [==]%0a* [[Site/SideBar]]  . . . January 21, 2009, at 04:16 AM by ?: [==]%0a* [[Site/PageActions]]  . . . January 21, 2009, at 03:44 AM by ?: [==]%0a
-time=1280243386
+rev=131
+text=* [[Site.SideBar | SideBar]]  . . . January 18, 2011, at 03:06 AM by ?: [==]%0a* [[Site.OtherTools | Other forward-time simulation tools]]  . . . October 07, 2010, at 01:53 PM by ?: [==]%0a* [[Site.OtherTools | Other Tools]]  . . . February 05, 2010, at 02:41 PM by ?: [==]%0a* [[Site/NotifyList]]  . . . January 21, 2009, at 05:00 PM by ?: [==]%0a* [[Site/SideBar]]  . . . January 21, 2009, at 04:16 AM by ?: [==]%0a* [[Site/PageActions]]  . . . January 21, 2009, at 03:44 AM by ?: [==]%0a
+time=1295319976

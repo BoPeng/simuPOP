@@ -39,45 +39,45 @@ simuOpt.setOptions(alleleType='long')
 from simuPOP import *
 
 options = [
-    {'arg':'s:',
-     'longarg':'size=',
+    {
+     'name':'size',
      'default':1000,
      'label':'Population Size',
-     'allowedTypes':[types.IntType, types.LongType],
-     'validate':simuOpt.valueGT(0),
+     'type':[int, long],
+     'validator':simuOpt.valueGT(0),
      'description':'population size'
     },
-     {'arg':'l:',
-     'longarg':'lociNum=',
+     {
+     'name':'lociNum',
      'default':100,
      'label':'Number of Loci',
-     'allowedTypes':[types.IntType, types.LongType],
-     'validate':simuOpt.valueGT(0),
+     'type':[int, long],
+     'validator':simuOpt.valueGT(0),
      'description':'Number of loci'
     },
-    {'arg':'e:',
-     'longarg':'gen=',
+    {
+     'name':'gen',
      'default':20,
-     'allowedTypes':[types.IntType, types.LongType],
+     'type':[int, long],
      'label':'Generations to evolve',
      'description':'Length of evolution',
-     'validate':simuOpt.valueGT(0)
+     'validator':simuOpt.valueGT(0)
     },
-    {'arg':'r:',
-     'longarg':'recRate=',
+    {
+     'name':'recRate',
      'default':0.001,
      'label':'Recombination Rate',
-     'allowedTypes':[types.FloatType],
+     'type':[float],
      'description':'Recombination rate',
-     'validate':simuOpt.valueBetween(0., 1.),
+     'validator':simuOpt.valueBetween(0., 1.),
     },
-    {'arg':'n:',
-     'longarg':'rep=',
+    {
+     'name':'rep',
      'default':5,
      'label':'Number of Replicate',
-     'allowedTypes':[types.IntType, types.LongType],
+     'type':[int, long],
      'description':'Number of replicates',
-     'validate':simuOpt.valueGT(0)
+     'validator':simuOpt.valueGT(0)
     }
 ]
 

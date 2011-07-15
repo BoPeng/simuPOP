@@ -55,9 +55,35 @@ from simuOpt import *
 setOptions(optimized=True, alleleType='binary', version='1.0.1')
 from simuPOP import *
 
-import os, sys, urllib, gzip, exceptions, tempfile, shutil
+import os, sys, urllib, gzip, tempfile, shutil, time
 
 HapMap3_pops = ['ASW', 'CEU', 'CHD', 'GIH', 'JPT+CHB', 'LWK', 'MEX', 'MKK', 'TSI', 'YRI']
+HapMap3_pop_types = {
+    'ASW': ('TRIOS', 'DUOS', 'UNRELATED'),
+    'CEU': ('TRIOS', 'DUOS', 'UNRELATED'),
+    'CHD': ('',),
+    'GIH': ('',),
+    'JPT+CHB': ('',),
+    'LWK': ('',),
+    'MEX': ('TRIOS', 'DUOS'),
+    'MKK': ('TRIOS', 'UNRELATED'),
+    'TSI': ('',),
+    'YRI': ('TRIOS', 'DUOS', 'UNRELATED'),
+}
+
+HapMap3_pop_sizes = {
+    'ASW': 53,
+    'CEU': 113,
+    'CHD': 85,
+    'GIH': 88,
+    'JPT+CHB': 170,
+    'LWK': 90,
+    'MEX': 50,
+    'MKK': 143,
+    'TSI': 88,
+    'YRI': 113
+}
+
 
 release = 2
 Genotype_URL = 'ftp://ftp.ncbi.nlm.nih.gov/hapmap//phasing/2009-02_phaseIII/HapMap3_r2/%s/'
@@ -70,15 +96,17 @@ def downloadIfNeeded(URL, path, file, logger=None):
     diskfile = os.path.join(path, file)
     # this actually will not happen because files are downloaded to
     # a temporary directory.
-    if os.path.isfile(diskfile):
-        return        
-    try:
-        urllib.urlretrieve('%s/%s' % (URL, file), diskfile)
-        if logger is not None:
-            logger.info('%s is downloaded.' % file)
-    except:
-        raise exceptions.SystemError('Failed to download file %s from URL %s' \
-            % (file, URL))
+    while True:
+        if os.path.isfile(diskfile):
+            return diskfile      
+        try:
+            urllib.urlretrieve('%s/%s' % (URL, file), diskfile)
+            if logger is not None:
+                logger.info('%s is downloaded.' % file)
+        except:
+            raise SystemError('Failed to download file %s from URL %s' \
+                % (file, URL))
+            time.sleep(5)
     return diskfile
 
 
@@ -244,16 +272,12 @@ def loadHapMapPop(chrom, popName, logger=None):
     allLociPos = []
     allLociNames = []
     diskFiles = []
-    for sampleType in ['', 'TRIOS', 'DUOS', 'UNRELATED']:
+    for sampleType in HapMap3_pop_types[popName]:
         datafile = genotype_file % (chrom, popName.lower(), sampleCode[sampleType])
-        try:
-            if sampleType == '':
-                diskfile = downloadIfNeeded(URL, tmpdir, datafile, logger)
-            else:
-                diskfile = downloadIfNeeded(URL + '/' + sampleType, tmpdir, datafile, logger)
-            # if top directory has this file
-        except SystemError, e:
-            continue
+        if sampleType == '':
+            diskfile = downloadIfNeeded(URL, tmpdir, datafile, logger)
+        else:
+            diskfile = downloadIfNeeded(URL + '/' + sampleType, tmpdir, datafile, logger)
         (numInds, lociNames, alleleNames, lociPos) = _probeInfo(diskfile)
         diskFiles.append(diskfile)
         if logger:
@@ -333,9 +357,10 @@ if __name__ == '__main__':
             try:
                 if os.path.isfile(popFile):
                     # test if this file is OK.
-                    loadPopulation(popFile)
-                    logger.info("Population %s already exists. Please remove it first if you would like to regenerate this file." % popFile)
-                    continue
+                    pop = loadPopulation(popFile)
+                    if pop.popSize() == HapMap3_pop_sizes[sample]:
+                        logger.info("Skipping existing population %s." % popFile)
+                        continue
             except:
                 # continue to load file
                 pass

@@ -6,7 +6,7 @@
 #
 #
 
-from simuRareVariants import simuRareVariants, saveMarkerInfoToFile, saveMutantsToFile
+from srv import simuRareVariants, saveMarkerInfoToFile, saveMutantsToFile
 from simuPOP import sampling
 import simuPOP as sim
 
@@ -14,8 +14,8 @@ import simuPOP as sim
 # also call the script from command line.
 #
 # We only need pop file to further analysis. No .ped file is saved.
-simuRareVariants(regions=['chr1:1..63000'], N=(8100, 7900, 900000),
-    numGen=(20000, 10, 370), mu=1.8e-8, numStep=[100,1,10],
+simuRareVariants(regions=['chr1:1..63000'], N=(8100, 8100, 7900, 900000),
+    G=(20000, 10, 370), mu=1.8e-8, steps=[100,1,10],
     selModel='multiplicative', selDist='constant', selCoef=None,
     popFile='example.pop')
 

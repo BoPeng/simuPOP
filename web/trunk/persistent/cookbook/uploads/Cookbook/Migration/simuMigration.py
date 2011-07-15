@@ -22,33 +22,33 @@ else:
 
 options = [
     {
-     'longarg':'subPopSize=',
+     'name':'subPopSize',
      'default':5000,
      'label':'SubPopulation Size',
-     'allowedTypes':[types.IntType, types.LongType],
-     'validate':simuOpt.valueGT(0),
+     'type':[int, long],
+     'validator':simuOpt.valueGT(0),
      },
     {
-     'longarg':'numOfSubPops=',
+     'name':'numOfSubPops',
      'default':5,
-     'allowedTypes':[types.IntType, types.LongType],
+     'type':[int, long],
      'label':'Number of Subpopulations',
-     'validate':simuOpt.valueGT(0)
+     'validator':simuOpt.valueGT(0)
      },
     {
-     'longarg':'m=',
+     'name':'m',
      'default':0.05,
      'label':'Migration Rate',
-     'allowedTypes':[types.FloatType],
-     'validate':simuOpt.valueBetween(0., 1.),
+     'type':[float],
+     'validator':simuOpt.valueBetween(0., 1.),
      },
     {
-     'longarg':'generations=',
+     'name':'generations',
      'default':200,
      'label':'Generations to evolve',
      'description':'Length of evolution',
-     'allowedTypes':[types.IntType, types.LongType],
-     'validate':simuOpt.valueGT(0)
+     'type':[int, long],
+     'validator':simuOpt.valueGT(0)
      },
 ]
 

@@ -18,38 +18,38 @@ import simuOpt
 from simuPOP import *
 
 options = [
-    {'arg':'s:',
-     'longarg':'size=',
+    {
+     'name':'size',
      'default':100000,
      'label':'Population Size',
-     'allowedTypes':[types.IntType, types.LongType],
-     'validate':simuOpt.valueGT(0),
+     'type':[int, long],
+     'validator':simuOpt.valueGT(0),
      'description':'''population size. HWE assumes infinite population size
          so large population size improves approximity to theoretical estimates.'''
     },
-    {'arg':'e:',
-     'longarg':'endGen=',
+    {
+     'name':'endGen',
      'default':5,
-     'allowedTypes':[types.IntType, types.LongType],
+     'type':[int, long],
      'label':'Ending Generation',
      'description':'Length of evolution',
-     'validate':simuOpt.valueGT(0)
+     'validator':simuOpt.valueGT(0)
     },
-    {'arg':'m:',
-     'longarg':'malleleFreq=',
+    {
+     'name':'malleleFreq',
      'default':0.4,
-     'allowedTypes':[types.FloatType, types.LongType],
+     'type':[float, long],
      'label':'Male Allele Frequency',
      'description':'Initial allele frequency in males,',
-     'validate':simuOpt.valueBetween(0, 1)
+     'validator':simuOpt.valueBetween(0, 1)
     },
-    {'arg':'f:',
-     'longarg':'falleleFreq=',
+    {
+     'name':'falleleFreq',
      'default':0.7,
-     'allowedTypes':[types.FloatType, types.LongType],
+     'type':[float, long],
      'label':'Female Allele Frequency',
      'description':'Initial allele frequency in females.',
-     'validate':simuOpt.valueBetween(0, 1)
+     'validator':simuOpt.valueBetween(0, 1)
     },
 ]
 

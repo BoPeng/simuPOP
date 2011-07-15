@@ -40,14 +40,14 @@ import os, sys, types, exceptions, math
 # declare all options, getParam will use these info to get parameters
 # from a tk/wx-based dialog, command line, options etc.
 options = [
-    {'longarg': 'numDSL=',
+    {'name': 'numDSL',
      'default': 1,
      'label': 'Number of DSL',
      'description': '''Number of disease susecptibility loci for the disease.''',
-     'allowedTypes': [types.IntType],
-     'validate':    simuOpt.valueGT(0)
+     'type': [int],
+     'validator':    simuOpt.valueGT(0)
     },
-    {'longarg': 'initSpec=',
+    {'name': 'initSpec',
      'default': [0.9]+[0.02]*5,
      'label': 'Initial allelic spectrum',
      'description': '''Initial allelic spectrum for the disease. It will 
@@ -55,19 +55,19 @@ options = [
                 The first element should be the allele frequency of the wild type (allele 1)
                 and the rest are frquencies of disease alleles. These frequencies should
                 add up to one. You can also specify spectra for all DSL using a 2d list''',
-     'allowedTypes': [types.ListType, types.TupleType],
+     'type': [types.ListType, types.TupleType],
     },
-    {'longarg': 'selModel=',
+    {'name': 'selModel',
      'default': ['recessive'],
      'label': 'Selection model(s)',
      'description': '''Given selection coef, for recessive model,
                 the fitness values are [1, 1, 1-s] for genotype AA,Aa,aa (A
                 is the wild type). For additive model, the fitness values are
                 [1,1-s/2,1-s]. You can also specify a list of models for each DSL.''' ,
-     'allowedTypes': [types.ListType, types.TupleType],
-     'validate': simuOpt.valueListOf( simuOpt.valueOneOf(['recessive','additive'])),
+     'type': [types.ListType, types.TupleType],
+     'validator': simuOpt.valueListOf( simuOpt.valueOneOf(['recessive','additive'])),
     },
-    {'longarg': 'selModelAllDSL=',
+    {'name': 'selModelAllDSL',
      'default': 'additive',
      'label': 'Multi-locus selection model',
      'description': '''Overall fitness values given fitness values for each DSL,
@@ -77,10 +77,10 @@ options = [
                 For example, for a 2-locus model, you need to provide 
                     [w11,w12,w13,w21,w22,w23,w31,w32,w33] 
                 where, for example, w21 is the fitness value for genotype AaBB.''',
-     'allowedTypes': [types.StringType],
+     'type': [str],
      'chooseOneOf': [ 'additive', 'multiplicative', 'customized']
     }, 
-    {'longarg': 'selCoef=',
+    {'name': 'selCoef',
      'default': [0.02],
      'label': 'Selection coefficient(s)',
      'description': '''Selection coef (s) for the disease.
@@ -88,24 +88,24 @@ options = [
                 [1,1-s/2,1-s] for the additive model. You can specify
                 different values for each DSL. In the case of customized selection
                 model, this coefficient is a fitness table, NOT selection coefficient(s).''',
-     'allowedTypes': [types.ListType, types.TupleType],
-     'validate':    simuOpt.valueListOf( simuOpt.valueGT(0.))
+     'type': [types.ListType, types.TupleType],
+     'validator':    simuOpt.valueListOf( simuOpt.valueGT(0.))
     },
-    {'longarg': 'mutaModel=',
+    {'name': 'mutaModel',
      'default': 'k-allele',
      'label': 'Mutation model',
-     'allowedTypes': [types.StringType],
+     'type': [str],
      'description': '''Microsatellite markers are mutated using    
                 symmetric stepwise mutation wile SNP markers are mutaed
                 using a 2-allele model (kam) DSL are not mutated unless in disease
                 introduction stage.''',
-     'validate':    simuOpt.valueOneOf(['k-allele', 'stepwise']),
+     'validator':    simuOpt.valueOneOf(['k-allele', 'stepwise']),
      'chooseOneOf': ['k-allele', 'stepwise']
     },
-    {'longarg': 'maxAllele=',
+    {'name': 'maxAllele',
      'default': 255,
      'label': 'Max allele at each DSL',
-     'allowedTypes': [types.IntType],
+     'type': [int],
      'description': '''Maximum allele state at each DSL. For stepwise
                 model, 255 is more than enough. For k-allele model, you may
                 want to have more than 255 alleles especially when expected 
@@ -114,128 +114,128 @@ options = [
                 significantly.
                 NOTE: very large maxAllele will significantly slow down the simulation
                 due to the creation of large array as population variable.''',
-     'validate':    simuOpt.valueGT(1),
+     'validator':    simuOpt.valueGT(1),
     }, 
-    {'longarg': 'mutaRate=',
+    {'name': 'mutaRate',
      'default': [0.0001],
      'label': 'Mutation rate(s)',
-     'allowedTypes': [types.ListType, types.TupleType],
+     'type': [types.ListType, types.TupleType],
      'description': '''Mutation rate for all DSL. Can be different for each DSL.''',
-     'validate':    simuOpt.valueListOf( simuOpt.valueBetween(0,1))
+     'validator':    simuOpt.valueListOf( simuOpt.valueBetween(0,1))
     },
-    {'longarg': 'initSize=',
+    {'name': 'initSize',
      'default': 10000,
      'label': 'Initial population size',
-     'allowedTypes': [types.IntType, types.LongType],
+     'type': [int, long],
      'description': '''Initial population size. This size will be maintained
                 till the end of burnin stage''',
-     'validate':    simuOpt.valueGT(0)
+     'validator':    simuOpt.valueGT(0)
     },
-    {'longarg': 'finalSize=',
+    {'name': 'finalSize',
      'default': 1000000,
      'label': 'Final population size',
-     'allowedTypes': [types.IntType, types.LongType],
+     'type': [int, long],
      'description': 'Ending population size (after expansion.',
-     'validate':    simuOpt.valueGT(0)
+     'validator':    simuOpt.valueGT(0)
     }, 
-    {'longarg': 'burnin=',
+    {'name': 'burnin',
      'default': 2000,
      'label': 'Length of burn-in stage',
-     'allowedTypes': [types.IntType],
+     'type': [int],
      'description': 'Number of generations of the burn in stage.',
-     'validate':    simuOpt.valueGT(0)
+     'validator':    simuOpt.valueGT(0)
     },
-    {'longarg': 'noMigrGen=',
+    {'name': 'noMigrGen',
      'default': 400,
      'label': 'Length of no-migration stage',
-     'allowedTypes': [types.IntType, types.LongType],
+     'type': [int, long],
      'description': '''Number of generations when migration is zero. This stage
                 is used to build up population structure.''',
-     'validate':    simuOpt.valueGT(0)
+     'validator':    simuOpt.valueGT(0)
     },
-    {'longarg': 'mixingGen=',
+    {'name': 'mixingGen',
      'default': 100,
      'label': 'Length of mixing stage',
-     'allowedTypes': [types.IntType, types.LongType],
+     'type': [int, long],
      'description': '''Number of generations when migration is present. This stage
                 will mix individuals from subpopulations using an circular stepping stone
                 migration model.''',
-     'validate':    simuOpt.valueGT(0)
+     'validator':    simuOpt.valueGT(0)
     },    
-    {'longarg': 'growth=',
+    {'name': 'growth',
      'default': 'exponential',
      'label': 'Population growth model',
      'description': '''How Population is grown from initSize to finalSize.
                 Choose between instant, linear and exponential''',
      'chooseOneOf': ['exponential', 'linear', 'instant'],
     },
-    {'longarg': 'numSubPop=',
+    {'name': 'numSubPop',
      'default': 1,
      'label': 'Number of split subpops',
-     'allowedTypes': [types.IntType],
+     'type': [int],
      'description': 'Number of subpopulations to be split into after burnin stage.',
-     'validate':    simuOpt.valueGT(0)
+     'validator':    simuOpt.valueGT(0)
     },
-    {'longarg': 'migrModel=',
+    {'name': 'migrModel',
      'default': 'none',
      'label': 'Migration model',
-     'allowedTypes': [types.StringType],
+     'type': [str],
      'description': '''Migration model. Choose between stepping stone and island.    
                 A stepping stone model will be a circular model.''',
-     'validate':    simuOpt.valueOneOf(['island', 'stepping stone', 'none']),
+     'validator':    simuOpt.valueOneOf(['island', 'stepping stone', 'none']),
      'chooseOneOf': ['stepping stone', 'island', 'none']
     }, 
-    {'longarg': 'migrRate=',
+    {'name': 'migrRate',
      'default': 0.05,
      'label': 'Migration rate',
      'description': '''Migration rate during mixing stage. 
                 Island or circular stepping stone migration model can be used. ''',
-     'allowedTypes': [types.FloatType, types.IntType],
-     'validate':    simuOpt.valueBetween(0,1)
+     'type': [float, int],
+     'validator':    simuOpt.valueBetween(0,1)
     },
-     {'longarg': 'update=',
+     {'name': 'update',
      'default': 100,
      'label': 'Update figure every # gen',
-     'allowedTypes': [types.IntType],
+     'type': [int],
      'description': '''Update figure every some generation.''',
-     'validate':    simuOpt.valueGE(1)
+     'validator':    simuOpt.valueGE(1)
     },    
-    {'longarg': 'dispPlot=',
+    {'name': 'dispPlot',
      'default': True,
      'label': 'Display plot?',
-     'allowedTypes': [types.BooleanType],
+     'type': [types.BooleanType],
      'description': 'If false, do not disply figure.',
     },
-    {'longarg': 'saveAt=',
+    {'name': 'saveAt',
      'default': [x*100 for x in range(1,11)],
      'label': 'Save figure at generation',
-     'allowedTypes': [types.ListType, types.TupleType],
+     'type': [types.ListType, types.TupleType],
      'description': '''At these generations, figures will be saved, instead of displayed.
                 Note that:
                     1): generations at which figure is not updated will not be saved. (update parameter)
                     2); figures will not be displayed at these generations
                     3): file name will be cdcvXXX.eps
                 ''',
-     'validate':    simuOpt.valueListOf(simuOpt.valueGE(0))
+     'validator':    simuOpt.valueListOf(simuOpt.valueGE(0))
     },
-    {'longarg': 'savePop=',
+    {'name': 'savePop',
      'default': '',
-     'allowedTypes': [types.StringType], 
+     'type': [str], 
      'description': 'save final population in a file. This feature is only available from command line.',
     },
-    {'longarg': 'resume=',
+    {'name': 'resume',
      'default': '',
-     'allowedTypes': [types.StringType], 
+     'type': [str], 
      'description': 'resume from a saved population. This option is only available from command line.'
     },
-    {'longarg': 'resumeAtGen=',
+    {'name': 'resumeAtGen',
      'default': 0,
-     'allowedTypes': [types.IntType, types.LongType],
+     'type': [int, long],
      'description': 'when resume is not empty. Start from this generation. This option is only available from command line.'
     },
-    {'longarg': 'name=',
+    {'name': 'name',
      'default': 'cdcv',
-     'allowedTypes': [types.StringType],
+     'type': [str],
      'label': 'Name of the simulation',
      'description': 'Base name for configuration (.cfg) log file (.log) and figures (.eps)'
     },
@@ -680,7 +680,7 @@ if __name__ == '__main__':
     initSpec = []
     if type(initSpecTmp) not in [types.ListType, types.TupleType]:
         raise exceptions.ValueError("Expecting a spectrum or a list of spectra")
-    if type(initSpecTmp[0]) == types.FloatType:
+    if type(initSpecTmp[0]) == float:
         initSpec = [initSpecTmp]*numDSL
     elif type(initSpecTmp[0]) not in [types.TupleType, types.ListType]:
         raise exceptions.ValueError("Expecting a spectrum or a list of spectra")

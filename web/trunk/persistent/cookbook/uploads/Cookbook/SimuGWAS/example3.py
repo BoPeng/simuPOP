@@ -12,7 +12,7 @@ from simuPOP import *
 
 import loadHapMap3, selectMarkers, simuGWAS
 
-def downloadData(logger):
+def downloadData(chroms, logger):
     '''
     Download and create populations from the third phase of the HapMap3 data.
     This equivalent to command
@@ -21,11 +21,12 @@ def downloadData(logger):
     '''
     if not os.path.isdir('HapMap'):
         os.mkdir('HapMap')
-    for popName in loadHapMap3.HapMap3_pops:
-        filename = 'HapMap/HapMap3_%s_chr%d.pop' % (popName, 2)
-        if not os.path.isfile(filename):
-            pop = loadHapMap3.loadHapMapPop(2, popName, logger)
-            pop.save(filename)
+    for chrom in chroms:
+        for popName in loadHapMap3.HapMap3_pops:
+            filename = 'HapMap/HapMap3_%s_chr%d.pop' % (popName, chrom)
+            if not os.path.isfile(filename):
+                pop = loadHapMap3.loadHapMapPop(chrom, popName, logger)
+                pop.save(filename)
 
 def getInitPop(logger):
     '''
@@ -221,7 +222,7 @@ def generateTrioSamples(logger=None):
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger('example3')
-    downloadData(logger)
+    downloadData([2], logger)
     getInitPop(logger)
     shortsweep(logger)
     longsweep(logger)

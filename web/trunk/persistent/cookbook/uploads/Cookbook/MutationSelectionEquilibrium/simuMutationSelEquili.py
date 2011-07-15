@@ -17,34 +17,34 @@ from simuPOP import *
 
 options = [
     {
-     'longarg':'PopSize=',
+     'name':'PopSize',
      'default':2000,
      'label':'Population Size',
-     'allowedTypes':[types.IntType, types.LongType],
-     'validate':simuOpt.valueGT(0),
+     'type':[int, long],
+     'validator':simuOpt.valueGT(0),
      },
     {
-     'longarg':'m=',
+     'name':'m',
      'default':0.001,
      'label':'Mutation Rate',
-     'allowedTypes':[types.FloatType],
-     'validate':simuOpt.valueBetween(0., 1.),
+     'type':[float],
+     'validator':simuOpt.valueBetween(0., 1.),
      },
     {
-     'longarg':'generations=',
+     'name':'generations',
      'default':500,
      'label':'Generations to evolve',
      'description':'Length of evolution',
-     'allowedTypes':[types.IntType, types.LongType],
-     'validate':simuOpt.valueGT(0)
+     'type':[int, long],
+     'validator':simuOpt.valueGT(0)
      },
     {
-     'longarg':'step=',
+     'name':'step',
      'default':100,
      'label':'Steps to take per generation',
      'description':'Values displayed per generation',
-     'allowedTypes':[types.IntType, types.LongType],
-     'validate':simuOpt.valueGT(0)
+     'type':[int, long],
+     'validator':simuOpt.valueGT(0)
      },
 ]
 

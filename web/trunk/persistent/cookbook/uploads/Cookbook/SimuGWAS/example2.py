@@ -12,8 +12,7 @@ from simuPOP import *
 
 import loadHapMap3, selectMarkers, simuGWAS
 
-
-def downloadData(logger):
+def downloadData(chroms, logger):
     '''
     Download and create populations from the third phase of the HapMap3 data.
     This equivalent to command
@@ -22,9 +21,9 @@ def downloadData(logger):
     '''
     if not os.path.isdir('HapMap'):
         os.mkdir('HapMap')
-    for chrom in [2, 5, 10]:
+    for chrom in chroms:
         for popName in loadHapMap3.HapMap3_pops:
-            filename = 'HapMap/HapMap3_%s_chr%d.pop' % (popName, 2)
+            filename = 'HapMap/HapMap3_%s_chr%d.pop' % (popName, chrom)
             if not os.path.isfile(filename):
                 pop = loadHapMap3.loadHapMapPop(chrom, popName, logger)
                 pop.save(filename)
@@ -160,7 +159,7 @@ if __name__ == '__main__':
     # You can change logging level to DEBUG to get more information
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger('example2')
-    downloadData(logger)
+    downloadData([2, 5, 10], logger)
     getInitPop(logger)
     expandPop(logger)
     generateSample(logger=logger)

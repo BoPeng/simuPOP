@@ -58,7 +58,7 @@ from simuOpt import *
 setOptions(optimized=True, alleleType='binary', version='1.0.1')
 from simuPOP import *
 
-import os, sys, urllib, gzip, exceptions, tempfile, shutil
+import os, sys, urllib, gzip, tempfile, shutil
 
 # URL and revision number. You can choose to download other hapmap files
 release = 22
@@ -87,7 +87,7 @@ def downloadIfNeeded(URL, path, file, logger=None):
     try:
         urllib.urlretrieve('%s/%s' % (URL, file), diskfile)
     except:
-        raise exceptions.SystemError('Failed to download file %s from URL %s' \
+        raise SystemError('Failed to download file %s from URL %s' \
             % (file, URL))
 
 
@@ -165,7 +165,7 @@ def load_population(pop, ch, sample, dest, logger=None):
     downloadIfNeeded(Genotype_URL, dest, file, logger)
     for line_no,line in enumerate(gzip.open(os.path.join(dest, file)).readlines()):
         genotype = [int(x) for x in line.split()]
-        ind = line_no / 2
+        ind = int(line_no / 2)
         ploidy = line_no % 2
         # always chromosome 0, because each population has only one chromosome
         pop.individual(ind).setGenotype(genotype, ploidy)

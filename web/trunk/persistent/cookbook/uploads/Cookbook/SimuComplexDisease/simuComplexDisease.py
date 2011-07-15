@@ -144,22 +144,22 @@ from simuPOP import utils
 #
 options = [
     {'separator': 'Genotype structure:'},    
-    {'longarg': 'numChrom=',
+    {'name': 'numChrom',
      'default': 10,
      'label': 'Number of chromosomes',
      'description': 'Number of chromosomes.',
-     'allowedTypes': [types.IntType],
-     'validate':    simuOpt.valueGT(0)
+     'type': [int],
+     'validator':    simuOpt.valueGT(0)
     },
-    {'longarg': 'numLoci=',
+    {'name': 'numLoci',
      'default': 20,
      'label': 'Number of loci on each chrom',
      'description': '''Number of loci on each chromosome, current there 
              only equal number of markers on each chromosome is supported.''',
-     'allowedTypes': [types.IntType],
-     'validate':    simuOpt.valueGT(0)
+     'type': [int],
+     'validator':    simuOpt.valueGT(0)
     },
-    {'longarg': 'markerType=',
+    {'name': 'markerType',
      'default': 'microsatellite',
      'label': 'Marker type',
      'description': '''Type of markers. Can be microsatellite or SNP.
@@ -167,11 +167,11 @@ options = [
                 stepwise model while SNP markers will be mutated using a
                 2-state model. Mutation rate should be much smaller for
                 SNP markers than that of microsatellite markers.''',
-     'allowedTypes': [types.StringType],
-     'validate':    simuOpt.valueOneOf(['microsatellite', 'SNP']),
+     'type': [str],
+     'validator':    simuOpt.valueOneOf(['microsatellite', 'SNP']),
      'chooseOneOf': ['microsatellite', 'SNP']
     },
-    {'longarg': 'DSL=',
+    {'name': 'DSL',
      'default': [45, 85, 125],
      'label': 'DSL after marker (0-indexed)',
      'description': '''A list of loci *after* a marker. For example, 
@@ -180,107 +180,107 @@ options = [
                 it determines the complexity of the disease.
                 A single number is allowed and implies a simple disease with
                 one disease locus.''',
-     'allowedTypes': [types.TupleType, types.ListType],
-     'validate':    simuOpt.valueListOf( simuOpt.valueGT(0) )
+     'type': [types.TupleType, types.ListType],
+     'validator':    simuOpt.valueListOf( simuOpt.valueGT(0) )
     },
-    {'longarg': 'DSLLoc=',
+    {'name': 'DSLLoc',
      'default': [.5, .5, .5],
      'label': 'DSL location between markers',
      'description': '''A list of loci location between two markers.
                 Since all disease loci will be *between* equal spaced markers,
                 the location should be between 0 and 1. A single value is acceptable
                 as the location of all DSL.''',
-     'allowedTypes': [types.TupleType, types.ListType],
-     'validate':    simuOpt.valueListOf( simuOpt.valueBetween(0,1))
+     'type': [types.TupleType, types.ListType],
+     'validator':    simuOpt.valueListOf( simuOpt.valueBetween(0,1))
     },
     #
     #
     {'separator': 'Demographic model:'},
-    {'longarg': 'initSize=',
+    {'name': 'initSize',
      'default': 10000,
      'label': 'Initial population size',
-     'allowedTypes': [types.IntType, types.LongType],
+     'type': [int, long],
      'description': '''Initial population size. This size will be maintained
                 till the end of burnin stage''',
-     'validate':    simuOpt.valueGT(0)
+     'validator':    simuOpt.valueGT(0)
     },
-    {'longarg': 'endingSize=',
+    {'name': 'endingSize',
      'default': 200000,
      'label': 'Final population size',
-     'allowedTypes': [types.IntType, types.LongType],
+     'type': [int, long],
      'description': 'Final population size after population expansion.',
-     'validate':    simuOpt.valueGT(0)
+     'validator':    simuOpt.valueGT(0)
     }, 
-    {'longarg': 'growthModel=',
+    {'name': 'growthModel',
      'default': 'exponential',
      'label': 'Population growth model',
      'description': '''How Population is grown from initSize to endingSize.
                 Choose between linear and exponential''',
      'chooseOneOf': ['exponential', 'linear'],
     },
-    {'longarg': 'burninGen=',
+    {'name': 'burninGen',
      'default': 3000,
      'label': 'Length of burn-in stage',
-     'allowedTypes': [types.IntType],
+     'type': [int],
      'description': 'Number of generations of the burn in stage.',
-     'validate':    simuOpt.valueGT(0)
+     'validator':    simuOpt.valueGT(0)
     },
-    {'longarg': 'splitGen=',
+    {'name': 'splitGen',
      'default': 5000,
      'label': 'When to split Population',
-     'allowedTypes': [types.IntType, types.LongType],
+     'type': [int, long],
      'description': '''At which generation to split the population. 
                 The population will start to grow after burnin stage but will
                 not split till this generation. Note that if the disease is 
                 introduced after this stage, it will be in one of subpopulations.
      ''',
-     'validate':    simuOpt.valueGT(0)
+     'validator':    simuOpt.valueGT(0)
     },
-    {'longarg': 'mixingGen=',
+    {'name': 'mixingGen',
      'default': 8000,
      'label': 'When to mix Population',
-     'allowedTypes': [types.IntType, types.LongType],
+     'type': [int, long],
      'description': '''At which generation to start mixing (allow migration.
                 This number should be greater than or equal to split gen.''',
-     'validate':    simuOpt.valueGE(0)
+     'validator':    simuOpt.valueGE(0)
     },
-    {'longarg': 'endingGen=',
+    {'name': 'endingGen',
      'default': 10000,
      'label': 'Ending generation number',
-     'allowedTypes': [types.IntType, types.LongType],
+     'type': [int, long],
      'description': '''At which generation to stop the simulation.
                 This is the total generation number.''',
-     'validate':    simuOpt.valueGE(0)
+     'validator':    simuOpt.valueGE(0)
     },
     #
     #
     {'separator': 'Migration parameters:'},    
-    {'longarg': 'numSubPop=',
+    {'name': 'numSubPop',
      'default': 1,
      'label': 'Number of subpopulations to split',
-     'allowedTypes': [types.IntType],
+     'type': [int],
      'description': 'Number of subpopulations to be split into after burnin stage.',
-     'validate':    simuOpt.valueGT(0)
+     'validator':    simuOpt.valueGT(0)
     },
-    {'longarg': 'migrModel=',
+    {'name': 'migrModel',
      'default': 'stepping stone',
      'useDefault': True,
      'label': 'Migration model',
-     'allowedTypes': [types.StringType],
+     'type': [str],
      'description': '''Migration model. Choose between stepping stone (circular),
                 island and none. ''',
-     'validate':    simuOpt.valueOneOf(['island', 'stepping stone', 'none']),
+     'validator':    simuOpt.valueOneOf(['island', 'stepping stone', 'none']),
      'chooseOneOf': ['stepping stone', 'island', 'none']
     }, 
-    {'longarg': 'migrRate=',
+    {'name': 'migrRate',
      'default': 0.0001,
      'label': 'Migration rate',
      'description': '''Migration rate during mixing stage. 
                 A circular stepping stone migration model will be used. ''',
-     'allowedTypes': [types.IntType, types.FloatType],
-     'validate':    simuOpt.valueBetween(0,1)
+     'type': [int, float],
+     'validator':    simuOpt.valueBetween(0,1)
     },
-    {'longarg': 'alleleDistInSubPop=',
+    {'name': 'alleleDistInSubPop',
      'useDefault': True,
      'default': 'uneven',
      'label': 'Allele distribution in subpopulations',
@@ -292,46 +292,46 @@ options = [
                 will be proportional to the interval lengths of 0 x x x 1 while x are uniform
                 [0,1]. The distribution of interval lengths, are roughly exponential 
                 (conditional on overall length 1). ''',
-     'allowedTypes': [types.StringType],
-     'validate':    simuOpt.valueOneOf(['even', 'uneven']),
+     'type': [str],
+     'validator':    simuOpt.valueOneOf(['even', 'uneven']),
      'chooseOneOf': ['even', 'uneven']
     },
     #
     #
     {'separator': 'Disease model:'},
-    {'longarg': 'curAlleleFreq=',
+    {'name': 'curAlleleFreq',
      'default': [0.05, 0.05, 0.05],
      'label': 'Final allele frequencies',
-     'allowedTypes': [types.ListType, types.TupleType],
+     'type': [types.ListType, types.TupleType],
      'description': '''Current allele frequencies for each DSL.
                 If a number is given, it is assumed to be the frequency
                 for all DSL.''',
-     'validate': simuOpt.valueListOf( simuOpt.valueBetween(0,1))
+     'validator': simuOpt.valueListOf( simuOpt.valueBetween(0,1))
     },
-    {'longarg': 'minMutAge=',
+    {'name': 'minMutAge',
      'default': 0,
      'label': 'Minimum mutant age',
-     'allowedTypes': [types.IntType, types.LongType],
+     'type': [int, long],
      'description': '''Minimum mutation age. Default to 0. Because the population
                 may be split into subpopulations at splitGen, if the mutation age is too
                 short, it may fall in one of the subpopulations. To void this, you can 
                 set minMutAge to be endingGen - splitGen. Note that all mutants have the same
                 minimum mutant age regardless final allele frequency.'''
     },
-    {'longarg': 'maxMutAge=',
+    {'name': 'maxMutAge',
      'default': 0,
      'label': 'Maximum mutant age',
-     'allowedTypes': [types.IntType, types.LongType],
+     'type': [int, long],
      'description': '''Maximum mutant age. Default to 0, means no max and the real
                 maximum mutant age will be endingGen. However, if you do not want mutant to
                 be generated in the burnin stage. You can set maxMutAge to endingGen-burnin.
                 Note that all mutants have the same maximum mutant age regardless final 
                 allele frequency.'''
     },
-    {'longarg': 'fitness=',
+    {'name': 'fitness',
      'default': [1, 1.0001, 1.0002],
      'label': 'Fitness of genotype AA,Aa,aa',
-     'allowedTypes': [types.ListType, types.TupleType],
+     'type': [types.ListType, types.TupleType],
      'description': '''Fitness of genotype, can be:
                 f1, f2, f3: if one DSL, the fitness for genotype AA, Aa and aa
                 f1, f2, f3: if multiple DSL, the same fitness for each locus
@@ -346,9 +346,9 @@ options = [
                     aa  c1 c2 c3
                 3^n numbers are needed for n DSL.
         ''',
-     'validate':    simuOpt.valueListOf(simuOpt.valueGE(0.)),
+     'validator':    simuOpt.valueListOf(simuOpt.valueGE(0.)),
     },
-    {'longarg': 'selMultiLocusModel=',
+    {'name': 'selMultiLocusModel',
     'default': 'none',
     'label': 'Multi-locus selection model',
     'description': '''Model of overall fitness value given fitness values for each DSL.
@@ -357,26 +357,26 @@ options = [
                 interaction: the intepretation of fitness parameter is different.
                     see fitness.
                 ''',
-    'allowedTypes': [types.StringType],
+    'type': [str],
     'chooseOneOf': [ 'additive', 'multiplicative', 'interaction', 'none']
     },
     #
     #
     {'separator': 'Evolutionary parameters:'},
-    {'longarg': 'mutaRate=',
+    {'name': 'mutaRate',
      'default': 0.0001,
      'label': 'Mutation rate',
-     'allowedTypes': [types.IntType, types.FloatType],
+     'type': [int, float],
      'description': '''Microsatellite markers are mutated using    
                 symmetric stepwise mutation wile SNP markers are mutaed
                 using a 2-allele model (kam) DSL are not mutated unless in disease
                 introduction stage.''',
-     'validate':    simuOpt.valueBetween(0,1)
+     'validator':    simuOpt.valueBetween(0,1)
     },
-    {'longarg': 'recRate=',
+    {'name': 'recRate',
      'default': [0.0005],
      'label': 'Recombination rate',
-     'allowedTypes': [types.TupleType, types.ListType],
+     'type': [types.TupleType, types.ListType],
      'description': '''If a number is given, it is the recombination rate between
                  adjacent markers. If a list is given, it should be the recombination
                  rate between all markers and DSL. For example, if you have two chromosome
@@ -387,37 +387,37 @@ options = [
                  Note that the distance between 3-x, x-5 is smaller than distance
                  between markers.
      ''',
-     'validate': simuOpt.valueListOf(simuOpt.valueBetween(0,1))
+     'validator': simuOpt.valueListOf(simuOpt.valueBetween(0,1))
     },
     #
     {'separator': 'Final Population preparation:'},
-    {'longarg': 'savedGen=',
+    {'name': 'savedGen',
      'default': 2,
      'useDefault': True,
      'label': 'Generations to save',
-     'allowedTypes': [types.IntType, types.LongType],
-     'validate': simuOpt.valueBetween(1, 3),
+     'type': [int, long],
+     'validator': simuOpt.valueBetween(1, 3),
      'description': '''How many generations to save in the final population. 1 means no parental 
                 generations, and 3 means grandparent, parent and current generations. Default
                 is two, which is good for sampling schemes like affected sibpair sampling.''',
     },
-    {'longarg': 'numOffspring=',
+    {'name': 'numOffspring',
      'default': 2,
      'useDefault': True,
-     'allowedTypes': [types.FloatType, types.IntType, types.LongType],
+     'type': [float, int, long],
      'label': 'Number of offspring per mating', 
      'description': '''Number of offspring in these last generations. 2 is good for affected sibpair. More
                 is needed for the sampling of large Pedigrees. The value can be the number of offspring
                 per mating when numOffMode=constant, but can also be parameters for a distribution. Details
                 see description of numOffMode.''',
-     'validate': simuOpt.valueGT(0),
+     'validator': simuOpt.valueGT(0),
     },
-    {'longarg': 'numOffMode=',
+    {'name': 'numOffMode',
      'default': 'constant',
      'useDefault': True,
      'label': 'Mode to determine number of offspring', 
      'chooseOneOf': [ 'constant', 'geometric'],
-     'allowedTypes': [types.StringType],
+     'type': [str],
      'description': '''Two ways to determine number of offspring. If constant, numOffspring will be used
                 to generate the same number of offspring per mating event (in the final generations). If
                 'geometric', P(k) = p*(1-p)^(k-1) where p=numOffspring. 0<p<1. The mean number of offspring
@@ -426,26 +426,26 @@ options = [
     #
     # 
     {'separator': 'Miscellaneous:'},
-    {'longarg': 'dryrun',
+    {'name': 'dryrun',
      'useDefault': True,
      'default': False,
      'description':    'Only display how simulation will perform.'
      # do not save to config, do not prompt, so this appeared to be an undocumented option.
     },
-    {'longarg': 'savePop=',
+    {'name': 'savePop',
      'default': [],
      'useDefault': True,
      'label': 'Save population at generations',
-     'allowedTypes': [types.ListType, types.TupleType],
-     'validate': simuOpt.valueListOf(simuOpt.valueGE(0)),
+     'type': [types.ListType, types.TupleType],
+     'validator': simuOpt.valueListOf(simuOpt.valueGE(0)),
      'description': '''A list of generations at which populations are saved, 
                 default to []. It can be used for intermediate analysis, but simulations can
                 not be resumed from this population due to the re-generation of allele 
                 frequency trajectories.''',
     },
-    {'longarg': 'name=',
+    {'name': 'name',
      'default': 'simu',
-     'allowedTypes': [types.StringType],
+     'type': [str],
      'label': 'Simulation name',
      'description': '''Name of simulation, files saved will be 
                     name + '.log': statistics output

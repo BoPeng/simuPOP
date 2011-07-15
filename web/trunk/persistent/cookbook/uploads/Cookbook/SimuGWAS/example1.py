@@ -12,7 +12,7 @@ import simuOpt
 simuOpt.setOptions(gui=False, alleleType='binary')
 from simuPOP import *
 
-def downloadData(logger):
+def downloadData(chroms, logger):
     '''
     Download and create populations from the third phase of the HapMap3 data.
     This equivalent to command
@@ -21,11 +21,12 @@ def downloadData(logger):
     '''
     if not os.path.isdir('HapMap'):
         os.mkdir('HapMap')
-    for popName in loadHapMap3.HapMap3_pops:
-        filename = 'HapMap/HapMap3_%s_chr%d.pop' % (popName, 2)
-        if not os.path.isfile(filename):
-            pop = loadHapMap3.loadHapMapPop(3, popName, logger)
-            pop.save(filename)
+    for chrom in chroms:
+        for popName in loadHapMap3.HapMap3_pops:
+            filename = 'HapMap/HapMap3_%s_chr%d.pop' % (popName, chrom)
+            if not os.path.isfile(filename):
+                pop = loadHapMap3.loadHapMapPop(chrom, popName, logger)
+                pop.save(filename)
 
 def getInitPop(logger):
     '''
@@ -98,6 +99,6 @@ def expandPop(logger):
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger('example1')
-    downloadData(logger)
+    downloadData([2], logger)
     getInitPop(logger)
     expandPop(logger)

@@ -24,11 +24,12 @@ def downloadData(logger):
     '''
     if not os.path.isdir('HapMap'):
         os.mkdir('HapMap')
-    for popName in loadHapMap3.HapMap3_pops:
-        filename = 'HapMap/HapMap3_%s_chr%d.pop' % (popName, 2)
-        if not os.path.isfile(filename):
-            pop = loadHapMap3.loadHapMapPop(2, popName, logger)
-            pop.save(filename)
+    for chrom in chroms:
+        for popName in loadHapMap3.HapMap3_pops:
+            filename = 'HapMap/HapMap3_%s_chr%d.pop' % (popName, chrom)
+            if not os.path.isfile(filename):
+                pop = loadHapMap3.loadHapMapPop(chrom, popName, logger)
+                pop.save(filename)
 
 def getInitPop(logger):
     '''
@@ -122,7 +123,7 @@ def mix(logger):
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger('example4')
-    downloadData(logger)
+    downloadData([2], logger)
     getInitPop(logger)
     expandPop(logger)
     mix(logger)

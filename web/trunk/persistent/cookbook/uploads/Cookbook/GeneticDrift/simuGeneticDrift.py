@@ -6,7 +6,7 @@
 This program demonstrates changes of allele frequency on single locus due to genetic drift.
 """
 
-import simuOpt, os, sys, types, time
+import simuOpt, os, sys, time
 from simuPOP import *
 
 try:
@@ -19,33 +19,29 @@ else:
     useRPy = True
 
 options = [
-    {'arg':'p:',
-     'longarg':'popSize=',
+    {'name':'popSize',
      'default':100,
      'label':'Population Size',
-     'allowedTypes':[types.IntType, types.LongType],
-     'validate':simuOpt.valueGT(0),
+     'type': 'integer',
+     'validator': 'popSize > 0',
      },
-    {'arg': 'P:',
-     'longarg':'p=',
+    {'name':'p',
      'default':0.2,
-     'allowedTypes': [types.FloatType],
+     'type': 'number',
      'label':'Initial Allele Frequency',
-     'validate':simuOpt.valueBetween(0., 1.),
+     'validator': 'p > 0 and p < 1',
      },
-    {'arg':'g:',
-     'longarg':'generations=',
+    {'name':'generations',
      'default':100,
      'label':'Number of Generations',
-     'allowedTypes':[types.IntType, types.LongType],
-     'validate':simuOpt.valueGT(0)
+     'type': 'integer',
+     'validator': 'generations > 0',
      },
-    {'arg':'r:',
-     'longarg':'replications=',
+    {'name':'replications',
      'default':5,
      'label':'Number of Replicates',
-     'allowedTypes':[types.IntType, types.LongType],
-     'validate':simuOpt.valueGT(0)
+     'type': 'integer',
+     'validator': 'replications > 0',
      },
 ]
 
