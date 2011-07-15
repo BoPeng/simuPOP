@@ -13,8 +13,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
+ * *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
@@ -307,7 +306,7 @@ void Population::deactivateVirtualSubPop(size_t subPop) const
 	m_vspSplitter->deactivate(subPop);
 }
 
-
+/*
 int Population::__cmp__(const Population & rhs) const
 {
 	if (genoStruIdx() != rhs.genoStruIdx()) {
@@ -343,8 +342,9 @@ int Population::__cmp__(const Population & rhs) const
 
 	return 0;
 }
+*/
 
-
+/*
 Individual & Population::indByID(double fid, const uintList & ancGens, const string & idField)
 {
 	size_t id = toID(fid);
@@ -387,8 +387,9 @@ Individual & Population::indByID(double fid, const uintList & ancGens, const str
 	// this is just to suppress a warning.
 	return m_inds[0];
 }
+*/
 
-
+/*
 pyIndIterator Population::individuals(vspID subPopID)
 {
 	DBG_FAILIF(hasActivatedVirtualSubPop(), RuntimeError,
@@ -415,8 +416,9 @@ pyIndIterator Population::individuals(vspID subPopID)
 		return pyIndIterator(m_inds.begin() + subPopBegin(spID),
 			m_inds.begin() + subPopEnd(spID), true, vspFunctor());
 }
+*/
 
-
+/*
 Individual & Population::ancestor(double fidx, ssize_t gen, vspID vsp)
 {
 	size_t idx = toID(fidx);
@@ -453,8 +455,9 @@ Individual & Population::ancestor(double fidx, ssize_t gen, vspID vsp)
 		return m_ancestralPops[genIdx].m_inds[shift + idx];
 	}
 }
+*/
 
-
+/*
 const Individual & Population::ancestor(double fidx, ssize_t gen, vspID vsp) const
 {
 	size_t idx = toID(fidx);
@@ -490,8 +493,9 @@ const Individual & Population::ancestor(double fidx, ssize_t gen, vspID vsp) con
 		return m_ancestralPops[genIdx].m_inds[shift + idx];
 	}
 }
+*/
 
-
+/*
 IndAlleleIterator Population::alleleIterator(size_t locus)
 {
 	CHECKRANGEABSLOCUS(locus);
@@ -510,8 +514,9 @@ IndAlleleIterator Population::alleleIterator(size_t locus)
 		return IndAlleleIterator(locus, m_genotype.begin(), m_genotype.end(),
 			totNumLoci());
 }
+*/
 
-
+/*
 /// CPPONLY allele begin, for given subPop
 IndAlleleIterator Population::alleleIterator(size_t locus, size_t subPop)
 {
@@ -531,8 +536,9 @@ IndAlleleIterator Population::alleleIterator(size_t locus, size_t subPop)
 			m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize(),
 			totNumLoci());
 }
+*/
 
-
+/*
 PyObject * Population::genotype(vspID subPopID)
 {
 
@@ -560,8 +566,9 @@ PyObject * Population::genotype(vspID subPopID)
 	}
 	return NULL;
 }
+*/
 
-
+/*
 void Population::setGenotype(const uintList & genoList, vspID subPopID)
 {
 	const vectoru & geno = genoList.elems();
@@ -598,8 +605,9 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 		deactivateVirtualSubPop(subPop.subPop());
 	}
 }
+*/
 
-
+/*
 void Population::validate(const string & msg) const
 {
 #ifdef OPTIMIZED
@@ -629,6 +637,7 @@ void Population::validate(const string & msg) const
 	}
 #endif
 }
+*/
 
 
 void Population::fitSubPopStru(const vectoru & newSubPopSizes,
@@ -681,7 +690,7 @@ void Population::fitSubPopStru(const vectoru & newSubPopSizes,
 	}
 }
 
-
+/*
 void Population::fitGenoStru(size_t stru)
 {
 	// set genotypic structure to a population.
@@ -711,6 +720,7 @@ void Population::fitGenoStru(size_t stru)
 		}
 	}
 }
+*/
 
 
 void Population::setSubPopStru(const vectoru & newSubPopSizes,
@@ -737,6 +747,7 @@ void Population::setSubPopStru(const vectoru & newSubPopSizes,
 	for (m_subPopIndex[0] = 0; i <= numSubPop(); ++i)
 		m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
 }
+
 
 
 size_t Population::subPopSize(vspID subPopID, int ancGen) const
@@ -777,6 +788,7 @@ size_t Population::subPopSize(vspID subPopID, int ancGen) const
 }
 
 
+/*
 void Population::sortIndividuals(const stringList & infoList)
 {
 	const vectorstr & infoFields = infoList.elems();
@@ -790,8 +802,10 @@ void Population::sortIndividuals(const stringList & infoList)
 		parallelSort(rawIndBegin(sp), rawIndEnd(sp), indCompare(fields));
 	setIndOrdered(false);
 }
+*/
 
 
+/*
 void Population::setSubPopByIndInfo(const string & field)
 {
 	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
@@ -867,8 +881,10 @@ void Population::setSubPopByIndInfo(const string & field)
 	if (!m_subPopNames.empty())
 		m_subPopNames.resize(numSubPop(), UnnamedSubPop);
 }
+*/
 
 
+/*
 vectoru Population::splitSubPop(size_t subPop, const vectorf & sizes, const vectorstr & names)
 {
 	if (sizes.size() <= 1)
@@ -918,8 +934,10 @@ vectoru Population::splitSubPop(size_t subPop, const vectorf & sizes, const vect
 	setSubPopStru(subPopSizes, subPopNames);
 	return ret;
 }
+*/
 
 
+/*
 void Population::removeSubPops(const subPopList & subPops)
 {
 	syncIndPointers();
@@ -1016,8 +1034,9 @@ void Population::removeSubPops(const subPopList & subPops)
 		m_inds[i].setInfoPtr(infoPtr);
 	}
 }
+*/
 
-
+/*
 void Population::removeMarkedIndividuals()
 {
 	syncIndPointers();
@@ -1068,8 +1087,9 @@ void Population::removeMarkedIndividuals()
 		m_inds[i].setInfoPtr(infoPtr);
 	}
 }
+*/
 
-
+/*
 void Population::removeIndividuals(const uintList & indexList, const floatList & IDList,
                                    const string & idField, PyObject * filter)
 {
@@ -1152,8 +1172,9 @@ void Population::removeIndividuals(const uintList & indexList, const floatList &
 	}
 	useAncestralGen(curGen);
 }
+*/
 
-
+/*
 size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 {
 	if (!name.empty() && m_subPopNames.empty())
@@ -1259,8 +1280,9 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 	}
 	return sps[0];
 }
+*/
 
-
+/*
 void Population::addChromFrom(const Population & pop)
 {
 	size_t numLoci1 = totNumLoci();
@@ -1303,8 +1325,9 @@ void Population::addChromFrom(const Population & pop)
 		// sort information only
 		syncIndPointers(true);
 }
+*/
 
-
+/*
 void Population::addIndFrom(const Population & pop)
 {
 	DBG_FAILIF(genoStruIdx() != pop.genoStruIdx(), ValueError,
@@ -1357,8 +1380,9 @@ void Population::addIndFrom(const Population & pop)
 	DBG_ASSERT(m_subPopNames.empty() || m_subPopNames.size() == numSubPop(), SystemError,
 		"subpopulation names can either be empty, or be specified for all subpopulations.");
 }
+*/
 
-
+/*
 void Population::addLociFrom(const Population & pop)
 {
 	DBG_FAILIF(ancestralGens() != pop.ancestralGens(), ValueError,
@@ -1407,8 +1431,9 @@ void Population::addLociFrom(const Population & pop)
 	// sort information only
 	syncIndPointers(true);
 }
+*/
 
-
+/*
 void Population::addChrom(const floatList & lociPosList, const stringList & lociNameList,
                           const string & chromName, const stringMatrix & alleleNames,
                           size_t chromType)
@@ -1457,8 +1482,9 @@ void Population::addChrom(const floatList & lociPosList, const stringList & loci
 	//   so that the order is set to True.
 	syncIndPointers(true);
 }
+*/
 
-
+/*
 vectoru Population::addLoci(const uintList & chromList, const floatList & posList,
                             const stringList & lociNameList, const stringMatrix & alleleNamesMatrix)
 {
@@ -1517,8 +1543,9 @@ vectoru Population::addLoci(const uintList & chromList, const floatList & posLis
 	syncIndPointers(true);
 	return newIndex;
 }
+*/
 
-
+/*
 void Population::resize(const uintList & sizeList, bool propagate)
 {
 	const vectoru & newSubPopSizes = sizeList.elems();
@@ -1568,8 +1595,9 @@ void Population::resize(const uintList & sizeList, bool propagate)
 	for (m_subPopIndex[0] = 0; idx <= numSubPop(); ++idx)
 		m_subPopIndex[idx] = m_subPopIndex[idx - 1] + m_subPopSize[idx - 1];
 }
+*/
 
-
+/*
 Population & Population::extractSubPops(const subPopList & subPops, bool rearrange) const
 {
 #ifndef OPTIMIZED
@@ -1726,8 +1754,9 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 
 	return pop;
 }
+*/
 
-
+/*
 Population & Population::extractMarkedIndividuals() const
 {
 	Population & pop = *new Population();
@@ -1795,8 +1824,9 @@ Population & Population::extractMarkedIndividuals() const
 	}
 	return pop;
 }
+*/
 
-
+/*
 Population & Population::extractIndividuals(const uintList & indexList,
                                             const floatList & IDList, const string & idField,
                                             PyObject * filter) const
@@ -1895,8 +1925,9 @@ Population & Population::extractIndividuals(const uintList & indexList,
 	const_cast<Population *>(this)->useAncestralGen(curGen);
 	return *allPop;
 }
+*/
 
-
+/*
 Population & Population::extract(const lociList & extractedLoci, const stringList & infoFieldList,
                                  const subPopList & _subPops, const uintList & ancGens) const
 {
@@ -2141,8 +2172,9 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 		pop.removeSubPops(emptySubPops);
 	return pop;
 }
+*/
 
-
+/*
 void Population::removeLoci(const lociList & removeList, const lociList & keepList)
 {
 	if (removeList.unspecified() && keepList.unspecified())
@@ -2200,8 +2232,9 @@ void Population::removeLoci(const lociList & removeList, const lociList & keepLi
 	}
 	setIndOrdered(true);
 }
+*/
 
-
+/*
 void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList & loci_,
                                const stringMatrix & alleleNamesMatrix)
 {
@@ -2355,8 +2388,9 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 	}
 	useAncestralGen(oldGen);
 }
+*/
 
-
+/*
 void Population::push(Population & rhs)
 {
 	DBG_ASSERT(rhs.genoStruIdx() == genoStruIdx(), ValueError,
@@ -2407,8 +2441,9 @@ void Population::push(Population & rhs)
 	validate("Current population after push and discard:");
 	rhs.validate("Outside Population after push and discard:");
 }
+*/
 
-
+/*
 void Population::addInfoFields(const stringList & fieldList, double init)
 {
 	const vectorstr & fields = fieldList.elems();
@@ -2462,8 +2497,9 @@ void Population::addInfoFields(const stringList & fieldList, double init)
 		useAncestralGen(oldAncPop);
 	}
 }
+*/
 
-
+/*
 void Population::setInfoFields(const stringList & fieldList, double init)
 {
 	const vectorstr & fields = fieldList.elems();
@@ -2484,8 +2520,9 @@ void Population::setInfoFields(const stringList & fieldList, double init)
 	}
 	useAncestralGen(oldAncPop);
 }
+*/
 
-
+/*
 void Population::removeInfoFields(const stringList & fieldList)
 {
 	const vectorstr & fields = fieldList.elems();
@@ -2527,8 +2564,9 @@ void Population::removeInfoFields(const stringList & fieldList)
 	}
 	useAncestralGen(oldAncPop);
 }
+*/
 
-
+/*
 void Population::updateInfoFieldsFrom(const stringList & fieldList, const Population & pop,
                                       const stringList & fromFieldList, const uintList & ancGens)
 {
@@ -2559,8 +2597,9 @@ void Population::updateInfoFieldsFrom(const stringList & fieldList, const Popula
 	}
 	useAncestralGen(oldGen);
 }
+*/
 
-
+/*
 void Population::setIndInfo(const floatList & valueList, const uintString &
                             field, vspID subPopID)
 {
@@ -2586,8 +2625,9 @@ void Population::setIndInfo(const floatList & valueList, const uintString &
 			*ptr = static_cast<double>(values[i % valueSize]);
 	}
 }
+*/
 
-
+/*
 void Population::markIndividuals(vspID subPop, bool mark) const
 {
 	if (subPop.valid()) {
@@ -2602,8 +2642,9 @@ void Population::markIndividuals(vspID subPop, bool mark) const
 			it->setMarked(mark);
 	}
 }
+*/
 
-
+/*
 // set ancestral depth, can be -1
 void Population::setAncestralDepth(int depth)
 {
@@ -2620,8 +2661,9 @@ void Population::setAncestralDepth(int depth)
 
 	m_ancestralGens = depth;
 }
+*/
 
-
+/*
 void Population::keepAncestralGens(const uintList & ancGens)
 {
 	if (ancGens.allAvail())
@@ -2660,6 +2702,7 @@ void Population::keepAncestralGens(const uintList & ancGens)
 		m_ancestralPops.pop_back();
 	m_curAncestralGen = 0;
 }
+*/
 
 
 void Population::useAncestralGen(ssize_t idx)
@@ -2698,8 +2741,10 @@ void Population::useAncestralGen(ssize_t idx)
 }
 
 
+
 //template<class Archive>
-void Population::save(boost::archive::text_oarchive & ar, const unsigned int /* version */) const
+//void Population::save(boost::archive::text_oarchive & ar, const unsigned int /* version */) const
+/*
 {
 	// deep adjustment: everyone in order
 	const_cast<Population *>(this)->syncIndPointers();
@@ -2775,10 +2820,12 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int /* 
 	string vars = varsAsString();
 	ar & vars;
 }
+*/
 
 
 //template<class Archive>
-void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* version */)
+//void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* version */)
+/*
 {
 	size_t ma;
 	ar & ma;
@@ -2956,8 +3003,9 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 
 	setIndOrdered(true);
 }
+*/
 
-
+/*
 void Population::save(const string & filename) const
 {
 	boost::iostreams::filtering_ostream ofs;
@@ -2971,8 +3019,9 @@ void Population::save(const string & filename) const
 	boost::archive::text_oarchive oa(ofs);
 	oa << *this;
 }
+*/
 
-
+/*
 void Population::load(const string & filename)
 {
 	boost::iostreams::filtering_istream ifs;
@@ -2991,8 +3040,9 @@ void Population::load(const string & filename)
 		throw ValueError("Failed to load Population " + filename + ".\n");
 	}
 }
+*/
 
-
+/*
 PyObject * Population::vars(vspID vsp)
 {
 	if (!vsp.valid()) {
@@ -3024,8 +3074,9 @@ PyObject * Population::vars(vspID vsp)
 	Py_INCREF(spObj);
 	return spObj;
 }
+*/
 
-
+/*
 // The same as vars(), but without increasing
 // reference count.
 PyObject * Population::dict(vspID vsp)
@@ -3056,8 +3107,9 @@ PyObject * Population::dict(vspID vsp)
 
 	return spObj;
 }
+*/
 
-
+/*
 void Population::syncIndPointers(bool infoOnly) const
 {
 	if (indOrdered())
@@ -3110,8 +3162,9 @@ void Population::syncIndPointers(bool infoOnly) const
 	}
 	setIndOrdered(true);
 }
+*/
 
-
+/*
 Population & loadPopulation(const string & file)
 {
 	Population * p = new Population();
@@ -3119,6 +3172,8 @@ Population & loadPopulation(const string & file)
 	p->load(file);
 	return *p;
 }
+*/
+
 
 
 }

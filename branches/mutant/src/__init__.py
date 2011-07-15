@@ -355,31 +355,31 @@ if simuOptions['Debug'] != []:
 ALL_AVAIL = True
 UNSPECIFIED = False
 
-def evolve_pop(self, initOps=[], preOps=[], matingScheme=MatingScheme(), postOps=[],
-    finalOps=[], gen=-1, dryrun=False):
-    '''Evolve the current population *gen* generations using mating scheme
-    *matingScheme* and operators *initOps* (applied before evolution), *preOps*
-    (applied to the parental population at the beginning of each life cycle),
-    *postOps* (applied to the offspring population at the end of each life
-    cycle) and *finalOps* (applied at the end of evolution). More specifically,
-    this function creates a *Simulator* using the current population, call its
-    *evolve* function using passed parameters and then replace the current
-    population with the evolved population. Please refer to function 
-    ``Simulator.evolve`` for more details about each parameter.'''
-    if dryrun:
-        print describeEvolProcess(initOps, preOps, matingScheme, postOps, finalOps, gen, 1)
-        return (0,)
-    if isinstance(self, Pedigree):
-        raise ValueError("Evolving a pedigree object directly is not allowed.")
-    # create a simulator with self
-    simu = Simulator(self)
-    # evolve
-    gen = simu.evolve(initOps, preOps, matingScheme, postOps, finalOps, gen)
-    # get the evolved population
-    self.swap(simu.population(0))
-    return gen[0]
+##def evolve_pop(self, initOps=[], preOps=[], matingScheme=MatingScheme(), postOps=[],
+##    finalOps=[], gen=-1, dryrun=False):
+##    '''Evolve the current population *gen* generations using mating scheme
+##    *matingScheme* and operators *initOps* (applied before evolution), *preOps*
+##    (applied to the parental population at the beginning of each life cycle),
+##    *postOps* (applied to the offspring population at the end of each life
+##    cycle) and *finalOps* (applied at the end of evolution). More specifically,
+##    this function creates a *Simulator* using the current population, call its
+##    *evolve* function using passed parameters and then replace the current
+##    population with the evolved population. Please refer to function 
+##    ``Simulator.evolve`` for more details about each parameter.'''
+##    if dryrun:
+##        print describeEvolProcess(initOps, preOps, matingScheme, postOps, finalOps, gen, 1)
+##        return (0,)
+##    if isinstance(self, Pedigree):
+##        raise ValueError("Evolving a pedigree object directly is not allowed.")
+##    # create a simulator with self
+##    simu = Simulator(self)
+##    # evolve
+##    gen = simu.evolve(initOps, preOps, matingScheme, postOps, finalOps, gen)
+##    # get the evolved population
+##    self.swap(simu.population(0))
+##    return gen[0]
 
-Population.evolve = evolve_pop
+##Population.evolve = evolve_pop
 
 def all_individuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL):
     '''Return an iterator that iterat through all (virtual) subpopulations in
@@ -465,7 +465,7 @@ def as_population(self):
     self.__class__, pop.__class__ = pop.__class__, self.__class__
     self.this, pop.this = pop.this, self.this
 
-Pedigree.asPopulation = as_population
+##Pedigree.asPopulation = as_population
 
 # Other definitions that does not really belong to simuUtil.py
 class _dw(object):
@@ -483,20 +483,20 @@ def dvars(self, *args, **kwargs):
     return _dw(self.vars(*args, **kwargs))
 
 Population.dvars = dvars
-Simulator.dvars = dvars
+##Simulator.dvars = dvars
 
 # expose the clone() method to Python copy module.
 def _deepcopy(self, memo):
     return self.clone()
 
 Population.__deepcopy__ = _deepcopy
-Simulator.__deepcopy__ = _deepcopy
-BaseOperator.__deepcopy__ = _deepcopy
+##Simulator.__deepcopy__ = _deepcopy
+##BaseOperator.__deepcopy__ = _deepcopy
 
 
 Population.__deepcopy__ = _deepcopy
-Simulator.__deepcopy__ = _deepcopy
-BaseOperator.__deepcopy__ = _deepcopy
+##Simulator.__deepcopy__ = _deepcopy
+##BaseOperator.__deepcopy__ = _deepcopy
 
 def ind_setInfo2(self, field, value):
     self.setInfo(value, field)
@@ -642,174 +642,174 @@ class WithArgs:
 
 # mating schemes
 
-class SequentialParentsChooser(CombinedParentsChooser):
-    '''This parent chooser chooses two parents (a father and a mother)
-    sequentially from their respective sex groups. Selection is not considered.
-    If all fathers (or mothers) are exhausted, this parent chooser will choose
-    fathers (or mothers) from the beginning of the (virtual) subpopulation
-    again.'''
-    def __init__(self):
-        '''Create a parent chooser that chooses two parents sequentially from a
-        parental (virtual) subpopulation.'''
-        CombinedParentsChooser.__init__(self,
-            SequentialParentChooser(MALE_ONLY),
-            SequentialParentChooser(FEMALE_ONLY))
-
-
-class CloneMating(HomoMating):
-    '''A homogeneous mating scheme that uses a sequential parent chooser and
-    a clone offspring generator.'''
-    def __init__(self, numOffspring = 1, sexMode = None, ops = CloneGenoTransmitter(),
-        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = None):
-        '''Create a clonal mating scheme that clones parents to offspring using
-        a ``CloneGenoTransmitter``. Please refer to class ``OffspringGenerator``
-        for parameters *ops* and *numOffspring*, and to class ``HomoMating`` for
-        parameters  *subPopSize*, *subPops* and *weight*. Parameters *sexMode* and
-        *selectionField* are ignored because this mating scheme does not support
-        natural selection, and ``CloneGenoTransmitter`` copies sex from parents
-        to offspring. Note that ``CloneGenoTransmitter`` by default also copies
-        all parental information fields to offspring.
-        '''
-        HomoMating.__init__(self,
-            chooser = SequentialParentChooser(),
-            generator = OffspringGenerator(ops, numOffspring, RANDOM_SEX),
-            subPopSize = subPopSize,
-            subPops = subPops,
-            weight = weight)
-
-
-class RandomSelection(HomoMating):
-    '''A homogeneous mating scheme that uses a random single-parent parent
-    chooser with replacement, and a clone offspring generator. This mating
-    scheme is usually used to simulate the basic haploid Wright-Fisher model
-    but it can also be applied to diploid populations.'''
-    def __init__(self, numOffspring = 1, sexMode = None, ops = CloneGenoTransmitter(),
-        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
-        '''Create a mating scheme that select a parent randomly and copy him or
-        her to the offspring population. Please refer to class 
-        ``RandomParentChooser`` for parameter *selectionField*, to class
-        ``OffspringGenerator`` for parameters *ops* and *numOffspring*, and to
-        class ``HomoMating`` for parameters *subPopSize*, *subPops* and *weight*.
-        Parameter *sexMode* is ignored because ``cloneOffspringGenerator`` copies
-        sex from parents to offspring.
-        '''
-        HomoMating.__init__(self,
-            chooser = RandomParentChooser(True, selectionField),
-            generator = OffspringGenerator(ops, numOffspring, RANDOM_SEX),
-            subPopSize = subPopSize,
-            subPops = subPops,
-            weight = weight)
-
-
-class RandomMating(HomoMating):
-    '''A homogeneous mating scheme that uses a random parents chooser with
-    replacement and a Mendelian offspring generator. This mating scheme is
-    widely used to simulate diploid sexual Wright-Fisher random mating.'''
-    def __init__(self, numOffspring = 1, sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(), 
-        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
-        '''Creates a random mating ssheme that selects two parents randomly and
-        transmit genotypes according to Mendelian laws. Please refer to class
-        ``RandomParentsChooser`` for parameter *selectionField*, to class
-        ``OffspringGenerator`` for parameters *ops*, *sexMode* and
-        *numOffspring*, and to class ``HomoMating`` for parameters
-        *subPopSize*, *subPops* and *weight*.
-        '''
-        HomoMating.__init__(self,
-            chooser = RandomParentsChooser(True, selectionField),
-            generator = OffspringGenerator(ops, numOffspring, sexMode),
-            subPopSize = subPopSize,
-            subPops = subPops,
-            weight = weight)
-
-
-class MonogamousMating(HomoMating):
-    '''A homogeneous mating scheme that uses a random parents chooser without
-    replacement and a Mendelian offspring generator. It differs from the basic
-    random mating scheme in that each parent can mate only once so there is no
-    half-sibling in the population.'''
-    def __init__(self, numOffspring = 1, sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(),
-        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = None):
-        '''Creates a monogamous mating scheme that selects each parent only
-        once. Please refer to class ``OffspringGenerator`` for parameters
-        *ops*, *sexMode* and *numOffspring*, and to class ``HomoMating`` for
-        parameters *subPopSize*, *subPops* and *weight*. Parameter
-        *selectionField* is ignored because this mating scheme does not
-        support natural selection.
-        '''
-        HomoMating.__init__(self,
-            chooser = RandomParentsChooser(replacement=False),
-            generator = OffspringGenerator(ops, numOffspring, sexMode),
-            subPopSize = subPopSize,
-            subPops = subPops,
-            weight = weight)
-
-
-class PolygamousMating(HomoMating):
-    '''A homogeneous mating scheme that uses a multi-spouse parents chooser
-    and a Mendelian offspring generator. It differs from the basic random
-    mating scheme in that each parent of sex *polySex* will have *polyNum*
-    spouses.'''
-    def __init__(self, polySex=MALE, polyNum=1, numOffspring = 1,
-        sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(), subPopSize = [],
-        subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
-        '''Creates a polygamous mating scheme that each parent mates with
-        multiple spouses. Please refer to class ``PolyParentsChooser`` for
-        parameters *polySex*, *polyNum* and *selectionField*, to class
-        ``OffspringGenerator`` for parameters *ops*,  *sexMode* and
-        *numOffspring*, and to class ``HomoMating`` for parameters
-        *subPopSize*, *subPops* and *weight*. '''
-        HomoMating.__init__(self,
-            chooser = PolyParentsChooser(polySex, polyNum),
-            generator = OffspringGenerator(ops, numOffspring, sexMode),
-            subPopSize = subPopSize,
-            subPops = subPops,
-            weight = weight)
-
-
-class HaplodiploidMating(HomoMating):
-    '''A homogeneous mating scheme that uses a random parents chooser with
-    replacement and a haplodiploid offspring generator. It should be used
-    in a haplodiploid population where male individuals only have one set
-    of homologous chromosomes.'''
-    def __init__(self, numOffspring = 1., sexMode = RANDOM_SEX,
-        ops = HaplodiploidGenoTransmitter(), subPopSize = [], subPops = ALL_AVAIL,
-        weight = 0, selectionField = 'fitness'):
-        '''Creates a mating scheme in haplodiploid populations. Please refer
-        to class ``RandomParentsChooser`` for parameter *selectionField*, to
-        class ``OffspringGenerator`` for parameters *ops*, *sexMode* and
-        *numOffspring*, and to class ``HomoMating`` for parameters
-        *subPopSize*, *subPops* and *weight*.
-        '''
-        HomoMating.__init__(self,
-            chooser = RandomParentsChooser(True, selectionField),
-            generator = OffspringGenerator(ops, numOffspring, sexMode),
-            subPopSize = subPopSize,
-            subPops = subPops,
-            weight = weight)
-
-
-class SelfMating(HomoMating):
-    '''A homogeneous mating scheme that uses a random single-parent parent
-    chooser with or without replacement (parameter *replacement*) and a
-    selfing offspring generator. It is used to mimic self-fertilization
-    in certain plant populations.'''
-    def __init__(self, replacement=True, numOffspring = 1, sexMode = RANDOM_SEX,
-        ops = SelfingGenoTransmitter(), subPopSize = [], subPops = ALL_AVAIL, weight = 0,
-        selectionField = 'fitness'):
-        '''Creates a selfing mating scheme where two homologous copies of
-        parental chromosomes are transmitted to offspring according to
-        Mendelian laws. Please refer to class ``RandomParentChooser`` for
-        parameter *replacement* and  *selectionField*, to class
-        ``OffspringGenerator`` for parameters *ops*, *sexMode* and
-        *numOffspring*, and to class ``HomoMating`` for parameters
-        *subPopSize*, *subPops* and *weight*.
-    '''
-        HomoMating.__init__(self,
-            chooser = RandomParentChooser(replacement, selectionField),
-            generator = OffspringGenerator(ops, numOffspring, sexMode),
-            subPopSize = subPopSize,
-            subPops = subPops,
-            weight = weight)
+##class SequentialParentsChooser(CombinedParentsChooser):
+##    '''This parent chooser chooses two parents (a father and a mother)
+##    sequentially from their respective sex groups. Selection is not considered.
+##    If all fathers (or mothers) are exhausted, this parent chooser will choose
+##    fathers (or mothers) from the beginning of the (virtual) subpopulation
+##    again.'''
+##    def __init__(self):
+##        '''Create a parent chooser that chooses two parents sequentially from a
+##        parental (virtual) subpopulation.'''
+##        CombinedParentsChooser.__init__(self,
+##            SequentialParentChooser(MALE_ONLY),
+##            SequentialParentChooser(FEMALE_ONLY))
+##
+##
+##class CloneMating(HomoMating):
+##    '''A homogeneous mating scheme that uses a sequential parent chooser and
+##    a clone offspring generator.'''
+##    def __init__(self, numOffspring = 1, sexMode = None, ops = CloneGenoTransmitter(),
+##        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = None):
+##        '''Create a clonal mating scheme that clones parents to offspring using
+##        a ``CloneGenoTransmitter``. Please refer to class ``OffspringGenerator``
+##        for parameters *ops* and *numOffspring*, and to class ``HomoMating`` for
+##        parameters  *subPopSize*, *subPops* and *weight*. Parameters *sexMode* and
+##        *selectionField* are ignored because this mating scheme does not support
+##        natural selection, and ``CloneGenoTransmitter`` copies sex from parents
+##        to offspring. Note that ``CloneGenoTransmitter`` by default also copies
+##        all parental information fields to offspring.
+##        '''
+##        HomoMating.__init__(self,
+##            chooser = SequentialParentChooser(),
+##            generator = OffspringGenerator(ops, numOffspring, RANDOM_SEX),
+##            subPopSize = subPopSize,
+##            subPops = subPops,
+##            weight = weight)
+##
+##
+##class RandomSelection(HomoMating):
+##    '''A homogeneous mating scheme that uses a random single-parent parent
+##    chooser with replacement, and a clone offspring generator. This mating
+##    scheme is usually used to simulate the basic haploid Wright-Fisher model
+##    but it can also be applied to diploid populations.'''
+##    def __init__(self, numOffspring = 1, sexMode = None, ops = CloneGenoTransmitter(),
+##        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
+##        '''Create a mating scheme that select a parent randomly and copy him or
+##        her to the offspring population. Please refer to class 
+##        ``RandomParentChooser`` for parameter *selectionField*, to class
+##        ``OffspringGenerator`` for parameters *ops* and *numOffspring*, and to
+##        class ``HomoMating`` for parameters *subPopSize*, *subPops* and *weight*.
+##        Parameter *sexMode* is ignored because ``cloneOffspringGenerator`` copies
+##        sex from parents to offspring.
+##        '''
+##        HomoMating.__init__(self,
+##            chooser = RandomParentChooser(True, selectionField),
+##            generator = OffspringGenerator(ops, numOffspring, RANDOM_SEX),
+##            subPopSize = subPopSize,
+##            subPops = subPops,
+##            weight = weight)
+##
+##
+##class RandomMating(HomoMating):
+##    '''A homogeneous mating scheme that uses a random parents chooser with
+##    replacement and a Mendelian offspring generator. This mating scheme is
+##    widely used to simulate diploid sexual Wright-Fisher random mating.'''
+##    def __init__(self, numOffspring = 1, sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(), 
+##        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
+##        '''Creates a random mating ssheme that selects two parents randomly and
+##        transmit genotypes according to Mendelian laws. Please refer to class
+##        ``RandomParentsChooser`` for parameter *selectionField*, to class
+##        ``OffspringGenerator`` for parameters *ops*, *sexMode* and
+##        *numOffspring*, and to class ``HomoMating`` for parameters
+##        *subPopSize*, *subPops* and *weight*.
+##        '''
+##        HomoMating.__init__(self,
+##            chooser = RandomParentsChooser(True, selectionField),
+##            generator = OffspringGenerator(ops, numOffspring, sexMode),
+##            subPopSize = subPopSize,
+##            subPops = subPops,
+##            weight = weight)
+##
+##
+##class MonogamousMating(HomoMating):
+##    '''A homogeneous mating scheme that uses a random parents chooser without
+##    replacement and a Mendelian offspring generator. It differs from the basic
+##    random mating scheme in that each parent can mate only once so there is no
+##    half-sibling in the population.'''
+##    def __init__(self, numOffspring = 1, sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(),
+##        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = None):
+##        '''Creates a monogamous mating scheme that selects each parent only
+##        once. Please refer to class ``OffspringGenerator`` for parameters
+##        *ops*, *sexMode* and *numOffspring*, and to class ``HomoMating`` for
+##        parameters *subPopSize*, *subPops* and *weight*. Parameter
+##        *selectionField* is ignored because this mating scheme does not
+##        support natural selection.
+##        '''
+##        HomoMating.__init__(self,
+##            chooser = RandomParentsChooser(replacement=False),
+##            generator = OffspringGenerator(ops, numOffspring, sexMode),
+##            subPopSize = subPopSize,
+##            subPops = subPops,
+##            weight = weight)
+##
+##
+##class PolygamousMating(HomoMating):
+##    '''A homogeneous mating scheme that uses a multi-spouse parents chooser
+##    and a Mendelian offspring generator. It differs from the basic random
+##    mating scheme in that each parent of sex *polySex* will have *polyNum*
+##    spouses.'''
+##    def __init__(self, polySex=MALE, polyNum=1, numOffspring = 1,
+##        sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(), subPopSize = [],
+##        subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
+##        '''Creates a polygamous mating scheme that each parent mates with
+##        multiple spouses. Please refer to class ``PolyParentsChooser`` for
+##        parameters *polySex*, *polyNum* and *selectionField*, to class
+##        ``OffspringGenerator`` for parameters *ops*,  *sexMode* and
+##        *numOffspring*, and to class ``HomoMating`` for parameters
+##        *subPopSize*, *subPops* and *weight*. '''
+##        HomoMating.__init__(self,
+##            chooser = PolyParentsChooser(polySex, polyNum),
+##            generator = OffspringGenerator(ops, numOffspring, sexMode),
+##            subPopSize = subPopSize,
+##            subPops = subPops,
+##            weight = weight)
+##
+##
+##class HaplodiploidMating(HomoMating):
+##    '''A homogeneous mating scheme that uses a random parents chooser with
+##    replacement and a haplodiploid offspring generator. It should be used
+##    in a haplodiploid population where male individuals only have one set
+##    of homologous chromosomes.'''
+##    def __init__(self, numOffspring = 1., sexMode = RANDOM_SEX,
+##        ops = HaplodiploidGenoTransmitter(), subPopSize = [], subPops = ALL_AVAIL,
+##        weight = 0, selectionField = 'fitness'):
+##        '''Creates a mating scheme in haplodiploid populations. Please refer
+##        to class ``RandomParentsChooser`` for parameter *selectionField*, to
+##        class ``OffspringGenerator`` for parameters *ops*, *sexMode* and
+##        *numOffspring*, and to class ``HomoMating`` for parameters
+##        *subPopSize*, *subPops* and *weight*.
+##        '''
+##        HomoMating.__init__(self,
+##            chooser = RandomParentsChooser(True, selectionField),
+##            generator = OffspringGenerator(ops, numOffspring, sexMode),
+##            subPopSize = subPopSize,
+##            subPops = subPops,
+##            weight = weight)
+##
+##
+##class SelfMating(HomoMating):
+##    '''A homogeneous mating scheme that uses a random single-parent parent
+##    chooser with or without replacement (parameter *replacement*) and a
+##    selfing offspring generator. It is used to mimic self-fertilization
+##    in certain plant populations.'''
+##    def __init__(self, replacement=True, numOffspring = 1, sexMode = RANDOM_SEX,
+##        ops = SelfingGenoTransmitter(), subPopSize = [], subPops = ALL_AVAIL, weight = 0,
+##        selectionField = 'fitness'):
+##        '''Creates a selfing mating scheme where two homologous copies of
+##        parental chromosomes are transmitted to offspring according to
+##        Mendelian laws. Please refer to class ``RandomParentChooser`` for
+##        parameter *replacement* and  *selectionField*, to class
+##        ``OffspringGenerator`` for parameters *ops*, *sexMode* and
+##        *numOffspring*, and to class ``HomoMating`` for parameters
+##        *subPopSize*, *subPops* and *weight*.
+##    '''
+##        HomoMating.__init__(self,
+##            chooser = RandomParentChooser(replacement, selectionField),
+##            generator = OffspringGenerator(ops, numOffspring, sexMode),
+##            subPopSize = subPopSize,
+##            subPops = subPops,
+##            weight = weight)
 
 ## 
 ## def consanguineousMating(infoFields = [], func = None, param = None,
@@ -835,171 +835,171 @@ class SelfMating(HomoMating):
 ##         weight = weight)
 ## 
 
-class ControlledRandomMating(HomoMating):
-    '''A homogeneous mating scheme that uses a random sexual parents chooser
-    with replacement and a controlled offspring generator using Mendelian
-    genotype transmitter. It falls back to a regular random mating scheme
-    if there is no locus to control or no trajectory is defined.'''
-    def __init__(self, loci=[], alleles=[], freqFunc=None,
-        numOffspring = 1, sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(),
-        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
-        '''Creates a random mating scheme that controls allele frequency at
-        loci *loci*. At each generation, function *freqFunc* will be called to
-        called to obtain intended frequencies of alleles *alleles* at loci
-        *loci*. The controlled offspring generator will control the acceptance
-        of offspring so that the generation reaches desired allele frequencies
-        at these loci. If *loci* is empty or *freqFunc* is ``None``, this mating
-        scheme works identically to a ``RandomMating scheme``. Rationals and
-        applications of this mating scheme is described in details in a paper *Peng
-        et al, 2007 (PLoS Genetics)*. Please refer to class ``RandomParentsChooser``
-        for parameters *selectionField*, to class ``ControlledOffspringGenerator``
-        for parameters *loci*, *alleles*, *freqFunc*, to class
-        ``OffspringGenerator`` for parameters *ops*, *sexMode* and *numOffspring*,
-        and to class ``HomoMating`` for parameters *subPopSize*, *subPops* and
-        *weight*.
-        '''
-        if (type(loci) in [type([]), type(())] and len(loci) == 0) or (freqFunc is None):
-            HomoMating.__init__(self,
-                chooser = RandomParentsChooser(True, selectionField),
-                generator = OffspringGenerator(ops, numOffspring, sexMode),
-                subPopSize = subPopSize,
-                subPops = subPops,
-                weight = weight)
-        else:
-            HomoMating.__init__(self,
-                chooser = RandomParentsChooser(True, selectionField),
-                generator = ControlledOffspringGenerator(loci, alleles, freqFunc,
-                    ops, numOffspring, sexMode),
-                subPopSize = subPopSize,
-                subPops = subPops,
-                weight = weight)
-
-
-class SNPMutator(MatrixMutator):
-    '''A mutator model that assumes two alleles 0 and 1 and accepts mutation
-    rate from 0 to 1, and from 1 to 0 alleles. '''
-    def __init__(self, u=0, v=0, *args, **kwargs):
-        '''Return a ``MatrixMutator`` with proper mutate matrix for a two-allele
-        mutation model using mutation rate from allele 0 to 1 (parameter ``u``)
-        and from 1 to 0 (parameter ``v``)'''
-        MatrixMutator.__init__(self, [[1-u, u], [v, 1-v]], *args, **kwargs)
-
-
-class AcgtMutator(MatrixMutator):
-    '''This mutation operator assumes alleles 0, 1, 2, 3 as nucleotides ``A``,
-    ``C``, ``G`` and ``T`` and use a 4 by 4 mutation rate matrix to mutate them.
-    Although a general model needs 12 parameters, less parameters are needed
-    for specific nucleotide mutation models (parameter ``model``). The length
-    and meaning of parameter ``rate`` is model dependent.'''
-    def __init__(self, rate=[], model='general', *args, **kwargs):
-        '''Create a mutation model that mutates between nucleotides ``A``,
-        ``C``, ``G``, and ``T`` (alleles are coded in that order as 0, 1, 2
-        and 3). Currently supported models are Jukes and Cantor 1969 model
-        (``JC69``), Kimura's 2-parameter model (``K80``), Felsenstein 1981
-        model (``F81``), Hasgawa, Kishino and Yano 1985 model (``HKY85``),
-        Tamura 1992 model (``T92``), Tamura and Nei 1993 model (``TN93``),
-        Generalized time reversible model (``GTR``), and a general model
-        (``general``) with 12 parameters. Please refer to the simuPOP user's
-        guide for detailed information about each model.
-        '''
-        if model == 'JC69':
-            if type(rate) in [type(()), type([])]:
-                if len(rate) != 1:
-                    raise ValueError('A Jukes and Cantor 1969 model needs one parameter mu.')
-                mu = rate[0]
-            else:
-                mu = rate
-            m = [[0,     mu/4., mu/4., mu/4.],
-                 [mu/4., 0,     mu/4., mu/4.],
-                 [mu/4., mu/4., 0,     mu/4.],
-                 [mu/4., mu/4., mu/4., 0    ]]
-        elif model == 'K80':
-            if len(rate) != 2:
-                raise ValueError('A Kimura 2-parameter model requires two parameters mu and k')
-            mu, k = rate
-            m = [[0,       mu/4.,   mu*k/4., mu/4.  ],
-                 [mu/4.,   0,       mu/4.,   mu*k/4.],
-                 [mu*k/4., mu/4.,   0,       mu/4.  ],
-                 [mu/4.,   mu*k/4., mu/4.,   0      ]]
-        elif model == 'F81':
-            if len(rate) != 4:
-                raise ValueError('A Felsenstein 1981 model requires four parameters mu, pi_A, pi_C and pi_G')
-            mu, piA, piC, piG = rate
-            piT = 1 - piA - piC - piG
-            if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
-                piG < 0 or piG > 1 or piT < 0 or piT > 1:
-                raise ValueError('Basic frequencies should be between 0 and 1')
-            m = [[0,      mu*piC, mu*piG, mu*piT],
-                 [mu*piA, 0,      mu*piG, mu*piT],
-                 [mu*piA, mu*piC, 0,      mu*piT],
-                 [mu*piA, mu*piC, mu*piG, 0     ]]
-        elif model == 'HKY85':
-            if len(rate) != 5:
-                raise ValueError('A Hasegawa, Kishino and Yano 1985 model requires five parameters mu, k, pi_A, pi_C and pi_G')
-            mu, k, piA, piC, piG = rate
-            piT = 1 - piA - piC - piG
-            if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
-                piG < 0 or piG > 1 or piT < 0 or piT > 1:
-                raise ValueError('Basic frequencies should be between 0 and 1')
-            m = [[0,        mu*piC,   mu*k*piG, mu*piT  ],
-                 [mu*piA,   0,        mu*piG,   mu*k*piT],
-                 [mu*k*piA, mu*piC,   0,        mu*piT  ],
-                 [mu*piA,   mu*k*piC, mu*piG,   0       ]]
-        elif model == 'T92':
-            if len(rate) != 2:
-                raise ValueError('A Tamura 1992 model requires two parameters mu and pi_GC')
-            mu, piGC = rate
-            piG = piC = piGC/2.
-            piA = piT = (1 - piGC)/2.
-            if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
-                piG < 0 or piG > 1 or piT < 0 or piT > 1:
-                raise ValueError('Basic frequencies should be between 0 and 1')
-            m = [[0,      mu*piC, mu*piG, mu*piT],
-                 [mu*piA, 0,      mu*piG, mu*piT],
-                 [mu*piA, mu*piC, 0,      mu*piT],
-                 [mu*piA, mu*piC, mu*piG, 0     ]]
-        elif model == 'TN93':
-            if len(rate) != 6:
-                raise ValueError('A Tamura and Nei 1993 model requires six parameters mu, k1, k2, pi_A, pi_C and pi_G')
-            mu, k1, k2, piA, piC, piG = rate
-            piT = 1 - piA - piC - piG
-            if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
-                piG < 0 or piG > 1 or piT < 0 or piT > 1:
-                raise ValueError('Basic frequencies should be between 0 and 1')
-            m = [[0,         mu*piC,    mu*k1*piG, mu*piT   ],
-                 [mu*piA,    0,         mu*piG,    mu*k2*piT],
-                 [mu*k1*piA, mu*piC,    0,         mu*piT   ],
-                 [mu*piA,    mu*k2*piC, mu*piG,    0        ]]
-        elif model == 'GTR':
-            if len(rate) != 9:
-                raise ValueError('A generalized time reversible model requires nine parameters x1, ..., x6, pi_A, pi_C and pi_G')
-            x1, x2, x3, x4, x5, x6, piA, piC, piG = rate
-            piT = 1 - piA - piC - piG
-            if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
-                piG < 0 or piG > 1 or piT < 0 or piT > 1:
-                raise ValueError('Basic frequencies should be between 0 and 1')
-            m = [[0,  piA*x1/piC, piA*x2/piG, piA*x3/piT],
-                 [x1, 0,          piC*x4/piG, piC*x5/piT],
-                 [x2, x4,         0,          piG*x6/piT],
-                 [x3, x5,         x6,         0         ]]
-        elif model == 'general':
-            if len(rate) != 12:
-                raise ValueError('Please specify 12 parameters for this general nucleotide mutation model')
-            m = [[0,       rate[0],  rate[1],  rate[2]],
-                 [rate[3], 0,        rate[4],  rate[5]],
-                 [rate[6], rate[7],  0,        rate[8]],
-                 [rate[9], rate[10], rate[11], 0      ]]
-        else:
-            raise ValueError('Unrecognized nucleotide mutation model %s' % model)
-        MatrixMutator.__init__(self, m, *args, **kwargs)
-
-
-class AminoAcidMutator(MatrixMutator):
-    '''
-    This operator has not been implemented.
-    '''
-    def __init__(self, rate=[], model='general', *args, **kwargs):
-        MatrixMutator.__init__(self, rate, *args, **kwargs)
+##class ControlledRandomMating(HomoMating):
+##    '''A homogeneous mating scheme that uses a random sexual parents chooser
+##    with replacement and a controlled offspring generator using Mendelian
+##    genotype transmitter. It falls back to a regular random mating scheme
+##    if there is no locus to control or no trajectory is defined.'''
+##    def __init__(self, loci=[], alleles=[], freqFunc=None,
+##        numOffspring = 1, sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(),
+##        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
+##        '''Creates a random mating scheme that controls allele frequency at
+##        loci *loci*. At each generation, function *freqFunc* will be called to
+##        called to obtain intended frequencies of alleles *alleles* at loci
+##        *loci*. The controlled offspring generator will control the acceptance
+##        of offspring so that the generation reaches desired allele frequencies
+##        at these loci. If *loci* is empty or *freqFunc* is ``None``, this mating
+##        scheme works identically to a ``RandomMating scheme``. Rationals and
+##        applications of this mating scheme is described in details in a paper *Peng
+##        et al, 2007 (PLoS Genetics)*. Please refer to class ``RandomParentsChooser``
+##        for parameters *selectionField*, to class ``ControlledOffspringGenerator``
+##        for parameters *loci*, *alleles*, *freqFunc*, to class
+##        ``OffspringGenerator`` for parameters *ops*, *sexMode* and *numOffspring*,
+##        and to class ``HomoMating`` for parameters *subPopSize*, *subPops* and
+##        *weight*.
+##        '''
+##        if (type(loci) in [type([]), type(())] and len(loci) == 0) or (freqFunc is None):
+##            HomoMating.__init__(self,
+##                chooser = RandomParentsChooser(True, selectionField),
+##                generator = OffspringGenerator(ops, numOffspring, sexMode),
+##                subPopSize = subPopSize,
+##                subPops = subPops,
+##                weight = weight)
+##        else:
+##            HomoMating.__init__(self,
+##                chooser = RandomParentsChooser(True, selectionField),
+##                generator = ControlledOffspringGenerator(loci, alleles, freqFunc,
+##                    ops, numOffspring, sexMode),
+##                subPopSize = subPopSize,
+##                subPops = subPops,
+##                weight = weight)
+##
+##
+##class SNPMutator(MatrixMutator):
+##    '''A mutator model that assumes two alleles 0 and 1 and accepts mutation
+##    rate from 0 to 1, and from 1 to 0 alleles. '''
+##    def __init__(self, u=0, v=0, *args, **kwargs):
+##        '''Return a ``MatrixMutator`` with proper mutate matrix for a two-allele
+##        mutation model using mutation rate from allele 0 to 1 (parameter ``u``)
+##        and from 1 to 0 (parameter ``v``)'''
+##        MatrixMutator.__init__(self, [[1-u, u], [v, 1-v]], *args, **kwargs)
+##
+##
+##class AcgtMutator(MatrixMutator):
+##    '''This mutation operator assumes alleles 0, 1, 2, 3 as nucleotides ``A``,
+##    ``C``, ``G`` and ``T`` and use a 4 by 4 mutation rate matrix to mutate them.
+##    Although a general model needs 12 parameters, less parameters are needed
+##    for specific nucleotide mutation models (parameter ``model``). The length
+##    and meaning of parameter ``rate`` is model dependent.'''
+##    def __init__(self, rate=[], model='general', *args, **kwargs):
+##        '''Create a mutation model that mutates between nucleotides ``A``,
+##        ``C``, ``G``, and ``T`` (alleles are coded in that order as 0, 1, 2
+##        and 3). Currently supported models are Jukes and Cantor 1969 model
+##        (``JC69``), Kimura's 2-parameter model (``K80``), Felsenstein 1981
+##        model (``F81``), Hasgawa, Kishino and Yano 1985 model (``HKY85``),
+##        Tamura 1992 model (``T92``), Tamura and Nei 1993 model (``TN93``),
+##        Generalized time reversible model (``GTR``), and a general model
+##        (``general``) with 12 parameters. Please refer to the simuPOP user's
+##        guide for detailed information about each model.
+##        '''
+##        if model == 'JC69':
+##            if type(rate) in [type(()), type([])]:
+##                if len(rate) != 1:
+##                    raise ValueError('A Jukes and Cantor 1969 model needs one parameter mu.')
+##                mu = rate[0]
+##            else:
+##                mu = rate
+##            m = [[0,     mu/4., mu/4., mu/4.],
+##                 [mu/4., 0,     mu/4., mu/4.],
+##                 [mu/4., mu/4., 0,     mu/4.],
+##                 [mu/4., mu/4., mu/4., 0    ]]
+##        elif model == 'K80':
+##            if len(rate) != 2:
+##                raise ValueError('A Kimura 2-parameter model requires two parameters mu and k')
+##            mu, k = rate
+##            m = [[0,       mu/4.,   mu*k/4., mu/4.  ],
+##                 [mu/4.,   0,       mu/4.,   mu*k/4.],
+##                 [mu*k/4., mu/4.,   0,       mu/4.  ],
+##                 [mu/4.,   mu*k/4., mu/4.,   0      ]]
+##        elif model == 'F81':
+##            if len(rate) != 4:
+##                raise ValueError('A Felsenstein 1981 model requires four parameters mu, pi_A, pi_C and pi_G')
+##            mu, piA, piC, piG = rate
+##            piT = 1 - piA - piC - piG
+##            if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
+##                piG < 0 or piG > 1 or piT < 0 or piT > 1:
+##                raise ValueError('Basic frequencies should be between 0 and 1')
+##            m = [[0,      mu*piC, mu*piG, mu*piT],
+##                 [mu*piA, 0,      mu*piG, mu*piT],
+##                 [mu*piA, mu*piC, 0,      mu*piT],
+##                 [mu*piA, mu*piC, mu*piG, 0     ]]
+##        elif model == 'HKY85':
+##            if len(rate) != 5:
+##                raise ValueError('A Hasegawa, Kishino and Yano 1985 model requires five parameters mu, k, pi_A, pi_C and pi_G')
+##            mu, k, piA, piC, piG = rate
+##            piT = 1 - piA - piC - piG
+##            if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
+##                piG < 0 or piG > 1 or piT < 0 or piT > 1:
+##                raise ValueError('Basic frequencies should be between 0 and 1')
+##            m = [[0,        mu*piC,   mu*k*piG, mu*piT  ],
+##                 [mu*piA,   0,        mu*piG,   mu*k*piT],
+##                 [mu*k*piA, mu*piC,   0,        mu*piT  ],
+##                 [mu*piA,   mu*k*piC, mu*piG,   0       ]]
+##        elif model == 'T92':
+##            if len(rate) != 2:
+##                raise ValueError('A Tamura 1992 model requires two parameters mu and pi_GC')
+##            mu, piGC = rate
+##            piG = piC = piGC/2.
+##            piA = piT = (1 - piGC)/2.
+##            if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
+##                piG < 0 or piG > 1 or piT < 0 or piT > 1:
+##                raise ValueError('Basic frequencies should be between 0 and 1')
+##            m = [[0,      mu*piC, mu*piG, mu*piT],
+##                 [mu*piA, 0,      mu*piG, mu*piT],
+##                 [mu*piA, mu*piC, 0,      mu*piT],
+##                 [mu*piA, mu*piC, mu*piG, 0     ]]
+##        elif model == 'TN93':
+##            if len(rate) != 6:
+##                raise ValueError('A Tamura and Nei 1993 model requires six parameters mu, k1, k2, pi_A, pi_C and pi_G')
+##            mu, k1, k2, piA, piC, piG = rate
+##            piT = 1 - piA - piC - piG
+##            if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
+##                piG < 0 or piG > 1 or piT < 0 or piT > 1:
+##                raise ValueError('Basic frequencies should be between 0 and 1')
+##            m = [[0,         mu*piC,    mu*k1*piG, mu*piT   ],
+##                 [mu*piA,    0,         mu*piG,    mu*k2*piT],
+##                 [mu*k1*piA, mu*piC,    0,         mu*piT   ],
+##                 [mu*piA,    mu*k2*piC, mu*piG,    0        ]]
+##        elif model == 'GTR':
+##            if len(rate) != 9:
+##                raise ValueError('A generalized time reversible model requires nine parameters x1, ..., x6, pi_A, pi_C and pi_G')
+##            x1, x2, x3, x4, x5, x6, piA, piC, piG = rate
+##            piT = 1 - piA - piC - piG
+##            if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
+##                piG < 0 or piG > 1 or piT < 0 or piT > 1:
+##                raise ValueError('Basic frequencies should be between 0 and 1')
+##            m = [[0,  piA*x1/piC, piA*x2/piG, piA*x3/piT],
+##                 [x1, 0,          piC*x4/piG, piC*x5/piT],
+##                 [x2, x4,         0,          piG*x6/piT],
+##                 [x3, x5,         x6,         0         ]]
+##        elif model == 'general':
+##            if len(rate) != 12:
+##                raise ValueError('Please specify 12 parameters for this general nucleotide mutation model')
+##            m = [[0,       rate[0],  rate[1],  rate[2]],
+##                 [rate[3], 0,        rate[4],  rate[5]],
+##                 [rate[6], rate[7],  0,        rate[8]],
+##                 [rate[9], rate[10], rate[11], 0      ]]
+##        else:
+##            raise ValueError('Unrecognized nucleotide mutation model %s' % model)
+##        MatrixMutator.__init__(self, m, *args, **kwargs)
+##
+##
+##class AminoAcidMutator(MatrixMutator):
+##    '''
+##    This operator has not been implemented.
+##    '''
+##    def __init__(self, rate=[], model='general', *args, **kwargs):
+##        MatrixMutator.__init__(self, rate, *args, **kwargs)
 
 #
 # functions to corresponding operators

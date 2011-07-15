@@ -306,7 +306,7 @@ public:
 	 * to detect if scratch population is prepared properly during
 	 * evolution
 	 */
-	void validate(const string & msg) const;
+//	void validate(const string & msg) const;
 
 	/** CPPONLY
 	 * Fix a population, resize it if necessary. The content
@@ -363,13 +363,13 @@ public:
 	// allow compaison of populations in python
 	// only equal or unequal, no greater or less than
 	/// a python function used to compare the population objects
-	int __cmp__(const Population & rhs) const;
+//	int __cmp__(const Population & rhs) const;
 
 	/** HIDDEN
 	 *  adapt the current population to anther population structure.
 	 *  population size might or might not be changed.
 	 */
-	void fitGenoStru(size_t stru);
+//	void fitGenoStru(size_t stru);
 
 	/** HIDDEN
 	 *  set population/subpopulation structure given subpopulation sizes
@@ -606,7 +606,7 @@ public:
 	 *  object to a pedigree object and use function <tt>Pedigree.indByID</tt>.
 	 *  <group>4-ind</group>
 	 */
-	Individual & indByID(double id, const uintList & ancGens = uintList(), const string & idField = "ind_id");
+//	Individual & indByID(double id, const uintList & ancGens = uintList(), const string & idField = "ind_id");
 
 	/** CPPONLY: const version of the ind function.
 	 */
@@ -638,12 +638,12 @@ public:
 	 *  acceptable as long as it rounds closely to an integer.
 	 *  <group>6-ancestral</group>
 	 */
-	Individual & ancestor(double idx, ssize_t gen, vspID subPop = vspID());
+//	Individual & ancestor(double idx, ssize_t gen, vspID subPop = vspID());
 
 	/** CPPONLY const version of ancestor().
 	 *  <group>6-ancestral</group>
 	 */
-	const Individual & ancestor(double idx, ssize_t gen, vspID subPop = vspID()) const;
+//	const Individual & ancestor(double idx, ssize_t gen, vspID subPop = vspID()) const;
 
 	/** Return an iterator that can be used to iterate through all individuals
 	 *  in a population (if <tt>subPop=[]</tt>, default), or a (virtual)
@@ -652,7 +652,7 @@ public:
 	 *  ancestral generations, please use function \c Population.allIndividuals().
 	 *  <group>4-ind</group>
 	 */
-	pyIndIterator individuals(vspID subPop = vspID());
+//	pyIndIterator individuals(vspID subPop = vspID());
 
 	/// CPPONLY
 	bool indOrdered() const
@@ -817,11 +817,11 @@ public:
 	   subpopulations will be respected.	Therefore, it is possible to access all alleles within an
 	   subpopulation	through such iterators.
 	 */
-	IndAlleleIterator alleleIterator(size_t locus);
+//	IndAlleleIterator alleleIterator(size_t locus);
 
 
 	/// CPPONLY allele begin, for given subPop
-	IndAlleleIterator alleleIterator(size_t locus, size_t subPop);
+//	IndAlleleIterator alleleIterator(size_t locus, size_t subPop);
 
 
 	///  CPPONLY allele iterator, go through all allels one by one, without subPop info
@@ -829,6 +829,7 @@ public:
 	   if order, in order
 	   otherwise, do not even respect subpopulation structure
 	 */
+/*
 	GenoIterator genoBegin(bool order)
 	{
 		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
@@ -839,8 +840,9 @@ public:
 
 		return m_genotype.begin();
 	}
+*/
 
-
+/*
 	///  CPPONLY allele iterator
 	GenoIterator genoEnd(bool order)
 	{
@@ -851,6 +853,7 @@ public:
 
 		return m_genotype.end();
 	}
+*/
 
 
 	///  CPPONLY allele iterator, go through all allels one by one in a subpopulation
@@ -858,6 +861,7 @@ public:
 	   if order, keep order
 	   if not order, respect subpopulation structure
 	 */
+/*
 	GenoIterator genoBegin(size_t subPop, bool order)
 	{
 		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
@@ -868,8 +872,9 @@ public:
 
 		return m_genotype.begin() + m_subPopIndex[subPop] * genoSize();
 	}
+*/
 
-
+/*
 	/// CPPONLY allele iterator in a subpopulation.
 	GenoIterator genoEnd(size_t subPop, bool order)
 	{
@@ -880,6 +885,7 @@ public:
 
 		return m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize();
 	}
+*/
 
 
 	/// CPPONLY genoIterator --- beginning of individual ind.
@@ -923,7 +929,7 @@ public:
 	 *  subpopulation \e subPop. Virtual subpopulation is unsupported.
 	 *  <group>5-genotype</group>
 	 */
-	PyObject * genotype(vspID subPop = vspID());
+//	PyObject * genotype(vspID subPop = vspID());
 
 	/** Fill the genotype of all individuals in a population (if
 	 *  <tt>subPop=[]</tt>) or in a (virtual) subpopulation \e subPop (if
@@ -932,7 +938,7 @@ public:
 	 *  <tt>subPopSize(subPop)*totNumLoci()*ploidy()</tt>.
 	 *  <group>5-genotype</group>
 	 */
-	void setGenotype(const uintList & geno, vspID subPop = vspID());
+//	void setGenotype(const uintList & geno, vspID subPop = vspID());
 
 	//@}
 
@@ -944,7 +950,7 @@ public:
 	 *  fields (\e infoFields). Individuals will be sorted at an increasing
 	 *  order.
 	 */
-	void sortIndividuals(const stringList & infoFields);
+//	void sortIndividuals(const stringList & infoFields);
 
 	/** Rearrange individuals to their new subpopulations according to their
 	 *  integer values at information field \e field (value returned by
@@ -953,7 +959,7 @@ public:
 	 *  kept. New subpopulations will have empty names.
 	 *  <group>7-manipulate</group>
 	 */
-	void setSubPopByIndInfo(const string & field);
+//	void setSubPopByIndInfo(const string & field);
 
 	/** Split subpopulation \e subPop into subpopulations of given \e sizes,
 	 *  which should add up to the size of subpopulation \e subPop or \e 1,
@@ -965,7 +971,7 @@ public:
 	 *  split subpopulations.
 	 *  <group>7-manipulate</group>
 	 */
-	vectoru splitSubPop(size_t subPop, const vectorf & sizes, const vectorstr & names = vectorstr());
+//	vectoru splitSubPop(size_t subPop, const vectorf & sizes, const vectorstr & names = vectorstr());
 
 
 	/** Remove (virtual) subpopulation(s) \e subPops and all their individuals.
@@ -976,10 +982,10 @@ public:
 	 *  This function only handles the present generation.
 	 *  <group>7-manipulate</group>
 	 */
-	void removeSubPops(const subPopList & subPops);
+//	void removeSubPops(const subPopList & subPops);
 
 	/// CPPONLY
-	void removeMarkedIndividuals();
+//	void removeMarkedIndividuals();
 
 	/** remove individual(s) by absolute indexes (parameter \e index) or
 	 *  their IDs (parameter \e IDs), or using a filter function (paramter
@@ -1000,9 +1006,9 @@ public:
 	 *  kept even if all individuals from it are removed.
 	 *  <group>7-manipulate</group>
 	 */
-	void removeIndividuals(const uintList & indexes = vectoru(),
-		const floatList & IDs = vectorf(), const string & idField = "ind_id",
-		PyObject * filter = NULL);
+//	void removeIndividuals(const uintList & indexes = vectoru(),
+//		const floatList & IDs = vectorf(), const string & idField = "ind_id",
+//		PyObject * filter = NULL);
 
 	/** Merge subpopulations \e subPops. If \e subPops is \c ALL_AVAIL (default),
 	 *  all subpopulations will be merged. \e subPops do not have to be adjacent
@@ -1013,7 +1019,7 @@ public:
 	 *  function returns the ID of the merged subpopulation.
 	 *  <group>7-manipulate</group>
 	 */
-	size_t mergeSubPops(const uintList & subPops = uintList(), const string & name = UnnamedSubPop);
+//	size_t mergeSubPops(const uintList & subPops = uintList(), const string & name = UnnamedSubPop);
 
 	/** Add all individuals, including ancestors, in \e pop to the current
 	 *  population. Two populations should have the same genotypic structures
@@ -1021,7 +1027,7 @@ public:
 	 *  \e pop are kept.
 	 *  <group>7-manipulate</group>
 	 */
-	void addIndFrom(const Population & pop);
+//	void addIndFrom(const Population & pop);
 
 	/** Add chromosomes in population \e pop to the current population.
 	 *  population \e pop should have the same number of individuals as the
@@ -1030,7 +1036,7 @@ public:
 	 *  new chromosomes from population \c pop individual by individual.
 	 *  <group>7-manipulate</group>
 	 */
-	void addChromFrom(const Population & pop);
+//	void addChromFrom(const Population & pop);
 
 	/** Add loci from population \e pop, chromosome by chromosome. Added
 	 *  loci will be inserted according to their position. Their position
@@ -1039,7 +1045,7 @@ public:
 	 *  current population in the current and all ancestral generations.
 	 *  <group>7-manipulate</group>
 	 */
-	void addLociFrom(const Population & pop);
+//	void addLociFrom(const Population & pop);
 
 	/** Add chromosome \e chromName with given type \e chromType to a
 	 *  population, with loci \e lociNames inserted at position \e lociPos.
@@ -1050,9 +1056,9 @@ public:
 	 *  be used if \e lociNames is not specified.
 	 *  <group>7-manipulate</group>
 	 */
-	void addChrom(const floatList & lociPos, const stringList & lociNames = vectorstr(),
-		const string & chromName = string(), const stringMatrix & alleleNames = stringMatrix(),
-		size_t chromType = AUTOSOME);
+//	void addChrom(const floatList & lociPos, const stringList & lociNames = vectorstr(),
+//		const string & chromName = string(), const stringMatrix & alleleNames = stringMatrix(),
+//		size_t chromType = AUTOSOME);
 
 	/** Insert loci \e lociNames at positions \e pos on chromosome \e chrom.
 	 *  These parameters should be lists of the same length, although
@@ -1066,8 +1072,8 @@ public:
 	 *  function returns indexes of the inserted loci.
 	 *  <group>7-manipulate</group>
 	 */
-	vectoru addLoci(const uintList & chrom, const floatList & pos,
-		const stringList & lociNames = vectorstr(), const stringMatrix & alleleNames = stringMatrix());
+//	vectoru addLoci(const uintList & chrom, const floatList & pos,
+//		const stringList & lociNames = vectorstr(), const stringMatrix & alleleNames = stringMatrix());
 
 	/** Resize population by giving new subpopulation sizes \e sizes.
 	 *  individuals at the end of some subpopulations will be removed if the
@@ -1081,7 +1087,7 @@ public:
 	 *  the current generation.
 	 *  <group>7-manipulate</group>
 	 */
-	void resize(const uintList & sizes, bool propagate = false);
+//	void resize(const uintList & sizes, bool propagate = false);
 
 
 	/** Extract a list of (virtual) subpopulations from a population and create
@@ -1100,11 +1106,11 @@ public:
 	 *  This function only extract individuals from the present generation.
 	 *  <group>7-manipulate</group>
 	 */
-	Population & extractSubPops(const subPopList & subPops = subPopList(), bool rearrange = false) const;
+//	Population & extractSubPops(const subPopList & subPops = subPopList(), bool rearrange = false) const;
 
 
 	/// CPPONLY
-	Population & extractMarkedIndividuals() const;
+//	Population & extractMarkedIndividuals() const;
 
 	/** Extract individuals with given absolute indexes (parameter \e indexes),
 	 *  IDs (parameter \e IDs, stored in information field \e idField,
@@ -1124,9 +1130,9 @@ public:
 	 *  error will be given if an invalid ID is encountered.
 	 *  <group>7-manipulate</group>
 	 */
-	Population & extractIndividuals(const uintList & indexes = vectoru(),
-		const floatList & IDs = vectorf(), const string & idField = "ind_id",
-		PyObject * filter = NULL) const;
+//	Population & extractIndividuals(const uintList & indexes = vectoru(),
+//		const floatList & IDs = vectorf(), const string & idField = "ind_id",
+//		PyObject * filter = NULL) const;
 
 	/** Extract subsets of individuals, loci and/or information fields from the
 	 *  current population and create a new population. By default, all
@@ -1145,15 +1151,15 @@ public:
 	 *  CPPONLY
 	 *  <group>7-manipulate</group>
 	 */
-	Population & extract(const lociList & extractedLoci, const stringList & infoFieldList,
-		const subPopList & subPops = subPopList(), const uintList & ancGens = uintList()) const;
+//	Population & extract(const lociList & extractedLoci, const stringList & infoFieldList,
+//		const subPopList & subPops = subPopList(), const uintList & ancGens = uintList()) const;
 
 	/** Remove \e loci (absolute indexes or names) and genotypes at these loci
 	 *  from the current population. Alternatively, a parameter \e keep can be
 	 *  used to specify loci that will not be removed.
 	 *  <group>7-manipulate</group>
 	 */
-	void removeLoci(const lociList & loci = lociList(NULL), const lociList & keep = lociList(NULL));
+//	void removeLoci(const lociList & loci = lociList(NULL), const lociList & keep = lociList(NULL));
 
 	/** Recode alleles at \e loci (can be a list of loci indexes or names, or
 	 *  all loci in a population (\c ALL_AVAIL)) to other values according to
@@ -1172,8 +1178,8 @@ public:
 	 *  alleles for all subpopulations in all ancestral generations.
 	 *  <group>7-manipulate</group>
 	 */
-	void recodeAlleles(const uintListFunc & alleles, const lociList & loci = lociList(),
-		const stringMatrix & alleleNames = stringMatrix());
+//	void recodeAlleles(const uintListFunc & alleles, const lociList & loci = lociList(),
+//		const stringMatrix & alleleNames = stringMatrix());
 
 	/** Push population \e pop into the current population. Both populations
 	 *  should have the same genotypic structure. The current population is
@@ -1187,7 +1193,7 @@ public:
 	 *  current population.
 	 *  <group>6-ancestral</group>
 	 */
-	void push(Population & pop);
+//	void push(Population & pop);
 
 	/** HIDDEN
 	 *  Return the current ancestral generation number.
@@ -1225,7 +1231,7 @@ public:
 	/** CPPONLY
 	 *  Mark subpopulation
 	 */
-	void markIndividuals(vspID subPop, bool mark) const;
+//	void markIndividuals(vspID subPop, bool mark) const;
 
 	/** Set information field \c field (specified by index or name) of
 	 *  all individuals (if <tt>subPop=[]</tt>, default), or individuals in
@@ -1234,8 +1240,8 @@ public:
 	 *  the size of the population or (virtual) subpopulation.
 	 *  <group>8-info</group>
 	 */
-	void setIndInfo(const floatList & values, const uintString & field,
-		vspID subPop = vspID());
+//	void setIndInfo(const floatList & values, const uintString & field,
+//		vspID subPop = vspID());
 
 
 	/// CPPONLY info iterator
@@ -1330,18 +1336,18 @@ public:
 	 *  exists, it will be re-initialized.
 	 * <group>8-info</group>
 	 */
-	void addInfoFields(const stringList & fields, double init = 0);
+//	void addInfoFields(const stringList & fields, double init = 0);
 
 	/** Set information fields \e fields to a population and initialize them
 	 *  with value \e init. All existing information fields will be removed.
 	 *  <group>8-info</group>
 	 */
-	void setInfoFields(const stringList & fields, double init = 0);
+//	void setInfoFields(const stringList & fields, double init = 0);
 
 	/** Remove information fields \e fields from a population.
 	 *  <group>8-info</group>
 	 */
-	void removeInfoFields(const stringList & fields);
+//	void removeInfoFields(const stringList & fields);
 
 
 	/** Update information fields \e fields from \e fromFields of another
@@ -1351,9 +1357,9 @@ public:
 	 *  the specified ancestral generations are updated.
 	 *  <group>8-info</group>
 	 */
-	void updateInfoFieldsFrom(const stringList & fields, const Population & pop,
-		const stringList & fromFields = vectorstr(),
-		const uintList & ancGens = uintList());
+//	void updateInfoFieldsFrom(const stringList & fields, const Population & pop,
+//		const stringList & fromFields = vectorstr(),
+//		const uintList & ancGens = uintList());
 
 	/** set the intended ancestral depth of a population to \e depth, which can
 	 *  be \c 0 (does not store any ancestral generation), \c -1 (store all
@@ -1362,10 +1368,10 @@ public:
 	 *  (if \e depth > 0), extra ancestral generations are removed.
 	 *  <group>6-ancestral</group>
 	 */
-	void setAncestralDepth(int depth);
+//	void setAncestralDepth(int depth);
 
 	/// CPPONLY remove certain ancestral generations
-	void keepAncestralGens(const uintList & ancGens);
+//	void keepAncestralGens(const uintList & ancGens);
 
 	/** Making ancestral generation \e idx (\c 0 for current generation, \c 1
 	 *  for parental generation, \c 2 for grand-parental generation, etc) the
@@ -1387,18 +1393,18 @@ public:
 	   This function is const because the population is 'not changed'
 	   conceptually.
 	 */
-	void syncIndPointers(bool infoOnly = false) const;
+//	void syncIndPointers(bool infoOnly = false) const;
 
 	/** Save population to a file \e filename, which can be loaded by a global
 	 *  function <tt>loadPopulation(filename)</tt>.
 	 *  <group>8-pop</group>
 	 */
-	void save(const string & filename) const;
+//	void save(const string & filename) const;
 
 	/** CPPONLY load Population from file \e filename
 	 *  <group>8-pop</group>
 	 */
-	void load(const string & filename);
+//	void load(const string & filename);
 
 public:
 	/** return variables of a population as a Python dictionary. If a valid
@@ -1408,11 +1414,11 @@ public:
 	 *  \e subPop does not exist in <tt>vars()["subPop"]</tt>.
 	 *  <group>9-var</group>
 	 */
-	PyObject * vars(vspID subPop = vspID());
+//	PyObject * vars(vspID subPop = vspID());
 
 
 	/// CPPONLY The same as vars(), but without increasing reference count.
-	PyObject * dict(vspID subPop = vspID());
+//	PyObject * dict(vspID subPop = vspID());
 
 	/// CPPONLY
 	SharedVariables & getVars() const
@@ -1461,15 +1467,14 @@ public:
 	void execute(const string & stmts = string())
 	{
 		Expression("", stmts, m_vars.dict()).evaluate();
-	}
-
+	} 
 
 private:
 	friend class boost::serialization::access;
 
-	void save(boost::archive::text_oarchive & ar, const unsigned int /* version */) const;
+//	void save(boost::archive::text_oarchive & ar, const unsigned int /* version */) const;
 
-	void load(boost::archive::text_iarchive & ar, const unsigned int /* version */);
+//	void load(boost::archive::text_iarchive & ar, const unsigned int /* version */);
 
 	BOOST_SERIALIZATION_SPLIT_MEMBER();
 
@@ -1579,7 +1584,7 @@ public:
 
 /** load a population from a file saved by <tt>Population::save()</tt>.
  */
-Population & loadPopulation(const string & file);
+//Population & loadPopulation(const string & file);
 
 }
 

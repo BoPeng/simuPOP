@@ -34,26 +34,26 @@
 #include "genoStru.h"
 #include "individual.h"
 #include "population.h"
-#include "pedigree.h"
+//#include "pedigree.h"
 #include "virtualSubPop.h"
-#include "operator.h"
-#include "simulator.h"
+//#include "operator.h"
+//#include "simulator.h"
 
 #include "utility.h"
-#include "pedigree.h"
-#include "initializer.h"
-#include "outputer.h"
-#include "mating.h"
-#include "tagger.h"
-#include "stator.h"
-#include "migrator.h"
-#include "mutator.h"
-#include "transmitter.h"
-#include "selector.h"
-#include "qtrait.h"
-#include "penetrance.h"
+//#include "pedigree.h"
+//#include "initializer.h"
+//#include "outputer.h"
+//#include "mating.h"
+//#include "tagger.h"
+//#include "stator.h"
+//#include "migrator.h"
+//#include "mutator.h"
+//#include "transmitter.h"
+//#include "selector.h"
+//#include "qtrait.h"
+//#include "penetrance.h"
 
-#include "sandbox.h"
+//#include "sandbox.h"
 
 %}
 
@@ -224,17 +224,17 @@ namespace std
 %ignore simuPOP::IndAlleleIterator;
 %ignore simuPOP::IndInfoIterator;
 
-%newobject loadPopulation;
+//%newobject loadPopulation;
 
 // %newobject simuPOP::Population::extract;
-%newobject simuPOP::Population::extractSubPops;
-%newobject simuPOP::Population::extractIndividuals;
-%newobject simuPOP::Population::clone;
-%newobject simuPOP::Simulator::extract;
-%newobject simuPOP::Simulator::clone;
-%newobject simuPOP::BaseOperator::clone;
-%newobject simuPOP::MatingScheme::clone;
-%newobject simuPOP::Stat::clone;
+//%newobject simuPOP::Population::extractSubPops;
+//%newobject simuPOP::Population::extractIndividuals;
+//%newobject simuPOP::Population::clone;
+//%newobject simuPOP::Simulator::extract;
+//%newobject simuPOP::Simulator::clone;
+//%newobject simuPOP::BaseOperator::clone;
+//%newobject simuPOP::MatingScheme::clone;
+//%newobject simuPOP::Stat::clone;
 
 // the following load a docstring file extracted from doxgen output.
 // there will also be a bunch of %ignore directives as well
@@ -282,29 +282,29 @@ namespace std {
     %template()    vector<simuPOP::BaseOperator * >;
 }
 
-%include "operator.h"
+//%include "operator.h"
 
 namespace std
 {
     %template()    vector<PyObject*>;
-    %template()    vector<simuPOP::HomoMating * >;
+//    %template()    vector<simuPOP::HomoMating * >;
 }
 
 
 ////////////////////////// SIMUPOP CLASSES //////////////////////////
 
-%include "mating.h"
-%include "simulator.h"
-%include "stator.h"
-%include "outputer.h"
-%include "initializer.h"
-%include "tagger.h"
-%include "migrator.h"
-%include "mutator.h"
-%include "transmitter.h"
-%include "selector.h"
-%include "qtrait.h"
-%include "penetrance.h"
-%include "pedigree.h"
-%include "sandbox.h"
+//%include "mating.h"
+//%include "simulator.h"
+//%include "stator.h"
+//%include "outputer.h"
+//%include "initializer.h"
+//%include "tagger.h"
+//%include "migrator.h"
+//%include "mutator.h"
+//%include "transmitter.h"
+//%include "selector.h"
+//%include "qtrait.h"
+//%include "penetrance.h"
+//%include "pedigree.h"
+//%include "sandbox.h"
 
