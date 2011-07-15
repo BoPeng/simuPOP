@@ -5,7 +5,7 @@ get:
 	rsync -v -rlt -z simupop,simupop@web.sourceforge.net:/home/project-web/simupop/persistent/cookbook ${HOME}/simuPOP/web/persistent --exclude='sessions' --exclude='.svn'
 
 upload:
-	rsync -v -rlt -z ${HOME}/simuPOP/web/htdocs simupop,simupop@web.sourceforge.net --exclude='src_doc' --exclude='manual_release' --exclude='manual_svn' --exclude='.svn'
+	rsync -v -rlt -z ${HOME}/simuPOP/web/htdocs simupop,simupop@web.sourceforge.net: --exclude='src_doc' --exclude='manual_release' --exclude='manual_svn' --exclude='.svn'
 	rsync -v -rlt -z ${HOME}/simuPOP/web/persistent/web simupop,simupop@web.sourceforge.net:/home/project-web/simupop/persistent --exclude='sessions' --exclude='.svn'
 	rsync -v -rlt -z ${HOME}/simuPOP/web/persistent/cookbook simupop,simupop@web.sourceforge.net:/home/project-web/simupop/persistent --exclude='sessions' --exclude='.svn'
 
