@@ -284,7 +284,7 @@ public:
 		m_subPopSize.swap(rhs.m_subPopSize);
 		m_subPopNames.swap(rhs.m_subPopNames);
 		m_subPopIndex.swap(rhs.m_subPopIndex);
-		m_genotype.swap(rhs.m_genotype);
+///		m_genotype.swap(rhs.m_genotype);
 		m_info.swap(rhs.m_info);
 		m_inds.swap(rhs.m_inds);
 		std::swap(m_ancestralGens, rhs.m_ancestralGens);
@@ -889,22 +889,27 @@ public:
 
 
 	/// CPPONLY genoIterator --- beginning of individual ind.
+/*
 	GenoIterator indGenoBegin(size_t ind) const
 	{
 		CHECKRANGEIND(ind);
 		return m_inds[ind].genoBegin();
 	}
+*/
 
 
 	/// CPPONLY genoIterator -- end of individual ind.
+/*
 	GenoIterator indGenoEnd(size_t ind) const
 	{
 		CHECKRANGEIND(ind);
 		return m_inds[ind].genoEnd();
 	}
+*/
 
 
 	/// CPPONLY genoIterator --- beginning of individual ind.
+/*
 	GenoIterator indGenoBegin(size_t ind, size_t subPop) const
 	{
 		CHECKRANGESUBPOP(subPop);
@@ -912,9 +917,10 @@ public:
 
 		return m_inds[ subPopBegin(subPop) + ind].genoBegin();
 	}
-
+*/
 
 	/// CPPONLY genoIterator -- end of individual ind.
+/*
 	GenoIterator indGenoEnd(size_t ind, size_t subPop) const
 	{
 		CHECKRANGESUBPOP(subPop);
@@ -922,6 +928,7 @@ public:
 
 		return m_inds[ subPopBegin(subPop) + ind].genoEnd();
 	}
+*/
 
 
 	/** Return an editable array of the genotype of all individuals in
@@ -1495,7 +1502,7 @@ private:
 	BaseVspSplitter * m_vspSplitter;
 
 	/// pool of genotypic information
-	vectora m_genotype;
+///	vectora m_genotype;
 
 	/// information
 	/// only in head node
@@ -1516,7 +1523,7 @@ private:
 	{
 		vectoru m_subPopSize;
 		vectorstr m_subPopNames;
-		vectora m_genotype;
+///		vectora m_genotype;
 		vectorf m_info;
 		vector<Individual> m_inds;
 		bool m_indOrdered;

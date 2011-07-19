@@ -55,7 +55,7 @@ Population::Population(const uintList & size,
 	m_subPopNames(),
 	m_subPopIndex(size.elems().size() + 1),
 	m_vspSplitter(NULL),
-	m_genotype(0),
+///	m_genotype(0),
 	m_info(0),
 	m_inds(0),
 	m_ancestralGens(ancGen),
@@ -112,7 +112,7 @@ Population::Population(const Population & rhs) :
 	m_subPopNames(rhs.m_subPopNames),
 	m_subPopIndex(rhs.m_subPopIndex),
 	m_vspSplitter(NULL),
-	m_genotype(0),
+///	m_genotype(0),
 	m_info(0),
 	m_inds(0),
 	m_ancestralGens(rhs.m_ancestralGens),
@@ -127,7 +127,7 @@ Population::Population(const Population & rhs) :
 
 	try {
 		m_inds.resize(rhs.m_popSize);
-		m_genotype.resize(m_popSize * genoSize());
+///		m_genotype.resize(m_popSize * genoSize());
 		// have 0 length for mpi/non-head node
 		m_info.resize(rhs.m_popSize * infoSize());
 	} catch (...) {
@@ -143,14 +143,14 @@ Population::Population(const Population & rhs) :
 
 	// copy genotype one by one so Individual genoPtr will not
 	// point outside of subpopulation region.
-	GenoIterator ptr = m_genotype.begin();
+///	GenoIterator ptr = m_genotype.begin();
 	InfoIterator infoPtr = m_info.begin();
-	size_t step = genoSize();
+///	size_t step = genoSize();
 	size_t infoStep = infoSize();
-	for (size_t i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep) {
-		m_inds[i].setGenoPtr(ptr);
+	for (size_t i = 0; i < m_popSize; ++i,/* ptr += step,*/ infoPtr += infoStep) {
+///		m_inds[i].setGenoPtr(ptr);
 		m_inds[i].setInfoPtr(infoPtr);
-		m_inds[i].copyFrom(rhs.m_inds[i]);
+///		m_inds[i].copyFrom(rhs.m_inds[i]);
 	}
 
 	// copy ancestral populations
@@ -165,8 +165,8 @@ Population::Population(const Population & rhs) :
 			vector<Individual> & linds = lp.m_inds;
 			const vector<Individual> & rinds = rp.m_inds;
 
-			GenoIterator lg = lp.m_genotype.begin();
-			ConstGenoIterator rg = rp.m_genotype.begin();
+///			GenoIterator lg = lp.m_genotype.begin();
+///			ConstGenoIterator rg = rp.m_genotype.begin();
 
 			InfoIterator li = lp.m_info.begin();
 			ConstInfoIterator ri = rp.m_info.begin();
@@ -174,7 +174,7 @@ Population::Population(const Population & rhs) :
 			size_t ps = rinds.size();
 
 			for (size_t i = 0; i < ps; ++i) {
-				linds[i].setGenoPtr(rinds[i].genoPtr() - rg + lg);
+///				linds[i].setGenoPtr(rinds[i].genoPtr() - rg + lg);
 				linds[i].setInfoPtr(rinds[i].infoPtr() - ri + li);
 			}
 		}
@@ -195,7 +195,7 @@ void Population::popData::swap(Population & pop)
 {
 	pop.m_subPopSize.swap(m_subPopSize);
 	pop.m_subPopNames.swap(m_subPopNames);
-	pop.m_genotype.swap(m_genotype);
+///	pop.m_genotype.swap(m_genotype);
 	pop.m_info.swap(m_info);
 	pop.m_inds.swap(m_inds);
 	std::swap(pop.m_indOrdered, m_indOrdered);
@@ -654,7 +654,7 @@ void Population::fitSubPopStru(const vectoru & newSubPopSizes,
 		try {
 			if (step != 0 && m_popSize > MaxIndexSize / step)
 				throw RuntimeError("Population size times number of loci exceed maximum index size.");
-			m_genotype.resize(m_popSize * step);
+///			m_genotype.resize(m_popSize * step);
 			m_info.resize(m_popSize * is);
 			m_inds.resize(m_popSize);
 		} catch (...) {
@@ -669,10 +669,10 @@ void Population::fitSubPopStru(const vectoru & newSubPopSizes,
 				+ "k bytes)");
 		}
 		// reset individual pointers
-		GenoIterator ptr = m_genotype.begin();
+///		GenoIterator ptr = m_genotype.begin();
 		InfoIterator infoPtr = m_info.begin();
-		for (size_t i = 0; i < m_popSize; ++i, ptr += step, infoPtr += is) {
-			m_inds[i].setGenoPtr(ptr);
+		for (size_t i = 0; i < m_popSize; ++i, /*ptr += step,*/ infoPtr += is) {
+///			m_inds[i].setGenoPtr(ptr);
 			m_inds[i].setInfoPtr(infoPtr);
 			m_inds[i].setGenoStruIdx(genoStruIdx());
 		}

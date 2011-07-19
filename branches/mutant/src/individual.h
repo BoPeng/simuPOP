@@ -108,7 +108,7 @@ public:
 	/// CPPONLY
 	Individual(const Individual & ind) :
 		GenoStruTrait(ind), m_flags(ind.m_flags),
-		m_genoPtr(ind.m_genoPtr),
+///		m_genoPtr(ind.m_genoPtr),
 		m_infoPtr(ind.m_infoPtr)
 	{
 	}
@@ -121,10 +121,12 @@ public:
 
 
 	/// CPPONLY set genotype pointer (use if Allele*pos can not be determined during construction)
+/*
 	void setGenoPtr(GenoIterator pos)
 	{
 		m_genoPtr = pos;
 	}
+*/
 
 
 	/// CPPONLY set pointer to individual info
@@ -138,17 +140,19 @@ public:
 	Individual & operator=(const Individual & rhs);
 
 	/// CPPONLY deep copy of an individual class
-	Individual & copyFrom(const Individual & rhs);
+//	Individual & copyFrom(const Individual & rhs);
 
 	//@}
 	/// @name readonly structural info
 	//@{
 
 	/// CPPONLY pointer to alleles
+/*
 	GenoIterator genoPtr() const
 	{
 		return m_genoPtr;
 	}
+*/
 
 
 	/// CPPONLY
@@ -170,14 +174,14 @@ public:
 	 *
 	 * <group>1-allele</group>
 	 */
-	UINT allele(size_t idx, ssize_t ploidy = -1, ssize_t chrom = -1) const;
+///	UINT allele(size_t idx, ssize_t ploidy = -1, ssize_t chrom = -1) const;
 
 
 	/** return the name of <tt>allele(idx, ploidy, chrom)</tt>. If idx is
 	 *  invalid (e.g. second homologus copy of chromosome Y), '_' is returned.
 	 *  <group>1-allele</group>
 	 */
-	string alleleChar(size_t idx, ssize_t ploidy = -1, ssize_t chrom = -1) const;
+///	string alleleChar(size_t idx, ssize_t ploidy = -1, ssize_t chrom = -1) const;
 
 	/** set allele \e allele to a locus, using its absolute index \e idx.
 	 *  If a ploidy \e ploidy and/or a chromosome indexes are given, \e idx is
@@ -186,7 +190,7 @@ public:
 	 *  specified chromosome (if \e chrom >= 0).
 	 *  <group>1-allele</group>
 	 */
-	void setAllele(Allele allele, size_t idx, int ploidy = -1, int chrom = -1);
+///	void setAllele(Allele allele, size_t idx, int ploidy = -1, int chrom = -1);
 
 	/** return an editable array (a \c carray object) that represents all
 	 *  alleles of an individual. If \e ploidy or \e chroms is given, only
@@ -195,14 +199,14 @@ public:
 	 *  not be gaps between chromosomes.
 	 *  <group>2-genotype</group>
 	 */
-	PyObject * genotype(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
+///	PyObject * genotype(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
 
 
 	/** CPPONLY
 	 *  Return a Python object with alleles at specified loci. This function
 	 *  is usually used to collect alleles to send to a user-provided function.
 	 */
-	PyObject * genoAtLoci(const lociList & loci);
+///	PyObject * genoAtLoci(const lociList & loci);
 
 	/** Fill the genotype of an individual using a list of alleles \e geno.
 	 *  If parameters \e ploidy and/or \e chroms are specified, alleles will
@@ -211,7 +215,7 @@ public:
 	 *  number of alleles to be filled.
 	 *  <group>2-genotype</group>
 	 */
-	void setGenotype(const uintList & geno, const uintList & ploidy = uintList(), const uintList & chroms = uintList());
+///	void setGenotype(const uintList & geno, const uintList & ploidy = uintList(), const uintList & chroms = uintList());
 
 	/** return the sex of an individual, \c 1 for male and \c 2 for female.
 	 * <group>3-sex</group>
@@ -343,39 +347,46 @@ public:
 		m_infoPtr[idx] = value;
 	}
 
-
+/*
 	/// CPPONLY start of alleles
 	GenoIterator genoBegin() const
 	{
 		return m_genoPtr;
 	}
-
+*/
 
 	/// CPPONLY end of allele
+/*
 	GenoIterator genoEnd() const
 	{
 		return m_genoPtr + genoSize();
 	}
+*/
 
 
 	/// CPPONLY start of allele of the pth set of chromosome
+/*
 	GenoIterator genoBegin(size_t p) const
 	{
 		CHECKRANGEPLOIDY(p);
 		return m_genoPtr + p * totNumLoci();
 
 	}
+*/
 
 
 	/// CPPONLY end of allele of the pth set of chromosome
+/*
 	GenoIterator genoEnd(size_t p) const
 	{
 		CHECKRANGEPLOIDY(p);
 		return m_genoPtr + (p + 1) * totNumLoci();
 	}
+*/
 
 
 	/// CPPONLY start of allele of the pth set of chromosome, chrom ch
+/*
 	GenoIterator genoBegin(size_t p, size_t chrom) const
 	{
 		CHECKRANGEPLOIDY(p);
@@ -383,9 +394,11 @@ public:
 		return m_genoPtr + p * totNumLoci() + chromBegin(chrom);
 
 	}
+*/
 
 
 	/// CPPONLY end of allele of the pth set of chromosome
+/*
 	GenoIterator genoEnd(size_t p, size_t chrom) const
 	{
 		CHECKRANGEPLOIDY(p);
@@ -393,6 +406,7 @@ public:
 		return m_genoPtr + p * totNumLoci() + chromEnd(chrom);
 
 	}
+*/
 
 
 	/// CPPONLY start of info
@@ -413,19 +427,21 @@ public:
 	/// @name copy, comparison, swap operations to objects.
 	//@{
 	/// compare if two individuals are the same used in case of serialization etc.
-	bool operator==(const Individual & rhs) const;
+///	bool operator==(const Individual & rhs) const;
 
 	/// compare if two individuals are not the same used in case of serialization etc.
+/*
 	bool operator!=(const Individual & rhs) const
 	{
 		return !(*this == rhs);
 	}
+*/
 
 
 	// allow compaison of individuals in python
 	// only equal or unequal, no greater or less than
 	/// a python function used to compare the individual objects
-	int __cmp__(const Individual & rhs) const;
+///	int __cmp__(const Individual & rhs) const;
 
 
 	/// CPPONLY swap Individuals
@@ -441,14 +457,14 @@ public:
 	   swap pointers. (There is no order right now within
 	   subpopulation so the later case is rare, at best.)
 	 */
-	void swap(Individual & ind, bool swapContent = true);
+///	void swap(Individual & ind, bool swapContent = true);
 
 	//@}
 	/// @name misc (only relevant to developers)
 	//@{
 
 	/// CPPONLY
-	void display(ostream & out, int width = 1, const vectoru & loci = vectoru());
+///	void display(ostream & out, int width = 1, const vectoru & loci = vectoru());
 
 	//@}
 
@@ -497,7 +513,7 @@ protected:
 	mutable unsigned char m_flags;
 
 	/// pointer to genotype.
-	GenoIterator m_genoPtr;
+///	GenoIterator m_genoPtr;
 
 	/// pointer to info
 	InfoIterator m_infoPtr;

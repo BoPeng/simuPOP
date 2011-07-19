@@ -38,14 +38,14 @@ namespace simuPOP {
 Individual & Individual::operator=(const Individual & rhs)
 {
 	m_flags = rhs.m_flags;
-	setGenoPtr(rhs.genoPtr());
+///	setGenoPtr(rhs.genoPtr());
 	setInfoPtr(rhs.infoPtr());
 	// also copy genoStru pointer...
 	this->setGenoStruIdx(rhs.genoStruIdx());
 	return *this;
 }
 
-
+/*
 Individual & Individual::copyFrom(const Individual & rhs)
 {
 	m_flags = rhs.m_flags;
@@ -55,8 +55,9 @@ Individual & Individual::copyFrom(const Individual & rhs)
 	this->setGenoStruIdx(rhs.genoStruIdx());
 	return *this;
 }
+*/
 
-
+/*
 bool Individual::operator==(const Individual & rhs) const
 {
 	if (genoStruIdx() != rhs.genoStruIdx()) {
@@ -84,12 +85,14 @@ bool Individual::operator==(const Individual & rhs) const
 		}
 	return true;
 }
+*/
 
-
+/*
 int Individual::__cmp__(const Individual & rhs) const
 {
 	return (*this == rhs) ? 0 : 1;
 }
+*/
 
 
 bool Individual::validIndex(size_t idx) const
@@ -127,7 +130,7 @@ bool Individual::validIndex(size_t /* idx */, size_t p, size_t ch) const
 	return true;
 }
 
-
+/*
 UINT Individual::allele(size_t idx, ssize_t p, ssize_t chrom) const
 {
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
@@ -146,8 +149,9 @@ UINT Individual::allele(size_t idx, ssize_t p, ssize_t chrom) const
 		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)));
 	}
 }
+*/
 
-
+/*
 string Individual::alleleChar(size_t idx, ssize_t p, ssize_t chrom) const
 {
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
@@ -167,8 +171,9 @@ string Individual::alleleChar(size_t idx, ssize_t p, ssize_t chrom) const
 		return validIndex(idx, p, chrom) ? alleleName(allele(idx, p, chrom), idx + chromBegin(chrom)) : "_";
 	}
 }
+*/
 
-
+/*
 PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 {
 	DBG_WARNIF(true, "The returned object of function Individual.genotype() is a special "
@@ -232,8 +237,9 @@ PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 		return Allele_Vec_As_NumArray(m_genoPtr + beginP * totNumLoci() + chromBegin(beginCh),
 			m_genoPtr + beginP * totNumLoci() + chromEnd(endCh - 1));
 }
+*/
 
-
+/*
 PyObject * Individual::genoAtLoci(const lociList & lociList)
 {
 	ssize_t ply = ploidy();
@@ -287,8 +293,9 @@ PyObject * Individual::genoAtLoci(const lociList & lociList)
 		PyTuple_SET_ITEM(genoObj, j, PyInt_FromLong(alleles[j]));
 	return genoObj;
 }
+*/
 
-
+/*
 void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 {
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
@@ -307,8 +314,9 @@ void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)) = allele;
 	}
 }
+*/
 
-
+/*
 void Individual::setGenotype(const uintList & genoList, const uintList & ply, const uintList & ch)
 {
 	const vectoru & geno = genoList.elems();
@@ -350,8 +358,9 @@ void Individual::setGenotype(const uintList & genoList, const uintList & ply, co
 		}
 	}
 }
+*/
 
-
+/*
 void Individual::swap(Individual & ind, bool swapContent)
 {
 	if (genoStruIdx() != ind.genoStruIdx())
@@ -370,8 +379,8 @@ void Individual::swap(Individual & ind, bool swapContent)
 		std::swap(m_genoPtr, ind.m_genoPtr);
 	}
 }
-
-
+*/
+/*
 void Individual::display(ostream & out, int width, const vectoru & loci)
 {
 	out << (sex() == MALE ? 'M' : 'F') << (affected() ? 'A' : 'U') << " ";
@@ -398,6 +407,7 @@ void Individual::display(ostream & out, int width, const vectoru & loci)
 			out << " " << *info;
 	}
 }
+*/
 
 
 }
