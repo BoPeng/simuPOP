@@ -988,7 +988,11 @@ void PyObj_As_Array(PyObject * obj, vectorf & val);
 void PyObj_As_IntArray(PyObject * obj, vectori & val);
 
 /// CPPONLY
+#ifdef MUTANTALLELE
+PyObject * Allele_Vec_As_NumArray(compressed_vectora genotype,Py_ssize_t begin, Py_ssize_t end);
+#else
 PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
+#endif
 
 /// CPPONLY
 string PyObj_AsString(PyObject * str);
