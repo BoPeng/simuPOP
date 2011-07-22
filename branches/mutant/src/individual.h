@@ -121,12 +121,14 @@ public:
 
 
 	/// CPPONLY set genotype pointer (use if Allele*pos can not be determined during construction)
-/*
+#ifdef MUTANTALLELE
+	void setGenoPtr(size_t pos)
+#else
 	void setGenoPtr(GenoIterator pos)
+#endif
 	{
 		m_genoPtr = pos;
 	}
-*/
 
 
 	/// CPPONLY set pointer to individual info
@@ -513,7 +515,11 @@ protected:
 	mutable unsigned char m_flags;
 
 	/// pointer to genotype.
-///	GenoIterator m_genoPtr;
+#ifdef MUTANTALLELE
+	size_t m_genoPtr;
+#else
+	GenoIterator m_genoPtr;
+#endif
 
 	/// pointer to info
 	InfoIterator m_infoPtr;

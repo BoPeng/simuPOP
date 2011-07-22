@@ -654,7 +654,7 @@ void Population::fitSubPopStru(const vectoru & newSubPopSizes,
 		try {
 			if (step != 0 && m_popSize > MaxIndexSize / step)
 				throw RuntimeError("Population size times number of loci exceed maximum index size.");
-///			m_genotype.resize(m_popSize * step);
+			m_genotype.resize(m_popSize * step);
 			m_info.resize(m_popSize * is);
 			m_inds.resize(m_popSize);
 		} catch (...) {
@@ -664,15 +664,23 @@ void Population::fitSubPopStru(const vectoru & newSubPopSizes,
 #ifdef BINARYALLELE
 				+ toStr((m_popSize * step / 8 + m_popSize * is * sizeof(double) + m_popSize * sizeof(Individual)) / 1024)
 #else
+#  ifdef MUTANTALLELE
+				+ toStr((m_popSize * is * sizeof(double) + m_popSize * sizeof(Individual)) / 1024)
+#  else
 				+ toStr((m_popSize * step * sizeof(Allele) + m_popSize * is * sizeof(double) + m_popSize * sizeof(Individual)) / 1024)
+#  endif
 #endif
 				+ "k bytes)");
 		}
 		// reset individual pointers
-///		GenoIterator ptr = m_genotype.begin();
+#ifdef MUTANTALLELE
+		size_t ptr = 0;
+#else
+		GenoIterator ptr = m_genotype.begin();
+#endif
 		InfoIterator infoPtr = m_info.begin();
-		for (size_t i = 0; i < m_popSize; ++i, /*ptr += step,*/ infoPtr += is) {
-///			m_inds[i].setGenoPtr(ptr);
+		for (size_t i = 0; i < m_popSize; ++i, ptr += step, infoPtr += is) {
+			m_inds[i].setGenoPtr(ptr);
 			m_inds[i].setInfoPtr(infoPtr);
 			m_inds[i].setGenoStruIdx(genoStruIdx());
 		}

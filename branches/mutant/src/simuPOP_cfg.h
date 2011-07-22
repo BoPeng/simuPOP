@@ -42,6 +42,11 @@
 // under parent directory. Included with -I.. option.
 #include "config.h"
 
+// for compressed vector
+#ifdef MUTANTALLELE
+#  include "boost/numeric/ublas/vector_sparse.hpp"
+#endif
+
 // For the handling of binary modules and for the use of unordered_map in tr1
 #ifdef _MSC_VER
 
@@ -338,15 +343,19 @@ typedef unsigned long ULONG;
 extern const size_t MaxIndexSize;
 typedef long LONG;
 
-typedef std::vector<long>                        vectori;
-typedef std::vector<double>                      vectorf;
-typedef std::vector<Allele>                      vectora;
-typedef std::vector<size_t>                      vectoru;
-typedef std::vector<std::string>                 vectorstr;
-typedef std::pair<size_t, size_t>                pairu;
-typedef std::vector<std::vector<long> >          matrixi;
-typedef std::vector<std::vector<std::string > >  matrixstr;
-typedef std::vector<std::vector<double > >       matrixf;
+typedef std::vector<long>                                vectori;
+typedef std::vector<double>                              vectorf;
+typedef std::vector<Allele>                              vectora;
+#ifdef MUTANTALLELE
+typedef boost::numeric::ublas::compressed_vector<Allele> compressed_vectora;
+#endif
+typedef std::vector<Allele>                              vectora;
+typedef std::vector<size_t>                              vectoru;
+typedef std::vector<std::string>                         vectorstr;
+typedef std::pair<size_t, size_t>                        pairu;
+typedef std::vector<std::vector<long> >                  matrixi;
+typedef std::vector<std::vector<std::string > >          matrixstr;
+typedef std::vector<std::vector<double > >               matrixf;
 
 #include <map>
 using std::map;

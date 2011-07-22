@@ -1502,7 +1502,11 @@ private:
 	BaseVspSplitter * m_vspSplitter;
 
 	/// pool of genotypic information
-///	vectora m_genotype;
+#ifdef MUTANTALLELE
+	compressed_vectora m_genotype;
+#else
+	vectora m_genotype;
+#endif
 
 	/// information
 	/// only in head node
