@@ -989,7 +989,7 @@ void PyObj_As_IntArray(PyObject * obj, vectori & val);
 
 /// CPPONLY
 #ifdef MUTANTALLELE
-PyObject * Allele_Vec_As_NumArray(compressed_vectora genotype,Py_ssize_t begin, Py_ssize_t end);
+PyObject * Allele_Vec_As_NumArray(compressed_vectora * genoPtr,Py_ssize_t begin, Py_ssize_t end);
 #else
 PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
 #endif

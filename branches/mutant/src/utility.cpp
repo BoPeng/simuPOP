@@ -115,7 +115,7 @@ using boost::cmatch;
 // these functions are defined in customizedTypes.c which is included
 // in simuPOP_wrap.cpp
 #ifdef MUTANTALLELE
-extern "C" PyObject * newcarrayobject(compressed_vectora genotyp, Py_ssize_t begin, Py_ssize_t end);
+extern "C" PyObject * newcarrayobject(compressed_vectora * genoPtr, Py_ssize_t begin, Py_ssize_t end);
 #else
 extern "C" PyObject * newcarrayobject(GenoIterator begin, GenoIterator end);
 #endif
@@ -127,7 +127,7 @@ extern "C" int initCustomizedTypes(void);
 
 #else
 #  ifdef MUTANTALLELE
-PyObject * newcarrayobject(compressed_vectora genotyp, Py_ssize_t begin, Py_ssize_t end);
+PyObject * newcarrayobject(compressed_vectora * genoPtr, Py_ssize_t begin, Py_ssize_t end);
 #  else
 PyObject * newcarrayobject(GenoIterator, GenoIterator)
 #  endif
@@ -1218,9 +1218,9 @@ void PyObj_As_IntArray(PyObject * obj, vectori & val)
 }
 
 #ifdef MUTANTALLELE
-PyObject * Allele_Vec_As_NumArray(compressed_vectora genotype,Py_ssize_t begin, Py_ssize_t end)
+PyObject * Allele_Vec_As_NumArray(compressed_vectora * genoPtr,Py_ssize_t begin, Py_ssize_t end)
 {
-	PyObject * res = newcarrayobject(genotype, begin, end);
+	PyObject * res = newcarrayobject(genoPtr, begin, end);
 
 	DBG_FAILIF(res == NULL, ValueError, "Can not convert buf to Allele num array");
 	return res;

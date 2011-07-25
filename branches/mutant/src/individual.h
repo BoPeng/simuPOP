@@ -122,13 +122,17 @@ public:
 
 	/// CPPONLY set genotype pointer (use if Allele*pos can not be determined during construction)
 #ifdef MUTANTALLELE
-	void setGenoPtr(size_t pos)
+	void setGenoPtr(compressed_vectora * genoPtr, size_t pos)
+	{
+		m_genoPtr = genoPtr;
+		m_genoIdx = pos;
+	}
 #else
 	void setGenoPtr(GenoIterator pos)
-#endif
 	{
 		m_genoPtr = pos;
 	}
+#endif
 
 
 	/// CPPONLY set pointer to individual info
@@ -176,7 +180,7 @@ public:
 	 *
 	 * <group>1-allele</group>
 	 */
-///	UINT allele(size_t idx, ssize_t ploidy = -1, ssize_t chrom = -1) const;
+	UINT allele(size_t idx, ssize_t ploidy = -1, ssize_t chrom = -1) const;
 
 
 	/** return the name of <tt>allele(idx, ploidy, chrom)</tt>. If idx is
@@ -192,7 +196,7 @@ public:
 	 *  specified chromosome (if \e chrom >= 0).
 	 *  <group>1-allele</group>
 	 */
-///	void setAllele(Allele allele, size_t idx, int ploidy = -1, int chrom = -1);
+	void setAllele(Allele allele, size_t idx, int ploidy = -1, int chrom = -1);
 
 	/** return an editable array (a \c carray object) that represents all
 	 *  alleles of an individual. If \e ploidy or \e chroms is given, only
@@ -201,7 +205,7 @@ public:
 	 *  not be gaps between chromosomes.
 	 *  <group>2-genotype</group>
 	 */
-///	PyObject * genotype(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
+	PyObject * genotype(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
 
 
 	/** CPPONLY
@@ -217,7 +221,7 @@ public:
 	 *  number of alleles to be filled.
 	 *  <group>2-genotype</group>
 	 */
-///	void setGenotype(const uintList & geno, const uintList & ploidy = uintList(), const uintList & chroms = uintList());
+	void setGenotype(const uintList & geno, const uintList & ploidy = uintList(), const uintList & chroms = uintList());
 
 	/** return the sex of an individual, \c 1 for male and \c 2 for female.
 	 * <group>3-sex</group>
@@ -516,7 +520,8 @@ protected:
 
 	/// pointer to genotype.
 #ifdef MUTANTALLELE
-	size_t m_genoPtr;
+	compressed_vectora * m_genoPtr;
+	size_t m_genoIdx;
 #else
 	GenoIterator m_genoPtr;
 #endif

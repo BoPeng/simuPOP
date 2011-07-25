@@ -389,7 +389,6 @@ Individual & Population::indByID(double fid, const uintList & ancGens, const str
 }
 */
 
-/*
 pyIndIterator Population::individuals(vspID subPopID)
 {
 	DBG_FAILIF(hasActivatedVirtualSubPop(), RuntimeError,
@@ -416,7 +415,6 @@ pyIndIterator Population::individuals(vspID subPopID)
 		return pyIndIterator(m_inds.begin() + subPopBegin(spID),
 			m_inds.begin() + subPopEnd(spID), true, vspFunctor());
 }
-*/
 
 /*
 Individual & Population::ancestor(double fidx, ssize_t gen, vspID vsp)
@@ -673,14 +671,16 @@ void Population::fitSubPopStru(const vectoru & newSubPopSizes,
 				+ "k bytes)");
 		}
 		// reset individual pointers
+		InfoIterator infoPtr = m_info.begin();
 #ifdef MUTANTALLELE
-		size_t ptr = 0;
+		size_t idx = 0;
+		for (size_t i = 0; i < m_popSize; ++i, idx += step, infoPtr += is) {
+			m_inds[i].setGenoPtr(&m_genotype,idx);
 #else
 		GenoIterator ptr = m_genotype.begin();
-#endif
-		InfoIterator infoPtr = m_info.begin();
 		for (size_t i = 0; i < m_popSize; ++i, ptr += step, infoPtr += is) {
 			m_inds[i].setGenoPtr(ptr);
+#endif
 			m_inds[i].setInfoPtr(infoPtr);
 			m_inds[i].setGenoStruIdx(genoStruIdx());
 		}

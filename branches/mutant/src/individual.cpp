@@ -130,26 +130,37 @@ bool Individual::validIndex(size_t /* idx */, size_t p, size_t ch) const
 	return true;
 }
 
-/*
+
 UINT Individual::allele(size_t idx, ssize_t p, ssize_t chrom) const
 {
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
 		"A valid ploidy index has to be specified if chrom is non-positive");
 	if (p < 0) {
 		CHECKRANGEGENOSIZE(idx);
+#ifdef MUTANTALLELE
+		return static_cast<UINT>((*m_genoPtr)[m_genoIdx + idx]);
+#else
 		return static_cast<UINT>(*(m_genoPtr + idx));
+#endif
 	} else if (chrom < 0) {
 		CHECKRANGEABSLOCUS(idx);
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
+#ifdef MUTANTALLELE
+		return static_cast<UINT>((*m_genoPtr)[m_genoIdx + idx + p * totNumLoci()]);
+#else
 		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci()));
+#endif
 	} else {
 		CHECKRANGELOCUS(chrom, idx);
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
 		CHECKRANGECHROM(static_cast<size_t>(chrom));
+#ifdef MUTANTALLELE
+		return static_cast<UINT>((*m_genoPtr)[m_genoIdx + idx + p * totNumLoci() + chromBegin(chrom)]);
+#else
 		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)));
+#endif
 	}
 }
-*/
 
 /*
 string Individual::alleleChar(size_t idx, ssize_t p, ssize_t chrom) const
@@ -173,7 +184,6 @@ string Individual::alleleChar(size_t idx, ssize_t p, ssize_t chrom) const
 }
 */
 
-/*
 PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 {
 	DBG_WARNIF(true, "The returned object of function Individual.genotype() is a special "
@@ -231,13 +241,22 @@ PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 		// has to be all chromosomes
 		DBG_FAILIF(beginCh != 0 || endCh != numChrom(), ValueError,
 			"If multiple ploidy are chosen, all chromosomes has to be chosen.");
+#ifdef MUTANTALLELE
+		return Allele_Vec_As_NumArray(m_genoPtr, m_genoIdx + beginP * totNumLoci(),
+			m_genoIdx + endP * totNumLoci());
+#else
 		return Allele_Vec_As_NumArray(m_genoPtr + beginP * totNumLoci(),
 			m_genoPtr + endP * totNumLoci());
+#endif
 	} else
+#ifdef MUTANTALLELE
+		return Allele_Vec_As_NumArray(m_genoPtr, m_genoIdx + beginP * totNumLoci() + chromBegin(beginCh),
+			m_genoIdx + beginP * totNumLoci() + chromEnd(endCh - 1));
+#else
 		return Allele_Vec_As_NumArray(m_genoPtr + beginP * totNumLoci() + chromBegin(beginCh),
 			m_genoPtr + beginP * totNumLoci() + chromEnd(endCh - 1));
+#endif
 }
-*/
 
 /*
 PyObject * Individual::genoAtLoci(const lociList & lociList)
@@ -295,28 +314,38 @@ PyObject * Individual::genoAtLoci(const lociList & lociList)
 }
 */
 
-/*
 void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 {
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
 		"A valid ploidy index has to be specified if chrom is non-positive");
 	if (p < 0) {
 		CHECKRANGEGENOSIZE(idx);
+#ifdef MUTANTALLELE
+		(*m_genoPtr)[m_genoIdx + idx] = allele;
+#else
 		*(m_genoPtr + idx) = allele;
+#endif
 	} else if (chrom < 0) {
 		CHECKRANGEABSLOCUS(idx);
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
+#ifdef MUTANTALLELE
+		(*m_genoPtr)[m_genoIdx + idx + p * totNumLoci()] = allele;
+#else
 		*(m_genoPtr + idx + p * totNumLoci()) = allele;
+#endif
 	} else {
 		CHECKRANGELOCUS(static_cast<size_t>(chrom), idx);
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
 		CHECKRANGECHROM(static_cast<size_t>(chrom));
+#ifdef MUTANTALLELE
+		(*m_genoPtr)[m_genoIdx + idx + p * totNumLoci() + chromBegin(chrom)] = allele;
+#else
 		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)) = allele;
+#endif
 	}
 }
-*/
 
-/*
+
 void Individual::setGenotype(const uintList & genoList, const uintList & ply, const uintList & ch)
 {
 	const vectoru & geno = genoList.elems();
@@ -351,14 +380,18 @@ void Individual::setGenotype(const uintList & genoList, const uintList & ply, co
 		size_t p = ploidys[i];
 		for (size_t j = 0; j < chroms.size(); ++j) {
 			size_t chrom = chroms[j];
+#ifdef MUTANTALLELE
+			size_t genoIdx = m_genoIdx + p * totNumLoci() + chromBegin(chrom);
+			for (size_t i = 0; i < numLoci(chrom); i++, ++idx)
+				(*m_genoPtr)[genoIdx + i] = ToAllele(geno[idx % sz]);
+#else
 			GenoIterator ptr = m_genoPtr + p * totNumLoci() + chromBegin(chrom);
-
 			for (size_t i = 0; i < numLoci(chrom); i++, ++idx)
 				*(ptr + i) = ToAllele(geno[idx % sz]);
+#endif
 		}
 	}
 }
-*/
 
 /*
 void Individual::swap(Individual & ind, bool swapContent)

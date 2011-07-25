@@ -652,7 +652,7 @@ public:
 	 *  ancestral generations, please use function \c Population.allIndividuals().
 	 *  <group>4-ind</group>
 	 */
-//	pyIndIterator individuals(vspID subPop = vspID());
+	pyIndIterator individuals(vspID subPop = vspID());
 
 	/// CPPONLY
 	bool indOrdered() const
