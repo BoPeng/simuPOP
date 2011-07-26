@@ -566,7 +566,6 @@ PyObject * Population::genotype(vspID subPopID)
 }
 */
 
-/*
 void Population::setGenotype(const uintList & genoList, vspID subPopID)
 {
 	const vectoru & geno = genoList.elems();
@@ -575,11 +574,18 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 
 	syncIndPointers();
 	if (!subPop.valid()) {
+#ifdef MUTANTALLELE
+		size_t sz = geno.size();
+		for (size_t i = 0; i < popSize() * genoSize(); ++i)
+			m_genotype[i] = ToAllele(geno[i % sz]);
+		return;
+#else
 		GenoIterator ptr = m_genotype.begin();
 		size_t sz = geno.size();
 		for (size_t i = 0; i < popSize() * genoSize(); ++i)
 			*(ptr++) = ToAllele(geno[i % sz]);
 		return;
+#endif
 	}
 
 	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
@@ -590,20 +596,30 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 
 	size_t sz = geno.size();
 	if (!subPop.isVirtual()) {
+#ifdef MUTANTALLELE
+		size_t idx = genoBegin(sp, true);
+		for (size_t i = 0; i < subPopSize(sp) * genoSize(); ++i)
+			m_genotype[idx+i] = ToAllele(geno[i % sz]);
+#else
 		GenoIterator ptr = genoBegin(sp, true);
 		for (size_t i = 0; i < subPopSize(sp) * genoSize(); ++i)
 			*(ptr++) = ToAllele(geno[i % sz]);
+#endif
 	} else {
 		activateVirtualSubPop(subPop);
 		IndIterator it = indIterator(sp);
 		size_t i = 0;
 		for (; it.valid(); ++it)
+#ifdef MUTANTALLELE
+			for (size_t git = it->genoBegin(); git != it->genoEnd(); ++git, ++i)
+				m_genotype[git] = ToAllele(geno[i % sz]);
+#else
 			for (GenoIterator git = it->genoBegin(); git != it->genoEnd(); ++git, ++i)
 				*git = ToAllele(geno[i % sz]);
+#endif
 		deactivateVirtualSubPop(subPop.subPop());
 	}
 }
-*/
 
 /*
 void Population::validate(const string & msg) const
@@ -892,7 +908,6 @@ void Population::setSubPopByIndInfo(const string & field)
 */
 
 
-/*
 vectoru Population::splitSubPop(size_t subPop, const vectorf & sizes, const vectorstr & names)
 {
 	if (sizes.size() <= 1)
@@ -942,7 +957,6 @@ vectoru Population::splitSubPop(size_t subPop, const vectorf & sizes, const vect
 	setSubPopStru(subPopSizes, subPopNames);
 	return ret;
 }
-*/
 
 
 /*
@@ -1182,7 +1196,6 @@ void Population::removeIndividuals(const uintList & indexList, const floatList &
 }
 */
 
-/*
 size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 {
 	if (!name.empty() && m_subPopNames.empty())
@@ -1252,10 +1265,16 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 	size_t step = genoSize();
 	size_t infoStep = infoSize();
 	vector<Individual> new_inds;
-	vectora new_genotype;
 	vectorf new_info;
-	new_inds.reserve(popSize());
+#ifdef MUTANTALLELE
+	compressed_vectora new_genotype;
+	size_t idx = 0;
+	new_genotype.resize(step * popSize());
+#else
+	vectora new_genotype;
 	new_genotype.reserve(step * popSize());
+#endif
+	new_inds.reserve(popSize());
 	new_info.reserve(infoStep * popSize());
 
 	for (size_t sp = 0; sp < numSubPop(); ++sp) {
@@ -1264,7 +1283,12 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 			continue;
 		// do not remove.
 		new_inds.insert(new_inds.end(), rawIndBegin(src), rawIndEnd(src));
+#ifdef MUTANTALLELE
+		insertGenotype(new_genotype, idx, m_genotype, genoBegin(src, true), genoEnd(src, true));
+#else
 		new_genotype.insert(new_genotype.end(), genoBegin(src, true), genoEnd(src, true));
+#endif
+
 		if (infoStep > 0)
 			new_info.insert(new_info.end(),
 				m_info.begin() + subPopBegin(src) * infoStep,
@@ -1280,15 +1304,20 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 	m_info.swap(new_info);
 	setSubPopStru(new_size, new_names);
 	//
-	GenoIterator ptr = m_genotype.begin();
 	InfoIterator infoPtr = m_info.begin();
+#ifdef MUTANTALLELE
+	idx = 0;
+	for (size_t i = 0; i < m_popSize; ++i, idx += step, infoPtr += infoStep) {
+		m_inds[i].setGenoPtr(&m_genotype, idx);
+#else
+	GenoIterator ptr = m_genotype.begin();
 	for (size_t i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep) {
 		m_inds[i].setGenoPtr(ptr);
+#endif
 		m_inds[i].setInfoPtr(infoPtr);
 	}
 	return sps[0];
 }
-*/
 
 /*
 void Population::addChromFrom(const Population & pop)
@@ -3117,7 +3146,6 @@ PyObject * Population::dict(vspID vsp)
 }
 */
 
-/*
 void Population::syncIndPointers(bool infoOnly) const
 {
 	if (indOrdered())
@@ -3143,11 +3171,15 @@ void Population::syncIndPointers(bool infoOnly) const
 	} else {
 		DBG_DO(DBG_POPULATION, cerr << "Adjust geno and info position " << endl);
 
-		size_t sz = genoSize();
 		size_t is = infoSize();
+		//MUTANTALLELE don't need to sync genotype because 
+		//we don't use iterator in MUTANTALLELE
+#ifndef MUTANTALLELE
+		size_t sz = genoSize();
 		vectora tmpGenotype(m_popSize * genoSize());
-		vectorf tmpInfo(m_popSize * infoSize());
 		vectora::iterator it = tmpGenotype.begin();
+#endif
+		vectorf tmpInfo(m_popSize * infoSize());
 		vectorf::iterator infoPtr = tmpInfo.begin();
 
 		IndIterator ind = const_cast<Population *>(this)->indIterator();
@@ -3155,22 +3187,28 @@ void Population::syncIndPointers(bool infoOnly) const
 #ifdef BINARYALLELE
 			copyGenotype(ind->genoBegin(), it, sz);
 #else
+#  ifndef MUTANTALLELE
 			copy(ind->genoBegin(), ind->genoEnd(), it);
+#  endif
 #endif
+
+#ifndef MUTANTALLELE
 			ind->setGenoPtr(it);
 			it += sz;
+#endif
 
 			copy(ind->infoBegin(), ind->infoEnd(), infoPtr);
 			ind->setInfoPtr(infoPtr);
 			infoPtr += is;
 		}
 		// discard original genotype
+#ifndef MUTANTALLELE
 		const_cast<Population *>(this)->m_genotype.swap(tmpGenotype);
+#endif
 		const_cast<Population *>(this)->m_info.swap(tmpInfo);
 	}
 	setIndOrdered(true);
 }
-*/
 
 /*
 Population & loadPopulation(const string & file)

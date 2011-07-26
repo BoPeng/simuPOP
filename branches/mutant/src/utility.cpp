@@ -4649,4 +4649,11 @@ void testCopyGenotype()
 #  endif
 #endif
 
+#ifdef MUTANTALLELE
+void insertGenotype(compressed_vectora & new_element, size_t & idx , const compressed_vectora & old_element, const size_t begin, const size_t end){
+	for(size_t i = begin; i < end - begin; ++i, ++idx)
+		new_element.insert_element(idx, old_element[i]);
+} 
+#endif
+
 }

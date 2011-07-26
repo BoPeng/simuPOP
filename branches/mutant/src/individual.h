@@ -353,21 +353,29 @@ public:
 		m_infoPtr[idx] = value;
 	}
 
-/*
+#ifdef MUTANTALLELE
+	/// CPPONLY start of alleles
+	size_t genoBegin() const
+	{
+		return m_genoIdx;
+	}
+	/// CPPONLY end of allele
+	size_t genoEnd() const
+	{
+		return m_genoIdx + genoSize();
+	}
+#else
 	/// CPPONLY start of alleles
 	GenoIterator genoBegin() const
 	{
 		return m_genoPtr;
 	}
-*/
-
 	/// CPPONLY end of allele
-/*
 	GenoIterator genoEnd() const
 	{
 		return m_genoPtr + genoSize();
 	}
-*/
+#endif
 
 
 	/// CPPONLY start of allele of the pth set of chromosome
