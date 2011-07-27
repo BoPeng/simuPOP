@@ -2143,7 +2143,15 @@ void testCopyGenotype();
 #endif
 
 #ifdef MUTANTALLELE
-void insertGenotype(compressed_vectora & new_element, size_t & idx, const compressed_vectora & old_element, const size_t begin, const size_t end); 
+/// CPPONLY
+void insertGenotype(compressed_vectora & newCVector, const size_t startIdx, const compressed_vectora & oldCVector, const size_t begin, const size_t end); 
+
+/// CPPONLY
+void copyGenotype(const compressed_vectora & oldCVector, const size_t oldBegin, const size_t oldEnd, compressed_vectora & newCVector, const size_t newBegin); 
+
+/// CPPONLY
+void eraseGenotype(compressed_vectora & element, const size_t begin, const size_t end);
+
 #endif
 
 /// CPPONLY initialize module simuPOP when using "import simuPOP"

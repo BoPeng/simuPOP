@@ -1012,7 +1012,7 @@ public:
 	 *  This function only handles the present generation.
 	 *  <group>7-manipulate</group>
 	 */
-//	void removeSubPops(const subPopList & subPops);
+	void removeSubPops(const subPopList & subPops);
 
 	/// CPPONLY
 //	void removeMarkedIndividuals();
@@ -1261,7 +1261,7 @@ public:
 	/** CPPONLY
 	 *  Mark subpopulation
 	 */
-//	void markIndividuals(vspID subPop, bool mark) const;
+	void markIndividuals(vspID subPop, bool mark) const;
 
 	/** Set information field \c field (specified by index or name) of
 	 *  all individuals (if <tt>subPop=[]</tt>, default), or individuals in

@@ -55,7 +55,7 @@ Population::Population(const uintList & size,
 	m_subPopNames(),
 	m_subPopIndex(size.elems().size() + 1),
 	m_vspSplitter(NULL),
-///	m_genotype(0),
+	m_genotype(0),
 	m_info(0),
 	m_inds(0),
 	m_ancestralGens(ancGen),
@@ -691,7 +691,7 @@ void Population::fitSubPopStru(const vectoru & newSubPopSizes,
 #ifdef MUTANTALLELE
 		size_t idx = 0;
 		for (size_t i = 0; i < m_popSize; ++i, idx += step, infoPtr += is) {
-			m_inds[i].setGenoPtr(&m_genotype,idx);
+			m_inds[i].setGenoPtr(&m_genotype, idx);
 #else
 		GenoIterator ptr = m_genotype.begin();
 		for (size_t i = 0; i < m_popSize; ++i, ptr += step, infoPtr += is) {
@@ -958,8 +958,6 @@ vectoru Population::splitSubPop(size_t subPop, const vectorf & sizes, const vect
 	return ret;
 }
 
-
-/*
 void Population::removeSubPops(const subPopList & subPops)
 {
 	syncIndPointers();
@@ -970,8 +968,13 @@ void Population::removeSubPops(const subPopList & subPops)
 	size_t infoStep = infoSize();
 	RawIndIterator oldInd = m_inds.begin();
 	RawIndIterator newInd = m_inds.begin();
+#ifdef MUTANTALLELE
+	size_t oldPtr = 0;
+	size_t newPtr = 0;
+#else
 	GenoIterator oldPtr = m_genotype.begin();
 	GenoIterator newPtr = m_genotype.begin();
+#endif
 	InfoIterator oldInfoPtr = m_info.begin();
 	InfoIterator newInfoPtr = m_info.begin();
 
@@ -1008,7 +1011,11 @@ void Population::removeSubPops(const subPopList & subPops)
 					++newSize;
 					if (oldInd != newInd) {
 						*newInd = *oldInd;
+#ifdef MUTANTALLELE
+						copyGenotype(m_genotype, oldPtr, oldPtr + step, m_genotype, newPtr);
+#else
 						copy(oldPtr, oldPtr + step, newPtr);
+#endif
 						copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
 					}
 					++newInd;
@@ -1030,8 +1037,12 @@ void Population::removeSubPops(const subPopList & subPops)
 				new_spNames.push_back(m_subPopNames[sp]);
 			// do not remove.
 			if (oldPtr != newPtr) {
-				copy(oldInd, oldInd + spSize, newInd);
+#ifdef MUTANTALLELE
+				copyGenotype(m_genotype, oldPtr, oldPtr + step * spSize, m_genotype, newPtr);
+#else
 				copy(oldPtr, oldPtr + step * spSize, newPtr);
+#endif
+				copy(oldInd, oldInd + spSize, newInd);
 				copy(oldInfoPtr, oldInfoPtr + infoStep * spSize, newInfoPtr);
 			}
 			newInd += spSize;
@@ -1044,19 +1055,28 @@ void Population::removeSubPops(const subPopList & subPops)
 	}
 	//
 	m_inds.erase(newInd, m_inds.end());
+#ifdef MUTANTALLELE
+	eraseGenotype(m_genotype, newPtr, m_genotype.size());
+#else
 	m_genotype.erase(newPtr, m_genotype.end());
+#endif
 	m_info.erase(newInfoPtr, m_info.end());
 	m_popSize = std::accumulate(new_size.begin(), new_size.end(), size_t(0));
 	setSubPopStru(new_size, new_spNames);
 	//
-	GenoIterator ptr = m_genotype.begin();
 	InfoIterator infoPtr = m_info.begin();
+#ifdef MUTANTALLELE
+	size_t idx = 0;
+	for (size_t i = 0; i < m_popSize; ++i, idx += step, infoPtr += infoStep) {
+		m_inds[i].setGenoPtr(&m_genotype, idx);
+#else
+	GenoIterator ptr = m_genotype.begin();
 	for (size_t i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep) {
 		m_inds[i].setGenoPtr(ptr);
+#endif
 		m_inds[i].setInfoPtr(infoPtr);
 	}
 }
-*/
 
 /*
 void Population::removeMarkedIndividuals()
@@ -1285,6 +1305,7 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 		new_inds.insert(new_inds.end(), rawIndBegin(src), rawIndEnd(src));
 #ifdef MUTANTALLELE
 		insertGenotype(new_genotype, idx, m_genotype, genoBegin(src, true), genoEnd(src, true));
+		idx += genoEnd(src, true) - genoBegin(src, true);
 #else
 		new_genotype.insert(new_genotype.end(), genoBegin(src, true), genoEnd(src, true));
 #endif
@@ -2664,7 +2685,6 @@ void Population::setIndInfo(const floatList & valueList, const uintString &
 }
 */
 
-/*
 void Population::markIndividuals(vspID subPop, bool mark) const
 {
 	if (subPop.valid()) {
@@ -2679,7 +2699,6 @@ void Population::markIndividuals(vspID subPop, bool mark) const
 			it->setMarked(mark);
 	}
 }
-*/
 
 /*
 // set ancestral depth, can be -1

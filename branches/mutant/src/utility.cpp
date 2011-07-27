@@ -4650,10 +4650,30 @@ void testCopyGenotype()
 #endif
 
 #ifdef MUTANTALLELE
-void insertGenotype(compressed_vectora & new_element, size_t & idx , const compressed_vectora & old_element, const size_t begin, const size_t end){
-	for(size_t i = begin; i < end - begin; ++i, ++idx)
-		new_element.insert_element(idx, old_element[i]);
+void insertGenotype(compressed_vectora & newCVector,const size_t startIdx , const compressed_vectora & oldCVector, const size_t begin, const size_t end)
+{
+	size_t idx = startIdx;
+	for(size_t i = begin; i < end; ++i, ++idx)
+		newCVector[idx] = oldCVector[i];
 } 
+
+
+void copyGenotype(const compressed_vectora & oldCVector, const size_t oldBegin, const size_t oldEnd, compressed_vectora & newCVector, const size_t newBegin)
+{
+	size_t idx = newBegin;
+	for(size_t i = oldBegin; i < oldEnd; ++i, ++idx)
+		newCVector[idx] = oldCVector[i];
+}
+
+
+void eraseGenotype(compressed_vectora & cvector, const size_t begin, const size_t end) {
+	size_t idx = begin;
+	for(size_t i = begin; i < end; ++i, ++idx)
+		cvector.erase_element(idx);
+	//  compressed vector doesn't decrease the size when it is erased.
+	//  we have to resize it. 
+	cvector.resize(cvector.size() - (end - begin));
+}
 #endif
 
 }
