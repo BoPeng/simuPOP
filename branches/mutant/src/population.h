@@ -306,7 +306,7 @@ public:
 	 * to detect if scratch population is prepared properly during
 	 * evolution
 	 */
-//	void validate(const string & msg) const;
+	void validate(const string & msg) const;
 
 	/** CPPONLY
 	 * Fix a population, resize it if necessary. The content
@@ -606,7 +606,7 @@ public:
 	 *  object to a pedigree object and use function <tt>Pedigree.indByID</tt>.
 	 *  <group>4-ind</group>
 	 */
-//	Individual & indByID(double id, const uintList & ancGens = uintList(), const string & idField = "ind_id");
+	Individual & indByID(double id, const uintList & ancGens = uintList(), const string & idField = "ind_id");
 
 	/** CPPONLY: const version of the ind function.
 	 */
@@ -638,7 +638,7 @@ public:
 	 *  acceptable as long as it rounds closely to an integer.
 	 *  <group>6-ancestral</group>
 	 */
-//	Individual & ancestor(double idx, ssize_t gen, vspID subPop = vspID());
+	Individual & ancestor(double idx, ssize_t gen, vspID subPop = vspID());
 
 	/** CPPONLY const version of ancestor().
 	 *  <group>6-ancestral</group>
@@ -1223,7 +1223,7 @@ public:
 	 *  current population.
 	 *  <group>6-ancestral</group>
 	 */
-//	void push(Population & pop);
+	void push(Population & pop);
 
 	/** HIDDEN
 	 *  Return the current ancestral generation number.
@@ -1270,8 +1270,8 @@ public:
 	 *  the size of the population or (virtual) subpopulation.
 	 *  <group>8-info</group>
 	 */
-//	void setIndInfo(const floatList & values, const uintString & field,
-//		vspID subPop = vspID());
+	void setIndInfo(const floatList & values, const uintString & field,
+		vspID subPop = vspID());
 
 
 	/// CPPONLY info iterator
@@ -1366,7 +1366,7 @@ public:
 	 *  exists, it will be re-initialized.
 	 * <group>8-info</group>
 	 */
-//	void addInfoFields(const stringList & fields, double init = 0);
+	void addInfoFields(const stringList & fields, double init = 0);
 
 	/** Set information fields \e fields to a population and initialize them
 	 *  with value \e init. All existing information fields will be removed.
@@ -1448,7 +1448,7 @@ public:
 
 
 	/// CPPONLY The same as vars(), but without increasing reference count.
-//	PyObject * dict(vspID subPop = vspID());
+	PyObject * dict(vspID subPop = vspID());
 
 	/// CPPONLY
 	SharedVariables & getVars() const
@@ -1550,7 +1550,11 @@ private:
 	{
 		vectoru m_subPopSize;
 		vectorstr m_subPopNames;
-///		vectora m_genotype;
+#ifdef MUTANTALLELE
+		compressed_vectora m_genotype;
+#else
+		vectora m_genotype;
+#endif
 		vectorf m_info;
 		vector<Individual> m_inds;
 		bool m_indOrdered;

@@ -112,7 +112,7 @@ Population::Population(const Population & rhs) :
 	m_subPopNames(rhs.m_subPopNames),
 	m_subPopIndex(rhs.m_subPopIndex),
 	m_vspSplitter(NULL),
-///	m_genotype(0),
+	m_genotype(0),
 	m_info(0),
 	m_inds(0),
 	m_ancestralGens(rhs.m_ancestralGens),
@@ -127,7 +127,7 @@ Population::Population(const Population & rhs) :
 
 	try {
 		m_inds.resize(rhs.m_popSize);
-///		m_genotype.resize(m_popSize * genoSize());
+		m_genotype.resize(m_popSize * genoSize());
 		// have 0 length for mpi/non-head node
 		m_info.resize(rhs.m_popSize * infoSize());
 	} catch (...) {
@@ -143,15 +143,24 @@ Population::Population(const Population & rhs) :
 
 	// copy genotype one by one so Individual genoPtr will not
 	// point outside of subpopulation region.
-///	GenoIterator ptr = m_genotype.begin();
 	InfoIterator infoPtr = m_info.begin();
-///	size_t step = genoSize();
 	size_t infoStep = infoSize();
-	for (size_t i = 0; i < m_popSize; ++i,/* ptr += step,*/ infoPtr += infoStep) {
-///		m_inds[i].setGenoPtr(ptr);
+	size_t step = genoSize();
+#ifdef MUTANTALLELE
+	size_t idx = 0;
+	for (size_t i = 0; i < m_popSize; ++i, idx += step, infoPtr += infoStep) {
+		m_inds[i].setGenoPtr(&m_genotype, idx);
 		m_inds[i].setInfoPtr(infoPtr);
-///		m_inds[i].copyFrom(rhs.m_inds[i]);
+		m_inds[i].copyFrom(rhs.m_inds[i]);
 	}
+#else
+	GenoIterator ptr = m_genotype.begin();
+	for (size_t i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep) {
+		m_inds[i].setGenoPtr(ptr);
+		m_inds[i].setInfoPtr(infoPtr);
+		m_inds[i].copyFrom(rhs.m_inds[i]);
+	}
+#endif
 
 	// copy ancestral populations
 	try {
@@ -164,17 +173,24 @@ Population::Population(const Population & rhs) :
 
 			vector<Individual> & linds = lp.m_inds;
 			const vector<Individual> & rinds = rp.m_inds;
-
-///			GenoIterator lg = lp.m_genotype.begin();
-///			ConstGenoIterator rg = rp.m_genotype.begin();
-
+#ifdef MUTANTALLELE
+			size_t lg = 0; 
+			const size_t rg = 0;
+#else
+			GenoIterator lg = p.m_genotype.begin();
+			ConstGenoIterator rg = rp.m_genotype.begin();
+#endif
 			InfoIterator li = lp.m_info.begin();
 			ConstInfoIterator ri = rp.m_info.begin();
 
 			size_t ps = rinds.size();
 
 			for (size_t i = 0; i < ps; ++i) {
-///				linds[i].setGenoPtr(rinds[i].genoPtr() - rg + lg);
+#ifdef MUTANTALLELE
+				linds[i].setGenoPtr(rinds[i].genoPtr() ,rinds[i].genoIdx() - rg + lg);
+#else
+				linds[i].setGenoPtr(rinds[i].genoPtr() - rg + lg);
+#endif
 				linds[i].setInfoPtr(rinds[i].infoPtr() - ri + li);
 			}
 		}
@@ -195,7 +211,7 @@ void Population::popData::swap(Population & pop)
 {
 	pop.m_subPopSize.swap(m_subPopSize);
 	pop.m_subPopNames.swap(m_subPopNames);
-///	pop.m_genotype.swap(m_genotype);
+	pop.m_genotype.swap(m_genotype);
 	pop.m_info.swap(m_info);
 	pop.m_inds.swap(m_inds);
 	std::swap(pop.m_indOrdered, m_indOrdered);
@@ -344,7 +360,6 @@ int Population::__cmp__(const Population & rhs) const
 }
 */
 
-/*
 Individual & Population::indByID(double fid, const uintList & ancGens, const string & idField)
 {
 	size_t id = toID(fid);
@@ -387,7 +402,6 @@ Individual & Population::indByID(double fid, const uintList & ancGens, const str
 	// this is just to suppress a warning.
 	return m_inds[0];
 }
-*/
 
 pyIndIterator Population::individuals(vspID subPopID)
 {
@@ -416,7 +430,6 @@ pyIndIterator Population::individuals(vspID subPopID)
 			m_inds.begin() + subPopEnd(spID), true, vspFunctor());
 }
 
-/*
 Individual & Population::ancestor(double fidx, ssize_t gen, vspID vsp)
 {
 	size_t idx = toID(fidx);
@@ -453,7 +466,6 @@ Individual & Population::ancestor(double fidx, ssize_t gen, vspID vsp)
 		return m_ancestralPops[genIdx].m_inds[shift + idx];
 	}
 }
-*/
 
 /*
 const Individual & Population::ancestor(double fidx, ssize_t gen, vspID vsp) const
@@ -621,7 +633,6 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 	}
 }
 
-/*
 void Population::validate(const string & msg) const
 {
 #ifdef OPTIMIZED
@@ -633,13 +644,23 @@ void Population::validate(const string & msg) const
 		msg + "Wrong genotype size for this population");
 	ConstInfoIterator ib = m_info.begin();
 	ConstInfoIterator ie = m_info.end();
+#ifdef MUTANTALLELE
+	size_t gb = 0;
+	size_t ge = m_genotype.size();
+#else
 	ConstGenoIterator gb = m_genotype.begin();
 	ConstGenoIterator ge = m_genotype.end();
+#endif
 
 	if (genoSize() > 0) {
 		for (ConstIndIterator it = indIterator(); it.valid(); ++it) {
+#ifdef MUTANTALLELE
+			DBG_ASSERT(it->genoIdx() >= gb && it->genoIdx() < ge, SystemError,
+				msg + "Wrong genotype pointer");
+#else
 			DBG_ASSERT(it->genoPtr() >= gb && it->genoPtr() < ge, SystemError,
 				msg + "Wrong genotype pointer");
+#endif
 		}
 	}
 	if (infoSize() > 0) {
@@ -651,7 +672,6 @@ void Population::validate(const string & msg) const
 	}
 #endif
 }
-*/
 
 
 void Population::fitSubPopStru(const vectoru & newSubPopSizes,
@@ -2448,7 +2468,6 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 }
 */
 
-/*
 void Population::push(Population & rhs)
 {
 	DBG_ASSERT(rhs.genoStruIdx() == genoStruIdx(), ValueError,
@@ -2499,9 +2518,7 @@ void Population::push(Population & rhs)
 	validate("Current population after push and discard:");
 	rhs.validate("Outside Population after push and discard:");
 }
-*/
 
-/*
 void Population::addInfoFields(const stringList & fieldList, double init)
 {
 	const vectorstr & fields = fieldList.elems();
@@ -2555,7 +2572,6 @@ void Population::addInfoFields(const stringList & fieldList, double init)
 		useAncestralGen(oldAncPop);
 	}
 }
-*/
 
 /*
 void Population::setInfoFields(const stringList & fieldList, double init)
@@ -2657,7 +2673,6 @@ void Population::updateInfoFieldsFrom(const stringList & fieldList, const Popula
 }
 */
 
-/*
 void Population::setIndInfo(const floatList & valueList, const uintString &
                             field, vspID subPopID)
 {
@@ -2683,7 +2698,6 @@ void Population::setIndInfo(const floatList & valueList, const uintString &
 			*ptr = static_cast<double>(values[i % valueSize]);
 	}
 }
-*/
 
 void Population::markIndividuals(vspID subPop, bool mark) const
 {
@@ -3132,7 +3146,6 @@ PyObject * Population::vars(vspID vsp)
 }
 */
 
-/*
 // The same as vars(), but without increasing
 // reference count.
 PyObject * Population::dict(vspID vsp)
@@ -3163,7 +3176,6 @@ PyObject * Population::dict(vspID vsp)
 
 	return spObj;
 }
-*/
 
 void Population::syncIndPointers(bool infoOnly) const
 {

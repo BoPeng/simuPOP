@@ -45,17 +45,19 @@ Individual & Individual::operator=(const Individual & rhs)
 	return *this;
 }
 
-/*
 Individual & Individual::copyFrom(const Individual & rhs)
 {
 	m_flags = rhs.m_flags;
+#ifdef MUTANTALLELE
+	copyGenotype(*(rhs.genoPtr()), rhs.genoBegin(), rhs.genoEnd(), *m_genoPtr, genoBegin());
+#else
 	copy(rhs.genoBegin(), rhs.genoEnd(), genoBegin());
+#endif
 	copy(rhs.infoBegin(), rhs.infoEnd(), infoBegin());
 	// also copy genoStru pointer...
 	this->setGenoStruIdx(rhs.genoStruIdx());
 	return *this;
 }
-*/
 
 /*
 bool Individual::operator==(const Individual & rhs) const

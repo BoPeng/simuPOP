@@ -146,19 +146,31 @@ public:
 	Individual & operator=(const Individual & rhs);
 
 	/// CPPONLY deep copy of an individual class
-//	Individual & copyFrom(const Individual & rhs);
+	Individual & copyFrom(const Individual & rhs);
 
 	//@}
 	/// @name readonly structural info
 	//@{
 
+#ifdef MUTANTALLELE
+	/// CPPONLY index to alleles
+	compressed_vectora * genoPtr() const
+	{
+		return m_genoPtr;
+	}
+
+	size_t genoIdx() const
+	{
+		return m_genoIdx;
+	}
+
+#else
 	/// CPPONLY pointer to alleles
-/*
 	GenoIterator genoPtr() const
 	{
 		return m_genoPtr;
 	}
-*/
+#endif
 
 
 	/// CPPONLY
@@ -529,6 +541,7 @@ protected:
 	/// pointer to genotype.
 #ifdef MUTANTALLELE
 	compressed_vectora * m_genoPtr;
+
 	size_t m_genoIdx;
 #else
 	GenoIterator m_genoPtr;
