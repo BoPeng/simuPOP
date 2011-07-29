@@ -548,7 +548,6 @@ IndAlleleIterator Population::alleleIterator(size_t locus, size_t subPop)
 }
 */
 
-/*
 PyObject * Population::genotype(vspID subPopID)
 {
 
@@ -567,16 +566,23 @@ PyObject * Population::genotype(vspID subPopID)
 	syncIndPointers();
 	if (!vsp.valid()) {
 		// directly expose values. Do not copy data over.
+#ifdef MUTANTALLELE
+		return Allele_Vec_As_NumArray(&m_genotype, 0, m_genotype.size());
+#else
 		return Allele_Vec_As_NumArray(m_genotype.begin(), m_genotype.end());
+#endif
 	} else {
 		size_t subPop = vsp.subPop();
 		CHECKRANGESUBPOP(subPop);
 		// directly expose values. Do not copy data over.
+#ifdef MUTANTALLELE
+		return Allele_Vec_As_NumArray(&m_genotype, genoBegin(subPop,true), genoEnd(subPop, true));
+#else
 		return Allele_Vec_As_NumArray(genoBegin(subPop, true), genoEnd(subPop, true));
+#endif
 	}
 	return NULL;
 }
-*/
 
 void Population::setGenotype(const uintList & genoList, vspID subPopID)
 {
@@ -1360,7 +1366,7 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 	return sps[0];
 }
 
-/*
+
 void Population::addChromFrom(const Population & pop)
 {
 	size_t numLoci1 = totNumLoci();
@@ -1378,15 +1384,31 @@ void Population::addChromFrom(const Population & pop)
 		//
 		DBG_FAILIF(m_subPopSize != pop.m_subPopSize, ValueError,
 			"Can not add chromosomes from a population with different subpopulation sizes");
-
+#ifdef MUTANTALLELE
+		compressed_vectora newGenotype(genoSize() * m_popSize);
+		// append pop2 chromosomes to the first one
+		size_t idx = 0;
+#else
 		vectora newGenotype(genoSize() * m_popSize);
-
 		// append pop2 chromosomes to the first one
 		GenoIterator ptr = newGenotype.begin();
+#endif
+
 		size_t pEnd = ploidy();
 		for (size_t i = 0; i < m_popSize; ++i) {
 			// set new geno structure
 			m_inds[i].setGenoStruIdx(genoStruIdx());
+#ifdef MUTANTALLELE
+			size_t idx1 = m_inds[i].genoIdx();
+			size_t idx2 = pop.m_inds[i].genoIdx();
+			for (size_t p = 0; p < pEnd; ++p) {
+				for (size_t j = 0; j < numLoci1; ++j)
+					newGenotype[idx++] = m_genotype[idx1++];
+				for (size_t j = 0; j < numLoci2; ++j)
+					newGenotype[idx++] = pop.m_genotype[idx2++];
+			}
+
+#else
 			GenoIterator ptr1 = m_inds[i].genoPtr();
 			GenoIterator ptr2 = pop.m_inds[i].genoPtr();
 			m_inds[i].setGenoPtr(ptr);
@@ -1396,14 +1418,19 @@ void Population::addChromFrom(const Population & pop)
 				for (size_t j = 0; j < numLoci2; ++j)
 					*(ptr++) = *(ptr2++);
 			}
+#endif
 		}
 		m_genotype.swap(newGenotype);
+#ifdef MUTANTALLELE
+		// compressed_vectora must be setGenoPtr after swap
+		for (size_t i = 0, idx = 0; i < m_popSize;idx+=genoSize(), ++i) 
+			m_inds[i].setGenoPtr(&m_genotype, idx);
+#endif
 	}
 	if (!indOrdered())
 		// sort information only
 		syncIndPointers(true);
 }
-*/
 
 /*
 void Population::addIndFrom(const Population & pop)
@@ -1460,7 +1487,6 @@ void Population::addIndFrom(const Population & pop)
 }
 */
 
-/*
 void Population::addLociFrom(const Population & pop)
 {
 	DBG_FAILIF(ancestralGens() != pop.ancestralGens(), ValueError,
@@ -1481,15 +1507,32 @@ void Population::addLociFrom(const Population & pop)
 		DBG_FAILIF(m_subPopSize != pop.m_subPopSize, ValueError,
 			"Can not add chromosomes from a population with different subpopulation sizes");
 		//
+#ifdef MUTANTALLELE
+		compressed_vectora newGenotype(genoSize() * m_popSize);
+		// merge chromosome by chromosome
+		size_t idx = 0;
+#else
 		vectora newGenotype(genoSize() * m_popSize);
-
 		// merge chromosome by chromosome
 		GenoIterator ptr = newGenotype.begin();
+#endif
 		size_t pEnd = ploidy();
 		size_t newSize = totNumLoci();
 		for (size_t i = 0; i < m_popSize; ++i) {
 			// set new geno structure
 			m_inds[i].setGenoStruIdx(genoStruIdx());
+#ifdef MUTANTALLELE
+			size_t idx1 = m_inds[i].genoIdx();
+			size_t idx2 = pop.m_inds[i].genoIdx();
+			// copy each allele
+			for (size_t p = 0; p < pEnd; ++p) {
+				for (size_t i = 0; i < size1; ++i)
+					newGenotype[idx + indexes1[i]] = m_genotype[idx1++]; 
+				for (size_t i = 0; i < size2; ++i)
+					newGenotype[idx + indexes2[i]] = pop.m_genotype[idx2++]; 
+				idx += newSize;
+			}
+#else
 			GenoIterator ptr1 = m_inds[i].genoPtr();
 			GenoIterator ptr2 = pop.m_inds[i].genoPtr();
 			// new genotype
@@ -1502,16 +1545,21 @@ void Population::addLociFrom(const Population & pop)
 					ptr[indexes2[i]] = *(ptr2++);
 				ptr += newSize;
 			}
+#endif
 		}
 		m_genotype.swap(newGenotype);
+#ifdef MUTANTALLELE
+		// compressed_vectora must be setGenoPtr after swap
+		for (size_t i = 0, idx = 0; i < m_popSize;idx+=genoSize(), ++i) 
+			m_inds[i].setGenoPtr(&m_genotype, idx);
+#endif
 	}
 
 	// sort information only
 	syncIndPointers(true);
 }
-*/
 
-/*
+
 void Population::addChrom(const floatList & lociPosList, const stringList & lociNameList,
                           const string & chromName, const stringMatrix & alleleNames,
                           size_t chromType)
@@ -1533,15 +1581,32 @@ void Population::addChrom(const floatList & lociPosList, const stringList & loci
 		useAncestralGen(depth);
 		//
 		size_t newPopGenoSize = genoSize() * m_popSize;
+#ifdef MUTANTALLELE
+		compressed_vectora newGenotype(newPopGenoSize, 0);
+
+		// copy data over
+		size_t newIdx = 0;
+#else
 		vectora newGenotype(newPopGenoSize, 0);
 
 		// copy data over
 		GenoIterator newPtr = newGenotype.begin();
+#endif
+
 		size_t pEnd = ploidy();
 		size_t gap = totNumLoci() - oldNumLoci;
 		for (size_t i = 0; i < m_popSize; ++i) {
 			// set new geno structure
 			m_inds[i].setGenoStruIdx(genoStruIdx());
+#ifdef MUTANTALLELE
+			size_t oldIdx = m_inds[i].genoIdx();
+			// copy each chromosome
+			for (size_t p = 0; p < pEnd; ++p) {
+				for (size_t i = 0; i < oldNumLoci; ++i)
+					newGenotype[newIdx++] = m_genotype[oldIdx++];
+				newIdx += gap;
+			}
+#else
 			GenoIterator oldPtr = m_inds[i].genoPtr();
 			// new genotype
 			m_inds[i].setGenoPtr(newPtr);
@@ -1551,8 +1616,15 @@ void Population::addChrom(const floatList & lociPosList, const stringList & loci
 					*(newPtr++) = *(oldPtr++);
 				newPtr += gap;
 			}
+#endif
 		}
 		m_genotype.swap(newGenotype);
+#ifdef MUTANTALLELE
+		// compressed_vectora must be setGenoPtr after swap
+		for (size_t i = 0, idx = 0; i < m_popSize;idx+=genoSize(), ++i) 
+			m_inds[i].setGenoPtr(&m_genotype, idx);
+#endif
+
 	}
 	// if indOrdered is false:
 	//   individual genotype is now sorted. If we do not do
@@ -1560,9 +1632,8 @@ void Population::addChrom(const floatList & lociPosList, const stringList & loci
 	//   so that the order is set to True.
 	syncIndPointers(true);
 }
-*/
 
-/*
+
 vectoru Population::addLoci(const uintList & chromList, const floatList & posList,
                             const stringList & lociNameList, const stringMatrix & alleleNamesMatrix)
 {
@@ -1593,14 +1664,29 @@ vectoru Population::addLoci(const uintList & chromList, const floatList & posLis
 		useAncestralGen(depth);
 		//
 		size_t newPopGenoSize = genoSize() * m_popSize;
+#ifdef MUTANTALLELE
+		compressed_vectora newGenotype(newPopGenoSize, 0);
+		// copy data over
+		size_t newIdx = 0;
+#else
 		vectora newGenotype(newPopGenoSize, 0);
-
 		// copy data over
 		GenoIterator newPtr = newGenotype.begin();
+#endif
 		size_t pEnd = ploidy();
 		for (size_t i = 0; i < m_popSize; ++i) {
 			// set new geno structure
 			m_inds[i].setGenoStruIdx(genoStruIdx());
+#ifdef MUTANTALLELE
+			size_t oldIdx = m_inds[i].genoIdx();
+			// copy each chromosome
+			for (size_t p = 0; p < pEnd; ++p) {
+				vectoru::iterator loc = loci.begin();
+				for (; loc != loci.end(); ++loc)
+					newGenotype[newIdx + *loc] = m_genotype[oldIdx++];
+				newIdx += totNumLoci();
+			}
+#else
 			GenoIterator oldPtr = m_inds[i].genoPtr();
 			// new genotype
 			m_inds[i].setGenoPtr(newPtr);
@@ -1611,8 +1697,14 @@ vectoru Population::addLoci(const uintList & chromList, const floatList & posLis
 					newPtr[*loc] = *(oldPtr++);
 				newPtr += totNumLoci();
 			}
+#endif
 		}
 		m_genotype.swap(newGenotype);
+#ifdef MUTANTALLELE
+		// compressed_vectora must be setGenoPtr after swap
+		for (size_t i = 0, idx = 0; i < m_popSize;idx+=genoSize(), ++i) 
+			m_inds[i].setGenoPtr(&m_genotype, idx);
+#endif
 	}
 	// if indOrdered is false:
 	//   individual genotype is now sorted. If we do not do
@@ -1621,7 +1713,6 @@ vectoru Population::addLoci(const uintList & chromList, const floatList & posLis
 	syncIndPointers(true);
 	return newIndex;
 }
-*/
 
 /*
 void Population::resize(const uintList & sizeList, bool propagate)
@@ -2252,7 +2343,6 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 }
 */
 
-/*
 void Population::removeLoci(const lociList & removeList, const lociList & keepList)
 {
 	if (removeList.unspecified() && keepList.unspecified())
@@ -2288,13 +2378,29 @@ void Population::removeLoci(const lociList & removeList, const lociList & keepLi
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
 		//
+#ifdef MUTANTALLELE
+		compressed_vectora newGenotype(genoSize() * m_popSize);
+		// copy data over
+		size_t newIdx = 0;
+#else
 		vectora newGenotype(genoSize() * m_popSize);
 		// copy data over
 		GenoIterator newPtr = newGenotype.begin();
+#endif
 		size_t pEnd = ploidy();
 		for (size_t i = 0; i < m_popSize; ++i) {
 			// set new geno structure
 			m_inds[i].setGenoStruIdx(genoStruIdx());
+#ifdef MUTANTALLELE
+			size_t oldIdx = m_inds[i].genoIdx();
+			for (size_t p = 0; p < pEnd; ++p) {
+				vectoru::iterator loc = kept.begin();
+				for (; loc != kept.end(); ++loc)
+					// this line needs ordered kept array
+					newGenotype[newIdx++] = m_genotype[oldIdx + *loc];
+				oldIdx += oldTotNumLoci;
+			}
+#else
 			GenoIterator oldPtr = m_inds[i].genoPtr();
 			// new genotype
 			m_inds[i].setGenoPtr(newPtr);
@@ -2305,12 +2411,17 @@ void Population::removeLoci(const lociList & removeList, const lociList & keepLi
 					*(newPtr++) = oldPtr[*loc];
 				oldPtr += oldTotNumLoci;
 			}
+#endif
 		}
 		m_genotype.swap(newGenotype);
+#ifdef MUTANTALLELE
+		// compressed_vectora must be setGenoPtr after swap
+		for (size_t i = 0, idx = 0; i < m_popSize;idx+=genoSize(), ++i) 
+			m_inds[i].setGenoPtr(&m_genotype, idx);
+#endif
 	}
 	setIndOrdered(true);
 }
-*/
 
 /*
 void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList & loci_,
@@ -2573,7 +2684,6 @@ void Population::addInfoFields(const stringList & fieldList, double init)
 	}
 }
 
-/*
 void Population::setInfoFields(const stringList & fieldList, double init)
 {
 	const vectorstr & fields = fieldList.elems();
@@ -2594,9 +2704,7 @@ void Population::setInfoFields(const stringList & fieldList, double init)
 	}
 	useAncestralGen(oldAncPop);
 }
-*/
 
-/*
 void Population::removeInfoFields(const stringList & fieldList)
 {
 	const vectorstr & fields = fieldList.elems();
@@ -2638,7 +2746,6 @@ void Population::removeInfoFields(const stringList & fieldList)
 	}
 	useAncestralGen(oldAncPop);
 }
-*/
 
 /*
 void Population::updateInfoFieldsFrom(const stringList & fieldList, const Population & pop,

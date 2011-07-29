@@ -959,7 +959,7 @@ public:
 	 *  subpopulation \e subPop. Virtual subpopulation is unsupported.
 	 *  <group>5-genotype</group>
 	 */
-//	PyObject * genotype(vspID subPop = vspID());
+	PyObject * genotype(vspID subPop = vspID());
 
 	/** Fill the genotype of all individuals in a population (if
 	 *  <tt>subPop=[]</tt>) or in a (virtual) subpopulation \e subPop (if
@@ -1066,7 +1066,7 @@ public:
 	 *  new chromosomes from population \c pop individual by individual.
 	 *  <group>7-manipulate</group>
 	 */
-//	void addChromFrom(const Population & pop);
+	void addChromFrom(const Population & pop);
 
 	/** Add loci from population \e pop, chromosome by chromosome. Added
 	 *  loci will be inserted according to their position. Their position
@@ -1075,7 +1075,7 @@ public:
 	 *  current population in the current and all ancestral generations.
 	 *  <group>7-manipulate</group>
 	 */
-//	void addLociFrom(const Population & pop);
+	void addLociFrom(const Population & pop);
 
 	/** Add chromosome \e chromName with given type \e chromType to a
 	 *  population, with loci \e lociNames inserted at position \e lociPos.
@@ -1086,9 +1086,9 @@ public:
 	 *  be used if \e lociNames is not specified.
 	 *  <group>7-manipulate</group>
 	 */
-//	void addChrom(const floatList & lociPos, const stringList & lociNames = vectorstr(),
-//		const string & chromName = string(), const stringMatrix & alleleNames = stringMatrix(),
-//		size_t chromType = AUTOSOME);
+	void addChrom(const floatList & lociPos, const stringList & lociNames = vectorstr(),
+		const string & chromName = string(), const stringMatrix & alleleNames = stringMatrix(),
+		size_t chromType = AUTOSOME);
 
 	/** Insert loci \e lociNames at positions \e pos on chromosome \e chrom.
 	 *  These parameters should be lists of the same length, although
@@ -1102,8 +1102,8 @@ public:
 	 *  function returns indexes of the inserted loci.
 	 *  <group>7-manipulate</group>
 	 */
-//	vectoru addLoci(const uintList & chrom, const floatList & pos,
-//		const stringList & lociNames = vectorstr(), const stringMatrix & alleleNames = stringMatrix());
+	vectoru addLoci(const uintList & chrom, const floatList & pos,
+		const stringList & lociNames = vectorstr(), const stringMatrix & alleleNames = stringMatrix());
 
 	/** Resize population by giving new subpopulation sizes \e sizes.
 	 *  individuals at the end of some subpopulations will be removed if the
@@ -1189,7 +1189,7 @@ public:
 	 *  used to specify loci that will not be removed.
 	 *  <group>7-manipulate</group>
 	 */
-//	void removeLoci(const lociList & loci = lociList(NULL), const lociList & keep = lociList(NULL));
+	void removeLoci(const lociList & loci = lociList(NULL), const lociList & keep = lociList(NULL));
 
 	/** Recode alleles at \e loci (can be a list of loci indexes or names, or
 	 *  all loci in a population (\c ALL_AVAIL)) to other values according to
@@ -1372,12 +1372,12 @@ public:
 	 *  with value \e init. All existing information fields will be removed.
 	 *  <group>8-info</group>
 	 */
-//	void setInfoFields(const stringList & fields, double init = 0);
+	void setInfoFields(const stringList & fields, double init = 0);
 
 	/** Remove information fields \e fields from a population.
 	 *  <group>8-info</group>
 	 */
-//	void removeInfoFields(const stringList & fields);
+	void removeInfoFields(const stringList & fields);
 
 
 	/** Update information fields \e fields from \e fromFields of another
