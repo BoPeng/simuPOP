@@ -1015,7 +1015,7 @@ public:
 	void removeSubPops(const subPopList & subPops);
 
 	/// CPPONLY
-//	void removeMarkedIndividuals();
+	void removeMarkedIndividuals();
 
 	/** remove individual(s) by absolute indexes (parameter \e index) or
 	 *  their IDs (parameter \e IDs), or using a filter function (paramter
@@ -1036,9 +1036,9 @@ public:
 	 *  kept even if all individuals from it are removed.
 	 *  <group>7-manipulate</group>
 	 */
-//	void removeIndividuals(const uintList & indexes = vectoru(),
-//		const floatList & IDs = vectorf(), const string & idField = "ind_id",
-//		PyObject * filter = NULL);
+	void removeIndividuals(const uintList & indexes = vectoru(),
+		const floatList & IDs = vectorf(), const string & idField = "ind_id",
+		PyObject * filter = NULL);
 
 	/** Merge subpopulations \e subPops. If \e subPops is \c ALL_AVAIL (default),
 	 *  all subpopulations will be merged. \e subPops do not have to be adjacent
@@ -1136,7 +1136,7 @@ public:
 	 *  This function only extract individuals from the present generation.
 	 *  <group>7-manipulate</group>
 	 */
-//	Population & extractSubPops(const subPopList & subPops = subPopList(), bool rearrange = false) const;
+	Population & extractSubPops(const subPopList & subPops = subPopList(), bool rearrange = false) const;
 
 
 	/// CPPONLY

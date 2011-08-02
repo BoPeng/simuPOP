@@ -1104,7 +1104,7 @@ void Population::removeSubPops(const subPopList & subPops)
 	}
 }
 
-/*
+
 void Population::removeMarkedIndividuals()
 {
 	syncIndPointers();
@@ -1114,10 +1114,15 @@ void Population::removeMarkedIndividuals()
 	size_t infoStep = infoSize();
 	RawIndIterator oldInd = m_inds.begin();
 	RawIndIterator newInd = m_inds.begin();
-	GenoIterator oldPtr = m_genotype.begin();
 	InfoIterator oldInfoPtr = m_info.begin();
-	GenoIterator newPtr = m_genotype.begin();
 	InfoIterator newInfoPtr = m_info.begin();
+#ifdef MUTANTALLELE
+	size_t oldPtr = 0;
+	size_t newPtr = 0;
+#else
+	GenoIterator oldPtr = m_genotype.begin();
+	GenoIterator newPtr = m_genotype.begin();
+#endif
 	//
 	for (size_t sp = 0; sp < numSubPop(); ++sp) {
 		size_t newSize = 0;
@@ -1128,7 +1133,11 @@ void Population::removeMarkedIndividuals()
 				++newSize;
 				if (oldInd != newInd) {
 					*newInd = *oldInd;
+#ifdef MUTANTALLELE
+					copyGenotype(m_genotype, oldPtr, oldPtr + step, m_genotype, newPtr);
+#else
 					copy(oldPtr, oldPtr + step, newPtr);
+#endif
 					copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
 				}
 				++newInd;
@@ -1143,21 +1152,30 @@ void Population::removeMarkedIndividuals()
 	}
 	//
 	m_inds.erase(newInd, m_inds.end());
+#ifdef MUTANTALLELE
+	eraseGenotype(m_genotype, newPtr, m_genotype.size());
+#else
 	m_genotype.erase(newPtr, m_genotype.end());
+#endif
 	m_info.erase(newInfoPtr, m_info.end());
 	m_popSize = std::accumulate(new_size.begin(), new_size.end(), size_t(0));
 	setSubPopStru(new_size, m_subPopNames);
 	//
-	GenoIterator ptr = m_genotype.begin();
 	InfoIterator infoPtr = m_info.begin();
+#ifdef MUTANTALLELE
+	size_t idx = 0;
+	for (size_t i = 0; i < m_popSize; ++i, idx += step, infoPtr += infoStep) {
+		m_inds[i].setGenoPtr(&m_genotype, idx);
+#else
+	GenoIterator ptr = m_genotype.begin();
 	for (size_t i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep) {
 		m_inds[i].setGenoPtr(ptr);
+#endif
 		m_inds[i].setInfoPtr(infoPtr);
 	}
 }
-*/
 
-/*
+
 void Population::removeIndividuals(const uintList & indexList, const floatList & IDList,
                                    const string & idField, PyObject * filter)
 {
@@ -1240,7 +1258,7 @@ void Population::removeIndividuals(const uintList & indexList, const floatList &
 	}
 	useAncestralGen(curGen);
 }
-*/
+
 
 size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 {
@@ -1766,7 +1784,6 @@ void Population::resize(const uintList & sizeList, bool propagate)
 }
 */
 
-/*
 Population & Population::extractSubPops(const subPopList & subPops, bool rearrange) const
 {
 #ifndef OPTIMIZED
@@ -1791,7 +1808,11 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 	size_t infoStep = infoSize();
 
 	vector<Individual> new_inds;
+#ifdef MUTANTALLELE
+	compressed_vectora new_genotype;
+#else
 	vectora new_genotype;
+#endif
 	vectorf new_info;
 
 	if (rearrange) {
@@ -1810,7 +1831,11 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 		new_info.resize(sz * infoStep);
 		//
 		RawIndIterator newInd = new_inds.begin();
+#ifdef MUTANTALLELE
+		size_t newPtr = 0;
+#else
 		GenoIterator newPtr = new_genotype.begin();
+#endif
 		InfoIterator newInfoPtr = new_info.begin();
 
 		it = subPops.begin();
@@ -1819,7 +1844,11 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 			ConstIndIterator oldInd = indIterator(it->subPop());
 			for (; oldInd.valid(); ++oldInd) {
 				*newInd = *oldInd;
+#ifdef MUTANTALLELE
+				copyGenotype(*(oldInd->genoPtr()), oldInd->genoBegin(), oldInd->genoEnd(), new_genotype, newPtr);
+#else
 				copy(oldInd->genoBegin(), oldInd->genoEnd(), newPtr);
+#endif
 				copy(oldInd->infoBegin(), oldInd->infoEnd(), newInfoPtr);
 				++newInd;
 				newPtr += step;
@@ -1839,12 +1868,20 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 		new_info.resize(sz * infoStep);
 		//
 		RawIndIterator newInd = new_inds.begin();
+#ifdef MUTANTALLELE
+		size_t newPtr = 0;
+#else
 		GenoIterator newPtr = new_genotype.begin();
+#endif
 		InfoIterator newInfoPtr = new_info.begin();
 
 		//
 		ConstRawIndIterator oldInd = m_inds.begin();
+#ifdef MUTANTALLELE
+		size_t oldPtr = 0;
+#else
 		ConstGenoIterator oldPtr = m_genotype.begin();
+#endif
 		ConstInfoIterator oldInfoPtr = m_info.begin();
 		for (size_t sp = 0; sp < numSubPop(); ++sp) {
 			size_t spSize = subPopSize(sp);
@@ -1855,7 +1892,11 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 					new_spNames.push_back(m_subPopNames[sp]);
 				//
 				copy(oldInd, oldInd + spSize, newInd);
+#ifdef MUTANTALLELE
+				copyGenotype(m_genotype, oldPtr, oldPtr + step * spSize, new_genotype, newPtr);
+#else
 				copy(oldPtr, oldPtr + step * spSize, newPtr);
+#endif
 				copy(oldInfoPtr, oldInfoPtr + infoStep * spSize, newInfoPtr);
 
 				oldInd += spSize;
@@ -1865,8 +1906,8 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 				newPtr += step * spSize;
 				newInfoPtr += infoStep * spSize;
 			} else if (subPops.overlap(sp)) {
-				// partial copy
-				//
+				// partial copy 
+				// 
 				// mark for copy
 				markIndividuals(sp, false);
 				subPopList::const_iterator it = subPops.begin();
@@ -1881,7 +1922,11 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 					if (oldInd->marked()) {
 						++newSize;
 						*newInd = *oldInd;
+#ifdef MUTANTALLELE
+						copyGenotype(m_genotype, oldPtr, oldPtr + step, new_genotype, newPtr);
+#else
 						copy(oldPtr, oldPtr + step, newPtr);
+#endif
 						copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
 						++newInd;
 						newPtr += step;
@@ -1914,16 +1959,21 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 	pop.m_popSize = sz;
 	pop.setSubPopStru(new_size, new_spNames);
 	//
-	GenoIterator ptr = pop.m_genotype.begin();
 	InfoIterator infoPtr = pop.m_info.begin();
+#ifdef MUTANTALLELE
+	size_t idx = 0;
+	for (size_t i = 0; i < pop.m_popSize; ++i, idx += step, infoPtr += infoStep) {
+		pop.m_inds[i].setGenoPtr(&pop.m_genotype, idx);
+#else
+	GenoIterator ptr = pop.m_genotype.begin();
 	for (size_t i = 0; i < pop.m_popSize; ++i, ptr += step, infoPtr += infoStep) {
 		pop.m_inds[i].setGenoPtr(ptr);
+#endif
 		pop.m_inds[i].setInfoPtr(infoPtr);
 	}
 
 	return pop;
 }
-*/
 
 /*
 Population & Population::extractMarkedIndividuals() const
