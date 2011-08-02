@@ -36,12 +36,12 @@
 #include "population.h"
 //#include "pedigree.h"
 #include "virtualSubPop.h"
-//#include "operator.h"
+#include "operator.h"
 //#include "simulator.h"
 
 #include "utility.h"
 //#include "pedigree.h"
-//#include "initializer.h"
+#include "initializer.h"
 //#include "outputer.h"
 //#include "mating.h"
 //#include "tagger.h"
@@ -282,7 +282,7 @@ namespace std {
     %template()    vector<simuPOP::BaseOperator * >;
 }
 
-//%include "operator.h"
+%include "operator.h"
 
 namespace std
 {
@@ -297,7 +297,7 @@ namespace std
 //%include "simulator.h"
 //%include "stator.h"
 //%include "outputer.h"
-//%include "initializer.h"
+%include "initializer.h"
 //%include "tagger.h"
 //%include "migrator.h"
 //%include "mutator.h"

@@ -1429,12 +1429,12 @@ public:
 	 *  function <tt>loadPopulation(filename)</tt>.
 	 *  <group>8-pop</group>
 	 */
-//	void save(const string & filename) const;
+	void save(const string & filename) const;
 
 	/** CPPONLY load Population from file \e filename
 	 *  <group>8-pop</group>
 	 */
-//	void load(const string & filename);
+	void load(const string & filename);
 
 public:
 	/** return variables of a population as a Python dictionary. If a valid
@@ -1444,7 +1444,7 @@ public:
 	 *  \e subPop does not exist in <tt>vars()["subPop"]</tt>.
 	 *  <group>9-var</group>
 	 */
-//	PyObject * vars(vspID subPop = vspID());
+	PyObject * vars(vspID subPop = vspID());
 
 
 	/// CPPONLY The same as vars(), but without increasing reference count.
@@ -1502,9 +1502,9 @@ public:
 private:
 	friend class boost::serialization::access;
 
-//	void save(boost::archive::text_oarchive & ar, const unsigned int /* version */) const;
+	void save(boost::archive::text_oarchive & ar, const unsigned int /* version */) const;
 
-//	void load(boost::archive::text_iarchive & ar, const unsigned int /* version */);
+	void load(boost::archive::text_iarchive & ar, const unsigned int /* version */);
 
 	BOOST_SERIALIZATION_SPLIT_MEMBER();
 
@@ -1622,7 +1622,7 @@ public:
 
 /** load a population from a file saved by <tt>Population::save()</tt>.
  */
-//Population & loadPopulation(const string & file);
+Population & loadPopulation(const string & file);
 
 }
 

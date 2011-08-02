@@ -177,7 +177,7 @@ Population::Population(const Population & rhs) :
 			size_t lg = 0; 
 			const size_t rg = 0;
 #else
-			GenoIterator lg = p.m_genotype.begin();
+			GenoIterator lg = lp.m_genotype.begin();
 			ConstGenoIterator rg = rp.m_genotype.begin();
 #endif
 			InfoIterator li = lp.m_info.begin();
@@ -2970,8 +2970,7 @@ void Population::useAncestralGen(ssize_t idx)
 
 
 //template<class Archive>
-//void Population::save(boost::archive::text_oarchive & ar, const unsigned int /* version */) const
-/*
+void Population::save(boost::archive::text_oarchive & ar, const unsigned int /* version */) const
 {
 	// deep adjustment: everyone in order
 	const_cast<Population *>(this)->syncIndPointers();
@@ -3047,12 +3046,10 @@ void Population::useAncestralGen(ssize_t idx)
 	string vars = varsAsString();
 	ar & vars;
 }
-*/
 
 
 //template<class Archive>
-//void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* version */)
-/*
+void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* version */)
 {
 	size_t ma;
 	ar & ma;
@@ -3098,12 +3095,20 @@ void Population::useAncestralGen(ssize_t idx)
 		size_t size;
 		ar & size;
 		m_genotype.resize(size);
+#  ifdef MUTANTALLELE
+		size_t idx = 0;
+#  else
 		GenoIterator ptr = m_genotype.begin();
+#  endif
 		WORDTYPE data = 0;
 		for (size_t i = 0; i < size; ++i) {
 			if (i % 32 == 0)
 				ar & data;
+#  ifdef MUTANTALLELE
+			m_genotype[idx++] = (data & (1UL << (i % 32))) != 0;
+#  else
 			*ptr++ = (data & (1UL << (i % 32))) != 0;
+#  endif
 		}
 	}                                                                                   // if ma == 1
 	else {                                                                              // for non-binary types, ...
@@ -3139,13 +3144,21 @@ void Population::useAncestralGen(ssize_t idx)
 		m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
 
 	// assign genotype location and set structure information for individuals
-	GenoIterator ptr = m_genotype.begin();
-	size_t step = genoSize();
+
 	InfoIterator infoPtr = m_info.begin();
 	size_t infoStep = infoSize();
+	size_t step = genoSize();
+#ifdef MUTANTALLELE
+	size_t idx = 0;
+	for (size_t i = 0; i < m_popSize; ++i, idx += step, infoPtr += infoStep) {
+		m_inds[i].setGenoStruIdx(genoStruIdx());
+		m_inds[i].setGenoPtr(&m_genotype, idx);
+#else
+	GenoIterator ptr = m_genotype.begin();
 	for (size_t i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep) {
 		m_inds[i].setGenoStruIdx(genoStruIdx());
 		m_inds[i].setGenoPtr(ptr);
+#endif
 		m_inds[i].setInfoPtr(infoPtr);
 	}
 	m_ancestralGens = 0;
@@ -3189,12 +3202,20 @@ void Population::useAncestralGen(ssize_t idx)
 			size_t size;
 			ar & size;
 			pd.m_genotype.resize(size);
+#  ifdef MUTANTALLELE
+  			idx = 0;
+#  else
 			ptr = pd.m_genotype.begin();
+#  endif
 			WORDTYPE data = 0;
 			for (size_t i = 0; i < size; ++i) {
 				if (i % 32 == 0)
 					ar & data;
+#  ifdef MUTANTALLELE
+				pd.m_genotype[idx++] = (data & (1UL << i % 32)) != 0;
+#  else
 				*ptr++ = (data & (1UL << i % 32)) != 0;
+#  endif
 			}
 		} else {
 			DBG_DO(DBG_POPULATION, cerr << "Load long from long. " << endl);
@@ -3211,11 +3232,17 @@ void Population::useAncestralGen(ssize_t idx)
 		// set pointers
 		vector<Individual> & inds = p.m_inds;
 		size_t ps = inds.size();
-		ptr = p.m_genotype.begin();
 		infoPtr = p.m_info.begin();
-
+#ifdef MUTANTALLELE
+		idx = 0;
+		for (size_t i = 0; i < ps; ++i, idx += step, infoPtr += infoStep) {
+			inds[i].setGenoPtr(&p.m_genotype, idx);
+#else
+		ptr = p.m_genotype.begin();
 		for (size_t i = 0; i < ps; ++i, ptr += step, infoPtr += infoStep) {
 			inds[i].setGenoPtr(ptr);
+#endif
+
 			inds[i].setInfoPtr(infoPtr);
 			// set new genoStructure
 			inds[i].setGenoStruIdx(genoStruIdx());
@@ -3230,9 +3257,7 @@ void Population::useAncestralGen(ssize_t idx)
 
 	setIndOrdered(true);
 }
-*/
 
-/*
 void Population::save(const string & filename) const
 {
 	boost::iostreams::filtering_ostream ofs;
@@ -3246,9 +3271,8 @@ void Population::save(const string & filename) const
 	boost::archive::text_oarchive oa(ofs);
 	oa << *this;
 }
-*/
 
-/*
+
 void Population::load(const string & filename)
 {
 	boost::iostreams::filtering_istream ifs;
@@ -3267,9 +3291,8 @@ void Population::load(const string & filename)
 		throw ValueError("Failed to load Population " + filename + ".\n");
 	}
 }
-*/
 
-/*
+
 PyObject * Population::vars(vspID vsp)
 {
 	if (!vsp.valid()) {
@@ -3301,7 +3324,6 @@ PyObject * Population::vars(vspID vsp)
 	Py_INCREF(spObj);
 	return spObj;
 }
-*/
 
 // The same as vars(), but without increasing
 // reference count.
@@ -3398,7 +3420,6 @@ void Population::syncIndPointers(bool infoOnly) const
 	setIndOrdered(true);
 }
 
-/*
 Population & loadPopulation(const string & file)
 {
 	Population * p = new Population();
@@ -3406,7 +3427,6 @@ Population & loadPopulation(const string & file)
 	p->load(file);
 	return *p;
 }
-*/
 
 
 

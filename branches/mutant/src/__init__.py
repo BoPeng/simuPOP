@@ -140,9 +140,9 @@ __all__ = [
 ###    #
 ###    # Operators
 ###    #
-###    'InitSex',
+    'InitSex',
 ###    'InitInfo',
-###    'InitGenotype',
+    'InitGenotype',
 ###    #
 ###    'PyOutput',
 ###    'PyEval',
@@ -211,7 +211,7 @@ __all__ = [
 ###    # Function form of operators
 ###    'dump',
 ###    #
-###    'initSex',
+    'initSex',
 ###    'initInfo',
     'initGenotype',
 ###    #
@@ -247,9 +247,9 @@ __all__ = [
 ###    #
 ###    'closeOutput',
 ###    'describeEvolProcess',
-###    'loadPopulation',
+    'loadPopulation',
 ###    'loadPedigree',
-###    'moduleInfo',
+    'moduleInfo',
 ###    'turnOffDebug',
 ###    'turnOnDebug',
 ###    'setOptions',
