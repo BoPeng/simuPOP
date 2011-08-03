@@ -1999,7 +1999,11 @@ bool statLD::apply(Population & pop) const
 			for (size_t p = 0; p < ply; ++p) {
 				if (ply == 2 && p == 1 && ind->sex() == MALE && pop.isHaplodiploid())
 					continue;
+#ifdef MUTANTALLELE
+				size_t geno = ind->genoBegin(p);
+#else
 				GenoIterator geno = ind->genoBegin(p);
+#endif
 				// allele frequency
 				for (size_t idx = 0; idx < nLoci; ++idx) {
 					if (ply == 2 && chromTypes[idx] == CHROMOSOME_Y && ind->sex() == FEMALE)
@@ -2007,7 +2011,11 @@ bool statLD::apply(Population & pop) const
 					if (ply == 2 && ((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
 					                 (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
 						continue;
+#ifdef MUTANTALLELE
+					alleleCnt[idx][(*ind->genoPtr())[geno + loci[idx]]]++;
+#else
 					alleleCnt[idx][*(geno + loci[idx])]++;
+#endif
 				}
 				// haplotype frequency
 				for (size_t idx = 0; idx < nLD; ++idx) {
@@ -2017,7 +2025,11 @@ bool statLD::apply(Population & pop) const
 					if (((chromType == CHROMOSOME_X && p == 1) ||
 					     (chromType == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
 						continue;
+#ifdef MUTANTALLELE
+					haploCnt[idx][HAPLOCNT::key_type((*ind->genoPtr())[geno + m_LD[idx][0]], (*ind->genoPtr())[geno + m_LD[idx][1]])]++;
+#else
 					haploCnt[idx][HAPLOCNT::key_type(*(geno + m_LD[idx][0]), *(geno + m_LD[idx][1]))]++;
+#endif
 				}
 			}
 		}
@@ -2312,7 +2324,11 @@ bool statAssociation::apply(Population & pop) const
 				for (size_t p = 0; p < ply; ++p) {
 					if (ply == 2 && p == 1 && ind->sex() == MALE && pop.isHaplodiploid())
 						continue;
+#ifdef MUTANTALLELE
+					size_t geno = ind->genoBegin(p);
+#else
 					GenoIterator geno = ind->genoBegin(p);
+#endif
 					// allele count
 					for (size_t idx = 0; idx < nLoci; ++idx) {
 						if (ply == 2 && chromTypes[idx] == CHROMOSOME_Y && ind->sex() == FEMALE)
@@ -2321,21 +2337,37 @@ bool statAssociation::apply(Population & pop) const
 						                 (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
 							continue;
 						if (ind->affected())
+#ifdef MUTANTALLELE
+							caseAlleleCnt[idx][(*ind->genoPtr())[geno + loci[idx]]]++;
+						else
+							ctrlAlleleCnt[idx][(*ind->genoPtr())[geno + loci[idx]]]++;
+#else
 							caseAlleleCnt[idx][*(geno + loci[idx])]++;
 						else
 							ctrlAlleleCnt[idx][*(geno + loci[idx])]++;
+#endif
 					}
 				}
 			}
 			// genotype
 			if (hasGenoTest) {
+#ifdef MUTANTALLELE
+				size_t geno1 = ind->genoBegin(0);
+				size_t geno2 = ind->genoBegin(1);
+#else
 				GenoIterator geno1 = ind->genoBegin(0);
 				GenoIterator geno2 = ind->genoBegin(1);
+#endif
 				for (size_t idx = 0; idx < nLoci; ++idx) {
 					if (chromTypes[idx] == CHROMOSOME_X || chromTypes[idx] == CHROMOSOME_Y)
 						continue;
+#ifdef MUTANTALLELE
+					Allele a1 = (*ind->genoPtr())[geno1 + loci[idx]];
+					Allele a2 = (*ind->genoPtr())[geno2 + loci[idx]];
+#else
 					Allele a1 = *(geno1 + loci[idx]);
 					Allele a2 = *(geno2 + loci[idx]);
+#endif
 					if (a1 > a2)
 						std::swap(a1, a2);
 					if (ind->affected())
@@ -2902,11 +2934,21 @@ bool statHWE::apply(Population & pop) const
 
 		IndIterator ind = pop.indIterator(it->subPop());
 		for (; ind.valid(); ++ind) {
+#ifdef MUTANTALLELE
+			size_t geno1 = ind->genoBegin(0);
+			size_t geno2 = ind->genoBegin(1);
+#else
 			GenoIterator geno1 = ind->genoBegin(0);
 			GenoIterator geno2 = ind->genoBegin(1);
+#endif
 			for (size_t idx = 0; idx < nLoci; ++idx) {
+#ifdef MUTANTALLELE
+				Allele a1 = (*ind->genoPtr())[geno1 + loci[idx]];
+				Allele a2 = (*ind->genoPtr())[geno2 + loci[idx]];
+#else
 				Allele a1 = *(geno1 + loci[idx]);
 				Allele a2 = *(geno2 + loci[idx]);
+#endif
 				if (a1 > a2)
 					std::swap(a1, a2);
 				genoCnt[idx][GENOCNT::key_type(a1, a2)]++;

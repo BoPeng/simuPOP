@@ -817,11 +817,11 @@ public:
 	   subpopulations will be respected.	Therefore, it is possible to access all alleles within an
 	   subpopulation	through such iterators.
 	 */
-//	IndAlleleIterator alleleIterator(size_t locus);
+	IndAlleleIterator alleleIterator(size_t locus);
 
 
 	/// CPPONLY allele begin, for given subPop
-//	IndAlleleIterator alleleIterator(size_t locus, size_t subPop);
+	IndAlleleIterator alleleIterator(size_t locus, size_t subPop);
 
 
 	///  CPPONLY allele iterator, go through all allels one by one, without subPop info

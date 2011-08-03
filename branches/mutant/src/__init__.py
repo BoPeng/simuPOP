@@ -103,12 +103,12 @@ __all__ = [
 ###    'Simulator',
 ###    'Pedigree',
 ###    # splitters
-###    'SexSplitter',
+    'SexSplitter',
 ###    'AffectionSplitter',
 ###    'CombinedSplitter',
 ###    'ProductSplitter',
 ###    'ProportionSplitter',
-###    'InfoSplitter',
+    'InfoSplitter',
 ###    'GenotypeSplitter',
 ###    'RangeSplitter',
 ###    # mating schemes
@@ -186,7 +186,7 @@ __all__ = [
 ###    #
 ###    'PyQuanTrait',
 ###    #
-###    'Stat',
+    'Stat',
 ###    #
 ###    'IdTagger',
 ###    'InheritTagger',
@@ -237,7 +237,7 @@ __all__ = [
 ###    'snpMutate',
 ###    'acgtMutate',
 ###    #
-###    'stat',
+    'stat',
 ###    #
 ###    # Global functions
 ###    'WithArgs',

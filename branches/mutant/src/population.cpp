@@ -505,7 +505,6 @@ const Individual & Population::ancestor(double fidx, ssize_t gen, vspID vsp) con
 }
 */
 
-/*
 IndAlleleIterator Population::alleleIterator(size_t locus)
 {
 	CHECKRANGEABSLOCUS(locus);
@@ -521,12 +520,15 @@ IndAlleleIterator Population::alleleIterator(size_t locus)
 		return IndAlleleIterator(locus, indIterator());
 	else
 		// a simplere case with straightforward iterator
+#ifdef MUTANTALLELE
+		return IndAlleleIterator(locus, &m_genotype, 0, m_genotype.size(),
+			totNumLoci());
+#else
 		return IndAlleleIterator(locus, m_genotype.begin(), m_genotype.end(),
 			totNumLoci());
+#endif
 }
-*/
 
-/*
 /// CPPONLY allele begin, for given subPop
 IndAlleleIterator Population::alleleIterator(size_t locus, size_t subPop)
 {
@@ -541,12 +543,18 @@ IndAlleleIterator Population::alleleIterator(size_t locus, size_t subPop)
 		return IndAlleleIterator(locus, indIterator(subPop));
 	else
 		// this is a complex case
+#ifdef MUTANTALLELE
+		return IndAlleleIterator(locus, &m_genotype,
+			m_subPopIndex[subPop] * genoSize(),
+			m_subPopIndex[subPop + 1] * genoSize(),
+			totNumLoci());
+#else
 		return IndAlleleIterator(locus,
 			m_genotype.begin() + m_subPopIndex[subPop] * genoSize(),
 			m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize(),
 			totNumLoci());
+#endif
 }
-*/
 
 PyObject * Population::genotype(vspID subPopID)
 {
