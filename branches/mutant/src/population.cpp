@@ -215,6 +215,13 @@ void Population::popData::swap(Population & pop)
 	pop.m_info.swap(m_info);
 	pop.m_inds.swap(m_inds);
 	std::swap(pop.m_indOrdered, m_indOrdered);
+#ifdef MUTANTALLELE
+	// compressed_vectora must be setGenoPtr after swap
+	for (size_t i = 0; i < pop.m_inds.size(); ++i) 
+		pop.m_inds[i].setGenoPtr(&pop.m_genotype);
+	for (size_t i = 0; i < m_inds.size(); ++i) 
+		m_inds[i].setGenoPtr(&m_genotype);
+#endif
 }
 
 
@@ -322,7 +329,7 @@ void Population::deactivateVirtualSubPop(size_t subPop) const
 	m_vspSplitter->deactivate(subPop);
 }
 
-/*
+
 int Population::__cmp__(const Population & rhs) const
 {
 	if (genoStruIdx() != rhs.genoStruIdx()) {
@@ -358,7 +365,7 @@ int Population::__cmp__(const Population & rhs) const
 
 	return 0;
 }
-*/
+
 
 Individual & Population::indByID(double fid, const uintList & ancGens, const string & idField)
 {
@@ -467,7 +474,6 @@ Individual & Population::ancestor(double fidx, ssize_t gen, vspID vsp)
 	}
 }
 
-/*
 const Individual & Population::ancestor(double fidx, ssize_t gen, vspID vsp) const
 {
 	size_t idx = toID(fidx);
@@ -503,7 +509,6 @@ const Individual & Population::ancestor(double fidx, ssize_t gen, vspID vsp) con
 		return m_ancestralPops[genIdx].m_inds[shift + idx];
 	}
 }
-*/
 
 IndAlleleIterator Population::alleleIterator(size_t locus)
 {
@@ -1340,8 +1345,7 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 	vectorf new_info;
 #ifdef MUTANTALLELE
 	compressed_vectora new_genotype;
-	size_t idx = 0;
-	new_genotype.resize(step * popSize());
+	new_genotype.reserve(step * popSize());
 #else
 	vectora new_genotype;
 	new_genotype.reserve(step * popSize());
@@ -1356,8 +1360,7 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 		// do not remove.
 		new_inds.insert(new_inds.end(), rawIndBegin(src), rawIndEnd(src));
 #ifdef MUTANTALLELE
-		insertGenotype(new_genotype, idx, m_genotype, genoBegin(src, true), genoEnd(src, true));
-		idx += genoEnd(src, true) - genoBegin(src, true);
+		insertGenotype(new_genotype, new_genotype.size(), m_genotype, genoBegin(src, true), genoEnd(src, true));
 #else
 		new_genotype.insert(new_genotype.end(), genoBegin(src, true), genoEnd(src, true));
 #endif
@@ -1379,7 +1382,7 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 	//
 	InfoIterator infoPtr = m_info.begin();
 #ifdef MUTANTALLELE
-	idx = 0;
+	size_t idx = 0;
 	for (size_t i = 0; i < m_popSize; ++i, idx += step, infoPtr += infoStep) {
 		m_inds[i].setGenoPtr(&m_genotype, idx);
 #else
@@ -1449,7 +1452,7 @@ void Population::addChromFrom(const Population & pop)
 		m_genotype.swap(newGenotype);
 #ifdef MUTANTALLELE
 		// compressed_vectora must be setGenoPtr after swap
-		for (size_t i = 0, idx = 0; i < m_popSize;idx+=genoSize(), ++i) 
+		for (size_t i = 0, idx = 0; i < m_popSize; idx += genoSize(), ++i) 
 			m_inds[i].setGenoPtr(&m_genotype, idx);
 #endif
 	}
@@ -1458,7 +1461,7 @@ void Population::addChromFrom(const Population & pop)
 		syncIndPointers(true);
 }
 
-/*
+
 void Population::addIndFrom(const Population & pop)
 {
 	DBG_FAILIF(genoStruIdx() != pop.genoStruIdx(), ValueError,
@@ -1478,17 +1481,29 @@ void Population::addIndFrom(const Population & pop)
 		m_popSize += pop.m_popSize;
 		//
 		m_inds.insert(m_inds.end(), pop.m_inds.begin(), pop.m_inds.end());
+#ifdef MUTANTALLELE
+		insertGenotype(m_genotype,m_genotype.size(), pop.m_genotype, 0, m_genotype.size());
+#else
 		m_genotype.insert(m_genotype.end(), pop.m_genotype.begin(), pop.m_genotype.end());
+#endif
 		m_info.insert(m_info.end(), pop.m_info.begin(), pop.m_info.end());
 		// iterators ready
-		GenoIterator ptr = m_genotype.begin();
 		InfoIterator infoPtr = m_info.begin();
 		size_t step = genoSize();
 		size_t infoStep = infoSize();
+#ifdef MUTANTALLELE
+		size_t idx = 0;
+		// set pointers
+		for (size_t i = 0; i < m_popSize; ++i, idx += step, infoPtr += infoStep) {
+			m_inds[i].setGenoStruIdx(genoStruIdx());
+			m_inds[i].setGenoPtr(&m_genotype, idx);
+#else
+		GenoIterator ptr = m_genotype.begin();
 		// set pointers
 		for (size_t i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep) {
 			m_inds[i].setGenoStruIdx(genoStruIdx());
 			m_inds[i].setGenoPtr(ptr);
+#endif
 			m_inds[i].setInfoPtr(infoPtr);
 		}
 		// rebuild index
@@ -1511,7 +1526,7 @@ void Population::addIndFrom(const Population & pop)
 	DBG_ASSERT(m_subPopNames.empty() || m_subPopNames.size() == numSubPop(), SystemError,
 		"subpopulation names can either be empty, or be specified for all subpopulations.");
 }
-*/
+
 
 void Population::addLociFrom(const Population & pop)
 {
@@ -1576,7 +1591,7 @@ void Population::addLociFrom(const Population & pop)
 		m_genotype.swap(newGenotype);
 #ifdef MUTANTALLELE
 		// compressed_vectora must be setGenoPtr after swap
-		for (size_t i = 0, idx = 0; i < m_popSize;idx+=genoSize(), ++i) 
+		for (size_t i = 0, idx = 0; i < m_popSize; idx += genoSize(), ++i) 
 			m_inds[i].setGenoPtr(&m_genotype, idx);
 #endif
 	}
@@ -1605,7 +1620,6 @@ void Population::addChrom(const floatList & lociPosList, const stringList & loci
 
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
-		//
 		size_t newPopGenoSize = genoSize() * m_popSize;
 #ifdef MUTANTALLELE
 		compressed_vectora newGenotype(newPopGenoSize, 0);
@@ -1647,7 +1661,7 @@ void Population::addChrom(const floatList & lociPosList, const stringList & loci
 		m_genotype.swap(newGenotype);
 #ifdef MUTANTALLELE
 		// compressed_vectora must be setGenoPtr after swap
-		for (size_t i = 0, idx = 0; i < m_popSize;idx+=genoSize(), ++i) 
+		for (size_t i = 0, idx = 0; i < m_popSize; idx += genoSize(), ++i) 
 			m_inds[i].setGenoPtr(&m_genotype, idx);
 #endif
 
@@ -1728,7 +1742,7 @@ vectoru Population::addLoci(const uintList & chromList, const floatList & posLis
 		m_genotype.swap(newGenotype);
 #ifdef MUTANTALLELE
 		// compressed_vectora must be setGenoPtr after swap
-		for (size_t i = 0, idx = 0; i < m_popSize;idx+=genoSize(), ++i) 
+		for (size_t i = 0, idx = 0; i < m_popSize; idx += genoSize(), ++i) 
 			m_inds[i].setGenoPtr(&m_genotype, idx);
 #endif
 	}
@@ -2474,7 +2488,7 @@ void Population::removeLoci(const lociList & removeList, const lociList & keepLi
 		m_genotype.swap(newGenotype);
 #ifdef MUTANTALLELE
 		// compressed_vectora must be setGenoPtr after swap
-		for (size_t i = 0, idx = 0; i < m_popSize;idx+=genoSize(), ++i) 
+		for (size_t i = 0, idx = 0; i < m_popSize; idx += genoSize(), ++i) 
 			m_inds[i].setGenoPtr(&m_genotype, idx);
 #endif
 	}
@@ -2674,6 +2688,14 @@ void Population::push(Population & rhs)
 	m_info.swap(rhs.m_info);
 	m_inds.swap(rhs.m_inds);
 	std::swap(m_indOrdered, rhs.m_indOrdered);
+
+#ifdef MUTANTALLELE
+	// compressed_vectora must be setGenoPtr after swap
+	for (size_t i = 0; i < m_inds.size(); ++i) 
+		m_inds[i].setGenoPtr(&m_genotype);
+	for (size_t i = 0; i < rhs.m_inds.size(); ++i) 
+		rhs.m_inds[i].setGenoPtr(&rhs.m_genotype);
+#endif
 	// current population should be working well
 	// (with all datamember copied form rhs
 	// rhs may not be working well since m_genotype etc
@@ -2879,7 +2901,6 @@ void Population::markIndividuals(vspID subPop, bool mark) const
 	}
 }
 
-/*
 // set ancestral depth, can be -1
 void Population::setAncestralDepth(int depth)
 {
@@ -2896,7 +2917,6 @@ void Population::setAncestralDepth(int depth)
 
 	m_ancestralGens = depth;
 }
-*/
 
 /*
 void Population::keepAncestralGens(const uintList & ancGens)

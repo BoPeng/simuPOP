@@ -108,7 +108,11 @@ public:
 	/// CPPONLY
 	Individual(const Individual & ind) :
 		GenoStruTrait(ind), m_flags(ind.m_flags),
-///		m_genoPtr(ind.m_genoPtr),
+#ifdef MUTANTALLELE
+		m_genoPtr(ind.m_genoPtr), m_genoIdx(ind.m_genoIdx),
+#else
+		m_genoPtr(ind.m_genoPtr),
+#endif
 		m_infoPtr(ind.m_infoPtr)
 	{
 	}
@@ -127,6 +131,13 @@ public:
 		m_genoPtr = genoPtr;
 		m_genoIdx = pos;
 	}
+
+
+	void setGenoPtr(compressed_vectora * genoPtr)
+	{
+		m_genoPtr = genoPtr;
+	}
+
 #else
 	void setGenoPtr(GenoIterator pos)
 	{
@@ -484,21 +495,19 @@ public:
 	/// @name copy, comparison, swap operations to objects.
 	//@{
 	/// compare if two individuals are the same used in case of serialization etc.
-///	bool operator==(const Individual & rhs) const;
+	bool operator==(const Individual & rhs) const;
 
 	/// compare if two individuals are not the same used in case of serialization etc.
-/*
 	bool operator!=(const Individual & rhs) const
 	{
 		return !(*this == rhs);
 	}
-*/
 
 
 	// allow compaison of individuals in python
 	// only equal or unequal, no greater or less than
 	/// a python function used to compare the individual objects
-///	int __cmp__(const Individual & rhs) const;
+	int __cmp__(const Individual & rhs) const;
 
 
 	/// CPPONLY swap Individuals

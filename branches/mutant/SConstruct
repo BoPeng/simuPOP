@@ -212,7 +212,7 @@ Alias('common', (std_common_lib, op_common_lib))
 # 
 targets = []
 exe_targets = []
-all_modu = ['mu'] #['std', 'op', 'la', 'laop', 'ba', 'baop']
+all_modu = ['mu','std'] #['std', 'op', 'la', 'laop', 'ba', 'baop']
 all_exe = [x + '_exe' for x in all_modu]
 for key in all_modu:
     if key in BUILD_TARGETS:

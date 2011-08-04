@@ -284,7 +284,7 @@ public:
 		m_subPopSize.swap(rhs.m_subPopSize);
 		m_subPopNames.swap(rhs.m_subPopNames);
 		m_subPopIndex.swap(rhs.m_subPopIndex);
-///		m_genotype.swap(rhs.m_genotype);
+		m_genotype.swap(rhs.m_genotype);
 		m_info.swap(rhs.m_info);
 		m_inds.swap(rhs.m_inds);
 		std::swap(m_ancestralGens, rhs.m_ancestralGens);
@@ -295,6 +295,13 @@ public:
 		std::swap(m_vspSplitter, rhs.m_vspSplitter);
 		std::swap(rhs.m_gen, m_gen);
 		std::swap(rhs.m_rep, m_rep);
+#ifdef MUTANTALLELE
+		// compressed_vectora must be setGenoPtr after swap
+		for (size_t i = 0; i < m_inds.size(); ++i) 
+			m_inds[i].setGenoPtr(&m_genotype);
+		for (size_t i = 0; i < rhs.m_inds.size(); ++i) 
+			rhs.m_inds[i].setGenoPtr(&rhs.m_genotype);
+#endif
 	}
 
 
@@ -363,7 +370,7 @@ public:
 	// allow compaison of populations in python
 	// only equal or unequal, no greater or less than
 	/// a python function used to compare the population objects
-//	int __cmp__(const Population & rhs) const;
+	int __cmp__(const Population & rhs) const;
 
 	/** HIDDEN
 	 *  adapt the current population to anther population structure.
@@ -643,7 +650,7 @@ public:
 	/** CPPONLY const version of ancestor().
 	 *  <group>6-ancestral</group>
 	 */
-//	const Individual & ancestor(double idx, ssize_t gen, vspID subPop = vspID()) const;
+	const Individual & ancestor(double idx, ssize_t gen, vspID subPop = vspID()) const;
 
 	/** Return an iterator that can be used to iterate through all individuals
 	 *  in a population (if <tt>subPop=[]</tt>, default), or a (virtual)
@@ -1057,7 +1064,7 @@ public:
 	 *  \e pop are kept.
 	 *  <group>7-manipulate</group>
 	 */
-//	void addIndFrom(const Population & pop);
+	void addIndFrom(const Population & pop);
 
 	/** Add chromosomes in population \e pop to the current population.
 	 *  population \e pop should have the same number of individuals as the
@@ -1398,7 +1405,7 @@ public:
 	 *  (if \e depth > 0), extra ancestral generations are removed.
 	 *  <group>6-ancestral</group>
 	 */
-//	void setAncestralDepth(int depth);
+	void setAncestralDepth(int depth);
 
 	/// CPPONLY remove certain ancestral generations
 //	void keepAncestralGens(const uintList & ancGens);

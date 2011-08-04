@@ -38,7 +38,11 @@ namespace simuPOP {
 Individual & Individual::operator=(const Individual & rhs)
 {
 	m_flags = rhs.m_flags;
-///	setGenoPtr(rhs.genoPtr());
+#ifdef MUTANTALLELE
+	setGenoPtr(rhs.genoPtr(), rhs.genoIdx());
+#else
+	setGenoPtr(rhs.genoPtr());
+#endif
 	setInfoPtr(rhs.infoPtr());
 	// also copy genoStru pointer...
 	this->setGenoStruIdx(rhs.genoStruIdx());
@@ -59,7 +63,7 @@ Individual & Individual::copyFrom(const Individual & rhs)
 	return *this;
 }
 
-/*
+
 bool Individual::operator==(const Individual & rhs) const
 {
 	if (genoStruIdx() != rhs.genoStruIdx()) {
@@ -77,7 +81,11 @@ bool Individual::operator==(const Individual & rhs) const
 	}
 
 	for (size_t i = 0, iEnd = genoSize(); i < iEnd; ++i)
+#ifdef MUTANTALLELE
+		if ((*m_genoPtr)[m_genoIdx + i] != (*rhs.m_genoPtr)[rhs.m_genoIdx + i])
+#else
 		if (*(m_genoPtr + i) != *(rhs.m_genoPtr + i))
+#endif
 			return false;
 
 	for (size_t i = 0, iEnd = infoSize(); i < iEnd; ++i)
@@ -87,14 +95,12 @@ bool Individual::operator==(const Individual & rhs) const
 		}
 	return true;
 }
-*/
 
-/*
+
 int Individual::__cmp__(const Individual & rhs) const
 {
 	return (*this == rhs) ? 0 : 1;
 }
-*/
 
 
 bool Individual::validIndex(size_t idx) const

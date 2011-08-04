@@ -4653,6 +4653,7 @@ void testCopyGenotype()
 void insertGenotype(compressed_vectora & newCVector,const size_t startIdx , const compressed_vectora & oldCVector, const size_t begin, const size_t end)
 {
 	size_t idx = startIdx;
+	newCVector.resize(newCVector.size() + end - begin);
 	for(size_t i = begin; i < end; ++i, ++idx)
 		newCVector[idx] = oldCVector[i];
 } 
