@@ -523,7 +523,7 @@ public:
 	   swap pointers. (There is no order right now within
 	   subpopulation so the later case is rare, at best.)
 	 */
-///	void swap(Individual & ind, bool swapContent = true);
+	void swap(Individual & ind, bool swapContent = true);
 
 	//@}
 	/// @name misc (only relevant to developers)

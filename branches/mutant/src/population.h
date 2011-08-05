@@ -987,7 +987,7 @@ public:
 	 *  fields (\e infoFields). Individuals will be sorted at an increasing
 	 *  order.
 	 */
-//	void sortIndividuals(const stringList & infoFields);
+	void sortIndividuals(const stringList & infoFields);
 
 	/** Rearrange individuals to their new subpopulations according to their
 	 *  integer values at information field \e field (value returned by
@@ -996,7 +996,7 @@ public:
 	 *  kept. New subpopulations will have empty names.
 	 *  <group>7-manipulate</group>
 	 */
-//	void setSubPopByIndInfo(const string & field);
+	void setSubPopByIndInfo(const string & field);
 
 	/** Split subpopulation \e subPop into subpopulations of given \e sizes,
 	 *  which should add up to the size of subpopulation \e subPop or \e 1,
@@ -1124,7 +1124,7 @@ public:
 	 *  the current generation.
 	 *  <group>7-manipulate</group>
 	 */
-//	void resize(const uintList & sizes, bool propagate = false);
+	void resize(const uintList & sizes, bool propagate = false);
 
 
 	/** Extract a list of (virtual) subpopulations from a population and create
@@ -1147,7 +1147,7 @@ public:
 
 
 	/// CPPONLY
-//	Population & extractMarkedIndividuals() const;
+	Population & extractMarkedIndividuals() const;
 
 	/** Extract individuals with given absolute indexes (parameter \e indexes),
 	 *  IDs (parameter \e IDs, stored in information field \e idField,
@@ -1167,9 +1167,9 @@ public:
 	 *  error will be given if an invalid ID is encountered.
 	 *  <group>7-manipulate</group>
 	 */
-//	Population & extractIndividuals(const uintList & indexes = vectoru(),
-//		const floatList & IDs = vectorf(), const string & idField = "ind_id",
-//		PyObject * filter = NULL) const;
+	Population & extractIndividuals(const uintList & indexes = vectoru(),
+		const floatList & IDs = vectorf(), const string & idField = "ind_id",
+		PyObject * filter = NULL) const;
 
 	/** Extract subsets of individuals, loci and/or information fields from the
 	 *  current population and create a new population. By default, all
@@ -1215,8 +1215,8 @@ public:
 	 *  alleles for all subpopulations in all ancestral generations.
 	 *  <group>7-manipulate</group>
 	 */
-//	void recodeAlleles(const uintListFunc & alleles, const lociList & loci = lociList(),
-//		const stringMatrix & alleleNames = stringMatrix());
+	void recodeAlleles(const uintListFunc & alleles, const lociList & loci = lociList(),
+		const stringMatrix & alleleNames = stringMatrix());
 
 	/** Push population \e pop into the current population. Both populations
 	 *  should have the same genotypic structure. The current population is

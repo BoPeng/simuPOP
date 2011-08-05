@@ -401,7 +401,7 @@ void Individual::setGenotype(const uintList & genoList, const uintList & ply, co
 	}
 }
 
-/*
+
 void Individual::swap(Individual & ind, bool swapContent)
 {
 	if (genoStruIdx() != ind.genoStruIdx())
@@ -412,15 +412,29 @@ void Individual::swap(Individual & ind, bool swapContent)
 	if (swapContent) {
 		Allele tmp;
 		for (size_t i = 0, iEnd = genoSize(); i < iEnd; i++) {
+#ifdef MUTANTALLELE
+			tmp = (*m_genoPtr)[m_genoIdx + i];
+			(*m_genoPtr)[m_genoIdx + i] = (*ind.m_genoPtr)[ind.m_genoIdx + i];
+			(*ind.m_genoPtr)[ind.m_genoIdx + i] = tmp;
+#else
 			tmp = m_genoPtr[i];
 			m_genoPtr[i] = ind.m_genoPtr[i];
 			ind.m_genoPtr[i] = tmp;
+#endif
 		}
 	} else {
+#ifdef MUTANTALLELE
+		size_t tmp;
 		std::swap(m_genoPtr, ind.m_genoPtr);
+		tmp = m_genoIdx;	
+		m_genoIdx = ind.m_genoIdx;
+		ind.m_genoIdx = m_genoIdx;		
+#else
+		std::swap(m_genoPtr, ind.m_genoPtr);
+#endif
 	}
 }
-*/
+
 /*
 void Individual::display(ostream & out, int width, const vectoru & loci)
 {

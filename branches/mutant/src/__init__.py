@@ -188,7 +188,7 @@ __all__ = [
 ###    #
     'Stat',
 ###    #
-###    'IdTagger',
+    'IdTagger',
 ###    'InheritTagger',
 ###    'ParentsTagger',
 ###    'PedigreeTagger',
@@ -212,7 +212,7 @@ __all__ = [
 ###    'dump',
 ###    #
     'initSex',
-###    'initInfo',
+    'initInfo',
     'initGenotype',
 ###    #
 ###    'pyEval',
@@ -220,7 +220,7 @@ __all__ = [
 ###    'infoEval',
 ###    'infoExec',
 ###    #
-###    'tagID',
+    'tagID',
 ###    #
 ###    'migrate',
 ###    'resizeSubPops',

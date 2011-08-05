@@ -851,7 +851,6 @@ size_t Population::subPopSize(vspID subPopID, int ancGen) const
 }
 
 
-/*
 void Population::sortIndividuals(const stringList & infoList)
 {
 	const vectorstr & infoFields = infoList.elems();
@@ -865,10 +864,8 @@ void Population::sortIndividuals(const stringList & infoList)
 		parallelSort(rawIndBegin(sp), rawIndEnd(sp), indCompare(fields));
 	setIndOrdered(false);
 }
-*/
 
 
-/*
 void Population::setSubPopByIndInfo(const string & field)
 {
 	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
@@ -897,18 +894,29 @@ void Population::setSubPopByIndInfo(const string & field)
 		DBG_DO(DBG_POPULATION, cerr << "New pop size" << newPopSize << endl);
 
 		// allocate new genotype and inds
+#ifdef MUTANTALLELE
+		compressed_vectora newGenotype(genoSize() * newPopSize);
+#else
 		vectora newGenotype(genoSize() * newPopSize);
+#endif
 		vectorf newInfo(newPopSize * infoSize());
 		vector<Individual> newInds(newPopSize);
 
 		// assign genotype location and set structure information for individuals
-		GenoIterator ptr = newGenotype.begin();
 		InfoIterator infoPtr = newInfo.begin();
 		size_t step = genoSize();
 		size_t infoStep = infoSize();
+#ifdef MUTANTALLELE
+		size_t ptr = 0;
+		for (size_t i = 0; i < newPopSize; ++i, ptr += step, ++it, infoPtr += infoStep) {
+			newInds[i].setGenoStruIdx(genoStruIdx());
+			newInds[i].setGenoPtr(&newGenotype, ptr);
+#else
+		GenoIterator ptr = newGenotype.begin();
 		for (size_t i = 0; i < newPopSize; ++i, ptr += step, ++it, infoPtr += infoStep) {
 			newInds[i].setGenoStruIdx(genoStruIdx());
 			newInds[i].setGenoPtr(ptr);
+#endif
 			newInds[i].setInfoPtr(infoPtr);
 			newInds[i].copyFrom(*it);                         // copy everything, with info value
 		}
@@ -917,9 +925,13 @@ void Population::setSubPopByIndInfo(const string & field)
 		m_genotype.swap(newGenotype);
 		m_info.swap(newInfo);
 		m_inds.swap(newInds);
-
 		m_popSize = newPopSize;
 		setIndOrdered(true);
+#ifdef MUTANTALLELE
+		// compressed_vectora must be setGenoPtr after swap
+		for (size_t i = 0; i < m_popSize; ++i) 
+			m_inds[i].setGenoPtr(&m_genotype);
+#endif
 	}
 
 	if (m_inds.empty()) {
@@ -944,7 +956,6 @@ void Population::setSubPopByIndInfo(const string & field)
 	if (!m_subPopNames.empty())
 		m_subPopNames.resize(numSubPop(), UnnamedSubPop);
 }
-*/
 
 
 vectoru Population::splitSubPop(size_t subPop, const vectorf & sizes, const vectorstr & names)
@@ -1754,7 +1765,7 @@ vectoru Population::addLoci(const uintList & chromList, const floatList & posLis
 	return newIndex;
 }
 
-/*
+
 void Population::resize(const uintList & sizeList, bool propagate)
 {
 	const vectoru & newSubPopSizes = sizeList.elems();
@@ -1766,17 +1777,25 @@ void Population::resize(const uintList & sizeList, bool propagate)
 
 	// prepare new Population
 	vector<Individual> newInds(newPopSize);
-	vectora newGenotype(genoSize() * newPopSize);
 	vectorf newInfo(newPopSize * infoSize());
 	// iterators ready
-	GenoIterator ptr = newGenotype.begin();
 	InfoIterator infoPtr = newInfo.begin();
 	size_t step = genoSize();
 	size_t infoStep = infoSize();
-	// set pointers
+#ifdef MUTANTALLELE
+	compressed_vectora newGenotype(genoSize() * newPopSize);
+	size_t ptr = 0;
+	for (size_t i = 0; i < newPopSize; ++i, ptr += step, infoPtr += infoStep) {
+		newInds[i].setGenoStruIdx(genoStruIdx());
+		newInds[i].setGenoPtr(&newGenotype, ptr);
+#else
+	vectora newGenotype(genoSize() * newPopSize);
+	GenoIterator ptr = newGenotype.begin();
 	for (size_t i = 0; i < newPopSize; ++i, ptr += step, infoPtr += infoStep) {
 		newInds[i].setGenoStruIdx(genoStruIdx());
 		newInds[i].setGenoPtr(ptr);
+#endif
+	// set pointers
 		newInds[i].setInfoPtr(infoPtr);
 	}
 	// copy stuff over
@@ -1799,12 +1818,18 @@ void Population::resize(const uintList & sizeList, bool propagate)
 	m_popSize = newPopSize;
 	setIndOrdered(true);
 	m_subPopSize = newSubPopSizes;
+
+#ifdef MUTANTALLELE
+	// compressed_vectora must be setGenoPtr after swap
+	for (size_t i = 0; i < m_popSize; ++i) 
+		m_inds[i].setGenoPtr(&m_genotype);
+#endif
 	// rebuild index
 	size_t idx = 1;
 	for (m_subPopIndex[0] = 0; idx <= numSubPop(); ++idx)
 		m_subPopIndex[idx] = m_subPopIndex[idx - 1] + m_subPopSize[idx - 1];
 }
-*/
+
 
 Population & Population::extractSubPops(const subPopList & subPops, bool rearrange) const
 {
@@ -1997,7 +2022,7 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 	return pop;
 }
 
-/*
+
 Population & Population::extractMarkedIndividuals() const
 {
 	Population & pop = *new Population();
@@ -2012,7 +2037,11 @@ Population & Population::extractMarkedIndividuals() const
 	size_t step = genoSize();
 	size_t infoStep = infoSize();
 	ConstRawIndIterator oldInd = m_inds.begin();
+#ifdef MUTANTALLELE
+	size_t oldPtr = 0;
+#else
 	ConstGenoIterator oldPtr = m_genotype.begin();
+#endif
 	ConstInfoIterator oldInfoPtr = m_info.begin();
 
 	size_t sz = 0;
@@ -2023,11 +2052,19 @@ Population & Population::extractMarkedIndividuals() const
 			++sz;
 
 	vector<Individual> new_inds(sz);
+#ifdef MUTANTALLELE
+	compressed_vectora new_genotype(sz * step);
+#else
 	vectora new_genotype(sz * step);
+#endif
 	vectorf new_info(sz * infoStep);
 
 	RawIndIterator newInd = new_inds.begin();
+#ifdef MUTANTALLELE
+	size_t newPtr = 0;
+#else
 	GenoIterator newPtr = new_genotype.begin();
+#endif
 	InfoIterator newInfoPtr = new_info.begin();
 	//
 	for (size_t sp = 0; sp < numSubPop(); ++sp) {
@@ -2038,7 +2075,11 @@ Population & Population::extractMarkedIndividuals() const
 			if (oldInd->marked()) {
 				++newSize;
 				*newInd = *oldInd;
+#ifdef MUTANTALLELE
+				copyGenotype(m_genotype, oldPtr, oldPtr + step, new_genotype, newPtr);
+#else
 				copy(oldPtr, oldPtr + step, newPtr);
+#endif
 				copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
 				++newInd;
 				newPtr += step;
@@ -2057,17 +2098,22 @@ Population & Population::extractMarkedIndividuals() const
 	pop.m_popSize = std::accumulate(new_size.begin(), new_size.end(), size_t(0));
 	pop.setSubPopStru(new_size, m_subPopNames);
 	//
-	GenoIterator ptr = pop.m_genotype.begin();
 	InfoIterator infoPtr = pop.m_info.begin();
+#ifdef MUTANTALLELE
+	size_t idx = 0;
+	for (size_t i = 0; i < pop.m_popSize; ++i, idx += step, infoPtr += infoStep) {
+		pop.m_inds[i].setGenoPtr(&pop.m_genotype, idx);
+#else
+	GenoIterator ptr = pop.m_genotype.begin();
 	for (size_t i = 0; i < pop.m_popSize; ++i, ptr += step, infoPtr += infoStep) {
 		pop.m_inds[i].setGenoPtr(ptr);
+#endif
 		pop.m_inds[i].setInfoPtr(infoPtr);
 	}
 	return pop;
 }
-*/
 
-/*
+
 Population & Population::extractIndividuals(const uintList & indexList,
                                             const floatList & IDList, const string & idField,
                                             PyObject * filter) const
@@ -2166,7 +2212,6 @@ Population & Population::extractIndividuals(const uintList & indexList,
 	const_cast<Population *>(this)->useAncestralGen(curGen);
 	return *allPop;
 }
-*/
 
 /*
 Population & Population::extract(const lociList & extractedLoci, const stringList & infoFieldList,
@@ -2495,7 +2540,7 @@ void Population::removeLoci(const lociList & removeList, const lociList & keepLi
 	setIndOrdered(true);
 }
 
-/*
+
 void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList & loci_,
                                const stringMatrix & alleleNamesMatrix)
 {
@@ -2544,18 +2589,33 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
 
+#ifdef MUTANTALLELE
+		size_t ptr = 0;
+		size_t ptrEnd = m_genotype.size();
+#else
 		GenoIterator ptr = m_genotype.begin();
 		GenoIterator ptrEnd = m_genotype.end();
+#endif
 		if (!newAlleles.empty()) {
 			const vectoru & map = newAlleles.elems();
 			if (loci_.allAvail()) {
 				for (; ptr != ptrEnd; ++ptr) {
+#ifdef MUTANTALLELE
+					if (static_cast<size_t>(m_genotype[ptr]) >= map.size()) {
+						DBG_WARNIF(true,
+							"Allele " + toStr(static_cast<size_t>(m_genotype[ptr])) + " can not be recoded");
+#else
 					if (static_cast<size_t>(*ptr) >= map.size()) {
 						DBG_WARNIF(true,
 							"Allele " + toStr(static_cast<size_t>(*ptr)) + " can not be recoded");
+#endif
 						continue;
 					}
+#ifdef MUTANTALLELE
+					m_genotype[ptr] = ToAllele(map[m_genotype[ptr]]);
+#else
 					*ptr = ToAllele(map[*ptr]);
+#endif
 				}
 			} else {
 				size_t numLoci = totNumLoci();
@@ -2563,10 +2623,17 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 				for (; ptr != ptrEnd; ptr += numLoci) {
 					for (size_t i = 0; i < iEnd; ++i) {
 						DBG_FAILIF(loci[i] >= numLoci, IndexError, "Loci index out of range");
+#ifdef MUTANTALLELE
+						size_t allele = ptr + loci[i];
+						DBG_FAILIF(static_cast<size_t>(m_genotype[allele]) >= map.size(),
+							ValueError, "Allele " + toStr(static_cast<size_t>(m_genotype[allele])) + " can not be recoded");
+						m_genotype[allele]= ToAllele(map[m_genotype[allele]]);
+#else
 						GenoIterator allele = ptr + loci[i];
 						DBG_FAILIF(static_cast<size_t>(*allele) >= map.size(),
 							ValueError, "Allele " + toStr(static_cast<size_t>(*allele)) + " can not be recoded");
 						*allele = ToAllele(map[*allele]);
+#endif
 					}
 				}
 			}
@@ -2592,10 +2659,23 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 				if (loci_.allAvail()) {
 					for (size_t i = 0; i < numLoci; ++i) {
 						if (alleleIndex != InvalidValue)
+#ifdef MUTANTALLELE
+							PyTuple_SET_ITEM(args, alleleIndex, PyInt_FromLong(static_cast<int>(m_genotype[ptr + i])));
+#else
 							PyTuple_SET_ITEM(args, alleleIndex, PyInt_FromLong(static_cast<int>(*(ptr + i))));
+#endif
 						if (locusIndex != InvalidValue)
 							PyTuple_SET_ITEM(args, locusIndex, PyInt_FromLong(static_cast<int>(i)));
 						if (locusIndex != InvalidValue) {
+#ifdef MUTANTALLELE
+							std::pair<Allele, size_t> key(m_genotype[ptr + i], i);
+							AlleleLocusMap::iterator it = alleleLocusMap.find(key);
+							if (it != alleleLocusMap.end())
+								m_genotype[ptr + i] = it->second;
+							else {
+								m_genotype[ptr + i] = ToAllele(func(PyObj_As_Int, args));
+								alleleLocusMap[key] = m_genotype[ptr + i];
+#else
 							std::pair<Allele, size_t> key(*(ptr + i), i);
 							AlleleLocusMap::iterator it = alleleLocusMap.find(key);
 							if (it != alleleLocusMap.end())
@@ -2603,8 +2683,18 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 							else {
 								*(ptr + i) = ToAllele(func(PyObj_As_Int, args));
 								alleleLocusMap[key] = *(ptr + i);
+#endif
 							}
 						} else {
+#ifdef MUTANTALLELE
+							AlleleMap::iterator it = alleleMap.find(m_genotype[ptr + i]);
+							if (it != alleleMap.end())
+								m_genotype[ptr + i] = it->second;
+							else {
+								Allele oldAllele = m_genotype[ptr + i];
+								m_genotype[ptr + i] = ToAllele(func(PyObj_As_Int, args));
+								alleleMap[oldAllele] = m_genotype[ptr + i];
+#else
 							AlleleMap::iterator it = alleleMap.find(*(ptr + i));
 							if (it != alleleMap.end())
 								*(ptr + i) = it->second;
@@ -2612,6 +2702,7 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 								Allele oldAllele = *(ptr + i);
 								*(ptr + i) = ToAllele(func(PyObj_As_Int, args));
 								alleleMap[oldAllele] = *(ptr + i);
+#endif
 							}
 						}
 					}
@@ -2619,10 +2710,23 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 					for (size_t i = 0; i < iEnd; ++i) {
 						DBG_FAILIF(loci[i] >= numLoci, IndexError, "Loci index out of range");
 						if (alleleIndex != InvalidValue)
+#ifdef MUTANTALLELE
+							PyTuple_SET_ITEM(args, alleleIndex, PyInt_FromLong(static_cast<int>(m_genotype[ptr + loci[i]])));
+#else
 							PyTuple_SET_ITEM(args, alleleIndex, PyInt_FromLong(static_cast<int>(*(ptr + loci[i]))));
+#endif
 						if (locusIndex != InvalidValue)
 							PyTuple_SET_ITEM(args, locusIndex, PyInt_FromLong(static_cast<int>(loci[i])));
 						if (locusIndex != InvalidValue) {
+#ifdef MUTANTALLELE
+							std::pair<Allele, size_t> key(m_genotype[ptr + loci[i]], loci[i]);
+							AlleleLocusMap::iterator it = alleleLocusMap.find(key);
+							if (it != alleleLocusMap.end())
+								m_genotype[ptr + loci[i]] = it->second;
+							else {
+								m_genotype[ptr + loci[i]] = ToAllele(func(PyObj_As_Int, args));
+								alleleLocusMap[key] = m_genotype[ptr + loci[i]];
+#else
 							std::pair<Allele, size_t> key(*(ptr + loci[i]), loci[i]);
 							AlleleLocusMap::iterator it = alleleLocusMap.find(key);
 							if (it != alleleLocusMap.end())
@@ -2630,8 +2734,18 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 							else {
 								*(ptr + loci[i]) = ToAllele(func(PyObj_As_Int, args));
 								alleleLocusMap[key] = *(ptr + loci[i]);
+#endif
 							}
 						} else {
+#ifdef MUTANTALLELE
+							AlleleMap::iterator it = alleleMap.find(m_genotype[ptr + loci[i]]);
+							if (it != alleleMap.end())
+								m_genotype[ptr + loci[i]] = it->second;
+							else {
+								Allele oldAllele = m_genotype[ptr + loci[i]];
+								m_genotype[ptr + loci[i]] = ToAllele(func(PyObj_As_Int, args));
+								alleleMap[oldAllele] = m_genotype[ptr + loci[i]];
+#else
 							AlleleMap::iterator it = alleleMap.find(*(ptr + loci[i]));
 							if (it != alleleMap.end())
 								*(ptr + loci[i]) = it->second;
@@ -2639,6 +2753,7 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 								Allele oldAllele = *(ptr + loci[i]);
 								*(ptr + loci[i]) = ToAllele(func(PyObj_As_Int, args));
 								alleleMap[oldAllele] = *(ptr + loci[i]);
+#endif
 							}
 						}
 					}
@@ -2649,7 +2764,7 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 	}
 	useAncestralGen(oldGen);
 }
-*/
+
 
 void Population::push(Population & rhs)
 {
