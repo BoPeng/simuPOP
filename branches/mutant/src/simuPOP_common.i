@@ -51,7 +51,7 @@
 //#include "transmitter.h"
 //#include "selector.h"
 //#include "qtrait.h"
-//#include "penetrance.h"
+#include "penetrance.h"
 
 //#include "sandbox.h"
 
@@ -304,7 +304,7 @@ namespace std
 //%include "transmitter.h"
 //%include "selector.h"
 //%include "qtrait.h"
-//%include "penetrance.h"
+%include "penetrance.h"
 //%include "pedigree.h"
 //%include "sandbox.h"
 

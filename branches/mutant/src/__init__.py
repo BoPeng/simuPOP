@@ -104,13 +104,13 @@ __all__ = [
 ###    'Pedigree',
 ###    # splitters
     'SexSplitter',
-###    'AffectionSplitter',
-###    'CombinedSplitter',
-###    'ProductSplitter',
-###    'ProportionSplitter',
+    'AffectionSplitter',
+    'CombinedSplitter',
+    'ProductSplitter',
+    'ProportionSplitter',
     'InfoSplitter',
-###    'GenotypeSplitter',
-###    'RangeSplitter',
+    'GenotypeSplitter',
+    'RangeSplitter',
 ###    # mating schemes
 ###    'MatingScheme',
 ###    'HomoMating',
@@ -254,7 +254,7 @@ __all__ = [
 ###    'turnOnDebug',
 ###    'setOptions',
 ###    #
-###    'maPenetrance',
+    'maPenetrance',
 ###    'mapPenetrance',
 ###    'mlPenetrance',
 ###    'pyPenetrance',

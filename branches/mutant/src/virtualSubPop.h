@@ -826,85 +826,85 @@ private:
 /** This class defines a VSP splitter that defines VSPs according to individual
  *  genotype at specified loci.
  */
-///class GenotypeSplitter : public BaseVspSplitter
-///{
-///public:
-///	/** Create a splitter that defines VSPs by individual genotype at \e loci
-///	 *  (can be indexes or names of one or more loci). Each list in a list
-///	 *  \e allele defines a VSP, which is a list of allowed alleles at these
-///	 *  \e loci. If only one VSP is defined, the outer list of the nested list
-///	 *  can be ignored. If phase if true, the order of alleles in each list is
-///	 *  significant. If more than one set of alleles are given, Individuals
-///	 *  having either of them is qualified.
-///	 *
-///	 *  For example, in a haploid population, <tt>loci=1, alleles=[0, 1]</tt>
-///	 *  defines a VSP with individuals having allele \c 0 or \c 1 at locus \c 1,
-///	 *  <tt>alleles=[[0, 1], [2]]</tt> defines two VSPs with indivdiuals in the
-///	 *  second VSP having allele \c 2 at locus \c 1. If multiple loci are
-///	 *  involved, alleles at each locus need to be defined. For example,
-///	 *  VSP defined by <tt>loci=[0, 1], alleles=[0, 1, 1, 1]</tt> consists of
-///	 *  individuals having alleles <tt>[0, 1]</tt> or <tt>[1, 1]</tt> at loci
-///	 *  <tt>[0, 1]</tt>.
-///	 *
-///	 *  In a haploid population, <tt>loci=1, alleles=[0, 1]</tt> defines a VSP
-///	 *  with individuals having genotype <tt>[0, 1]</tt> or <tt>[1, 0]</tt> at
-///	 *  locus \c 1. <tt>alleles[[0, 1], [2, 2]]</tt> defines two VSPs with
-///	 *  indivdiuals in the second VSP having genotype <tt>[2, 2]</tt> at locus
-///	 *  \c 1. If \e phase is set to \c True, the first VSP will only has
-///	 *  individuals with genotype <tt>[0, 1]</tt>. In the multiple loci case,
-///	 *  alleles should be arranged by haplotypes, for example,
-///	 *  <tt>loci=[0, 1], alleles=[0, 0, 1, 1], phase=True</tt> defines a VSP with
-///	 *  individuals having genotype <tt>-0-0-, -1-1-</tt> at loci \c 0 and \c 1.
-///	 *  If <tt>phase=False</tt> (default), genotypes <tt>-1-1-, -0-0-</tt>,
-///	 *  <tt>-0-1-</tt> and <tt>-1-0-</tt> are all allowed.
-///	 *
-///	 *  A default set of names are given to each VSP unless a new set of names
-///	 *  is given by parameter \e names.
-///	 */
-///	GenotypeSplitter(const lociList & loci,
-///		const intMatrix & alleles, bool phase = false,
-///		const stringList & names = vectorstr());
-///
-///	/// HIDDEN
-///	BaseVspSplitter * clone() const
-///	{
-///		return new GenotypeSplitter(*this);
-///	}
-///
-///
-///	/// the size of a given virtual subpopulation.
-///	/// CPPONLY
-///	size_t size(const Population & pop, size_t subPop, size_t virtualSubPop) const;
-///
-///	/// number of virtual subpops of subpopulation sp
-///	size_t numVirtualSubPop() const;
-///
-///	/** Return \c True if individual \e ind (an index relative to specified
-///	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
-///	 *  CPPONLY
-///	 */
-///	bool contains(const Population & pop, size_t ind, vspID vsp) const;
-///
-///	/// mark individuals in the given vsp as visible, and others invisible.
-///	/// CPPONLY
-///	void activate(const Population & pop, size_t subPop, size_t virtualSubPop);
-///
-///	/** Return name of VSP \e vsp, which is <tt>"Genotype loc1,loc2:genotype"</tt>
-///	 *  as defined by parameters \e loci and \e alleles. A user provided name
-///	 *  will be returned if specified.
-///	 */
-///	string name(size_t vsp) const;
-///
-///private:
-///	bool match(const Individual * ind, const vectori & alleles) const;
-///
-///	bool matchSingle(const Individual * ind, const vectori & alleles) const;
-///
-///private:
-///	lociList m_loci;
-///	matrixi m_alleles;
-///	bool m_phase;
-///};
+class GenotypeSplitter : public BaseVspSplitter
+{
+public:
+	/** Create a splitter that defines VSPs by individual genotype at \e loci
+	 *  (can be indexes or names of one or more loci). Each list in a list
+	 *  \e allele defines a VSP, which is a list of allowed alleles at these
+	 *  \e loci. If only one VSP is defined, the outer list of the nested list
+	 *  can be ignored. If phase if true, the order of alleles in each list is
+	 *  significant. If more than one set of alleles are given, Individuals
+	 *  having either of them is qualified.
+	 *
+	 *  For example, in a haploid population, <tt>loci=1, alleles=[0, 1]</tt>
+	 *  defines a VSP with individuals having allele \c 0 or \c 1 at locus \c 1,
+	 *  <tt>alleles=[[0, 1], [2]]</tt> defines two VSPs with indivdiuals in the
+	 *  second VSP having allele \c 2 at locus \c 1. If multiple loci are
+	 *  involved, alleles at each locus need to be defined. For example,
+	 *  VSP defined by <tt>loci=[0, 1], alleles=[0, 1, 1, 1]</tt> consists of
+	 *  individuals having alleles <tt>[0, 1]</tt> or <tt>[1, 1]</tt> at loci
+	 *  <tt>[0, 1]</tt>.
+	 *
+	 *  In a haploid population, <tt>loci=1, alleles=[0, 1]</tt> defines a VSP
+	 *  with individuals having genotype <tt>[0, 1]</tt> or <tt>[1, 0]</tt> at
+	 *  locus \c 1. <tt>alleles[[0, 1], [2, 2]]</tt> defines two VSPs with
+	 *  indivdiuals in the second VSP having genotype <tt>[2, 2]</tt> at locus
+	 *  \c 1. If \e phase is set to \c True, the first VSP will only has
+	 *  individuals with genotype <tt>[0, 1]</tt>. In the multiple loci case,
+	 *  alleles should be arranged by haplotypes, for example,
+	 *  <tt>loci=[0, 1], alleles=[0, 0, 1, 1], phase=True</tt> defines a VSP with
+	 *  individuals having genotype <tt>-0-0-, -1-1-</tt> at loci \c 0 and \c 1.
+	 *  If <tt>phase=False</tt> (default), genotypes <tt>-1-1-, -0-0-</tt>,
+	 *  <tt>-0-1-</tt> and <tt>-1-0-</tt> are all allowed.
+	 *
+	 *  A default set of names are given to each VSP unless a new set of names
+	 *  is given by parameter \e names.
+	 */
+	GenotypeSplitter(const lociList & loci,
+		const intMatrix & alleles, bool phase = false,
+		const stringList & names = vectorstr());
+
+	/// HIDDEN
+	BaseVspSplitter * clone() const
+	{
+		return new GenotypeSplitter(*this);
+	}
+
+
+	/// the size of a given virtual subpopulation.
+	/// CPPONLY
+	size_t size(const Population & pop, size_t subPop, size_t virtualSubPop) const;
+
+	/// number of virtual subpops of subpopulation sp
+	size_t numVirtualSubPop() const;
+
+	/** Return \c True if individual \e ind (an index relative to specified
+	 *  subpopulation) belongs to specified virtual subpopulation \e vsp.
+	 *  CPPONLY
+	 */
+	bool contains(const Population & pop, size_t ind, vspID vsp) const;
+
+	/// mark individuals in the given vsp as visible, and others invisible.
+	/// CPPONLY
+	void activate(const Population & pop, size_t subPop, size_t virtualSubPop);
+
+	/** Return name of VSP \e vsp, which is <tt>"Genotype loc1,loc2:genotype"</tt>
+	 *  as defined by parameters \e loci and \e alleles. A user provided name
+	 *  will be returned if specified.
+	 */
+	string name(size_t vsp) const;
+
+private:
+	bool match(const Individual * ind, const vectori & alleles) const;
+
+	bool matchSingle(const Individual * ind, const vectori & alleles) const;
+
+private:
+	lociList m_loci;
+	matrixi m_alleles;
+	bool m_phase;
+};
 
 }
 #endif
