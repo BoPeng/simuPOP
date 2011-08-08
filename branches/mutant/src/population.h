@@ -376,7 +376,7 @@ public:
 	 *  adapt the current population to anther population structure.
 	 *  population size might or might not be changed.
 	 */
-//	void fitGenoStru(size_t stru);
+	void fitGenoStru(size_t stru);
 
 	/** HIDDEN
 	 *  set population/subpopulation structure given subpopulation sizes
@@ -917,25 +917,38 @@ public:
 #endif
 
 
-
+#ifdef MUTANTALLELE
 	/// CPPONLY genoIterator --- beginning of individual ind.
-/*
+	size_t indGenoBegin(size_t ind) const
+	{
+		CHECKRANGEIND(ind);
+		return m_inds[ind].genoBegin();
+	}
+
+
+	/// CPPONLY genoIterator -- end of individual ind.
+	size_t indGenoEnd(size_t ind) const
+	{
+		CHECKRANGEIND(ind);
+		return m_inds[ind].genoEnd();
+	}
+
+#else
+	/// CPPONLY genoIterator --- beginning of individual ind.
 	GenoIterator indGenoBegin(size_t ind) const
 	{
 		CHECKRANGEIND(ind);
 		return m_inds[ind].genoBegin();
 	}
-*/
 
 
 	/// CPPONLY genoIterator -- end of individual ind.
-/*
 	GenoIterator indGenoEnd(size_t ind) const
 	{
 		CHECKRANGEIND(ind);
 		return m_inds[ind].genoEnd();
 	}
-*/
+#endif
 
 
 	/// CPPONLY genoIterator --- beginning of individual ind.
@@ -1188,8 +1201,8 @@ public:
 	 *  CPPONLY
 	 *  <group>7-manipulate</group>
 	 */
-//	Population & extract(const lociList & extractedLoci, const stringList & infoFieldList,
-//		const subPopList & subPops = subPopList(), const uintList & ancGens = uintList()) const;
+	Population & extract(const lociList & extractedLoci, const stringList & infoFieldList,
+		const subPopList & subPops = subPopList(), const uintList & ancGens = uintList()) const;
 
 	/** Remove \e loci (absolute indexes or names) and genotypes at these loci
 	 *  from the current population. Alternatively, a parameter \e keep can be
@@ -1408,7 +1421,7 @@ public:
 	void setAncestralDepth(int depth);
 
 	/// CPPONLY remove certain ancestral generations
-//	void keepAncestralGens(const uintList & ancGens);
+	void keepAncestralGens(const uintList & ancGens);
 
 	/** Making ancestral generation \e idx (\c 0 for current generation, \c 1
 	 *  for parental generation, \c 2 for grand-parental generation, etc) the

@@ -34,16 +34,16 @@
 #include "genoStru.h"
 #include "individual.h"
 #include "population.h"
-//#include "pedigree.h"
+#include "pedigree.h"
 #include "virtualSubPop.h"
 #include "operator.h"
-//#include "simulator.h"
+#include "simulator.h"
 
 #include "utility.h"
-//#include "pedigree.h"
+#include "pedigree.h"
 #include "initializer.h"
 //#include "outputer.h"
-//#include "mating.h"
+#include "mating.h"
 #include "tagger.h"
 #include "stator.h"
 //#include "migrator.h"
@@ -224,12 +224,12 @@ namespace std
 %ignore simuPOP::IndAlleleIterator;
 %ignore simuPOP::IndInfoIterator;
 
-//%newobject loadPopulation;
+%newobject loadPopulation;
 
-// %newobject simuPOP::Population::extract;
-//%newobject simuPOP::Population::extractSubPops;
-//%newobject simuPOP::Population::extractIndividuals;
-//%newobject simuPOP::Population::clone;
+//%newobject simuPOP::Population::extract;
+%newobject simuPOP::Population::extractSubPops;
+%newobject simuPOP::Population::extractIndividuals;
+%newobject simuPOP::Population::clone;
 //%newobject simuPOP::Simulator::extract;
 //%newobject simuPOP::Simulator::clone;
 //%newobject simuPOP::BaseOperator::clone;
@@ -293,8 +293,8 @@ namespace std
 
 ////////////////////////// SIMUPOP CLASSES //////////////////////////
 
-//%include "mating.h"
-//%include "simulator.h"
+%include "mating.h"
+%include "simulator.h"
 %include "stator.h"
 //%include "outputer.h"
 %include "initializer.h"
@@ -305,6 +305,6 @@ namespace std
 //%include "selector.h"
 //%include "qtrait.h"
 %include "penetrance.h"
-//%include "pedigree.h"
+%include "pedigree.h"
 //%include "sandbox.h"
 

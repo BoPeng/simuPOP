@@ -101,7 +101,7 @@ __all__ = [
     # This is just to make help(Individual) available to users.
     'Individual',
 ###    'Simulator',
-###    'Pedigree',
+    'Pedigree',
 ###    # splitters
     'SexSplitter',
     'AffectionSplitter',
@@ -128,7 +128,7 @@ __all__ = [
 ###    'PolyParentsChooser',
 ###    #
 ###    'RandomMating',
-###    'RandomSelection',
+    'RandomSelection',
 ###    'MonogamousMating',
 ###    'SelfMating',
 ###    'CloneMating',
@@ -248,7 +248,7 @@ __all__ = [
 ###    'closeOutput',
 ###    'describeEvolProcess',
     'loadPopulation',
-###    'loadPedigree',
+    'loadPedigree',
     'moduleInfo',
 ###    'turnOffDebug',
 ###    'turnOnDebug',
@@ -355,31 +355,31 @@ if simuOptions['Debug'] != []:
 ALL_AVAIL = True
 UNSPECIFIED = False
 
-##def evolve_pop(self, initOps=[], preOps=[], matingScheme=MatingScheme(), postOps=[],
-##    finalOps=[], gen=-1, dryrun=False):
-##    '''Evolve the current population *gen* generations using mating scheme
-##    *matingScheme* and operators *initOps* (applied before evolution), *preOps*
-##    (applied to the parental population at the beginning of each life cycle),
-##    *postOps* (applied to the offspring population at the end of each life
-##    cycle) and *finalOps* (applied at the end of evolution). More specifically,
-##    this function creates a *Simulator* using the current population, call its
-##    *evolve* function using passed parameters and then replace the current
-##    population with the evolved population. Please refer to function 
-##    ``Simulator.evolve`` for more details about each parameter.'''
-##    if dryrun:
-##        print describeEvolProcess(initOps, preOps, matingScheme, postOps, finalOps, gen, 1)
-##        return (0,)
-##    if isinstance(self, Pedigree):
-##        raise ValueError("Evolving a pedigree object directly is not allowed.")
-##    # create a simulator with self
-##    simu = Simulator(self)
-##    # evolve
-##    gen = simu.evolve(initOps, preOps, matingScheme, postOps, finalOps, gen)
-##    # get the evolved population
-##    self.swap(simu.population(0))
-##    return gen[0]
+def evolve_pop(self, initOps=[], preOps=[], matingScheme=MatingScheme(), postOps=[],
+    finalOps=[], gen=-1, dryrun=False):
+    '''Evolve the current population *gen* generations using mating scheme
+    *matingScheme* and operators *initOps* (applied before evolution), *preOps*
+    (applied to the parental population at the beginning of each life cycle),
+    *postOps* (applied to the offspring population at the end of each life
+    cycle) and *finalOps* (applied at the end of evolution). More specifically,
+    this function creates a *Simulator* using the current population, call its
+    *evolve* function using passed parameters and then replace the current
+    population with the evolved population. Please refer to function 
+    ``Simulator.evolve`` for more details about each parameter.'''
+    if dryrun:
+        print describeEvolProcess(initOps, preOps, matingScheme, postOps, finalOps, gen, 1)
+        return (0,)
+    if isinstance(self, Pedigree):
+        raise ValueError("Evolving a pedigree object directly is not allowed.")
+    # create a simulator with self
+    simu = Simulator(self)
+    # evolve
+    gen = simu.evolve(initOps, preOps, matingScheme, postOps, finalOps, gen)
+    # get the evolved population
+    self.swap(simu.population(0))
+    return gen[0]
 
-##Population.evolve = evolve_pop
+Population.evolve = evolve_pop
 
 def all_individuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL):
     '''Return an iterator that iterat through all (virtual) subpopulations in
