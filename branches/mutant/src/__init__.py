@@ -100,7 +100,7 @@ __all__ = [
     'Population',
     # This is just to make help(Individual) available to users.
     'Individual',
-###    'Simulator',
+    'Simulator',
     'Pedigree',
 ###    # splitters
     'SexSplitter',
@@ -113,7 +113,7 @@ __all__ = [
     'RangeSplitter',
 ###    # mating schemes
 ###    'MatingScheme',
-###    'HomoMating',
+    'HomoMating',
 ###    'HeteroMating',
 ###    'PedigreeMating',
 ###    'OffspringGenerator',
@@ -127,7 +127,7 @@ __all__ = [
 ###    'ParentChooser',
 ###    'PolyParentsChooser',
 ###    #
-###    'RandomMating',
+    'RandomMating',
     'RandomSelection',
 ###    'MonogamousMating',
 ###    'SelfMating',
@@ -157,10 +157,10 @@ __all__ = [
 ###    #
 ###    'GenoTransmitter',
 ###    'HaplodiploidGenoTransmitter',
-###    'MendelianGenoTransmitter',
+    'MendelianGenoTransmitter',
 ###    'MitochondrialGenoTransmitter',
 ###    'SelfingGenoTransmitter',
-###    'CloneGenoTransmitter',
+    'CloneGenoTransmitter',
 ###    'Recombinator',
 ###    # 
 ###    'PointMutator',
@@ -191,15 +191,15 @@ __all__ = [
     'IdTagger',
 ###    'InheritTagger',
 ###    'ParentsTagger',
-###    'PedigreeTagger',
+    'PedigreeTagger',
 ###    'PyTagger',
 ###    'SummaryTagger',
 ###    #
 ###    'TerminateIf',
 ###    'DiscardIf',
-###    'discardIf',
+    'discardIf',
 ###    #
-###    'PyOperator',
+    'PyOperator',
 ###    #
 ###    'NoneOp',
 ###    'Dumper',
@@ -678,49 +678,49 @@ class WithArgs:
 ##            weight = weight)
 ##
 ##
-##class RandomSelection(HomoMating):
-##    '''A homogeneous mating scheme that uses a random single-parent parent
-##    chooser with replacement, and a clone offspring generator. This mating
-##    scheme is usually used to simulate the basic haploid Wright-Fisher model
-##    but it can also be applied to diploid populations.'''
-##    def __init__(self, numOffspring = 1, sexMode = None, ops = CloneGenoTransmitter(),
-##        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
-##        '''Create a mating scheme that select a parent randomly and copy him or
-##        her to the offspring population. Please refer to class 
-##        ``RandomParentChooser`` for parameter *selectionField*, to class
-##        ``OffspringGenerator`` for parameters *ops* and *numOffspring*, and to
-##        class ``HomoMating`` for parameters *subPopSize*, *subPops* and *weight*.
-##        Parameter *sexMode* is ignored because ``cloneOffspringGenerator`` copies
-##        sex from parents to offspring.
-##        '''
-##        HomoMating.__init__(self,
-##            chooser = RandomParentChooser(True, selectionField),
-##            generator = OffspringGenerator(ops, numOffspring, RANDOM_SEX),
-##            subPopSize = subPopSize,
-##            subPops = subPops,
-##            weight = weight)
-##
-##
-##class RandomMating(HomoMating):
-##    '''A homogeneous mating scheme that uses a random parents chooser with
-##    replacement and a Mendelian offspring generator. This mating scheme is
-##    widely used to simulate diploid sexual Wright-Fisher random mating.'''
-##    def __init__(self, numOffspring = 1, sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(), 
-##        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
-##        '''Creates a random mating ssheme that selects two parents randomly and
-##        transmit genotypes according to Mendelian laws. Please refer to class
-##        ``RandomParentsChooser`` for parameter *selectionField*, to class
-##        ``OffspringGenerator`` for parameters *ops*, *sexMode* and
-##        *numOffspring*, and to class ``HomoMating`` for parameters
-##        *subPopSize*, *subPops* and *weight*.
-##        '''
-##        HomoMating.__init__(self,
-##            chooser = RandomParentsChooser(True, selectionField),
-##            generator = OffspringGenerator(ops, numOffspring, sexMode),
-##            subPopSize = subPopSize,
-##            subPops = subPops,
-##            weight = weight)
-##
+class RandomSelection(HomoMating):
+    '''A homogeneous mating scheme that uses a random single-parent parent
+    chooser with replacement, and a clone offspring generator. This mating
+    scheme is usually used to simulate the basic haploid Wright-Fisher model
+    but it can also be applied to diploid populations.'''
+    def __init__(self, numOffspring = 1, sexMode = None, ops = CloneGenoTransmitter(),
+        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
+        '''Create a mating scheme that select a parent randomly and copy him or
+        her to the offspring population. Please refer to class 
+        ``RandomParentChooser`` for parameter *selectionField*, to class
+        ``OffspringGenerator`` for parameters *ops* and *numOffspring*, and to
+        class ``HomoMating`` for parameters *subPopSize*, *subPops* and *weight*.
+        Parameter *sexMode* is ignored because ``cloneOffspringGenerator`` copies
+        sex from parents to offspring.
+        '''
+        HomoMating.__init__(self,
+            chooser = RandomParentChooser(True, selectionField),
+            generator = OffspringGenerator(ops, numOffspring, RANDOM_SEX),
+            subPopSize = subPopSize,
+            subPops = subPops,
+            weight = weight)
+
+
+class RandomMating(HomoMating):
+    '''A homogeneous mating scheme that uses a random parents chooser with
+    replacement and a Mendelian offspring generator. This mating scheme is
+    widely used to simulate diploid sexual Wright-Fisher random mating.'''
+    def __init__(self, numOffspring = 1, sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(), 
+        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
+        '''Creates a random mating ssheme that selects two parents randomly and
+        transmit genotypes according to Mendelian laws. Please refer to class
+        ``RandomParentsChooser`` for parameter *selectionField*, to class
+        ``OffspringGenerator`` for parameters *ops*, *sexMode* and
+        *numOffspring*, and to class ``HomoMating`` for parameters
+        *subPopSize*, *subPops* and *weight*.
+        '''
+        HomoMating.__init__(self,
+            chooser = RandomParentsChooser(True, selectionField),
+            generator = OffspringGenerator(ops, numOffspring, sexMode),
+            subPopSize = subPopSize,
+            subPops = subPops,
+            weight = weight)
+
 ##
 ##class MonogamousMating(HomoMating):
 ##    '''A homogeneous mating scheme that uses a random parents chooser without

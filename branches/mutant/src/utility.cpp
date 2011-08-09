@@ -4667,13 +4667,20 @@ void copyGenotype(const compressed_vectora & oldCVector, const size_t oldBegin, 
 }
 
 
-void eraseGenotype(compressed_vectora & cvector, const size_t begin, const size_t end) {
-	size_t idx = begin;
-	for(size_t i = begin; i < end; ++i, ++idx)
-		cvector.erase_element(idx);
+void eraseGenotype(compressed_vectora & cvector, const size_t begin, const size_t end)
+{
+	for(size_t i = begin; i < end; ++i)
+		cvector.erase_element(i);
 	//  compressed vector doesn't decrease the size when it is erased.
 	//  we have to resize it. 
 	cvector.resize(cvector.size() - (end - begin));
+}
+
+
+void clearGenotype(compressed_vectora & cvector, const size_t begin, const size_t end)
+{
+	for(size_t i = begin; i < end; ++i)
+		cvector.erase_element(i);
 }
 #endif
 

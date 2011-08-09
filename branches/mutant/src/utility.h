@@ -2150,8 +2150,11 @@ void insertGenotype(compressed_vectora & newCVector, const size_t startIdx, cons
 void copyGenotype(const compressed_vectora & oldCVector, const size_t oldBegin, const size_t oldEnd, compressed_vectora & newCVector, const size_t newBegin); 
 
 /// CPPONLY
-void eraseGenotype(compressed_vectora & element, const size_t begin, const size_t end);
+void eraseGenotype(compressed_vectora & cvector, const size_t begin, const size_t end);
 
+
+/// CPPONLY
+void clearGenotype(compressed_vectora & cvector, const size_t begin, const size_t end);
 #endif
 
 /// CPPONLY initialize module simuPOP when using "import simuPOP"

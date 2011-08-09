@@ -67,15 +67,15 @@ public:
 	 *  homologous set of chromosomes of individual \e ind. It is equivalent to
 	 *  <tt>ind.setGenotype([0], ploidy, chrom)</tt>.
 	 */
-///	void clearChromosome(const Individual & ind, int ploidy, size_t chrom) const;
+	void clearChromosome(const Individual & ind, int ploidy, size_t chrom) const;
 
 	/** Transmit chromosome \e chrom on the \e parPloidy set of homologous
 	 *  chromosomes from \e parent to the \e ploidy set of homologous
 	 *  chromosomes of \e offspring. It is equivalent to
 	 *  <tt>offspring.setGenotype(parent.genotype(parPloidy, chrom), polidy, chrom)</tt>.
 	 */
-///	void copyChromosome(const Individual & parent, int parPloidy,
-///		Individual & offspring, int ploidy, size_t chrom) const;
+	void copyChromosome(const Individual & parent, int parPloidy,
+		Individual & offspring, int ploidy, size_t chrom) const;
 
 	/** Transmit the \e parPloidy set of homologous chromosomes from \e parent
 	 *  to the \e ploidy set of homologous chromosomes of \e offspring.
@@ -129,145 +129,145 @@ protected:
 };
 
 
-////** This during mating operator copies parental genotype directly to offspring.
-/// *  This operator works for all mating schemes when one or two parents are
-/// *  involved. If both parents are passed, maternal genotype are copied. In
-/// *  addition to genotypes on all non-customized or specified chromosomes, sex
-/// *  and information fields are by default also coped copied from parent to
-/// *  offspring.
-/// */
-///class CloneGenoTransmitter : public GenoTransmitter
-///{
-///public:
-///	/** Create a clone genotype transmitter (a during-mating operator) that
-///	 *  copies genotypes from parents to offspring. If two parents are
-///	 *  specified, genotypes are copied maternally. After genotype
-///	 *  transmission, offspring sex is copied from parental sex even if sex
-///	 *  has been determined by an offspring generator. All or specified
-///	 *  information fields (parameter \e infoFields, default to \c ALL_AVAIL)
-///	 *  will also be copied from parent to offspring. Parameters \e subPops
-///	 *  is ignored. This operator by default copies genotypes on all
-///	 *  autosome and sex chromosomes (excluding customized chromosomes), unless
-///	 *  a parameter \e chroms is used to specify which chromosomes to copy.
-///	 */
-///	CloneGenoTransmitter(const stringFunc & output = "", const uintList & chroms = uintList(),
-///		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
-///		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-///		const stringList & infoFields = stringList()) :
-///		GenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields),
-///		m_chroms(chroms)
-///	{
-///	}
-///
-///
-///	/// HIDDEN Deep copy of a clone genotype transmitter.
-///	BaseOperator * clone() const
-///	{
-///		return new CloneGenoTransmitter(*this);
-///	}
-///
-///
-///	/// HIDDEN
-///	string describe(bool format = true) const;
-///
-///
-///	/// CPPONLY
-///	bool applyDuringMating(Population & pop, Population & offPop,
-///		RawIndIterator offspring,
-///		Individual * dad = NULL,
-///		Individual * mom = NULL) const;
-///
-///
-///	/// CPPONLY
-///	bool parallelizable() const
-///	{
-///		return true;
-///	}
-///
-///
-///private:
-///	// this is user input.
-///	const uintList m_chroms;
-///};
-///
-///
-////** This Mendelian offspring generator accepts two parents and pass their
-/// *  genotypes to an offspring following Mendel's laws. Sex chromosomes are
-/// *  handled according to the sex of the offspring, which is usually determined
-/// *  in advance by an offspring generator. Customized chromosomes are not
-/// *  handled.
-/// */
-///class MendelianGenoTransmitter : public GenoTransmitter
-///{
-///public:
-///	/** Create a Mendelian genotype transmitter (a during-mating operator) that
-///	 *  transmits genotypes from parents to offspring following Mendel's laws.
-///	 *  Autosomes and sex chromosomes are handled but customized chromosomes
-///	 *  are ignored. Parameters \e subPops and \e infoFields are ignored.
-///	 */
-///	MendelianGenoTransmitter(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
-///		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-///		const stringList & infoFields = vectorstr()) :
-///		GenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields),
-///		m_chromX(-1), m_chromY(-1), m_numChrom(0)
-///	{
-///	}
-///
-///
-///	/// HIDDEN Deep copy of a Mendelian genotype transmitter.
-///	BaseOperator * clone() const
-///	{
-///		return new MendelianGenoTransmitter(*this);
-///	}
-///
-///
-///	/// HIDDEN
-///	string describe(bool format = true) const
-///	{
-///		(void)format;  // avoid warning about unused parameter
-///		return "<simuPOP.MendelianGenoTransmitter>" ;
-///	}
-///
-///
-///	/// CPPONLY
-///	virtual bool applyDuringMating(Population & pop, Population & offPop,
-///		RawIndIterator offspring,
-///		Individual * dad = NULL,
-///		Individual * mom = NULL) const;
-///
-///	/** HIDDEN Initialize a base genotype operator for a population. This function should be
-///	 *  called before function \c transmitGenotype is used to transmit genotype.
-///	 */
-///	void initialize(const Individual & ind) const;
-///
-///	/** Transmit genotype from parent to offspring, and fill the \e ploidy
-///	 *  homologous set of chromosomes. This function does not set genotypes of
-///	 *  customized chromosomes and handles sex chromosomes properly, according
-///	 *  to offspring sex and \c ploidy.
-///	 */
-///	void transmitGenotype(const Individual & parent,
-///		Individual & offspring, int ploidy) const;
-///
-///
-///	/// CPPONLY
-///	bool parallelizable() const
-///	{
-///		return true;
-///	}
-///
-///
-///protected:
-///	// cache chromBegin, chromEnd for better performance.
-///	mutable vectoru m_chIdx;
-///
-///	mutable int m_chromX;
-///
-///	mutable int m_chromY;
-///
-///	mutable size_t m_numChrom;
-///};
-///
-///
+/** This during mating operator copies parental genotype directly to offspring.
+ *  This operator works for all mating schemes when one or two parents are
+ *  involved. If both parents are passed, maternal genotype are copied. In
+ *  addition to genotypes on all non-customized or specified chromosomes, sex
+ *  and information fields are by default also coped copied from parent to
+ *  offspring.
+ */
+class CloneGenoTransmitter : public GenoTransmitter
+{
+public:
+	/** Create a clone genotype transmitter (a during-mating operator) that
+	 *  copies genotypes from parents to offspring. If two parents are
+	 *  specified, genotypes are copied maternally. After genotype
+	 *  transmission, offspring sex is copied from parental sex even if sex
+	 *  has been determined by an offspring generator. All or specified
+	 *  information fields (parameter \e infoFields, default to \c ALL_AVAIL)
+	 *  will also be copied from parent to offspring. Parameters \e subPops
+	 *  is ignored. This operator by default copies genotypes on all
+	 *  autosome and sex chromosomes (excluding customized chromosomes), unless
+	 *  a parameter \e chroms is used to specify which chromosomes to copy.
+	 */
+	CloneGenoTransmitter(const stringFunc & output = "", const uintList & chroms = uintList(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = stringList()) :
+		GenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields),
+		m_chroms(chroms)
+	{
+	}
+
+
+	/// HIDDEN Deep copy of a clone genotype transmitter.
+	BaseOperator * clone() const
+	{
+		return new CloneGenoTransmitter(*this);
+	}
+
+
+	/// HIDDEN
+	string describe(bool format = true) const;
+
+
+	/// CPPONLY
+	bool applyDuringMating(Population & pop, Population & offPop,
+		RawIndIterator offspring,
+		Individual * dad = NULL,
+		Individual * mom = NULL) const;
+
+
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return true;
+	}
+
+
+private:
+	// this is user input.
+	const uintList m_chroms;
+};
+
+
+/** This Mendelian offspring generator accepts two parents and pass their
+ *  genotypes to an offspring following Mendel's laws. Sex chromosomes are
+ *  handled according to the sex of the offspring, which is usually determined
+ *  in advance by an offspring generator. Customized chromosomes are not
+ *  handled.
+ */
+class MendelianGenoTransmitter : public GenoTransmitter
+{
+public:
+	/** Create a Mendelian genotype transmitter (a during-mating operator) that
+	 *  transmits genotypes from parents to offspring following Mendel's laws.
+	 *  Autosomes and sex chromosomes are handled but customized chromosomes
+	 *  are ignored. Parameters \e subPops and \e infoFields are ignored.
+	 */
+	MendelianGenoTransmitter(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = vectorstr()) :
+		GenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields),
+		m_chromX(-1), m_chromY(-1), m_numChrom(0)
+	{
+	}
+
+
+	/// HIDDEN Deep copy of a Mendelian genotype transmitter.
+	BaseOperator * clone() const
+	{
+		return new MendelianGenoTransmitter(*this);
+	}
+
+
+	/// HIDDEN
+	string describe(bool format = true) const
+	{
+		(void)format;  // avoid warning about unused parameter
+		return "<simuPOP.MendelianGenoTransmitter>" ;
+	}
+
+
+	/// CPPONLY
+	virtual bool applyDuringMating(Population & pop, Population & offPop,
+		RawIndIterator offspring,
+		Individual * dad = NULL,
+		Individual * mom = NULL) const;
+
+	/** HIDDEN Initialize a base genotype operator for a population. This function should be
+	 *  called before function \c transmitGenotype is used to transmit genotype.
+	 */
+	void initialize(const Individual & ind) const;
+
+	/** Transmit genotype from parent to offspring, and fill the \e ploidy
+	 *  homologous set of chromosomes. This function does not set genotypes of
+	 *  customized chromosomes and handles sex chromosomes properly, according
+	 *  to offspring sex and \c ploidy.
+	 */
+	void transmitGenotype(const Individual & parent,
+		Individual & offspring, int ploidy) const;
+
+
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return true;
+	}
+
+
+protected:
+	// cache chromBegin, chromEnd for better performance.
+	mutable vectoru m_chIdx;
+
+	mutable int m_chromX;
+
+	mutable int m_chromY;
+
+	mutable size_t m_numChrom;
+};
+
+
 ////** A genotype transmitter (during-mating operator) that transmits parental
 /// *  genotype of a parent through self-fertilization. That is to say, the
 /// *  offspring genotype is formed according to Mendel's laws, only that a
