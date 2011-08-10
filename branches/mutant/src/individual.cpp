@@ -170,7 +170,7 @@ UINT Individual::allele(size_t idx, ssize_t p, ssize_t chrom) const
 	}
 }
 
-/*
+
 string Individual::alleleChar(size_t idx, ssize_t p, ssize_t chrom) const
 {
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
@@ -190,7 +190,7 @@ string Individual::alleleChar(size_t idx, ssize_t p, ssize_t chrom) const
 		return validIndex(idx, p, chrom) ? alleleName(allele(idx, p, chrom), idx + chromBegin(chrom)) : "_";
 	}
 }
-*/
+
 
 PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 {
@@ -435,7 +435,7 @@ void Individual::swap(Individual & ind, bool swapContent)
 	}
 }
 
-/*
+
 void Individual::display(ostream & out, int width, const vectoru & loci)
 {
 	out << (sex() == MALE ? 'M' : 'F') << (affected() ? 'A' : 'U') << " ";
@@ -462,7 +462,6 @@ void Individual::display(ostream & out, int width, const vectoru & loci)
 			out << " " << *info;
 	}
 }
-*/
 
 
 }

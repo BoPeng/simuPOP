@@ -131,7 +131,7 @@ __all__ = [
     'RandomSelection',
 ###    'MonogamousMating',
 ###    'SelfMating',
-###    'CloneMating',
+    'CloneMating',
 ###    'HaplodiploidMating',
 ###    #'consanguineousMating',
 ###    'ControlledRandomMating',
@@ -144,11 +144,11 @@ __all__ = [
 ###    'InitInfo',
     'InitGenotype',
 ###    #
-###    'PyOutput',
-###    'PyEval',
-###    'PyExec',
-###    'InfoEval',
-###    'InfoExec',
+    'PyOutput',
+    'PyEval',
+    'PyExec',
+    'InfoEval',
+    'InfoExec',
 ###    #
 ###    'Migrator',
 ###    'MergeSubPops',
@@ -172,7 +172,7 @@ __all__ = [
 ###    'AcgtMutator',
 ###    'AminoAcidMutator',
 ###    'ContextMutator',
-###    'KAlleleMutator',
+    'KAlleleMutator',
 ###    #
 ###    'MapSelector',
 ###    'MaSelector',
@@ -184,7 +184,7 @@ __all__ = [
 ###    'MlPenetrance',
 ###    'PyPenetrance',
 ###    #
-###    'PyQuanTrait',
+    'PyQuanTrait',
 ###    #
     'Stat',
 ###    #
@@ -195,7 +195,7 @@ __all__ = [
 ###    'PyTagger',
 ###    'SummaryTagger',
 ###    #
-###    'TerminateIf',
+    'TerminateIf',
 ###    'DiscardIf',
     'discardIf',
 ###    #
@@ -206,19 +206,19 @@ __all__ = [
 ###    'SavePopulation',
 ###    'IfElse',
 ###    'Pause',
-###    'TicToc',
+    'TicToc',
 ###    #
 ###    # Function form of operators
-###    'dump',
+    'dump',
 ###    #
     'initSex',
     'initInfo',
     'initGenotype',
 ###    #
-###    'pyEval',
-###    'pyExec',
-###    'infoEval',
-###    'infoExec',
+    'pyEval',
+    'pyExec',
+    'infoEval',
+    'infoExec',
 ###    #
     'tagID',
 ###    #
@@ -229,7 +229,7 @@ __all__ = [
 ###    #
 ###    'matrixMutate',
 ###    'contextMutate',
-###    'kAlleleMutate',
+    'kAlleleMutate',
 ###    'mixedMutate',
 ###    'pointMutate',
 ###    'pyMutate',
@@ -240,12 +240,12 @@ __all__ = [
     'stat',
 ###    #
 ###    # Global functions
-###    'WithArgs',
+    'WithArgs',
 ###    # RNG Related
 ###    'RNG',
 ###    'getRNG',
 ###    #
-###    'closeOutput',
+    'closeOutput',
 ###    'describeEvolProcess',
     'loadPopulation',
     'loadPedigree',
@@ -259,7 +259,7 @@ __all__ = [
 ###    'mlPenetrance',
 ###    'pyPenetrance',
 ###    #
-###    'pyQuanTrait',
+    'pyQuanTrait',
 ###    #
 ###    # For testing only
 ###    'applyDuringMatingOperator',
@@ -483,7 +483,7 @@ def dvars(self, *args, **kwargs):
     return _dw(self.vars(*args, **kwargs))
 
 Population.dvars = dvars
-##Simulator.dvars = dvars
+Simulator.dvars = dvars
 
 # expose the clone() method to Python copy module.
 def _deepcopy(self, memo):
@@ -656,28 +656,28 @@ class WithArgs:
 ##            SequentialParentChooser(FEMALE_ONLY))
 ##
 ##
-##class CloneMating(HomoMating):
-##    '''A homogeneous mating scheme that uses a sequential parent chooser and
-##    a clone offspring generator.'''
-##    def __init__(self, numOffspring = 1, sexMode = None, ops = CloneGenoTransmitter(),
-##        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = None):
-##        '''Create a clonal mating scheme that clones parents to offspring using
-##        a ``CloneGenoTransmitter``. Please refer to class ``OffspringGenerator``
-##        for parameters *ops* and *numOffspring*, and to class ``HomoMating`` for
-##        parameters  *subPopSize*, *subPops* and *weight*. Parameters *sexMode* and
-##        *selectionField* are ignored because this mating scheme does not support
-##        natural selection, and ``CloneGenoTransmitter`` copies sex from parents
-##        to offspring. Note that ``CloneGenoTransmitter`` by default also copies
-##        all parental information fields to offspring.
-##        '''
-##        HomoMating.__init__(self,
-##            chooser = SequentialParentChooser(),
-##            generator = OffspringGenerator(ops, numOffspring, RANDOM_SEX),
-##            subPopSize = subPopSize,
-##            subPops = subPops,
-##            weight = weight)
-##
-##
+class CloneMating(HomoMating):
+    '''A homogeneous mating scheme that uses a sequential parent chooser and
+    a clone offspring generator.'''
+    def __init__(self, numOffspring = 1, sexMode = None, ops = CloneGenoTransmitter(),
+        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = None):
+        '''Create a clonal mating scheme that clones parents to offspring using
+        a ``CloneGenoTransmitter``. Please refer to class ``OffspringGenerator``
+        for parameters *ops* and *numOffspring*, and to class ``HomoMating`` for
+        parameters  *subPopSize*, *subPops* and *weight*. Parameters *sexMode* and
+        *selectionField* are ignored because this mating scheme does not support
+        natural selection, and ``CloneGenoTransmitter`` copies sex from parents
+        to offspring. Note that ``CloneGenoTransmitter`` by default also copies
+        all parental information fields to offspring.
+        '''
+        HomoMating.__init__(self,
+            chooser = SequentialParentChooser(),
+            generator = OffspringGenerator(ops, numOffspring, RANDOM_SEX),
+            subPopSize = subPopSize,
+            subPops = subPops,
+            weight = weight)
+
+
 class RandomSelection(HomoMating):
     '''A homogeneous mating scheme that uses a random single-parent parent
     chooser with replacement, and a clone offspring generator. This mating
