@@ -446,515 +446,543 @@ bool MendelianGenoTransmitter::applyDuringMating(Population & /* pop */,
 ///}
 ///
 ///
-///Recombinator::Recombinator(const floatList & rates, double intensity,
-///	const lociList & loci, const floatList & convMode,
-///	const stringFunc & output, int begin, int end, int step, const intList & at,
-///	const intList & reps, const subPopList & subPops, const stringList & infoFields)
-///	:
-///	GenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields),
-///	m_intensity(intensity), m_rates(rates.elems()), m_loci(loci),
-///	m_recBeforeLoci(0), m_convMode(convMode.elems()), m_chromX(-1), m_chromY(-1),
-///	m_customizedBegin(-1), m_customizedEnd(-1), m_algorithm(0), m_debugOutput(NULL),
-///#ifdef _OPENMP
-///	m_bt(numThreads(), getRNG())
-///#else
-///	m_bt(getRNG())
-///#endif
-///{
-///
-///	DBG_FAILIF(m_convMode.empty(), ValueError,
-///		"Please specify a conversion mode");
-///
-///	int mode = static_cast<int>(m_convMode[0]);
-///	(void)mode;  // avoid a warning.
-///	DBG_FAILIF(mode != NO_CONVERSION && m_convMode.size() != 3,
-///		ValueError, "Two parameters are required for a non-NoConversion conversion mode");
-///
-///	DBG_FAILIF(mode != NO_CONVERSION && (fcmp_lt(m_convMode[1], 0) || fcmp_gt(m_convMode[1], 1)),
-///		ValueError, "Conversion probability should be between 0 and 1");
-///};
-///
-///
-///string Recombinator::describe(bool /* format */) const
-///{
-///	string desc = "<simuPOP.Recombinator> genetic recombination.";
-///
-///	return desc;
-///}
-///
-///
-///size_t Recombinator::markersConverted(size_t index, const Individual & ind) const
-///{
-///	int mode = static_cast<int>(m_convMode[0]);
-///
-///	// IMPORTANT: if conversion length reaches end of chromosome
-///	// this is an recombination! Otherwise, conversion will
-///	// interfere with free crossover between chromosomes
-///	if (mode == NUM_MARKERS || mode == GEOMETRIC_DISTRIBUTION) {
-///		size_t num = 0;
-///		if (mode == NUM_MARKERS)
-///			num = static_cast<int>(m_convMode[2]);
-///		else
-///			num = getRNG().randGeometric(m_convMode[2]);
-///
-///		// if conversion reaches end of chromosome, it is an recombination event
-///		if (num == 0 || num >= ind.lociLeft(index))
-///			return 0;
-///		else
-///			return num;
-///	} else {
-///		double len = 0;
-///		if (mode == TRACT_LENGTH)
-///			len = m_convMode[2];
-///		else
-///			len = getRNG().randExponential(len);
-///		//
-///		// recombination starts 'before' index so we assume that it happens
-///		// randomly (uniformly) between this and previous marker
-///		if (index > 0)
-///			len -= getRNG().randUniform() * ind.lociDist(index - 1, index);
-///		if (len <= 0. || len >= ind.distLeft(index))
-///			return 0;
-///		else
-///			return ind.lociCovered(index, len);
-///	}
-///}
-///
-///
-///void Recombinator::initialize(const Individual & ind) const
-///{
-///	GenoTransmitter::initialize(ind);
-///
-///	m_chromX = ind.chromX();
-///	m_chromY = ind.chromY();
-///	if (!ind.customizedChroms().empty()) {
-///		m_customizedBegin = static_cast<int>(ind.chromBegin(ind.customizedChroms()[0]));
-///		m_customizedEnd = static_cast<int>(ind.chromEnd(ind.customizedChroms().back()));
-///	}
-///	// prepare m_bt
-///	vectorf vecP;
-///	//
-///	const vectoru & loci = m_loci.elems(&ind);
-///
-///	DBG_FAILIF(m_intensity < 0 && m_rates.empty(), ValueError,
-///		"You should specify m_intensity, or m_rates "
-///		"(a number or a sequence of recombination m_ratess.)");
-///
-///	DBG_FAILIF(m_rates.size() > 1 && loci.empty(), ValueError,
-///		"When more than one m_ratess are given, loci should be"
-///		" explicitly specified.");
-///
-///	DBG_FAILIF(m_rates.size() > 1 && m_rates.size() != loci.size(),
-///		ValueError, "If both rates and loci are specified, "
-///		            "they should have the same length.");
-///
-///	bool useLociDist = m_rates.empty();
-///
-///	m_recBeforeLoci.clear();
-///	vecP.clear();
-///	for (size_t ch = 0; ch < ind.numChrom(); ++ch) {
-///		size_t chBegin = ind.chromBegin(ch);
-///		size_t chEnd = ind.chromEnd(ch);
-///
-///		if (chBegin == chEnd)
-///			continue;
-///
-///		if (ind.chromType(ch) == CUSTOMIZED) {
-///			// recombine before customized chromosome.
-///			if (ind.numChrom() != ch + 1 && ind.chromType(ch + 1) != CUSTOMIZED) {
-///				m_recBeforeLoci.push_back(chEnd);
-///				vecP.push_back(0.5);
-///			}
-///			continue;
-///		}
-///
-///		if (m_loci.allAvail()) {
-///			// get loci distance * m_rates and then recombinant points
-///			for (size_t loc = chBegin; loc < chEnd - 1; ++loc) {
-///				m_recBeforeLoci.push_back(loc + 1);
-///				double r = useLociDist ? ((ind.locusPos(loc + 1) - ind.locusPos(loc)) * m_intensity) : m_rates[0];
-///
-///				DBG_WARNIF(fcmp_gt(r, 0.5),
-///					"Recombination m_rates after marker " + toStr(loc) + " is out of range ("
-///					+ toStr(r) + " ) so it is set to 0.5. This may happen \n"
-///					             "when you use recombination m_intensity instead of m_rates, and your loci \n"
-///					             "distance is too high.)");
-///				vecP.push_back(min(0.5, r));
-///			}
-///		} else {
-///			DBG_FAILIF(m_rates.size() > 1 && m_rates.size() != loci.size(), SystemError,
-///				"If an array is given, rates and loci should have the same length");
-///
-///			// get loci distance * m_rates and then recombinant points
-///			for (size_t loc = chBegin; loc < chEnd - 1; ++loc) {
-///				// if this locus will be recombined.
-///				vectoru::const_iterator pos = find(loci.begin(), loci.end(), loc);
-///				if (pos != loci.end()) {
-///					double r = 0;
-///					if (useLociDist)
-///						r = m_intensity > 0 ? ((ind.locusPos(loc + 1) - ind.locusPos(loc)) * m_intensity) : r;
-///					else if (m_rates.size() == 1 && !useLociDist)
-///						r = max(m_rates[0], 0.);
-///					else
-///						r = m_rates[pos - loci.begin()];
-///					m_recBeforeLoci.push_back(loc + 1);
-///					vecP.push_back(r);
-///
-///					DBG_ASSERT(fcmp_ge(vecP[vecP.size() - 1], 0) && fcmp_le(vecP[vecP.size() - 1], 1),
-///						ValueError,
-///						"Recombination m_rates should be in [0,1]. (Maybe your loci distance is too high.)");
-///				}
-///			}
-///		}
-///		// after each chromosome ...
-///		m_recBeforeLoci.push_back(chEnd);
-///		vecP.push_back(0.5);
-///	}
-///	DBG_DO(DBG_TRANSMITTER, cerr	<< "Specify after Loci. With m_ratess "
-///		                            << vecP << " before " << m_recBeforeLoci << endl);
-///
-///	DBG_FAILIF(vecP.empty(), ValueError, "No non-empty chromosome.");
-///
-///	DBG_ASSERT(vecP.size() == m_recBeforeLoci.size(), SystemError,
-///		"Rate and before loci should have the same length.");
-///
-///	DBG_FAILIF(ind.chromType(ind.numChrom() - 1) != CUSTOMIZED && !m_recBeforeLoci.empty() && m_recBeforeLoci.back() != ind.totNumLoci(),
-///		SystemError,
-///		"The last beforeLoci elem should be total number of loci. (If the last chromsome is not customized");
-///
-///	DBG_ASSERT(vecP.back() == .5, SystemError,
-///		"The last elem of m_rates should be half.");
-///
-///	// if the operator is called directly, there is no way to know population size so we
-///	// a variable to tell it.
-///#ifdef _OPENMP
-///	for (size_t i = 0; i < numThreads(); i++)
-///		m_bt[i].setParameter(vecP, 0 /* obsolete m_intendedSize */);
-///#else
-///
-///	m_bt.setParameter(vecP, 0 /* obsolete m_intendedSize */);
-///#endif
-///	// choose an algorithm
-///	// if recombinations are dense. use the first algorithm
-///	// For example 10 chromoes, regular 0.5*10=5
-///	// if there are high recombination on chromosomes, ....
-///	//
-///	// In addition, the second algorithm is really difficult in the
-///	// handling of sex chromosomes etc.
-///	if (std::accumulate(vecP.begin(), vecP.end(), 0.) > ind.numChrom()
-///	    || m_chromX > 0 || m_customizedBegin > 0)
-///		m_algorithm = 0;
-///	else
-///		m_algorithm = 1;
-///	DBG_DO(DBG_TRANSMITTER, cerr << "Algorithm " << m_algorithm << " is being used " << endl);
-///}
-///
-///
-///void Recombinator::transmitGenotype(const Individual & parent,
-///                                    Individual & offspring, int ploidy) const
-///{
-///	initializeIfNeeded(offspring);
-///
-///	//Bernullitrial for each thread
-///#ifdef _OPENMP
-///	Bernullitrials & bt = m_bt[omp_get_thread_num()];
-///#else
-///	Bernullitrials & bt = m_bt;
-///#endif
-///
-///	// use which copy of chromosome
-///	GenoIterator cp[2], off;
-///
-///	cp[0] = parent.genoBegin(0);
-///	cp[1] = parent.genoBegin(1);
-///	off = offspring.genoBegin(ploidy);
-///
-///	// handling of sex chromosomes, by specifying chromsome
-///	// ranges with specified ploidy.
-///	int ignoreBegin = -1;
-///	int ignoreEnd = -1;
-///	int forceFirstBegin = -1;
-///	int forceFirstEnd = -1;
-///	int forceSecondBegin = -1;
-///	int forceSecondEnd = -1;
-///
-///	// from maternal, ignore chromosome Y
-///	if (ploidy == 0 && m_chromY > 0) {
-///		ignoreBegin = static_cast<int>(parent.chromBegin(m_chromY));
-///		ignoreEnd = static_cast<int>(parent.chromEnd(m_chromY));
-///	} else if (ploidy == 1 && m_chromX > 0) {
-///		if (offspring.sex() == MALE) {
-///			ignoreBegin = static_cast<int>(parent.chromBegin(m_chromX));
-///			ignoreEnd = static_cast<int>(parent.chromEnd(m_chromX));
-///			forceSecondBegin = static_cast<int>(parent.chromBegin(m_chromY));
-///			forceSecondEnd = static_cast<int>(parent.chromEnd(m_chromY));
-///		} else {
-///			ignoreBegin = static_cast<int>(parent.chromBegin(m_chromY));
-///			ignoreEnd = static_cast<int>(parent.chromEnd(m_chromY));
-///			forceFirstBegin = static_cast<int>(parent.chromBegin(m_chromX));
-///			forceFirstEnd = static_cast<int>(parent.chromEnd(m_chromX));
-///		}
-///	}
-///	// get a new set of values.
-///	// const BoolResults& bs = bt.trial();
-///	bt.trial();
-///	int curCp = bt.trialSucc(m_recBeforeLoci.size() - 1) ? 0 : 1;
-///	curCp = forceFirstBegin == 0 ? 0 : (forceSecondBegin == 0 ? 1 : curCp);
-///
-///	if (m_debugOutput)
-///		*m_debugOutput << offspring.intInfo(infoField(0)) << ' ' << parent.intInfo(infoField(0)) << ' ' << curCp;
-///
-///	// the last one does not count, because it determines
-///	// the initial copy of paternal chromosome
-///	bt.setTrialSucc(m_recBeforeLoci.size() - 1, false);
-///
-///	// algorithm one:
-///	//
-///	//  gt: index on chromosomes
-///	//  gtEnd: total number of loci
-///	//
-///	//  at each locus, check if recombine after it, if so
-///	//  recombine.
-///	bool withConversion = static_cast<int>(m_convMode[0]) != NO_CONVERSION
-///	                      && m_convMode[1] > 0.;
-///	if (m_algorithm == 0) {
-///		// negative means no conversion is pending.
-///		ssize_t convCount = -1;
-///		size_t gtEnd = m_recBeforeLoci.back();
-///		for (size_t gt = 0, bl = 0; gt < gtEnd; ++gt, --convCount) {
-///			// do not copy genotype in the ignored region.
-///			if ((ignoreBegin < 0 || gt < static_cast<size_t>(ignoreBegin) || gt >= static_cast<size_t>(ignoreEnd)) &&
-///			    (m_customizedBegin < 0 || gt < static_cast<size_t>(m_customizedBegin) || gt >= static_cast<size_t>(m_customizedEnd)))
-///				// copy
-///				off[gt] = cp[curCp][gt];
-///			// look ahead
-///			if (convCount == 0) {             // conversion ...
-///				if (forceFirstBegin > 0 && gt + 1 >= static_cast<size_t>(forceFirstBegin)
-///				    && gt + 1 < static_cast<size_t>(forceFirstEnd)) {
-///					if (curCp != 0 && m_debugOutput)
-///						*m_debugOutput << ' ' << gt;
-///					curCp = 0;
-///				} else if (forceSecondBegin > 0 && gt + 1 >= static_cast<size_t>(forceSecondBegin)
-///				           && gt + 1 < static_cast<size_t>(forceSecondEnd)) {
-///					if (curCp != 1 && m_debugOutput)
-///						*m_debugOutput << ' ' << gt;
-///					curCp = 1;
-///				} else {
-///					curCp = (curCp + 1) % 2;
-///					if (m_debugOutput)
-///						*m_debugOutput << ' ' << gt;
-///				}
-///				//
-///				// no pending conversion
-///				convCount = -1;
-///			}
-///			if (gt + 1 == m_recBeforeLoci[bl]) {
-///				DBG_DO(DBG_TRANSMITTER, cerr << gt << " " << m_recBeforeLoci[bl] << ", ");
-///				if (forceFirstBegin >= 0 && gt + 1 >= static_cast<size_t>(forceFirstBegin)
-///				    && gt + 1 < static_cast<size_t>(forceFirstEnd)) {
-///					if (curCp != 0 && m_debugOutput)
-///						*m_debugOutput << ' ' << gt;
-///					curCp = 0;
-///					convCount = -1;
-///				} else if (forceSecondBegin >= 0 && gt + 1 >= static_cast<size_t>(forceSecondBegin)
-///				           && gt + 1 < static_cast<size_t>(forceSecondEnd)) {
-///					if (curCp != 1 && m_debugOutput)
-///						*m_debugOutput << ' ' << gt;
-///					curCp = 1;
-///					convCount = -1;
-///				} else if (convCount < 0 && bt.trialSucc(bl)) {
-///					// recombination (if convCount == 0, a conversion event is ending)
-///					curCp = (curCp + 1) % 2;
-///					if (m_debugOutput)
-///						*m_debugOutput << ' ' << gt;
-///					// if conversion happens
-///					if (withConversion &&
-///					    parent.lociLeft(gt) != 1 &&             // can not be at the end of a chromosome
-///					    (m_convMode[1] == 1. || getRNG().randUniform() < m_convMode[1])) {
-///						// convCount will be decreased, until reconversion completes
-///						// or another recombination happens
-///						convCount = markersConverted(gt + 1, parent);
-///					} else
-///						// another recombination stops the previous conversion
-///						convCount = -1;
-///				}
-///				++bl;
-///			}
-///		}
-///	} else {
-///#ifndef BINARYALLELE
-///		size_t gt = 0, gtEnd = 0;
-///		size_t pos = bt.probFirstSucc();
-///		// if there is some recombination
-///		ssize_t convCount = -1;
-///		size_t convEnd;
-///		if (pos != Bernullitrials::npos) {
-///			// first piece
-///			for (; gt < m_recBeforeLoci[pos]; ++gt)
-///				off[gt] = cp[curCp][gt];
-///			curCp = (curCp + 1) % 2;
-///			if (m_debugOutput)
-///				*m_debugOutput << ' ' << gt - 1;
-///			//
-///			if (withConversion &&
-///			    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
-///			    (m_convMode[1] == 1. || getRNG().randUniform() < m_convMode[1])) {
-///				convCount = markersConverted(gt, parent);
-///			}
-///			// next recombination point...
-///			while ((pos = bt.probNextSucc(pos)) != Bernullitrials::npos) {
-///				// copy from last to this recombination point, but
-///				// there might be a conversion event in between
-///				gtEnd = m_recBeforeLoci[pos];
-///				if (convCount > 0) {
-///					convEnd = gt + convCount;
-///					if (convEnd < gtEnd) {
-///						for (; gt < convEnd; ++gt)
-///							off[gt] = cp[curCp][gt];
-///						curCp = (curCp + 1) % 2;
-///						if (m_debugOutput)
-///							*m_debugOutput << ' ' << gt - 1;
-///					}
-///					// no pending conversion
-///					convCount = -1;
-///				}
-///				// copy from the end of conversion to this recombination point
-///				for (; gt < gtEnd; ++gt)
-///					off[gt] = cp[curCp][gt];
-///				curCp = (curCp + 1) % 2;
-///				if (m_debugOutput)
-///					*m_debugOutput << ' ' << gt - 1;
-///				//
-///				// conversion event for this recombination event
-///				if (withConversion &&
-///				    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
-///				    (m_convMode[1] == 1. || getRNG().randUniform() < m_convMode[1])) {
-///					// convCount will be decreased, until reconversion completes
-///					// or another recombination happens
-///					convCount = markersConverted(gt, parent);
-///				}
-///			}
-///		}
-///		gtEnd = m_recBeforeLoci.back();
-///		// copy the last piece
-///		if (convCount > 0) {
-///			convEnd = gt + convCount;
-///			if (convEnd < gtEnd) {
-///				for (; gt < convEnd; ++gt)
-///					off[gt] = cp[curCp][gt];
-///				curCp = (curCp + 1) % 2;
-///				if (m_debugOutput)
-///					*m_debugOutput << ' ' << gt - 1;
-///			}
-///		}
-///		for (; gt < gtEnd; ++gt)
-///			off[gt] = cp[curCp][gt];
-///#else
-///		size_t gt = 0, gtEnd = 0;
-///		size_t pos = bt.probFirstSucc();
-///		// if there is some recombination
-///		ssize_t convCount = -1;
-///		size_t convEnd;
-///		if (pos != Bernullitrials::npos) {
-///			// first piece
-///			gtEnd = m_recBeforeLoci[pos];
-///			copyGenotype(cp[curCp] + gt, off + gt, m_recBeforeLoci[pos] - gt);
-///			gt = gtEnd;
-///			curCp = (curCp + 1) % 2;
-///			if (m_debugOutput)
-///				*m_debugOutput << ' ' << gt - 1;
-///			if (withConversion &&
-///			    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
-///			    (m_convMode[1] == 1. || getRNG().randUniform() < m_convMode[1])) {
-///				convCount = markersConverted(gt, parent);
-///			}
-///			// next recombination point...
-///			while ((pos = bt.probNextSucc(pos)) != Bernullitrials::npos) {
-///				gtEnd = m_recBeforeLoci[pos];
-///				if (convCount > 0) {
-///					convEnd = gt + convCount;
-///					if (convEnd < gtEnd) {
-///						copyGenotype(cp[curCp] + gt, off + gt, convCount);
-///						gt = convEnd;
-///						curCp = (curCp + 1) % 2;
-///						if (m_debugOutput)
-///							*m_debugOutput << ' ' << gt - 1;
-///					}
-///					// no pending conversion
-///					convCount = -1;
-///				}
-///				// copy from the end of conversion to the next recombination point
-///				copyGenotype(cp[curCp] + gt, off + gt, m_recBeforeLoci[pos] - gt);
-///				gt = gtEnd;
-///				curCp = (curCp + 1) % 2;
-///				if (m_debugOutput)
-///					*m_debugOutput << ' ' << gt - 1;
-///				// conversion event for this recombination event
-///				if (withConversion &&
-///				    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
-///				    (m_convMode[1] == 1. || getRNG().randUniform() < m_convMode[1])) {
-///					// convCount will be decreased, until reconversion completes
-///					// or another recombination happens
-///					convCount = markersConverted(gt, parent);
-///				}
-///			}
-///		}
-///		gtEnd = m_recBeforeLoci.back();
-///		// copy the last piece
-///		if (convCount > 0) {
-///			convEnd = gt + convCount;
-///			if (convEnd < gtEnd) {
-///				copyGenotype(cp[curCp] + gt, off + gt, convCount);
-///				gt = convEnd;
-///				curCp = (curCp + 1) % 2;
-///				if (m_debugOutput)
-///					*m_debugOutput << ' ' << gt - 1;
-///			}
-///		}
-///		copyGenotype(cp[curCp] + gt, off + gt, gtEnd - gt);
-///#endif
-///	}
-///	if (m_debugOutput)
-///		*m_debugOutput << '\n';
-///	// handle special chromosomes
-///	if (m_chromX > 0) {
-///		if (offspring.sex() == FEMALE) {
-///			clearChromosome(offspring, 0, m_chromY);
-///			clearChromosome(offspring, 1, m_chromY);
-///		} else {
-///			clearChromosome(offspring, 0, m_chromY);
-///			clearChromosome(offspring, 1, m_chromX);
-///		}
-///	}
-///}
-///
-///
-///bool Recombinator::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
-///                                     Individual * dad, Individual * mom) const
-///{
-///	// if offspring does not belong to subPops, do nothing, but does not fail.
-///	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
-///		return true;
-///
-///	initializeIfNeeded(*offspring);
-///
-///	DBG_FAILIF(dad == NULL && mom == NULL,
-///		ValueError, "None of the parents is invalid.");
-///
-///	DBG_FAILIF(m_recBeforeLoci.empty(), ValueError,
-///		"Uninitialized Recombinator");
-///
-///	if (infoSize() == 1 && !noOutput())
-///		m_debugOutput = &getOstream(pop.dict());
-///	else
-///		m_debugOutput = NULL;
-///	transmitGenotype(*(mom ? mom : dad), *offspring, 0);
-///	transmitGenotype(*(dad ? dad : mom), *offspring, 1);
-///
-///	if (m_debugOutput)
-///		closeOstream();
-///	return true;
-///}
+Recombinator::Recombinator(const floatList & rates, double intensity,
+	const lociList & loci, const floatList & convMode,
+	const stringFunc & output, int begin, int end, int step, const intList & at,
+	const intList & reps, const subPopList & subPops, const stringList & infoFields)
+	:
+	GenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields),
+	m_intensity(intensity), m_rates(rates.elems()), m_loci(loci),
+	m_recBeforeLoci(0), m_convMode(convMode.elems()), m_chromX(-1), m_chromY(-1),
+	m_customizedBegin(-1), m_customizedEnd(-1), m_algorithm(0), m_debugOutput(NULL),
+#ifdef _OPENMP
+	m_bt(numThreads(), getRNG())
+#else
+	m_bt(getRNG())
+#endif
+{
+
+	DBG_FAILIF(m_convMode.empty(), ValueError,
+		"Please specify a conversion mode");
+
+	int mode = static_cast<int>(m_convMode[0]);
+	(void)mode;  // avoid a warning.
+	DBG_FAILIF(mode != NO_CONVERSION && m_convMode.size() != 3,
+		ValueError, "Two parameters are required for a non-NoConversion conversion mode");
+
+	DBG_FAILIF(mode != NO_CONVERSION && (fcmp_lt(m_convMode[1], 0) || fcmp_gt(m_convMode[1], 1)),
+		ValueError, "Conversion probability should be between 0 and 1");
+};
+
+
+string Recombinator::describe(bool /* format */) const
+{
+	string desc = "<simuPOP.Recombinator> genetic recombination.";
+
+	return desc;
+}
+
+
+size_t Recombinator::markersConverted(size_t index, const Individual & ind) const
+{
+	int mode = static_cast<int>(m_convMode[0]);
+
+	// IMPORTANT: if conversion length reaches end of chromosome
+	// this is an recombination! Otherwise, conversion will
+	// interfere with free crossover between chromosomes
+	if (mode == NUM_MARKERS || mode == GEOMETRIC_DISTRIBUTION) {
+		size_t num = 0;
+		if (mode == NUM_MARKERS)
+			num = static_cast<int>(m_convMode[2]);
+		else
+			num = getRNG().randGeometric(m_convMode[2]);
+
+		// if conversion reaches end of chromosome, it is an recombination event
+		if (num == 0 || num >= ind.lociLeft(index))
+			return 0;
+		else
+			return num;
+	} else {
+		double len = 0;
+		if (mode == TRACT_LENGTH)
+			len = m_convMode[2];
+		else
+			len = getRNG().randExponential(len);
+		//
+		// recombination starts 'before' index so we assume that it happens
+		// randomly (uniformly) between this and previous marker
+		if (index > 0)
+			len -= getRNG().randUniform() * ind.lociDist(index - 1, index);
+		if (len <= 0. || len >= ind.distLeft(index))
+			return 0;
+		else
+			return ind.lociCovered(index, len);
+	}
+}
+
+
+void Recombinator::initialize(const Individual & ind) const
+{
+	GenoTransmitter::initialize(ind);
+
+	m_chromX = ind.chromX();
+	m_chromY = ind.chromY();
+	if (!ind.customizedChroms().empty()) {
+		m_customizedBegin = static_cast<int>(ind.chromBegin(ind.customizedChroms()[0]));
+		m_customizedEnd = static_cast<int>(ind.chromEnd(ind.customizedChroms().back()));
+	}
+	// prepare m_bt
+	vectorf vecP;
+	//
+	const vectoru & loci = m_loci.elems(&ind);
+
+	DBG_FAILIF(m_intensity < 0 && m_rates.empty(), ValueError,
+		"You should specify m_intensity, or m_rates "
+		"(a number or a sequence of recombination m_ratess.)");
+
+	DBG_FAILIF(m_rates.size() > 1 && loci.empty(), ValueError,
+		"When more than one m_ratess are given, loci should be"
+		" explicitly specified.");
+
+	DBG_FAILIF(m_rates.size() > 1 && m_rates.size() != loci.size(),
+		ValueError, "If both rates and loci are specified, "
+		            "they should have the same length.");
+
+	bool useLociDist = m_rates.empty();
+
+	m_recBeforeLoci.clear();
+	vecP.clear();
+	for (size_t ch = 0; ch < ind.numChrom(); ++ch) {
+		size_t chBegin = ind.chromBegin(ch);
+		size_t chEnd = ind.chromEnd(ch);
+
+		if (chBegin == chEnd)
+			continue;
+
+		if (ind.chromType(ch) == CUSTOMIZED) {
+			// recombine before customized chromosome.
+			if (ind.numChrom() != ch + 1 && ind.chromType(ch + 1) != CUSTOMIZED) {
+				m_recBeforeLoci.push_back(chEnd);
+				vecP.push_back(0.5);
+			}
+			continue;
+		}
+
+		if (m_loci.allAvail()) {
+			// get loci distance * m_rates and then recombinant points
+			for (size_t loc = chBegin; loc < chEnd - 1; ++loc) {
+				m_recBeforeLoci.push_back(loc + 1);
+				double r = useLociDist ? ((ind.locusPos(loc + 1) - ind.locusPos(loc)) * m_intensity) : m_rates[0];
+
+				DBG_WARNIF(fcmp_gt(r, 0.5),
+					"Recombination m_rates after marker " + toStr(loc) + " is out of range ("
+					+ toStr(r) + " ) so it is set to 0.5. This may happen \n"
+					             "when you use recombination m_intensity instead of m_rates, and your loci \n"
+					             "distance is too high.)");
+				vecP.push_back(min(0.5, r));
+			}
+		} else {
+			DBG_FAILIF(m_rates.size() > 1 && m_rates.size() != loci.size(), SystemError,
+				"If an array is given, rates and loci should have the same length");
+
+			// get loci distance * m_rates and then recombinant points
+			for (size_t loc = chBegin; loc < chEnd - 1; ++loc) {
+				// if this locus will be recombined.
+				vectoru::const_iterator pos = find(loci.begin(), loci.end(), loc);
+				if (pos != loci.end()) {
+					double r = 0;
+					if (useLociDist)
+						r = m_intensity > 0 ? ((ind.locusPos(loc + 1) - ind.locusPos(loc)) * m_intensity) : r;
+					else if (m_rates.size() == 1 && !useLociDist)
+						r = max(m_rates[0], 0.);
+					else
+						r = m_rates[pos - loci.begin()];
+					m_recBeforeLoci.push_back(loc + 1);
+					vecP.push_back(r);
+
+					DBG_ASSERT(fcmp_ge(vecP[vecP.size() - 1], 0) && fcmp_le(vecP[vecP.size() - 1], 1),
+						ValueError,
+						"Recombination m_rates should be in [0,1]. (Maybe your loci distance is too high.)");
+				}
+			}
+		}
+		// after each chromosome ...
+		m_recBeforeLoci.push_back(chEnd);
+		vecP.push_back(0.5);
+	}
+	DBG_DO(DBG_TRANSMITTER, cerr	<< "Specify after Loci. With m_ratess "
+		                            << vecP << " before " << m_recBeforeLoci << endl);
+
+	DBG_FAILIF(vecP.empty(), ValueError, "No non-empty chromosome.");
+
+	DBG_ASSERT(vecP.size() == m_recBeforeLoci.size(), SystemError,
+		"Rate and before loci should have the same length.");
+
+	DBG_FAILIF(ind.chromType(ind.numChrom() - 1) != CUSTOMIZED && !m_recBeforeLoci.empty() && m_recBeforeLoci.back() != ind.totNumLoci(),
+		SystemError,
+		"The last beforeLoci elem should be total number of loci. (If the last chromsome is not customized");
+
+	DBG_ASSERT(vecP.back() == .5, SystemError,
+		"The last elem of m_rates should be half.");
+
+	// if the operator is called directly, there is no way to know population size so we
+	// a variable to tell it.
+#ifdef _OPENMP
+	for (size_t i = 0; i < numThreads(); i++)
+		m_bt[i].setParameter(vecP, 0 /* obsolete m_intendedSize */);
+#else
+
+	m_bt.setParameter(vecP, 0 /* obsolete m_intendedSize */);
+#endif
+	// choose an algorithm
+	// if recombinations are dense. use the first algorithm
+	// For example 10 chromoes, regular 0.5*10=5
+	// if there are high recombination on chromosomes, ....
+	//
+	// In addition, the second algorithm is really difficult in the
+	// handling of sex chromosomes etc.
+	if (std::accumulate(vecP.begin(), vecP.end(), 0.) > ind.numChrom()
+	    || m_chromX > 0 || m_customizedBegin > 0)
+		m_algorithm = 0;
+	else
+		m_algorithm = 1;
+	DBG_DO(DBG_TRANSMITTER, cerr << "Algorithm " << m_algorithm << " is being used " << endl);
+}
+
+
+void Recombinator::transmitGenotype(const Individual & parent,
+                                    Individual & offspring, int ploidy) const
+{
+	initializeIfNeeded(offspring);
+
+	//Bernullitrial for each thread
+#ifdef _OPENMP
+	Bernullitrials & bt = m_bt[omp_get_thread_num()];
+#else
+	Bernullitrials & bt = m_bt;
+#endif
+
+	// use which copy of chromosome
+#ifdef MUTANTALLELE
+	size_t cp[2], off;
+#else
+	GenoIterator cp[2], off;
+#endif
+
+	cp[0] = parent.genoBegin(0);
+	cp[1] = parent.genoBegin(1);
+	off = offspring.genoBegin(ploidy);
+
+	// handling of sex chromosomes, by specifying chromsome
+	// ranges with specified ploidy.
+	int ignoreBegin = -1;
+	int ignoreEnd = -1;
+	int forceFirstBegin = -1;
+	int forceFirstEnd = -1;
+	int forceSecondBegin = -1;
+	int forceSecondEnd = -1;
+
+	// from maternal, ignore chromosome Y
+	if (ploidy == 0 && m_chromY > 0) {
+		ignoreBegin = static_cast<int>(parent.chromBegin(m_chromY));
+		ignoreEnd = static_cast<int>(parent.chromEnd(m_chromY));
+	} else if (ploidy == 1 && m_chromX > 0) {
+		if (offspring.sex() == MALE) {
+			ignoreBegin = static_cast<int>(parent.chromBegin(m_chromX));
+			ignoreEnd = static_cast<int>(parent.chromEnd(m_chromX));
+			forceSecondBegin = static_cast<int>(parent.chromBegin(m_chromY));
+			forceSecondEnd = static_cast<int>(parent.chromEnd(m_chromY));
+		} else {
+			ignoreBegin = static_cast<int>(parent.chromBegin(m_chromY));
+			ignoreEnd = static_cast<int>(parent.chromEnd(m_chromY));
+			forceFirstBegin = static_cast<int>(parent.chromBegin(m_chromX));
+			forceFirstEnd = static_cast<int>(parent.chromEnd(m_chromX));
+		}
+	}
+	// get a new set of values.
+	// const BoolResults& bs = bt.trial();
+	bt.trial();
+	int curCp = bt.trialSucc(m_recBeforeLoci.size() - 1) ? 0 : 1;
+	curCp = forceFirstBegin == 0 ? 0 : (forceSecondBegin == 0 ? 1 : curCp);
+
+	if (m_debugOutput)
+		*m_debugOutput << offspring.intInfo(infoField(0)) << ' ' << parent.intInfo(infoField(0)) << ' ' << curCp;
+
+	// the last one does not count, because it determines
+	// the initial copy of paternal chromosome
+	bt.setTrialSucc(m_recBeforeLoci.size() - 1, false);
+
+	// algorithm one:
+	//
+	//  gt: index on chromosomes
+	//  gtEnd: total number of loci
+	//
+	//  at each locus, check if recombine after it, if so
+	//  recombine.
+	bool withConversion = static_cast<int>(m_convMode[0]) != NO_CONVERSION
+	                      && m_convMode[1] > 0.;
+	if (m_algorithm == 0) {
+		// negative means no conversion is pending.
+		ssize_t convCount = -1;
+		size_t gtEnd = m_recBeforeLoci.back();
+		for (size_t gt = 0, bl = 0; gt < gtEnd; ++gt, --convCount) {
+			// do not copy genotype in the ignored region.
+			if ((ignoreBegin < 0 || gt < static_cast<size_t>(ignoreBegin) || gt >= static_cast<size_t>(ignoreEnd)) &&
+			    (m_customizedBegin < 0 || gt < static_cast<size_t>(m_customizedBegin) || gt >= static_cast<size_t>(m_customizedEnd)))
+				// copy
+#ifdef MUTANTALLELE
+				(*offspring.genoPtr())[off + gt] = (*parent.genoPtr())[cp[curCp] + gt];
+#else
+				off[gt] = cp[curCp][gt];
+#endif
+			// look ahead
+			if (convCount == 0) {             // conversion ...
+				if (forceFirstBegin > 0 && gt + 1 >= static_cast<size_t>(forceFirstBegin)
+				    && gt + 1 < static_cast<size_t>(forceFirstEnd)) {
+					if (curCp != 0 && m_debugOutput)
+						*m_debugOutput << ' ' << gt;
+					curCp = 0;
+				} else if (forceSecondBegin > 0 && gt + 1 >= static_cast<size_t>(forceSecondBegin)
+				           && gt + 1 < static_cast<size_t>(forceSecondEnd)) {
+					if (curCp != 1 && m_debugOutput)
+						*m_debugOutput << ' ' << gt;
+					curCp = 1;
+				} else {
+					curCp = (curCp + 1) % 2;
+					if (m_debugOutput)
+						*m_debugOutput << ' ' << gt;
+				}
+				//
+				// no pending conversion
+				convCount = -1;
+			}
+			if (gt + 1 == m_recBeforeLoci[bl]) {
+				DBG_DO(DBG_TRANSMITTER, cerr << gt << " " << m_recBeforeLoci[bl] << ", ");
+				if (forceFirstBegin >= 0 && gt + 1 >= static_cast<size_t>(forceFirstBegin)
+				    && gt + 1 < static_cast<size_t>(forceFirstEnd)) {
+					if (curCp != 0 && m_debugOutput)
+						*m_debugOutput << ' ' << gt;
+					curCp = 0;
+					convCount = -1;
+				} else if (forceSecondBegin >= 0 && gt + 1 >= static_cast<size_t>(forceSecondBegin)
+				           && gt + 1 < static_cast<size_t>(forceSecondEnd)) {
+					if (curCp != 1 && m_debugOutput)
+						*m_debugOutput << ' ' << gt;
+					curCp = 1;
+					convCount = -1;
+				} else if (convCount < 0 && bt.trialSucc(bl)) {
+					// recombination (if convCount == 0, a conversion event is ending)
+					curCp = (curCp + 1) % 2;
+					if (m_debugOutput)
+						*m_debugOutput << ' ' << gt;
+					// if conversion happens
+					if (withConversion &&
+					    parent.lociLeft(gt) != 1 &&             // can not be at the end of a chromosome
+					    (m_convMode[1] == 1. || getRNG().randUniform() < m_convMode[1])) {
+						// convCount will be decreased, until reconversion completes
+						// or another recombination happens
+						convCount = markersConverted(gt + 1, parent);
+					} else
+						// another recombination stops the previous conversion
+						convCount = -1;
+				}
+				++bl;
+			}
+		}
+	} else {
+#ifndef BINARYALLELE
+		size_t gt = 0, gtEnd = 0;
+		size_t pos = bt.probFirstSucc();
+		// if there is some recombination
+		ssize_t convCount = -1;
+		size_t convEnd;
+		if (pos != Bernullitrials::npos) {
+			// first piece
+			for (; gt < m_recBeforeLoci[pos]; ++gt)
+#  ifdef MUTANTALLELE
+				(*offspring.genoPtr())[off + gt] = (*parent.genoPtr())[cp[curCp] + gt];
+#  else
+				off[gt] = cp[curCp][gt];
+#  endif
+			curCp = (curCp + 1) % 2;
+			if (m_debugOutput)
+				*m_debugOutput << ' ' << gt - 1;
+			//
+			if (withConversion &&
+			    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
+			    (m_convMode[1] == 1. || getRNG().randUniform() < m_convMode[1])) {
+				convCount = markersConverted(gt, parent);
+			}
+			// next recombination point...
+			while ((pos = bt.probNextSucc(pos)) != Bernullitrials::npos) {
+				// copy from last to this recombination point, but
+				// there might be a conversion event in between
+				gtEnd = m_recBeforeLoci[pos];
+				if (convCount > 0) {
+					convEnd = gt + convCount;
+					if (convEnd < gtEnd) {
+						for (; gt < convEnd; ++gt)
+#  ifdef MUTANTALLELE
+                                                        (*offspring.genoPtr())[off + gt] = (*parent.genoPtr())[cp[curCp] + gt];
+#  else
+							off[gt] = cp[curCp][gt];
+#  endif
+						curCp = (curCp + 1) % 2;
+						if (m_debugOutput)
+							*m_debugOutput << ' ' << gt - 1;
+					}
+					// no pending conversion
+					convCount = -1;
+				}
+				// copy from the end of conversion to this recombination point
+				for (; gt < gtEnd; ++gt)
+#  ifdef MUTANTALLELE
+                                        (*offspring.genoPtr())[off + gt] = (*parent.genoPtr())[cp[curCp] + gt];
+#  else
+					off[gt] = cp[curCp][gt];
+#  endif
+				curCp = (curCp + 1) % 2;
+				if (m_debugOutput)
+					*m_debugOutput << ' ' << gt - 1;
+				//
+				// conversion event for this recombination event
+				if (withConversion &&
+				    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
+				    (m_convMode[1] == 1. || getRNG().randUniform() < m_convMode[1])) {
+					// convCount will be decreased, until reconversion completes
+					// or another recombination happens
+					convCount = markersConverted(gt, parent);
+				}
+			}
+		}
+		gtEnd = m_recBeforeLoci.back();
+		// copy the last piece
+		if (convCount > 0) {
+			convEnd = gt + convCount;
+			if (convEnd < gtEnd) {
+				for (; gt < convEnd; ++gt)
+#  ifdef MUTANTALLELE
+                                        (*offspring.genoPtr())[off + gt] = (*parent.genoPtr())[cp[curCp] + gt];
+#  else
+					off[gt] = cp[curCp][gt];
+#  endif
+				curCp = (curCp + 1) % 2;
+				if (m_debugOutput)
+					*m_debugOutput << ' ' << gt - 1;
+			}
+		}
+		for (; gt < gtEnd; ++gt)
+#  ifdef MUTANTALLELE
+                        (*offspring.genoPtr())[off + gt] = (*parent.genoPtr())[cp[curCp] + gt];
+#  else
+			off[gt] = cp[curCp][gt];
+#  endif
+#else
+		size_t gt = 0, gtEnd = 0;
+		size_t pos = bt.probFirstSucc();
+		// if there is some recombination
+		ssize_t convCount = -1;
+		size_t convEnd;
+		if (pos != Bernullitrials::npos) {
+			// first piece
+			gtEnd = m_recBeforeLoci[pos];
+			copyGenotype(cp[curCp] + gt, off + gt, m_recBeforeLoci[pos] - gt);
+			gt = gtEnd;
+			curCp = (curCp + 1) % 2;
+			if (m_debugOutput)
+				*m_debugOutput << ' ' << gt - 1;
+			if (withConversion &&
+			    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
+			    (m_convMode[1] == 1. || getRNG().randUniform() < m_convMode[1])) {
+				convCount = markersConverted(gt, parent);
+			}
+			// next recombination point...
+			while ((pos = bt.probNextSucc(pos)) != Bernullitrials::npos) {
+				gtEnd = m_recBeforeLoci[pos];
+				if (convCount > 0) {
+					convEnd = gt + convCount;
+					if (convEnd < gtEnd) {
+						copyGenotype(cp[curCp] + gt, off + gt, convCount);
+						gt = convEnd;
+						curCp = (curCp + 1) % 2;
+						if (m_debugOutput)
+							*m_debugOutput << ' ' << gt - 1;
+					}
+					// no pending conversion
+					convCount = -1;
+				}
+				// copy from the end of conversion to the next recombination point
+				copyGenotype(cp[curCp] + gt, off + gt, m_recBeforeLoci[pos] - gt);
+				gt = gtEnd;
+				curCp = (curCp + 1) % 2;
+				if (m_debugOutput)
+					*m_debugOutput << ' ' << gt - 1;
+				// conversion event for this recombination event
+				if (withConversion &&
+				    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
+				    (m_convMode[1] == 1. || getRNG().randUniform() < m_convMode[1])) {
+					// convCount will be decreased, until reconversion completes
+					// or another recombination happens
+					convCount = markersConverted(gt, parent);
+				}
+			}
+		}
+		gtEnd = m_recBeforeLoci.back();
+		// copy the last piece
+		if (convCount > 0) {
+			convEnd = gt + convCount;
+			if (convEnd < gtEnd) {
+				copyGenotype(cp[curCp] + gt, off + gt, convCount);
+				gt = convEnd;
+				curCp = (curCp + 1) % 2;
+				if (m_debugOutput)
+					*m_debugOutput << ' ' << gt - 1;
+			}
+		}
+		copyGenotype(cp[curCp] + gt, off + gt, gtEnd - gt);
+#endif
+	}
+	if (m_debugOutput)
+		*m_debugOutput << '\n';
+	// handle special chromosomes
+	if (m_chromX > 0) {
+		if (offspring.sex() == FEMALE) {
+			clearChromosome(offspring, 0, m_chromY);
+			clearChromosome(offspring, 1, m_chromY);
+		} else {
+			clearChromosome(offspring, 0, m_chromY);
+			clearChromosome(offspring, 1, m_chromX);
+		}
+	}
+}
+
+
+bool Recombinator::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
+                                     Individual * dad, Individual * mom) const
+{
+	// if offspring does not belong to subPops, do nothing, but does not fail.
+	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
+		return true;
+
+	initializeIfNeeded(*offspring);
+
+	DBG_FAILIF(dad == NULL && mom == NULL,
+		ValueError, "None of the parents is invalid.");
+
+	DBG_FAILIF(m_recBeforeLoci.empty(), ValueError,
+		"Uninitialized Recombinator");
+
+	if (infoSize() == 1 && !noOutput())
+		m_debugOutput = &getOstream(pop.dict());
+	else
+		m_debugOutput = NULL;
+	transmitGenotype(*(mom ? mom : dad), *offspring, 0);
+	transmitGenotype(*(dad ? dad : mom), *offspring, 1);
+
+	if (m_debugOutput)
+		closeOstream();
+	return true;
+}
 
 
 }

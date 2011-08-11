@@ -129,7 +129,7 @@ __all__ = [
 ###    #
     'RandomMating',
     'RandomSelection',
-###    'MonogamousMating',
+    'MonogamousMating',
 ###    'SelfMating',
     'CloneMating',
 ###    'HaplodiploidMating',
@@ -161,7 +161,7 @@ __all__ = [
 ###    'MitochondrialGenoTransmitter',
 ###    'SelfingGenoTransmitter',
     'CloneGenoTransmitter',
-###    'Recombinator',
+    'Recombinator',
 ###    # 
 ###    'PointMutator',
 ###    'MatrixMutator',
@@ -190,7 +190,7 @@ __all__ = [
 ###    #
     'IdTagger',
 ###    'InheritTagger',
-###    'ParentsTagger',
+    'ParentsTagger',
     'PedigreeTagger',
 ###    'PyTagger',
 ###    'SummaryTagger',
@@ -721,29 +721,29 @@ class RandomMating(HomoMating):
             subPops = subPops,
             weight = weight)
 
-##
-##class MonogamousMating(HomoMating):
-##    '''A homogeneous mating scheme that uses a random parents chooser without
-##    replacement and a Mendelian offspring generator. It differs from the basic
-##    random mating scheme in that each parent can mate only once so there is no
-##    half-sibling in the population.'''
-##    def __init__(self, numOffspring = 1, sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(),
-##        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = None):
-##        '''Creates a monogamous mating scheme that selects each parent only
-##        once. Please refer to class ``OffspringGenerator`` for parameters
-##        *ops*, *sexMode* and *numOffspring*, and to class ``HomoMating`` for
-##        parameters *subPopSize*, *subPops* and *weight*. Parameter
-##        *selectionField* is ignored because this mating scheme does not
-##        support natural selection.
-##        '''
-##        HomoMating.__init__(self,
-##            chooser = RandomParentsChooser(replacement=False),
-##            generator = OffspringGenerator(ops, numOffspring, sexMode),
-##            subPopSize = subPopSize,
-##            subPops = subPops,
-##            weight = weight)
-##
-##
+
+class MonogamousMating(HomoMating):
+    '''A homogeneous mating scheme that uses a random parents chooser without
+    replacement and a Mendelian offspring generator. It differs from the basic
+    random mating scheme in that each parent can mate only once so there is no
+    half-sibling in the population.'''
+    def __init__(self, numOffspring = 1, sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(),
+        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = None):
+        '''Creates a monogamous mating scheme that selects each parent only
+        once. Please refer to class ``OffspringGenerator`` for parameters
+        *ops*, *sexMode* and *numOffspring*, and to class ``HomoMating`` for
+        parameters *subPopSize*, *subPops* and *weight*. Parameter
+        *selectionField* is ignored because this mating scheme does not
+        support natural selection.
+        '''
+        HomoMating.__init__(self,
+            chooser = RandomParentsChooser(replacement=False),
+            generator = OffspringGenerator(ops, numOffspring, sexMode),
+            subPopSize = subPopSize,
+            subPops = subPops,
+            weight = weight)
+
+
 ##class PolygamousMating(HomoMating):
 ##    '''A homogeneous mating scheme that uses a multi-spouse parents chooser
 ##    and a Mendelian offspring generator. It differs from the basic random

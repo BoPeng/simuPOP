@@ -437,212 +437,212 @@ protected:
 ///};
 ///
 ///
-////** A genotype transmitter (during-mating operator) that transmits parental
-/// *  chromosomes to offspring, subject to recombination and gene conversion.
-/// *  This can be used to replace \c MendelianGenoTransmitter and
-/// *  \c SelfingGenoTransmitter. It does not work in haplodiploid populations,
-/// *  although a customized genotype transmitter that makes uses this
-/// *  operator could be defined. Please refer to the simuPOP user's guide or
-/// *  online cookbook for details.
-/// *
-/// *  Recombination could be applied to all adjacent markers or after specified
-/// *  loci. Recombination rate between two adjacent markers could be specified
-/// *  directly, or calculated using physical distance between them. In the latter
-/// *  case, a recombination intensity is multiplied by physical distance between
-/// *  markers.
-/// *
-/// *  Gene conversion is interpreted as double-recombination events. That is to
-/// *  say, if a recombination event happens, it has a certain probability (can
-/// *  be 1) to become a conversion event, namely triggering another recombination
-/// *  event down the chromosome. The length of the converted chromosome can be
-/// *  controlled in a number of ways.
-/// *
-/// *  \note simuPOP does not assume any unit to loci positions so recombination
-/// *  intensity could be explained differntly (e.g. cM/Mb, Morgan/Mb) depending
-/// *  on your intepretation of loci positions. For example, if basepair is used
-/// *  for loci position, <tt>intensity=10^-8</tt> indicates <tt>10^-8</tt> per
-/// *  basepair, which is equivalent to <tt>10^-2</tt> per Mb or 1 cM/Mb. If \c Mb
-/// *  is used for physical positions, the same recombination intensity could be
-/// *  achieved by <tt>intensity=0.01</tt>.
-/// */
-///class Recombinator : public GenoTransmitter
-///{
-///public:
-///	/** Create a Recombinator (a mendelian genotype transmitter with
-///	 *  recombination and gene conversion) that passes genotypes from parents
-///	 *  (or a parent in case of self-fertilization) to offspring.
-///	 *
-///	 *  Recombination happens by default between all adjacent markers but can
-///	 *  be limited to a given set of \e loci, which can be a list of loci
-///	 *  indexes, names or \c ALL_AVAIL. Each locus in this list specifies
-///	 *  a recombination point between the locus and the locus immediately
-///	 *  \b before it. Loci that are the first locus on each chromosome are
-///	 *  ignored.
-///	 *
-///	 *  If a single recombination rate (parameter \e rates) is specified, it
-///	 *  will used for all loci (all loci or loci specified by parameter
-///	 *  \e loci), regardless of physical distances between adjacent loci.
-///	 *
-///	 *  If a list of recombination rates are specified in \e rates, a parameter
-///	 *  \e loci with the same length should also be specified. Different
-///	 *  recombination rates can then be used after these loci (between
-///	 *  specified loci and their immediate neighbor to the right).
-///	 *
-///	 *  A recombination intensity (\e intensity) can be used to specify
-///	 *  recombination rates that are proportional to physical distances between
-///	 *  adjacent markers. If the physical distance between two markers is \c d,
-///	 *  the recombination rate between them will be <tt>intensity * d</tt>. No
-///	 *  unit is assume for loci position and recombination intensity.
-///	 *
-///	 *  Gene conversion is controlled using parameter \e convMode, which can be
-///	 *
-///	 *  \li <tt>NoConversion</tt>: no gene conversion (default).
-///	 *  \li <tt>(NUM_MARKERS, prob, n)</tt>: With probability \e prob, convert
-///	 *      a fixed number (\e n) of markers if a recombination event happens.
-///	 *  \li <tt>(GEOMETRIC_DISTRIBUTION, prob, p)</tt>: With probability \e prob,
-///	 *      convert a random number of markers if a recombination event happens.
-///	 *      The number of markes converted follows a geometric distribution
-///	 *      with probability \e p.
-///	 *  \li <tt>(TRACT_LENGTH, prob, n)</tt>: With probability \e prob, convert
-///	 *      a region of fixed tract length (\e n) if a recombination event
-///	 *      happens. The actual number of markers converted depends on loci
-///	 *      positions of surrounding loci. The starting position of this
-///	 *      tract is the middle of two adjacent markers. For example, if four
-///	 *      loci are located at <tt>0, 1, 2, 3</tt> respectively, a conversion
-///	 *      event happens between \c 0 and \c 1, with a tract length 2 will
-///	 *      start at 0.5 and end at 2.5, covering the second and third loci.
-///	 *  \li <tt>(EXPONENTIAL_DISTRIBUTION, prob, p)</tt>: With probability
-///	 *      \e prob, convert a region of random tract length if a recombination
-///	 *      event happens. The distribution of tract length follows a
-///	 *      exponential distribution with probability \c p. The actual number
-///	 *      of markers converted depends on loci positions of surrounding loci.
-///	 *
-///	 *  simuPOP uses this probabilistic model of gene conversion because when a
-///	 *  recombination event happens, it may become a recombination event if the
-///	 *  if the Holliday junction is resolved/repaired successfully, or a
-///	 *  conversion event if the junction is not resolved/repaired. The
-///	 *  probability, however, is more commonly denoted by the ratio of
-///	 *  conversion to recombination events in the literature. This ratio varies
-///	 *  greatly from study to study, ranging from 0.1 to 15 (Chen et al, Nature
-///	 *  Review Genetics, 2007). This translate to 0.1/0.9~0.1 to 15/16~0.94 of
-///	 *  the gene conversion probability.
-///	 *
-///	 *  A \c Recombinator usually does not send any output. However, if an
-///	 *  information field is given (parameter \e infoFields), this operator
-///	 *  will treat this information field as an unique ID of parents and
-///	 *  offspring and output all recombination events in the format of
-///	 *  <tt>offspring_id parent_id starting_ploidy loc1 loc2 ... </tt> where
-///	 *  \c starting_ploidy indicates which homologous copy genotype replication
-///	 *  starts from (\c 0 or \c 1), \c loc1, \c loc2 etc are loci after which
-///	 *  recombination events happens. If there are multiple chromosomes on the
-///	 *  genome, you will see a lot of (fake) recombination events because of
-///	 *  independent segregation of chromosomes. Such a record will be generated
-///	 *  for each set of homologous chromosomes so an diploid offspring will
-///	 *  have two lines of output. Note that individual IDs need to be set
-///	 *  (using a \c IdTagger operator) before this Recombinator is applied.
-///	 *
-///	 *  \note conversion tract length is usually short, and is estimated to be
-///	 *      between 337 and 456 bp, with overall range between maybe 50 - 2500
-///	 *      bp. This is usually not enough to convert, for example, two adjacent
-///	 *      markers from the HapMap dataset.
-///	 *
-///	 *  \note There is no recombination between sex chromosomes (Chromosomes X
-///	 *      and Y), although recombination is possible between pesudoautosomal
-///	 *      regions on these chromosomes. If such a feature is required, you
-///	 *      will have to simulate the pesudoautosomal regions as separate
-///	 *      chromosomes.
-///	 */
-///	Recombinator(const floatList & rates = vectorf(), double intensity = -1,
-///		const lociList & loci = lociList(), const floatList & convMode = NO_CONVERSION,
-///		const stringFunc & output = "", int begin = 0, int end = -1, int step = 1,
-///		const intList & at = vectori(),
-///		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-///		const stringList & infoFields = vectorstr());
-///
-///
-///	/// HIDDEN Deep copy of a Recombinator
-///	virtual BaseOperator * clone() const
-///	{
-///		return new Recombinator(*this);
-///	}
-///
-///
-///	virtual ~Recombinator()
-///	{
-///	}
-///
-///
-///	/// HIDDEN
-///	string describe(bool format = true) const;
-///
-///
-///	/** HIDDEN Initialize a Recombinator for the genotypic structure of population
-///	 *  \e pop. This function should be called before a Recombinator is
-///	 *  explicitly applied to a population.
-///	 */
-///	void initialize(const Individual & ind) const;
-///
-///	/** This function transmits genotypes from a \e parent to the \e ploidy-th
-///	 *  homologous set of chromosomes of an \e offspring. It can be used, for
-///	 *  example, by a customized genotype transmitter to use sex-specific
-///	 *  recombination rates to transmit parental genotypes to offspring.
-///	 */
-///	void transmitGenotype(const Individual & parent,
-///		Individual & offspring, int ploidy) const;
-///
-///	/** CPPONLY
-///	 *  Apply the Recombinator during mating
-///	 */
-///	virtual bool applyDuringMating(Population & pop, Population & offPop,
-///		RawIndIterator offspring,
-///		Individual * dad, Individual * mom) const;
-///
-///	/// CPPONLY
-///	bool parallelizable() const
-///	{
-///		return true;
-///	}
-///
-///
-///private:
-///	/// determine number of markers to convert
-///	size_t markersConverted(size_t index, const Individual & ind) const;
-///
-///private:
-///	/// intensity
-///	const double m_intensity;
-///
-///	/// differnt rates
-///	const vectorf m_rates;
-///
-///	/// initial parameter
-///	const lociList m_loci;
-///
-///	/// position to recombine, changed to fit a special pop
-///	mutable vectoru m_recBeforeLoci;
-///
-///	const vectorf m_convMode;
-///
-///	// locataion of special chromosomes
-///	mutable int m_chromX;
-///	mutable int m_chromY;
-///	mutable int m_customizedBegin;
-///	mutable int m_customizedEnd;
-///
-///	/// algorithm to use (frequent or seldom recombinations)
-///	mutable int m_algorithm;
-///
-///	mutable ostream * m_debugOutput;
-///
-///	/// bernulli trials
-///#ifdef _OPENMP
-///	mutable vector<Bernullitrials> m_bt;
-///#else
-///	mutable Bernullitrials m_bt;
-///#endif
-///
-///
-///};
+/** A genotype transmitter (during-mating operator) that transmits parental
+ *  chromosomes to offspring, subject to recombination and gene conversion.
+ *  This can be used to replace \c MendelianGenoTransmitter and
+ *  \c SelfingGenoTransmitter. It does not work in haplodiploid populations,
+ *  although a customized genotype transmitter that makes uses this
+ *  operator could be defined. Please refer to the simuPOP user's guide or
+ *  online cookbook for details.
+ *
+ *  Recombination could be applied to all adjacent markers or after specified
+ *  loci. Recombination rate between two adjacent markers could be specified
+ *  directly, or calculated using physical distance between them. In the latter
+ *  case, a recombination intensity is multiplied by physical distance between
+ *  markers.
+ *
+ *  Gene conversion is interpreted as double-recombination events. That is to
+ *  say, if a recombination event happens, it has a certain probability (can
+ *  be 1) to become a conversion event, namely triggering another recombination
+ *  event down the chromosome. The length of the converted chromosome can be
+ *  controlled in a number of ways.
+ *
+ *  \note simuPOP does not assume any unit to loci positions so recombination
+ *  intensity could be explained differntly (e.g. cM/Mb, Morgan/Mb) depending
+ *  on your intepretation of loci positions. For example, if basepair is used
+ *  for loci position, <tt>intensity=10^-8</tt> indicates <tt>10^-8</tt> per
+ *  basepair, which is equivalent to <tt>10^-2</tt> per Mb or 1 cM/Mb. If \c Mb
+ *  is used for physical positions, the same recombination intensity could be
+ *  achieved by <tt>intensity=0.01</tt>.
+ */
+class Recombinator : public GenoTransmitter
+{
+public:
+	/** Create a Recombinator (a mendelian genotype transmitter with
+	 *  recombination and gene conversion) that passes genotypes from parents
+	 *  (or a parent in case of self-fertilization) to offspring.
+	 *
+	 *  Recombination happens by default between all adjacent markers but can
+	 *  be limited to a given set of \e loci, which can be a list of loci
+	 *  indexes, names or \c ALL_AVAIL. Each locus in this list specifies
+	 *  a recombination point between the locus and the locus immediately
+	 *  \b before it. Loci that are the first locus on each chromosome are
+	 *  ignored.
+	 *
+	 *  If a single recombination rate (parameter \e rates) is specified, it
+	 *  will used for all loci (all loci or loci specified by parameter
+	 *  \e loci), regardless of physical distances between adjacent loci.
+	 *
+	 *  If a list of recombination rates are specified in \e rates, a parameter
+	 *  \e loci with the same length should also be specified. Different
+	 *  recombination rates can then be used after these loci (between
+	 *  specified loci and their immediate neighbor to the right).
+	 *
+	 *  A recombination intensity (\e intensity) can be used to specify
+	 *  recombination rates that are proportional to physical distances between
+	 *  adjacent markers. If the physical distance between two markers is \c d,
+	 *  the recombination rate between them will be <tt>intensity * d</tt>. No
+	 *  unit is assume for loci position and recombination intensity.
+	 *
+	 *  Gene conversion is controlled using parameter \e convMode, which can be
+	 *
+	 *  \li <tt>NoConversion</tt>: no gene conversion (default).
+	 *  \li <tt>(NUM_MARKERS, prob, n)</tt>: With probability \e prob, convert
+	 *      a fixed number (\e n) of markers if a recombination event happens.
+	 *  \li <tt>(GEOMETRIC_DISTRIBUTION, prob, p)</tt>: With probability \e prob,
+	 *      convert a random number of markers if a recombination event happens.
+	 *      The number of markes converted follows a geometric distribution
+	 *      with probability \e p.
+	 *  \li <tt>(TRACT_LENGTH, prob, n)</tt>: With probability \e prob, convert
+	 *      a region of fixed tract length (\e n) if a recombination event
+	 *      happens. The actual number of markers converted depends on loci
+	 *      positions of surrounding loci. The starting position of this
+	 *      tract is the middle of two adjacent markers. For example, if four
+	 *      loci are located at <tt>0, 1, 2, 3</tt> respectively, a conversion
+	 *      event happens between \c 0 and \c 1, with a tract length 2 will
+	 *      start at 0.5 and end at 2.5, covering the second and third loci.
+	 *  \li <tt>(EXPONENTIAL_DISTRIBUTION, prob, p)</tt>: With probability
+	 *      \e prob, convert a region of random tract length if a recombination
+	 *      event happens. The distribution of tract length follows a
+	 *      exponential distribution with probability \c p. The actual number
+	 *      of markers converted depends on loci positions of surrounding loci.
+	 *
+	 *  simuPOP uses this probabilistic model of gene conversion because when a
+	 *  recombination event happens, it may become a recombination event if the
+	 *  if the Holliday junction is resolved/repaired successfully, or a
+	 *  conversion event if the junction is not resolved/repaired. The
+	 *  probability, however, is more commonly denoted by the ratio of
+	 *  conversion to recombination events in the literature. This ratio varies
+	 *  greatly from study to study, ranging from 0.1 to 15 (Chen et al, Nature
+	 *  Review Genetics, 2007). This translate to 0.1/0.9~0.1 to 15/16~0.94 of
+	 *  the gene conversion probability.
+	 *
+	 *  A \c Recombinator usually does not send any output. However, if an
+	 *  information field is given (parameter \e infoFields), this operator
+	 *  will treat this information field as an unique ID of parents and
+	 *  offspring and output all recombination events in the format of
+	 *  <tt>offspring_id parent_id starting_ploidy loc1 loc2 ... </tt> where
+	 *  \c starting_ploidy indicates which homologous copy genotype replication
+	 *  starts from (\c 0 or \c 1), \c loc1, \c loc2 etc are loci after which
+	 *  recombination events happens. If there are multiple chromosomes on the
+	 *  genome, you will see a lot of (fake) recombination events because of
+	 *  independent segregation of chromosomes. Such a record will be generated
+	 *  for each set of homologous chromosomes so an diploid offspring will
+	 *  have two lines of output. Note that individual IDs need to be set
+	 *  (using a \c IdTagger operator) before this Recombinator is applied.
+	 *
+	 *  \note conversion tract length is usually short, and is estimated to be
+	 *      between 337 and 456 bp, with overall range between maybe 50 - 2500
+	 *      bp. This is usually not enough to convert, for example, two adjacent
+	 *      markers from the HapMap dataset.
+	 *
+	 *  \note There is no recombination between sex chromosomes (Chromosomes X
+	 *      and Y), although recombination is possible between pesudoautosomal
+	 *      regions on these chromosomes. If such a feature is required, you
+	 *      will have to simulate the pesudoautosomal regions as separate
+	 *      chromosomes.
+	 */
+	Recombinator(const floatList & rates = vectorf(), double intensity = -1,
+		const lociList & loci = lociList(), const floatList & convMode = NO_CONVERSION,
+		const stringFunc & output = "", int begin = 0, int end = -1, int step = 1,
+		const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = vectorstr());
+
+
+	/// HIDDEN Deep copy of a Recombinator
+	virtual BaseOperator * clone() const
+	{
+		return new Recombinator(*this);
+	}
+
+
+	virtual ~Recombinator()
+	{
+	}
+
+
+	/// HIDDEN
+	string describe(bool format = true) const;
+
+
+	/** HIDDEN Initialize a Recombinator for the genotypic structure of population
+	 *  \e pop. This function should be called before a Recombinator is
+	 *  explicitly applied to a population.
+	 */
+	void initialize(const Individual & ind) const;
+
+	/** This function transmits genotypes from a \e parent to the \e ploidy-th
+	 *  homologous set of chromosomes of an \e offspring. It can be used, for
+	 *  example, by a customized genotype transmitter to use sex-specific
+	 *  recombination rates to transmit parental genotypes to offspring.
+	 */
+	void transmitGenotype(const Individual & parent,
+		Individual & offspring, int ploidy) const;
+
+	/** CPPONLY
+	 *  Apply the Recombinator during mating
+	 */
+	virtual bool applyDuringMating(Population & pop, Population & offPop,
+		RawIndIterator offspring,
+		Individual * dad, Individual * mom) const;
+
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return true;
+	}
+
+
+private:
+	/// determine number of markers to convert
+	size_t markersConverted(size_t index, const Individual & ind) const;
+
+private:
+	/// intensity
+	const double m_intensity;
+
+	/// differnt rates
+	const vectorf m_rates;
+
+	/// initial parameter
+	const lociList m_loci;
+
+	/// position to recombine, changed to fit a special pop
+	mutable vectoru m_recBeforeLoci;
+
+	const vectorf m_convMode;
+
+	// locataion of special chromosomes
+	mutable int m_chromX;
+	mutable int m_chromY;
+	mutable int m_customizedBegin;
+	mutable int m_customizedEnd;
+
+	/// algorithm to use (frequent or seldom recombinations)
+	mutable int m_algorithm;
+
+	mutable ostream * m_debugOutput;
+
+	/// bernulli trials
+#ifdef _OPENMP
+	mutable vector<Bernullitrials> m_bt;
+#else
+	mutable Bernullitrials m_bt;
+#endif
+
+
+};
 
 }
 #endif
