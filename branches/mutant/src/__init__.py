@@ -201,10 +201,10 @@ __all__ = [
 ###    #
     'PyOperator',
 ###    #
-###    'NoneOp',
+    'NoneOp',
 ###    'Dumper',
 ###    'SavePopulation',
-###    'IfElse',
+    'IfElse',
 ###    'Pause',
     'TicToc',
 ###    #

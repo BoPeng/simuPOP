@@ -3503,7 +3503,6 @@ PyObject * Population::vars(vspID vsp)
 		Py_INCREF(m_vars.dict());
 		return m_vars.dict();
 	}
-
 	DBG_ASSERT(static_cast<size_t>(vsp.subPop()) < numSubPop(),
 		IndexError, "Subpop index out of range of 0 ~ " + toStr(numSubPop() - 1));
 
