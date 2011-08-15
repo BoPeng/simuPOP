@@ -1664,9 +1664,10 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 			if (fcmp_gt(w_neg[i], 0.)) {
 				vspSize[i] = static_cast<ULONG>(pop.subPopSize(sps[i]) * w_neg[i]);
 				DBG_ASSERT(all >= vspSize[i], ValueError,
-					"Not enough offspring to accommodate specified weight scheme. "
-					"Current item is " + toStr(i) + " requires " + toStr(vspSize[i])
-					+ " available " + toStr(all) + ".");
+					"Mating scheme with a negative weight of " + toStr(w_neg[i]) + 
+					" would like to produce " + toStr(vspSize[i]) +
+					" offspring, but there are only " + toStr(all) +
+					" unclaimed offspring left.")
 				all -= vspSize[i];
 			}
 		}
@@ -1676,9 +1677,10 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 			if (all > 0 && fcmp_gt(w_pos[i], 0.)) {
 				vspSize[i] = static_cast<ULONG>(all_pos * w_pos[i] / overall_pos);
 				DBG_ASSERT(all >= vspSize[i], ValueError,
-					"Not enough offspring to accommodate specified weight scheme. "
-					"Current item is " + toStr(i) + " requires " + toStr(vspSize[i])
-					+ " available " + toStr(all_pos) + ".");
+					"Mating scheme with a positive weight of " + toStr(w_pos[i]) + 
+					" would like to produce " + toStr(vspSize[i]) +
+					" offspring, but there are only " + toStr(all) +
+					" unclaimed offspring left.")
 				all -= vspSize[i];
 			}
 		}
