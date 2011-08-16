@@ -1213,7 +1213,7 @@ def analyze(test):
         for stat in range(9, len(pfRecords[0])):
             print 'STAT %2d' % (stat - 8),
             # each stat, for different revisions, and type
-            for type in ['short', 'long', 'binary']:
+            for type in ['short', 'long', 'binary', 'mutant']:
                 print '|' if len(revs) < 4 else '\n %3s|' % type[0],
                 for rev in revs:
                     one = [rec for rec in pfRecords if rec[8] == type and rec[7] == rev]
@@ -1253,7 +1253,7 @@ if __name__ == '__main__':
     # Perform tests
     #
     alleleType = 'all'
-    # allele type can be specified by --alleleType=long/short/binary
+    # allele type can be specified by --alleleType=long/short/binary/mutant
     if '-b' in sys.argv:
         alleleType = 'binary'
         sys.argv.remove('-b')
@@ -1263,6 +1263,9 @@ if __name__ == '__main__':
     elif '-l' in sys.argv:
         alleleType = 'long'
         sys.argv.remove('-l')
+    elif '-m' in sys.argv:
+        alleleType = 'mutant'
+        sys.argv.remove('-m')
     #
     if alleleType == 'all':
         for t in ['s', 'l', 'b']:

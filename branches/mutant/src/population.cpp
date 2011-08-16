@@ -2356,13 +2356,17 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 		vector<Individual> new_inds;
 #ifdef MUTANTALLELE
 		compressed_vectora new_genotype;
+		if (removeLoci) 
+			new_genotype.resize(size * step);
+		else
+			new_genotype.reserve(size * step);
 #else
 		vectora new_genotype;
+		new_genotype.reserve(size * step);
 #endif
 		vectorf new_info;
 
 		new_inds.reserve(size);
-		new_genotype.reserve(size * step);
 		new_info.reserve(size * infoStep);
 		// copy genotype and info...
 		if (!removeInd) {
@@ -2382,7 +2386,7 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 					size_t ptr = it->genoBegin();
 					for (size_t p = 0; p < pEnd; p += pStep) {
 						for (lociPtr = new_loci.begin(); lociPtr != lociEnd; ++lociPtr)
-							new_genotype.resize(new_genotype.size() + 1);
+							//new_genotype.resize(new_genotype.size() + 1);
 							new_genotype[new_genotype.size() - 1] = (*it->genoPtr())[ptr + *lociPtr + p];
 					}
 #else
@@ -2430,7 +2434,7 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 						size_t ptr = indGenoBegin(*it);
 						for (size_t p = 0; p < pEnd; p += pStep) {
 							for (lociPtr = new_loci.begin(); lociPtr != lociEnd; ++lociPtr)
-								new_genotype.resize(new_genotype.size() + 1);
+								//new_genotype.resize(new_genotype.size() + 1);
 								new_genotype[new_genotype.size() - 1] =  (*m_inds[*it].genoPtr())[ptr + *lociPtr + p];
 						}
 #else
@@ -3585,10 +3589,11 @@ void Population::syncIndPointers(bool infoOnly) const
 		DBG_DO(DBG_POPULATION, cerr << "Adjust geno and info position " << endl);
 
 		size_t is = infoSize();
-		//MUTANTALLELE don't need to sync genotype because 
-		//we don't use iterator in MUTANTALLELE
-#ifndef MUTANTALLELE
 		size_t sz = genoSize();
+#ifdef MUTANTALLELE
+		compressed_vectora tmpGenotype(m_popSize * genoSize());
+		size_t it = 0;
+#else
 		vectora tmpGenotype(m_popSize * genoSize());
 		vectora::iterator it = tmpGenotype.begin();
 #endif
@@ -3600,24 +3605,26 @@ void Population::syncIndPointers(bool infoOnly) const
 #ifdef BINARYALLELE
 			copyGenotype(ind->genoBegin(), it, sz);
 #else
-#  ifndef MUTANTALLELE
+#  ifdef MUTANTALLELE
+			copyGenotype(*ind->genoPtr(), ind->genoBegin(), ind->genoEnd(), tmpGenotype, it);
+#  else
 			copy(ind->genoBegin(), ind->genoEnd(), it);
 #  endif
 #endif
 
-#ifndef MUTANTALLELE
+#ifdef MUTANTALLELE
+			ind->setGenoPtr(&tmpGenotype, it);
+#else
 			ind->setGenoPtr(it);
-			it += sz;
 #endif
+			it += sz;
 
 			copy(ind->infoBegin(), ind->infoEnd(), infoPtr);
 			ind->setInfoPtr(infoPtr);
 			infoPtr += is;
 		}
 		// discard original genotype
-#ifndef MUTANTALLELE
 		const_cast<Population *>(this)->m_genotype.swap(tmpGenotype);
-#endif
 		const_cast<Population *>(this)->m_info.swap(tmpInfo);
 	}
 	setIndOrdered(true);

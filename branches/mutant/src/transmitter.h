@@ -82,8 +82,8 @@ public:
 	 *  Customized chromosomes are not copied. It is equivalent to
 	 *  <tt>offspring.setGenotype(parent.genotype(parPloidy), ploidy)</tt>.
 	 */
-///	void copyChromosomes(const Individual & parent, int parPloidy,
-///		Individual & offspring, int ploidy) const;
+	void copyChromosomes(const Individual & parent, int parPloidy,
+		Individual & offspring, int ploidy) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
@@ -268,175 +268,175 @@ protected:
 };
 
 
-////** A genotype transmitter (during-mating operator) that transmits parental
-/// *  genotype of a parent through self-fertilization. That is to say, the
-/// *  offspring genotype is formed according to Mendel's laws, only that a
-/// *  parent serves as both maternal and paternal parents.
-/// */
-///class SelfingGenoTransmitter : public MendelianGenoTransmitter
-///{
-///public:
-///	/** Create a self-fertilization genotype transmitter that transmits
-///	 *  genotypes of a parent to an offspring through self-fertilization.
-///	 *  Cutsomized chromosomes are not handled. Parameters \e subPops and
-///	 *  \e infoFields are ignored.
-///	 */
-///	SelfingGenoTransmitter(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
-///		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-///		const stringList & infoFields = vectorstr())
-///		: MendelianGenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields)
-///	{
-///	}
-///
-///
-///	/// HIDDEN Deep copy of a selfing genotype transmitter
-///	BaseOperator * clone() const
-///	{
-///		return new SelfingGenoTransmitter(*this);
-///	}
-///
-///
-///	/// HIDDEN
-///	string describe(bool format = true) const
-///	{
-///		(void)format;  // avoid warning about unused parameter
-///		return "<simuPOP.SelfingGenoTransmitter>" ;
-///	}
-///
-///
-///	/// CPPONLY
-///	bool applyDuringMating(Population & pop, Population & offPop,
-///		RawIndIterator offspring,
-///		Individual * dad = NULL,
-///		Individual * mom = NULL) const;
-///
-///};
-///
-///
-////** A genotype transmitter (during-mating operator) for haplodiploid
-/// *  populations. The female parent is considered as diploid and the male parent
-/// *  is considered as haploid (only the first homologous copy is valid). If the
-/// *  offspring is \c FEMALE, she will get a random copy of two homologous
-/// *  chromosomes of her mother, and get the only paternal copy from her father.
-/// *  If the offspring is \c MALE, he will only get a set of chromosomes from his
-/// *  mother.
-/// */
-///class HaplodiploidGenoTransmitter : public MendelianGenoTransmitter
-///{
-///public:
-///	/** Create a haplodiploid genotype transmitter (during-mating operator)
-///	 *  that transmit parental genotypes from parents to offspring in a
-///	 *  haplodiploid population. Parameters \e subPops and \e infoFields
-///	 *  are ignored.
-///	 */
-///	HaplodiploidGenoTransmitter(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
-///		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-///		const stringList & infoFields = vectorstr())
-///		: MendelianGenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields),
-///		m_copier()
-///	{
-///	}
-///
-///
-///	/// HIDDEN Deep copy of a haplodiploid transmitter.
-///	BaseOperator * clone() const
-///	{
-///		return new HaplodiploidGenoTransmitter(*this);
-///	}
-///
-///
-///	/// HIDDEN
-///	string describe(bool format = true) const
-///	{
-///		(void)format;  // avoid warning about unused parameter
-///		return "<simuPOP.HaplodiploidGenoTransmitter>" ;
-///	}
-///
-///
-///	/// HIDDEN
-///	void initialize(const Individual & ind) const;
-///
-///	/// CPPONLY
-///	virtual bool applyDuringMating(Population & pop, Population & offPop,
-///		RawIndIterator offspring,
-///		Individual * dad = NULL,
-///		Individual * mom = NULL) const;
-///
-///private:
-///	GenoTransmitter m_copier;
-///};
-///
-///
-////** This geno transmitter assumes that the first homologous copy of several (or
-/// *  all) \c Customized chromosomes are copies of mitochondrial chromosomes. It
-/// *  transmits these chromosomes randomly from the female parent to offspring.
-/// *  If this transmitter is applied to populations with more than one homologous
-/// *  copies of chromosomes, it transmits the first homologous copy of
-/// *  chromosomes and clears alleles (set to zero) on other homologous copies.
-/// */
-///class MitochondrialGenoTransmitter : public GenoTransmitter
-///{
-///public:
-///	/** Createa a mitochondrial genotype transmitter that treats all Customized
-///	 *  chromosomes, or a list of chromosomes specified by \e chroms, as human
-///	 *  mitochondrial chromosomes. These chromosomes should have the same
-///	 *  length and the same number of loci. This operator transmits these
-///	 *  chromosomes randomly from the female parent to offspring of both sexes.
-///	 */
-///	MitochondrialGenoTransmitter(const stringFunc & output = "",
-///		const uintList & chroms = uintList(),
-///		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
-///		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-///		const stringList & infoFields = vectorstr())
-///		: GenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields),
-///		m_chroms(chroms), m_mitoChroms(0), m_numLoci(0)
-///	{
-///	}
-///
-///
-///	/// HIDDEN Deep copy of a mitochondrial genotype transmitter.
-///	BaseOperator * clone() const
-///	{
-///		return new MitochondrialGenoTransmitter(*this);
-///	}
-///
-///
-///	/// HIDDEN
-///	string describe(bool format = true) const
-///	{
-///		(void)format;  // avoid warning about unused parameter
-///		return "<simuPOP.MitochondrialGenoTransmitter>" ;
-///	}
-///
-///
-///	/// HIDDEN
-///	void initialize(const Individual & ind) const;
-///
-///	/// CPPONLY
-///	virtual bool applyDuringMating(Population & pop, Population & offPop,
-///		RawIndIterator offspring,
-///		Individual * dad = NULL,
-///		Individual * mom = NULL) const;
-///
-///	/// CPPONLY
-///	bool parallelizable() const
-///	{
-///		return true;
-///	}
-///
-///
-///private:
-///	// this is user input.
-///	const uintList m_chroms;
-///
-///	// this is the temporary holder for different populaitons
-///	mutable vectoru m_mitoChroms;
-///
-///	//
-///	mutable size_t m_numLoci;
-///};
-///
-///
+/** A genotype transmitter (during-mating operator) that transmits parental
+ *  genotype of a parent through self-fertilization. That is to say, the
+ *  offspring genotype is formed according to Mendel's laws, only that a
+ *  parent serves as both maternal and paternal parents.
+ */
+class SelfingGenoTransmitter : public MendelianGenoTransmitter
+{
+public:
+	/** Create a self-fertilization genotype transmitter that transmits
+	 *  genotypes of a parent to an offspring through self-fertilization.
+	 *  Cutsomized chromosomes are not handled. Parameters \e subPops and
+	 *  \e infoFields are ignored.
+	 */
+	SelfingGenoTransmitter(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = vectorstr())
+		: MendelianGenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields)
+	{
+	}
+
+
+	/// HIDDEN Deep copy of a selfing genotype transmitter
+	BaseOperator * clone() const
+	{
+		return new SelfingGenoTransmitter(*this);
+	}
+
+
+	/// HIDDEN
+	string describe(bool format = true) const
+	{
+		(void)format;  // avoid warning about unused parameter
+		return "<simuPOP.SelfingGenoTransmitter>" ;
+	}
+
+
+	/// CPPONLY
+	bool applyDuringMating(Population & pop, Population & offPop,
+		RawIndIterator offspring,
+		Individual * dad = NULL,
+		Individual * mom = NULL) const;
+
+};
+
+
+/** A genotype transmitter (during-mating operator) for haplodiploid
+ *  populations. The female parent is considered as diploid and the male parent
+ *  is considered as haploid (only the first homologous copy is valid). If the
+ *  offspring is \c FEMALE, she will get a random copy of two homologous
+ *  chromosomes of her mother, and get the only paternal copy from her father.
+ *  If the offspring is \c MALE, he will only get a set of chromosomes from his
+ *  mother.
+ */
+class HaplodiploidGenoTransmitter : public MendelianGenoTransmitter
+{
+public:
+	/** Create a haplodiploid genotype transmitter (during-mating operator)
+	 *  that transmit parental genotypes from parents to offspring in a
+	 *  haplodiploid population. Parameters \e subPops and \e infoFields
+	 *  are ignored.
+	 */
+	HaplodiploidGenoTransmitter(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = vectorstr())
+		: MendelianGenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields),
+		m_copier()
+	{
+	}
+
+
+	/// HIDDEN Deep copy of a haplodiploid transmitter.
+	BaseOperator * clone() const
+	{
+		return new HaplodiploidGenoTransmitter(*this);
+	}
+
+
+	/// HIDDEN
+	string describe(bool format = true) const
+	{
+		(void)format;  // avoid warning about unused parameter
+		return "<simuPOP.HaplodiploidGenoTransmitter>" ;
+	}
+
+
+	/// HIDDEN
+	void initialize(const Individual & ind) const;
+
+	/// CPPONLY
+	virtual bool applyDuringMating(Population & pop, Population & offPop,
+		RawIndIterator offspring,
+		Individual * dad = NULL,
+		Individual * mom = NULL) const;
+
+private:
+	GenoTransmitter m_copier;
+};
+
+
+/** This geno transmitter assumes that the first homologous copy of several (or
+ *  all) \c Customized chromosomes are copies of mitochondrial chromosomes. It
+ *  transmits these chromosomes randomly from the female parent to offspring.
+ *  If this transmitter is applied to populations with more than one homologous
+ *  copies of chromosomes, it transmits the first homologous copy of
+ *  chromosomes and clears alleles (set to zero) on other homologous copies.
+ */
+class MitochondrialGenoTransmitter : public GenoTransmitter
+{
+public:
+	/** Createa a mitochondrial genotype transmitter that treats all Customized
+	 *  chromosomes, or a list of chromosomes specified by \e chroms, as human
+	 *  mitochondrial chromosomes. These chromosomes should have the same
+	 *  length and the same number of loci. This operator transmits these
+	 *  chromosomes randomly from the female parent to offspring of both sexes.
+	 */
+	MitochondrialGenoTransmitter(const stringFunc & output = "",
+		const uintList & chroms = uintList(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = vectorstr())
+		: GenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields),
+		m_chroms(chroms), m_mitoChroms(0), m_numLoci(0)
+	{
+	}
+
+
+	/// HIDDEN Deep copy of a mitochondrial genotype transmitter.
+	BaseOperator * clone() const
+	{
+		return new MitochondrialGenoTransmitter(*this);
+	}
+
+
+	/// HIDDEN
+	string describe(bool format = true) const
+	{
+		(void)format;  // avoid warning about unused parameter
+		return "<simuPOP.MitochondrialGenoTransmitter>" ;
+	}
+
+
+	/// HIDDEN
+	void initialize(const Individual & ind) const;
+
+	/// CPPONLY
+	virtual bool applyDuringMating(Population & pop, Population & offPop,
+		RawIndIterator offspring,
+		Individual * dad = NULL,
+		Individual * mom = NULL) const;
+
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return true;
+	}
+
+
+private:
+	// this is user input.
+	const uintList m_chroms;
+
+	// this is the temporary holder for different populaitons
+	mutable vectoru m_mitoChroms;
+
+	//
+	mutable size_t m_numLoci;
+};
+
+
 /** A genotype transmitter (during-mating operator) that transmits parental
  *  chromosomes to offspring, subject to recombination and gene conversion.
  *  This can be used to replace \c MendelianGenoTransmitter and

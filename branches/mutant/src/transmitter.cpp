@@ -98,7 +98,7 @@ void GenoTransmitter::copyChromosome(const Individual & parent, int parPloidy,
 #endif
 }
 
-/*
+
 void GenoTransmitter::copyChromosomes(const Individual & parent,
                                       int parPloidy, Individual & offspring, int ploidy) const
 {
@@ -109,13 +109,24 @@ void GenoTransmitter::copyChromosomes(const Individual & parent,
 		for (size_t ch = 0; ch < parent.numChrom(); ++ch) {
 			if (m_lociToCopy[ch] == 0)
 				continue;
+#ifdef MUTANTALLELE
+			size_t par = parent.genoBegin(parPloidy, ch);
+			size_t off = offspring.genoBegin(ploidy, ch);
+#else
 			GenoIterator par = parent.genoBegin(parPloidy, ch);
 			GenoIterator off = offspring.genoBegin(ploidy, ch);
+#endif
+
 #ifdef BINARYALLELE
 			copyGenotype(par, off, m_lociToCopy[ch]);
 #else
+#  ifdef MUTANTALLELE
+			size_t par_end = parent.genoEnd(parPloidy, ch);
+			copyGenotype(*parent.genoPtr(), par, par_end, *offspring.genoPtr(), off);
+#  else
 			GenoIterator par_end = parent.genoEnd(parPloidy, ch);
 			copy(par, par_end, off);
+#  endif
 #endif
 		}
 	} else {             // easy
@@ -123,11 +134,15 @@ void GenoTransmitter::copyChromosomes(const Individual & parent,
 		copyGenotype(parent.genoBegin(parPloidy), offspring.genoBegin(ploidy),
 			offspring.totNumLoci());
 #else
+#  ifdef MUTANTALLELE
+		copyGenotype(*parent.genoPtr(), parent.genoBegin(parPloidy), parent.genoEnd(parPloidy), *offspring.genoPtr(), offspring.genoBegin(ploidy));
+#  else
 		copy(parent.genoBegin(parPloidy), parent.genoEnd(parPloidy), offspring.genoBegin(ploidy));
+#  endif
 #endif
 	}
 }
-*/
+
 
 string CloneGenoTransmitter::describe(bool /* format */) const
 {
@@ -336,116 +351,126 @@ bool MendelianGenoTransmitter::applyDuringMating(Population & /* pop */,
 }
 
 
-///bool SelfingGenoTransmitter::applyDuringMating(Population & /* pop */, Population & offPop, RawIndIterator offspring,
-///                                               Individual * dad, Individual * mom) const
-///{
-///	// if offspring does not belong to subPops, do nothing, but does not fail.
-///	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
-///		return true;
-///	//
-///	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
-///		"Selfing genotype transmitter requires at least one valid parents");
-///
-///	// call MendelianGenoTransmitter::initialize if needed.
-///	Individual * parent = mom != NULL ? mom : dad;
-///
-///	initializeIfNeeded(*offspring);
-///	// use the same parent to produce two copies of chromosomes
-///	transmitGenotype(*parent, *offspring, 0);
-///	transmitGenotype(*parent, *offspring, 1);
-///	return true;
-///}
-///
-///
-///void HaplodiploidGenoTransmitter::initialize(const Individual & ind) const
-///{
-///	DBG_FAILIF(ind.chromX() >= 0 || ind.chromY() >= 0, ValueError,
-///		"Haplodiploid indulations do not use sex chromosomes");
-///	MendelianGenoTransmitter::initialize(ind);
-///}
-///
-///
-///bool HaplodiploidGenoTransmitter::applyDuringMating(Population & /* pop */,
-///                                                    Population & offPop, RawIndIterator offspring,
-///                                                    Individual * dad, Individual * mom) const
-///{
-///	// if offspring does not belong to subPops, do nothing, but does not fail.
-///	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
-///		return true;
-///	DBG_FAILIF(dad == NULL || mom == NULL, ValueError,
-///		"haplodiploid offspring generator: one of the parents is invalid.");
-///
-///	initializeIfNeeded(*offspring);
-///	// mom generate the first...
-///	transmitGenotype(*mom, *offspring, 0);
-///
-///	if (offspring->sex() == FEMALE)
-///		copyChromosomes(*dad, 0, *offspring, 1);
-///	return true;
-///}
-///
-///
-///void MitochondrialGenoTransmitter::initialize(const Individual & ind) const
-///{
-///	GenoTransmitter::initialize(ind);
-///	if (m_chroms.allAvail()) {
-///		for (size_t ch = 0; ch < ind.numChrom(); ++ch)
-///			if (ind.chromType(ch) == CUSTOMIZED)
-///				m_mitoChroms.push_back(ch);
-///	} else
-///		m_mitoChroms = m_chroms.elems();
-///	DBG_DO(DBG_TRANSMITTER, cerr << "Mitochondrial chromosomes " << m_mitoChroms << endl);
-///	if (m_mitoChroms.empty())
-///		return;
-///
-///	m_numLoci = ind.numLoci(m_mitoChroms[0]);
-///
-///#ifndef OPTIMIZED
-///	for (size_t ch = 1; ch < m_mitoChroms.size(); ++ch) {
-///		DBG_FAILIF(ind.numLoci(m_mitoChroms[ch]) != m_numLoci, ValueError,
-///			"All mitochondrial chromosomes should have the same number of loci");
-///	}
-///#endif
-///}
-///
-///
-///bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
-///                                                     Individual * /* dad */, Individual * mom) const
-///{
-///	// if offspring does not belong to subPops, do nothing, but does not fail.
-///	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
-///		return true;
-///	initializeIfNeeded(*offspring);
-///
-///	(void)mom;  // avoid a warning message of unused varible in optimized modules
-///	DBG_FAILIF(mom == NULL, ValueError,
-///		"MitochondrialGenoTransmitter requires valid female parent.");
-///
-///	if (m_numLoci == 0)
-///		return true;
-///
-///	size_t pldy = pop.ploidy();
-///	//
-///	vectoru::iterator it = m_mitoChroms.begin();
-///	vectoru::iterator it_end = m_mitoChroms.end();
-///	for (; it != it_end; ++it) {
-///		size_t src = getRNG().randInt(static_cast<ULONG>(m_mitoChroms.size()));
-///		GenoIterator par = mom->genoBegin(0, m_mitoChroms[src]);
-///		GenoIterator off = offspring->genoBegin(0, *it);
-///#ifdef BINARYALLELE
-///		copyGenotype(par, off, m_numLoci);
-///#else
-///		GenoIterator par_end = mom->genoEnd(0, m_mitoChroms[src]);
-///		copy(par, par_end, off);
-///#endif
-///		for (size_t p = 1; p < pldy; ++p)
-///			clearChromosome(*offspring, 1, static_cast<int>(*it));
-///	}
-///
-///	return true;
-///}
-///
-///
+bool SelfingGenoTransmitter::applyDuringMating(Population & /* pop */, Population & offPop, RawIndIterator offspring,
+                                               Individual * dad, Individual * mom) const
+{
+	// if offspring does not belong to subPops, do nothing, but does not fail.
+	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
+		return true;
+	//
+	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
+		"Selfing genotype transmitter requires at least one valid parents");
+
+	// call MendelianGenoTransmitter::initialize if needed.
+	Individual * parent = mom != NULL ? mom : dad;
+
+	initializeIfNeeded(*offspring);
+	// use the same parent to produce two copies of chromosomes
+	transmitGenotype(*parent, *offspring, 0);
+	transmitGenotype(*parent, *offspring, 1);
+	return true;
+}
+
+
+void HaplodiploidGenoTransmitter::initialize(const Individual & ind) const
+{
+	DBG_FAILIF(ind.chromX() >= 0 || ind.chromY() >= 0, ValueError,
+		"Haplodiploid indulations do not use sex chromosomes");
+	MendelianGenoTransmitter::initialize(ind);
+}
+
+
+bool HaplodiploidGenoTransmitter::applyDuringMating(Population & /* pop */,
+                                                    Population & offPop, RawIndIterator offspring,
+                                                    Individual * dad, Individual * mom) const
+{
+	// if offspring does not belong to subPops, do nothing, but does not fail.
+	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
+		return true;
+	DBG_FAILIF(dad == NULL || mom == NULL, ValueError,
+		"haplodiploid offspring generator: one of the parents is invalid.");
+
+	initializeIfNeeded(*offspring);
+	// mom generate the first...
+	transmitGenotype(*mom, *offspring, 0);
+
+	if (offspring->sex() == FEMALE)
+		copyChromosomes(*dad, 0, *offspring, 1);
+	return true;
+}
+
+
+void MitochondrialGenoTransmitter::initialize(const Individual & ind) const
+{
+	GenoTransmitter::initialize(ind);
+	if (m_chroms.allAvail()) {
+		for (size_t ch = 0; ch < ind.numChrom(); ++ch)
+			if (ind.chromType(ch) == CUSTOMIZED)
+				m_mitoChroms.push_back(ch);
+	} else
+		m_mitoChroms = m_chroms.elems();
+	DBG_DO(DBG_TRANSMITTER, cerr << "Mitochondrial chromosomes " << m_mitoChroms << endl);
+	if (m_mitoChroms.empty())
+		return;
+
+	m_numLoci = ind.numLoci(m_mitoChroms[0]);
+
+#ifndef OPTIMIZED
+	for (size_t ch = 1; ch < m_mitoChroms.size(); ++ch) {
+		DBG_FAILIF(ind.numLoci(m_mitoChroms[ch]) != m_numLoci, ValueError,
+			"All mitochondrial chromosomes should have the same number of loci");
+	}
+#endif
+}
+
+
+bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
+                                                     Individual * /* dad */, Individual * mom) const
+{
+	// if offspring does not belong to subPops, do nothing, but does not fail.
+	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
+		return true;
+	initializeIfNeeded(*offspring);
+
+	(void)mom;  // avoid a warning message of unused varible in optimized modules
+	DBG_FAILIF(mom == NULL, ValueError,
+		"MitochondrialGenoTransmitter requires valid female parent.");
+
+	if (m_numLoci == 0)
+		return true;
+
+	size_t pldy = pop.ploidy();
+	//
+	vectoru::iterator it = m_mitoChroms.begin();
+	vectoru::iterator it_end = m_mitoChroms.end();
+	for (; it != it_end; ++it) {
+		size_t src = getRNG().randInt(static_cast<ULONG>(m_mitoChroms.size()));
+#ifdef MUTANTALLELE
+		size_t par = mom->genoBegin(0, m_mitoChroms[src]);
+		size_t off = offspring->genoBegin(0, *it);
+#else
+		GenoIterator par = mom->genoBegin(0, m_mitoChroms[src]);
+		GenoIterator off = offspring->genoBegin(0, *it);
+#endif
+#ifdef BINARYALLELE
+		copyGenotype(par, off, m_numLoci);
+#else
+#  ifdef MUTANTALLELE
+		size_t par_end = mom->genoEnd(0, m_mitoChroms[src]);
+		copyGenotype(*mom->genoPtr(), par, par_end, *offspring->genoPtr(), off);
+#  else
+		GenoIterator par_end = mom->genoEnd(0, m_mitoChroms[src]);
+		copy(par, par_end, off);
+#  endif
+#endif
+		for (size_t p = 1; p < pldy; ++p)
+			clearChromosome(*offspring, 1, static_cast<int>(*it));
+	}
+
+	return true;
+}
+
+
 Recombinator::Recombinator(const floatList & rates, double intensity,
 	const lociList & loci, const floatList & convMode,
 	const stringFunc & output, int begin, int end, int step, const intList & at,

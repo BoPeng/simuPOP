@@ -46,10 +46,10 @@
 #include "mating.h"
 #include "tagger.h"
 #include "stator.h"
-//#include "migrator.h"
+#include "migrator.h"
 #include "mutator.h"
 #include "transmitter.h"
-//#include "selector.h"
+#include "selector.h"
 #include "qtrait.h"
 #include "penetrance.h"
 
@@ -230,11 +230,11 @@ namespace std
 %newobject simuPOP::Population::extractSubPops;
 %newobject simuPOP::Population::extractIndividuals;
 %newobject simuPOP::Population::clone;
-//%newobject simuPOP::Simulator::extract;
-//%newobject simuPOP::Simulator::clone;
-//%newobject simuPOP::BaseOperator::clone;
-//%newobject simuPOP::MatingScheme::clone;
-//%newobject simuPOP::Stat::clone;
+%newobject simuPOP::Simulator::extract;
+%newobject simuPOP::Simulator::clone;
+%newobject simuPOP::BaseOperator::clone;
+%newobject simuPOP::MatingScheme::clone;
+%newobject simuPOP::Stat::clone;
 
 // the following load a docstring file extracted from doxgen output.
 // there will also be a bunch of %ignore directives as well
@@ -287,7 +287,7 @@ namespace std {
 namespace std
 {
     %template()    vector<PyObject*>;
-//    %template()    vector<simuPOP::HomoMating * >;
+    %template()    vector<simuPOP::HomoMating * >;
 }
 
 
@@ -299,10 +299,10 @@ namespace std
 %include "outputer.h"
 %include "initializer.h"
 %include "tagger.h"
-//%include "migrator.h"
+%include "migrator.h"
 %include "mutator.h"
 %include "transmitter.h"
-//%include "selector.h"
+%include "selector.h"
 %include "qtrait.h"
 %include "penetrance.h"
 %include "pedigree.h"

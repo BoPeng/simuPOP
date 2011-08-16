@@ -201,9 +201,9 @@ HEADER_FILES = [
     'mating.h',
     'operator.h',
     'initializer.h',
-    #'migrator.h',
+    'migrator.h',
     'outputer.h',
-    #'selector.h',
+    'selector.h',
     'penetrance.h',
     'qtrait.h',
     'stator.h',
@@ -224,9 +224,9 @@ SOURCE_FILES = [
     'mating.cpp',
     'operator.cpp',
     'initializer.cpp',
-    #'migrator.cpp',
+    'migrator.cpp',
     'outputer.cpp',
-    #'selector.cpp',
+    'selector.cpp',
     'penetrance.cpp',
     'qtrait.cpp',
     'stator.cpp',
@@ -551,7 +551,7 @@ if os.name == 'nt':    # Windows
 if __name__ == '__main__':
     SIMUPOP_VER, SIMUPOP_REV = simuPOP_version()
     # create source file for each module
-    MODULES = ['mu'] # ['std', 'op', 'la', 'laop', 'ba', 'baop']
+    MODULES = ['std', 'op', 'la', 'laop', 'ba', 'baop', 'mu', 'muop']
     #
     # Generate Wrapping files
     #

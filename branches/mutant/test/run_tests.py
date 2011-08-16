@@ -30,17 +30,17 @@
 # 
 # Usage:
 #   run_tests.py
-#       Run tests for 'short', 'long', and 'binary' modules and summarize
+#       Run tests for 'short', 'long', 'binary' and 'mutant' modules and summarize
 #       outputs
 #
-#   run_tests.py [ short | long | binary ] [-j#]
+#   run_tests.py [ short | long | binary | mutant ] [-j#]
 #       Run the tests for specified modules, or with specified number of threads
 #
 import re, unittest, sys, os
 
 from simuOpt import setOptions
 for arg in sys.argv:
-    if arg in ['short', 'long', 'binary']:
+    if arg in ['short', 'long', 'binary', 'mutant']:
         setOptions(alleleType = arg)
     if arg.startswith('-j'):
         setOptions(numThreads = int(arg[2:]))
@@ -61,8 +61,8 @@ def importTests():
     return tests
 
 if __name__ == '__main__':
-    if True not in [arg in ['short', 'long', 'binary'] for arg in sys.argv]:
-        for allele in ['binary', 'short', 'long']:
+    if True not in [arg in ['short', 'long', 'binary', 'mutant'] for arg in sys.argv]:
+        for allele in ['binary', 'short', 'long', 'mutant']:
             for numThreads in [1, 4]:
                 os.system('%s %s -j%d' % (sys.argv[0], allele, numThreads))
     else:
