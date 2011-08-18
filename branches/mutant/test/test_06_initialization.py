@@ -120,7 +120,6 @@ class TestInitialization(unittest.TestCase):
         for ind in pop.individuals():
             if ind.sex() == MALE:
                 count += 1
-        print(count)
         self.assertTrue(count / 1500. > 0.25 , 
             "Expression count / 1500. (test value %f) be greater than to 0.25 . This test may occasionally fail due to the randomness of outcome." % (count / 1500.))
         self.assertTrue(count /1500. < 0.35, 

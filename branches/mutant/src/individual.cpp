@@ -329,7 +329,7 @@ void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 	if (p < 0) {
 		CHECKRANGEGENOSIZE(idx);
 #ifdef MUTANTALLELE
-		(*m_genoPtr)[m_genoIdx + idx] = allele;
+		assignGenotype(*m_genoPtr, m_genoIdx + idx, allele);
 #else
 		*(m_genoPtr + idx) = allele;
 #endif
@@ -337,7 +337,7 @@ void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 		CHECKRANGEABSLOCUS(idx);
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
 #ifdef MUTANTALLELE
-		(*m_genoPtr)[m_genoIdx + idx + p * totNumLoci()] = allele;
+		assignGenotype(*m_genoPtr, m_genoIdx + idx + p * totNumLoci(), allele);
 #else
 		*(m_genoPtr + idx + p * totNumLoci()) = allele;
 #endif
@@ -346,7 +346,7 @@ void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
 		CHECKRANGECHROM(static_cast<size_t>(chrom));
 #ifdef MUTANTALLELE
-		(*m_genoPtr)[m_genoIdx + idx + p * totNumLoci() + chromBegin(chrom)] = allele;
+		assignGenotype(*m_genoPtr, m_genoIdx + idx + p * totNumLoci() + chromBegin(chrom), allele);
 #else
 		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)) = allele;
 #endif

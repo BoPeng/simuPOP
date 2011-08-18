@@ -2144,6 +2144,14 @@ void testCopyGenotype();
 
 #ifdef MUTANTALLELE
 /// CPPONLY
+void assignGenotype(compressed_vectora & assigned_cvector, const size_t assigned_idx, const compressed_vectora & cvector, const size_t idx);
+
+
+/// CPPONLY
+void assignGenotype(compressed_vectora & assigned_cvector, const size_t assigned_idx, const Allele allele);
+
+
+/// CPPONLY
 void insertGenotype(compressed_vectora & newCVector, const size_t startIdx, const compressed_vectora & oldCVector, const size_t begin, const size_t end); 
 
 /// CPPONLY
@@ -2155,6 +2163,10 @@ void eraseGenotype(compressed_vectora & cvector, const size_t begin, const size_
 
 /// CPPONLY
 void clearGenotype(compressed_vectora & cvector, const size_t begin, const size_t end);
+
+
+/// CPPONLY
+size_t findGenotype(const compressed_vectora & cvector, const size_t begin, const size_t end, const Allele allele);
 #endif
 
 /// CPPONLY initialize module simuPOP when using "import simuPOP"

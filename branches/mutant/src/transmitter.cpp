@@ -756,7 +756,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			    (m_customizedBegin < 0 || gt < static_cast<size_t>(m_customizedBegin) || gt >= static_cast<size_t>(m_customizedEnd)))
 				// copy
 #ifdef MUTANTALLELE
-				(*offspring.genoPtr())[off + gt] = (*parent.genoPtr())[cp[curCp] + gt];
+				assignGenotype(*offspring.genoPtr(), off + gt, *parent.genoPtr(), cp[curCp] + gt);
 #else
 				off[gt] = cp[curCp][gt];
 #endif
@@ -825,7 +825,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			// first piece
 			for (; gt < m_recBeforeLoci[pos]; ++gt)
 #  ifdef MUTANTALLELE
-				(*offspring.genoPtr())[off + gt] = (*parent.genoPtr())[cp[curCp] + gt];
+				assignGenotype(*offspring.genoPtr(), off + gt, *parent.genoPtr(), cp[curCp] + gt);
 #  else
 				off[gt] = cp[curCp][gt];
 #  endif
@@ -848,7 +848,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 					if (convEnd < gtEnd) {
 						for (; gt < convEnd; ++gt)
 #  ifdef MUTANTALLELE
-                                                        (*offspring.genoPtr())[off + gt] = (*parent.genoPtr())[cp[curCp] + gt];
+                                                        assignGenotype(*offspring.genoPtr(), off + gt, *parent.genoPtr(), cp[curCp] + gt);
 #  else
 							off[gt] = cp[curCp][gt];
 #  endif
@@ -862,7 +862,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 				// copy from the end of conversion to this recombination point
 				for (; gt < gtEnd; ++gt)
 #  ifdef MUTANTALLELE
-                                        (*offspring.genoPtr())[off + gt] = (*parent.genoPtr())[cp[curCp] + gt];
+                                        assignGenotype(*offspring.genoPtr(), off + gt, *parent.genoPtr(), cp[curCp] + gt);
 #  else
 					off[gt] = cp[curCp][gt];
 #  endif
@@ -887,7 +887,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			if (convEnd < gtEnd) {
 				for (; gt < convEnd; ++gt)
 #  ifdef MUTANTALLELE
-                                        (*offspring.genoPtr())[off + gt] = (*parent.genoPtr())[cp[curCp] + gt];
+                                        assignGenotype(*offspring.genoPtr(), off + gt, *parent.genoPtr(), cp[curCp] + gt);
 #  else
 					off[gt] = cp[curCp][gt];
 #  endif
@@ -898,7 +898,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 		}
 		for (; gt < gtEnd; ++gt)
 #  ifdef MUTANTALLELE
-                        (*offspring.genoPtr())[off + gt] = (*parent.genoPtr())[cp[curCp] + gt];
+                        assignGenotype(*offspring.genoPtr(), off + gt, *parent.genoPtr(), cp[curCp] + gt);
 #  else
 			off[gt] = cp[curCp][gt];
 #  endif
