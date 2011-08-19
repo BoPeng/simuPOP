@@ -2144,18 +2144,57 @@ void testCopyGenotype();
 
 #ifdef MUTANTALLELE
 /// CPPONLY
-void assignGenotype(compressed_vectora & assigned_cvector, const size_t assigned_idx, const compressed_vectora & cvector, const size_t idx);
+inline void assignGenotype(compressed_vectora & assigned_cvector, const size_t assigned_idx, const compressed_vectora & cvector, const size_t idx)
+{
+	if (assigned_cvector[assigned_idx] == 0 && cvector[idx] == 0)
+		return;
+	else if (assigned_cvector[assigned_idx] != 0 && cvector[idx] == 0)
+		assigned_cvector.erase_element(assigned_idx);
+	else
+		assigned_cvector[assigned_idx] = cvector[idx];
+}
 
 
 /// CPPONLY
-void assignGenotype(compressed_vectora & assigned_cvector, const size_t assigned_idx, const Allele allele);
+inline void assignGenotype(compressed_vectora & assigned_cvector, const size_t assigned_idx, const Allele allele)
+{
+	if (assigned_cvector[assigned_idx] == 0 && allele == 0)
+		return;
+	else if (assigned_cvector[assigned_idx] != 0 && allele == 0)
+		assigned_cvector.erase_element(assigned_idx);
+	else
+		assigned_cvector[assigned_idx] = allele;
+}
 
 
 /// CPPONLY
-void insertGenotype(compressed_vectora & newCVector, const size_t startIdx, const compressed_vectora & oldCVector, const size_t begin, const size_t end); 
+inline void insertGenotype(compressed_vectora & newCVector,const size_t startIdx , const compressed_vectora & oldCVector, const size_t begin, const size_t end)
+{
+	size_t idx = startIdx;
+	newCVector.resize(newCVector.size() + end - begin);
+	for(size_t i = begin; i < end; ++i, ++idx) 
+		if (newCVector[idx] == 0 && oldCVector[i] == 0)
+			continue;
+		else if (newCVector[idx] != 0 && oldCVector[i] == 0)
+			newCVector.erase_element(idx);
+		else
+			newCVector[idx] = oldCVector[i];
+} 
+
 
 /// CPPONLY
-void copyGenotype(const compressed_vectora & oldCVector, const size_t oldBegin, const size_t oldEnd, compressed_vectora & newCVector, const size_t newBegin); 
+inline void copyGenotype(const compressed_vectora & oldCVector, const size_t oldBegin, const size_t oldEnd, compressed_vectora & newCVector, const size_t newBegin)
+{
+	size_t idx = newBegin;
+	for(size_t i = oldBegin; i < oldEnd; ++i, ++idx)
+		if (newCVector[idx] == 0 && oldCVector[i] == 0)
+			continue;
+		else if (newCVector[idx] != 0 && oldCVector[i] == 0)
+			newCVector.erase_element(idx);
+		else
+			newCVector[idx] = oldCVector[i];
+}
+
 
 /// CPPONLY
 void eraseGenotype(compressed_vectora & cvector, const size_t begin, const size_t end);

@@ -391,7 +391,7 @@ void Individual::setGenotype(const uintList & genoList, const uintList & ply, co
 #ifdef MUTANTALLELE
 			size_t genoIdx = m_genoIdx + p * totNumLoci() + chromBegin(chrom);
 			for (size_t i = 0; i < numLoci(chrom); i++, ++idx)
-				(*m_genoPtr)[genoIdx + i] = ToAllele(geno[idx % sz]);
+				assignGenotype(*m_genoPtr, genoIdx + i, ToAllele(geno[idx % sz]));
 #else
 			GenoIterator ptr = m_genoPtr + p * totNumLoci() + chromBegin(chrom);
 			for (size_t i = 0; i < numLoci(chrom); i++, ++idx)
@@ -414,8 +414,9 @@ void Individual::swap(Individual & ind, bool swapContent)
 		for (size_t i = 0, iEnd = genoSize(); i < iEnd; i++) {
 #ifdef MUTANTALLELE
 			tmp = (*m_genoPtr)[m_genoIdx + i];
-			(*m_genoPtr)[m_genoIdx + i] = (*ind.m_genoPtr)[ind.m_genoIdx + i];
-			(*ind.m_genoPtr)[ind.m_genoIdx + i] = tmp;
+			assignGenotype(*m_genoPtr, m_genoIdx + i, *ind.m_genoPtr, ind.m_genoIdx + i);
+			assignGenotype(*ind.m_genoPtr, ind.m_genoIdx + i, tmp);
+						
 #else
 			tmp = m_genoPtr[i];
 			m_genoPtr[i] = ind.m_genoPtr[i];
