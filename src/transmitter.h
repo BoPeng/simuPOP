@@ -476,7 +476,7 @@ public:
 	 *  be limited to a given set of \e loci, which can be a list of loci
 	 *  indexes, names or \c ALL_AVAIL. Each locus in this list specifies
 	 *  a recombination point between the locus and the locus immediately
-	 *  \b before it. Loci that are the first locus on each chromosome are
+	 *  \b after it. Loci that are the last locus on each chromosome are
 	 *  ignored.
 	 *
 	 *  If a single recombination rate (parameter \e rates) is specified, it
