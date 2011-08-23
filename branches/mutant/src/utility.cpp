@@ -4654,6 +4654,9 @@ void eraseGenotype(compressed_vectora & cvector, const size_t begin, const size_
 {
 	for(size_t i = begin; i < end; ++i)
 		cvector.erase_element(i);
+	if (end != cvector.size())
+		for(size_t i = end, j = begin; i < cvector.size(); ++i, ++j)
+			cvector[j] = cvector[i]; 
 	//  compressed vector doesn't decrease the size when it is erased.
 	//  we have to resize it. 
 	cvector.resize(cvector.size() - (end - begin));

@@ -161,14 +161,14 @@ bool BaseMutator::apply(Population & pop) const
 						if (numMapInAllele > 0) {
 							if (static_cast<size_t>(*ptr) < numMapInAllele)
 #ifdef MUTANTALLELE
-								(*ptr.ptr())[ptr.idx()] = ToAllele(mapInList[*ptr]);
+								assignGenotype(*ptr.ptr(), ptr.idx(), ToAllele(mapInList[*ptr]));
 #else
 								*ptr = ToAllele(mapInList[*ptr]);
 #endif
 						} else {
 #ifdef MUTANTALLELE
-							(*ptr.ptr())[ptr.idx()] = ToAllele(mapInFunc(PyObj_As_Int, "(i)",
-									static_cast<int>(*ptr)));
+							assignGenotype(*ptr.ptr(), ptr.idx(), ToAllele(mapInFunc(PyObj_As_Int, "(i)",
+									static_cast<int>(*ptr))));
 #else
 							*ptr = ToAllele(mapInFunc(PyObj_As_Int, "(i)",
 									static_cast<int>(*ptr)));
@@ -187,14 +187,14 @@ bool BaseMutator::apply(Population & pop) const
 						if (numMapOutAllele > 0) {
 							if (static_cast<size_t>(*ptr) < numMapOutAllele)
 #ifdef MUTANTALLELE
-								(*ptr.ptr())[ptr.idx()] = ToAllele(mapOutList[*ptr]);
+								assignGenotype(*ptr.ptr(), ptr.idx(), ToAllele(mapOutList[*ptr]));
 #else
 								*ptr = ToAllele(mapOutList[*ptr]);
 #endif
 						} else {
 #ifdef MUTANTALLELE
-							(*ptr.ptr())[ptr.idx()] = ToAllele(mapOutFunc(PyObj_As_Int, "(i)",
-									static_cast<int>(*ptr)));
+							assignGenotype(*ptr.ptr(), ptr.idx(), ToAllele(mapOutFunc(PyObj_As_Int, "(i)",
+									static_cast<int>(*ptr))));
 #else
 							*ptr = ToAllele(mapOutFunc(PyObj_As_Int, "(i)",
 									static_cast<int>(*ptr)));
@@ -271,7 +271,7 @@ void MatrixMutator::mutate(IndAlleleIterator & ptr, size_t) const
 			+ toStr(m_sampler.size() - 1));
 		return;
 	}
-	(*ptr.ptr())[ptr.idx()] = ToAllele(m_sampler[(*ptr.ptr())[ptr.idx()]].draw());
+	assignGenotype(*ptr.ptr(), ptr.idx(), ToAllele(m_sampler[(*ptr.ptr())[ptr.idx()]].draw()));
 }
 #else
 void MatrixMutator::mutate(AlleleRef allele, size_t) const
@@ -311,9 +311,9 @@ void KAlleleMutator::mutate(AlleleRef allele, size_t) const
 #  ifdef MUTANTALLELE
 	Allele new_allele = static_cast<Allele>(getRNG().randInt(m_k - 1));
 	if (new_allele >= (*ptr.ptr())[ptr.idx()])
-		(*ptr.ptr())[ptr.idx()] = new_allele + 1;
+		assignGenotype(*ptr.ptr(), ptr.idx(), new_allele + 1);
 	else
-		(*ptr.ptr())[ptr.idx()] = new_allele;
+		assignGenotype(*ptr.ptr(), ptr.idx(), new_allele);
 #  else
 	Allele new_allele = static_cast<Allele>(getRNG().randInt(m_k - 1));
 	if (new_allele >= allele)
@@ -387,7 +387,7 @@ void StepwiseMutator::mutate(AlleleRef allele, size_t) const
 		if (static_cast<UINT>((*ptr.ptr())[ptr.idx()] + step) < m_maxAllele)
 			AlleleAdd((*ptr.ptr())[ptr.idx()], step);
 		else
-			(*ptr.ptr())[ptr.idx()] = ToAllele(m_maxAllele);
+			assignGenotype(*ptr.ptr(), ptr.idx(), ToAllele(m_maxAllele));
 #  else
 		if (static_cast<UINT>(allele + step) < m_maxAllele)
 			AlleleAdd(allele, step);
@@ -405,7 +405,7 @@ void StepwiseMutator::mutate(AlleleRef allele, size_t) const
 		if ((*ptr.ptr())[ptr.idx()] > step)
 			AlleleMinus((*ptr.ptr())[ptr.idx()], step);
 		else
-			(*ptr.ptr())[ptr.idx()] = 0;
+			assignGenotype(*ptr.ptr(), ptr.idx(), 0);
 #  else
 		if (allele > step)
 			AlleleMinus(allele, step);
@@ -457,7 +457,7 @@ void PyMutator::mutate(AlleleRef allele, size_t) const
 	DBG_ASSERT(static_cast<unsigned>(resInt) <= ModuleMaxAllele, ValueError,
 		"Mutated to an allele greater than maximum allowed allele value");
 #  ifdef MUTANTALLELE
-	(*ptr.ptr())[ptr.idx()] = static_cast<Allele>(resInt);
+	assignGenotype(*ptr.ptr(), ptr.idx(), static_cast<Allele>(resInt));
 #  else
 	allele = static_cast<Allele>(resInt);
 #  endif
