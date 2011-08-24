@@ -7704,7 +7704,7 @@ Details:
     can be limited to a given set of loci, which can be a list of loci
     indexes, names or ALL_AVAIL. Each locus in this list specifies a
     recombination point between the locus and the locus immediately
-    before it. Loci that are the first locus on each chromosome are
+    after it. Loci that are the last locus on each chromosome are
     ignored.  If a single recombination rate (parameter rates) is
     specified, it will used for all loci (all loci or loci specified
     by parameter loci), regardless of physical distances between
