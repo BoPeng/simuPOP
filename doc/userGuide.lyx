@@ -1,4 +1,4 @@
-#LyX 1.6.8 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -13806,8 +13806,9 @@ Infinite-sites model and other simulation techniques **
 
 \begin_layout Standard
 Infinite-sites and infinite-alleles models have some similarities.
- In some cases, you can treat a long chromosomal region as a locus and use
- the infinite-alleles model, actually a 
+ If you assume that mutation is the only force to create new mutants, you
+ can treat a long chromosomal region as a locus and use the infinite-alleles
+ model, actually a 
 \begin_inset Formula $k$
 \end_inset
 
@@ -13816,6 +13817,28 @@ Infinite-sites and infinite-alleles models have some similarities.
 \end_inset
 
 , to mimic the infinite-site model.
+ This assumption is certainly wrong with the infinite-site model when recombinat
+ion is involved, because recombination creates new haplotypes (alleles)
+ under the infinite-site model.
+ However, for short regions where recombination can be ignored, an 
+\begin_inset Formula $k$
+\end_inset
+
+-allele model can be an easy and fast way to mimic an infinite-site model.
+ That statement basically says that you have a choice between two models
+ if you would like to simulate the evolution of this gene, namely considering
+ the gene as a locus and simulating variants as alleles, or considering
+ the gene as a sequence and simulating haplotypes as alleles.
+\end_layout
+
+\begin_layout Standard
+For example, the CFTR gene (for cystic fibrosis) can have many alleles (thinking
+ in terms of infinite-allele model) which are nucleotide mutations on tens
+ of locations (infinite-site model).
+ In order to simulate the evolution of this gene, you have a choice between
+ two models, namely considering the gene as a locus and simulating variants
+ as alleles, or considering the gene as a sequence and simulating haplotypes
+ as alleles.
  Because there is supposed to be only one mutant at each site, you can assign
  a unique 
 \emph on
@@ -13823,9 +13846,7 @@ location
 \emph default
  for each allele of an infinite-allele model and convert multi-allelic datasets
  simulated by an infinite-allele model to sequences of diallelic markers.
- It worth noting that mutation rates are interpreted differently for these
- two models, and there is no way to recombine in such a region because it
- is reprsented as a single allele.
+ Note that mutation rates are interpreted differently for these two models.
 \end_layout
 
 \begin_layout Standard
