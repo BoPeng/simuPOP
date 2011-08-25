@@ -1268,7 +1268,7 @@ if __name__ == '__main__':
         sys.argv.remove('-m')
     #
     if alleleType == 'all':
-        for t in ['s', 'l', 'b']:
+        for t in ['s', 'l', 'b', 'm']:
             ret = subprocess.call([sys.executable, sys.argv[0], '-%s' % t] + sys.argv[1:])
             if ret != 0:  # if crash or killed
                 print 'Error: A non-zero return value is returned for module %s' % t

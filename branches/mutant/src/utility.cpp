@@ -170,7 +170,11 @@ using std::sort;
 using std::greater;
 
 // global constant variables
+#ifdef MUTANTALLELE
+const unsigned long ModuleMaxAllele = 2;
+#else
 const unsigned long ModuleMaxAllele = std::numeric_limits<Allele>::max();
+#endif
 const unsigned long MaxRandomNumber = std::numeric_limits<int32_t>::max();
 const unsigned char MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
 const size_t InvalidValue = ~size_t(0);

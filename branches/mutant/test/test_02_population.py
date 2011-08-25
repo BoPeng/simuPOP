@@ -1121,12 +1121,12 @@ class TestPopulation(unittest.TestCase):
     def testCrossPlatformLoad(self):
         'Testing loading populations created from other platform and allele types'
         # the populations are created by
-        # pop = Population(10000, loci=100, infoFields='a'])
+        # pop = Population(10000, loci=100, infoFields='a')
         # initGenotype(pop, genotype=[0, 1, 1, 1, 0, 1, 1])
         # initInfo(pop, values=[1, 2, 3, 4, 5], infoFields='a')
         # pop.save('testXX_XX.pop') # for different os and module
         for plat in [64, 32]:
-            for mod in ['std', 'la', 'ba']:
+            for mod in ['std', 'la', 'ba', 'mu']:
                 popname = 'sample_%d_%s.pop' % (plat, mod)
                 pop = Population()
                 try:

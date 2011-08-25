@@ -3291,9 +3291,15 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 				ar & data;
 			*ptr++ = (data & (1UL << (i % 32))) != 0;
 		}
-	}
+	// binary from mutant
+	} else if (ma == 2) {
+		compressed_vectora tmpgeno;
+		ar & tmpgeno;
+		m_genotype.resize(tmpgeno.size());
+		for (size_t i = 0; i < tmpgeno.size(); ++i)
+			m_genotype[i] = ToAllele(tmpgeno[i]);
 	// binary from others (long types)
-	else {
+	} else {
 		DBG_DO(DBG_POPULATION, cerr << "Load bin from long. " << endl);
 		vectoru tmpgeno;
 		ar & tmpgeno;
@@ -3302,7 +3308,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 			m_genotype[i] = ToAllele(tmpgeno[i]);
 	}
 #else
-	// long from binary
+	// long or mutant from binary
 	if (ma == 1) {
 		// for version 2 and higher, archive in 32bit blocks.
 		size_t size;
@@ -3326,8 +3332,30 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 	}                                                                                   // if ma == 1
 	else {                                                                              // for non-binary types, ...
 		DBG_DO(DBG_POPULATION, cerr << "Load long from long. " << endl);
+#  ifdef MUTANTALLELE
+		// mutant from mutant
+		if (ma == 2)
+			ar & m_genotype;
+		// mutant from long
+		else {
+			vectora data;
+			ar & data;
+			m_genotype.resize(data.size());
+			for (size_t i = 0; i < data.size(); ++i)
+				assignGenotype(m_genotype, i, data[i]);
+		}
+#  else
+		// long from mutant
+		if (ma == 2) {
+			compressed_vectora data;
+			ar & data;
+			m_genotype.resize(data.size());
+			for (size_t i = 0; i < data.size(); ++i)
+				m_genotype[i] = data[i];
 		// long from long
-		ar & m_genotype;
+		} else
+			ar & m_genotype;
+#  endif
 	}
 #endif
 
