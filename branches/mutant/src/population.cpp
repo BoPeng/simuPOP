@@ -3292,7 +3292,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 			*ptr++ = (data & (1UL << (i % 32))) != 0;
 		}
 	// binary from mutant
-	} else if (ma == 2) {
+	} else if (ma == 256) {
 		compressed_vectora tmpgeno;
 		ar & tmpgeno;
 		m_genotype.resize(tmpgeno.size());
@@ -3334,7 +3334,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 		DBG_DO(DBG_POPULATION, cerr << "Load long from long. " << endl);
 #  ifdef MUTANTALLELE
 		// mutant from mutant
-		if (ma == 2)
+		if (ma == 256)
 			ar & m_genotype;
 		// mutant from long
 		else {
@@ -3346,7 +3346,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 		}
 #  else
 		// long from mutant
-		if (ma == 2) {
+		if (ma == 256) {
 			compressed_vectora data;
 			ar & data;
 			m_genotype.resize(data.size());

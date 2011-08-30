@@ -171,7 +171,7 @@ using std::greater;
 
 // global constant variables
 #ifdef MUTANTALLELE
-const unsigned long ModuleMaxAllele = 2;
+const unsigned long ModuleMaxAllele = 256;
 #else
 const unsigned long ModuleMaxAllele = std::numeric_limits<Allele>::max();
 #endif

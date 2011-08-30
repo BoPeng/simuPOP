@@ -44,6 +44,7 @@
 
 // for compressed vector
 #include "boost/numeric/ublas/vector_sparse.hpp"
+using boost::numeric::ublas::compressed_vector;
 
 // For the handling of binary modules and for the use of unordered_map in tr1
 #ifdef _MSC_VER
@@ -344,7 +345,7 @@ typedef long LONG;
 typedef std::vector<long>                                vectori;
 typedef std::vector<double>                              vectorf;
 typedef std::vector<Allele>                              vectora;
-typedef boost::numeric::ublas::compressed_vector<Allele> compressed_vectora;
+typedef compressed_vector<unsigned char> 		 compressed_vectora;
 typedef std::vector<Allele>                              vectora;
 typedef std::vector<size_t>                              vectoru;
 typedef std::vector<std::string>                         vectorstr;

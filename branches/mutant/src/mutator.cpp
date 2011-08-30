@@ -290,30 +290,30 @@ void MatrixMutator::mutate(AlleleRef allele, size_t) const
 // mutate to a state other than current state with equal probability
 #ifdef MUTANTALLELE
 void KAlleleMutator::mutate(IndAlleleIterator & ptr, size_t) const
-#else
-void KAlleleMutator::mutate(AlleleRef allele, size_t) const
-#endif
 {
-#ifdef MUTANTALLELE
 	if (static_cast<size_t>((*ptr.ptr())[ptr.idx()]) >= m_k) {
 		DBG_WARNIF(true, "Allele " + toStr(static_cast<size_t>((*ptr.ptr())[ptr.idx()]))
-#else
-	if (static_cast<size_t>(allele) >= m_k) {
-		DBG_WARNIF(true, "Allele " + toStr(static_cast<size_t>(allele))
-#endif
 			+ " will not be mutated because mutate rates are only defined for alleles 0 ... "
 			+ toStr(m_k - 1));
 		return;
 	}
-#ifdef BINARYALLELE
-	allele = !allele;
-#else
-#  ifdef MUTANTALLELE
 	Allele new_allele = static_cast<Allele>(getRNG().randInt(m_k - 1));
 	if (new_allele >= (*ptr.ptr())[ptr.idx()])
 		assignGenotype(*ptr.ptr(), ptr.idx(), new_allele + 1);
 	else
 		assignGenotype(*ptr.ptr(), ptr.idx(), new_allele);
+}
+#else
+void KAlleleMutator::mutate(AlleleRef allele, size_t) const
+{
+	if (static_cast<size_t>(allele) >= m_k) {
+		DBG_WARNIF(true, "Allele " + toStr(static_cast<size_t>(allele))
+			+ " will not be mutated because mutate rates are only defined for alleles 0 ... "
+			+ toStr(m_k - 1));
+		return;
+	}
+#  ifdef BINARYALLELE
+	allele = !allele;
 #  else
 	Allele new_allele = static_cast<Allele>(getRNG().randInt(m_k - 1));
 	if (new_allele >= allele)
@@ -321,8 +321,9 @@ void KAlleleMutator::mutate(AlleleRef allele, size_t) const
 	else
 		allele = new_allele;
 #  endif
-#endif
 }
+#endif
+
 
 
 StepwiseMutator::StepwiseMutator(const floatList & rates, const lociList & loci,
