@@ -7643,3 +7643,703 @@ TestPedigreeMating : loci=100, size=10000: 26.5212380886
 TestPedigreeMating : loci=100, size=20000: 54.3880081177
 TestPedigreeMating : 26.5212380886, 54.3880081177
 TestPedigreeMating : End of test TestPedigreeMating
+TestBasicRandomMating : Host: ubuntu (Linux, x86_64, x86_64)
+TestBasicRandomMating : Time: Fri Sep  2 13:40:40 2011
+TestBasicRandomMating : Python: 2.7.2 [GCC 4.5.2]
+TestBasicRandomMating : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 274038
+TestBasicRandomMating : loci=10, size=10000: 24307
+TestBasicRandomMating : loci=10, size=100000: 1604
+TestBasicRandomMating : loci=100, size=1000: 232402
+TestBasicRandomMating : loci=100, size=10000: 19874
+TestBasicRandomMating : loci=100, size=100000: 964
+TestBasicRandomMating : loci=10000, size=1000: 10737
+TestBasicRandomMating : loci=10000, size=10000: 969
+TestBasicRandomMating : loci=10000, size=100000: failed
+TestBasicRandomMating : loci=100000, size=1000: 1155
+TestBasicRandomMating : loci=100000, size=10000: failed
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 274038, 24307, 1604, 232402, 19874, 964, 10737, 969, 0, 1155, 0, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestBasicRandomMating : Host: ubuntu (Linux, x86_64, x86_64)
+TestBasicRandomMating : Time: Fri Sep  2 13:49:55 2011
+TestBasicRandomMating : Python: 2.7.2 [GCC 4.5.2]
+TestBasicRandomMating : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 254897
+TestBasicRandomMating : loci=10, size=10000: 22271
+TestBasicRandomMating : loci=10, size=100000: 1194
+TestBasicRandomMating : loci=100, size=1000: 182786
+TestBasicRandomMating : loci=100, size=10000: 10560
+TestBasicRandomMating : loci=100, size=100000: 666
+TestBasicRandomMating : loci=10000, size=1000: 2963
+TestBasicRandomMating : loci=10000, size=10000: 278
+TestBasicRandomMating : loci=10000, size=100000: 0
+TestBasicRandomMating : loci=100000, size=1000: 299
+TestBasicRandomMating : loci=100000, size=10000: 0
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 254897, 22271, 1194, 182786, 10560, 666, 2963, 278, 0, 299, 0, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestBasicRandomMating : Host: ubuntu (Linux, x86_64, x86_64)
+TestBasicRandomMating : Time: Fri Sep  2 13:59:07 2011
+TestBasicRandomMating : Python: 2.7.2 [GCC 4.5.2]
+TestBasicRandomMating : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 180406
+TestBasicRandomMating : loci=10, size=10000: 17261
+TestBasicRandomMating : loci=10, size=100000: 1472
+TestBasicRandomMating : loci=100, size=1000: 187825
+TestBasicRandomMating : loci=100, size=10000: 17725
+TestBasicRandomMating : loci=100, size=100000: 1297
+TestBasicRandomMating : loci=10000, size=1000: 87832
+TestBasicRandomMating : loci=10000, size=10000: 4301
+TestBasicRandomMating : loci=10000, size=100000: 310
+TestBasicRandomMating : loci=100000, size=1000: 8956
+TestBasicRandomMating : loci=100000, size=10000: 799
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 180406, 17261, 1472, 187825, 17725, 1297, 87832, 4301, 310, 8956, 799, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestBasicRandomMating : Host: ubuntu (Linux, x86_64, x86_64)
+TestBasicRandomMating : Time: Fri Sep  2 14:10:20 2011
+TestBasicRandomMating : Python: 2.7.2 [GCC 4.5.2]
+TestBasicRandomMating : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 246904
+TestBasicRandomMating : loci=10, size=10000: 23954
+TestBasicRandomMating : loci=10, size=100000: 2029
+TestBasicRandomMating : loci=100, size=1000: 97469
+TestBasicRandomMating : loci=100, size=10000: 9437
+TestBasicRandomMating : loci=100, size=100000: 897
+TestBasicRandomMating : loci=10000, size=1000: 1492
+TestBasicRandomMating : loci=10000, size=10000: 146
+TestBasicRandomMating : loci=10000, size=100000: 14
+TestBasicRandomMating : loci=100000, size=1000: 150
+TestBasicRandomMating : loci=100000, size=10000: 14
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 246904, 23954, 2029, 97469, 9437, 897, 1492, 146, 14, 150, 14, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestRandomSelection : Host: ubuntu (Linux, x86_64, x86_64)
+TestRandomSelection : Time: Fri Sep  2 14:21:31 2011
+TestRandomSelection : Python: 2.7.2 [GCC 4.5.2]
+TestRandomSelection : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestRandomSelection : Test: Random selection scheme, results are number of generations in 30 seconds.
+TestRandomSelection : loci=10, size=10000: 30021
+TestRandomSelection : loci=10, size=100000: 2225
+TestRandomSelection : loci=100, size=10000: 24619
+TestRandomSelection : loci=100, size=100000: 1225
+TestRandomSelection : loci=10000, size=10000: 566
+TestRandomSelection : loci=10000, size=100000: failed
+TestRandomSelection : 30021, 2225, 24619, 1225, 566, 0
+TestRandomSelection : End of test TestRandomSelection
+TestRandomSelection : Host: ubuntu (Linux, x86_64, x86_64)
+TestRandomSelection : Time: Fri Sep  2 14:24:14 2011
+TestRandomSelection : Python: 2.7.2 [GCC 4.5.2]
+TestRandomSelection : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestRandomSelection : Test: Random selection scheme, results are number of generations in 30 seconds.
+TestRandomSelection : loci=10, size=10000: 28649
+TestRandomSelection : loci=10, size=100000: 1481
+TestRandomSelection : loci=100, size=10000: 8738
+TestRandomSelection : loci=100, size=100000: 637
+TestRandomSelection : loci=10000, size=10000: 148
+TestRandomSelection : loci=10000, size=100000: 0
+TestRandomSelection : 28649, 1481, 8738, 637, 148, 0
+TestRandomSelection : End of test TestRandomSelection
+TestRandomSelection : Host: ubuntu (Linux, x86_64, x86_64)
+TestRandomSelection : Time: Fri Sep  2 14:26:51 2011
+TestRandomSelection : Python: 2.7.2 [GCC 4.5.2]
+TestRandomSelection : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestRandomSelection : Test: Random selection scheme, results are number of generations in 30 seconds.
+TestRandomSelection : loci=10, size=10000: 22468
+TestRandomSelection : loci=10, size=100000: 1915
+TestRandomSelection : loci=100, size=10000: 26503
+TestRandomSelection : loci=100, size=100000: 1765
+TestRandomSelection : loci=10000, size=10000: 3540
+TestRandomSelection : loci=10000, size=100000: 274
+TestRandomSelection : 22468, 1915, 26503, 1765, 3540, 274
+TestRandomSelection : End of test TestRandomSelection
+TestRandomSelection : Host: ubuntu (Linux, x86_64, x86_64)
+TestRandomSelection : Time: Fri Sep  2 14:29:59 2011
+TestRandomSelection : Python: 2.7.2 [GCC 4.5.2]
+TestRandomSelection : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestRandomSelection : Test: Random selection scheme, results are number of generations in 30 seconds.
+TestRandomSelection : loci=10, size=10000: 22556
+TestRandomSelection : loci=10, size=100000: 1947
+TestRandomSelection : loci=100, size=10000: 5251
+TestRandomSelection : loci=100, size=100000: 587
+TestRandomSelection : loci=10000, size=10000: 59
+TestRandomSelection : loci=10000, size=100000: 8
+TestRandomSelection : 22556, 1947, 5251, 587, 59, 8
+TestRandomSelection : End of test TestRandomSelection
+TestPolygamousMating : Host: ubuntu (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Fri Sep  2 14:33:08 2011
+TestPolygamousMating : Python: 2.7.2 [GCC 4.5.2]
+TestPolygamousMating : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 9003
+TestPolygamousMating : loci=10, size=100000: 739
+TestPolygamousMating : loci=100, size=10000: 7624
+TestPolygamousMating : loci=100, size=100000: 492
+TestPolygamousMating : loci=10000, size=10000: 546
+TestPolygamousMating : loci=10000, size=100000: failed
+TestPolygamousMating : 9003, 739, 7624, 492, 546, 0
+TestPolygamousMating : End of test TestPolygamousMating
+TestPolygamousMating : Host: ubuntu (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Fri Sep  2 14:35:47 2011
+TestPolygamousMating : Python: 2.7.2 [GCC 4.5.2]
+TestPolygamousMating : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 8737
+TestPolygamousMating : loci=10, size=100000: 610
+TestPolygamousMating : loci=100, size=10000: 5171
+TestPolygamousMating : loci=100, size=100000: 364
+TestPolygamousMating : loci=10000, size=10000: 150
+TestPolygamousMating : loci=10000, size=100000: 0
+TestPolygamousMating : 8737, 610, 5171, 364, 150, 0
+TestPolygamousMating : End of test TestPolygamousMating
+TestPolygamousMating : Host: ubuntu (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Fri Sep  2 14:38:23 2011
+TestPolygamousMating : Python: 2.7.2 [GCC 4.5.2]
+TestPolygamousMating : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 6885
+TestPolygamousMating : loci=10, size=100000: 615
+TestPolygamousMating : loci=100, size=10000: 6753
+TestPolygamousMating : loci=100, size=100000: 551
+TestPolygamousMating : loci=10000, size=10000: 2239
+TestPolygamousMating : loci=10000, size=100000: 176
+TestPolygamousMating : 6885, 615, 6753, 551, 2239, 176
+TestPolygamousMating : End of test TestPolygamousMating
+TestPolygamousMating : Host: ubuntu (Linux, x86_64, x86_64)
+TestPolygamousMating : Time: Fri Sep  2 14:41:31 2011
+TestPolygamousMating : Python: 2.7.2 [GCC 4.5.2]
+TestPolygamousMating : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestPolygamousMating : Test: Polygamous mating scheme, results are number of generations in 30 seconds.
+TestPolygamousMating : loci=10, size=10000: 8431
+TestPolygamousMating : loci=10, size=100000: 773
+TestPolygamousMating : loci=100, size=10000: 4110
+TestPolygamousMating : loci=100, size=100000: 400
+TestPolygamousMating : loci=10000, size=10000: 73
+TestPolygamousMating : loci=10000, size=100000: 8
+TestPolygamousMating : 8431, 773, 4110, 400, 73, 8
+TestPolygamousMating : End of test TestPolygamousMating
+TestPyParentChooser : Host: ubuntu (Linux, x86_64, x86_64)
+TestPyParentChooser : Time: Fri Sep  2 14:44:39 2011
+TestPyParentChooser : Python: 2.7.2 [GCC 4.5.2]
+TestPyParentChooser : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestPyParentChooser : Test: HomoMating scheme with PyParentChooser , results are number of generations in 30 seconds.
+TestPyParentChooser : loci=10, size=10000: 274
+TestPyParentChooser : loci=10, size=100000: 27
+TestPyParentChooser : loci=100, size=10000: 277
+TestPyParentChooser : loci=100, size=100000: 27
+TestPyParentChooser : loci=10000, size=10000: 175
+TestPyParentChooser : loci=10000, size=100000: failed
+TestPyParentChooser : 274, 27, 277, 27, 175, 0
+TestPyParentChooser : End of test TestPyParentChooser
+TestPyParentChooser : Host: ubuntu (Linux, x86_64, x86_64)
+TestPyParentChooser : Time: Fri Sep  2 14:47:19 2011
+TestPyParentChooser : Python: 2.7.2 [GCC 4.5.2]
+TestPyParentChooser : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestPyParentChooser : Test: HomoMating scheme with PyParentChooser , results are number of generations in 30 seconds.
+TestPyParentChooser : loci=10, size=10000: 277
+TestPyParentChooser : loci=10, size=100000: 28
+TestPyParentChooser : loci=100, size=10000: 271
+TestPyParentChooser : loci=100, size=100000: 26
+TestPyParentChooser : loci=10000, size=10000: 85
+TestPyParentChooser : loci=10000, size=100000: 0
+TestPyParentChooser : 277, 28, 271, 26, 85, 0
+TestPyParentChooser : End of test TestPyParentChooser
+TestPyParentChooser : Host: ubuntu (Linux, x86_64, x86_64)
+TestPyParentChooser : Time: Fri Sep  2 14:49:54 2011
+TestPyParentChooser : Python: 2.7.2 [GCC 4.5.2]
+TestPyParentChooser : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestPyParentChooser : Test: HomoMating scheme with PyParentChooser , results are number of generations in 30 seconds.
+TestPyParentChooser : loci=10, size=10000: 267
+TestPyParentChooser : loci=10, size=100000: 27
+TestPyParentChooser : loci=100, size=10000: 270
+TestPyParentChooser : loci=100, size=100000: 26
+TestPyParentChooser : loci=10000, size=10000: 246
+TestPyParentChooser : loci=10000, size=100000: 24
+TestPyParentChooser : 267, 27, 270, 26, 246, 24
+TestPyParentChooser : End of test TestPyParentChooser
+TestPyParentChooser : Host: ubuntu (Linux, x86_64, x86_64)
+TestPyParentChooser : Time: Fri Sep  2 14:53:00 2011
+TestPyParentChooser : Python: 2.7.2 [GCC 4.5.2]
+TestPyParentChooser : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestPyParentChooser : Test: HomoMating scheme with PyParentChooser , results are number of generations in 30 seconds.
+TestPyParentChooser : loci=10, size=10000: 287
+TestPyParentChooser : loci=10, size=100000: 28
+TestPyParentChooser : loci=100, size=10000: 270
+TestPyParentChooser : loci=100, size=100000: 27
+TestPyParentChooser : loci=10000, size=10000: 57
+TestPyParentChooser : loci=10000, size=100000: 6
+TestPyParentChooser : 287, 28, 270, 27, 57, 6
+TestPyParentChooser : End of test TestPyParentChooser
+TestIdTagger : Host: ubuntu (Linux, x86_64, x86_64)
+TestIdTagger : Time: Fri Sep  2 14:56:06 2011
+TestIdTagger : Python: 2.7.2 [GCC 4.5.2]
+TestIdTagger : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestIdTagger : Test: Test idTagger, results are number of generations in 30 seconds.
+TestIdTagger : loci=10, size=10000: 23018
+TestIdTagger : loci=10, size=100000: 2196
+TestIdTagger : loci=100, size=10000: 22380
+TestIdTagger : loci=100, size=100000: 2097
+TestIdTagger : loci=10000, size=10000: 21262
+TestIdTagger : loci=10000, size=100000: failed
+TestIdTagger : 23018, 2196, 22380, 2097, 21262, 0
+TestIdTagger : End of test TestIdTagger
+TestIdTagger : Host: ubuntu (Linux, x86_64, x86_64)
+TestIdTagger : Time: Fri Sep  2 14:58:47 2011
+TestIdTagger : Python: 2.7.2 [GCC 4.5.2]
+TestIdTagger : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestIdTagger : Test: Test idTagger, results are number of generations in 30 seconds.
+TestIdTagger : loci=10, size=10000: 22620
+TestIdTagger : loci=10, size=100000: 2149
+TestIdTagger : loci=100, size=10000: 21934
+TestIdTagger : loci=100, size=100000: 2136
+TestIdTagger : loci=10000, size=10000: 22190
+TestIdTagger : loci=10000, size=100000: 0
+TestIdTagger : 22620, 2149, 21934, 2136, 22190, 0
+TestIdTagger : End of test TestIdTagger
+TestIdTagger : Host: ubuntu (Linux, x86_64, x86_64)
+TestIdTagger : Time: Fri Sep  2 15:01:23 2011
+TestIdTagger : Python: 2.7.2 [GCC 4.5.2]
+TestIdTagger : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestIdTagger : Test: Test idTagger, results are number of generations in 30 seconds.
+TestIdTagger : loci=10, size=10000: 22985
+TestIdTagger : loci=10, size=100000: 2136
+TestIdTagger : loci=100, size=10000: 22628
+TestIdTagger : loci=100, size=100000: 2090
+TestIdTagger : loci=10000, size=10000: 22468
+TestIdTagger : loci=10000, size=100000: 2104
+TestIdTagger : 22985, 2136, 22628, 2090, 22468, 2104
+TestIdTagger : End of test TestIdTagger
+TestIdTagger : Host: ubuntu (Linux, x86_64, x86_64)
+TestIdTagger : Time: Fri Sep  2 15:04:30 2011
+TestIdTagger : Python: 2.7.2 [GCC 4.5.2]
+TestIdTagger : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestIdTagger : Test: Test idTagger, results are number of generations in 30 seconds.
+TestIdTagger : loci=10, size=10000: 21731
+TestIdTagger : loci=10, size=100000: 2104
+TestIdTagger : loci=100, size=10000: 22375
+TestIdTagger : loci=100, size=100000: 2100
+TestIdTagger : loci=10000, size=10000: 21110
+TestIdTagger : loci=10000, size=100000: 2104
+TestIdTagger : 21731, 2104, 22375, 2100, 21110, 2104
+TestIdTagger : End of test TestIdTagger
+TestPedigreeTagger : Host: ubuntu (Linux, x86_64, x86_64)
+TestPedigreeTagger : Time: Fri Sep  2 15:07:36 2011
+TestPedigreeTagger : Python: 2.7.2 [GCC 4.5.2]
+TestPedigreeTagger : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestPedigreeTagger : Test: Test PedigreeTagger, results are number of generations in 30 seconds.
+TestPedigreeTagger : loci=10, size=10000: 5403
+TestPedigreeTagger : loci=10, size=100000: 444
+TestPedigreeTagger : loci=100, size=10000: 4829
+TestPedigreeTagger : loci=100, size=100000: 383
+TestPedigreeTagger : loci=10000, size=10000: 182
+TestPedigreeTagger : loci=10000, size=100000: failed
+TestPedigreeTagger : 5403, 444, 4829, 383, 182, 0
+TestPedigreeTagger : End of test TestPedigreeTagger
+TestPedigreeTagger : Host: ubuntu (Linux, x86_64, x86_64)
+TestPedigreeTagger : Time: Fri Sep  2 15:10:17 2011
+TestPedigreeTagger : Python: 2.7.2 [GCC 4.5.2]
+TestPedigreeTagger : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestPedigreeTagger : Test: Test PedigreeTagger, results are number of generations in 30 seconds.
+TestPedigreeTagger : loci=10, size=10000: 5453
+TestPedigreeTagger : loci=10, size=100000: 404
+TestPedigreeTagger : loci=100, size=10000: 3246
+TestPedigreeTagger : loci=100, size=100000: 213
+TestPedigreeTagger : loci=10000, size=10000: 44
+TestPedigreeTagger : loci=10000, size=100000: 0
+TestPedigreeTagger : 5453, 404, 3246, 213, 44, 0
+TestPedigreeTagger : End of test TestPedigreeTagger
+TestPedigreeTagger : Host: ubuntu (Linux, x86_64, x86_64)
+TestPedigreeTagger : Time: Fri Sep  2 15:12:52 2011
+TestPedigreeTagger : Python: 2.7.2 [GCC 4.5.2]
+TestPedigreeTagger : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestPedigreeTagger : Test: Test PedigreeTagger, results are number of generations in 30 seconds.
+TestPedigreeTagger : loci=10, size=10000: 5077
+TestPedigreeTagger : loci=10, size=100000: 451
+TestPedigreeTagger : loci=100, size=10000: 5279
+TestPedigreeTagger : loci=100, size=100000: 413
+TestPedigreeTagger : loci=10000, size=10000: 1676
+TestPedigreeTagger : loci=10000, size=100000: 103
+TestPedigreeTagger : 5077, 451, 5279, 413, 1676, 103
+TestPedigreeTagger : End of test TestPedigreeTagger
+TestPedigreeTagger : Host: ubuntu (Linux, x86_64, x86_64)
+TestPedigreeTagger : Time: Fri Sep  2 15:15:58 2011
+TestPedigreeTagger : Python: 2.7.2 [GCC 4.5.2]
+TestPedigreeTagger : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestPedigreeTagger : Test: Test PedigreeTagger, results are number of generations in 30 seconds.
+TestPedigreeTagger : loci=10, size=10000: 5204
+TestPedigreeTagger : loci=10, size=100000: 458
+TestPedigreeTagger : loci=100, size=10000: 3274
+TestPedigreeTagger : loci=100, size=100000: 297
+TestPedigreeTagger : loci=10000, size=10000: 77
+TestPedigreeTagger : loci=10000, size=100000: 8
+TestPedigreeTagger : 5204, 458, 3274, 297, 77, 8
+TestPedigreeTagger : End of test TestPedigreeTagger
+TestInheritTagger : Host: ubuntu (Linux, x86_64, x86_64)
+TestInheritTagger : Time: Fri Sep  2 15:19:08 2011
+TestInheritTagger : Python: 2.7.2 [GCC 4.5.2]
+TestInheritTagger : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestInheritTagger : Test: Test InheritTagger, results are number of generations in 30 seconds.
+TestInheritTagger : loci=10, size=10000: 11315
+TestInheritTagger : loci=10, size=100000: 716
+TestInheritTagger : loci=100, size=10000: 9422
+TestInheritTagger : loci=100, size=100000: 458
+TestInheritTagger : loci=10000, size=10000: 506
+TestInheritTagger : loci=10000, size=100000: failed
+TestInheritTagger : 11315, 716, 9422, 458, 506, 0
+TestInheritTagger : End of test TestInheritTagger
+TestInheritTagger : Host: ubuntu (Linux, x86_64, x86_64)
+TestInheritTagger : Time: Fri Sep  2 15:21:46 2011
+TestInheritTagger : Python: 2.7.2 [GCC 4.5.2]
+TestInheritTagger : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestInheritTagger : Test: Test InheritTagger, results are number of generations in 30 seconds.
+TestInheritTagger : loci=10, size=10000: 10938
+TestInheritTagger : loci=10, size=100000: 564
+TestInheritTagger : loci=100, size=10000: 5547
+TestInheritTagger : loci=100, size=100000: 325
+TestInheritTagger : loci=10000, size=10000: 139
+TestInheritTagger : loci=10000, size=100000: 0
+TestInheritTagger : 10938, 564, 5547, 325, 139, 0
+TestInheritTagger : End of test TestInheritTagger
+TestInheritTagger : Host: ubuntu (Linux, x86_64, x86_64)
+TestInheritTagger : Time: Fri Sep  2 15:24:21 2011
+TestInheritTagger : Python: 2.7.2 [GCC 4.5.2]
+TestInheritTagger : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestInheritTagger : Test: Test InheritTagger, results are number of generations in 30 seconds.
+TestInheritTagger : loci=10, size=10000: 7917
+TestInheritTagger : loci=10, size=100000: 619
+TestInheritTagger : loci=100, size=10000: 7971
+TestInheritTagger : loci=100, size=100000: 565
+TestInheritTagger : loci=10000, size=10000: 2131
+TestInheritTagger : loci=10000, size=100000: 153
+TestInheritTagger : 7917, 619, 7971, 565, 2131, 153
+TestInheritTagger : End of test TestInheritTagger
+TestInheritTagger : Host: ubuntu (Linux, x86_64, x86_64)
+TestInheritTagger : Time: Fri Sep  2 15:27:27 2011
+TestInheritTagger : Python: 2.7.2 [GCC 4.5.2]
+TestInheritTagger : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestInheritTagger : Test: Test InheritTagger, results are number of generations in 30 seconds.
+TestInheritTagger : loci=10, size=10000: 10578
+TestInheritTagger : loci=10, size=100000: 864
+TestInheritTagger : loci=100, size=10000: 4481
+TestInheritTagger : loci=100, size=100000: 416
+TestInheritTagger : loci=10000, size=10000: 74
+TestInheritTagger : loci=10000, size=100000: 8
+TestInheritTagger : 10578, 864, 4481, 416, 74, 8
+TestInheritTagger : End of test TestInheritTagger
+TestSelfMating : Host: ubuntu (Linux, x86_64, x86_64)
+TestSelfMating : Time: Fri Sep  2 15:30:35 2011
+TestSelfMating : Python: 2.7.2 [GCC 4.5.2]
+TestSelfMating : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestSelfMating : Test: Self mating scheme, results are number of generations in 30 seconds.
+TestSelfMating : loci=10, size=10000: 21320
+TestSelfMating : loci=10, size=100000: 1636
+TestSelfMating : loci=100, size=10000: 15740
+TestSelfMating : loci=100, size=100000: 906
+TestSelfMating : loci=10000, size=10000: 615
+TestSelfMating : loci=10000, size=100000: failed
+TestSelfMating : 21320, 1636, 15740, 906, 615, 0
+TestSelfMating : End of test TestSelfMating
+TestSelfMating : Host: ubuntu (Linux, x86_64, x86_64)
+TestSelfMating : Time: Fri Sep  2 15:33:14 2011
+TestSelfMating : Python: 2.7.2 [GCC 4.5.2]
+TestSelfMating : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestSelfMating : Test: Self mating scheme, results are number of generations in 30 seconds.
+TestSelfMating : loci=10, size=10000: 20201
+TestSelfMating : loci=10, size=100000: 1201
+TestSelfMating : loci=100, size=10000: 8519
+TestSelfMating : loci=100, size=100000: 614
+TestSelfMating : loci=10000, size=10000: 164
+TestSelfMating : loci=10000, size=100000: 0
+TestSelfMating : 20201, 1201, 8519, 614, 164, 0
+TestSelfMating : End of test TestSelfMating
+TestSelfMating : Host: ubuntu (Linux, x86_64, x86_64)
+TestSelfMating : Time: Fri Sep  2 15:35:51 2011
+TestSelfMating : Python: 2.7.2 [GCC 4.5.2]
+TestSelfMating : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestSelfMating : Test: Self mating scheme, results are number of generations in 30 seconds.
+TestSelfMating : loci=10, size=10000: 11646
+TestSelfMating : loci=10, size=100000: 1045
+TestSelfMating : loci=100, size=10000: 11994
+TestSelfMating : loci=100, size=100000: 958
+TestSelfMating : loci=10000, size=10000: 3062
+TestSelfMating : loci=10000, size=100000: 241
+TestSelfMating : 11646, 1045, 11994, 958, 3062, 241
+TestSelfMating : End of test TestSelfMating
+TestSelfMating : Host: ubuntu (Linux, x86_64, x86_64)
+TestSelfMating : Time: Fri Sep  2 15:38:57 2011
+TestSelfMating : Python: 2.7.2 [GCC 4.5.2]
+TestSelfMating : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestSelfMating : Test: Self mating scheme, results are number of generations in 30 seconds.
+TestSelfMating : loci=10, size=10000: 17544
+TestSelfMating : loci=10, size=100000: 1668
+TestSelfMating : loci=100, size=10000: 5510
+TestSelfMating : loci=100, size=100000: 554
+TestSelfMating : loci=10000, size=10000: 76
+TestSelfMating : loci=10000, size=100000: 8
+TestSelfMating : 17544, 1668, 5510, 554, 76, 8
+TestSelfMating : End of test TestSelfMating
+TestHaplodiploidMating : Host: ubuntu (Linux, x86_64, x86_64)
+TestHaplodiploidMating : Time: Fri Sep  2 15:42:06 2011
+TestHaplodiploidMating : Python: 2.7.2 [GCC 4.5.2]
+TestHaplodiploidMating : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestHaplodiploidMating : Test: Haplodiploid mating scheme, results are number of generations in 30 seconds.
+TestHaplodiploidMating : loci=10, size=10000: 18361
+TestHaplodiploidMating : loci=10, size=100000: 1326
+TestHaplodiploidMating : loci=100, size=10000: 14645
+TestHaplodiploidMating : loci=100, size=100000: 741
+TestHaplodiploidMating : loci=10000, size=10000: 677
+TestHaplodiploidMating : loci=10000, size=100000: failed
+TestHaplodiploidMating : 18361, 1326, 14645, 741, 677, 0
+TestHaplodiploidMating : End of test TestHaplodiploidMating
+TestHaplodiploidMating : Host: ubuntu (Linux, x86_64, x86_64)
+TestHaplodiploidMating : Time: Fri Sep  2 15:44:46 2011
+TestHaplodiploidMating : Python: 2.7.2 [GCC 4.5.2]
+TestHaplodiploidMating : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestHaplodiploidMating : Test: Haplodiploid mating scheme, results are number of generations in 30 seconds.
+TestHaplodiploidMating : loci=10, size=10000: 17606
+TestHaplodiploidMating : loci=10, size=100000: 990
+TestHaplodiploidMating : loci=100, size=10000: 8314
+TestHaplodiploidMating : loci=100, size=100000: 494
+TestHaplodiploidMating : loci=10000, size=10000: 185
+TestHaplodiploidMating : loci=10000, size=100000: 0
+TestHaplodiploidMating : 17606, 990, 8314, 494, 185, 0
+TestHaplodiploidMating : End of test TestHaplodiploidMating
+TestHaplodiploidMating : Host: ubuntu (Linux, x86_64, x86_64)
+TestHaplodiploidMating : Time: Fri Sep  2 15:47:22 2011
+TestHaplodiploidMating : Python: 2.7.2 [GCC 4.5.2]
+TestHaplodiploidMating : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestHaplodiploidMating : Test: Haplodiploid mating scheme, results are number of generations in 30 seconds.
+TestHaplodiploidMating : loci=10, size=10000: 13241
+TestHaplodiploidMating : loci=10, size=100000: 1110
+TestHaplodiploidMating : loci=100, size=10000: 13381
+TestHaplodiploidMating : loci=100, size=100000: 959
+TestHaplodiploidMating : loci=10000, size=10000: 2906
+TestHaplodiploidMating : loci=10000, size=100000: 214
+TestHaplodiploidMating : 13241, 1110, 13381, 959, 2906, 214
+TestHaplodiploidMating : End of test TestHaplodiploidMating
+TestHaplodiploidMating : Host: ubuntu (Linux, x86_64, x86_64)
+TestHaplodiploidMating : Time: Fri Sep  2 15:50:30 2011
+TestHaplodiploidMating : Python: 2.7.2 [GCC 4.5.2]
+TestHaplodiploidMating : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestHaplodiploidMating : Test: Haplodiploid mating scheme, results are number of generations in 30 seconds.
+TestHaplodiploidMating : loci=10, size=10000: 16535
+TestHaplodiploidMating : loci=10, size=100000: 1421
+TestHaplodiploidMating : loci=100, size=10000: 6479
+TestHaplodiploidMating : loci=100, size=100000: 618
+TestHaplodiploidMating : loci=10000, size=10000: 102
+TestHaplodiploidMating : loci=10000, size=100000: 10
+TestHaplodiploidMating : 16535, 1421, 6479, 618, 102, 10
+TestHaplodiploidMating : End of test TestHaplodiploidMating
+TestMitochondrialGenoTransmitter : Host: ubuntu (Linux, x86_64, x86_64)
+TestMitochondrialGenoTransmitter : Time: Fri Sep  2 15:53:37 2011
+TestMitochondrialGenoTransmitter : Python: 2.7.2 [GCC 4.5.2]
+TestMitochondrialGenoTransmitter : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestMitochondrialGenoTransmitter : Test: MitochondrialGenoTransmitter, results are number of generations in 30 seconds.
+TestMitochondrialGenoTransmitter : loci=10, size=10000: 29568
+TestMitochondrialGenoTransmitter : loci=10, size=100000: 2911
+TestMitochondrialGenoTransmitter : loci=100, size=10000: 29619
+TestMitochondrialGenoTransmitter : loci=100, size=100000: 2878
+TestMitochondrialGenoTransmitter : loci=10000, size=10000: 29177
+TestMitochondrialGenoTransmitter : loci=10000, size=100000: failed
+TestMitochondrialGenoTransmitter : 29568, 2911, 29619, 2878, 29177, 0
+TestMitochondrialGenoTransmitter : End of test TestMitochondrialGenoTransmitter
+TestMitochondrialGenoTransmitter : Host: ubuntu (Linux, x86_64, x86_64)
+TestMitochondrialGenoTransmitter : Time: Fri Sep  2 15:56:15 2011
+TestMitochondrialGenoTransmitter : Python: 2.7.2 [GCC 4.5.2]
+TestMitochondrialGenoTransmitter : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestMitochondrialGenoTransmitter : Test: MitochondrialGenoTransmitter, results are number of generations in 30 seconds.
+TestMitochondrialGenoTransmitter : loci=10, size=10000: 29181
+TestMitochondrialGenoTransmitter : loci=10, size=100000: 2695
+TestMitochondrialGenoTransmitter : loci=100, size=10000: 29296
+TestMitochondrialGenoTransmitter : loci=100, size=100000: 2694
+TestMitochondrialGenoTransmitter : loci=10000, size=10000: 27788
+TestMitochondrialGenoTransmitter : loci=10000, size=100000: 0
+TestMitochondrialGenoTransmitter : 29181, 2695, 29296, 2694, 27788, 0
+TestMitochondrialGenoTransmitter : End of test TestMitochondrialGenoTransmitter
+TestMitochondrialGenoTransmitter : Host: ubuntu (Linux, x86_64, x86_64)
+TestMitochondrialGenoTransmitter : Time: Fri Sep  2 15:58:51 2011
+TestMitochondrialGenoTransmitter : Python: 2.7.2 [GCC 4.5.2]
+TestMitochondrialGenoTransmitter : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestMitochondrialGenoTransmitter : Test: MitochondrialGenoTransmitter, results are number of generations in 30 seconds.
+TestMitochondrialGenoTransmitter : loci=10, size=10000: 28827
+TestMitochondrialGenoTransmitter : loci=10, size=100000: 2740
+TestMitochondrialGenoTransmitter : loci=100, size=10000: 28792
+TestMitochondrialGenoTransmitter : loci=100, size=100000: 2741
+TestMitochondrialGenoTransmitter : loci=10000, size=10000: 29472
+TestMitochondrialGenoTransmitter : loci=10000, size=100000: 2726
+TestMitochondrialGenoTransmitter : 28827, 2740, 28792, 2741, 29472, 2726
+TestMitochondrialGenoTransmitter : End of test TestMitochondrialGenoTransmitter
+TestMitochondrialGenoTransmitter : Host: ubuntu (Linux, x86_64, x86_64)
+TestMitochondrialGenoTransmitter : Time: Fri Sep  2 16:01:57 2011
+TestMitochondrialGenoTransmitter : Python: 2.7.2 [GCC 4.5.2]
+TestMitochondrialGenoTransmitter : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestMitochondrialGenoTransmitter : Test: MitochondrialGenoTransmitter, results are number of generations in 30 seconds.
+TestMitochondrialGenoTransmitter : loci=10, size=10000: 27850
+TestMitochondrialGenoTransmitter : loci=10, size=100000: 2631
+TestMitochondrialGenoTransmitter : loci=100, size=10000: 27945
+TestMitochondrialGenoTransmitter : loci=100, size=100000: 2661
+TestMitochondrialGenoTransmitter : loci=10000, size=10000: 28948
+TestMitochondrialGenoTransmitter : loci=10000, size=100000: 2691
+TestMitochondrialGenoTransmitter : 27850, 2631, 27945, 2661, 28948, 2691
+TestMitochondrialGenoTransmitter : End of test TestMitochondrialGenoTransmitter
+TestRecombinator : Host: ubuntu (Linux, x86_64, x86_64)
+TestRecombinator : Time: Fri Sep  2 16:05:04 2011
+TestRecombinator : Python: 2.7.2 [GCC 4.5.2]
+TestRecombinator : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestRecombinator : Test: Recombinator, results are number of generations in 30 seconds.
+TestRecombinator : loci=10, size=10000: 4937
+TestRecombinator : loci=10, size=100000: 445
+TestRecombinator : loci=100, size=10000: 2765
+TestRecombinator : loci=100, size=100000: 218
+TestRecombinator : loci=10000, size=10000: 59
+TestRecombinator : loci=10000, size=100000: failed
+TestRecombinator : 4937, 445, 2765, 218, 59, 0
+TestRecombinator : End of test TestRecombinator
+TestRecombinator : Host: ubuntu (Linux, x86_64, x86_64)
+TestRecombinator : Time: Fri Sep  2 16:07:44 2011
+TestRecombinator : Python: 2.7.2 [GCC 4.5.2]
+TestRecombinator : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestRecombinator : Test: Recombinator, results are number of generations in 30 seconds.
+TestRecombinator : loci=10, size=10000: 4629
+TestRecombinator : loci=10, size=100000: 368
+TestRecombinator : loci=100, size=10000: 2223
+TestRecombinator : loci=100, size=100000: 178
+TestRecombinator : loci=10000, size=10000: 54
+TestRecombinator : loci=10000, size=100000: 0
+TestRecombinator : 4629, 368, 2223, 178, 54, 0
+TestRecombinator : End of test TestRecombinator
+TestRecombinator : Host: ubuntu (Linux, x86_64, x86_64)
+TestRecombinator : Time: Fri Sep  2 16:10:19 2011
+TestRecombinator : Python: 2.7.2 [GCC 4.5.2]
+TestRecombinator : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestRecombinator : Test: Recombinator, results are number of generations in 30 seconds.
+TestRecombinator : loci=10, size=10000: 3691
+TestRecombinator : loci=10, size=100000: 339
+TestRecombinator : loci=100, size=10000: 1472
+TestRecombinator : loci=100, size=100000: 135
+TestRecombinator : loci=10000, size=10000: 22
+TestRecombinator : loci=10000, size=100000: 3
+TestRecombinator : 3691, 339, 1472, 135, 22, 3
+TestRecombinator : End of test TestRecombinator
+TestRecombinator : Host: ubuntu (Linux, x86_64, x86_64)
+TestRecombinator : Time: Fri Sep  2 16:13:39 2011
+TestRecombinator : Python: 2.7.2 [GCC 4.5.2]
+TestRecombinator : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestRecombinator : Test: Recombinator, results are number of generations in 30 seconds.
+TestRecombinator : loci=10, size=10000: 4201
+TestRecombinator : loci=10, size=100000: 414
+TestRecombinator : loci=100, size=10000: 1638
+TestRecombinator : loci=100, size=100000: 163
+TestRecombinator : loci=10000, size=10000: 24
+TestRecombinator : loci=10000, size=100000: 3
+TestRecombinator : 4201, 414, 1638, 163, 24, 3
+TestRecombinator : End of test TestRecombinator
+TestCombinedParentsChooser : Host: ubuntu (Linux, x86_64, x86_64)
+TestCombinedParentsChooser : Time: Fri Sep  2 16:16:54 2011
+TestCombinedParentsChooser : Python: 2.7.2 [GCC 4.5.2]
+TestCombinedParentsChooser : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestCombinedParentsChooser : Test: CombinedParentsChooser, results are number of generations in 30 seconds.
+TestCombinedParentsChooser : loci=10, size=10000: 19254
+TestCombinedParentsChooser : loci=10, size=100000: 1576
+TestCombinedParentsChooser : loci=100, size=10000: 15574
+TestCombinedParentsChooser : loci=100, size=100000: 895
+TestCombinedParentsChooser : loci=10000, size=10000: 579
+TestCombinedParentsChooser : loci=10000, size=100000: failed
+TestCombinedParentsChooser : 19254, 1576, 15574, 895, 579, 0
+TestCombinedParentsChooser : End of test TestCombinedParentsChooser
+TestCombinedParentsChooser : Host: ubuntu (Linux, x86_64, x86_64)
+TestCombinedParentsChooser : Time: Fri Sep  2 16:19:32 2011
+TestCombinedParentsChooser : Python: 2.7.2 [GCC 4.5.2]
+TestCombinedParentsChooser : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestCombinedParentsChooser : Test: CombinedParentsChooser, results are number of generations in 30 seconds.
+TestCombinedParentsChooser : loci=10, size=10000: 18998
+TestCombinedParentsChooser : loci=10, size=100000: 1125
+TestCombinedParentsChooser : loci=100, size=10000: 8393
+TestCombinedParentsChooser : loci=100, size=100000: 574
+TestCombinedParentsChooser : loci=10000, size=10000: 153
+TestCombinedParentsChooser : loci=10000, size=100000: 0
+TestCombinedParentsChooser : 18998, 1125, 8393, 574, 153, 0
+TestCombinedParentsChooser : End of test TestCombinedParentsChooser
+TestCombinedParentsChooser : Host: ubuntu (Linux, x86_64, x86_64)
+TestCombinedParentsChooser : Time: Fri Sep  2 16:22:07 2011
+TestCombinedParentsChooser : Python: 2.7.2 [GCC 4.5.2]
+TestCombinedParentsChooser : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestCombinedParentsChooser : Test: CombinedParentsChooser, results are number of generations in 30 seconds.
+TestCombinedParentsChooser : loci=10, size=10000: 11001
+TestCombinedParentsChooser : loci=10, size=100000: 1049
+TestCombinedParentsChooser : loci=100, size=10000: 11899
+TestCombinedParentsChooser : loci=100, size=100000: 943
+TestCombinedParentsChooser : loci=10000, size=10000: 3000
+TestCombinedParentsChooser : loci=10000, size=100000: 235
+TestCombinedParentsChooser : 11001, 1049, 11899, 943, 3000, 235
+TestCombinedParentsChooser : End of test TestCombinedParentsChooser
+TestCombinedParentsChooser : Host: ubuntu (Linux, x86_64, x86_64)
+TestCombinedParentsChooser : Time: Fri Sep  2 16:25:15 2011
+TestCombinedParentsChooser : Python: 2.7.2 [GCC 4.5.2]
+TestCombinedParentsChooser : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestCombinedParentsChooser : Test: CombinedParentsChooser, results are number of generations in 30 seconds.
+TestCombinedParentsChooser : loci=10, size=10000: 16779
+TestCombinedParentsChooser : loci=10, size=100000: 1548
+TestCombinedParentsChooser : loci=100, size=10000: 5330
+TestCombinedParentsChooser : loci=100, size=100000: 524
+TestCombinedParentsChooser : loci=10000, size=10000: 74
+TestCombinedParentsChooser : loci=10000, size=100000: 8
+TestCombinedParentsChooser : 16779, 1548, 5330, 524, 74, 8
+TestCombinedParentsChooser : End of test TestCombinedParentsChooser
+TestHeteroMating : Host: ubuntu (Linux, x86_64, x86_64)
+TestHeteroMating : Time: Fri Sep  2 16:28:26 2011
+TestHeteroMating : Python: 2.7.2 [GCC 4.5.2]
+TestHeteroMating : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestHeteroMating : Test: HeteroMating, results are number of generations in 30 seconds.
+TestHeteroMating : loci=10, size=10000: 10503
+TestHeteroMating : loci=10, size=100000: 863
+TestHeteroMating : loci=100, size=10000: 8801
+TestHeteroMating : loci=100, size=100000: 576
+TestHeteroMating : loci=10000, size=10000: 587
+TestHeteroMating : loci=10000, size=100000: failed
+TestHeteroMating : 10503, 863, 8801, 576, 587, 0
+TestHeteroMating : End of test TestHeteroMating
+TestHeteroMating : Host: ubuntu (Linux, x86_64, x86_64)
+TestHeteroMating : Time: Fri Sep  2 16:31:05 2011
+TestHeteroMating : Python: 2.7.2 [GCC 4.5.2]
+TestHeteroMating : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestHeteroMating : Test: HeteroMating, results are number of generations in 30 seconds.
+TestHeteroMating : loci=10, size=10000: 10268
+TestHeteroMating : loci=10, size=100000: 740
+TestHeteroMating : loci=100, size=10000: 5926
+TestHeteroMating : loci=100, size=100000: 444
+TestHeteroMating : loci=10000, size=10000: 160
+TestHeteroMating : loci=10000, size=100000: 0
+TestHeteroMating : 10268, 740, 5926, 444, 160, 0
+TestHeteroMating : End of test TestHeteroMating
+TestHeteroMating : Host: ubuntu (Linux, x86_64, x86_64)
+TestHeteroMating : Time: Fri Sep  2 16:33:42 2011
+TestHeteroMating : Python: 2.7.2 [GCC 4.5.2]
+TestHeteroMating : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestHeteroMating : Test: HeteroMating, results are number of generations in 30 seconds.
+TestHeteroMating : loci=10, size=10000: 7307
+TestHeteroMating : loci=10, size=100000: 673
+TestHeteroMating : loci=100, size=10000: 7681
+TestHeteroMating : loci=100, size=100000: 647
+TestHeteroMating : loci=10000, size=10000: 2510
+TestHeteroMating : loci=10000, size=100000: 206
+TestHeteroMating : 7307, 673, 7681, 647, 2510, 206
+TestHeteroMating : End of test TestHeteroMating
+TestHeteroMating : Host: ubuntu (Linux, x86_64, x86_64)
+TestHeteroMating : Time: Fri Sep  2 16:36:48 2011
+TestHeteroMating : Python: 2.7.2 [GCC 4.5.2]
+TestHeteroMating : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestHeteroMating : Test: HeteroMating, results are number of generations in 30 seconds.
+TestHeteroMating : loci=10, size=10000: 9652
+TestHeteroMating : loci=10, size=100000: 894
+TestHeteroMating : loci=100, size=10000: 4281
+TestHeteroMating : loci=100, size=100000: 431
+TestHeteroMating : loci=10000, size=10000: 73
+TestHeteroMating : loci=10000, size=100000: 8
+TestHeteroMating : 9652, 894, 4281, 431, 73, 8
+TestHeteroMating : End of test TestHeteroMating

@@ -458,7 +458,7 @@ class TestHeteroMating(PerformanceTest):
 
 class TestPedigreeMating(PerformanceTest):
 
-    def __init__(self, logger, repeats=5000):
+    def __init__(self, logger, repeats=5):
         PerformanceTest.__init__(self, 'PedigreeMating, results are time (not processor time) to apply operator for %d generations.' % int(repeats),
             logger)
         self.repeats = repeats
