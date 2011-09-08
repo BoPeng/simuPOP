@@ -8343,3 +8343,319 @@ TestHeteroMating : loci=10000, size=10000: 73
 TestHeteroMating : loci=10000, size=100000: 8
 TestHeteroMating : 9652, 894, 4281, 431, 73, 8
 TestHeteroMating : End of test TestHeteroMating
+TestDuringMatingPyOperator : Host: ubuntu (Linux, x86_64, x86_64)
+TestDuringMatingPyOperator : Time: Tue Sep  6 16:48:35 2011
+TestDuringMatingPyOperator : Python: 2.7.2 [GCC 4.5.2]
+TestDuringMatingPyOperator : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestDuringMatingPyOperator : Test: Test the performance of during-mating function call for operator PyOperator.The results are number of generations in 60 seconds
+TestDuringMatingPyOperator : func=_func1Param, size=1000: 107537
+TestDuringMatingPyOperator : func=_func1Param, size=10000: 10790
+TestDuringMatingPyOperator : func=_func1Param, size=100000: 1075
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=1000: 52645
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=10000: 5364
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=100000: 534
+TestDuringMatingPyOperator : func=_func4Param, size=1000: 45184
+TestDuringMatingPyOperator : func=_func4Param, size=10000: 4533
+TestDuringMatingPyOperator : func=_func4Param, size=100000: 451
+TestDuringMatingPyOperator : 107537, 10790, 1075, 52645, 5364, 534, 45184, 4533, 451
+TestDuringMatingPyOperator : End of test TestDuringMatingPyOperator
+TestDuringMatingPyOperator : Host: ubuntu (Linux, x86_64, x86_64)
+TestDuringMatingPyOperator : Time: Tue Sep  6 16:57:44 2011
+TestDuringMatingPyOperator : Python: 2.7.2 [GCC 4.5.2]
+TestDuringMatingPyOperator : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestDuringMatingPyOperator : Test: Test the performance of during-mating function call for operator PyOperator.The results are number of generations in 60 seconds
+TestDuringMatingPyOperator : func=_func1Param, size=1000: 113250
+TestDuringMatingPyOperator : func=_func1Param, size=10000: 11182
+TestDuringMatingPyOperator : func=_func1Param, size=100000: 1104
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=1000: 55392
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=10000: 5405
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=100000: 547
+TestDuringMatingPyOperator : func=_func4Param, size=1000: 50933
+TestDuringMatingPyOperator : func=_func4Param, size=10000: 5281
+TestDuringMatingPyOperator : func=_func4Param, size=100000: 509
+TestDuringMatingPyOperator : 113250, 11182, 1104, 55392, 5405, 547, 50933, 5281, 509
+TestDuringMatingPyOperator : End of test TestDuringMatingPyOperator
+TestDuringMatingPyOperator : Host: ubuntu (Linux, x86_64, x86_64)
+TestDuringMatingPyOperator : Time: Tue Sep  6 17:06:54 2011
+TestDuringMatingPyOperator : Python: 2.7.2 [GCC 4.5.2]
+TestDuringMatingPyOperator : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestDuringMatingPyOperator : Test: Test the performance of during-mating function call for operator PyOperator.The results are number of generations in 60 seconds
+TestDuringMatingPyOperator : func=_func1Param, size=1000: 117111
+TestDuringMatingPyOperator : func=_func1Param, size=10000: 11905
+TestDuringMatingPyOperator : func=_func1Param, size=100000: 1175
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=1000: 57443
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=10000: 5637
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=100000: 576
+TestDuringMatingPyOperator : func=_func4Param, size=1000: 46235
+TestDuringMatingPyOperator : func=_func4Param, size=10000: 4774
+TestDuringMatingPyOperator : func=_func4Param, size=100000: 470
+TestDuringMatingPyOperator : 117111, 11905, 1175, 57443, 5637, 576, 46235, 4774, 470
+TestDuringMatingPyOperator : End of test TestDuringMatingPyOperator
+TestDuringMatingPyOperator : Host: ubuntu (Linux, x86_64, x86_64)
+TestDuringMatingPyOperator : Time: Tue Sep  6 17:16:05 2011
+TestDuringMatingPyOperator : Python: 2.7.2 [GCC 4.5.2]
+TestDuringMatingPyOperator : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestDuringMatingPyOperator : Test: Test the performance of during-mating function call for operator PyOperator.The results are number of generations in 60 seconds
+TestDuringMatingPyOperator : func=_func1Param, size=1000: 119799
+TestDuringMatingPyOperator : func=_func1Param, size=10000: 11499
+TestDuringMatingPyOperator : func=_func1Param, size=100000: 1195
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=1000: 58359
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=10000: 5788
+TestDuringMatingPyOperator : func=_func1ParamCallSex, size=100000: 585
+TestDuringMatingPyOperator : func=_func4Param, size=1000: 54237
+TestDuringMatingPyOperator : func=_func4Param, size=10000: 5484
+TestDuringMatingPyOperator : func=_func4Param, size=100000: 536
+TestDuringMatingPyOperator : 119799, 11499, 1195, 58359, 5788, 585, 54237, 5484, 536
+TestDuringMatingPyOperator : End of test TestDuringMatingPyOperator
+TestInitGenotypeCase1 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeCase1 : Time: Thu Sep  8 12:03:26 2011
+TestInitGenotypeCase1 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeCase1 : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestInitGenotypeCase1 : Test: InitGenotype case 1, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase1 : size=10000: 1.97948694229
+TestInitGenotypeCase1 : size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 1.96452903748
+TestInitGenotypeCase1 : 1.97948694229, 1.96452903748
+TestInitGenotypeCase1 : End of test TestInitGenotypeCase1
+TestInitGenotypeCase1 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeCase1 : Time: Thu Sep  8 12:03:30 2011
+TestInitGenotypeCase1 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeCase1 : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestInitGenotypeCase1 : Test: InitGenotype case 1, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase1 : size=10000: 1.98143410683
+TestInitGenotypeCase1 : size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 1.99306297302
+TestInitGenotypeCase1 : 1.98143410683, 1.99306297302
+TestInitGenotypeCase1 : End of test TestInitGenotypeCase1
+TestInitGenotypeCase1 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeCase1 : Time: Thu Sep  8 12:03:35 2011
+TestInitGenotypeCase1 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeCase1 : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestInitGenotypeCase1 : Test: InitGenotype case 1, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase1 : size=10000: 3.17016386986
+TestInitGenotypeCase1 : size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 3.2041721344
+TestInitGenotypeCase1 : 3.17016386986, 3.2041721344
+TestInitGenotypeCase1 : End of test TestInitGenotypeCase1
+TestInitGenotypeCase1 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeCase1 : Time: Thu Sep  8 12:03:41 2011
+TestInitGenotypeCase1 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeCase1 : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestInitGenotypeCase1 : Test: InitGenotype case 1, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase1 : size=10000: 30.7124340534
+TestInitGenotypeCase1 : size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 30.1568500996
+TestInitGenotypeCase1 : 30.7124340534, 30.1568500996
+TestInitGenotypeCase1 : End of test TestInitGenotypeCase1
+TestInitGenotypeCase2 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeCase2 : Time: Thu Sep  8 15:36:24 2011
+TestInitGenotypeCase2 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeCase2 : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestInitGenotypeCase2 : Test: InitGenotype case 2, results are time (not processor time) to apply operator for 1 times.
+TestInitGenotypeCase2 : size=1000: 0.0165719985962
+TestInitGenotypeCase2 : size=[100, 100, 100, 100, 100, 100, 100, 100, 100, 100]: 0.0109159946442
+TestInitGenotypeCase2 : 0.0165719985962, 0.0109159946442
+TestInitGenotypeCase2 : End of test TestInitGenotypeCase2
+TestInitGenotypeCase2 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeCase2 : Time: Thu Sep  8 15:36:24 2011
+TestInitGenotypeCase2 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeCase2 : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestInitGenotypeCase2 : Test: InitGenotype case 2, results are time (not processor time) to apply operator for 1 times.
+TestInitGenotypeCase2 : size=1000: 0.0104379653931
+TestInitGenotypeCase2 : size=[100, 100, 100, 100, 100, 100, 100, 100, 100, 100]: 0.0127420425415
+TestInitGenotypeCase2 : 0.0104379653931, 0.0127420425415
+TestInitGenotypeCase2 : End of test TestInitGenotypeCase2
+TestInitGenotypeCase2 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeCase2 : Time: Thu Sep  8 15:36:24 2011
+TestInitGenotypeCase2 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeCase2 : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestInitGenotypeCase2 : Test: InitGenotype case 2, results are time (not processor time) to apply operator for 1 times.
+TestInitGenotypeCase2 : size=1000: 0.0225179195404
+TestInitGenotypeCase2 : size=[100, 100, 100, 100, 100, 100, 100, 100, 100, 100]: 0.0143361091614
+TestInitGenotypeCase2 : 0.0225179195404, 0.0143361091614
+TestInitGenotypeCase2 : End of test TestInitGenotypeCase2
+TestInitGenotypeCase2 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeCase2 : Time: Thu Sep  8 15:36:24 2011
+TestInitGenotypeCase2 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeCase2 : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestInitGenotypeCase2 : Test: InitGenotype case 2, results are time (not processor time) to apply operator for 1 times.
+TestInitGenotypeCase2 : size=1000: 5.02628707886
+TestInitGenotypeCase2 : size=[100, 100, 100, 100, 100, 100, 100, 100, 100, 100]: 0.459452867508
+TestInitGenotypeCase2 : 5.02628707886, 0.459452867508
+TestInitGenotypeCase2 : End of test TestInitGenotypeCase2
+TestInitGenotypeSparseCase2 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeSparseCase2 : Time: Thu Sep  8 15:36:30 2011
+TestInitGenotypeSparseCase2 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeSparseCase2 : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestInitGenotypeSparseCase2 : Test: InitGenotype case 2, results are time (not processor time) to apply operator for 1 times.
+TestInitGenotypeSparseCase2 : size=10000: 0.103541851044
+TestInitGenotypeSparseCase2 : size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 0.0912439823151
+TestInitGenotypeSparseCase2 : 0.103541851044, 0.0912439823151
+TestInitGenotypeSparseCase2 : End of test TestInitGenotypeSparseCase2
+TestInitGenotypeSparseCase2 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeSparseCase2 : Time: Thu Sep  8 15:36:30 2011
+TestInitGenotypeSparseCase2 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeSparseCase2 : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestInitGenotypeSparseCase2 : Test: InitGenotype case 2, results are time (not processor time) to apply operator for 1 times.
+TestInitGenotypeSparseCase2 : size=10000: 0.188251018524
+TestInitGenotypeSparseCase2 : size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 0.188047885895
+TestInitGenotypeSparseCase2 : 0.188251018524, 0.188047885895
+TestInitGenotypeSparseCase2 : End of test TestInitGenotypeSparseCase2
+TestInitGenotypeSparseCase2 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeSparseCase2 : Time: Thu Sep  8 15:36:31 2011
+TestInitGenotypeSparseCase2 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeSparseCase2 : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestInitGenotypeSparseCase2 : Test: InitGenotype case 2, results are time (not processor time) to apply operator for 1 times.
+TestInitGenotypeSparseCase2 : size=10000: 0.18367099762
+TestInitGenotypeSparseCase2 : size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 0.115933895111
+TestInitGenotypeSparseCase2 : 0.18367099762, 0.115933895111
+TestInitGenotypeSparseCase2 : End of test TestInitGenotypeSparseCase2
+TestInitGenotypeSparseCase2 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeSparseCase2 : Time: Thu Sep  8 15:36:31 2011
+TestInitGenotypeSparseCase2 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeSparseCase2 : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestInitGenotypeSparseCase2 : Test: InitGenotype case 2, results are time (not processor time) to apply operator for 1 times.
+TestInitGenotypeSparseCase2 : size=10000: 0.208841085434
+TestInitGenotypeSparseCase2 : size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 0.157536029816
+TestInitGenotypeSparseCase2 : 0.208841085434, 0.157536029816
+TestInitGenotypeSparseCase2 : End of test TestInitGenotypeSparseCase2
+TestInitGenotypeCase3 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeCase3 : Time: Thu Sep  8 15:36:32 2011
+TestInitGenotypeCase3 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeCase3 : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestInitGenotypeCase3 : Test: InitGenotype case 3, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase3 : size=1000: 0.0510709285736
+TestInitGenotypeCase3 : size=[100, 100, 100, 100, 100, 100, 100, 100, 100, 100]: 0.0409798622131
+TestInitGenotypeCase3 : 0.0510709285736, 0.0409798622131
+TestInitGenotypeCase3 : End of test TestInitGenotypeCase3
+TestInitGenotypeCase3 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeCase3 : Time: Thu Sep  8 15:36:32 2011
+TestInitGenotypeCase3 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeCase3 : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestInitGenotypeCase3 : Test: InitGenotype case 3, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase3 : size=1000: 0.0230178833008
+TestInitGenotypeCase3 : size=[100, 100, 100, 100, 100, 100, 100, 100, 100, 100]: 0.0234060287476
+TestInitGenotypeCase3 : 0.0230178833008, 0.0234060287476
+TestInitGenotypeCase3 : End of test TestInitGenotypeCase3
+TestInitGenotypeCase3 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeCase3 : Time: Thu Sep  8 15:36:33 2011
+TestInitGenotypeCase3 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeCase3 : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestInitGenotypeCase3 : Test: InitGenotype case 3, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase3 : size=1000: 0.0316109657288
+TestInitGenotypeCase3 : size=[100, 100, 100, 100, 100, 100, 100, 100, 100, 100]: 0.0311040878296
+TestInitGenotypeCase3 : 0.0316109657288, 0.0311040878296
+TestInitGenotypeCase3 : End of test TestInitGenotypeCase3
+TestInitGenotypeCase3 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeCase3 : Time: Thu Sep  8 15:36:33 2011
+TestInitGenotypeCase3 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeCase3 : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestInitGenotypeCase3 : Test: InitGenotype case 3, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase3 : size=1000: 23.1395039558
+TestInitGenotypeCase3 : size=[100, 100, 100, 100, 100, 100, 100, 100, 100, 100]: 23.3028430939
+TestInitGenotypeCase3 : 23.1395039558, 23.3028430939
+TestInitGenotypeCase3 : End of test TestInitGenotypeCase3
+TestInitGenotypeSparseCase3 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeSparseCase3 : Time: Thu Sep  8 15:37:19 2011
+TestInitGenotypeSparseCase3 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeSparseCase3 : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestInitGenotypeSparseCase3 : Test: InitGenotype case 3, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeSparseCase3 : size=10000: 0.265178918839
+TestInitGenotypeSparseCase3 : size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 0.231004953384
+TestInitGenotypeSparseCase3 : 0.265178918839, 0.231004953384
+TestInitGenotypeSparseCase3 : End of test TestInitGenotypeSparseCase3
+TestInitGenotypeSparseCase3 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeSparseCase3 : Time: Thu Sep  8 15:37:20 2011
+TestInitGenotypeSparseCase3 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeSparseCase3 : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestInitGenotypeSparseCase3 : Test: InitGenotype case 3, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeSparseCase3 : size=10000: 0.231900930405
+TestInitGenotypeSparseCase3 : size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 0.22539806366
+TestInitGenotypeSparseCase3 : 0.231900930405, 0.22539806366
+TestInitGenotypeSparseCase3 : End of test TestInitGenotypeSparseCase3
+TestInitGenotypeSparseCase3 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeSparseCase3 : Time: Thu Sep  8 15:37:20 2011
+TestInitGenotypeSparseCase3 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeSparseCase3 : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestInitGenotypeSparseCase3 : Test: InitGenotype case 3, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeSparseCase3 : size=10000: 0.323804140091
+TestInitGenotypeSparseCase3 : size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 0.338708877563
+TestInitGenotypeSparseCase3 : 0.323804140091, 0.338708877563
+TestInitGenotypeSparseCase3 : End of test TestInitGenotypeSparseCase3
+TestInitGenotypeSparseCase3 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeSparseCase3 : Time: Thu Sep  8 15:37:21 2011
+TestInitGenotypeSparseCase3 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeSparseCase3 : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestInitGenotypeSparseCase3 : Test: InitGenotype case 3, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeSparseCase3 : size=10000: 21.5974099636
+TestInitGenotypeSparseCase3 : size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 19.3666369915
+TestInitGenotypeSparseCase3 : 21.5974099636, 19.3666369915
+TestInitGenotypeSparseCase3 : End of test TestInitGenotypeSparseCase3
+TestInitGenotypeCase4 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeCase4 : Time: Thu Sep  8 15:38:02 2011
+TestInitGenotypeCase4 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeCase4 : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestInitGenotypeCase4 : Test: InitGenotype case 4, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase4 : size=1000: 0.109342813492
+TestInitGenotypeCase4 : size=[100, 100, 100, 100, 100, 100, 100, 100, 100, 100]: 0.0872640609741
+TestInitGenotypeCase4 : 0.109342813492, 0.0872640609741
+TestInitGenotypeCase4 : End of test TestInitGenotypeCase4
+TestInitGenotypeCase4 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeCase4 : Time: Thu Sep  8 15:38:03 2011
+TestInitGenotypeCase4 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeCase4 : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestInitGenotypeCase4 : Test: InitGenotype case 4, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase4 : size=1000: 0.0719668865204
+TestInitGenotypeCase4 : size=[100, 100, 100, 100, 100, 100, 100, 100, 100, 100]: 0.0701880455017
+TestInitGenotypeCase4 : 0.0719668865204, 0.0701880455017
+TestInitGenotypeCase4 : End of test TestInitGenotypeCase4
+TestInitGenotypeCase4 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeCase4 : Time: Thu Sep  8 15:38:03 2011
+TestInitGenotypeCase4 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeCase4 : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestInitGenotypeCase4 : Test: InitGenotype case 4, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase4 : size=1000: 0.0902638435364
+TestInitGenotypeCase4 : size=[100, 100, 100, 100, 100, 100, 100, 100, 100, 100]: 0.0760788917542
+TestInitGenotypeCase4 : 0.0902638435364, 0.0760788917542
+TestInitGenotypeCase4 : End of test TestInitGenotypeCase4
+TestInitGenotypeCase4 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeCase4 : Time: Thu Sep  8 15:38:03 2011
+TestInitGenotypeCase4 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeCase4 : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestInitGenotypeCase4 : Test: InitGenotype case 4, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeCase4 : size=1000: 38.6757872105
+TestInitGenotypeCase4 : size=[100, 100, 100, 100, 100, 100, 100, 100, 100, 100]: 37.9649450779
+TestInitGenotypeCase4 : 38.6757872105, 37.9649450779
+TestInitGenotypeCase4 : End of test TestInitGenotypeCase4
+TestInitGenotypeSparseCase4 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeSparseCase4 : Time: Thu Sep  8 15:39:20 2011
+TestInitGenotypeSparseCase4 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeSparseCase4 : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestInitGenotypeSparseCase4 : Test: InitGenotype case 4, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeSparseCase4 : size=10000: 0.7258207798
+TestInitGenotypeSparseCase4 : size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 0.678791999817
+TestInitGenotypeSparseCase4 : 0.7258207798, 0.678791999817
+TestInitGenotypeSparseCase4 : End of test TestInitGenotypeSparseCase4
+TestInitGenotypeSparseCase4 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeSparseCase4 : Time: Thu Sep  8 15:39:21 2011
+TestInitGenotypeSparseCase4 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeSparseCase4 : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestInitGenotypeSparseCase4 : Test: InitGenotype case 4, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeSparseCase4 : size=10000: 0.687571048737
+TestInitGenotypeSparseCase4 : size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 0.690458059311
+TestInitGenotypeSparseCase4 : 0.687571048737, 0.690458059311
+TestInitGenotypeSparseCase4 : End of test TestInitGenotypeSparseCase4
+TestInitGenotypeSparseCase4 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeSparseCase4 : Time: Thu Sep  8 15:39:23 2011
+TestInitGenotypeSparseCase4 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeSparseCase4 : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestInitGenotypeSparseCase4 : Test: InitGenotype case 4, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeSparseCase4 : size=10000: 0.781045198441
+TestInitGenotypeSparseCase4 : size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 0.751526832581
+TestInitGenotypeSparseCase4 : 0.781045198441, 0.751526832581
+TestInitGenotypeSparseCase4 : End of test TestInitGenotypeSparseCase4
+TestInitGenotypeSparseCase4 : Host: ubuntu (Linux, x86_64, x86_64)
+TestInitGenotypeSparseCase4 : Time: Thu Sep  8 15:39:24 2011
+TestInitGenotypeSparseCase4 : Python: 2.7.2 [GCC 4.5.2]
+TestInitGenotypeSparseCase4 : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestInitGenotypeSparseCase4 : Test: InitGenotype case 4, results are time (not processor time) to apply operator for 10 times.
+TestInitGenotypeSparseCase4 : size=10000: 0.956692934036
+TestInitGenotypeSparseCase4 : size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 0.952429056168
+TestInitGenotypeSparseCase4 : 0.956692934036, 0.952429056168
+TestInitGenotypeSparseCase4 : End of test TestInitGenotypeSparseCase4
