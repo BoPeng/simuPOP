@@ -458,6 +458,11 @@ RNG g_RNG;
 void setOptions(const int numThreads, const char * name, unsigned long seed)
 {
 #ifdef _OPENMP
+#  ifdef MUTANTALLELE
+	// mutant alleletype doesn't support multi-threads
+	g_numThreads = 1;
+	omp_set_num_threads(1);
+#  else
 	// if numThreads is zero, all threads will be used.
 	if (numThreads == 0) {
 		g_numThreads = omp_get_max_threads();
@@ -465,6 +470,8 @@ void setOptions(const int numThreads, const char * name, unsigned long seed)
 		omp_set_num_threads(numThreads);
 		g_numThreads = numThreads;
 	}
+#  endif
+
 #  if THREADPRIVATE_SUPPORT == 0
 	g_RNGs.resize(g_numThreads);
 	seed = g_RNGs[0] == NULL ? RNG::generateRandomSeed() : g_RNGs[0]->seed();
