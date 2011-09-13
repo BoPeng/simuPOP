@@ -8971,3 +8971,291 @@ TestStatNeutrality : loci=100, size=10000: 953.603506088
 TestStatNeutrality : loci=100, size=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]: 969.832591057
 TestStatNeutrality : 13.395624876, 12.9369330406, 109.449805975, 109.179064989, 953.603506088, 969.832591057
 TestStatNeutrality : End of test TestStatNeutrality
+TestMapSelector : Host: ubuntu (Linux, x86_64, x86_64)
+TestMapSelector : Time: Tue Sep 13 10:19:13 2011
+TestMapSelector : Python: 2.7.2 [GCC 4.5.2]
+TestMapSelector : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestMapSelector : Test: MapSelector, results are time (not processor time) to apply operator for 100 times.
+TestMapSelector : size=1000000: 15.7491400242
+TestMapSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 15.6869430542
+TestMapSelector : 15.7491400242, 15.6869430542
+TestMapSelector : End of test TestMapSelector
+TestMapSelector : Host: ubuntu (Linux, x86_64, x86_64)
+TestMapSelector : Time: Tue Sep 13 10:19:45 2011
+TestMapSelector : Python: 2.7.2 [GCC 4.5.2]
+TestMapSelector : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestMapSelector : Test: MapSelector, results are time (not processor time) to apply operator for 100 times.
+TestMapSelector : size=1000000: 15.5828440189
+TestMapSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 16.0302989483
+TestMapSelector : 15.5828440189, 16.0302989483
+TestMapSelector : End of test TestMapSelector
+TestMapSelector : Host: ubuntu (Linux, x86_64, x86_64)
+TestMapSelector : Time: Tue Sep 13 10:20:17 2011
+TestMapSelector : Python: 2.7.2 [GCC 4.5.2]
+TestMapSelector : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestMapSelector : Test: MapSelector, results are time (not processor time) to apply operator for 100 times.
+TestMapSelector : size=1000000: 15.4890680313
+TestMapSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 15.1100549698
+TestMapSelector : 15.4890680313, 15.1100549698
+TestMapSelector : End of test TestMapSelector
+TestMapSelector : Host: ubuntu (Linux, x86_64, x86_64)
+TestMapSelector : Time: Tue Sep 13 10:20:48 2011
+TestMapSelector : Python: 2.7.2 [GCC 4.5.2]
+TestMapSelector : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestMapSelector : Test: MapSelector, results are time (not processor time) to apply operator for 100 times.
+TestMapSelector : size=1000000: 24.9693388939
+TestMapSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 25.1573219299
+TestMapSelector : 24.9693388939, 25.1573219299
+TestMapSelector : End of test TestMapSelector
+TestMaSelector : Host: ubuntu (Linux, x86_64, x86_64)
+TestMaSelector : Time: Tue Sep 13 10:21:39 2011
+TestMaSelector : Python: 2.7.2 [GCC 4.5.2]
+TestMaSelector : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestMaSelector : Test: MaSelector, results are time (not processor time) to apply operator for 100 times.
+TestMaSelector : size=1000000: 2.19376802444
+TestMaSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 2.20615005493
+TestMaSelector : 2.19376802444, 2.20615005493
+TestMaSelector : End of test TestMaSelector
+TestMaSelector : Host: ubuntu (Linux, x86_64, x86_64)
+TestMaSelector : Time: Tue Sep 13 10:21:43 2011
+TestMaSelector : Python: 2.7.2 [GCC 4.5.2]
+TestMaSelector : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestMaSelector : Test: MaSelector, results are time (not processor time) to apply operator for 100 times.
+TestMaSelector : size=1000000: 2.56556797028
+TestMaSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 2.57972693443
+TestMaSelector : 2.56556797028, 2.57972693443
+TestMaSelector : End of test TestMaSelector
+TestMaSelector : Host: ubuntu (Linux, x86_64, x86_64)
+TestMaSelector : Time: Tue Sep 13 10:21:49 2011
+TestMaSelector : Python: 2.7.2 [GCC 4.5.2]
+TestMaSelector : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestMaSelector : Test: MaSelector, results are time (not processor time) to apply operator for 100 times.
+TestMaSelector : size=1000000: 3.0321059227
+TestMaSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 3.11807107925
+TestMaSelector : 3.0321059227, 3.11807107925
+TestMaSelector : End of test TestMaSelector
+TestMaSelector : Host: ubuntu (Linux, x86_64, x86_64)
+TestMaSelector : Time: Tue Sep 13 10:21:55 2011
+TestMaSelector : Python: 2.7.2 [GCC 4.5.2]
+TestMaSelector : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestMaSelector : Test: MaSelector, results are time (not processor time) to apply operator for 100 times.
+TestMaSelector : size=1000000: 12.1947801113
+TestMaSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 12.1603860855
+TestMaSelector : 12.1947801113, 12.1603860855
+TestMaSelector : End of test TestMaSelector
+TestMlSelector : Host: ubuntu (Linux, x86_64, x86_64)
+TestMlSelector : Time: Tue Sep 13 10:22:20 2011
+TestMlSelector : Python: 2.7.2 [GCC 4.5.2]
+TestMlSelector : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestMlSelector : Test: MlSelector, results are time (not processor time) to apply operator for 100 times.
+TestMlSelector : size=1000000: 26.7069420815
+TestMlSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 26.7580878735
+TestMlSelector : 26.7069420815, 26.7580878735
+TestMlSelector : End of test TestMlSelector
+TestMlSelector : Host: ubuntu (Linux, x86_64, x86_64)
+TestMlSelector : Time: Tue Sep 13 10:23:14 2011
+TestMlSelector : Python: 2.7.2 [GCC 4.5.2]
+TestMlSelector : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestMlSelector : Test: MlSelector, results are time (not processor time) to apply operator for 100 times.
+TestMlSelector : size=1000000: 26.406468153
+TestMlSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 26.4589800835
+TestMlSelector : 26.406468153, 26.4589800835
+TestMlSelector : End of test TestMlSelector
+TestMlSelector : Host: ubuntu (Linux, x86_64, x86_64)
+TestMlSelector : Time: Tue Sep 13 10:24:08 2011
+TestMlSelector : Python: 2.7.2 [GCC 4.5.2]
+TestMlSelector : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestMlSelector : Test: MlSelector, results are time (not processor time) to apply operator for 100 times.
+TestMlSelector : size=1000000: 27.2675750256
+TestMlSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 27.1614050865
+TestMlSelector : 27.2675750256, 27.1614050865
+TestMlSelector : End of test TestMlSelector
+TestMlSelector : Host: ubuntu (Linux, x86_64, x86_64)
+TestMlSelector : Time: Tue Sep 13 10:25:03 2011
+TestMlSelector : Python: 2.7.2 [GCC 4.5.2]
+TestMlSelector : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestMlSelector : Test: MlSelector, results are time (not processor time) to apply operator for 100 times.
+TestMlSelector : size=1000000: 48.3579251766
+TestMlSelector : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 47.9415130615
+TestMlSelector : 48.3579251766, 47.9415130615
+TestMlSelector : End of test TestMlSelector
+TestMapPenetrance : Host: ubuntu (Linux, x86_64, x86_64)
+TestMapPenetrance : Time: Tue Sep 13 10:26:40 2011
+TestMapPenetrance : Python: 2.7.2 [GCC 4.5.2]
+TestMapPenetrance : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestMapPenetrance : Test: MapPenetrance, results are time (not processor time) to apply operator for 100 times.
+TestMapPenetrance : size=1000000: 18.1024007797
+TestMapPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 18.3965749741
+TestMapPenetrance : 18.1024007797, 18.3965749741
+TestMapPenetrance : End of test TestMapPenetrance
+TestMapPenetrance : Host: ubuntu (Linux, x86_64, x86_64)
+TestMapPenetrance : Time: Tue Sep 13 10:27:17 2011
+TestMapPenetrance : Python: 2.7.2 [GCC 4.5.2]
+TestMapPenetrance : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestMapPenetrance : Test: MapPenetrance, results are time (not processor time) to apply operator for 100 times.
+TestMapPenetrance : size=1000000: 17.8075120449
+TestMapPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 17.7763662338
+TestMapPenetrance : 17.8075120449, 17.7763662338
+TestMapPenetrance : End of test TestMapPenetrance
+TestMapPenetrance : Host: ubuntu (Linux, x86_64, x86_64)
+TestMapPenetrance : Time: Tue Sep 13 10:27:54 2011
+TestMapPenetrance : Python: 2.7.2 [GCC 4.5.2]
+TestMapPenetrance : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestMapPenetrance : Test: MapPenetrance, results are time (not processor time) to apply operator for 100 times.
+TestMapPenetrance : size=1000000: 17.668856144
+TestMapPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 17.7869131565
+TestMapPenetrance : 17.668856144, 17.7869131565
+TestMapPenetrance : End of test TestMapPenetrance
+TestMapPenetrance : Host: ubuntu (Linux, x86_64, x86_64)
+TestMapPenetrance : Time: Tue Sep 13 10:28:31 2011
+TestMapPenetrance : Python: 2.7.2 [GCC 4.5.2]
+TestMapPenetrance : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestMapPenetrance : Test: MapPenetrance, results are time (not processor time) to apply operator for 100 times.
+TestMapPenetrance : size=1000000: 33.7175941467
+TestMapPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 33.9560329914
+TestMapPenetrance : 33.7175941467, 33.9560329914
+TestMapPenetrance : End of test TestMapPenetrance
+TestMaPenetrance : Host: ubuntu (Linux, x86_64, x86_64)
+TestMaPenetrance : Time: Tue Sep 13 10:29:41 2011
+TestMaPenetrance : Python: 2.7.2 [GCC 4.5.2]
+TestMaPenetrance : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestMaPenetrance : Test: MaPenetrance, results are time (not processor time) to apply operator for 100 times.
+TestMaPenetrance : size=1000000: 3.48681497574
+TestMaPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 3.3631310463
+TestMaPenetrance : 3.48681497574, 3.3631310463
+TestMaPenetrance : End of test TestMaPenetrance
+TestMaPenetrance : Host: ubuntu (Linux, x86_64, x86_64)
+TestMaPenetrance : Time: Tue Sep 13 10:29:49 2011
+TestMaPenetrance : Python: 2.7.2 [GCC 4.5.2]
+TestMaPenetrance : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestMaPenetrance : Test: MaPenetrance, results are time (not processor time) to apply operator for 100 times.
+TestMaPenetrance : size=1000000: 3.68890810013
+TestMaPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 3.66296720505
+TestMaPenetrance : 3.68890810013, 3.66296720505
+TestMaPenetrance : End of test TestMaPenetrance
+TestMaPenetrance : Host: ubuntu (Linux, x86_64, x86_64)
+TestMaPenetrance : Time: Tue Sep 13 10:29:57 2011
+TestMaPenetrance : Python: 2.7.2 [GCC 4.5.2]
+TestMaPenetrance : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestMaPenetrance : Test: MaPenetrance, results are time (not processor time) to apply operator for 100 times.
+TestMaPenetrance : size=1000000: 4.26177811623
+TestMaPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 4.29851293564
+TestMaPenetrance : 4.26177811623, 4.29851293564
+TestMaPenetrance : End of test TestMaPenetrance
+TestMaPenetrance : Host: ubuntu (Linux, x86_64, x86_64)
+TestMaPenetrance : Time: Tue Sep 13 10:30:07 2011
+TestMaPenetrance : Python: 2.7.2 [GCC 4.5.2]
+TestMaPenetrance : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestMaPenetrance : Test: MaPenetrance, results are time (not processor time) to apply operator for 100 times.
+TestMaPenetrance : size=1000000: 18.0765841007
+TestMaPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 18.2008039951
+TestMaPenetrance : 18.0765841007, 18.2008039951
+TestMaPenetrance : End of test TestMaPenetrance
+TestMlPenetrance : Host: ubuntu (Linux, x86_64, x86_64)
+TestMlPenetrance : Time: Tue Sep 13 10:30:45 2011
+TestMlPenetrance : Python: 2.7.2 [GCC 4.5.2]
+TestMlPenetrance : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestMlPenetrance : Test: MlPenetrance, results are time (not processor time) to apply operator for 100 times.
+TestMlPenetrance : size=1000000: 28.3573851585
+TestMlPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 27.6719429493
+TestMlPenetrance : 28.3573851585, 27.6719429493
+TestMlPenetrance : End of test TestMlPenetrance
+TestMlPenetrance : Host: ubuntu (Linux, x86_64, x86_64)
+TestMlPenetrance : Time: Tue Sep 13 10:31:43 2011
+TestMlPenetrance : Python: 2.7.2 [GCC 4.5.2]
+TestMlPenetrance : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestMlPenetrance : Test: MlPenetrance, results are time (not processor time) to apply operator for 100 times.
+TestMlPenetrance : size=1000000: 27.5734009743
+TestMlPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 27.6944429874
+TestMlPenetrance : 27.5734009743, 27.6944429874
+TestMlPenetrance : End of test TestMlPenetrance
+TestMlPenetrance : Host: ubuntu (Linux, x86_64, x86_64)
+TestMlPenetrance : Time: Tue Sep 13 10:32:39 2011
+TestMlPenetrance : Python: 2.7.2 [GCC 4.5.2]
+TestMlPenetrance : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestMlPenetrance : Test: MlPenetrance, results are time (not processor time) to apply operator for 100 times.
+TestMlPenetrance : size=1000000: 28.5251839161
+TestMlPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 28.5861368179
+TestMlPenetrance : 28.5251839161, 28.5861368179
+TestMlPenetrance : End of test TestMlPenetrance
+TestMlPenetrance : Host: ubuntu (Linux, x86_64, x86_64)
+TestMlPenetrance : Time: Tue Sep 13 10:33:37 2011
+TestMlPenetrance : Python: 2.7.2 [GCC 4.5.2]
+TestMlPenetrance : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestMlPenetrance : Test: MlPenetrance, results are time (not processor time) to apply operator for 100 times.
+TestMlPenetrance : size=1000000: 54.2838871479
+TestMlPenetrance : size=[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]: 54.125772953
+TestMlPenetrance : 54.2838871479, 54.125772953
+TestMlPenetrance : End of test TestMlPenetrance
+TestMigratorByProbability : Host: ubuntu (Linux, x86_64, x86_64)
+TestMigratorByProbability : Time: Tue Sep 13 10:35:28 2011
+TestMigratorByProbability : Python: 2.7.2 [GCC 4.5.2]
+TestMigratorByProbability : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestMigratorByProbability : Test: Migrator BY_PROBABILITY, results are time (not processor time) to apply operator for 5 times.
+TestMigratorByProbability : size=1000000: 2.10614299774
+TestMigratorByProbability : size=10000000: 26.4348130226
+TestMigratorByProbability : 2.10614299774, 26.4348130226
+TestMigratorByProbability : End of test TestMigratorByProbability
+TestMigratorByProbability : Host: ubuntu (Linux, x86_64, x86_64)
+TestMigratorByProbability : Time: Tue Sep 13 10:35:57 2011
+TestMigratorByProbability : Python: 2.7.2 [GCC 4.5.2]
+TestMigratorByProbability : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestMigratorByProbability : Test: Migrator BY_PROBABILITY, results are time (not processor time) to apply operator for 5 times.
+TestMigratorByProbability : size=1000000: 2.13832092285
+TestMigratorByProbability : size=10000000: 25.6000499725
+TestMigratorByProbability : 2.13832092285, 25.6000499725
+TestMigratorByProbability : End of test TestMigratorByProbability
+TestMigratorByProbability : Host: ubuntu (Linux, x86_64, x86_64)
+TestMigratorByProbability : Time: Tue Sep 13 10:36:25 2011
+TestMigratorByProbability : Python: 2.7.2 [GCC 4.5.2]
+TestMigratorByProbability : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestMigratorByProbability : Test: Migrator BY_PROBABILITY, results are time (not processor time) to apply operator for 5 times.
+TestMigratorByProbability : size=1000000: 2.36126494408
+TestMigratorByProbability : size=10000000: 28.2843220234
+TestMigratorByProbability : 2.36126494408, 28.2843220234
+TestMigratorByProbability : End of test TestMigratorByProbability
+TestMigratorByProbability : Host: ubuntu (Linux, x86_64, x86_64)
+TestMigratorByProbability : Time: Tue Sep 13 10:36:56 2011
+TestMigratorByProbability : Python: 2.7.2 [GCC 4.5.2]
+TestMigratorByProbability : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestMigratorByProbability : Test: Migrator BY_PROBABILITY, results are time (not processor time) to apply operator for 5 times.
+TestMigratorByProbability : size=1000000: 1.95554995537
+TestMigratorByProbability : size=10000000: 24.42958498
+TestMigratorByProbability : 1.95554995537, 24.42958498
+TestMigratorByProbability : End of test TestMigratorByProbability
+TestMigratorByProportion : Host: ubuntu (Linux, x86_64, x86_64)
+TestMigratorByProportion : Time: Tue Sep 13 10:37:23 2011
+TestMigratorByProportion : Python: 2.7.2 [GCC 4.5.2]
+TestMigratorByProportion : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestMigratorByProportion : Test: Migrator BY_PROPORTION, results are time (not processor time) to apply operator for 5 times.
+TestMigratorByProportion : size=1000000: 2.94374990463
+TestMigratorByProportion : size=10000000: 31.6885719299
+TestMigratorByProportion : 2.94374990463, 31.6885719299
+TestMigratorByProportion : End of test TestMigratorByProportion
+TestMigratorByProportion : Host: ubuntu (Linux, x86_64, x86_64)
+TestMigratorByProportion : Time: Tue Sep 13 10:37:58 2011
+TestMigratorByProportion : Python: 2.7.2 [GCC 4.5.2]
+TestMigratorByProportion : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestMigratorByProportion : Test: Migrator BY_PROPORTION, results are time (not processor time) to apply operator for 5 times.
+TestMigratorByProportion : size=1000000: 2.40683412552
+TestMigratorByProportion : size=10000000: 26.9157719612
+TestMigratorByProportion : 2.40683412552, 26.9157719612
+TestMigratorByProportion : End of test TestMigratorByProportion
+TestMigratorByProportion : Host: ubuntu (Linux, x86_64, x86_64)
+TestMigratorByProportion : Time: Tue Sep 13 10:38:28 2011
+TestMigratorByProportion : Python: 2.7.2 [GCC 4.5.2]
+TestMigratorByProportion : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestMigratorByProportion : Test: Migrator BY_PROPORTION, results are time (not processor time) to apply operator for 5 times.
+TestMigratorByProportion : size=1000000: 2.32115483284
+TestMigratorByProportion : size=10000000: 32.2616999149
+TestMigratorByProportion : 2.32115483284, 32.2616999149
+TestMigratorByProportion : End of test TestMigratorByProportion
+TestMigratorByProportion : Host: ubuntu (Linux, x86_64, x86_64)
+TestMigratorByProportion : Time: Tue Sep 13 10:39:03 2011
+TestMigratorByProportion : Python: 2.7.2 [GCC 4.5.2]
+TestMigratorByProportion : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestMigratorByProportion : Test: Migrator BY_PROPORTION, results are time (not processor time) to apply operator for 5 times.
+TestMigratorByProportion : size=1000000: 2.14464998245
+TestMigratorByProportion : size=10000000: 25.0359089375
+TestMigratorByProportion : 2.14464998245, 25.0359089375
+TestMigratorByProportion : End of test TestMigratorByProportion

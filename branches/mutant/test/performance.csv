@@ -673,3 +673,35 @@ TestStatNeutrality, 2011-09-08 19:47:39,180, ubuntu, x86_64-1threads, python2.7.
 TestStatNeutrality, 2011-09-08 20:23:06,303, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, long, 12.2279689312, 12.1628530025, 108.331331968, 110.215101004, 939.076458931, 944.825975895
 TestStatNeutrality, 2011-09-08 21:07:19,770, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, binary, 14.6297898293, 14.8758358955, 134.249452114, 133.190568209, 1182.794137, 1173.40388608
 TestStatNeutrality, 2011-09-08 21:43:28,579, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, mutant, 13.395624876, 12.9369330406, 109.449805975, 109.179064989, 953.603506088, 969.832591057
+TestMapSelector, 2011-09-13 10:19:45,662, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, short, 15.7491400242, 15.6869430542
+TestMapSelector, 2011-09-13 10:20:17,609, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, long, 15.5828440189, 16.0302989483
+TestMapSelector, 2011-09-13 10:20:48,540, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, binary, 15.4890680313, 15.1100549698
+TestMapSelector, 2011-09-13 10:21:39,092, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, mutant, 24.9693388939, 25.1573219299
+TestMaSelector, 2011-09-13 10:21:43,861, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, short, 2.19376802444, 2.20615005493
+TestMaSelector, 2011-09-13 10:21:49,333, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, long, 2.56556797028, 2.57972693443
+TestMaSelector, 2011-09-13 10:21:55,823, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, binary, 3.0321059227, 3.11807107925
+TestMaSelector, 2011-09-13 10:22:20,625, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, mutant, 12.1947801113, 12.1603860855
+TestMlSelector, 2011-09-13 10:23:14,646, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, short, 26.7069420815, 26.7580878735
+TestMlSelector, 2011-09-13 10:24:08,026, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, long, 26.406468153, 26.4589800835
+TestMlSelector, 2011-09-13 10:25:02,991, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, binary, 27.2675750256, 27.1614050865
+TestMlSelector, 2011-09-13 10:26:39,985, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, mutant, 48.3579251766, 47.9415130615
+TestMapPenetrance, 2011-09-13 10:27:17,739, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, short, 18.1024007797, 18.3965749741
+TestMapPenetrance, 2011-09-13 10:27:54,482, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, long, 17.8075120449, 17.7763662338
+TestMapPenetrance, 2011-09-13 10:28:31,304, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, binary, 17.668856144, 17.7869131565
+TestMapPenetrance, 2011-09-13 10:29:40,953, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, mutant, 33.7175941467, 33.9560329914
+TestMaPenetrance, 2011-09-13 10:29:49,058, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, short, 3.48681497574, 3.3631310463
+TestMaPenetrance, 2011-09-13 10:29:57,595, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, long, 3.68890810013, 3.66296720505
+TestMaPenetrance, 2011-09-13 10:30:07,456, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, binary, 4.26177811623, 4.29851293564
+TestMaPenetrance, 2011-09-13 10:30:45,652, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, mutant, 18.0765841007, 18.2008039951
+TestMlPenetrance, 2011-09-13 10:31:43,024, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, short, 28.3573851585, 27.6719429493
+TestMlPenetrance, 2011-09-13 10:32:39,462, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, long, 27.5734009743, 27.6944429874
+TestMlPenetrance, 2011-09-13 10:33:37,877, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, binary, 28.5251839161, 28.5861368179
+TestMlPenetrance, 2011-09-13 10:35:28,161, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, mutant, 54.2838871479, 54.125772953
+TestMigratorByProbability, 2011-09-13 10:35:57,170, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, short, 2.10614299774, 26.4348130226
+TestMigratorByProbability, 2011-09-13 10:36:25,462, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, long, 2.13832092285, 25.6000499725
+TestMigratorByProbability, 2011-09-13 10:36:56,591, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, binary, 2.36126494408, 28.2843220234
+TestMigratorByProbability, 2011-09-13 10:37:23,408, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, mutant, 1.95554995537, 24.42958498
+TestMigratorByProportion, 2011-09-13 10:37:58,598, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, short, 2.94374990463, 31.6885719299
+TestMigratorByProportion, 2011-09-13 10:38:28,409, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, long, 2.40683412552, 26.9157719612
+TestMigratorByProportion, 2011-09-13 10:39:03,404, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, binary, 2.32115483284, 32.2616999149
+TestMigratorByProportion, 2011-09-13 10:39:31,022, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, mutant, 2.14464998245, 25.0359089375
