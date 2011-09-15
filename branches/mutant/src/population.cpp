@@ -3006,7 +3006,7 @@ void Population::removeInfoFields(const stringList & fieldList)
 	useAncestralGen(oldAncPop);
 }
 
-/*
+
 void Population::updateInfoFieldsFrom(const stringList & fieldList, const Population & pop,
                                       const stringList & fromFieldList, const uintList & ancGens)
 {
@@ -3037,7 +3037,7 @@ void Population::updateInfoFieldsFrom(const stringList & fieldList, const Popula
 	}
 	useAncestralGen(oldGen);
 }
-*/
+
 
 void Population::setIndInfo(const floatList & valueList, const uintString &
                             field, vspID subPopID)

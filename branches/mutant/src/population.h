@@ -831,39 +831,32 @@ public:
 	IndAlleleIterator alleleIterator(size_t locus, size_t subPop);
 
 
-	///  CPPONLY allele iterator, go through all allels one by one, without subPop info
-	/**
-	   if order, in order
-	   otherwise, do not even respect subpopulation structure
-	 */
-/*
-	GenoIterator genoBegin(bool order)
-	{
-		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
-			"This function is not valid with an activated virtual subpopulation");
-
-		if (order && !indOrdered())
-			syncIndPointers();
-
-		return m_genotype.begin();
-	}
-*/
-
-/*
-	///  CPPONLY allele iterator
-	GenoIterator genoEnd(bool order)
-	{
-		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
-			"This function is not valid with an activated virtual subpopulation");
-		if (order && !indOrdered())
-			syncIndPointers();
-
-		return m_genotype.end();
-	}
-*/
-
 
 #ifdef MUTANTALLELE
+	size_t genoBegin(bool order)
+	{
+		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+			"This function is not valid with an activated virtual subpopulation");
+
+		if (order && !indOrdered())
+			syncIndPointers();
+
+		return 0;
+	}
+
+
+	///  CPPONLY
+	size_t genoEnd(bool order)
+	{
+		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+			"This function is not valid with an activated virtual subpopulation");
+		if (order && !indOrdered())
+			syncIndPointers();
+
+		return m_genotype.size();
+	}
+
+
 	///  CPPONLY
 	size_t genoBegin(size_t subPop, bool order)
 	{
@@ -889,6 +882,35 @@ public:
 	}
 
 #else
+	///  CPPONLY allele iterator, go through all allels one by one, without subPop info
+	/**
+	   if order, in order
+	   otherwise, do not even respect subpopulation structure
+	 */
+	GenoIterator genoBegin(bool order)
+	{
+		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+			"This function is not valid with an activated virtual subpopulation");
+
+		if (order && !indOrdered())
+			syncIndPointers();
+
+		return m_genotype.begin();
+	}
+
+
+	///  CPPONLY allele iterator
+	GenoIterator genoEnd(bool order)
+	{
+		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+			"This function is not valid with an activated virtual subpopulation");
+		if (order && !indOrdered())
+			syncIndPointers();
+
+		return m_genotype.end();
+	}
+
+
 	///  CPPONLY allele iterator, go through all allels one by one in a subpopulation
 	/**
 	   if order, keep order
@@ -904,6 +926,8 @@ public:
 
 		return m_genotype.begin() + m_subPopIndex[subPop] * genoSize();
 	}
+
+
 	/// CPPONLY allele iterator in a subpopulation.
 	GenoIterator genoEnd(size_t subPop, bool order)
 	{
@@ -933,6 +957,27 @@ public:
 		return m_inds[ind].genoEnd();
 	}
 
+
+	/// CPPONLY genoIterator --- beginning of individual ind.
+	size_t indGenoBegin(size_t ind, size_t subPop) const
+	{
+		CHECKRANGESUBPOP(subPop);
+		CHECKRANGESUBPOPMEMBER(ind, subPop);
+
+		return m_inds[ subPopBegin(subPop) + ind].genoBegin();
+	}
+
+
+	/// CPPONLY genoIterator -- end of individual ind.
+	size_t indGenoEnd(size_t ind, size_t subPop) const
+	{
+		CHECKRANGESUBPOP(subPop);
+		CHECKRANGESUBPOPMEMBER(ind, subPop);
+
+		return m_inds[ subPopBegin(subPop) + ind].genoEnd();
+	}
+
+
 #else
 	/// CPPONLY genoIterator --- beginning of individual ind.
 	GenoIterator indGenoBegin(size_t ind) const
@@ -948,11 +993,9 @@ public:
 		CHECKRANGEIND(ind);
 		return m_inds[ind].genoEnd();
 	}
-#endif
 
 
 	/// CPPONLY genoIterator --- beginning of individual ind.
-/*
 	GenoIterator indGenoBegin(size_t ind, size_t subPop) const
 	{
 		CHECKRANGESUBPOP(subPop);
@@ -960,10 +1003,9 @@ public:
 
 		return m_inds[ subPopBegin(subPop) + ind].genoBegin();
 	}
-*/
+
 
 	/// CPPONLY genoIterator -- end of individual ind.
-/*
 	GenoIterator indGenoEnd(size_t ind, size_t subPop) const
 	{
 		CHECKRANGESUBPOP(subPop);
@@ -971,7 +1013,7 @@ public:
 
 		return m_inds[ subPopBegin(subPop) + ind].genoEnd();
 	}
-*/
+#endif
 
 
 	/** Return an editable array of the genotype of all individuals in
@@ -1407,9 +1449,9 @@ public:
 	 *  the specified ancestral generations are updated.
 	 *  <group>8-info</group>
 	 */
-//	void updateInfoFieldsFrom(const stringList & fields, const Population & pop,
-//		const stringList & fromFields = vectorstr(),
-//		const uintList & ancGens = uintList());
+	void updateInfoFieldsFrom(const stringList & fields, const Population & pop,
+		const stringList & fromFields = vectorstr(),
+		const uintList & ancGens = uintList());
 
 	/** set the intended ancestral depth of a population to \e depth, which can
 	 *  be \c 0 (does not store any ancestral generation), \c -1 (store all
