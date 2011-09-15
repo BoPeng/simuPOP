@@ -53,7 +53,7 @@
 #include "qtrait.h"
 #include "penetrance.h"
 
-//#include "sandbox.h"
+#include "sandbox.h"
 
 %}
 
@@ -306,5 +306,5 @@ namespace std
 %include "qtrait.h"
 %include "penetrance.h"
 %include "pedigree.h"
-//%include "sandbox.h"
+%include "sandbox.h"
 

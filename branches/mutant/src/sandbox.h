@@ -77,7 +77,7 @@ public:
 
 
 	/// HIDDEN apply the Migrator to populaiton \e pop.
-	virtual bool apply(Population & pop) const;
+//	virtual bool apply(Population & pop) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
@@ -153,7 +153,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return the fitness value, currently assuming diploid
 	 */
-	virtual double indFitness(Population & pop, Individual * ind) const;
+//	virtual double indFitness(Population & pop, Individual * ind) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
@@ -164,24 +164,24 @@ public:
 
 
 	/// CPPONLY
-	bool apply(Population & pop) const;
+//	bool apply(Population & pop) const;
 
 	typedef std::pair<double, double> SelCoef;
 
 private:
-	SelCoef getFitnessValue(size_t mutant) const;
+//	SelCoef getFitnessValue(size_t mutant) const;
 
 
-	double randomSelAddFitness(GenoIterator it, GenoIterator it_end) const;
+//	double randomSelAddFitness(GenoIterator it, GenoIterator it_end) const;
 
-	double randomSelExpFitness(GenoIterator it, GenoIterator it_end) const;
+//	double randomSelExpFitness(GenoIterator it, GenoIterator it_end) const;
 
 	// extended models does not assume additivity (h != 0.5)
-	double randomSelMulFitnessExt(GenoIterator it, GenoIterator it_end) const;
+//	double randomSelMulFitnessExt(GenoIterator it, GenoIterator it_end) const;
 
-	double randomSelAddFitnessExt(GenoIterator it, GenoIterator it_end) const;
+//	double randomSelAddFitnessExt(GenoIterator it, GenoIterator it_end) const;
 
-	double randomSelExpFitnessExt(GenoIterator it, GenoIterator it_end) const;
+//	double randomSelExpFitnessExt(GenoIterator it, GenoIterator it_end) const;
 
 private:
 	///
@@ -266,7 +266,7 @@ public:
 	}
 
 
-	virtual bool apply(Population & pop) const;
+//	virtual bool apply(Population & pop) const;
 
 	/// HIDDEN Deep copy of a \c MutSpaceMutator
 	virtual BaseOperator * clone() const
@@ -284,7 +284,7 @@ public:
 
 
 private:
-	size_t locateVacantLocus(Population & pop, size_t beg, size_t end, std::set<size_t> & mutants) const;
+//	size_t locateVacantLocus(Population & pop, size_t beg, size_t end, std::set<size_t> & mutants) const;
 
 private:
 	const double m_rate;
@@ -344,9 +344,9 @@ public:
 	/** CPPONLY
 	 *  Apply the Recombinator during mating
 	 */
-	virtual bool applyDuringMating(Population & pop, Population & offPop,
-		RawIndIterator offspring,
-		Individual * dad, Individual * mom) const;
+//	virtual bool applyDuringMating(Population & pop, Population & offPop,
+//		RawIndIterator offspring,
+//		Individual * dad, Individual * mom) const;
 
 private:
 #if TR1_SUPPORT == 0
@@ -356,12 +356,12 @@ private:
 	typedef std::tr1::unordered_map<unsigned int, int> MutCounter;
 #endif
 	// use when m_rate = 0.5
-	void transmitGenotype0(Population & offPop, const Individual & parent,
-		size_t offIndex, int ploidy) const;
+//	void transmitGenotype0(Population & offPop, const Individual & parent,
+//		size_t offIndex, int ploidy) const;
 
 	// use when m_rate < 1e-4
-	void transmitGenotype1(Population & offPop, const Individual & parent,
-		size_t offIndex, int ploidy) const;
+//	void transmitGenotype1(Population & offPop, const Individual & parent,
+//		size_t offIndex, int ploidy) const;
 
 private:
 	/// recombination rate

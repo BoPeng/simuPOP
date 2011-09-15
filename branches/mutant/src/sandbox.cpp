@@ -28,7 +28,7 @@
 
 namespace simuPOP {
 
-
+/*
 bool RevertFixedSites::apply(Population & pop) const
 {
 	if (pop.popSize() == 0 || pop.totNumLoci() == 0)
@@ -81,10 +81,11 @@ bool RevertFixedSites::apply(Population & pop) const
 	}
 	return true;
 }
+*/
 
 
-double MutSpaceSelector::indFitness(Population & /* pop */, Individual * ind) const
-{
+//double MutSpaceSelector::indFitness(Population & /* pop */, Individual * ind) const
+/*{
 	if (m_mode == MULTIPLICATIVE) {
 		return randomSelMulFitnessExt(ind->genoBegin(), ind->genoEnd());
 	} else if (m_mode == ADDITIVE) {
@@ -100,8 +101,9 @@ double MutSpaceSelector::indFitness(Population & /* pop */, Individual * ind) co
 	}
 	return 0;
 }
+*/
 
-
+/*
 bool MutSpaceSelector::apply(Population & pop) const
 {
 	m_newMutants.clear();
@@ -120,8 +122,9 @@ bool MutSpaceSelector::apply(Population & pop) const
 	}
 	return true;
 }
+*/
 
-
+/*
 MutSpaceSelector::SelCoef MutSpaceSelector::getFitnessValue(size_t mutant) const
 {
 	size_t sz = m_selDist.size();
@@ -174,8 +177,9 @@ MutSpaceSelector::SelCoef MutSpaceSelector::getFitnessValue(size_t mutant) const
 		m_additive = false;
 	return SelCoef(s, h);
 }
+*/
 
-
+/*
 double MutSpaceSelector::randomSelAddFitness(GenoIterator it, GenoIterator it_end) const
 {
 	double s = 0;
@@ -191,8 +195,8 @@ double MutSpaceSelector::randomSelAddFitness(GenoIterator it, GenoIterator it_en
 	}
 	return 1 - s > 0 ? 1 - s : 0;
 }
-
-
+*/
+/*
 double MutSpaceSelector::randomSelExpFitness(GenoIterator it, GenoIterator it_end) const
 {
 	double s = 0;
@@ -208,8 +212,8 @@ double MutSpaceSelector::randomSelExpFitness(GenoIterator it, GenoIterator it_en
 	}
 	return exp(-s);
 }
-
-
+*/
+/*
 double MutSpaceSelector::randomSelMulFitnessExt(GenoIterator it, GenoIterator it_end) const
 {
 	MutCounter cnt;
@@ -244,8 +248,8 @@ double MutSpaceSelector::randomSelMulFitnessExt(GenoIterator it, GenoIterator it
 	}
 	return s;
 }
-
-
+*/
+/*
 double MutSpaceSelector::randomSelAddFitnessExt(GenoIterator it, GenoIterator it_end) const
 {
 	MutCounter cnt;
@@ -280,8 +284,8 @@ double MutSpaceSelector::randomSelAddFitnessExt(GenoIterator it, GenoIterator it
 	}
 	return 1 - s > 0 ? 1 - s : 0;
 }
-
-
+*/
+/*
 double MutSpaceSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it_end) const
 {
 	MutCounter cnt;
@@ -316,10 +320,10 @@ double MutSpaceSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it
 	}
 	return exp(-s);
 }
+*/
 
-
-size_t MutSpaceMutator::locateVacantLocus(Population & /* pop */, size_t beg, size_t end, std::set<size_t> & mutants) const
-{
+//size_t MutSpaceMutator::locateVacantLocus(Population & /* pop */, size_t beg, size_t end, std::set<size_t> & mutants) const
+/*{
 	size_t loc = getRNG().randInt(static_cast<ULONG>(end - beg)) + beg;
 
 	std::set<size_t>::iterator it = std::find(mutants.begin(), mutants.end(), loc);
@@ -343,11 +347,11 @@ size_t MutSpaceMutator::locateVacantLocus(Population & /* pop */, size_t beg, si
 	// still cannot find
 	return 0;
 }
-
-
+*/
+/*
 bool MutSpaceMutator::apply(Population & pop) const
 {
-#ifdef BINARYALLELE
+#ifdef
 	(void)pop;      // avoid warning about unused parameter
 #else
 	const matrixi & ranges = m_ranges.elems();
@@ -485,8 +489,8 @@ bool MutSpaceMutator::apply(Population & pop) const
 #endif
 	return true;
 }
-
-
+*/
+/*
 void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individual & parent,
                                              size_t offIndex, int ploidy) const
 {
@@ -575,8 +579,8 @@ void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individu
 	}
 #endif
 }
-
-
+*/
+/*
 void MutSpaceRecombinator::transmitGenotype1(Population & offPop, const Individual & parent,
                                              size_t offIndex, int ploidy) const
 {
@@ -688,8 +692,8 @@ void MutSpaceRecombinator::transmitGenotype1(Population & offPop, const Individu
 	}
 #endif
 }
-
-
+*/
+/*
 bool MutSpaceRecombinator::applyDuringMating(Population & pop, Population & offPop,
                                              RawIndIterator offspring,
                                              Individual * dad, Individual * mom) const
@@ -715,6 +719,6 @@ bool MutSpaceRecombinator::applyDuringMating(Population & pop, Population & offP
 	}
 	return true;
 }
-
+*/
 
 }
