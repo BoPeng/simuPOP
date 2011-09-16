@@ -84,8 +84,23 @@ bool RevertFixedSites::apply(Population & pop) const
 */
 
 
-//double MutSpaceSelector::indFitness(Population & /* pop */, Individual * ind) const
-/*{
+double MutSpaceSelector::indFitness(Population & /* pop */, Individual * ind) const
+{
+#ifdef MUTANTALLELE
+	if (m_mode == MULTIPLICATIVE) {
+		return randomSelMulFitnessExt(ind->genoPtr(), ind->genoBegin(), ind->genoEnd());
+	} else if (m_mode == ADDITIVE) {
+		if (m_additive)
+			return randomSelAddFitness(ind->genoPtr(), ind->genoBegin(), ind->genoEnd());
+		else
+			return randomSelAddFitnessExt(ind->genoPtr(), ind->genoBegin(), ind->genoEnd());
+	} else if (m_mode == EXPONENTIAL) {
+		if (m_additive)
+			return randomSelExpFitness(ind->genoPtr(), ind->genoBegin(), ind->genoEnd());
+		else
+			return randomSelExpFitnessExt(ind->genoPtr(), ind->genoBegin(), ind->genoEnd());
+	}
+#else
 	if (m_mode == MULTIPLICATIVE) {
 		return randomSelMulFitnessExt(ind->genoBegin(), ind->genoEnd());
 	} else if (m_mode == ADDITIVE) {
@@ -99,11 +114,12 @@ bool RevertFixedSites::apply(Population & pop) const
 		else
 			return randomSelExpFitnessExt(ind->genoBegin(), ind->genoEnd());
 	}
+
+#endif
 	return 0;
 }
-*/
 
-/*
+
 bool MutSpaceSelector::apply(Population & pop) const
 {
 	m_newMutants.clear();
@@ -122,9 +138,8 @@ bool MutSpaceSelector::apply(Population & pop) const
 	}
 	return true;
 }
-*/
 
-/*
+
 MutSpaceSelector::SelCoef MutSpaceSelector::getFitnessValue(size_t mutant) const
 {
 	size_t sz = m_selDist.size();
@@ -177,9 +192,152 @@ MutSpaceSelector::SelCoef MutSpaceSelector::getFitnessValue(size_t mutant) const
 		m_additive = false;
 	return SelCoef(s, h);
 }
-*/
 
-/*
+
+
+#ifdef MUTANTALLELE
+double MutSpaceSelector::randomSelAddFitness(compressed_vectora * genoPtr, size_t it, size_t it_end) const
+{
+	double s = 0;
+
+	for (; it != it_end; ++it) {
+		if ((*genoPtr)[it] == 0)
+			continue;
+		SelMap::iterator sit = m_selFactory.find(static_cast<unsigned int>((*genoPtr)[it]));
+		if (sit == m_selFactory.end())
+			s += getFitnessValue((*genoPtr)[it]).first / 2.;
+		else
+			s += sit->second.first / 2;
+	}
+	return 1 - s > 0 ? 1 - s : 0;
+}
+
+
+double MutSpaceSelector::randomSelExpFitness(compressed_vectora * genoPtr, size_t it, size_t it_end) const
+{
+	double s = 0;
+
+	for (; it != it_end; ++it) {
+		if ((*genoPtr)[it] == 0)
+			continue;
+		SelMap::iterator sit = m_selFactory.find(static_cast<unsigned int>((*genoPtr)[it]));
+		if (sit == m_selFactory.end())
+			s += getFitnessValue((*genoPtr)[it]).first / 2.;
+		else
+			s += sit->second.first / 2;
+	}
+	return exp(-s);
+}
+
+
+double MutSpaceSelector::randomSelMulFitnessExt(compressed_vectora * genoPtr, size_t it, size_t it_end) const
+{
+	MutCounter cnt;
+
+	for (; it != it_end; ++it) {
+		if ((*genoPtr)[it] == 0)
+			continue;
+		MutCounter::iterator mit = cnt.find((*genoPtr)[it]);
+		if (mit == cnt.end())
+			cnt[(*genoPtr)[it]] = 1;
+		else
+			++mit->second;
+	}
+
+	double s = 1;
+	MutCounter::iterator mit = cnt.begin();
+	MutCounter::iterator mit_end = cnt.end();
+	for (; mit != mit_end; ++mit) {
+		SelMap::iterator sit = m_selFactory.find(mit->first);
+		if (sit == m_selFactory.end()) {
+			SelCoef sf = getFitnessValue(mit->first);
+			if (mit->second == 1)
+				s *= 1 - sf.first * sf.second;
+			else
+				s *= 1 - sf.first;
+		} else {
+			if (mit->second == 1)
+				s *= 1 - sit->second.first * sit->second.second;
+			else
+				s *= 1 - sit->second.first;
+		}
+	}
+	return s;
+}
+
+
+double MutSpaceSelector::randomSelAddFitnessExt(compressed_vectora * genoPtr, size_t it, size_t it_end) const
+{
+	MutCounter cnt;
+
+	for (; it != it_end; ++it) {
+		if ((*genoPtr)[it] == 0)
+			continue;
+		MutCounter::iterator mit = cnt.find((*genoPtr)[it]);
+		if (mit == cnt.end())
+			cnt[(*genoPtr)[it]] = 1;
+		else
+			++mit->second;
+	}
+
+	double s = 0;
+	MutCounter::iterator mit = cnt.begin();
+	MutCounter::iterator mit_end = cnt.end();
+	for (; mit != mit_end; ++mit) {
+		SelMap::iterator sit = m_selFactory.find(mit->first);
+		if (sit == m_selFactory.end()) {
+			SelCoef sf = getFitnessValue(mit->first);
+			if (mit->second == 1)
+				s += sf.first * sf.second;
+			else
+				s += sf.first;
+		} else {
+			if (mit->second == 1)
+				s += sit->second.first * sit->second.second;
+			else
+				s += sit->second.first;
+		}
+	}
+	return 1 - s > 0 ? 1 - s : 0;
+}
+
+
+double MutSpaceSelector::randomSelExpFitnessExt(compressed_vectora * genoPtr, size_t it, size_t it_end) const
+{
+	MutCounter cnt;
+
+	for (; it != it_end; ++it) {
+		if ((*genoPtr)[it] == 0)
+			continue;
+		MutCounter::iterator mit = cnt.find((*genoPtr)[it]);
+		if (mit == cnt.end())
+			cnt[(*genoPtr)[it]] = 1;
+		else
+			++mit->second;
+	}
+
+	double s = 0;
+	MutCounter::iterator mit = cnt.begin();
+	MutCounter::iterator mit_end = cnt.end();
+	for (; mit != mit_end; ++mit) {
+		SelMap::iterator sit = m_selFactory.find(mit->first);
+		if (sit == m_selFactory.end()) {
+			SelCoef sf = getFitnessValue(mit->first);
+			if (mit->second == 1)
+				s += sf.first * sf.second;
+			else
+				s += sf.first;
+		} else {
+			if (mit->second == 1)
+				s += sit->second.first * sit->second.second;
+			else
+				s += sit->second.first;
+		}
+	}
+	return exp(-s);
+}
+
+#else
 double MutSpaceSelector::randomSelAddFitness(GenoIterator it, GenoIterator it_end) const
 {
 	double s = 0;
@@ -195,8 +353,8 @@ double MutSpaceSelector::randomSelAddFitness(GenoIterator it, GenoIterator it_en
 	}
 	return 1 - s > 0 ? 1 - s : 0;
 }
-*/
-/*
+
+
 double MutSpaceSelector::randomSelExpFitness(GenoIterator it, GenoIterator it_end) const
 {
 	double s = 0;
@@ -212,8 +370,8 @@ double MutSpaceSelector::randomSelExpFitness(GenoIterator it, GenoIterator it_en
 	}
 	return exp(-s);
 }
-*/
-/*
+
+
 double MutSpaceSelector::randomSelMulFitnessExt(GenoIterator it, GenoIterator it_end) const
 {
 	MutCounter cnt;
@@ -248,8 +406,8 @@ double MutSpaceSelector::randomSelMulFitnessExt(GenoIterator it, GenoIterator it
 	}
 	return s;
 }
-*/
-/*
+
+
 double MutSpaceSelector::randomSelAddFitnessExt(GenoIterator it, GenoIterator it_end) const
 {
 	MutCounter cnt;
@@ -284,8 +442,8 @@ double MutSpaceSelector::randomSelAddFitnessExt(GenoIterator it, GenoIterator it
 	}
 	return 1 - s > 0 ? 1 - s : 0;
 }
-*/
-/*
+
+
 double MutSpaceSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it_end) const
 {
 	MutCounter cnt;
@@ -320,7 +478,9 @@ double MutSpaceSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it
 	}
 	return exp(-s);
 }
-*/
+
+
+#endif
 
 //size_t MutSpaceMutator::locateVacantLocus(Population & /* pop */, size_t beg, size_t end, std::set<size_t> & mutants) const
 /*{

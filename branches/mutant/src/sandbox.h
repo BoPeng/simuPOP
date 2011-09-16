@@ -153,7 +153,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return the fitness value, currently assuming diploid
 	 */
-//	virtual double indFitness(Population & pop, Individual * ind) const;
+	virtual double indFitness(Population & pop, Individual * ind) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
@@ -164,24 +164,41 @@ public:
 
 
 	/// CPPONLY
-//	bool apply(Population & pop) const;
+	bool apply(Population & pop) const;
 
 	typedef std::pair<double, double> SelCoef;
 
 private:
-//	SelCoef getFitnessValue(size_t mutant) const;
+	SelCoef getFitnessValue(size_t mutant) const;
 
 
-//	double randomSelAddFitness(GenoIterator it, GenoIterator it_end) const;
 
-//	double randomSelExpFitness(GenoIterator it, GenoIterator it_end) const;
+#ifdef MUTANTALLELE
+	double randomSelAddFitness(compressed_vectora * genoPtr, size_t it, size_t it_end) const;
+
+	double randomSelExpFitness(compressed_vectora * genoPtr, size_t it, size_t it_end) const;
+
+	double randomSelMulFitnessExt(compressed_vectora * genoPtr, size_t it, size_t it_end) const;
+
+	double randomSelAddFitnessExt(compressed_vectora * genoPtr, size_t it, size_t it_end) const;
+
+	double randomSelExpFitnessExt(compressed_vectora * genoPtr, size_t it, size_t it_end) const;
+
+#else
+	double randomSelAddFitness(GenoIterator it, GenoIterator it_end) const;
+
+	double randomSelExpFitness(GenoIterator it, GenoIterator it_end) const;
 
 	// extended models does not assume additivity (h != 0.5)
-//	double randomSelMulFitnessExt(GenoIterator it, GenoIterator it_end) const;
+	double randomSelMulFitnessExt(GenoIterator it, GenoIterator it_end) const;
 
-//	double randomSelAddFitnessExt(GenoIterator it, GenoIterator it_end) const;
+	double randomSelAddFitnessExt(GenoIterator it, GenoIterator it_end) const;
 
-//	double randomSelExpFitnessExt(GenoIterator it, GenoIterator it_end) const;
+	double randomSelExpFitnessExt(GenoIterator it, GenoIterator it_end) const;
+
+#endif
+
+
 
 private:
 	///
