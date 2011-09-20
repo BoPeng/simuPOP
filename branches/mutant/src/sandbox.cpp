@@ -28,7 +28,7 @@
 
 namespace simuPOP {
 
-/*
+
 bool RevertFixedSites::apply(Population & pop) const
 {
 	if (pop.popSize() == 0 || pop.totNumLoci() == 0)
@@ -36,7 +36,13 @@ bool RevertFixedSites::apply(Population & pop) const
 
 	RawIndIterator it = pop.rawIndBegin();
 	RawIndIterator it_end = pop.rawIndEnd();
+#ifdef MUTANTALLELE
+	std::set<Allele> commonAlleles;
+	for (size_t i = it->genoBegin(0); i < it->genoEnd(0); i++)
+		commonAlleles.insert((*it->genoPtr())[i]);
+#else
 	std::set<Allele> commonAlleles(it->genoBegin(0), it->genoEnd(0));
+#endif
 	commonAlleles.erase(0);
 	if (commonAlleles.size() == 0)
 		return true;
@@ -44,13 +50,25 @@ bool RevertFixedSites::apply(Population & pop) const
 	for (; it != it_end; ++it) {
 		// common = commonAlleles & geno0
 		std::set<Allele> common;
+#ifdef MUTANTALLELE
+		std::set<Allele> alleles1;
+		for (size_t i = it->genoBegin(0); i < it->genoEnd(0); i++)
+			alleles1.insert((*it->genoPtr())[i]);
+#else
 		std::set<Allele> alleles1(it->genoBegin(0), it->genoEnd(0));
+#endif
 		set_intersection(commonAlleles.begin(),
 			commonAlleles.end(), alleles1.begin(), alleles1.end(),
 			std::inserter(common, common.begin()));
 		// commonAlleles = common & geno1
 		commonAlleles.clear();
+#ifdef MUTANTALLELE
+		std::set<Allele> alleles2;
+		for (size_t i = it->genoBegin(1); i < it->genoEnd(1); i++)
+			alleles2.insert((*it->genoPtr())[i]);
+#else
 		std::set<Allele> alleles2(it->genoBegin(1), it->genoEnd(1));
+#endif
 		set_intersection(common.begin(),
 			common.end(), alleles2.begin(), alleles2.end(),
 			std::inserter(commonAlleles, commonAlleles.begin()));
@@ -70,18 +88,29 @@ bool RevertFixedSites::apply(Population & pop) const
 	vectora new_alleles(pop.totNumLoci());
 	for (; it != it_end; ++it) {
 		for (size_t p = 0; p < 2; ++p) {
+#ifdef MUTANTALLELE
+			std::set<Allele> old_alleles;
+			for (size_t i = it->genoBegin(p); i < it->genoEnd(p); i++)
+				old_alleles.insert((*it->genoPtr())[i]);
+#else
 			std::set<Allele> old_alleles(it->genoBegin(p), it->genoEnd(p));
+#endif
 			old_alleles.erase(0);
 			std::fill(new_alleles.begin(), new_alleles.end(), Allele(0));
 			set_difference(old_alleles.begin(), old_alleles.end(),
 				commonAlleles.begin(), commonAlleles.end(), new_alleles.begin());
+#ifdef MUTANTALLELE
+			size_t idx = it->genoBegin(p);
+			for (vectora::iterator new_it = new_alleles.begin(); new_it != new_alleles.end(); ++new_it, ++idx) 
+				(*it->genoPtr())[idx] = *new_it;	
+#else
 			std::copy(new_alleles.begin(), new_alleles.end(),
 				it->genoBegin(p));
+#endif
 		}
 	}
 	return true;
 }
-*/
 
 
 double MutSpaceSelector::indFitness(Population & /* pop */, Individual * ind) const
@@ -482,8 +511,8 @@ double MutSpaceSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it
 
 #endif
 
-//size_t MutSpaceMutator::locateVacantLocus(Population & /* pop */, size_t beg, size_t end, std::set<size_t> & mutants) const
-/*{
+size_t MutSpaceMutator::locateVacantLocus(Population & /* pop */, size_t beg, size_t end, std::set<size_t> & mutants) const
+{
 	size_t loc = getRNG().randInt(static_cast<ULONG>(end - beg)) + beg;
 
 	std::set<size_t>::iterator it = std::find(mutants.begin(), mutants.end(), loc);
@@ -507,11 +536,11 @@ double MutSpaceSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it
 	// still cannot find
 	return 0;
 }
-*/
-/*
+
+
 bool MutSpaceMutator::apply(Population & pop) const
 {
-#ifdef
+#ifdef BINARYALLELE
 	(void)pop;      // avoid warning about unused parameter
 #else
 	const matrixi & ranges = m_ranges.elems();
@@ -571,9 +600,24 @@ bool MutSpaceMutator::apply(Population & pop) const
 					// if the first time
 					if (mutants.empty()) {
 						// first try our luck...
+#  ifdef MUTANTALLELE
+						for (size_t i = pop.genoBegin(false); i < pop.genoEnd(false); i++) {
+							if ((*pop.genoPtr())[i] == ToAllele(mutLoc)) {
+								ok = i == pop.genoEnd(false);
+								break;
+							}
+						}
+#  else
 						ok = find(pop.genoBegin(false), pop.genoEnd(false), ToAllele(mutLoc)) == pop.genoEnd(false);
+#  endif
 						if (!ok) {
+#  ifdef MUTANTALLELE
+							std::set<size_t> existing;
+							for (size_t i = pop.genoBegin(false); i < pop.genoEnd(false); i++)
+								existing.insert((*pop.genoPtr())[i]);
+#  else
 							std::set<size_t> existing(pop.genoBegin(false), pop.genoEnd(false));
+#  endif
 							mutants.swap(existing);
 							mutants.erase(0);
 							saturated = mutants.size() == ploidyWidth;
@@ -599,9 +643,16 @@ bool MutSpaceMutator::apply(Population & pop) const
 					}
 					mutants.insert(mutLoc);
 				}
+#  ifdef MUTANTALLELE
+				size_t geno = ind.genoBegin(p, ch);
+				size_t nLoci = pop.numLoci(ch);
+				if ((*ind.genoPtr())[geno + nLoci - 1] != 0)
+#  else
 				GenoIterator geno = ind.genoBegin(p, ch);
 				size_t nLoci = pop.numLoci(ch);
-				if (*(geno + nLoci - 1) != 0) {
+				if (*(geno + nLoci - 1) != 0)
+#  endif
+				{
 					// if the number of mutants at this individual exceeds reserved numbers
 					DBG_DO(DBG_MUTATOR, cerr << "Adding 10 loci to region " << ch << endl);
 					vectorf added(10);
@@ -616,20 +667,44 @@ bool MutSpaceMutator::apply(Population & pop) const
 				}
 				// find the first non-zero location
 				for (size_t j = 0; j < nLoci; ++j) {
-					if (*(geno + j) == 0) {
+#  ifdef MUTANTALLELE
+					if ((*ind.genoPtr())[geno + j] == 0)
+#  else
+					if (*(geno + j) == 0)
+#  endif
+					{
 						// record mutation here
 						DBG_FAILIF(mutLoc >= ModuleMaxAllele, RuntimeError,
 							"Location can not be saved because it exceed max allowed allele.");
+#  ifdef MUTANTALLELE
+						(*ind.genoPtr())[geno + j] = ToAllele(mutLoc);
+#  else
 						*(geno + j) = ToAllele(mutLoc);
+#  endif
 						if (out)
 							(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t0\n";
 						break;
-					} else if (static_cast<size_t>(*(geno + j)) == mutLoc) {
+					} 
+#  ifdef MUTANTALLELE
+					else if (static_cast<size_t>((*ind.genoPtr())[geno + j]) == mutLoc) 
+#  else
+					else if (static_cast<size_t>(*(geno + j)) == mutLoc) 
+#  endif
+					{
 						// back mutation
 						//  from A b c d 0
 						//  to   d b c d 0
 						//  to   d b c 0 0
 						for (size_t k = j + 1; k < nLoci; ++k)
+#  ifdef MUTANTALLELE
+							if ((*ind.genoPtr())[geno + k] == 0) {
+								(*ind.genoPtr())[geno + j] = (*ind.genoPtr())[geno + k - 1];
+								(*ind.genoPtr())[geno + k - 1] = 0;
+								if (out)
+									(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t1\n";
+								break;
+							}
+#  else
 							if (*(geno + k) == 0) {
 								*(geno + j) = *(geno + k - 1);
 								*(geno + k - 1) = 0;
@@ -637,6 +712,7 @@ bool MutSpaceMutator::apply(Population & pop) const
 									(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t1\n";
 								break;
 							}
+#  endif
 						DBG_DO(DBG_MUTATOR, cerr << "Back mutation happens at generation " << pop.gen() << " on individual " << indIndex << endl);
 						break;
 					}
@@ -649,7 +725,7 @@ bool MutSpaceMutator::apply(Population & pop) const
 #endif
 	return true;
 }
-*/
+
 /*
 void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individual & parent,
                                              size_t offIndex, int ploidy) const

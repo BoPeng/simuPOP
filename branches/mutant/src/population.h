@@ -833,6 +833,12 @@ public:
 
 
 #ifdef MUTANTALLELE
+	compressed_vectora * genoPtr()
+	{
+		return &m_genotype;
+	}
+
+
 	size_t genoBegin(bool order)
 	{
 		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,

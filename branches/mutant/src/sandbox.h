@@ -77,7 +77,7 @@ public:
 
 
 	/// HIDDEN apply the Migrator to populaiton \e pop.
-//	virtual bool apply(Population & pop) const;
+	virtual bool apply(Population & pop) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
@@ -283,7 +283,7 @@ public:
 	}
 
 
-//	virtual bool apply(Population & pop) const;
+	virtual bool apply(Population & pop) const;
 
 	/// HIDDEN Deep copy of a \c MutSpaceMutator
 	virtual BaseOperator * clone() const
@@ -301,7 +301,7 @@ public:
 
 
 private:
-//	size_t locateVacantLocus(Population & pop, size_t beg, size_t end, std::set<size_t> & mutants) const;
+	size_t locateVacantLocus(Population & pop, size_t beg, size_t end, std::set<size_t> & mutants) const;
 
 private:
 	const double m_rate;
