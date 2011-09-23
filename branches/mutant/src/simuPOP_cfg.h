@@ -180,9 +180,13 @@ typedef vector<Allele>::reference AlleleRef;
 #    define ToAllele(a)   ((a) != 0)
 
 #  else
-
+#    ifdef MUTANTALLELE
+typedef unsigned int Allele;
+typedef unsigned int & AlleleRef;
+#    else
 typedef unsigned char Allele;
 typedef unsigned char & AlleleRef;
+#    endif
 #    define AlleleInc(a)  ++ (a)
 #    define AlleleDec(a)  -- (a)
 #    define AlleleAdd(a, b) (a) += (b)
@@ -345,7 +349,7 @@ typedef long LONG;
 typedef std::vector<long>                                vectori;
 typedef std::vector<double>                              vectorf;
 typedef std::vector<Allele>                              vectora;
-typedef compressed_vector<unsigned char> 		 compressed_vectora;
+typedef compressed_vector<unsigned int> 		 compressed_vectora;
 typedef std::vector<Allele>                              vectora;
 typedef std::vector<size_t>                              vectoru;
 typedef std::vector<std::string>                         vectorstr;

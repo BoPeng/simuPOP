@@ -460,6 +460,7 @@ void setOptions(const int numThreads, const char * name, unsigned long seed)
 #ifdef _OPENMP
 #  ifdef MUTANTALLELE
 	// mutant alleletype doesn't support multi-threads
+	(void)numThreads; // avoid an unused parameter warning
 	g_numThreads = 1;
 	omp_set_num_threads(1);
 #  else

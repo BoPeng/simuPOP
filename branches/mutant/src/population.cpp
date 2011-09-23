@@ -3297,7 +3297,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 		ar & tmpgeno;
 		m_genotype.resize(tmpgeno.size());
 		for (size_t i = 0; i < tmpgeno.size(); ++i)
-			m_genotype[i] = ToAllele(tmpgeno[i]);
+			m_genotype[i] = static_cast<Allele>(tmpgeno[i]);
 	// binary from others (long types)
 	} else {
 		DBG_DO(DBG_POPULATION, cerr << "Load bin from long. " << endl);

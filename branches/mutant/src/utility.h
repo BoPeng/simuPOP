@@ -2146,9 +2146,9 @@ void testCopyGenotype();
 /// CPPONLY
 inline void assignGenotype(compressed_vectora & assigned_cvector, const size_t assigned_idx, const compressed_vectora & cvector, const size_t idx)
 {
-	if (assigned_cvector[assigned_idx] == 0 && cvector[idx] == 0)
+	if (assigned_cvector[assigned_idx] == 0u && cvector[idx] == 0u)
 		return;
-	else if (assigned_cvector[assigned_idx] != 0 && cvector[idx] == 0)
+	else if (assigned_cvector[assigned_idx] != 0u && cvector[idx] == 0u)
 		assigned_cvector.erase_element(assigned_idx);
 	else
 		assigned_cvector[assigned_idx] = cvector[idx];
@@ -2158,9 +2158,9 @@ inline void assignGenotype(compressed_vectora & assigned_cvector, const size_t a
 /// CPPONLY
 inline void assignGenotype(compressed_vectora & assigned_cvector, const size_t assigned_idx, const Allele allele)
 {
-	if (assigned_cvector[assigned_idx] == 0 && allele == 0)
+	if (assigned_cvector[assigned_idx] == 0u && allele == 0u)
 		return;
-	else if (assigned_cvector[assigned_idx] != 0 && allele == 0)
+	else if (assigned_cvector[assigned_idx] != 0u && allele == 0u)
 		assigned_cvector.erase_element(assigned_idx);
 	else
 		assigned_cvector[assigned_idx] = allele;
@@ -2173,9 +2173,9 @@ inline void insertGenotype(compressed_vectora & newCVector,const size_t startIdx
 	size_t idx = startIdx;
 	newCVector.resize(newCVector.size() + end - begin);
 	for(size_t i = begin; i < end; ++i, ++idx) 
-		if (newCVector[idx] == 0 && oldCVector[i] == 0)
+		if (newCVector[idx] == 0u && oldCVector[i] == 0u)
 			continue;
-		else if (newCVector[idx] != 0 && oldCVector[i] == 0)
+		else if (newCVector[idx] != 0u && oldCVector[i] == 0u)
 			newCVector.erase_element(idx);
 		else
 			newCVector[idx] = oldCVector[i];
@@ -2187,9 +2187,9 @@ inline void copyGenotype(const compressed_vectora & oldCVector, const size_t old
 {
 	size_t idx = newBegin;
 	for(size_t i = oldBegin; i < oldEnd; ++i, ++idx)
-		if (newCVector[idx] == 0 && oldCVector[i] == 0)
+		if (newCVector[idx] == 0u && oldCVector[i] == 0u)
 			continue;
-		else if (newCVector[idx] != 0 && oldCVector[i] == 0)
+		else if (newCVector[idx] != 0u && oldCVector[i] == 0u)
 			newCVector.erase_element(idx);
 		else
 			newCVector[idx] = oldCVector[i];

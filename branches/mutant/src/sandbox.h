@@ -361,9 +361,9 @@ public:
 	/** CPPONLY
 	 *  Apply the Recombinator during mating
 	 */
-//	virtual bool applyDuringMating(Population & pop, Population & offPop,
-//		RawIndIterator offspring,
-//		Individual * dad, Individual * mom) const;
+	virtual bool applyDuringMating(Population & pop, Population & offPop,
+		RawIndIterator offspring,
+		Individual * dad, Individual * mom) const;
 
 private:
 #if TR1_SUPPORT == 0
@@ -373,12 +373,12 @@ private:
 	typedef std::tr1::unordered_map<unsigned int, int> MutCounter;
 #endif
 	// use when m_rate = 0.5
-//	void transmitGenotype0(Population & offPop, const Individual & parent,
-//		size_t offIndex, int ploidy) const;
+	void transmitGenotype0(Population & offPop, const Individual & parent,
+		size_t offIndex, int ploidy) const;
 
 	// use when m_rate < 1e-4
-//	void transmitGenotype1(Population & offPop, const Individual & parent,
-//		size_t offIndex, int ploidy) const;
+	void transmitGenotype1(Population & offPop, const Individual & parent,
+		size_t offIndex, int ploidy) const;
 
 private:
 	/// recombination rate
