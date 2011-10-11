@@ -31,18 +31,15 @@ namespace simuPOP {
 
 bool RevertFixedSites::apply(Population & pop) const
 {
+#ifdef MUTANTALLELE
 	if (pop.popSize() == 0 || pop.totNumLoci() == 0)
 		return true;
 
 	RawIndIterator it = pop.rawIndBegin();
 	RawIndIterator it_end = pop.rawIndEnd();
-#ifdef MUTANTALLELE
 	std::set<Allele> commonAlleles;
 	for (size_t i = it->genoBegin(0); i < it->genoEnd(0); i++)
 		commonAlleles.insert((*it->genoPtr())[i]);
-#else
-	std::set<Allele> commonAlleles(it->genoBegin(0), it->genoEnd(0));
-#endif
 	commonAlleles.erase(0);
 	if (commonAlleles.size() == 0)
 		return true;
@@ -50,25 +47,17 @@ bool RevertFixedSites::apply(Population & pop) const
 	for (; it != it_end; ++it) {
 		// common = commonAlleles & geno0
 		std::set<Allele> common;
-#ifdef MUTANTALLELE
 		std::set<Allele> alleles1;
 		for (size_t i = it->genoBegin(0); i < it->genoEnd(0); i++)
 			alleles1.insert((*it->genoPtr())[i]);
-#else
-		std::set<Allele> alleles1(it->genoBegin(0), it->genoEnd(0));
-#endif
 		set_intersection(commonAlleles.begin(),
 			commonAlleles.end(), alleles1.begin(), alleles1.end(),
 			std::inserter(common, common.begin()));
 		// commonAlleles = common & geno1
 		commonAlleles.clear();
-#ifdef MUTANTALLELE
 		std::set<Allele> alleles2;
 		for (size_t i = it->genoBegin(1); i < it->genoEnd(1); i++)
 			alleles2.insert((*it->genoPtr())[i]);
-#else
-		std::set<Allele> alleles2(it->genoBegin(1), it->genoEnd(1));
-#endif
 		set_intersection(common.begin(),
 			common.end(), alleles2.begin(), alleles2.end(),
 			std::inserter(commonAlleles, commonAlleles.begin()));
@@ -88,28 +77,22 @@ bool RevertFixedSites::apply(Population & pop) const
 	vectora new_alleles(pop.totNumLoci());
 	for (; it != it_end; ++it) {
 		for (size_t p = 0; p < 2; ++p) {
-#ifdef MUTANTALLELE
 			std::set<Allele> old_alleles;
 			for (size_t i = it->genoBegin(p); i < it->genoEnd(p); i++)
 				old_alleles.insert((*it->genoPtr())[i]);
-#else
-			std::set<Allele> old_alleles(it->genoBegin(p), it->genoEnd(p));
-#endif
 			old_alleles.erase(0);
 			std::fill(new_alleles.begin(), new_alleles.end(), Allele(0));
 			set_difference(old_alleles.begin(), old_alleles.end(),
 				commonAlleles.begin(), commonAlleles.end(), new_alleles.begin());
-#ifdef MUTANTALLELE
 			size_t idx = it->genoBegin(p);
 			for (vectora::iterator new_it = new_alleles.begin(); new_it != new_alleles.end(); ++new_it, ++idx) 
 				assignGenotype(*it->genoPtr(), idx, *new_it);
 				////(*it->genoPtr())[idx] = *new_it;	
-#else
-			std::copy(new_alleles.begin(), new_alleles.end(),
-				it->genoBegin(p));
-#endif
 		}
 	}
+#else
+	(void)pop;
+#endif
 	return true;
 }
 
@@ -131,20 +114,7 @@ double MutSpaceSelector::indFitness(Population & /* pop */, Individual * ind) co
 			return randomSelExpFitnessExt(ind->genoPtr(), ind->genoBegin(), ind->genoEnd());
 	}
 #else
-	if (m_mode == MULTIPLICATIVE) {
-		return randomSelMulFitnessExt(ind->genoBegin(), ind->genoEnd());
-	} else if (m_mode == ADDITIVE) {
-		if (m_additive)
-			return randomSelAddFitness(ind->genoBegin(), ind->genoEnd());
-		else
-			return randomSelAddFitnessExt(ind->genoBegin(), ind->genoEnd());
-	} else if (m_mode == EXPONENTIAL) {
-		if (m_additive)
-			return randomSelExpFitness(ind->genoBegin(), ind->genoEnd());
-		else
-			return randomSelExpFitnessExt(ind->genoBegin(), ind->genoEnd());
-	}
-
+	(void)ind;
 #endif
 	return 0;
 }
@@ -224,8 +194,6 @@ MutSpaceSelector::SelCoef MutSpaceSelector::getFitnessValue(size_t mutant) const
 }
 
 
-
-#ifdef MUTANTALLELE
 double MutSpaceSelector::randomSelAddFitness(compressed_vectora * genoPtr, size_t it, size_t it_end) const
 {
 	double s = 0;
@@ -367,151 +335,6 @@ double MutSpaceSelector::randomSelExpFitnessExt(compressed_vectora * genoPtr, si
 	return exp(-s);
 }
 
-#else
-double MutSpaceSelector::randomSelAddFitness(GenoIterator it, GenoIterator it_end) const
-{
-	double s = 0;
-
-	for (; it != it_end; ++it) {
-		if (*it == 0)
-			continue;
-		SelMap::iterator sit = m_selFactory.find(static_cast<unsigned int>(*it));
-		if (sit == m_selFactory.end())
-			s += getFitnessValue(*it).first / 2.;
-		else
-			s += sit->second.first / 2;
-	}
-	return 1 - s > 0 ? 1 - s : 0;
-}
-
-
-double MutSpaceSelector::randomSelExpFitness(GenoIterator it, GenoIterator it_end) const
-{
-	double s = 0;
-
-	for (; it != it_end; ++it) {
-		if (*it == 0)
-			continue;
-		SelMap::iterator sit = m_selFactory.find(static_cast<unsigned int>(*it));
-		if (sit == m_selFactory.end())
-			s += getFitnessValue(*it).first / 2.;
-		else
-			s += sit->second.first / 2;
-	}
-	return exp(-s);
-}
-
-
-double MutSpaceSelector::randomSelMulFitnessExt(GenoIterator it, GenoIterator it_end) const
-{
-	MutCounter cnt;
-
-	for (; it != it_end; ++it) {
-		if (*it == 0)
-			continue;
-		MutCounter::iterator mit = cnt.find(*it);
-		if (mit == cnt.end())
-			cnt[*it] = 1;
-		else
-			++mit->second;
-	}
-
-	double s = 1;
-	MutCounter::iterator mit = cnt.begin();
-	MutCounter::iterator mit_end = cnt.end();
-	for (; mit != mit_end; ++mit) {
-		SelMap::iterator sit = m_selFactory.find(mit->first);
-		if (sit == m_selFactory.end()) {
-			SelCoef sf = getFitnessValue(mit->first);
-			if (mit->second == 1)
-				s *= 1 - sf.first * sf.second;
-			else
-				s *= 1 - sf.first;
-		} else {
-			if (mit->second == 1)
-				s *= 1 - sit->second.first * sit->second.second;
-			else
-				s *= 1 - sit->second.first;
-		}
-	}
-	return s;
-}
-
-
-double MutSpaceSelector::randomSelAddFitnessExt(GenoIterator it, GenoIterator it_end) const
-{
-	MutCounter cnt;
-
-	for (; it != it_end; ++it) {
-		if (*it == 0)
-			continue;
-		MutCounter::iterator mit = cnt.find(*it);
-		if (mit == cnt.end())
-			cnt[*it] = 1;
-		else
-			++mit->second;
-	}
-
-	double s = 0;
-	MutCounter::iterator mit = cnt.begin();
-	MutCounter::iterator mit_end = cnt.end();
-	for (; mit != mit_end; ++mit) {
-		SelMap::iterator sit = m_selFactory.find(mit->first);
-		if (sit == m_selFactory.end()) {
-			SelCoef sf = getFitnessValue(mit->first);
-			if (mit->second == 1)
-				s += sf.first * sf.second;
-			else
-				s += sf.first;
-		} else {
-			if (mit->second == 1)
-				s += sit->second.first * sit->second.second;
-			else
-				s += sit->second.first;
-		}
-	}
-	return 1 - s > 0 ? 1 - s : 0;
-}
-
-
-double MutSpaceSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it_end) const
-{
-	MutCounter cnt;
-
-	for (; it != it_end; ++it) {
-		if (*it == 0)
-			continue;
-		MutCounter::iterator mit = cnt.find(*it);
-		if (mit == cnt.end())
-			cnt[*it] = 1;
-		else
-			++mit->second;
-	}
-
-	double s = 0;
-	MutCounter::iterator mit = cnt.begin();
-	MutCounter::iterator mit_end = cnt.end();
-	for (; mit != mit_end; ++mit) {
-		SelMap::iterator sit = m_selFactory.find(mit->first);
-		if (sit == m_selFactory.end()) {
-			SelCoef sf = getFitnessValue(mit->first);
-			if (mit->second == 1)
-				s += sf.first * sf.second;
-			else
-				s += sf.first;
-		} else {
-			if (mit->second == 1)
-				s += sit->second.first * sit->second.second;
-			else
-				s += sit->second.first;
-		}
-	}
-	return exp(-s);
-}
-
-
-#endif
-
 size_t MutSpaceMutator::locateVacantLocus(Population & /* pop */, size_t beg, size_t end, std::set<size_t> & mutants) const
 {
 	size_t loc = getRNG().randInt(static_cast<ULONG>(end - beg)) + beg;
@@ -541,9 +364,7 @@ size_t MutSpaceMutator::locateVacantLocus(Population & /* pop */, size_t beg, si
 
 bool MutSpaceMutator::apply(Population & pop) const
 {
-#ifdef BINARYALLELE
-	(void)pop;      // avoid warning about unused parameter
-#else
+#ifdef MUTANTALLELE
 	const matrixi & ranges = m_ranges.elems();
 	vectoru width(ranges.size());
 
@@ -601,24 +422,16 @@ bool MutSpaceMutator::apply(Population & pop) const
 					// if the first time
 					if (mutants.empty()) {
 						// first try our luck...
-#  ifdef MUTANTALLELE
 						for (size_t i = pop.genoBegin(false); i < pop.genoEnd(false); i++) {
 							if ((*pop.genoPtr())[i] == ToAllele(mutLoc)) {
 								ok = i == pop.genoEnd(false);
 								break;
 							}
 						}
-#  else
-						ok = find(pop.genoBegin(false), pop.genoEnd(false), ToAllele(mutLoc)) == pop.genoEnd(false);
-#  endif
 						if (!ok) {
-#  ifdef MUTANTALLELE
 							std::set<size_t> existing;
 							for (size_t i = pop.genoBegin(false); i < pop.genoEnd(false); i++)
 								existing.insert((*pop.genoPtr())[i]);
-#  else
-							std::set<size_t> existing(pop.genoBegin(false), pop.genoEnd(false));
-#  endif
 							mutants.swap(existing);
 							mutants.erase(0);
 							saturated = mutants.size() == ploidyWidth;
@@ -644,15 +457,9 @@ bool MutSpaceMutator::apply(Population & pop) const
 					}
 					mutants.insert(mutLoc);
 				}
-#  ifdef MUTANTALLELE
 				size_t geno = ind.genoBegin(p, ch);
 				size_t nLoci = pop.numLoci(ch);
 				if ((*ind.genoPtr())[geno + nLoci - 1] != 0u)
-#  else
-				GenoIterator geno = ind.genoBegin(p, ch);
-				size_t nLoci = pop.numLoci(ch);
-				if (*(geno + nLoci - 1) != 0)
-#  endif
 				{
 					// if the number of mutants at this individual exceeds reserved numbers
 					DBG_DO(DBG_MUTATOR, cerr << "Adding 10 loci to region " << ch << endl);
@@ -668,37 +475,22 @@ bool MutSpaceMutator::apply(Population & pop) const
 				}
 				// find the first non-zero location
 				for (size_t j = 0; j < nLoci; ++j) {
-#  ifdef MUTANTALLELE
-					if ((*ind.genoPtr())[geno + j] == 0u)
-#  else
-					if (*(geno + j) == 0)
-#  endif
-					{
+					if ((*ind.genoPtr())[geno + j] == 0u) {
 						// record mutation here
 						DBG_FAILIF(mutLoc >= ModuleMaxAllele, RuntimeError,
 							"Location can not be saved because it exceed max allowed allele.");
-#  ifdef MUTANTALLELE
 						assignGenotype(*ind.genoPtr(), geno + j, ToAllele(mutLoc));
 						////(*ind.genoPtr())[geno + j] = ToAllele(mutLoc);
-#  else
-						*(geno + j) = ToAllele(mutLoc);
-#  endif
 						if (out)
 							(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t0\n";
 						break;
 					} 
-#  ifdef MUTANTALLELE
-					else if (static_cast<size_t>((*ind.genoPtr())[geno + j]) == mutLoc) 
-#  else
-					else if (static_cast<size_t>(*(geno + j)) == mutLoc) 
-#  endif
-					{
+					else if (static_cast<size_t>((*ind.genoPtr())[geno + j]) == mutLoc) {
 						// back mutation
 						//  from A b c d 0
 						//  to   d b c d 0
 						//  to   d b c 0 0
 						for (size_t k = j + 1; k < nLoci; ++k)
-#  ifdef MUTANTALLELE
 							if ((*ind.genoPtr())[geno + k] == 0u) {
 								assignGenotype(*ind.genoPtr(), geno + j, (*ind.genoPtr())[geno + k - 1]);
 								////(*ind.genoPtr())[geno + j] = (*ind.genoPtr())[geno + k - 1];
@@ -708,15 +500,6 @@ bool MutSpaceMutator::apply(Population & pop) const
 									(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t1\n";
 								break;
 							}
-#  else
-							if (*(geno + k) == 0) {
-								*(geno + j) = *(geno + k - 1);
-								*(geno + k - 1) = 0;
-								if (out)
-									(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t1\n";
-								break;
-							}
-#  endif
 						DBG_DO(DBG_MUTATOR, cerr << "Back mutation happens at generation " << pop.gen() << " on individual " << indIndex << endl);
 						break;
 					}
@@ -726,6 +509,8 @@ bool MutSpaceMutator::apply(Population & pop) const
 	}           // each subpopulation
 	if (out)
 		closeOstream();
+#else
+	(void)pop;      // avoid warning about unused parameter
 #endif
 	return true;
 }
@@ -734,12 +519,7 @@ bool MutSpaceMutator::apply(Population & pop) const
 void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individual & parent,
                                              size_t offIndex, int ploidy) const
 {
-#ifdef BINARYALLELE
-	(void)offPop;       // avoid warning about unused parameter
-	(void)parent;       // avoid warning about unused parameter
-	(void)offIndex;     // avoid warning about unused parameter
-	(void)ploidy;       // avoid warning about unused parameter
-#else
+#ifdef MUTANTALLELE
 	size_t nCh = parent.numChrom();
 
 	// count duplicates...
@@ -749,7 +529,6 @@ void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individu
 		alleles.reserve(parent.numLoci(ch));
 		if (nCh == 1) {
 			// this is faster... for a most common case
-#  ifdef MUTANTALLELE
 			size_t it = parent.genoBegin();
 			size_t it_end = parent.genoEnd();
 			for (; it != it_end; ++it) {
@@ -761,22 +540,7 @@ void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individu
 				else
 					++mit->second;
 			}
-
-#  else
-			GenoIterator it = parent.genoBegin();
-			GenoIterator it_end = parent.genoEnd();
-			for (; it != it_end; ++it) {
-				if (*it == 0)
-					continue;
-				MutCounter::iterator mit = cnt.find(*it);
-				if (mit == cnt.end())
-					cnt[*it] = 1;
-				else
-					++mit->second;
-			}
-#  endif
 		} else {
-#  ifdef MUTANTALLELE
 			size_t it = parent.genoBegin(0, ch);
 			size_t it_end = parent.genoEnd(0, ch);
 			for (; it != it_end; ++it) {
@@ -799,45 +563,14 @@ void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individu
 				else
 					++mit->second;
 			}
-#  else
-			GenoIterator it = parent.genoBegin(0, ch);
-			GenoIterator it_end = parent.genoEnd(0, ch);
-			for (; it != it_end; ++it) {
-				if (*it == 0)
-					break;
-				MutCounter::iterator mit = cnt.find(*it);
-				if (mit == cnt.end())
-					cnt[*it] = 1;
-				else
-					++mit->second;
-			}
-			it = parent.genoBegin(1, ch);
-			it_end = parent.genoEnd(1, ch);
-			for (; it != it_end; ++it) {
-				if (*it == 0)
-					break;
-				MutCounter::iterator mit = cnt.find(*it);
-				if (mit == cnt.end())
-					cnt[*it] = 1;
-				else
-					++mit->second;
-			}
-#  endif
 		}
 		// no valid allele
 		if (cnt.empty()) {
-#  ifdef MUTANTALLELE
 			size_t it = offPop.individual(offIndex).genoBegin(ploidy, ch);
 			size_t it_end = offPop.individual(offIndex).genoEnd(ploidy, ch);
 			for (size_t i = it; i < it_end; ++i)
 				assignGenotype(*offPop.individual(offIndex).genoPtr(), it, 0);
 			continue;
-#  else
-			GenoIterator it = offPop.individual(offIndex).genoBegin(ploidy, ch);
-			GenoIterator it_end = offPop.individual(offIndex).genoEnd(ploidy, ch);
-			std::fill(it, it_end, 0);
-			continue;
-#  endif
 		}
 		// keep 1 count with probability 0.5, keep 2 count with probability 1
 		MutCounter::iterator mit = cnt.begin();
@@ -857,7 +590,6 @@ void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individu
 			vectoru addedChrom(sz, ch);
 			offPop.addLoci(addedChrom, added);
 		}
-#  ifdef MUTANTALLELE
 		//
 		size_t it = offPop.individual(offIndex).genoBegin(ploidy, ch);
 		size_t it_end = offPop.individual(offIndex).genoEnd(ploidy, ch);
@@ -866,16 +598,12 @@ void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individu
 		// fill the rest with 0.
 		for (size_t i = it; i < it_end; i++)
 			assignGenotype(*offPop.individual(offIndex).genoPtr(), i, 0);
-#  else
-		//
-		GenoIterator it = offPop.individual(offIndex).genoBegin(ploidy, ch);
-		GenoIterator it_end = offPop.individual(offIndex).genoEnd(ploidy, ch);
-		for (size_t i = 0; i < alleles.size(); ++i, ++it)
-			*it = ToAllele(alleles[i]);
-		// fill the rest with 0.
-		std::fill(it, it_end, 0);
-#  endif
 	}
+#else
+	(void)offPop;       // avoid warning about unused parameter
+	(void)parent;       // avoid warning about unused parameter
+	(void)offIndex;     // avoid warning about unused parameter
+	(void)ploidy;       // avoid warning about unused parameter
 #endif
 }
 
@@ -883,13 +611,7 @@ void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individu
 void MutSpaceRecombinator::transmitGenotype1(Population & offPop, const Individual & parent,
                                              size_t offIndex, int ploidy) const
 {
-#ifdef BINARYALLELE
-	(void)offPop;       // avoid warning about unused parameter
-	(void)parent;       // avoid warning about unused parameter
-	(void)offIndex;     // avoid warning about unused parameter
-	(void)ploidy;       // avoid warning about unused parameter
-#else
-#  ifdef MUTANTALLELE
+#ifdef MUTANTALLELE
 	const matrixi & ranges = m_ranges.elems();
 
 	for (size_t ch = 0; ch < parent.numChrom(); ++ch) {
@@ -991,109 +713,11 @@ void MutSpaceRecombinator::transmitGenotype1(Population & offPop, const Individu
 		for (size_t i = it; i < it_end; i++)
 			assignGenotype(*parent.genoPtr(), it, 0);
 	}
-
-#  else
-	const matrixi & ranges = m_ranges.elems();
-
-	for (size_t ch = 0; ch < parent.numChrom(); ++ch) {
-		size_t width = ranges[ch][1] - ranges[ch][0];
-		size_t beg = 0;
-		size_t end = getRNG().randGeometric(m_rate);
-		int p = getRNG().randBit() ? 0 : 1;
-		// no recombination
-		if (end >= width) {
-			copyChromosome(parent, p, offPop.individual(offIndex), ploidy, ch);
-			continue;
-		}
-		// we are in trouble... get some properties of alleles to reduce comparison
-		vectoru alleles;
-		size_t minAllele[2];
-		size_t maxAllele[2];
-		size_t cnt[2];
-		cnt[0] = 0;
-		cnt[1] = 0;
-		minAllele[0] = ranges[ch][1];
-		minAllele[1] = ranges[ch][1];
-		maxAllele[0] = ranges[ch][0];
-		maxAllele[1] = ranges[ch][0];
-		GenoIterator it = parent.genoBegin(0, ch);
-		GenoIterator it_end = parent.genoEnd(0, ch);
-		for (; it != it_end; ++it) {
-			if (*it == 0)
-				break;
-			++cnt[0];
-			if (*it < minAllele[0])
-				minAllele[0] = *it;
-			if (*it > maxAllele[0])
-				maxAllele[0] = *it;
-		}
-		it = parent.genoBegin(1, ch);
-		it_end = parent.genoEnd(1, ch);
-		for (; it != it_end; ++it) {
-			if (*it == 0)
-				break;
-			++cnt[1];
-			if (*it < minAllele[1])
-				minAllele[1] = *it;
-			if (*it > maxAllele[1])
-				maxAllele[1] = *it;
-		}
-		minAllele[0] -= ranges[ch][0];
-		minAllele[1] -= ranges[ch][0];
-		maxAllele[0] -= ranges[ch][0];
-		maxAllele[1] -= ranges[ch][0];
-		do {
-			// copy piece
-			// this algorithm is NOT efficient, but we count the rareness of recombination. :-)
-			if (cnt[p] > 0 && end >= minAllele[p] && beg <= maxAllele[p]) {
-				it = parent.genoBegin(p, ch);
-				it_end = parent.genoEnd(p, ch);
-				for (; it != it_end; ++it) {
-					if (*it == 0)
-						break;
-					if (*it >= beg + ranges[ch][0] && *it < end + ranges[ch][0]) {
-						alleles.push_back(*it);
-						--cnt[p];
-					}
-				}
-			}
-			// change ploidy
-			p = (p + 1) % 2;
-			// next step
-			beg = end;
-			end += getRNG().randGeometric(m_rate);
-		} while (end < width && (cnt[0] > 0 || cnt[1] > 0));
-		// last piece
-		if (cnt[0] > 0 || cnt[1] > 0) {
-			it = parent.genoBegin(p, ch);
-			it_end = parent.genoEnd(p, ch);
-			for (; it != it_end; ++it) {
-				if (*it >= beg + static_cast<size_t>(ranges[ch][0]) &&
-				    *it < static_cast<size_t>(ranges[ch][1]))
-					alleles.push_back(*it);
-			}
-		}
-		// set alleles
-		// not enough size
-		if (alleles.size() + 1 > offPop.numLoci(ch)) {
-			DBG_DO(DBG_TRANSMITTER, cerr << "Extending size of chromosome " << ch <<
-				" to " << alleles.size() + 2 << endl);
-			size_t sz = alleles.size() - offPop.numLoci(ch) + 2;
-			vectorf added(sz);
-			for (size_t j = 0; j < sz; ++j)
-				added[j] = static_cast<double>(offPop.numLoci(ch) + j + 1);
-			vectoru addedChrom(sz, ch);
-			offPop.addLoci(addedChrom, added);
-		}
-		//
-		it = offPop.individual(offIndex).genoBegin(ploidy, ch);
-		it_end = offPop.individual(offIndex).genoEnd(ploidy, ch);
-		for (size_t i = 0; i < alleles.size(); ++i, ++it)
-			*it = ToAllele(alleles[i]);
-		// fill the rest with 0.
-		std::fill(it, it_end, 0);
-	}
-#  endif
+#else
+	(void)offPop;       // avoid warning about unused parameter
+	(void)parent;       // avoid warning about unused parameter
+	(void)offIndex;     // avoid warning about unused parameter
+	(void)ploidy;       // avoid warning about unused parameter
 #endif
 }
 
