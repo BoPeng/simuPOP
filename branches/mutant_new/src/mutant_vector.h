@@ -6,6 +6,7 @@ using boost::numeric::ublas::compressed_vector;
 
 namespace simuPOP {
 
+#  ifdef MUTANTALLELE
 template <class T>
 class mutant_vector
 {
@@ -57,13 +58,21 @@ class mutant_vector
 			protected:
 				compressed_vector<T> * m_container;
 				size_t m_index;
+				typename compressed_vector<T>::iterator m_iter;	
+				
 			public:
-				iterator (compressed_vector<T> * c) : m_container(c), m_index(0)
+				iterator (compressed_vector<T> * c) : m_container(c), m_index(0), m_iter(m_container->begin())
 				{
 				}
 
-				iterator (compressed_vector<T> * c, size_t index) : m_container(c), m_index(index) 
+				iterator (compressed_vector<T> * c, size_t index) : m_container(c), m_index(index)
 				{
+					if (index == 0) { 
+						m_iter = m_container->begin();
+					}
+					else if (index == m_container->size()) {
+						m_iter = m_container->end();
+					}
 				}
 
 				iterator () : m_container(NULL), m_index(0)
@@ -152,14 +161,41 @@ class mutant_vector
 					return result;
 				}
 
+				size_t findPositionIndexData () {
+					for (size_t i = 0; i < m_container->filled(); i++) {
+						if (i < m_container->filled() - 1 && m_index > m_container->index_data()[i]) {
+							continue;
+						} else if (i == m_container->filled() - 1 &&  m_index > m_container->index_data()[i]) {
+							return i + 1;		
+						}
+						else { 
+							return i;
+						}
+					}
+					return 0;
+				}	
 
-				void setIndex(size_t index)
+				typename compressed_vector<T>::index_array_type::iterator getIndexIterator () {
+					return m_container->index_data().begin() + findPositionIndexData();
+				}	
+
+				typename compressed_vector<T>::value_array_type::iterator getValueIterator () {
+					return m_container->value_data().begin() + findPositionIndexData();
+				}	
+
+				typename compressed_vector<T>::iterator getCompressedVectorIterator()
 				{
-					m_index = index;
+					return m_container->find(m_index);
 				}
-				void setContainer(compressed_vector<T> *  c)
+
+				size_t getIndex()
 				{
-					m_container = c;	
+					return m_index;
+				}
+
+				compressed_vector<T> * getContainer()
+				{
+					return m_container;	
 				}
 		};
 
@@ -169,4 +205,27 @@ class mutant_vector
 
 }
 
+typedef unsigned int Allele;
+typedef unsigned int & AlleleRef;
+typedef simuPOP::mutant_vector<Allele> vectora;
+
+namespace simuPOP 
+{
+
+inline void copy(vectora::iterator begin, vectora::iterator end, vectora::iterator  it) 
+{
+	compressed_vector<Allele>::index_array_type::iterator it_src_begin = begin.getIndexIterator();
+	compressed_vector<Allele>::index_array_type::iterator iend   = end.getIndexIterator();
+	compressed_vector<Allele>::index_array_type::iterator it_dest_begin = it.getIndexIterator();
+	size_t src_begin = *it_src_begin;
+	size_t src_index = *it_src_begin != begin.getIndex() ? *it_src_begin - begin.getIndex() : 0;	
+	size_t dest_begin = *it_dest_begin;
+	for (;it_src_begin  != iend; ++it_src_begin) {
+		(*it.getContainer())[ ((*it_src_begin + src_index) - src_begin) + dest_begin ] = (*begin.getContainer())[*it_src_begin];
+	}
+}
+
+}
+
+#  endif
 #endif

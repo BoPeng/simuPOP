@@ -149,16 +149,16 @@ Population::Population(const Population & rhs) :
 #ifdef MUTANTALLELE
 	size_t idx = 0;
 	for (size_t i = 0; i < m_popSize; ++i, idx += step, infoPtr += infoStep) {
-		m_inds[i].setGenoPtr(&m_genotype, idx);
+//		m_inds[i].setGenoPtr(&m_genotype, idx);
 		m_inds[i].setInfoPtr(infoPtr);
-		m_inds[i].copyFrom(rhs.m_inds[i]);
+//		m_inds[i].copyFrom(rhs.m_inds[i]);
 	}
 #else
 	GenoIterator ptr = m_genotype.begin();
 	for (size_t i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep) {
 		m_inds[i].setGenoPtr(ptr);
 		m_inds[i].setInfoPtr(infoPtr);
-		m_inds[i].copyFrom(rhs.m_inds[i]);
+//		m_inds[i].copyFrom(rhs.m_inds[i]);
 	}
 #endif
 
@@ -174,8 +174,8 @@ Population::Population(const Population & rhs) :
 			vector<Individual> & linds = lp.m_inds;
 			const vector<Individual> & rinds = rp.m_inds;
 #ifdef MUTANTALLELE
-			size_t lg = 0; 
-			const size_t rg = 0;
+//			size_t lg = 0; 
+//			const size_t rg = 0;
 #else
 			GenoIterator lg = lp.m_genotype.begin();
 			ConstGenoIterator rg = rp.m_genotype.begin();
@@ -187,7 +187,7 @@ Population::Population(const Population & rhs) :
 
 			for (size_t i = 0; i < ps; ++i) {
 #ifdef MUTANTALLELE
-				linds[i].setGenoPtr(rinds[i].genoPtr() ,rinds[i].genoIdx() - rg + lg);
+//				linds[i].setGenoPtr(rinds[i].genoPtr() ,rinds[i].genoIdx() - rg + lg);
 #else
 				linds[i].setGenoPtr(rinds[i].genoPtr() - rg + lg);
 #endif
@@ -211,16 +211,18 @@ void Population::popData::swap(Population & pop)
 {
 	pop.m_subPopSize.swap(m_subPopSize);
 	pop.m_subPopNames.swap(m_subPopNames);
-	pop.m_genotype.swap(m_genotype);
+//	pop.m_genotype.swap(m_genotype);
 	pop.m_info.swap(m_info);
-	pop.m_inds.swap(m_inds);
+//	pop.m_inds.swap(m_inds);
 	std::swap(pop.m_indOrdered, m_indOrdered);
 #ifdef MUTANTALLELE
 	// compressed_vectora must be setGenoPtr after swap
+/*
 	for (size_t i = 0; i < pop.m_inds.size(); ++i) 
 		pop.m_inds[i].setGenoPtr(&pop.m_genotype);
 	for (size_t i = 0; i < m_inds.size(); ++i) 
 		m_inds[i].setGenoPtr(&m_genotype);
+*/
 #endif
 }
 
@@ -410,6 +412,7 @@ Individual & Population::indByID(double fid, const uintList & ancGens, const str
 	return m_inds[0];
 }
 
+
 pyIndIterator Population::individuals(vspID subPopID)
 {
 	DBG_FAILIF(hasActivatedVirtualSubPop(), RuntimeError,
@@ -436,6 +439,7 @@ pyIndIterator Population::individuals(vspID subPopID)
 		return pyIndIterator(m_inds.begin() + subPopBegin(spID),
 			m_inds.begin() + subPopEnd(spID), true, vspFunctor());
 }
+
 
 Individual & Population::ancestor(double fidx, ssize_t gen, vspID vsp)
 {
@@ -474,6 +478,7 @@ Individual & Population::ancestor(double fidx, ssize_t gen, vspID vsp)
 	}
 }
 
+
 const Individual & Population::ancestor(double fidx, ssize_t gen, vspID vsp) const
 {
 	size_t idx = toID(fidx);
@@ -510,6 +515,7 @@ const Individual & Population::ancestor(double fidx, ssize_t gen, vspID vsp) con
 	}
 }
 
+/*
 IndAlleleIterator Population::alleleIterator(size_t locus)
 {
 	CHECKRANGEABSLOCUS(locus);
@@ -533,8 +539,9 @@ IndAlleleIterator Population::alleleIterator(size_t locus)
 			totNumLoci());
 #endif
 }
-
+*/
 /// CPPONLY allele begin, for given subPop
+/*
 IndAlleleIterator Population::alleleIterator(size_t locus, size_t subPop)
 {
 	CHECKRANGEABSLOCUS(locus);
@@ -560,7 +567,8 @@ IndAlleleIterator Population::alleleIterator(size_t locus, size_t subPop)
 			totNumLoci());
 #endif
 }
-
+*/
+/*
 PyObject * Population::genotype(vspID subPopID)
 {
 
@@ -596,7 +604,8 @@ PyObject * Population::genotype(vspID subPopID)
 	}
 	return NULL;
 }
-
+*/
+/*
 void Population::setGenotype(const uintList & genoList, vspID subPopID)
 {
 	const vectoru & geno = genoList.elems();
@@ -606,10 +615,16 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 	syncIndPointers();
 	if (!subPop.valid()) {
 #ifdef MUTANTALLELE
+//		size_t sz = geno.size();
+//		for (size_t i = 0; i < popSize() * genoSize(); ++i)
+//			assignGenotype(m_genotype, i, ToAllele(geno[i % sz]));
+//		return;
+		GenoIterator ptr = m_genotype.begin();
 		size_t sz = geno.size();
 		for (size_t i = 0; i < popSize() * genoSize(); ++i)
-			assignGenotype(m_genotype, i, ToAllele(geno[i % sz]));
+			*(ptr++) = ToAllele(geno[i % sz]);
 		return;
+
 #else
 		GenoIterator ptr = m_genotype.begin();
 		size_t sz = geno.size();
@@ -628,9 +643,12 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 	size_t sz = geno.size();
 	if (!subPop.isVirtual()) {
 #ifdef MUTANTALLELE
-		size_t idx = genoBegin(sp, true);
+//		size_t idx = genoBegin(sp, true);
+//		for (size_t i = 0; i < subPopSize(sp) * genoSize(); ++i)
+//			assignGenotype(m_genotype, idx+i, ToAllele(geno[i % sz]));
+		GenoIterator ptr = genoBegin(sp, true);
 		for (size_t i = 0; i < subPopSize(sp) * genoSize(); ++i)
-			assignGenotype(m_genotype, idx+i, ToAllele(geno[i % sz]));
+			*(ptr++) = ToAllele(geno[i % sz]);
 #else
 		GenoIterator ptr = genoBegin(sp, true);
 		for (size_t i = 0; i < subPopSize(sp) * genoSize(); ++i)
@@ -642,8 +660,10 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 		size_t i = 0;
 		for (; it.valid(); ++it)
 #ifdef MUTANTALLELE
-			for (size_t git = it->genoBegin(); git != it->genoEnd(); ++git, ++i)
-				assignGenotype(m_genotype, git, ToAllele(geno[i % sz]));
+//			for (size_t git = it->genoBegin(); git != it->genoEnd(); ++git, ++i)
+//				assignGenotype(m_genotype, git, ToAllele(geno[i % sz]));
+			for (GenoIterator git = it->genoBegin(); git != it->genoEnd(); ++git, ++i)
+				*git = ToAllele(geno[i % sz]);
 #else
 			for (GenoIterator git = it->genoBegin(); git != it->genoEnd(); ++git, ++i)
 				*git = ToAllele(geno[i % sz]);
@@ -651,7 +671,8 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 		deactivateVirtualSubPop(subPop.subPop());
 	}
 }
-
+*/
+/*
 void Population::validate(const string & msg) const
 {
 #ifdef OPTIMIZED
@@ -691,7 +712,7 @@ void Population::validate(const string & msg) const
 	}
 #endif
 }
-
+*/
 
 void Population::fitSubPopStru(const vectoru & newSubPopSizes,
                                const vectorstr & newSubPopNames)
@@ -728,9 +749,11 @@ void Population::fitSubPopStru(const vectoru & newSubPopSizes,
 		// reset individual pointers
 		InfoIterator infoPtr = m_info.begin();
 #ifdef MUTANTALLELE
-		size_t idx = 0;
-		for (size_t i = 0; i < m_popSize; ++i, idx += step, infoPtr += is) {
-			m_inds[i].setGenoPtr(&m_genotype, idx);
+		GenoIterator ptr = m_genotype.begin();
+		//size_t idx = 0;
+		//for (size_t i = 0; i < m_popSize; ++i, idx += step, infoPtr += is) {
+		for (size_t i = 0; i < m_popSize; ++i, ptr += step, infoPtr += is) {
+			m_inds[i].setGenoPtr(ptr);
 #else
 		GenoIterator ptr = m_genotype.begin();
 		for (size_t i = 0; i < m_popSize; ++i, ptr += step, infoPtr += is) {
@@ -753,7 +776,7 @@ void Population::fitSubPopStru(const vectoru & newSubPopSizes,
 	}
 }
 
-
+/*
 void Population::fitGenoStru(size_t stru)
 {
 	// set genotypic structure to a population.
@@ -790,7 +813,7 @@ void Population::fitGenoStru(size_t stru)
 		}
 	}
 }
-
+*/
 
 void Population::setSubPopStru(const vectoru & newSubPopSizes,
                                const vectorstr & newSubPopNames)
@@ -872,6 +895,7 @@ void Population::sortIndividuals(const stringList & infoList)
 }
 
 
+/*
 void Population::setSubPopByIndInfo(const string & field)
 {
 	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
@@ -962,7 +986,7 @@ void Population::setSubPopByIndInfo(const string & field)
 	if (!m_subPopNames.empty())
 		m_subPopNames.resize(numSubPop(), UnnamedSubPop);
 }
-
+*/
 
 vectoru Population::splitSubPop(size_t subPop, const vectorf & sizes, const vectorstr & names)
 {
@@ -1014,6 +1038,7 @@ vectoru Population::splitSubPop(size_t subPop, const vectorf & sizes, const vect
 	return ret;
 }
 
+/*
 void Population::removeSubPops(const subPopList & subPops)
 {
 	syncIndPointers();
@@ -1133,8 +1158,8 @@ void Population::removeSubPops(const subPopList & subPops)
 		m_inds[i].setInfoPtr(infoPtr);
 	}
 }
-
-
+*/
+/*
 void Population::removeMarkedIndividuals()
 {
 	syncIndPointers();
@@ -1204,8 +1229,8 @@ void Population::removeMarkedIndividuals()
 		m_inds[i].setInfoPtr(infoPtr);
 	}
 }
-
-
+*/
+/*
 void Population::removeIndividuals(const uintList & indexList, const floatList & IDList,
                                    const string & idField, PyObject * filter)
 {
@@ -1288,8 +1313,9 @@ void Population::removeIndividuals(const uintList & indexList, const floatList &
 	}
 	useAncestralGen(curGen);
 }
+*/
 
-
+/*
 size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 {
 	if (!name.empty() && m_subPopNames.empty())
@@ -1411,8 +1437,8 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 	}
 	return sps[0];
 }
-
-
+*/
+/*
 void Population::addChromFrom(const Population & pop)
 {
 	size_t numLoci1 = totNumLoci();
@@ -1477,8 +1503,9 @@ void Population::addChromFrom(const Population & pop)
 		// sort information only
 		syncIndPointers(true);
 }
+*/
 
-
+/*
 void Population::addIndFrom(const Population & pop)
 {
 	DBG_FAILIF(genoStruIdx() != pop.genoStruIdx(), ValueError,
@@ -1543,8 +1570,8 @@ void Population::addIndFrom(const Population & pop)
 	DBG_ASSERT(m_subPopNames.empty() || m_subPopNames.size() == numSubPop(), SystemError,
 		"subpopulation names can either be empty, or be specified for all subpopulations.");
 }
-
-
+*/
+/*
 void Population::addLociFrom(const Population & pop)
 {
 	DBG_FAILIF(ancestralGens() != pop.ancestralGens(), ValueError,
@@ -1616,8 +1643,9 @@ void Population::addLociFrom(const Population & pop)
 	// sort information only
 	syncIndPointers(true);
 }
+*/
 
-
+/*
 void Population::addChrom(const floatList & lociPosList, const stringList & lociNameList,
                           const string & chromName, const stringMatrix & alleleNames,
                           size_t chromType)
@@ -1689,8 +1717,8 @@ void Population::addChrom(const floatList & lociPosList, const stringList & loci
 	//   so that the order is set to True.
 	syncIndPointers(true);
 }
-
-
+*/
+/*
 vectoru Population::addLoci(const uintList & chromList, const floatList & posList,
                             const stringList & lociNameList, const stringMatrix & alleleNamesMatrix)
 {
@@ -1770,8 +1798,8 @@ vectoru Population::addLoci(const uintList & chromList, const floatList & posLis
 	syncIndPointers(true);
 	return newIndex;
 }
-
-
+*/
+/*
 void Population::resize(const uintList & sizeList, bool propagate)
 {
 	const vectoru & newSubPopSizes = sizeList.elems();
@@ -1835,8 +1863,8 @@ void Population::resize(const uintList & sizeList, bool propagate)
 	for (m_subPopIndex[0] = 0; idx <= numSubPop(); ++idx)
 		m_subPopIndex[idx] = m_subPopIndex[idx - 1] + m_subPopSize[idx - 1];
 }
-
-
+*/
+/*
 Population & Population::extractSubPops(const subPopList & subPops, bool rearrange) const
 {
 #ifndef OPTIMIZED
@@ -2027,8 +2055,8 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 
 	return pop;
 }
-
-
+*/
+/*
 Population & Population::extractMarkedIndividuals() const
 {
 	Population & pop = *new Population();
@@ -2118,8 +2146,8 @@ Population & Population::extractMarkedIndividuals() const
 	}
 	return pop;
 }
-
-
+*/
+/*
 Population & Population::extractIndividuals(const uintList & indexList,
                                             const floatList & IDList, const string & idField,
                                             PyObject * filter) const
@@ -2218,8 +2246,8 @@ Population & Population::extractIndividuals(const uintList & indexList,
 	const_cast<Population *>(this)->useAncestralGen(curGen);
 	return *allPop;
 }
-
-
+*/
+/*
 Population & Population::extract(const lociList & extractedLoci, const stringList & infoFieldList,
                                  const subPopList & _subPops, const uintList & ancGens) const
 {
@@ -2519,8 +2547,8 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 		pop.removeSubPops(emptySubPops);
 	return pop;
 }
-
-
+*/
+/*
 void Population::removeLoci(const lociList & removeList, const lociList & keepList)
 {
 	if (removeList.unspecified() && keepList.unspecified())
@@ -2600,8 +2628,8 @@ void Population::removeLoci(const lociList & removeList, const lociList & keepLi
 	}
 	setIndOrdered(true);
 }
-
-
+*/
+/*
 void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList & loci_,
                                const stringMatrix & alleleNamesMatrix)
 {
@@ -2828,8 +2856,8 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 	}
 	useAncestralGen(oldGen);
 }
-
-
+*/
+/*
 void Population::push(Population & rhs)
 {
 	DBG_ASSERT(rhs.genoStruIdx() == genoStruIdx(), ValueError,
@@ -2888,6 +2916,7 @@ void Population::push(Population & rhs)
 	validate("Current population after push and discard:");
 	rhs.validate("Outside Population after push and discard:");
 }
+*/
 
 void Population::addInfoFields(const stringList & fieldList, double init)
 {
@@ -2943,6 +2972,7 @@ void Population::addInfoFields(const stringList & fieldList, double init)
 	}
 }
 
+
 void Population::setInfoFields(const stringList & fieldList, double init)
 {
 	const vectorstr & fields = fieldList.elems();
@@ -2963,6 +2993,7 @@ void Population::setInfoFields(const stringList & fieldList, double init)
 	}
 	useAncestralGen(oldAncPop);
 }
+
 
 void Population::removeInfoFields(const stringList & fieldList)
 {
@@ -3065,6 +3096,7 @@ void Population::setIndInfo(const floatList & valueList, const uintString &
 	}
 }
 
+
 void Population::markIndividuals(vspID subPop, bool mark) const
 {
 	if (subPop.valid()) {
@@ -3079,6 +3111,7 @@ void Population::markIndividuals(vspID subPop, bool mark) const
 			it->setMarked(mark);
 	}
 }
+
 
 // set ancestral depth, can be -1
 void Population::setAncestralDepth(int depth)
@@ -3097,7 +3130,7 @@ void Population::setAncestralDepth(int depth)
 	m_ancestralGens = depth;
 }
 
-
+/*
 void Population::keepAncestralGens(const uintList & ancGens)
 {
 	if (ancGens.allAvail())
@@ -3143,7 +3176,7 @@ void Population::keepAncestralGens(const uintList & ancGens)
 		m_ancestralPops.pop_back();
 	m_curAncestralGen = 0;
 }
-
+*/
 
 void Population::useAncestralGen(ssize_t idx)
 {
@@ -3183,7 +3216,8 @@ void Population::useAncestralGen(ssize_t idx)
 
 
 //template<class Archive>
-void Population::save(boost::archive::text_oarchive & ar, const unsigned int /* version */) const
+//void Population::save(boost::archive::text_oarchive & ar, const unsigned int /* version */) const
+/*
 {
 	// deep adjustment: everyone in order
 	const_cast<Population *>(this)->syncIndPointers();
@@ -3259,10 +3293,11 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int /* 
 	string vars = varsAsString();
 	ar & vars;
 }
-
+*/
 
 //template<class Archive>
-void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* version */)
+//void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* version */)
+/*
 {
 	size_t ma;
 	ar & ma;
@@ -3498,7 +3533,8 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 
 	setIndOrdered(true);
 }
-
+*/
+/*
 void Population::save(const string & filename) const
 {
 	boost::iostreams::filtering_ostream ofs;
@@ -3512,8 +3548,8 @@ void Population::save(const string & filename) const
 	boost::archive::text_oarchive oa(ofs);
 	oa << *this;
 }
-
-
+*/
+/*
 void Population::load(const string & filename)
 {
 	boost::iostreams::filtering_istream ifs;
@@ -3532,7 +3568,7 @@ void Population::load(const string & filename)
 		throw ValueError("Failed to load Population " + filename + ".\n");
 	}
 }
-
+*/
 
 PyObject * Population::vars(vspID vsp)
 {
@@ -3565,6 +3601,7 @@ PyObject * Population::vars(vspID vsp)
 	return spObj;
 }
 
+
 // The same as vars(), but without increasing
 // reference count.
 PyObject * Population::dict(vspID vsp)
@@ -3596,6 +3633,7 @@ PyObject * Population::dict(vspID vsp)
 	return spObj;
 }
 
+
 void Population::syncIndPointers(bool infoOnly) const
 {
 	if (indOrdered())
@@ -3624,8 +3662,10 @@ void Population::syncIndPointers(bool infoOnly) const
 		size_t is = infoSize();
 		size_t sz = genoSize();
 #ifdef MUTANTALLELE
-		compressed_vectora tmpGenotype(m_popSize * genoSize());
-		size_t it = 0;
+//		compressed_vectora tmpGenotype(m_popSize * genoSize());
+//		size_t it = 0;
+		vectora tmpGenotype(m_popSize * genoSize());
+		vectora::iterator it = tmpGenotype.begin();
 #else
 		vectora tmpGenotype(m_popSize * genoSize());
 		vectora::iterator it = tmpGenotype.begin();
@@ -3639,14 +3679,16 @@ void Population::syncIndPointers(bool infoOnly) const
 			copyGenotype(ind->genoBegin(), it, sz);
 #else
 #  ifdef MUTANTALLELE
-			copyGenotype(*ind->genoPtr(), ind->genoBegin(), ind->genoEnd(), tmpGenotype, it);
+//			copyGenotype(*ind->genoPtr(), ind->genoBegin(), ind->genoEnd(), tmpGenotype, it);
+			simuPOP::copy(ind->genoBegin(), ind->genoEnd(), it);
 #  else
 			copy(ind->genoBegin(), ind->genoEnd(), it);
 #  endif
 #endif
 
 #ifdef MUTANTALLELE
-			ind->setGenoPtr(&tmpGenotype, it);
+//			ind->setGenoPtr(&tmpGenotype, it);
+			ind->setGenoPtr(it);
 #else
 			ind->setGenoPtr(it);
 #endif
@@ -3663,6 +3705,7 @@ void Population::syncIndPointers(bool infoOnly) const
 	setIndOrdered(true);
 }
 
+/*
 Population & loadPopulation(const string & file)
 {
 	Population * p = new Population();
@@ -3670,7 +3713,7 @@ Population & loadPopulation(const string & file)
 	p->load(file);
 	return *p;
 }
-
+*/
 
 
 }

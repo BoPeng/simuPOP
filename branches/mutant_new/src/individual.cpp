@@ -34,7 +34,7 @@ using std::setprecision;
 
 namespace simuPOP {
 
-
+/*
 Individual & Individual::operator=(const Individual & rhs)
 {
 	m_flags = rhs.m_flags;
@@ -48,7 +48,8 @@ Individual & Individual::operator=(const Individual & rhs)
 	this->setGenoStruIdx(rhs.genoStruIdx());
 	return *this;
 }
-
+*/
+/*
 Individual & Individual::copyFrom(const Individual & rhs)
 {
 	m_flags = rhs.m_flags;
@@ -62,7 +63,7 @@ Individual & Individual::copyFrom(const Individual & rhs)
 	this->setGenoStruIdx(rhs.genoStruIdx());
 	return *this;
 }
-
+*/
 
 bool Individual::operator==(const Individual & rhs) const
 {
@@ -82,7 +83,7 @@ bool Individual::operator==(const Individual & rhs) const
 
 	for (size_t i = 0, iEnd = genoSize(); i < iEnd; ++i)
 #ifdef MUTANTALLELE
-		if ((*m_genoPtr)[m_genoIdx + i] != (*rhs.m_genoPtr)[rhs.m_genoIdx + i])
+		//if ((*m_genoPtr)[m_genoIdx + i] != (*rhs.m_genoPtr)[rhs.m_genoIdx + i])
 #else
 		if (*(m_genoPtr + i) != *(rhs.m_genoPtr + i))
 #endif
@@ -146,7 +147,8 @@ UINT Individual::allele(size_t idx, ssize_t p, ssize_t chrom) const
 	if (p < 0) {
 		CHECKRANGEGENOSIZE(idx);
 #ifdef MUTANTALLELE
-		return static_cast<UINT>((*m_genoPtr)[m_genoIdx + idx]);
+		return static_cast<UINT>(*(m_genoPtr + idx));
+		//return static_cast<UINT>((*m_genoPtr)[m_genoIdx + idx]);
 #else
 		return static_cast<UINT>(*(m_genoPtr + idx));
 #endif
@@ -154,7 +156,8 @@ UINT Individual::allele(size_t idx, ssize_t p, ssize_t chrom) const
 		CHECKRANGEABSLOCUS(idx);
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
 #ifdef MUTANTALLELE
-		return static_cast<UINT>((*m_genoPtr)[m_genoIdx + idx + p * totNumLoci()]);
+		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci()));
+		//return static_cast<UINT>((*m_genoPtr)[m_genoIdx + idx + p * totNumLoci()]);
 #else
 		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci()));
 #endif
@@ -163,14 +166,15 @@ UINT Individual::allele(size_t idx, ssize_t p, ssize_t chrom) const
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
 		CHECKRANGECHROM(static_cast<size_t>(chrom));
 #ifdef MUTANTALLELE
-		return static_cast<UINT>((*m_genoPtr)[m_genoIdx + idx + p * totNumLoci() + chromBegin(chrom)]);
+		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)));
+		//return static_cast<UINT>((*m_genoPtr)[m_genoIdx + idx + p * totNumLoci() + chromBegin(chrom)]);
 #else
 		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)));
 #endif
 	}
 }
 
-
+/*
 string Individual::alleleChar(size_t idx, ssize_t p, ssize_t chrom) const
 {
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
@@ -190,7 +194,7 @@ string Individual::alleleChar(size_t idx, ssize_t p, ssize_t chrom) const
 		return validIndex(idx, p, chrom) ? alleleName(allele(idx, p, chrom), idx + chromBegin(chrom)) : "_";
 	}
 }
-
+*/
 
 PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 {
@@ -250,16 +254,20 @@ PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 		DBG_FAILIF(beginCh != 0 || endCh != numChrom(), ValueError,
 			"If multiple ploidy are chosen, all chromosomes has to be chosen.");
 #ifdef MUTANTALLELE
-		return Allele_Vec_As_NumArray(m_genoPtr, m_genoIdx + beginP * totNumLoci(),
-			m_genoIdx + endP * totNumLoci());
+//		return Allele_Vec_As_NumArray(m_genoPtr, m_genoIdx + beginP * totNumLoci(),
+//			m_genoIdx + endP * totNumLoci());
+		return Allele_Vec_As_NumArray(m_genoPtr + beginP * totNumLoci(),
+			m_genoPtr + endP * totNumLoci());
 #else
 		return Allele_Vec_As_NumArray(m_genoPtr + beginP * totNumLoci(),
 			m_genoPtr + endP * totNumLoci());
 #endif
 	} else
 #ifdef MUTANTALLELE
-		return Allele_Vec_As_NumArray(m_genoPtr, m_genoIdx + beginP * totNumLoci() + chromBegin(beginCh),
-			m_genoIdx + beginP * totNumLoci() + chromEnd(endCh - 1));
+//		return Allele_Vec_As_NumArray(m_genoPtr, m_genoIdx + beginP * totNumLoci() + chromBegin(beginCh),
+//			m_genoIdx + beginP * totNumLoci() + chromEnd(endCh - 1));
+		return Allele_Vec_As_NumArray(m_genoPtr + beginP * totNumLoci() + chromBegin(beginCh),
+			m_genoPtr + beginP * totNumLoci() + chromEnd(endCh - 1));
 #else
 		return Allele_Vec_As_NumArray(m_genoPtr + beginP * totNumLoci() + chromBegin(beginCh),
 			m_genoPtr + beginP * totNumLoci() + chromEnd(endCh - 1));
@@ -267,6 +275,7 @@ PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 }
 
 
+/*
 PyObject * Individual::genoAtLoci(const lociList & lociList)
 {
 	ssize_t ply = ploidy();
@@ -320,7 +329,7 @@ PyObject * Individual::genoAtLoci(const lociList & lociList)
 		PyTuple_SET_ITEM(genoObj, j, PyInt_FromLong(alleles[j]));
 	return genoObj;
 }
-
+*/
 
 void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 {
@@ -329,7 +338,8 @@ void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 	if (p < 0) {
 		CHECKRANGEGENOSIZE(idx);
 #ifdef MUTANTALLELE
-		assignGenotype(*m_genoPtr, m_genoIdx + idx, allele);
+		//assignGenotype(*m_genoPtr, m_genoIdx + idx, allele);
+		*(m_genoPtr + idx) = allele;
 #else
 		*(m_genoPtr + idx) = allele;
 #endif
@@ -337,7 +347,8 @@ void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 		CHECKRANGEABSLOCUS(idx);
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
 #ifdef MUTANTALLELE
-		assignGenotype(*m_genoPtr, m_genoIdx + idx + p * totNumLoci(), allele);
+		//assignGenotype(*m_genoPtr, m_genoIdx + idx + p * totNumLoci(), allele);
+		*(m_genoPtr + idx + p * totNumLoci()) = allele;
 #else
 		*(m_genoPtr + idx + p * totNumLoci()) = allele;
 #endif
@@ -346,7 +357,8 @@ void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
 		CHECKRANGECHROM(static_cast<size_t>(chrom));
 #ifdef MUTANTALLELE
-		assignGenotype(*m_genoPtr, m_genoIdx + idx + p * totNumLoci() + chromBegin(chrom), allele);
+		//assignGenotype(*m_genoPtr, m_genoIdx + idx + p * totNumLoci() + chromBegin(chrom), allele);
+		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)) = allele;
 #else
 		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)) = allele;
 #endif
@@ -389,9 +401,12 @@ void Individual::setGenotype(const uintList & genoList, const uintList & ply, co
 		for (size_t j = 0; j < chroms.size(); ++j) {
 			size_t chrom = chroms[j];
 #ifdef MUTANTALLELE
-			size_t genoIdx = m_genoIdx + p * totNumLoci() + chromBegin(chrom);
+//			size_t genoIdx = m_genoIdx + p * totNumLoci() + chromBegin(chrom);
+//			for (size_t i = 0; i < numLoci(chrom); i++, ++idx)
+//				assignGenotype(*m_genoPtr, genoIdx + i, ToAllele(geno[idx % sz]));
+			GenoIterator ptr = m_genoPtr + p * totNumLoci() + chromBegin(chrom);
 			for (size_t i = 0; i < numLoci(chrom); i++, ++idx)
-				assignGenotype(*m_genoPtr, genoIdx + i, ToAllele(geno[idx % sz]));
+				*(ptr + i) = ToAllele(geno[idx % sz]);
 #else
 			GenoIterator ptr = m_genoPtr + p * totNumLoci() + chromBegin(chrom);
 			for (size_t i = 0; i < numLoci(chrom); i++, ++idx)
@@ -401,7 +416,7 @@ void Individual::setGenotype(const uintList & genoList, const uintList & ply, co
 	}
 }
 
-
+/*
 void Individual::swap(Individual & ind, bool swapContent)
 {
 	if (genoStruIdx() != ind.genoStruIdx())
@@ -435,8 +450,8 @@ void Individual::swap(Individual & ind, bool swapContent)
 #endif
 	}
 }
-
-
+*/
+/*
 void Individual::display(ostream & out, int width, const vectoru & loci)
 {
 	out << (sex() == MALE ? 'M' : 'F') << (affected() ? 'A' : 'U') << " ";
@@ -463,6 +478,6 @@ void Individual::display(ostream & out, int width, const vectoru & loci)
 			out << " " << *info;
 	}
 }
-
+*/
 
 }

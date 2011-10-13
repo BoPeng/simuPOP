@@ -989,7 +989,8 @@ void PyObj_As_IntArray(PyObject * obj, vectori & val);
 
 /// CPPONLY
 #ifdef MUTANTALLELE
-PyObject * Allele_Vec_As_NumArray(compressed_vectora * genoPtr,Py_ssize_t begin, Py_ssize_t end);
+//PyObject * Allele_Vec_As_NumArray(compressed_vectora * genoPtr,Py_ssize_t begin, Py_ssize_t end);
+PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
 #else
 PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
 #endif
@@ -2148,8 +2149,8 @@ inline void assignGenotype(compressed_vectora & assigned_cvector, const size_t a
 {
 	if (assigned_cvector[assigned_idx] == 0u && cvector[idx] == 0u)
 		return;
-	else if (assigned_cvector[assigned_idx] != 0u && cvector[idx] == 0u)
-		assigned_cvector.erase_element(assigned_idx);
+//	else if (assigned_cvector[assigned_idx] != 0u && cvector[idx] == 0u)
+//		assigned_cvector.erase_element(assigned_idx);
 	else
 		assigned_cvector[assigned_idx] = cvector[idx];
 }
@@ -2160,8 +2161,8 @@ inline void assignGenotype(compressed_vectora & assigned_cvector, const size_t a
 {
 	if (assigned_cvector[assigned_idx] == 0u && allele == 0u)
 		return;
-	else if (assigned_cvector[assigned_idx] != 0u && allele == 0u)
-		assigned_cvector.erase_element(assigned_idx);
+//	else if (assigned_cvector[assigned_idx] != 0u && allele == 0u)
+//		assigned_cvector.erase_element(assigned_idx);
 	else
 		assigned_cvector[assigned_idx] = allele;
 }
@@ -2175,8 +2176,8 @@ inline void insertGenotype(compressed_vectora & newCVector,const size_t startIdx
 	for(size_t i = begin; i < end; ++i, ++idx) 
 		if (newCVector[idx] == 0u && oldCVector[i] == 0u)
 			continue;
-		else if (newCVector[idx] != 0u && oldCVector[i] == 0u)
-			newCVector.erase_element(idx);
+//		else if (newCVector[idx] != 0u && oldCVector[i] == 0u)
+//			newCVector.erase_element(idx);
 		else
 			newCVector[idx] = oldCVector[i];
 } 

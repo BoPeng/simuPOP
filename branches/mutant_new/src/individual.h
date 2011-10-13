@@ -109,7 +109,7 @@ public:
 	Individual(const Individual & ind) :
 		GenoStruTrait(ind), m_flags(ind.m_flags),
 #ifdef MUTANTALLELE
-		m_genoPtr(ind.m_genoPtr), m_genoIdx(ind.m_genoIdx),
+//		m_genoPtr(ind.m_genoPtr), m_genoIdx(ind.m_genoIdx),
 #else
 		m_genoPtr(ind.m_genoPtr),
 #endif
@@ -126,6 +126,11 @@ public:
 
 	/// CPPONLY set genotype pointer (use if Allele*pos can not be determined during construction)
 #ifdef MUTANTALLELE
+	void setGenoPtr(GenoIterator pos)
+	{
+		m_genoPtr = pos;
+	}
+/*
 	void setGenoPtr(compressed_vectora * genoPtr, size_t pos)
 	{
 		m_genoPtr = genoPtr;
@@ -137,7 +142,7 @@ public:
 	{
 		m_genoPtr = genoPtr;
 	}
-
+*/
 #else
 	void setGenoPtr(GenoIterator pos)
 	{
@@ -154,10 +159,10 @@ public:
 
 
 	/// shallow copy of an individual class
-	Individual & operator=(const Individual & rhs);
+//	Individual & operator=(const Individual & rhs);
 
 	/// CPPONLY deep copy of an individual class
-	Individual & copyFrom(const Individual & rhs);
+//	Individual & copyFrom(const Individual & rhs);
 
 	//@}
 	/// @name readonly structural info
@@ -165,6 +170,7 @@ public:
 
 #ifdef MUTANTALLELE
 	/// CPPONLY index to alleles
+/*
 	compressed_vectora * genoPtr() const
 	{
 		return m_genoPtr;
@@ -174,6 +180,7 @@ public:
 	{
 		return m_genoIdx;
 	}
+*/
 
 #else
 	/// CPPONLY pointer to alleles
@@ -210,7 +217,7 @@ public:
 	 *  invalid (e.g. second homologus copy of chromosome Y), '_' is returned.
 	 *  <group>1-allele</group>
 	 */
-	string alleleChar(size_t idx, ssize_t ploidy = -1, ssize_t chrom = -1) const;
+//	string alleleChar(size_t idx, ssize_t ploidy = -1, ssize_t chrom = -1) const;
 
 	/** set allele \e allele to a locus, using its absolute index \e idx.
 	 *  If a ploidy \e ploidy and/or a chromosome indexes are given, \e idx is
@@ -235,7 +242,7 @@ public:
 	 *  Return a Python object with alleles at specified loci. This function
 	 *  is usually used to collect alleles to send to a user-provided function.
 	 */
-	PyObject * genoAtLoci(const lociList & loci);
+//	PyObject * genoAtLoci(const lociList & loci);
 
 	/** Fill the genotype of an individual using a list of alleles \e geno.
 	 *  If parameters \e ploidy and/or \e chroms are specified, alleles will
@@ -378,7 +385,7 @@ public:
 
 #ifdef MUTANTALLELE
 	/// CPPONLY start of alleles
-	size_t genoBegin() const
+/*	size_t genoBegin() const
 	{
 		return m_genoIdx;
 	}
@@ -425,6 +432,56 @@ public:
 		return m_genoIdx + p * totNumLoci() + chromEnd(chrom);
 
 	}
+*/
+	/// CPPONLY start of alleles
+	GenoIterator genoBegin() const
+	{
+		return m_genoPtr;
+	}
+
+
+	/// CPPONLY end of allele
+	GenoIterator genoEnd() const
+	{
+		return m_genoPtr + genoSize();
+	}
+
+
+	/// CPPONLY start of allele of the pth set of chromosome
+	GenoIterator genoBegin(size_t p) const
+	{
+		CHECKRANGEPLOIDY(p);
+		return m_genoPtr + p * totNumLoci();
+	}
+
+
+	/// CPPONLY end of allele of the pth set of chromosome
+	GenoIterator genoEnd(size_t p) const
+	{
+		CHECKRANGEPLOIDY(p);
+		return m_genoPtr + (p + 1) * totNumLoci();
+	}
+
+
+	/// CPPONLY start of allele of the pth set of chromosome, chrom ch
+	GenoIterator genoBegin(size_t p, size_t chrom) const
+	{
+		CHECKRANGEPLOIDY(p);
+		CHECKRANGECHROM(chrom);
+		return m_genoPtr + p * totNumLoci() + chromBegin(chrom);
+
+	}
+
+
+	/// CPPONLY end of allele of the pth set of chromosome
+	GenoIterator genoEnd(size_t p, size_t chrom) const
+	{
+		CHECKRANGEPLOIDY(p);
+		CHECKRANGECHROM(chrom);
+		return m_genoPtr + p * totNumLoci() + chromEnd(chrom);
+
+	}
+
 
 #else
 	/// CPPONLY start of alleles
@@ -523,14 +580,14 @@ public:
 	   swap pointers. (There is no order right now within
 	   subpopulation so the later case is rare, at best.)
 	 */
-	void swap(Individual & ind, bool swapContent = true);
+//	void swap(Individual & ind, bool swapContent = true);
 
 	//@}
 	/// @name misc (only relevant to developers)
 	//@{
 
 	/// CPPONLY
-	void display(ostream & out, int width = 1, const vectoru & loci = vectoru());
+//	void display(ostream & out, int width = 1, const vectoru & loci = vectoru());
 
 	//@}
 
@@ -580,9 +637,9 @@ protected:
 
 	/// pointer to genotype.
 #ifdef MUTANTALLELE
-	compressed_vectora * m_genoPtr;
-
-	size_t m_genoIdx;
+	GenoIterator m_genoPtr;
+        //compressed_vectora * m_genoPtr;
+	//size_t m_genoIdx;
 #else
 	GenoIterator m_genoPtr;
 #endif
@@ -991,7 +1048,7 @@ public:
 	typedef Allele value_type;
 	typedef long int difference_type;
 	typedef AlleleRef reference;
-	typedef GenoIterator pointer;
+	//typedef GenoIterator pointer;
 
 	CombinedAlleleIterator()
 	{

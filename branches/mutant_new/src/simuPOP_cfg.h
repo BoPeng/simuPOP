@@ -42,10 +42,6 @@
 // under parent directory. Included with -I.. option.
 #include "config.h"
 
-// for compressed vector
-#include "boost/numeric/ublas/vector_sparse.hpp"
-using boost::numeric::ublas::compressed_vector;
-
 // For the handling of binary modules and for the use of unordered_map in tr1
 #ifdef _MSC_VER
 
@@ -130,6 +126,7 @@ using std::string;
 #include <vector>
 using std::vector;
 
+
 /// UINT should not be changed to unsigned long
 /// since python extension use it as int.
 typedef unsigned int UINT;
@@ -180,10 +177,7 @@ typedef vector<Allele>::reference AlleleRef;
 #    define ToAllele(a)   ((a) != 0)
 
 #  else
-#    ifdef MUTANTALLELE
-typedef unsigned int Allele;
-typedef unsigned int & AlleleRef;
-#    else
+#    ifndef MUTANTALLELE
 typedef unsigned char Allele;
 typedef unsigned char & AlleleRef;
 #    endif
@@ -196,8 +190,15 @@ typedef unsigned char & AlleleRef;
 #  endif
 #endif
 
+// for mutant vector -- the class wrapper for compressed vector
+#include "mutant_vector.h"
+
+#ifdef MUTANTALLELE
+typedef simuPOP::mutant_vector<Allele>::iterator GenoIterator;
+#else
 typedef std::vector<Allele>::iterator GenoIterator;
 typedef std::vector<Allele>::const_iterator ConstGenoIterator;
+#endif
 
 // max allowed allele state
 extern const unsigned long ModuleMaxAllele;
@@ -348,9 +349,10 @@ typedef long LONG;
 
 typedef std::vector<long>                                vectori;
 typedef std::vector<double>                              vectorf;
+#ifndef MUTANTALLELE
 typedef std::vector<Allele>                              vectora;
+#endif
 typedef compressed_vector<unsigned int> 		 compressed_vectora;
-typedef std::vector<Allele>                              vectora;
 typedef std::vector<size_t>                              vectoru;
 typedef std::vector<std::string>                         vectorstr;
 typedef std::pair<size_t, size_t>                        pairu;
@@ -370,6 +372,8 @@ typedef std::map<vectori, double>          tupleDict;
 #define InvalidPyObject(obj) (obj == NULL || obj == Py_None)
 
 namespace simuPOP {
+
+
 /// exception handler. Exceptions will be passed to Python.
 class Exception
 {
