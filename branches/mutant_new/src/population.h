@@ -834,63 +834,6 @@ public:
 
 
 
-#ifdef MUTANTALLELE
-/*
-	compressed_vectora * genoPtr()
-	{
-		return &m_genotype;
-	}
-
-
-	size_t genoBegin(bool order)
-	{
-		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
-			"This function is not valid with an activated virtual subpopulation");
-
-		if (order && !indOrdered())
-			syncIndPointers();
-
-		return 0;
-	}
-
-
-	///  CPPONLY
-	size_t genoEnd(bool order)
-	{
-		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
-			"This function is not valid with an activated virtual subpopulation");
-		if (order && !indOrdered())
-			syncIndPointers();
-
-		return m_genotype.size();
-	}
-
-
-	///  CPPONLY
-	size_t genoBegin(size_t subPop, bool order)
-	{
-		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
-			"This function is not valid with an activated virtual subpopulation");
-		CHECKRANGESUBPOP(subPop);
-
-		syncIndPointers(order);
-
-		return m_subPopIndex[subPop] * genoSize();
-	}
-
-
-	///  CPPONLY
-	size_t genoEnd(size_t subPop, bool order)
-	{
-		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
-			"This function is not valid with an activated virtual subpopulation");
-		CHECKRANGESUBPOP(subPop);
-		syncIndPointers(order);
-
-		return m_subPopIndex[subPop + 1] * genoSize();
-	}
-*/
-#else
 	///  CPPONLY allele iterator, go through all allels one by one, without subPop info
 	/**
 	   if order, in order
@@ -947,7 +890,6 @@ public:
 
 		return m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize();
 	}
-#endif
 
 
 #ifdef MUTANTALLELE
@@ -1040,7 +982,7 @@ public:
 	 *  <tt>subPopSize(subPop)*totNumLoci()*ploidy()</tt>.
 	 *  <group>5-genotype</group>
 	 */
-//	void setGenotype(const uintList & geno, vspID subPop = vspID());
+	void setGenotype(const uintList & geno, vspID subPop = vspID());
 
 	//@}
 
@@ -1084,7 +1026,7 @@ public:
 	 *  This function only handles the present generation.
 	 *  <group>7-manipulate</group>
 	 */
-//	void removeSubPops(const subPopList & subPops);
+	void removeSubPops(const subPopList & subPops);
 
 	/// CPPONLY
 //	void removeMarkedIndividuals();
@@ -1121,7 +1063,7 @@ public:
 	 *  function returns the ID of the merged subpopulation.
 	 *  <group>7-manipulate</group>
 	 */
-//	size_t mergeSubPops(const uintList & subPops = uintList(), const string & name = UnnamedSubPop);
+	size_t mergeSubPops(const uintList & subPops = uintList(), const string & name = UnnamedSubPop);
 
 	/** Add all individuals, including ancestors, in \e pop to the current
 	 *  population. Two populations should have the same genotypic structures

@@ -28,16 +28,21 @@ class mutant_vector
 			m_container.resize(size);
 		}
 
-		size_t size() {
+		void reserve (size_t size)
+		{
+			m_container.reserve(size);
+		}
+
+		size_t size() const {
 			return m_container.size();
 		}
 
-		mutant_vector<T>::iterator  begin()
+		mutant_vector<T>::iterator  begin() 
 		{
 			return mutant_vector<T>::iterator(&m_container, 0); 
 		}
 
-		mutant_vector<T>::iterator  end()
+		mutant_vector<T>::iterator  end() 
 		{
 			return mutant_vector<T>::iterator(&m_container, m_container.size()); 
 		}
@@ -99,7 +104,33 @@ class mutant_vector
 						return true;
 					return false;
 				}
+				bool operator >= (const iterator & iter) const 
+				{
+					if (m_index >= iter.m_index)
+						return true;
+					return false;
+				}
 
+				bool operator <= (const iterator & iter) const 
+				{
+					if (m_index <= iter.m_index)
+						return true;
+					return false;
+				}
+
+				bool operator > (const iterator & iter) const 
+				{
+					if (m_index > iter.m_index)
+						return true;
+					return false;
+				}
+
+				bool operator < (const iterator & iter) const 
+				{
+					if (m_index < iter.m_index)
+						return true;
+					return false;
+				}
 
 				typename compressed_vector<T>::reference operator* () 
 				{
@@ -197,7 +228,30 @@ class mutant_vector
 				{
 					return m_container;	
 				}
+
+				void deleted()
+				{
+					m_container->erase_element(m_index);
+				}	
+
 		};
+
+		void erase (mutant_vector<T>::iterator begin,mutant_vector<T>::iterator end)
+		{
+			mutant_vector<T>::iterator it = begin;
+			mutant_vector<T>::iterator it2 = end;
+			for(;it != end; ++it) {
+				it.deleted();
+			}
+			it = begin;
+			if (end != this->end())
+				for(it2 = end; it2 != this->end(); ++it2, ++it) {
+					*it = *it2;
+				}
+			//  compressed vector doesn't decrease the size when it is erased.
+			//  we have to resize it. 
+			m_container.resize(m_container.size() - (end - begin));
+		}
 
 	private:
 		compressed_vector<T> m_container;
@@ -220,9 +274,25 @@ inline void copy(vectora::iterator begin, vectora::iterator end, vectora::iterat
 	size_t src_begin = *it_src_begin;
 	size_t src_index = *it_src_begin != begin.getIndex() ? *it_src_begin - begin.getIndex() : 0;	
 	size_t dest_begin = *it_dest_begin;
+	size_t dest_index = it.getIndex() - *it_dest_begin;
 	for (;it_src_begin  != iend; ++it_src_begin) {
-		(*it.getContainer())[ ((*it_src_begin + src_index) - src_begin) + dest_begin ] = (*begin.getContainer())[*it_src_begin];
+		(*it.getContainer())[ ((*it_src_begin + src_index) - src_begin) + dest_begin + dest_index ] = (*begin.getContainer())[*it_src_begin];
 	}
+}
+
+inline void insert(vectora::iterator it, vectora::iterator begin, vectora::iterator end)
+{
+	compressed_vector<size_t>::index_array_type::iterator it_src_begin = begin.getIndexIterator();
+	compressed_vector<size_t>::index_array_type::iterator iend   = end.getIndexIterator();
+	compressed_vector<size_t>::index_array_type::iterator it_dest_begin = it.getIndexIterator();
+	size_t src_begin = *it_src_begin;
+	size_t src_index = *it_src_begin != begin.getIndex() ? *it_src_begin - begin.getIndex() : 0;	
+	size_t dest_begin = *it_dest_begin;
+	size_t dest_index = it.getIndex() - *it_dest_begin;
+	for (;it_src_begin  != iend; ++it_src_begin) {
+		(*it.getContainer()).push_back(((*it_src_begin + src_index) - src_begin) + dest_begin + dest_index, (*begin.getContainer())[*it_src_begin]);
+	}
+
 }
 
 }

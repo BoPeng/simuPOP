@@ -108,11 +108,7 @@ public:
 	/// CPPONLY
 	Individual(const Individual & ind) :
 		GenoStruTrait(ind), m_flags(ind.m_flags),
-#ifdef MUTANTALLELE
-//		m_genoPtr(ind.m_genoPtr), m_genoIdx(ind.m_genoIdx),
-#else
 		m_genoPtr(ind.m_genoPtr),
-#endif
 		m_infoPtr(ind.m_infoPtr)
 	{
 	}
@@ -125,30 +121,10 @@ public:
 
 
 	/// CPPONLY set genotype pointer (use if Allele*pos can not be determined during construction)
-#ifdef MUTANTALLELE
 	void setGenoPtr(GenoIterator pos)
 	{
 		m_genoPtr = pos;
 	}
-/*
-	void setGenoPtr(compressed_vectora * genoPtr, size_t pos)
-	{
-		m_genoPtr = genoPtr;
-		m_genoIdx = pos;
-	}
-
-
-	void setGenoPtr(compressed_vectora * genoPtr)
-	{
-		m_genoPtr = genoPtr;
-	}
-*/
-#else
-	void setGenoPtr(GenoIterator pos)
-	{
-		m_genoPtr = pos;
-	}
-#endif
 
 
 	/// CPPONLY set pointer to individual info
@@ -168,27 +144,11 @@ public:
 	/// @name readonly structural info
 	//@{
 
-#ifdef MUTANTALLELE
-	/// CPPONLY index to alleles
-/*
-	compressed_vectora * genoPtr() const
-	{
-		return m_genoPtr;
-	}
-
-	size_t genoIdx() const
-	{
-		return m_genoIdx;
-	}
-*/
-
-#else
 	/// CPPONLY pointer to alleles
 	GenoIterator genoPtr() const
 	{
 		return m_genoPtr;
 	}
-#endif
 
 
 	/// CPPONLY
@@ -383,56 +343,6 @@ public:
 		m_infoPtr[idx] = value;
 	}
 
-#ifdef MUTANTALLELE
-	/// CPPONLY start of alleles
-/*	size_t genoBegin() const
-	{
-		return m_genoIdx;
-	}
-
-
-	/// CPPONLY end of allele
-	size_t genoEnd() const
-	{
-		return m_genoIdx + genoSize();
-	}
-
-
-	/// CPPONLY start of allele of the pth set of chromosome
-	size_t genoBegin(size_t p) const
-	{
-		CHECKRANGEPLOIDY(p);
-		return m_genoIdx + p * totNumLoci();
-	}
-
-
-	/// CPPONLY end of allele of the pth set of chromosome
-	size_t genoEnd(size_t p) const
-	{
-		CHECKRANGEPLOIDY(p);
-		return m_genoIdx + (p + 1) * totNumLoci();
-	}
-
-
-	/// CPPONLY start of allele of the pth set of chromosome, chrom ch
-	size_t genoBegin(size_t p, size_t chrom) const
-	{
-		CHECKRANGEPLOIDY(p);
-		CHECKRANGECHROM(chrom);
-		return m_genoIdx + p * totNumLoci() + chromBegin(chrom);
-
-	}
-
-
-	/// CPPONLY end of allele of the pth set of chromosome
-	size_t genoEnd(size_t p, size_t chrom) const
-	{
-		CHECKRANGEPLOIDY(p);
-		CHECKRANGECHROM(chrom);
-		return m_genoIdx + p * totNumLoci() + chromEnd(chrom);
-
-	}
-*/
 	/// CPPONLY start of alleles
 	GenoIterator genoBegin() const
 	{
@@ -481,58 +391,6 @@ public:
 		return m_genoPtr + p * totNumLoci() + chromEnd(chrom);
 
 	}
-
-
-#else
-	/// CPPONLY start of alleles
-	GenoIterator genoBegin() const
-	{
-		return m_genoPtr;
-	}
-
-
-	/// CPPONLY end of allele
-	GenoIterator genoEnd() const
-	{
-		return m_genoPtr + genoSize();
-	}
-
-
-	/// CPPONLY start of allele of the pth set of chromosome
-	GenoIterator genoBegin(size_t p) const
-	{
-		CHECKRANGEPLOIDY(p);
-		return m_genoPtr + p * totNumLoci();
-	}
-
-
-	/// CPPONLY end of allele of the pth set of chromosome
-	GenoIterator genoEnd(size_t p) const
-	{
-		CHECKRANGEPLOIDY(p);
-		return m_genoPtr + (p + 1) * totNumLoci();
-	}
-
-
-	/// CPPONLY start of allele of the pth set of chromosome, chrom ch
-	GenoIterator genoBegin(size_t p, size_t chrom) const
-	{
-		CHECKRANGEPLOIDY(p);
-		CHECKRANGECHROM(chrom);
-		return m_genoPtr + p * totNumLoci() + chromBegin(chrom);
-
-	}
-
-
-	/// CPPONLY end of allele of the pth set of chromosome
-	GenoIterator genoEnd(size_t p, size_t chrom) const
-	{
-		CHECKRANGEPLOIDY(p);
-		CHECKRANGECHROM(chrom);
-		return m_genoPtr + p * totNumLoci() + chromEnd(chrom);
-
-	}
-#endif
 
 	/// CPPONLY start of info
 	InfoIterator infoBegin() const
@@ -636,13 +494,7 @@ protected:
 	mutable unsigned char m_flags;
 
 	/// pointer to genotype.
-#ifdef MUTANTALLELE
 	GenoIterator m_genoPtr;
-        //compressed_vectora * m_genoPtr;
-	//size_t m_genoIdx;
-#else
-	GenoIterator m_genoPtr;
-#endif
 
 	/// pointer to info
 	InfoIterator m_infoPtr;

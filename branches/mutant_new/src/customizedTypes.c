@@ -53,13 +53,7 @@ typedef struct arrayobject
 {
 	PyObject_VAR_HEAD
 	// pointer to the beginning of the genotype
-#ifdef MUTANTALLELE
-//	compressed_vectora * ob_iter;
-//	size_t idx;
 	GenoIterator ob_iter;
-#else
-	GenoIterator ob_iter;
-#endif
 } arrayobject;
 
 /// CPPONLY
@@ -74,12 +68,7 @@ getarrayitem(arrayobject * op, Py_ssize_t i)
 	assert(is_carrayobject(op));
 	ap = (arrayobject *)op;
 	assert(i >= 0 && i < Py_SIZE(ap));
-#ifdef MUTANTALLELE
-	//return PyInt_FromLong((*ap->ob_iter)[ap->idx + i] );
 	return PyInt_FromLong(*(ap->ob_iter + i) );
-#else
-	return PyInt_FromLong(*(ap->ob_iter + i) );
-#endif
 }
 
 
@@ -99,12 +88,7 @@ setarrayitem(arrayobject * ap, Py_ssize_t i, PyObject * v)
 #  ifdef BINARYALLELE
 	*(ap->ob_iter + i) = (x != 0);
 #  else
-#    ifdef MUTANTALLELE
-	//(*ap->ob_iter)[ap->idx + i] = Allele(x);
 	*(ap->ob_iter + i) = Allele(x);
-#    else
-	*(ap->ob_iter + i) = Allele(x);
-#    endif
 #  endif
 	return 0;
 }
@@ -131,12 +115,7 @@ carray_init(PyTypeObject * /* type */, PyObject * /* args */, PyObject * /* kwds
 
 
 /// CPPONLY
-#ifdef MUTANTALLELE
-//PyObject * newcarrayobject(compressed_vectora * genoPtr, Py_ssize_t begin, Py_ssize_t end);
 PyObject * newcarrayobject(GenoIterator begin, GenoIterator end);
-#else
-PyObject * newcarrayobject(GenoIterator begin, GenoIterator end);
-#endif
 
 /// CPPONLY
 static void
@@ -385,12 +364,7 @@ static PyObject * array_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh
 		ihigh = ilow;
 	else if (ihigh > Py_SIZE(a))
 		ihigh = Py_SIZE(a);
-#ifdef MUTANTALLELE
-//	np = (arrayobject *)newcarrayobject(a->ob_iter, a->idx + ilow, a->idx + ihigh);
 	np = (arrayobject *)newcarrayobject(a->ob_iter + ilow, a->ob_iter + ihigh);
-#else
-	np = (arrayobject *)newcarrayobject(a->ob_iter + ilow, a->ob_iter + ihigh);
-#endif
 	if (np == NULL)
 		return NULL;
 	return (PyObject *)np;
@@ -729,25 +703,6 @@ bool is_carrayobject(PyObject * op)
 
 
 /// CPPONLY
-#ifdef MUTANTALLELE
-/*
-PyObject * newcarrayobject(compressed_vectora * genoPtr, Py_ssize_t begin, Py_ssize_t end)
-{
-	// create an object and copy data
-	arrayobject * op;
-
-	op = PyObject_New(arrayobject, &Arraytype);
-	if (op == NULL) {
-		PyObject_Del(op);
-		return PyErr_NoMemory();
-	}
-	//
-	op->idx     = begin;
-	op->ob_iter = genoPtr;
-	Py_SIZE(op) = end - begin;
-	return (PyObject *)op;
-}
-*/
 PyObject * newcarrayobject(GenoIterator begin, GenoIterator end)
 {
 	// create an object and copy data
@@ -763,23 +718,6 @@ PyObject * newcarrayobject(GenoIterator begin, GenoIterator end)
 	Py_SIZE(op) = end - begin;
 	return (PyObject *)op;
 }
-#else
-PyObject * newcarrayobject(GenoIterator begin, GenoIterator end)
-{
-	// create an object and copy data
-	arrayobject * op;
-
-	op = PyObject_New(arrayobject, &Arraytype);
-	if (op == NULL) {
-		PyObject_Del(op);
-		return PyErr_NoMemory();
-	}
-	//
-	op->ob_iter = begin;
-	Py_SIZE(op) = end - begin;
-	return (PyObject *)op;
-}
-#endif
 
 
 /* defdict type *********************************************************/
@@ -985,13 +923,7 @@ typedef struct arrayobject
 {
 	PyObject_VAR_HEAD
 	// pointer to the beginning of the genotype
-#ifdef MUTANTALLELE
-//	compressed_vectora * ob_iter;
-//	size_t idx;
 	GenoIterator ob_iter;
-#else 
-	GenoIterator ob_iter;
-#endif
 } arrayobject;
 
 bool is_carrayobject(PyObject * op);
@@ -1689,25 +1621,6 @@ bool is_carrayobject(PyObject * op)
 
 
 /// CPPONLY
-#ifdef MUTANTALLELE
-/*
-PyObject * newcarrayobject(compressed_vectora * genoPtr, Py_ssize_t begin, Py_ssize_t end)
-{
-	// create an object and copy data
-	arrayobject * op;
-
-	op = PyObject_New(arrayobject, &Arraytype);
-	if (op == NULL) {
-		PyObject_Del(op);
-		return PyErr_NoMemory();
-	}
-	//
-	op->idx     = begin;
-	op->ob_iter = genoPtr;
-	Py_SIZE(op) = end - begin;
-	return (PyObject *)op;
-}
-*/
 PyObject * newcarrayobject(GenoIterator begin, GenoIterator end)
 {
 	// create an object and copy data
@@ -1723,24 +1636,6 @@ PyObject * newcarrayobject(GenoIterator begin, GenoIterator end)
 	Py_SIZE(op) = end - begin;
 	return (PyObject *)op;
 }
-
-#else
-PyObject * newcarrayobject(GenoIterator begin, GenoIterator end)
-{
-	// create an object and copy data
-	arrayobject * op;
-
-	op = PyObject_New(arrayobject, &Arraytype);
-	if (op == NULL) {
-		PyObject_Del(op);
-		return PyErr_NoMemory();
-	}
-	//
-	op->ob_iter = begin;
-	Py_SIZE(op) = end - begin;
-	return (PyObject *)op;
-}
-#endif
 
 
 typedef struct

@@ -114,12 +114,9 @@ using boost::cmatch;
 #ifndef STANDALONE_EXECUTABLE
 // these functions are defined in customizedTypes.c which is included
 // in simuPOP_wrap.cpp
-#ifdef MUTANTALLELE
-//extern "C" PyObject * newcarrayobject(compressed_vectora * genoPtr, Py_ssize_t begin, Py_ssize_t end);
+
 extern "C" PyObject * newcarrayobject(GenoIterator begin, GenoIterator end);
-#else
-extern "C" PyObject * newcarrayobject(GenoIterator begin, GenoIterator end);
-#endif
+
 extern "C" PyObject * PyDefDict_New();
 
 extern "C" bool is_defdict(PyTypeObject * type);
@@ -127,12 +124,8 @@ extern "C" bool is_defdict(PyTypeObject * type);
 extern "C" int initCustomizedTypes(void);
 
 #else
-#  ifdef MUTANTALLELE
-//PyObject * newcarrayobject(compressed_vectora * genoPtr, Py_ssize_t begin, Py_ssize_t end);
+
 PyObject * newcarrayobject(GenoIterator, GenoIterator)
-#  else
-PyObject * newcarrayobject(GenoIterator, GenoIterator)
-#  endif
 {
 	return NULL;
 }
@@ -1231,14 +1224,6 @@ void PyObj_As_IntArray(PyObject * obj, vectori & val)
 	}
 }
 
-#ifdef MUTANTALLELE
-//PyObject * Allele_Vec_As_NumArray(compressed_vectora * genoPtr,Py_ssize_t begin, Py_ssize_t end)
-//{
-//	PyObject * res = newcarrayobject(genoPtr, begin, end);
-//
-//	DBG_FAILIF(res == NULL, ValueError, "Can not convert buf to Allele num array");
-//	return res;
-//}
 PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end)
 {
 	PyObject * res = newcarrayobject(begin, end);
@@ -1246,15 +1231,6 @@ PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end)
 	DBG_FAILIF(res == NULL, ValueError, "Can not convert buf to Allele num array");
 	return res;
 }
-#else
-PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end)
-{
-	PyObject * res = newcarrayobject(begin, end);
-
-	DBG_FAILIF(res == NULL, ValueError, "Can not convert buf to Allele num array");
-	return res;
-}
-#endif
 
 
 string PyObj_AsString(PyObject * str)
