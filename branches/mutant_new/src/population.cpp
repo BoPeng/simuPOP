@@ -146,21 +146,12 @@ Population::Population(const Population & rhs) :
 	InfoIterator infoPtr = m_info.begin();
 	size_t infoStep = infoSize();
 	size_t step = genoSize();
-#ifdef MUTANTALLELE
-	size_t idx = 0;
-	for (size_t i = 0; i < m_popSize; ++i, idx += step, infoPtr += infoStep) {
-//		m_inds[i].setGenoPtr(&m_genotype, idx);
-		m_inds[i].setInfoPtr(infoPtr);
-//		m_inds[i].copyFrom(rhs.m_inds[i]);
-	}
-#else
 	GenoIterator ptr = m_genotype.begin();
 	for (size_t i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep) {
 		m_inds[i].setGenoPtr(ptr);
 		m_inds[i].setInfoPtr(infoPtr);
-//		m_inds[i].copyFrom(rhs.m_inds[i]);
+		m_inds[i].copyFrom(rhs.m_inds[i]);
 	}
-#endif
 
 	// copy ancestral populations
 	try {
@@ -173,24 +164,15 @@ Population::Population(const Population & rhs) :
 
 			vector<Individual> & linds = lp.m_inds;
 			const vector<Individual> & rinds = rp.m_inds;
-#ifdef MUTANTALLELE
-//			size_t lg = 0; 
-//			const size_t rg = 0;
-#else
 			GenoIterator lg = lp.m_genotype.begin();
 			ConstGenoIterator rg = rp.m_genotype.begin();
-#endif
 			InfoIterator li = lp.m_info.begin();
 			ConstInfoIterator ri = rp.m_info.begin();
 
 			size_t ps = rinds.size();
 
 			for (size_t i = 0; i < ps; ++i) {
-#ifdef MUTANTALLELE
-//				linds[i].setGenoPtr(rinds[i].genoPtr() ,rinds[i].genoIdx() - rg + lg);
-#else
 				linds[i].setGenoPtr(rinds[i].genoPtr() - rg + lg);
-#endif
 				linds[i].setInfoPtr(rinds[i].infoPtr() - ri + li);
 			}
 		}
@@ -643,7 +625,7 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 	}
 }
 
-/*
+
 void Population::validate(const string & msg) const
 {
 #ifdef OPTIMIZED
@@ -655,27 +637,13 @@ void Population::validate(const string & msg) const
 		msg + "Wrong genotype size for this population");
 	ConstInfoIterator ib = m_info.begin();
 	ConstInfoIterator ie = m_info.end();
-#ifdef MUTANTALLELE
-	//size_t gb = 0;
-	//size_t ge = m_genotype.size();
 	ConstGenoIterator gb = m_genotype.begin();
 	ConstGenoIterator ge = m_genotype.end();
-#else
-	ConstGenoIterator gb = m_genotype.begin();
-	ConstGenoIterator ge = m_genotype.end();
-#endif
 
 	if (genoSize() > 0) {
 		for (ConstIndIterator it = indIterator(); it.valid(); ++it) {
-#ifdef MUTANTALLELE
-			//DBG_ASSERT(it->genoIdx() >= gb && it->genoIdx() < ge, SystemError,
-			//	msg + "Wrong genotype pointer");
-//			DBG_ASSERT(it->genoPtr() >= gb && it->genoPtr() < ge, SystemError,
-//				msg + "Wrong genotype pointer");
-#else
 			DBG_ASSERT(it->genoPtr() >= gb && it->genoPtr() < ge, SystemError,
 				msg + "Wrong genotype pointer");
-#endif
 		}
 	}
 	if (infoSize() > 0) {
@@ -687,7 +655,7 @@ void Population::validate(const string & msg) const
 	}
 #endif
 }
-*/
+
 
 void Population::fitSubPopStru(const vectoru & newSubPopSizes,
                                const vectorstr & newSubPopNames)
@@ -1357,11 +1325,7 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 			continue;
 		// do not remove.
 		new_inds.insert(new_inds.end(), rawIndBegin(src), rawIndEnd(src));
-#ifdef MUTANTALLELE
-		simuPOP::insert(new_genotype.end(), genoBegin(src, true), genoEnd(src, true));
-#else
 		new_genotype.insert(new_genotype.end(), genoBegin(src, true), genoEnd(src, true));
-#endif
 
 		if (infoStep > 0)
 			new_info.insert(new_info.end(),
@@ -2806,7 +2770,7 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 	useAncestralGen(oldGen);
 }
 */
-/*
+
 void Population::push(Population & rhs)
 {
 	DBG_ASSERT(rhs.genoStruIdx() == genoStruIdx(), ValueError,
@@ -2844,7 +2808,7 @@ void Population::push(Population & rhs)
 	m_info.swap(rhs.m_info);
 	m_inds.swap(rhs.m_inds);
 	std::swap(m_indOrdered, rhs.m_indOrdered);
-
+/*
 #ifdef MUTANTALLELE
 	// compressed_vectora must be setGenoPtr after swap
 	for (size_t i = 0; i < m_inds.size(); ++i) 
@@ -2852,6 +2816,7 @@ void Population::push(Population & rhs)
 	for (size_t i = 0; i < rhs.m_inds.size(); ++i) 
 		rhs.m_inds[i].setGenoPtr(&rhs.m_genotype);
 #endif
+*/
 	// current population should be working well
 	// (with all datamember copied form rhs
 	// rhs may not be working well since m_genotype etc
@@ -2865,7 +2830,7 @@ void Population::push(Population & rhs)
 	validate("Current population after push and discard:");
 	rhs.validate("Outside Population after push and discard:");
 }
-*/
+
 
 void Population::addInfoFields(const stringList & fieldList, double init)
 {

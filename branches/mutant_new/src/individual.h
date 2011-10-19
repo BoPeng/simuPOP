@@ -135,10 +135,10 @@ public:
 
 
 	/// shallow copy of an individual class
-//	Individual & operator=(const Individual & rhs);
+	Individual & operator=(const Individual & rhs);
 
 	/// CPPONLY deep copy of an individual class
-//	Individual & copyFrom(const Individual & rhs);
+	Individual & copyFrom(const Individual & rhs);
 
 	//@}
 	/// @name readonly structural info
@@ -438,7 +438,7 @@ public:
 	   swap pointers. (There is no order right now within
 	   subpopulation so the later case is rare, at best.)
 	 */
-//	void swap(Individual & ind, bool swapContent = true);
+	void swap(Individual & ind, bool swapContent = true);
 
 	//@}
 	/// @name misc (only relevant to developers)

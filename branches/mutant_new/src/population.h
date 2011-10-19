@@ -284,9 +284,9 @@ public:
 		m_subPopSize.swap(rhs.m_subPopSize);
 		m_subPopNames.swap(rhs.m_subPopNames);
 		m_subPopIndex.swap(rhs.m_subPopIndex);
-//		m_genotype.swap(rhs.m_genotype);
+		m_genotype.swap(rhs.m_genotype);
 		m_info.swap(rhs.m_info);
-//		m_inds.swap(rhs.m_inds);
+		m_inds.swap(rhs.m_inds);
 		std::swap(m_ancestralGens, rhs.m_ancestralGens);
 		m_vars.swap(rhs.m_vars);
 		m_ancestralPops.swap(rhs.m_ancestralPops);
@@ -315,7 +315,7 @@ public:
 	 * to detect if scratch population is prepared properly during
 	 * evolution
 	 */
-//	void validate(const string & msg) const;
+	void validate(const string & msg) const;
 
 	/** CPPONLY
 	 * Fix a population, resize it if necessary. The content
@@ -1237,7 +1237,7 @@ public:
 	 *  current population.
 	 *  <group>6-ancestral</group>
 	 */
-//	void push(Population & pop);
+	void push(Population & pop);
 
 	/** HIDDEN
 	 *  Return the current ancestral generation number.
@@ -1539,11 +1539,7 @@ private:
 	BaseVspSplitter * m_vspSplitter;
 
 	/// pool of genotypic information
-#ifdef MUTANTALLELE
 	vectora m_genotype;
-#else
-	vectora m_genotype;
-#endif
 
 	/// information
 	/// only in head node
@@ -1564,11 +1560,7 @@ private:
 	{
 		vectoru m_subPopSize;
 		vectorstr m_subPopNames;
-#ifdef MUTANTALLELE
 		vectora m_genotype;
-#else
-		vectora m_genotype;
-#endif
 		vectorf m_info;
 		vector<Individual> m_inds;
 		bool m_indOrdered;

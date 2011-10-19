@@ -34,27 +34,23 @@ using std::setprecision;
 
 namespace simuPOP {
 
-/*
+
 Individual & Individual::operator=(const Individual & rhs)
 {
 	m_flags = rhs.m_flags;
-#ifdef MUTANTALLELE
-	setGenoPtr(rhs.genoPtr(), rhs.genoIdx());
-#else
 	setGenoPtr(rhs.genoPtr());
-#endif
 	setInfoPtr(rhs.infoPtr());
 	// also copy genoStru pointer...
 	this->setGenoStruIdx(rhs.genoStruIdx());
 	return *this;
 }
-*/
-/*
+
+
 Individual & Individual::copyFrom(const Individual & rhs)
 {
 	m_flags = rhs.m_flags;
 #ifdef MUTANTALLELE
-	copyGenotype(*(rhs.genoPtr()), rhs.genoBegin(), rhs.genoEnd(), *m_genoPtr, genoBegin());
+	simuPOP::copy(rhs.genoBegin(), rhs.genoEnd(), genoBegin());
 #else
 	copy(rhs.genoBegin(), rhs.genoEnd(), genoBegin());
 #endif
@@ -63,7 +59,7 @@ Individual & Individual::copyFrom(const Individual & rhs)
 	this->setGenoStruIdx(rhs.genoStruIdx());
 	return *this;
 }
-*/
+
 
 bool Individual::operator==(const Individual & rhs) const
 {
@@ -82,11 +78,7 @@ bool Individual::operator==(const Individual & rhs) const
 	}
 
 	for (size_t i = 0, iEnd = genoSize(); i < iEnd; ++i)
-#ifdef MUTANTALLELE
-		//if ((*m_genoPtr)[m_genoIdx + i] != (*rhs.m_genoPtr)[rhs.m_genoIdx + i])
-#else
 		if (*(m_genoPtr + i) != *(rhs.m_genoPtr + i))
-#endif
 			return false;
 
 	for (size_t i = 0, iEnd = infoSize(); i < iEnd; ++i)
@@ -373,7 +365,7 @@ void Individual::setGenotype(const uintList & genoList, const uintList & ply, co
 	}
 }
 
-/*
+
 void Individual::swap(Individual & ind, bool swapContent)
 {
 	if (genoStruIdx() != ind.genoStruIdx())
@@ -384,30 +376,15 @@ void Individual::swap(Individual & ind, bool swapContent)
 	if (swapContent) {
 		Allele tmp;
 		for (size_t i = 0, iEnd = genoSize(); i < iEnd; i++) {
-#ifdef MUTANTALLELE
-			tmp = (*m_genoPtr)[m_genoIdx + i];
-			assignGenotype(*m_genoPtr, m_genoIdx + i, *ind.m_genoPtr, ind.m_genoIdx + i);
-			assignGenotype(*ind.m_genoPtr, ind.m_genoIdx + i, tmp);
-						
-#else
 			tmp = m_genoPtr[i];
-			m_genoPtr[i] = ind.m_genoPtr[i];
-			ind.m_genoPtr[i] = tmp;
-#endif
+			m_genoPtr[i] = ind.m_genoPtr[i]; //assignGenotype
+			ind.m_genoPtr[i] = tmp; //assignGenotype
 		}
 	} else {
-#ifdef MUTANTALLELE
-		size_t tmp;
 		std::swap(m_genoPtr, ind.m_genoPtr);
-		tmp = m_genoIdx;	
-		m_genoIdx = ind.m_genoIdx;
-		ind.m_genoIdx = m_genoIdx;		
-#else
-		std::swap(m_genoPtr, ind.m_genoPtr);
-#endif
 	}
 }
-*/
+
 /*
 void Individual::display(ostream & out, int width, const vectoru & loci)
 {
