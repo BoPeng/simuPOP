@@ -25,6 +25,17 @@ class mutant_vector
 			m_container.resize(size);
 		}
 
+		mutant_vector(size_t size, const T& value)
+		{
+			if (value == 0)
+				m_container.resize(size, value);
+			else {
+				m_container.resize(size,size);
+				for ( size_t i = 0; i < size; i++)
+					m_container.push_back(i, value);
+			}
+		}
+
 		void resize (size_t size)
 		{
 			m_container.resize(size);
@@ -59,7 +70,10 @@ class mutant_vector
 			return mutant_vector<T>::iterator(const_cast<compressed_vector<T> *>(&m_container), m_container.size()); 
 		}
 
-		
+		typename compressed_vector<T>::reference operator [] (size_t i)
+		{
+			return m_container[i];
+		}
 
 		void swap(mutant_vector<T> & vec)
 		{
@@ -67,6 +81,7 @@ class mutant_vector
 
 		}
 
+			
 		compressed_vector<T> &  getContainer()
 		{
 			return m_container;		
@@ -160,7 +175,7 @@ class mutant_vector
 
 				typename compressed_vector<T>::reference operator [] (const size_t i)
 				{
-					return (*m_container)[i];	
+					return (*m_container)[m_index + i];	
 				}
 
 				/// CPPONLY pre-incrment return by-reference 
