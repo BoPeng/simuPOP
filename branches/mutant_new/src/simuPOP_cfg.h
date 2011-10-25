@@ -350,9 +350,9 @@ typedef long LONG;
 
 typedef std::vector<long>                                vectori;
 typedef std::vector<double>                              vectorf;
-#ifndef MUTANTALLELE
+//#ifndef MUTANTALLELE
 typedef std::vector<Allele>                              vectora;
-#endif
+//#endif
 typedef compressed_vector<unsigned int> 		 compressed_vectora;
 typedef std::vector<size_t>                              vectoru;
 typedef std::vector<std::string>                         vectorstr;

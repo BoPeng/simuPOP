@@ -906,17 +906,6 @@ public:
 	{
 	}
 
-#ifdef MUTANTALLELE
-	CombinedAlleleIterator(size_t shift, compressed_vectora * ptr, size_t idx, size_t idxEnd, size_t size)
-		: m_useGappedIterator(true), m_valid(true), m_shift(shift),
-		m_ptr(ptr), m_idx(idx), m_idxEnd(idxEnd), m_size(size),
-		// ignored
-		m_it(), m_index(0), m_ploidy(0), m_chromType(0),
-		m_haplodiploid(false), m_p(0)
-	{
-		m_valid = m_idx != m_idxEnd;
-	}
-#else
 	CombinedAlleleIterator(size_t shift, GenoIterator ptr, GenoIterator ptrEnd, size_t size)
 		: m_useGappedIterator(true), m_valid(true), m_shift(shift),
 		m_ptr(ptr), m_ptrEnd(ptrEnd), m_size(size),
@@ -926,16 +915,11 @@ public:
 	{
 		m_valid = m_ptr != m_ptrEnd;
 	}
-#endif
 
 
 	CombinedAlleleIterator(size_t idx, IndividualIterator<T> it)
 		: m_useGappedIterator(false), m_valid(true), m_shift(),
-#ifdef MUTANTALLELE
-		m_ptr(), m_idx(), m_idxEnd(), m_size(0), // belong to a previous one
-#else
 		m_ptr(), m_ptrEnd(), m_size(0), // belong to a previous one
-#endif
 		m_it(it), m_index(idx), m_ploidy(0), m_chromType(0),
 		m_haplodiploid(false), m_p(0)
 	{
@@ -972,46 +956,17 @@ public:
 
 
 	// this is the most important part!
-#ifdef MUTANTALLELE
-	// we don't use iterator in compressed vector,
-	// so the function can't return AlleleRef
-	Allele operator *() const
-#else
 	AlleleRef operator *() const
-#endif
 	{
 		if (m_useGappedIterator)
-#ifdef MUTANTALLELE
-			return (*m_ptr)[m_idx + m_shift];
-#else
 			return *(m_ptr + m_shift);
-#endif
 		else {
 			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
-#ifdef MUTANTALLELE
-			return (*m_it->genoPtr())[m_it->genoBegin() + m_index + m_p * m_size];
-#else
 			return *(m_it->genoBegin() + m_index + m_p * m_size);
-#endif
 		}
 	}
 
-#ifdef MUTANTALLELE
-	size_t idx()
-	{
-		if (m_useGappedIterator)
-			return m_idx + m_shift;
-		else
-			return m_it->genoBegin() + m_index + m_p * m_size;
-	}
-	compressed_vectora * ptr()
-	{
-		if (m_useGappedIterator)
-			return m_ptr;
-		else
-			return m_it->genoPtr();
-	}
-#else
+
 	GenoIterator ptr()
 	{
 		if (m_useGappedIterator)
@@ -1019,7 +974,6 @@ public:
 		else
 			return m_it->genoBegin() + m_index + m_p * m_size;
 	}
-#endif
 
 
 	void advance(IndividualIterator<T> & it, size_t & p, bool & valid)
@@ -1073,13 +1027,8 @@ public:
 			return tmp;
 
 		if (m_useGappedIterator) {
-#ifdef MUTANTALLELE
-			m_idx += m_size;
-			m_valid = m_idx != m_idxEnd;
-#else
 			m_ptr += m_size;
 			m_valid = m_ptr != m_ptrEnd;
-#endif
 		} else {
 			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
 			advance(m_it, m_p, m_valid);
@@ -1093,13 +1042,8 @@ public:
 		if (!valid())
 			return *this;
 		if (m_useGappedIterator) {
-#ifdef MUTANTALLELE
-			m_idx += m_size;
-			m_valid = m_idx != m_idxEnd;
-#else
 			m_ptr += m_size;
 			m_valid = m_ptr != m_ptrEnd;
-#endif
 		} else {
 			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
 			advance(m_it, m_p, m_valid);
@@ -1113,17 +1057,10 @@ public:
 		if (!valid())
 			return *this;
 		if (m_useGappedIterator) {
-#ifdef MUTANTALLELE
-			m_idx += diff * m_size;
-			if (m_idx > m_idxEnd)
-				m_idx = m_idxEnd;
-			m_valid = m_idx != m_idxEnd;
-#else
 			m_ptr += diff * m_size;
 			if (m_ptr > m_ptrEnd)
 				m_ptr = m_ptrEnd;
 			m_valid = m_ptr != m_ptrEnd;
-#endif
 		} else {
 			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
 			for (int i = 0; i < diff && m_valid; ++i)
@@ -1141,17 +1078,10 @@ public:
 			return tmp;
 
 		if (m_useGappedIterator) {
-#ifdef MUTANTALLELE
-			tmp.m_idx += diff * m_size;
-			if (tmp.m_idx > tmp.m_idxEnd)
-				tmp.m_idx = tmp.m_idxEnd;
-			tmp.m_valid = tmp.m_idx != tmp.m_idxEnd;
-#else
 			tmp.m_ptr += diff * m_size;
 			if (tmp.m_ptr > tmp.m_ptrEnd)
 				tmp.m_ptr = tmp.m_ptrEnd;
 			tmp.m_valid = tmp.m_ptr != tmp.m_ptrEnd;
-#endif
 		} else {
 			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
 			for (int i = 0; i < diff && tmp.m_valid; ++i)
@@ -1164,11 +1094,7 @@ public:
 	bool operator!=(const CombinedAlleleIterator & rhs)
 	{
 		if (m_useGappedIterator)
-#ifdef MUTANTALLELE
-			return m_idx != rhs.m_idx || m_shift != rhs.m_shift;
-#else
 			return m_ptr != rhs.m_ptr || m_shift != rhs.m_shift;
-#endif
 		else {
 			//DBG_FAILIF(m_it.valid() && rhs.m_it.valid() &&
 			//	(m_ploidy != rhs.m_ploidy || m_size != rhs.m_size
@@ -1187,19 +1113,10 @@ private:
 	bool m_valid;
 	//
 	size_t m_shift;
-#ifdef MUTANTALLELE
-	//
-	compressed_vectora * m_ptr;
-	//
-	size_t m_idx;
-	//
-	size_t m_idxEnd;
-#else
 	//
 	GenoIterator m_ptr;
 	//
 	GenoIterator m_ptrEnd;
-#endif
 	// genosize
 	size_t m_size;
 	//

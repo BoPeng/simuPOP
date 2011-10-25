@@ -1,9 +1,8 @@
 #include "boost/numeric/ublas/vector_sparse.hpp"
 using boost::numeric::ublas::compressed_vector;
 
-#ifdef MUTANTALLELE
-#  ifndef _MUTANT_VECTOR_H
-#  define _MUTANT_VECTOR_H
+#ifndef _MUTANT_VECTOR_H
+#define _MUTANT_VECTOR_H
 
 
 namespace simuPOP {
@@ -178,6 +177,11 @@ class mutant_vector
 					return (*m_container)[m_index + i];	
 				}
 
+				typename compressed_vector<T>::const_reference operator [] (const size_t i) const
+				{
+					return (*m_container)[m_index + i];	
+				}
+
 				/// CPPONLY pre-incrment return by-reference 
 				iterator & operator++ () 
 				{
@@ -214,7 +218,23 @@ class mutant_vector
 					return *this;
 				}
 
+				const iterator & operator+= (const iterator & iter)  const
+				{
+					m_index+=iter.m_index;
+					if (m_index > m_container->size())
+						m_index = m_container->size();
+					return *this;
+				}
+
 				iterator & operator+= (const size_t size) 
+				{
+					m_index+=size;
+					if (m_index > m_container->size())
+						m_index = m_container->size();
+					return *this;
+				} 
+
+				const iterator & operator+= (const size_t size)  const
 				{
 					m_index+=size;
 					if (m_index > m_container->size())
@@ -343,20 +363,28 @@ class mutant_vector
 
 		}
 
+		template<class Archive>
+		void serialize(Archive & ar, const unsigned int /*file_version*/)
+		{
+			ar & m_container;
+		}
+		
+
 	private:
 		compressed_vector<T> m_container;
 };
 
 }
 
+#  ifdef MUTANTALLELE
 typedef unsigned int Allele;
-typedef unsigned int & AlleleRef;
-typedef simuPOP::mutant_vector<Allele> vectora;
+typedef compressed_vector<Allele>::reference AlleleRef;
+typedef simuPOP::mutant_vector<Allele> mutant_vectora;
 
 namespace simuPOP 
 {
 
-inline void copy(vectora::iterator begin, vectora::iterator end, vectora::iterator  it) 
+inline void copy(mutant_vectora::iterator begin, mutant_vectora::iterator end, mutant_vectora::iterator  it) 
 {
 	compressed_vector<Allele>::index_array_type::iterator it_src_begin = begin.getIndexIterator();
 	compressed_vector<Allele>::index_array_type::iterator iend   = end.getIndexIterator();
@@ -368,8 +396,7 @@ inline void copy(vectora::iterator begin, vectora::iterator end, vectora::iterat
 	}
 }
 
-
 }
-
 #  endif
+
 #endif

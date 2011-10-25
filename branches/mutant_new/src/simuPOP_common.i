@@ -46,7 +46,7 @@
 //#include "outputer.h"
 //#include "mating.h"
 //#include "tagger.h"
-//#include "stator.h"
+#include "stator.h"
 //#include "migrator.h"
 //#include "mutator.h"
 //#include "transmitter.h"
@@ -226,7 +226,7 @@ namespace std
 %ignore simuPOP::IndAlleleIterator;
 %ignore simuPOP::IndInfoIterator;
 
-///%newobject loadPopulation;
+%newobject loadPopulation;
 
 //%newobject simuPOP::Population::extract;
 ///%newobject simuPOP::Population::extractSubPops;
@@ -297,7 +297,7 @@ namespace std
 
 ///%include "mating.h"
 ///%include "simulator.h"
-///%include "stator.h"
+%include "stator.h"
 ///%include "outputer.h"
 %include "initializer.h"
 ///%include "tagger.h"

@@ -74,7 +74,8 @@ else:
             print('Support for openMP is turned off because version %s.%s.%s of gcc does not support this feature' % version)
             USE_OPENMP = False
     except:
-        print('Can not obtain version of gcc.')
+        print('Can not obtain version of gcc, and openMP is disable')
+        USE_OPENMP = False
 
 USE_ICC = False
 if distutils.sysconfig.get_config_var('CC') is not None:
@@ -207,7 +208,7 @@ HEADER_FILES = [
 #    'selector.h',
 #    'penetrance.h',
 #    'qtrait.h',
-#    'stator.h',
+    'stator.h',
 #    'mutator.h',
 #    'transmitter.h',
 #    'tagger.h',
@@ -230,7 +231,7 @@ SOURCE_FILES = [
 #    'selector.cpp',
 #    'penetrance.cpp',
 #    'qtrait.cpp',
-#    'stator.cpp',
+    'stator.cpp',
 #    'mutator.cpp',
 #    'transmitter.cpp',
 #    'tagger.cpp',

@@ -826,11 +826,11 @@ public:
 	   subpopulations will be respected.	Therefore, it is possible to access all alleles within an
 	   subpopulation	through such iterators.
 	 */
-//	IndAlleleIterator alleleIterator(size_t locus);
+	IndAlleleIterator alleleIterator(size_t locus);
 
 
 	/// CPPONLY allele begin, for given subPop
-//	IndAlleleIterator alleleIterator(size_t locus, size_t subPop);
+	IndAlleleIterator alleleIterator(size_t locus, size_t subPop);
 
 
 
@@ -1150,7 +1150,7 @@ public:
 	 *  This function only extract individuals from the present generation.
 	 *  <group>7-manipulate</group>
 	 */
-//	Population & extractSubPops(const subPopList & subPops = subPopList(), bool rearrange = false) const;
+	Population & extractSubPops(const subPopList & subPops = subPopList(), bool rearrange = false) const;
 
 
 	/// CPPONLY
@@ -1443,12 +1443,12 @@ public:
 	 *  function <tt>loadPopulation(filename)</tt>.
 	 *  <group>8-pop</group>
 	 */
-//	void save(const string & filename) const;
+	void save(const string & filename) const;
 
 	/** CPPONLY load Population from file \e filename
 	 *  <group>8-pop</group>
 	 */
-//	void load(const string & filename);
+	void load(const string & filename);
 
 public:
 	/** return variables of a population as a Python dictionary. If a valid
@@ -1516,9 +1516,9 @@ public:
 private:
 	friend class boost::serialization::access;
 
-//	void save(boost::archive::text_oarchive & ar, const unsigned int /* version */) const;
+	void save(boost::archive::text_oarchive & ar, const unsigned int /* version */) const;
 
-//	void load(boost::archive::text_iarchive & ar, const unsigned int /* version */);
+	void load(boost::archive::text_iarchive & ar, const unsigned int /* version */);
 
 	BOOST_SERIALIZATION_SPLIT_MEMBER();
 
@@ -1539,7 +1539,11 @@ private:
 	BaseVspSplitter * m_vspSplitter;
 
 	/// pool of genotypic information
+#ifdef MUTANTALLELE
+	mutant_vectora m_genotype;
+#else
 	vectora m_genotype;
+#endif
 
 	/// information
 	/// only in head node
@@ -1560,7 +1564,11 @@ private:
 	{
 		vectoru m_subPopSize;
 		vectorstr m_subPopNames;
+#ifdef MUTANTALLELE
+		mutant_vectora m_genotype;
+#else
 		vectora m_genotype;
+#endif
 		vectorf m_info;
 		vector<Individual> m_inds;
 		bool m_indOrdered;
@@ -1628,7 +1636,7 @@ public:
 
 /** load a population from a file saved by <tt>Population::save()</tt>.
  */
-//Population & loadPopulation(const string & file);
+Population & loadPopulation(const string & file);
 
 }
 
