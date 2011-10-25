@@ -70,11 +70,11 @@ else:
     output = ferr.readlines()[-1].decode('utf8')
     try:
         version = re.match('.*gcc version\s*(\d+).(\d+).(\d+).*', output).groups()
+        if int(version[0]) < 4 or int(version[1]) < 2:
+            print('Support for openMP is turned off because version %s.%s.%s of gcc does not support this feature' % version)
+            USE_OPENMP = False
     except:
         print('Can not obtain version of gcc.')
-    if int(version[0]) < 4 or int(version[1]) < 2:
-        print('Support for openMP is turned off because version %s.%s.%s of gcc does not support this feature' % version)
-        USE_OPENMP = False
 
 USE_ICC = False
 if distutils.sysconfig.get_config_var('CC') is not None:
