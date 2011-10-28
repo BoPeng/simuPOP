@@ -45,14 +45,14 @@
 #include "initializer.h"
 //#include "outputer.h"
 //#include "mating.h"
-//#include "tagger.h"
+#include "tagger.h"
 #include "stator.h"
 //#include "migrator.h"
 //#include "mutator.h"
 //#include "transmitter.h"
 //#include "selector.h"
 //#include "qtrait.h"
-//#include "penetrance.h"
+#include "penetrance.h"
 
 //#include "sandbox.h"
 
@@ -229,12 +229,12 @@ namespace std
 %newobject loadPopulation;
 
 //%newobject simuPOP::Population::extract;
-///%newobject simuPOP::Population::extractSubPops;
-///%newobject simuPOP::Population::extractIndividuals;
-///%newobject simuPOP::Population::clone;
-///%newobject simuPOP::Simulator::extract;
-///%newobject simuPOP::Simulator::clone;
-///%newobject simuPOP::BaseOperator::clone;
+%newobject simuPOP::Population::extractSubPops;
+%newobject simuPOP::Population::extractIndividuals;
+%newobject simuPOP::Population::clone;
+%newobject simuPOP::Simulator::extract;
+%newobject simuPOP::Simulator::clone;
+%newobject simuPOP::BaseOperator::clone;
 ///%newobject simuPOP::MatingScheme::clone;
 ///%newobject simuPOP::Stat::clone;
 
@@ -300,13 +300,13 @@ namespace std
 %include "stator.h"
 ///%include "outputer.h"
 %include "initializer.h"
-///%include "tagger.h"
+%include "tagger.h"
 ///%include "migrator.h"
 ///%include "mutator.h"
 ///%include "transmitter.h"
 ///%include "selector.h"
 ///%include "qtrait.h"
-///%include "penetrance.h"
+%include "penetrance.h"
 ///%include "pedigree.h"
 ///%include "sandbox.h"
 

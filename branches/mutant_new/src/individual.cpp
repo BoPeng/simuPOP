@@ -238,7 +238,7 @@ PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 }
 
 
-/*
+
 PyObject * Individual::genoAtLoci(const lociList & lociList)
 {
 	ssize_t ply = ploidy();
@@ -292,7 +292,7 @@ PyObject * Individual::genoAtLoci(const lociList & lociList)
 		PyTuple_SET_ITEM(genoObj, j, PyInt_FromLong(alleles[j]));
 	return genoObj;
 }
-*/
+
 
 void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 {

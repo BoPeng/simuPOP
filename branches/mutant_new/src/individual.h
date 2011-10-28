@@ -202,7 +202,7 @@ public:
 	 *  Return a Python object with alleles at specified loci. This function
 	 *  is usually used to collect alleles to send to a user-provided function.
 	 */
-//	PyObject * genoAtLoci(const lociList & loci);
+	PyObject * genoAtLoci(const lociList & loci);
 
 	/** Fill the genotype of an individual using a list of alleles \e geno.
 	 *  If parameters \e ploidy and/or \e chroms are specified, alleles will

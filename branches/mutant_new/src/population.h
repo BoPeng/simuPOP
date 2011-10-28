@@ -297,15 +297,14 @@ public:
 		std::swap(rhs.m_rep, m_rep);
 #ifdef MUTANTALLELE
 		// compressed_vectora must be setGenoPtr after swap
-/*
-		for (size_t i = 0; i < m_inds.size(); ++i) 
-			m_inds[i].setGenoPtr(&m_genotype);
-		for (size_t i = 0; i < rhs.m_inds.size(); ++i) 
-			rhs.m_inds[i].setGenoPtr(&rhs.m_genotype);
-*/
+		GenoIterator ptr = m_genotype.begin();
+		for (size_t i = 0; i < m_inds.size(); ++i, ptr += genoSize()) 
+			m_inds[i].setGenoPtr(ptr);
+		ptr = rhs.m_genotype.begin();
+		for (size_t i = 0; i < rhs.m_inds.size(); ++i, ptr += rhs.genoSize()) 
+			rhs.m_inds[i].setGenoPtr(ptr);
 #endif
 	}
-
 
 	/// destroy a population
 	~Population();
@@ -930,6 +929,41 @@ public:
 	}
 
 */
+	/// CPPONLY genoIterator --- beginning of individual ind.
+	GenoIterator indGenoBegin(size_t ind) const
+	{
+		CHECKRANGEIND(ind);
+		return m_inds[ind].genoBegin();
+	}
+
+
+	/// CPPONLY genoIterator -- end of individual ind.
+	GenoIterator indGenoEnd(size_t ind) const
+	{
+		CHECKRANGEIND(ind);
+		return m_inds[ind].genoEnd();
+	}
+
+
+	/// CPPONLY genoIterator --- beginning of individual ind.
+	GenoIterator indGenoBegin(size_t ind, size_t subPop) const
+	{
+		CHECKRANGESUBPOP(subPop);
+		CHECKRANGESUBPOPMEMBER(ind, subPop);
+
+		return m_inds[ subPopBegin(subPop) + ind].genoBegin();
+	}
+
+
+	/// CPPONLY genoIterator -- end of individual ind.
+	GenoIterator indGenoEnd(size_t ind, size_t subPop) const
+	{
+		CHECKRANGESUBPOP(subPop);
+		CHECKRANGESUBPOPMEMBER(ind, subPop);
+
+		return m_inds[ subPopBegin(subPop) + ind].genoEnd();
+	}
+
 #else
 	/// CPPONLY genoIterator --- beginning of individual ind.
 	GenoIterator indGenoBegin(size_t ind) const
@@ -1003,7 +1037,7 @@ public:
 	 *  kept. New subpopulations will have empty names.
 	 *  <group>7-manipulate</group>
 	 */
-//	void setSubPopByIndInfo(const string & field);
+	void setSubPopByIndInfo(const string & field);
 
 	/** Split subpopulation \e subPop into subpopulations of given \e sizes,
 	 *  which should add up to the size of subpopulation \e subPop or \e 1,
@@ -1071,7 +1105,7 @@ public:
 	 *  \e pop are kept.
 	 *  <group>7-manipulate</group>
 	 */
-//	void addIndFrom(const Population & pop);
+	void addIndFrom(const Population & pop);
 
 	/** Add chromosomes in population \e pop to the current population.
 	 *  population \e pop should have the same number of individuals as the
@@ -1131,7 +1165,7 @@ public:
 	 *  the current generation.
 	 *  <group>7-manipulate</group>
 	 */
-//	void resize(const uintList & sizes, bool propagate = false);
+	void resize(const uintList & sizes, bool propagate = false);
 
 
 	/** Extract a list of (virtual) subpopulations from a population and create
@@ -1154,7 +1188,7 @@ public:
 
 
 	/// CPPONLY
-//	Population & extractMarkedIndividuals() const;
+	Population & extractMarkedIndividuals() const;
 
 	/** Extract individuals with given absolute indexes (parameter \e indexes),
 	 *  IDs (parameter \e IDs, stored in information field \e idField,
@@ -1174,9 +1208,9 @@ public:
 	 *  error will be given if an invalid ID is encountered.
 	 *  <group>7-manipulate</group>
 	 */
-//	Population & extractIndividuals(const uintList & indexes = vectoru(),
-//		const floatList & IDs = vectorf(), const string & idField = "ind_id",
-//		PyObject * filter = NULL) const;
+	Population & extractIndividuals(const uintList & indexes = vectoru(),
+		const floatList & IDs = vectorf(), const string & idField = "ind_id",
+		PyObject * filter = NULL) const;
 
 	/** Extract subsets of individuals, loci and/or information fields from the
 	 *  current population and create a new population. By default, all
@@ -1195,8 +1229,8 @@ public:
 	 *  CPPONLY
 	 *  <group>7-manipulate</group>
 	 */
-//	Population & extract(const lociList & extractedLoci, const stringList & infoFieldList,
-//		const subPopList & subPops = subPopList(), const uintList & ancGens = uintList()) const;
+	Population & extract(const lociList & extractedLoci, const stringList & infoFieldList,
+		const subPopList & subPops = subPopList(), const uintList & ancGens = uintList()) const;
 
 	/** Remove \e loci (absolute indexes or names) and genotypes at these loci
 	 *  from the current population. Alternatively, a parameter \e keep can be
@@ -1222,8 +1256,8 @@ public:
 	 *  alleles for all subpopulations in all ancestral generations.
 	 *  <group>7-manipulate</group>
 	 */
-//	void recodeAlleles(const uintListFunc & alleles, const lociList & loci = lociList(),
-//		const stringMatrix & alleleNames = stringMatrix());
+	void recodeAlleles(const uintListFunc & alleles, const lociList & loci = lociList(),
+		const stringMatrix & alleleNames = stringMatrix());
 
 	/** Push population \e pop into the current population. Both populations
 	 *  should have the same genotypic structure. The current population is
