@@ -418,6 +418,19 @@ inline void copy(mutant_vectora::iterator begin, mutant_vectora::iterator end, m
 		*it = *itt;	
 }
 
+inline void fill(mutant_vectora::iterator begin, mutant_vectora::iterator end, Allele value) 
+{
+	if ( value == 0 )	
+        	for (mutant_vectora::iterator it = begin; it != end; ++it)
+			it.deleted();
+	else
+        	for (mutant_vectora::iterator it = begin; it != end; ++it)
+			*it = value;
+
+
+
+}
+
 }
 #  endif
 

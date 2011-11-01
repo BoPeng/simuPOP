@@ -1091,7 +1091,8 @@ string RangeSplitter::name(size_t subPop) const
 	return "Range [" + toStr(m_ranges[subPop][0]) + ", " +
 	       toStr(m_ranges[subPop][1]) + ")";
 }
-/*
+
+
 GenotypeSplitter::GenotypeSplitter(const lociList & loci,
 	const intMatrix & alleles, bool phase, const stringList & names)
 	: BaseVspSplitter(names), m_loci(loci), m_alleles(alleles.elems()),
@@ -1264,7 +1265,7 @@ bool GenotypeSplitter::matchSingle(const Individual * it, const vectori & allele
 	}
 	return false;
 }
-*/
+
 
 }     // namespce simuPOP
 

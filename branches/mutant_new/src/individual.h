@@ -177,7 +177,7 @@ public:
 	 *  invalid (e.g. second homologus copy of chromosome Y), '_' is returned.
 	 *  <group>1-allele</group>
 	 */
-//	string alleleChar(size_t idx, ssize_t ploidy = -1, ssize_t chrom = -1) const;
+	string alleleChar(size_t idx, ssize_t ploidy = -1, ssize_t chrom = -1) const;
 
 	/** set allele \e allele to a locus, using its absolute index \e idx.
 	 *  If a ploidy \e ploidy and/or a chromosome indexes are given, \e idx is
@@ -445,7 +445,7 @@ public:
 	//@{
 
 	/// CPPONLY
-//	void display(ostream & out, int width = 1, const vectoru & loci = vectoru());
+	void display(ostream & out, int width = 1, const vectoru & loci = vectoru());
 
 	//@}
 

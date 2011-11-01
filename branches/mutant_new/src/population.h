@@ -377,7 +377,7 @@ public:
 	 *  adapt the current population to anther population structure.
 	 *  population size might or might not be changed.
 	 */
-//	void fitGenoStru(size_t stru);
+	void fitGenoStru(size_t stru);
 
 	/** HIDDEN
 	 *  set population/subpopulation structure given subpopulation sizes
@@ -891,44 +891,6 @@ public:
 	}
 
 
-#ifdef MUTANTALLELE
-	/// CPPONLY genoIterator --- beginning of individual ind.
-/*
-	size_t indGenoBegin(size_t ind) const
-	{
-		CHECKRANGEIND(ind);
-		return m_inds[ind].genoBegin();
-	}
-
-
-	/// CPPONLY genoIterator -- end of individual ind.
-	size_t indGenoEnd(size_t ind) const
-	{
-		CHECKRANGEIND(ind);
-		return m_inds[ind].genoEnd();
-	}
-
-
-	/// CPPONLY genoIterator --- beginning of individual ind.
-	size_t indGenoBegin(size_t ind, size_t subPop) const
-	{
-		CHECKRANGESUBPOP(subPop);
-		CHECKRANGESUBPOPMEMBER(ind, subPop);
-
-		return m_inds[ subPopBegin(subPop) + ind].genoBegin();
-	}
-
-
-	/// CPPONLY genoIterator -- end of individual ind.
-	size_t indGenoEnd(size_t ind, size_t subPop) const
-	{
-		CHECKRANGESUBPOP(subPop);
-		CHECKRANGESUBPOPMEMBER(ind, subPop);
-
-		return m_inds[ subPopBegin(subPop) + ind].genoEnd();
-	}
-
-*/
 	/// CPPONLY genoIterator --- beginning of individual ind.
 	GenoIterator indGenoBegin(size_t ind) const
 	{
@@ -963,43 +925,6 @@ public:
 
 		return m_inds[ subPopBegin(subPop) + ind].genoEnd();
 	}
-
-#else
-	/// CPPONLY genoIterator --- beginning of individual ind.
-	GenoIterator indGenoBegin(size_t ind) const
-	{
-		CHECKRANGEIND(ind);
-		return m_inds[ind].genoBegin();
-	}
-
-
-	/// CPPONLY genoIterator -- end of individual ind.
-	GenoIterator indGenoEnd(size_t ind) const
-	{
-		CHECKRANGEIND(ind);
-		return m_inds[ind].genoEnd();
-	}
-
-
-	/// CPPONLY genoIterator --- beginning of individual ind.
-	GenoIterator indGenoBegin(size_t ind, size_t subPop) const
-	{
-		CHECKRANGESUBPOP(subPop);
-		CHECKRANGESUBPOPMEMBER(ind, subPop);
-
-		return m_inds[ subPopBegin(subPop) + ind].genoBegin();
-	}
-
-
-	/// CPPONLY genoIterator -- end of individual ind.
-	GenoIterator indGenoEnd(size_t ind, size_t subPop) const
-	{
-		CHECKRANGESUBPOP(subPop);
-		CHECKRANGESUBPOPMEMBER(ind, subPop);
-
-		return m_inds[ subPopBegin(subPop) + ind].genoEnd();
-	}
-#endif
 
 
 	/** Return an editable array of the genotype of all individuals in
@@ -1449,7 +1374,7 @@ public:
 	void setAncestralDepth(int depth);
 
 	/// CPPONLY remove certain ancestral generations
-//	void keepAncestralGens(const uintList & ancGens);
+	void keepAncestralGens(const uintList & ancGens);
 
 	/** Making ancestral generation \e idx (\c 0 for current generation, \c 1
 	 *  for parental generation, \c 2 for grand-parental generation, etc) the

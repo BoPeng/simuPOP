@@ -696,7 +696,7 @@ void Population::fitSubPopStru(const vectoru & newSubPopSizes,
 	}
 }
 
-/*
+
 void Population::fitGenoStru(size_t stru)
 {
 	// set genotypic structure to a population.
@@ -718,22 +718,15 @@ void Population::fitGenoStru(size_t stru)
 			m_info.resize(newInfoSize * popSize());
 		// reset structure
 		InfoIterator infoPtr = m_info.begin();
-#ifdef MUTANTALLELE
-		size_t idx = 0;
-		for (size_t i = 0; i < m_popSize; ++i, idx += newSize, infoPtr += newInfoSize) {
-			m_inds[i].setGenoStruIdx(stru);
-			m_inds[i].setGenoPtr(&m_genotype, idx);
-#else
 		GenoIterator ptr = m_genotype.begin();
 		for (size_t i = 0; i < m_popSize; ++i, ptr += newSize, infoPtr += newInfoSize) {
 			m_inds[i].setGenoStruIdx(stru);
 			m_inds[i].setGenoPtr(ptr);
-#endif
 			m_inds[i].setInfoPtr(infoPtr);
 		}
 	}
 }
-*/
+
 
 void Population::setSubPopStru(const vectoru & newSubPopSizes,
                                const vectorstr & newSubPopNames)
@@ -2856,7 +2849,7 @@ void Population::setAncestralDepth(int depth)
 	m_ancestralGens = depth;
 }
 
-/*
+
 void Population::keepAncestralGens(const uintList & ancGens)
 {
 	if (ancGens.allAvail())
@@ -2889,11 +2882,12 @@ void Population::keepAncestralGens(const uintList & ancGens)
 				pd1.m_inds.swap(pd.m_inds);
 				std::swap(pd1.m_indOrdered, pd.m_indOrdered);
 #ifdef MUTANTALLELE
-				// compressed_vectora must be setGenoPtr after swap
-				for (size_t i = 0; i < pd1.m_inds.size(); ++i) 
-					pd1.m_inds[i].setGenoPtr(&pd1.m_genotype);
-				for (size_t i = 0; i < pd.m_inds.size(); ++i) 
-					pd.m_inds[i].setGenoPtr(&pd.m_genotype);
+				GenoIterator ptr = pd1.m_genotype.begin();
+				for (size_t i = 0; i < pd1.m_inds.size(); ++i, ptr += pd1.m_genotype.size() / pd1.m_inds.size()) 
+					pd1.m_inds[i].setGenoPtr(ptr);
+				ptr = pd.m_genotype.begin();
+				for (size_t i = 0; i < pd.m_inds.size(); ++i, ptr += pd.m_genotype.size() / pd.m_inds.size()) 
+					pd.m_inds[i].setGenoPtr(ptr);
 #endif
 			}
 		}
@@ -2902,7 +2896,7 @@ void Population::keepAncestralGens(const uintList & ancGens)
 		m_ancestralPops.pop_back();
 	m_curAncestralGen = 0;
 }
-*/
+
 
 void Population::useAncestralGen(ssize_t idx)
 {

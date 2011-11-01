@@ -531,17 +531,10 @@ UINT ControlledOffspringGenerator::generateOffspring(Population & pop, Populatio
 	size_t totNumLoci = pop.totNumLoci();
 	// we know that scratch population has ordered linear genotype
 	for (size_t i = 0; i < nLoci; ++i) {
-#ifdef MUTANTALLELE
-		size_t ptr = itBegin->genoBegin();
-		for (size_t j = 0; j < numOff * pop.ploidy(); ++j, ptr += totNumLoci) {
-			if (m_flip[i] ? ((*itBegin->genoPtr())[ptr + loci[i]] != ToAllele(m_alleles[i]))
-				: ((*itBegin->genoPtr())[ptr + loci[i]] == ToAllele(m_alleles[i]))) {
-#else
 		GenoIterator ptr = itBegin->genoBegin();
 		for (size_t j = 0; j < numOff * pop.ploidy(); ++j, ptr += totNumLoci) {
 			if (m_flip[i] ? (*(ptr + loci[i]) != ToAllele(m_alleles[i]))
 				: (*(ptr + loci[i]) == ToAllele(m_alleles[i]))) {
-#endif
 				na[i]++;
 				hasAff = true;
 			}

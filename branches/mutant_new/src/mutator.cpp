@@ -62,21 +62,13 @@ void BaseMutator::fillContext(const Population & pop, IndAlleleIterator ptr, siz
 
 	for (size_t i = 0; i < cnt; ++i) {
 		if (locus >= beg + i)
-#ifdef MUTANTALLELE
-			m_context[i] = (*ptr.ptr())[ptr.idx() - (cnt - i)];
-#else
 			m_context[i] = *(ptr.ptr() - (cnt - i));
-#endif
 		else
 			m_context[i] = InvalidValue;
 	}
 	for (size_t i = 0; i < cnt; ++i) {
 		if (locus + i < end)
-#ifdef MUTANTALLELE
-			m_context[cnt + i] = (*ptr.ptr())[ptr.idx() + i + 1];
-#else
 			m_context[cnt + i] = *(ptr.ptr() + i + 1);
-#endif
 		else
 			m_context[cnt + i] = InvalidValue;
 	}
@@ -160,45 +152,23 @@ bool BaseMutator::apply(Population & pop) const
 					if (mapIn) {
 						if (numMapInAllele > 0) {
 							if (static_cast<size_t>(*ptr) < numMapInAllele)
-#ifdef MUTANTALLELE
-								assignGenotype(*ptr.ptr(), ptr.idx(), ToAllele(mapInList[*ptr]));
-#else
-								*ptr = ToAllele(mapInList[*ptr]);
-#endif
+								*ptr = ToAllele(mapInList[*ptr]); //assignGenotype
 						} else {
-#ifdef MUTANTALLELE
-							assignGenotype(*ptr.ptr(), ptr.idx(), ToAllele(mapInFunc(PyObj_As_Int, "(i)",
-									static_cast<int>(*ptr))));
-#else
 							*ptr = ToAllele(mapInFunc(PyObj_As_Int, "(i)",
-									static_cast<int>(*ptr)));
-#endif
+									static_cast<int>(*ptr))); //assignGenotype
 						}
 					}
 					if (!m_context.empty())
 						fillContext(pop, ptr, locus);
 					// The virtual mutate functions in derived operators will be called.
-#ifdef MUTANTALLELE
-					mutate(ptr, locus);
-#else
 					mutate(*ptr, locus);
-#endif
 					if (mapOut) {
 						if (numMapOutAllele > 0) {
 							if (static_cast<size_t>(*ptr) < numMapOutAllele)
-#ifdef MUTANTALLELE
-								assignGenotype(*ptr.ptr(), ptr.idx(), ToAllele(mapOutList[*ptr]));
-#else
-								*ptr = ToAllele(mapOutList[*ptr]);
-#endif
+								*ptr = ToAllele(mapOutList[*ptr]); //assignGenotype
 						} else {
-#ifdef MUTANTALLELE
-							assignGenotype(*ptr.ptr(), ptr.idx(), ToAllele(mapOutFunc(PyObj_As_Int, "(i)",
-									static_cast<int>(*ptr))));
-#else
 							*ptr = ToAllele(mapOutFunc(PyObj_As_Int, "(i)",
-									static_cast<int>(*ptr)));
-#endif
+									static_cast<int>(*ptr))); //assignGenotype
 						}
 					}
 					DBG_DO(DBG_MUTATOR, cerr << " is mutated to " << int(*ptr) << endl);
@@ -262,18 +232,6 @@ MatrixMutator::MatrixMutator(const floatMatrix & rate,
 	}
 }
 
-#ifdef MUTANTALLELE
-void MatrixMutator::mutate(IndAlleleIterator & ptr, size_t) const
-{
-	if (static_cast<size_t>((*ptr.ptr())[ptr.idx()]) >= m_sampler.size()) {
-		DBG_WARNIF(true, "Allele " + toStr(static_cast<size_t>((*ptr.ptr())[ptr.idx()]))
-			+ " will not be mutated because mutate rates are only defined for alleles 0 ... "
-			+ toStr(m_sampler.size() - 1));
-		return;
-	}
-	assignGenotype(*ptr.ptr(), ptr.idx(), ToAllele(m_sampler[(*ptr.ptr())[ptr.idx()]].draw()));
-}
-#else
 void MatrixMutator::mutate(AlleleRef allele, size_t) const
 {
 	if (static_cast<size_t>(allele) >= m_sampler.size()) {
@@ -284,26 +242,9 @@ void MatrixMutator::mutate(AlleleRef allele, size_t) const
 	}
 	allele = ToAllele(m_sampler[allele].draw());
 }
-#endif
 
 
 // mutate to a state other than current state with equal probability
-#ifdef MUTANTALLELE
-void KAlleleMutator::mutate(IndAlleleIterator & ptr, size_t) const
-{
-	if (static_cast<size_t>((*ptr.ptr())[ptr.idx()]) >= m_k) {
-		DBG_WARNIF(true, "Allele " + toStr(static_cast<size_t>((*ptr.ptr())[ptr.idx()]))
-			+ " will not be mutated because mutate rates are only defined for alleles 0 ... "
-			+ toStr(m_k - 1));
-		return;
-	}
-	Allele new_allele = static_cast<Allele>(getRNG().randInt(m_k - 1));
-	if (new_allele >= (*ptr.ptr())[ptr.idx()])
-		assignGenotype(*ptr.ptr(), ptr.idx(), new_allele + 1);
-	else
-		assignGenotype(*ptr.ptr(), ptr.idx(), new_allele);
-}
-#else
 void KAlleleMutator::mutate(AlleleRef allele, size_t) const
 {
 	if (static_cast<size_t>(allele) >= m_k) {
@@ -322,8 +263,6 @@ void KAlleleMutator::mutate(AlleleRef allele, size_t) const
 		allele = new_allele;
 #  endif
 }
-#endif
-
 
 
 StepwiseMutator::StepwiseMutator(const floatList & rates, const lociList & loci,
@@ -355,11 +294,7 @@ StepwiseMutator::StepwiseMutator(const floatList & rates, const lociList & loci,
 }
 
 
-#ifdef MUTANTALLELE
-void StepwiseMutator::mutate(IndAlleleIterator & ptr, size_t) const
-#else
 void StepwiseMutator::mutate(AlleleRef allele, size_t) const
-#endif
 {
 	UINT step = 1;
 
@@ -372,11 +307,7 @@ void StepwiseMutator::mutate(AlleleRef allele, size_t) const
 	} else {
 		DBG_ASSERT(m_mutStep.func().isValid(), ValueError,
 			"Invalid Python function for StepwiseMutator");
-#ifdef MUTANTALLELE
-		step = m_mutStep.func() (PyObj_As_Int, "(i)", static_cast<int>((*ptr.ptr())[ptr.idx()]));
-#else
 		step = m_mutStep.func() (PyObj_As_Int, "(i)", static_cast<int>(allele));
-#endif
 	}
 
 	// increase
@@ -384,17 +315,10 @@ void StepwiseMutator::mutate(AlleleRef allele, size_t) const
 #ifdef BINARYALLELE
 		allele = 1;
 #else
-#  ifdef MUTANTALLELE
-		if (static_cast<UINT>((*ptr.ptr())[ptr.idx()] + step) < m_maxAllele)
-			AlleleAdd((*ptr.ptr())[ptr.idx()], step);
-		else
-			assignGenotype(*ptr.ptr(), ptr.idx(), ToAllele(m_maxAllele));
-#  else
 		if (static_cast<UINT>(allele + step) < m_maxAllele)
 			AlleleAdd(allele, step);
 		else
-			allele = ToAllele(m_maxAllele);
-#  endif
+			allele = ToAllele(m_maxAllele); //assignGenotype
 #endif
 	}
 	// decrease
@@ -402,27 +326,16 @@ void StepwiseMutator::mutate(AlleleRef allele, size_t) const
 #ifdef BINARYALLELE
 		allele = 0;
 #else
-#  ifdef MUTANTALLELE
-		if ((*ptr.ptr())[ptr.idx()] > step)
-			AlleleMinus((*ptr.ptr())[ptr.idx()], step);
-		else
-			assignGenotype(*ptr.ptr(), ptr.idx(), 0);
-#  else
 		if (allele > step)
 			AlleleMinus(allele, step);
 		else
-			allele = 0;
-#  endif
+			allele = 0; //assignGenotype
 #endif
 	}
 }
 
 
-#ifdef MUTANTALLELE
-void PyMutator::mutate(IndAlleleIterator & ptr, size_t) const
-#else
 void PyMutator::mutate(AlleleRef allele, size_t) const
-#endif
 {
 	int resInt = 0;
 
@@ -431,11 +344,7 @@ void PyMutator::mutate(AlleleRef allele, size_t) const
 	for (size_t i = 0; i < m_func.numArgs(); ++i) {
 		const string & arg = m_func.arg(i);
 		if (arg == "allele")
-#ifdef MUTANTALLELE
-			PyTuple_SET_ITEM(args, i, PyInt_FromLong(static_cast<int>((*ptr.ptr())[ptr.idx()])));
-#else
 			PyTuple_SET_ITEM(args, i, PyInt_FromLong(static_cast<int>(allele)));
-#endif
 		else if (arg == "context") {
 			const vectoru & cnt = context();
 			PyObject * c = PyTuple_New(cnt.size());
@@ -457,39 +366,23 @@ void PyMutator::mutate(AlleleRef allele, size_t) const
 #else
 	DBG_ASSERT(static_cast<unsigned>(resInt) <= ModuleMaxAllele, ValueError,
 		"Mutated to an allele greater than maximum allowed allele value");
-#  ifdef MUTANTALLELE
-	assignGenotype(*ptr.ptr(), ptr.idx(), static_cast<Allele>(resInt));
-#  else
-	allele = static_cast<Allele>(resInt);
-#  endif
+	allele = static_cast<Allele>(resInt); //assignGenotype
 #endif
 }
 
 
-#ifdef MUTANTALLELE
-void MixedMutator::mutate(IndAlleleIterator & ptr, size_t locus) const
-#else
 void MixedMutator::mutate(AlleleRef allele, size_t locus) const
-#endif 
 {
 	size_t idx = m_sampler.draw();
 	const BaseMutator * mut = dynamic_cast<const BaseMutator *>(m_mutators[idx]);
 	double mu = mut->mutRate(locus);
 
 	if (mu == 1.0 || getRNG().randUniform() < mu)
-#ifdef MUTANTALLELE
-		mut->mutate(ptr, locus);
-#else
 		mut->mutate(allele, locus);
-#endif
 }
 
 
-#ifdef MUTANTALLELE
-void ContextMutator::mutate(IndAlleleIterator & ptr, size_t locus) const
-#else
 void ContextMutator::mutate(AlleleRef allele, size_t locus) const
-#endif
 {
 	const vectoru & alleles = context();
 
@@ -505,11 +398,7 @@ void ContextMutator::mutate(AlleleRef allele, size_t locus) const
 			DBG_DO(DBG_MUTATOR, cerr << "Context " << alleles << " mutator " << i << endl);
 			const BaseMutator * mut = dynamic_cast<const BaseMutator *>(m_mutators[i]);
 			if (getRNG().randUniform() < mut->mutRate(locus))
-#ifdef MUTANTALLELE
-				mut->mutate(ptr, locus);
-#else
 				mut->mutate(allele, locus);
-#endif
 			return;
 		}
 	}
@@ -517,11 +406,7 @@ void ContextMutator::mutate(AlleleRef allele, size_t locus) const
 		DBG_DO(DBG_MUTATOR, cerr << "No context found. Use last mutator." << endl);
 		const BaseMutator * mut = dynamic_cast<const BaseMutator *>(m_mutators[m_contexts.size()]);
 		if (getRNG().randUniform() < mut->mutRate(locus))
-#ifdef MUTANTALLELE
-			mut->mutate(ptr, locus);
-#else
 			mut->mutate(allele, locus);
-#endif
 	} else {
 		cerr << "Failed to find context " << alleles << endl;
 		throw RuntimeError("No match context is found and there is no default mutator");

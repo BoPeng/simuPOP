@@ -144,11 +144,7 @@ public:
 	double mutRate(size_t loc) const;
 
 	/// CPPONLY
-#ifdef MUTANTALLELE
-	virtual void mutate(IndAlleleIterator & /* allele */, size_t /* locus */) const
-#else
 	virtual void mutate(AlleleRef /* allele */, size_t /* locus */) const
-#endif
 	{
 		throw SystemError("You are not supposed to call this base mutator funciton.");
 	};
@@ -233,11 +229,7 @@ public:
 
 
 	/// CPPONLY
-#ifdef MUTANTALLELE
-	virtual void mutate(IndAlleleIterator & ptr, size_t locus) const;
-#else
 	virtual void mutate(AlleleRef allele, size_t locus) const;
-#endif
 
 	/// HIDDEN Deep copy of a \c MatrixMutator
 	virtual BaseOperator * clone() const
@@ -298,11 +290,7 @@ public:
 
 
 	/// CPPONLY
-#ifdef MUTANTALLELE
-	virtual void mutate(IndAlleleIterator & ptr, size_t locus) const;
-#else
 	virtual void mutate(AlleleRef allele, size_t locus) const;
-#endif
 
 	/// HIDDEN Deep copy of a \c KAlleleMutator
 	virtual BaseOperator * clone() const
@@ -375,11 +363,7 @@ public:
 
 	/// mutate according to the SMM model
 	/// CPPONLY
-#ifdef MUTANTALLELE
-	virtual void mutate(IndAlleleIterator & ptr, size_t locus) const;
-#else
 	virtual void mutate(AlleleRef allele, size_t locus) const;
-#endif
 
 	/// HIDDEN Deep copy of a \c StepwiseMutator
 	virtual BaseOperator * clone() const
@@ -448,11 +432,7 @@ public:
 
 
 	/// CPPONLY
-#ifdef MUTANTALLELE
-	virtual void mutate(IndAlleleIterator & ptr, size_t locus) const;
-#else
 	virtual void mutate(AlleleRef allele, size_t locus) const;
-#endif
 
 	/// HIDDEN
 	string describe(bool format = true) const
@@ -511,11 +491,7 @@ public:
 
 
 	/// CPPONLY
-#ifdef MUTANTALLELE
-	virtual void mutate(IndAlleleIterator & ptr, size_t locus) const;
-#else
 	virtual void mutate(AlleleRef allele, size_t locus) const;
-#endif
 
 	/// HIDDEN
 	string describe(bool format = true) const
@@ -590,11 +566,7 @@ public:
 
 
 	/// CPPONLY
-#ifdef MUTANTALLELE
-	virtual void mutate(IndAlleleIterator & ptr, size_t locus) const;
-#else
 	virtual void mutate(AlleleRef allele, size_t locus) const;
-#endif
 
 	/// HIDDEN
 	string describe(bool format = true) const
