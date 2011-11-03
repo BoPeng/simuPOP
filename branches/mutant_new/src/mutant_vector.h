@@ -27,9 +27,10 @@ class mutant_vector
 		mutant_vector(size_t size, const T& value)
 		{
 			if (value == 0)
-				m_container.resize(size, value);
+				m_container.resize(size);
 			else {
-				m_container.resize(size,size);
+				m_container.resize(size);
+				m_container.reserve(size);
 				for ( size_t i = 0; i < size; i++)
 					m_container.push_back(i, value);
 			}
@@ -49,22 +50,22 @@ class mutant_vector
 			return m_container.size();
 		}
 
-		mutant_vector<T>::iterator  begin() 
+		typename mutant_vector<T>::iterator  begin() 
 		{
 			return mutant_vector<T>::iterator(&m_container, 0); 
 		}
 
-		const mutant_vector<T>::iterator  begin() const
+		const typename mutant_vector<T>::iterator  begin() const
 		{
 			return mutant_vector<T>::iterator(const_cast<compressed_vector<T> *>(&m_container), 0); 
 		}
 
-		mutant_vector<T>::iterator  end() 
+		typename mutant_vector<T>::iterator  end() 
 		{
 			return mutant_vector<T>::iterator(&m_container, m_container.size()); 
 		}
 	
-		const mutant_vector<T>::iterator  end() const
+		const typename mutant_vector<T>::iterator  end() const
 		{
 			return mutant_vector<T>::iterator(const_cast<compressed_vector<T> *>(&m_container), m_container.size()); 
 		}
@@ -347,7 +348,7 @@ class mutant_vector
 
 		};
 
-		void erase (mutant_vector<T>::iterator begin,mutant_vector<T>::iterator end)
+		void erase (typename mutant_vector<T>::iterator begin,typename mutant_vector<T>::iterator end)
 		{
 			mutant_vector<T>::iterator it = begin;
 			mutant_vector<T>::iterator it2 = end;
@@ -364,7 +365,7 @@ class mutant_vector
 			m_container.resize(m_container.size() - (end.getIndex() - begin.getIndex()));
 		}
 
-		void insert(mutant_vector<T>::iterator it, mutant_vector<T>::iterator begin, mutant_vector<T>::iterator end)
+		void insert(typename mutant_vector<T>::iterator it, typename mutant_vector<T>::iterator begin, typename mutant_vector<T>::iterator end)
 		{
 			compressed_vector<size_t>::index_array_type::iterator it_src_begin = begin.getIndexIterator();
 			compressed_vector<size_t>::index_array_type::iterator iend   = end.getIndexIterator();
