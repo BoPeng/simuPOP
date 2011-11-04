@@ -214,7 +214,7 @@ HEADER_FILES = [
     'tagger.h',
     'pedigree.h',
     'virtualSubPop.h',
-#    'sandbox.h',
+    'sandbox.h',
 ]
 
 SOURCE_FILES = [
@@ -237,7 +237,7 @@ SOURCE_FILES = [
     'tagger.cpp',
     'pedigree.cpp',
     'virtualSubPop.cpp',
-#    'sandbox.cpp',
+    'sandbox.cpp',
 #    'main.cpp',
 ]
 

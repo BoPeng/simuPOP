@@ -300,13 +300,16 @@ void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 		"A valid ploidy index has to be specified if chrom is non-positive");
 	if (p < 0) {
 		CHECKRANGEGENOSIZE(idx);
-		*(m_genoPtr + idx) = allele; //assignGenotype
+#ifdef MUTANTALLELE
+		(m_genoPtr + idx).assign(allele);
+#else
+		*(m_genoPtr + idx) = allele;
+#endif
 	} else if (chrom < 0) {
 		CHECKRANGEABSLOCUS(idx);
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
 #ifdef MUTANTALLELE
-		//assignGenotype(*m_genoPtr, m_genoIdx + idx + p * totNumLoci(), allele);
-		*(m_genoPtr + idx + p * totNumLoci()) = allele;
+		(m_genoPtr + idx + p * totNumLoci()).assign(allele);
 #else
 		*(m_genoPtr + idx + p * totNumLoci()) = allele;
 #endif
@@ -315,10 +318,9 @@ void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
 		CHECKRANGECHROM(static_cast<size_t>(chrom));
 #ifdef MUTANTALLELE
-		//assignGenotype(*m_genoPtr, m_genoIdx + idx + p * totNumLoci() + chromBegin(chrom), allele);
-		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)) = allele;
+		(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)).assign(allele); 
 #else
-		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)) = allele;
+		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)) = allele; 
 #endif
 	}
 }

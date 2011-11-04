@@ -172,16 +172,16 @@ private:
 	SelCoef getFitnessValue(size_t mutant) const;
 
 
-	double randomSelAddFitness(compressed_vectora * genoPtr, size_t it, size_t it_end) const;
+	double randomSelAddFitness(GenoIterator it, GenoIterator it_end) const;
 
-	double randomSelExpFitness(compressed_vectora * genoPtr, size_t it, size_t it_end) const;
+	double randomSelExpFitness(GenoIterator it, GenoIterator it_end) const;
 
-	double randomSelMulFitnessExt(compressed_vectora * genoPtr, size_t it, size_t it_end) const;
+	// extended models does not assume additivity (h != 0.5)
+	double randomSelMulFitnessExt(GenoIterator it, GenoIterator it_end) const;
 
-	double randomSelAddFitnessExt(compressed_vectora * genoPtr, size_t it, size_t it_end) const;
+	double randomSelAddFitnessExt(GenoIterator it, GenoIterator it_end) const;
 
-	double randomSelExpFitnessExt(compressed_vectora * genoPtr, size_t it, size_t it_end) const;
-
+	double randomSelExpFitnessExt(GenoIterator it, GenoIterator it_end) const;
 
 private:
 	///

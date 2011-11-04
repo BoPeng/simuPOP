@@ -1,5 +1,6 @@
 #include "boost/numeric/ublas/vector_sparse.hpp"
 using boost::numeric::ublas::compressed_vector;
+using boost::numeric::ublas::sparse_vector_element;
 
 #ifndef _MUTANT_VECTOR_H
 #define _MUTANT_VECTOR_H
@@ -134,7 +135,7 @@ class mutant_vector
 				}
 */
 
-				iterator & operator= (const iterator & iter) 
+				iterator & operator = (const iterator & iter) 
 				{
 					m_container = iter.m_container;
 					m_index = iter.m_index;
@@ -186,6 +187,7 @@ class mutant_vector
 				{
 					return (*m_container)[m_index];
 				}
+				
 
 				typename compressed_vector<T>::const_reference operator* () const
 				{
@@ -331,7 +333,7 @@ class mutant_vector
 					return m_container->find(m_index);
 				}
 
-				size_t getIndex()
+				size_t getIndex ()
 				{
 					return m_index;
 				}
@@ -341,10 +343,19 @@ class mutant_vector
 					return m_container;	
 				}
 
-				void deleted()
+				void deleted ()
 				{
 					m_container->erase_element(m_index);
 				}	
+
+				void assign (typename compressed_vector<T>::const_reference value) 
+				{
+					if (value == 0u && (*m_container)[m_index] == 0u)
+						return;
+					else
+						(*m_container)[m_index] = value;
+				}
+
 
 		};
 
@@ -415,13 +426,17 @@ inline void copy(mutant_vectora::iterator begin, mutant_vectora::iterator end, m
 		(*it.getContainer())[ ((*it_src_begin + src_index) - src_begin) + dest_begin] = (*begin.getContainer())[*it_src_begin];
 	}*/
 	mutant_vectora::iterator itt = begin;
-	for (;itt != end; ++itt, ++it)
-		*it = *itt;	
+	for (;itt != end; ++itt, ++it) {
+		if (*it == 0u && *itt == 0u)
+			continue;
+		else
+			*it = *itt;	
+	}
 }
 
-inline void fill(mutant_vectora::iterator begin, mutant_vectora::iterator end, Allele value) 
+inline void fill (mutant_vectora::iterator begin, mutant_vectora::iterator end, Allele value) 
 {
-	if ( value == 0 )	
+	if (value == 0)	
         	for (mutant_vectora::iterator it = begin; it != end; ++it)
 			it.deleted();
 	else
@@ -429,6 +444,18 @@ inline void fill(mutant_vectora::iterator begin, mutant_vectora::iterator end, A
 			*it = value;
 
 
+
+}
+
+inline mutant_vectora::iterator find (mutant_vectora::iterator begin, mutant_vectora::iterator end, Allele value) 
+{
+	mutant_vectora::iterator it = begin;
+	for(; it != end; ++it)
+	{
+		if(*it == value)
+			return it;
+	}
+	return end;
 
 }
 
