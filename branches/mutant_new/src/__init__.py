@@ -246,7 +246,7 @@ __all__ = [
     'getRNG',
     #
     'closeOutput',
-#    'describeEvolProcess',
+    'describeEvolProcess',
     'loadPopulation',
     'loadPedigree',
     'moduleInfo',
