@@ -125,15 +125,6 @@ class mutant_vector
 				iterator () : m_container(NULL), m_index(0)
 				{
 				}
-/*
-				iterator (const iterator & other)
-				{
-					std::cout << "call copy constructor: " << m_index << std::endl;
-					m_container = other.m_container;
-					m_index = other.m_index;
-
-				}
-*/
 
 				iterator & operator = (const iterator & iter) 
 				{
@@ -383,10 +374,8 @@ class mutant_vector
 			size_t src_begin = *it_src_begin;
 			size_t src_index = *it_src_begin != begin.getIndex() ? *it_src_begin - begin.getIndex() : 0;	
 			size_t dest_begin = it.getIndex();
-			//size_t reserve_size = iend - it_src_begin;
 
 			m_container.resize(m_container.size() + (end.getIndex() - begin.getIndex()));
-			//m_container.reserve(m_container.nnz_capacity() + reserve_size);
 
 			for (;it_src_begin  != iend; ++it_src_begin) {
 				m_container.push_back(((*it_src_begin + src_index) - src_begin) + dest_begin, (*begin.getContainer())[*it_src_begin]);
@@ -417,14 +406,6 @@ namespace simuPOP
 
 inline void copy(mutant_vectora::iterator begin, mutant_vectora::iterator end, mutant_vectora::iterator  it) 
 {
-	/*compressed_vector<Allele>::index_array_type::iterator it_src_begin = begin.getIndexIterator();
-	compressed_vector<Allele>::index_array_type::iterator iend   = end.getIndexIterator();
-	size_t src_begin = *it_src_begin;
-	size_t src_index = *it_src_begin != begin.getIndex() ? *it_src_begin - begin.getIndex() : 0;	
-	size_t dest_begin = it.getIndex();
-	for (;it_src_begin  != iend; ++it_src_begin) {
-		(*it.getContainer())[ ((*it_src_begin + src_index) - src_begin) + dest_begin] = (*begin.getContainer())[*it_src_begin];
-	}*/
 	mutant_vectora::iterator itt = begin;
 	for (;itt != end; ++itt, ++it) {
 		if (*it == 0u && *itt == 0u)

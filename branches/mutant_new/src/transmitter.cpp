@@ -727,7 +727,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			if ((ignoreBegin < 0 || gt < static_cast<size_t>(ignoreBegin) || gt >= static_cast<size_t>(ignoreEnd)) &&
 			    (m_customizedBegin < 0 || gt < static_cast<size_t>(m_customizedBegin) || gt >= static_cast<size_t>(m_customizedEnd)))
 				// copy
-				off[gt] = cp[curCp][gt]; //assignGenotype
+				off[gt] = cp[curCp][gt];
 			// look ahead
 			if (convCount == 0) {             // conversion ...
 				if (forceFirstBegin > 0 && gt + 1 >= static_cast<size_t>(forceFirstBegin)
@@ -792,7 +792,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 		if (pos != Bernullitrials::npos) {
 			// first piece
 			for (; gt < m_recBeforeLoci[pos]; ++gt)
-				off[gt] = cp[curCp][gt]; //assignGenotype
+				off[gt] = cp[curCp][gt];
 			curCp = (curCp + 1) % 2;
 			if (m_debugOutput)
 				*m_debugOutput << ' ' << gt - 1;
@@ -811,7 +811,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 					convEnd = gt + convCount;
 					if (convEnd < gtEnd) {
 						for (; gt < convEnd; ++gt)
-							off[gt] = cp[curCp][gt]; //assignGenotype
+							off[gt] = cp[curCp][gt];
 						curCp = (curCp + 1) % 2;
 						if (m_debugOutput)
 							*m_debugOutput << ' ' << gt - 1;
@@ -821,7 +821,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 				}
 				// copy from the end of conversion to this recombination point
 				for (; gt < gtEnd; ++gt)
-					off[gt] = cp[curCp][gt]; //assignGenotype
+					off[gt] = cp[curCp][gt];
 				curCp = (curCp + 1) % 2;
 				if (m_debugOutput)
 					*m_debugOutput << ' ' << gt - 1;
@@ -842,14 +842,14 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			convEnd = gt + convCount;
 			if (convEnd < gtEnd) {
 				for (; gt < convEnd; ++gt)
-					off[gt] = cp[curCp][gt]; //assignGenotype
+					off[gt] = cp[curCp][gt];
 				curCp = (curCp + 1) % 2;
 				if (m_debugOutput)
 					*m_debugOutput << ' ' << gt - 1;
 			}
 		}
 		for (; gt < gtEnd; ++gt)
-			off[gt] = cp[curCp][gt]; //assignGenotype
+			off[gt] = cp[curCp][gt];
 #else
 		size_t gt = 0, gtEnd = 0;
 		size_t pos = bt.probFirstSucc();

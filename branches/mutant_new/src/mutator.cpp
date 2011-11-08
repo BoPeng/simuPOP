@@ -152,10 +152,10 @@ bool BaseMutator::apply(Population & pop) const
 					if (mapIn) {
 						if (numMapInAllele > 0) {
 							if (static_cast<size_t>(*ptr) < numMapInAllele)
-								*ptr = ToAllele(mapInList[*ptr]); //assignGenotype
+								*ptr = ToAllele(mapInList[*ptr]);
 						} else {
 							*ptr = ToAllele(mapInFunc(PyObj_As_Int, "(i)",
-									static_cast<int>(*ptr))); //assignGenotype
+									static_cast<int>(*ptr)));
 						}
 					}
 					if (!m_context.empty())
@@ -165,10 +165,10 @@ bool BaseMutator::apply(Population & pop) const
 					if (mapOut) {
 						if (numMapOutAllele > 0) {
 							if (static_cast<size_t>(*ptr) < numMapOutAllele)
-								*ptr = ToAllele(mapOutList[*ptr]); //assignGenotype
+								*ptr = ToAllele(mapOutList[*ptr]);
 						} else {
 							*ptr = ToAllele(mapOutFunc(PyObj_As_Int, "(i)",
-									static_cast<int>(*ptr))); //assignGenotype
+									static_cast<int>(*ptr)));
 						}
 					}
 					DBG_DO(DBG_MUTATOR, cerr << " is mutated to " << int(*ptr) << endl);
@@ -318,7 +318,7 @@ void StepwiseMutator::mutate(AlleleRef allele, size_t) const
 		if (static_cast<UINT>(allele + step) < m_maxAllele)
 			AlleleAdd(allele, step);
 		else
-			allele = ToAllele(m_maxAllele); //assignGenotype
+			allele = ToAllele(m_maxAllele);
 #endif
 	}
 	// decrease
@@ -329,7 +329,7 @@ void StepwiseMutator::mutate(AlleleRef allele, size_t) const
 		if (allele > step)
 			AlleleMinus(allele, step);
 		else
-			allele = 0; //assignGenotype
+			allele = 0;
 #endif
 	}
 }
@@ -366,7 +366,7 @@ void PyMutator::mutate(AlleleRef allele, size_t) const
 #else
 	DBG_ASSERT(static_cast<unsigned>(resInt) <= ModuleMaxAllele, ValueError,
 		"Mutated to an allele greater than maximum allowed allele value");
-	allele = static_cast<Allele>(resInt); //assignGenotype
+	allele = static_cast<Allele>(resInt);
 #endif
 }
 

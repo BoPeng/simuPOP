@@ -362,7 +362,7 @@ void Individual::setGenotype(const uintList & genoList, const uintList & ply, co
 			size_t chrom = chroms[j];
 			GenoIterator ptr = m_genoPtr + p * totNumLoci() + chromBegin(chrom);
 			for (size_t i = 0; i < numLoci(chrom); i++, ++idx)
-				*(ptr + i) = ToAllele(geno[idx % sz]); // assignGenotype
+				*(ptr + i) = ToAllele(geno[idx % sz]); 
 		}
 	}
 }
@@ -379,8 +379,8 @@ void Individual::swap(Individual & ind, bool swapContent)
 		Allele tmp;
 		for (size_t i = 0, iEnd = genoSize(); i < iEnd; i++) {
 			tmp = m_genoPtr[i];
-			m_genoPtr[i] = ind.m_genoPtr[i]; //assignGenotype
-			ind.m_genoPtr[i] = tmp; //assignGenotype
+			m_genoPtr[i] = ind.m_genoPtr[i];
+			ind.m_genoPtr[i] = tmp;
 		}
 	} else {
 		std::swap(m_genoPtr, ind.m_genoPtr);

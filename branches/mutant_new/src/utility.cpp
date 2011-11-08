@@ -4646,37 +4646,4 @@ void testCopyGenotype()
 #  endif
 #endif
 
-#ifdef MUTANTALLELE
-void eraseGenotype(compressed_vectora & cvector, const size_t begin, const size_t end)
-{
-	for(size_t i = begin; i < end; ++i)
-		cvector.erase_element(i);
-	if (end != cvector.size())
-		for(size_t i = end, j = begin; i < cvector.size(); ++i, ++j)
-			cvector[j] = cvector[i]; 
-	//  compressed vector doesn't decrease the size when it is erased.
-	//  we have to resize it. 
-	cvector.resize(cvector.size() - (end - begin));
-}
-
-
-void clearGenotype(compressed_vectora & cvector, const size_t begin, const size_t end)
-{
-	for(size_t i = begin; i < end; ++i)
-		cvector.erase_element(i);
-}
-
-
-size_t findGenotype(const compressed_vectora & cvector, const size_t begin, const size_t end, const Allele allele)
-{
-	for(size_t i = begin; i < end; ++i)
-	{
-		if(cvector[i] == allele)
-			return i;
-	}
-	return end;
-
-}
-#endif
-
 }
