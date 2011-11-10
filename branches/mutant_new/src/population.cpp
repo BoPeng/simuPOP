@@ -2916,6 +2916,15 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int /* 
 			data = 0;
 		}
 	}
+#elif defined MUTANTALLELE
+	size_t size = m_genotype.size();
+	ar & size;
+	ConstGenoIterator ptr = m_genotype.begin();
+	unsigned int data = 0;
+	for (size_t i = 0; i < size; ++i, ++ptr) {
+		data = *ptr;
+		ar & data;
+	}
 #else
 	ar & m_genotype;
 #endif
@@ -2946,6 +2955,15 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int /* 
 				ar & data;
 				data = 0;
 			}
+		}
+#elif defined MUTANTALLELE
+		size_t size = m_genotype.size();
+		ar & size;
+		ConstGenoIterator ptr = m_genotype.begin();
+		unsigned int data = 0;
+		for (size_t i = 0; i < size; ++i, ++ptr) {
+			data = *ptr;
+			ar & data;
 		}
 #else
 		ar & m_genotype;
@@ -2996,11 +3014,15 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 	// binary from mutant
 	} else if (ma == 256) {
 		DBG_DO(DBG_POPULATION, cerr << "Load bin from mutant. " << endl);
-		mutant_vector<unsigned int> tmpgeno;
-		ar & tmpgeno;
-		m_genotype.resize(tmpgeno.size());
-		for (size_t i = 0; i < tmpgeno.size(); ++i)
-			m_genotype[i] = ToAllele(tmpgeno[i]);
+		size_t size;
+		ar & size;
+		m_genotype.resize(size);
+		GenoIterator ptr = m_genotype.begin();
+		unsigned int data = 0;
+		for (size_t i = 0; i < size; ++i, ++ptr) {
+			ar & data;
+			*ptr = data;
+		}
 	// binary from others (long types)
 	} else {
 		DBG_DO(DBG_POPULATION, cerr << "Load bin from long. " << endl);
@@ -3029,24 +3051,38 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 		DBG_DO(DBG_POPULATION, cerr << "Load long from long. " << endl);
 #  ifdef MUTANTALLELE
 		// mutant from mutant
-		if (ma == 256)
-			ar & m_genotype;
+		if (ma == 256) {
+			size_t size;
+			ar & size;
+			m_genotype.resize(size);
+			GenoIterator ptr = m_genotype.begin();
+			unsigned int data = 0;
+			for (size_t i = 0; i < size; ++i, ++ptr) {
+				ar & data;
+				*ptr = data;
+			}
+		}
 		// mutant from long
 		else {
 			vectora data;
 			ar & data;
 			m_genotype.resize(data.size());
-			for (size_t i = 0; i < data.size(); ++i)
+			for (size_t i = 0; i < data.size(); ++i) {
 				m_genotype[i] = data[i];
+			}
 		}
 #  else
 		// long from mutant
 		if (ma == 256) {
-			mutant_vector<unsigned int> data;
-			ar & data;
-			m_genotype.resize(data.size());
-			for (size_t i = 0; i < data.size(); ++i)
-				m_genotype[i] = data[i];
+			size_t size;
+			ar & size;
+			m_genotype.resize(size);
+			GenoIterator ptr = m_genotype.begin();
+			unsigned int data = 0;
+			for (size_t i = 0; i < size; ++i, ++ptr) {
+				ar & data;
+				*ptr = data;
+			}
 		// long from long
 		} else
 			ar & m_genotype;

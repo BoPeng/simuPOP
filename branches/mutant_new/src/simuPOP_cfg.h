@@ -174,7 +174,7 @@ typedef vector<Allele>::reference AlleleRef;
 #    define AlleleMinus(a, b) (a) = ((b) == 0 ? (a) : ((b) > 0 ? false : true))
 #    define AlleleUnsigned(a) (static_cast<unsigned char>(a))
 // this is used to avoid a VC++ C4800 warning when converting int to bool
-#    define ToAllele(a)   ((a) != 0u)
+#    define ToAllele(a)   ((a) != 0)
 
 #  else
 #    ifndef MUTANTALLELE
