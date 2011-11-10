@@ -3048,10 +3048,10 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 		}
 	}                                                                                   // if ma == 1
 	else {                                                                              // for non-binary types, ...
-		DBG_DO(DBG_POPULATION, cerr << "Load long from long. " << endl);
 #  ifdef MUTANTALLELE
 		// mutant from mutant
 		if (ma == 256) {
+			DBG_DO(DBG_POPULATION, cerr << "Load mutant from mutant. " << endl);
 			size_t size;
 			ar & size;
 			m_genotype.resize(size);
@@ -3064,6 +3064,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 		}
 		// mutant from long
 		else {
+			DBG_DO(DBG_POPULATION, cerr << "Load mutant from long. " << endl);
 			vectora data;
 			ar & data;
 			m_genotype.resize(data.size());
@@ -3074,6 +3075,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 #  else
 		// long from mutant
 		if (ma == 256) {
+			DBG_DO(DBG_POPULATION, cerr << "Load long from mutant. " << endl);
 			size_t size;
 			ar & size;
 			m_genotype.resize(size);
@@ -3084,8 +3086,10 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 				*ptr = data;
 			}
 		// long from long
-		} else
+		} else {
+			DBG_DO(DBG_POPULATION, cerr << "Load long from long. " << endl);
 			ar & m_genotype;
+		}
 #  endif
 	}
 #endif
@@ -3152,6 +3156,19 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 					ar & data;
 				*ptr++ = (data & (1UL << i % 32)) != 0;
 			}
+		// binary from mutant
+		} else if (ma == 256) {
+			DBG_DO(DBG_POPULATION, cerr << "Load bin from mutant. " << endl);
+			size_t size;
+			ar & size;
+			pd.m_genotype.resize(size);
+			GenoIterator ptr = pd.m_genotype.begin();
+			unsigned int data = 0;
+			for (size_t i = 0; i < size; ++i, ++ptr) {
+				ar & data;
+				*ptr = data;
+			}
+		// binary from others (long types)
 		} else {
 			DBG_DO(DBG_POPULATION, cerr << "Load bin from long. " << endl);
 			// binary from long types
@@ -3175,9 +3192,49 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 				*ptr++ = (data & (1UL << i % 32)) != 0;
 			}
 		} else {
-			DBG_DO(DBG_POPULATION, cerr << "Load long from long. " << endl);
-			// long type from long type.
-			ar & pd.m_genotype;
+#  ifdef MUTANTALLELE
+			// mutant from mutant
+			if (ma == 256) {
+				DBG_DO(DBG_POPULATION, cerr << "Load mutant from mutant. " << endl);
+				size_t size;
+				ar & size;
+				pd.m_genotype.resize(size);
+				GenoIterator ptr = pd.m_genotype.begin();
+				unsigned int data = 0;
+				for (size_t i = 0; i < size; ++i, ++ptr) {
+					ar & data;
+					*ptr = data;
+				}
+			}
+			// mutant from long
+			else {
+				DBG_DO(DBG_POPULATION, cerr << "Load mutant from long. " << endl);
+				vectora data;
+				ar & data;
+				pd.m_genotype.resize(data.size());
+				for (size_t i = 0; i < data.size(); ++i) {
+					pd.m_genotype[i] = data[i];
+				}
+			}
+#  else
+			// long from mutant
+			if (ma == 256) {
+				DBG_DO(DBG_POPULATION, cerr << "Load long from mutant. " << endl);
+				size_t size;
+				ar & size;
+				pd.m_genotype.resize(size);
+				GenoIterator ptr = pd.m_genotype.begin();
+				unsigned int data = 0;
+				for (size_t i = 0; i < size; ++i, ++ptr) {
+					ar & data;
+					*ptr = data;
+				}
+			// long from long
+			} else {
+				DBG_DO(DBG_POPULATION, cerr << "Load long from long. " << endl);
+				ar & pd.m_genotype;
+			}
+#  endif
 		}
 #endif
 		ar & pd.m_info;
