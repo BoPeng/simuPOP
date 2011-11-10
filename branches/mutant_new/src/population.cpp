@@ -3021,7 +3021,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 		unsigned int data = 0;
 		for (size_t i = 0; i < size; ++i, ++ptr) {
 			ar & data;
-			*ptr = data;
+			*ptr = ToAllele(data);
 		}
 	// binary from others (long types)
 	} else {
@@ -3166,7 +3166,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 			unsigned int data = 0;
 			for (size_t i = 0; i < size; ++i, ++ptr) {
 				ar & data;
-				*ptr = data;
+				*ptr = ToAllele(data);
 			}
 		// binary from others (long types)
 		} else {
