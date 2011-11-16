@@ -41,7 +41,7 @@
 #          extra library directories, usually to boost library. The path separator is ; under windows.
 #
 #   targets: one of more of
-#      std op la laop ba baop: individual module
+#      std op la laop ba baop mu muop: individual module
 #      all = all modules
 #      default to all modules
 #      install: install specified targets
@@ -212,7 +212,7 @@ Alias('common', (std_common_lib, op_common_lib))
 # 
 targets = []
 exe_targets = []
-all_modu = ['std', 'op', 'la', 'laop', 'ba', 'baop']
+all_modu = ['std', 'op', 'la', 'laop', 'ba', 'baop', 'mu', 'muop']
 all_exe = [x + '_exe' for x in all_modu]
 for key in all_modu:
     if key in BUILD_TARGETS:
