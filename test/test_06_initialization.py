@@ -13,7 +13,7 @@ from simuOpt import setOptions
 setOptions(quiet=True)
 new_argv = []
 for arg in sys.argv:
-    if arg in ['short', 'long', 'binary']:
+    if arg in ['short', 'long', 'binary', 'mutant']:
         setOptions(alleleType = arg)
     elif arg.startswith('-j'):
         setOptions(numThreads = int(arg[2:]))
@@ -120,7 +120,6 @@ class TestInitialization(unittest.TestCase):
         for ind in pop.individuals():
             if ind.sex() == MALE:
                 count += 1
-        print(count)
         self.assertTrue(count / 1500. > 0.25 , 
             "Expression count / 1500. (test value %f) be greater than to 0.25 . This test may occasionally fail due to the randomness of outcome." % (count / 1500.))
         self.assertTrue(count /1500. < 0.35, 
