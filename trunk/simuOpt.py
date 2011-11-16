@@ -119,10 +119,10 @@ if '--optimized' in sys.argv or os.getenv('SIMUOPTIMIZED') is not None:
     simuOptions['Optimized'] = True
 
 # AlleleType: from environmental variable SIMUALLELETYPE
-if os.getenv('SIMUALLELETYPE') in ['short', 'long', 'binary']:
+if os.getenv('SIMUALLELETYPE') in ['short', 'long', 'binary','mutant']:
    simuOptions['AlleleType'] = os.getenv('SIMUALLELETYPE')
 elif os.getenv('SIMUALLELETYPE') is not None:
-    print 'Environmental variable SIMUALLELETYPE can only be short, long, or binary'
+    print 'Environmental variable SIMUALLELETYPE can only be short, long, binary, or mutant'
 
 # Debug: from environmental variable SIMUDEBUG
 if os.getenv('SIMUDEBUG') is not None:
@@ -162,8 +162,8 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
     load, and how the module should be loaded.
 
     alleleType
-        Use the standard, binary or long allele version of the simuPOP module
-        if ``alleleType`` is set to 'short', 'binary', or 'long' respectively.
+        Use the standard, binary,long or mutant allele version of the simuPOP module
+        if ``alleleType`` is set to 'short', 'binary', 'long', or 'mutant respectively.
         If this parameter is not set, this function will try to get its value
         from environmental variable ``SIMUALLELETYPE``. The standard (short)
         module will be used if the environmental variable is not defined.
@@ -226,10 +226,10 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
     elif optimized is not None:
         raise TypeError('Parameter optimized can be either True or False.')
     # Allele type
-    if alleleType in ['long', 'binary', 'short']:
+    if alleleType in ['long', 'binary', 'short', 'mutant']:
         simuOptions['AlleleType'] = alleleType
     elif alleleType is not None:
-        raise TypeError('Parameter alleleType can be either short, long, or binary.')
+        raise TypeError('Parameter alleleType can be either short, long, binary, or mutant.')
     # Graphical toolkit
     if gui in [True, False, 'wxPython', 'Tkinter', 'batch']:
         simuOptions['GUI'] = gui
