@@ -458,7 +458,7 @@ class TestHeteroMating(PerformanceTest):
 
 class TestPedigreeMating(PerformanceTest):
 
-    def __init__(self, logger, repeats=5000):
+    def __init__(self, logger, repeats=5):
         PerformanceTest.__init__(self, 'PedigreeMating, results are time (not processor time) to apply operator for %d generations.' % int(repeats),
             logger)
         self.repeats = repeats
@@ -659,7 +659,7 @@ class TestInitGenotypeCase1(PerformanceTest):
 
     def run(self):
         # overall running case
-        return self.sequentialRun(size=[100000, [10000]*10])
+        return self.sequentialRun(size=[10000, [1000]*10])
 
     def _run(self, size):
         # single test case
@@ -670,22 +670,42 @@ class TestInitGenotypeCase1(PerformanceTest):
         return t.timeit(number=self.repeats)
 
 class TestInitGenotypeCase2(PerformanceTest):
-    def __init__(self, logger, repeats=10):
+    def __init__(self, logger, repeats=1):
         PerformanceTest.__init__(self, 'InitGenotype case 2, results are time (not processor time) to apply operator for %d times.' % int(repeats),
             logger)
         self.repeats = repeats
 
     def run(self):
         # overall running case
-        return self.sequentialRun(size=[100000, [10000]*10])
+        return self.sequentialRun(size=[1000, [100]*10])
 
     def _run(self, size):
         # single test case
         t = timeit.Timer(
             setup = 'from __main__ import Population, initGenotype\n'
-                'pop = Population(size=%s,loci=1000)' % (size),
+                'pop = Population(size=%s,loci=100)' % (size),
             stmt = 'initGenotype(pop,prop=[.2,.8])') 
         return t.timeit(number=self.repeats)
+
+class TestInitGenotypeSparseCase2(PerformanceTest):
+    def __init__(self, logger, repeats=1):
+        PerformanceTest.__init__(self, 'InitGenotype case 2, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[10000, [1000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, initGenotype\n'
+                'pop = Population(size=%s,loci=100)' % (size),
+            stmt = 'initGenotype(pop,prop=[.999,.001])') 
+        return t.timeit(number=self.repeats)
+
+
 
 class TestInitGenotypeCase3(PerformanceTest):
     def __init__(self, logger, repeats=10):
@@ -695,15 +715,34 @@ class TestInitGenotypeCase3(PerformanceTest):
 
     def run(self):
         # overall running case
-        return self.sequentialRun(size=[100000, [10000]*10])
+        return self.sequentialRun(size=[1000, [100]*10])
 
     def _run(self, size):
         # single test case
         t = timeit.Timer(
             setup = 'from __main__ import Population, initGenotype\n'
-                'pop = Population(size=%s,loci=1000)' % (size),
+                'pop = Population(size=%s,loci=100)' % (size),
             stmt = 'initGenotype(pop,haplotypes=[[0,0,1,1],[1,1,0,0]], prop=[.2,.8])')
         return t.timeit(number=self.repeats)
+
+class TestInitGenotypeSparseCase3(PerformanceTest):
+    def __init__(self, logger, repeats=10):
+        PerformanceTest.__init__(self, 'InitGenotype case 3, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[10000, [1000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, initGenotype\n'
+                'pop = Population(size=%s,loci=100)' % (size),
+            stmt = 'initGenotype(pop,haplotypes=[[0,0,1,1],[1,1,0,0]], prop=[.999,.001])')
+        return t.timeit(number=self.repeats)
+
 
 class TestInitGenotypeCase4(PerformanceTest):
     def __init__(self, logger, repeats=10):
@@ -713,15 +752,35 @@ class TestInitGenotypeCase4(PerformanceTest):
 
     def run(self):
         # overall running case
-        return self.sequentialRun(size=[100000, [10000]*10])
+        return self.sequentialRun(size=[1000, [100]*10])
 
     def _run(self, size):
         # single test case
         t = timeit.Timer(
             setup = 'from __main__ import Population, initGenotype\n'
-                'pop = Population(size=%s,loci=1000)' % (size),
-            stmt = 'initGenotype(pop,freq=[0.5,0.5])')
+                'pop = Population(size=%s,loci=100)' % (size),
+            stmt = 'initGenotype(pop,freq=[.2,.8])')
         return t.timeit(number=self.repeats)
+
+class TestInitGenotypeSparseCase4(PerformanceTest):
+    def __init__(self, logger, repeats=10):
+        PerformanceTest.__init__(self, 'InitGenotype case 4, results are time (not processor time) to apply operator for %d times.' % int(repeats),
+            logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(size=[10000, [1000]*10])
+
+    def _run(self, size):
+        # single test case
+        t = timeit.Timer(
+            setup = 'from __main__ import Population, initGenotype\n'
+                'pop = Population(size=%s,loci=100)' % (size),
+            stmt = 'initGenotype(pop,freq=[.999,.001])')
+        return t.timeit(number=self.repeats)
+
+
 
 class TestInitSex(PerformanceTest):
     def __init__(self, logger, repeats=1000):
@@ -1213,7 +1272,7 @@ def analyze(test):
         for stat in range(9, len(pfRecords[0])):
             print 'STAT %2d' % (stat - 8),
             # each stat, for different revisions, and type
-            for type in ['short', 'long', 'binary']:
+            for type in ['short', 'long', 'binary', 'mutant']:
                 print '|' if len(revs) < 4 else '\n %3s|' % type[0],
                 for rev in revs:
                     one = [rec for rec in pfRecords if rec[8] == type and rec[7] == rev]
@@ -1253,7 +1312,7 @@ if __name__ == '__main__':
     # Perform tests
     #
     alleleType = 'all'
-    # allele type can be specified by --alleleType=long/short/binary
+    # allele type can be specified by --alleleType=long/short/binary/mutant
     if '-b' in sys.argv:
         alleleType = 'binary'
         sys.argv.remove('-b')
@@ -1263,9 +1322,12 @@ if __name__ == '__main__':
     elif '-l' in sys.argv:
         alleleType = 'long'
         sys.argv.remove('-l')
+    elif '-m' in sys.argv:
+        alleleType = 'mutant'
+        sys.argv.remove('-m')
     #
     if alleleType == 'all':
-        for t in ['s', 'l', 'b']:
+        for t in ['s', 'l', 'b', 'm']:
             ret = subprocess.call([sys.executable, sys.argv[0], '-%s' % t] + sys.argv[1:])
             if ret != 0:  # if crash or killed
                 print 'Error: A non-zero return value is returned for module %s' % t

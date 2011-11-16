@@ -14,7 +14,7 @@ from simuOpt import setOptions
 setOptions(quiet=True)
 new_argv = []
 for arg in sys.argv:
-    if arg in ['short', 'long', 'binary']:
+    if arg in ['short', 'long', 'binary', 'mutant']:
         setOptions(alleleType = arg)
     elif arg.startswith('-j'):
         setOptions(numThreads = int(arg[2:]))
