@@ -108,6 +108,7 @@ class mutant_vector
 				
 				iterator (compressed_vector<T> * c) : m_container(c), m_index(0)
 				{
+				// m_com_index is the smallest index of mutants (or -1 is nothing is there)
 				}
 
 				iterator (const compressed_vector<T> * c) : m_container(c), m_index(0)
@@ -116,6 +117,7 @@ class mutant_vector
 
 				iterator (compressed_vector<T> * c, size_t index) : m_container(c), m_index(index)
 				{
+				// find the smallest m_com_index  that is larger than index
 				}
 
 				iterator (const compressed_vector<T> * c, size_t index) : m_container(c), m_index(index)
@@ -176,6 +178,13 @@ class mutant_vector
 
 				typename compressed_vector<T>::reference operator* () 
 				{
+					// 
+					// 
+					// something like:
+					//  if m_index < m_con_index
+					//     return 0
+					//  else
+					//     return *m_con_index
 					return (*m_container)[m_index];
 				}
 				
@@ -198,7 +207,12 @@ class mutant_vector
 				/// CPPONLY pre-incrment return by-reference 
 				iterator & operator++ () 
 				{
+					// if m_index points to a real mutant, ++ will be compared with the next one.
+					//
+					// if m_index == *m_con_index
+					//     ++ m_con_index;
 					++m_index;
+					//
 					return *this;
 				}
 
