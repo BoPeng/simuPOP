@@ -1243,6 +1243,29 @@ class TestIteratingVSPs(PerformanceTest):
         return t.timeit(number=self.repeats)
 
 
+def getTestGenoIterPop(popSize, genoSize, numMutants):
+    pop = Population(size=popSize, loci=genoSize)
+    for i in range(numMutants):
+        ind = pop.individual(random.randint(0, popSize-1))
+        ind.setAllele(1, random.randint(0, genoSize-1), 0, 0)
+    return pop
+        
+class TestGenoIterator(PerformanceTest):
+    def __init__(self, logger, repeats=100):
+        PerformanceTest.__init__(self, 'Test the performance of iterating through genotypes'
+            'The results are time of iterating for %d times' % repeats, logger)
+        self.repeats = repeats
+
+    def run(self):
+        # overall running case
+        return self.sequentialRun(args=[(10000, 10, 100), (10000, 100, 100), (1000, 1000, 10000)])
+
+    def _run(self, args):
+        t = timeit.Timer(stmt='for g in pop.genotype():\n    pass',
+            setup='from __main__ import getTestGenoIterPop\n'
+            'pop=getTestGenoIterPop(%d, %d, %d)' % (args[0], args[1], args[2]))
+        return t.timeit(number=self.repeats)
+
 def analyze(test):
     '''Output performance statistics for a test
     '''
