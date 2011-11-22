@@ -158,7 +158,7 @@ def _swig_repr(self):
 %include "std_map.i"
 
 %include "config.h"
-%include "mutant_vector.h"
+//%include "mutant_vector.h"
 %include "simuPOP_cfg.h"
 
 typedef long ssize_t;

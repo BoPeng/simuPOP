@@ -8,6 +8,7 @@ using boost::numeric::ublas::sparse_vector_element;
 
 namespace simuPOP {
 
+/// CPPONLY
 template <class T>
 class mutant_vector
 {
@@ -432,8 +433,8 @@ class mutant_vector
 
 		void erase (typename mutant_vector<T>::iterator begin,typename mutant_vector<T>::iterator end)
 		{
-			mutant_vector<T>::iterator it = begin;
-			mutant_vector<T>::iterator it2 = end;
+			typename mutant_vector<T>::iterator it = begin;
+			typename mutant_vector<T>::iterator it2 = end;
 			for(;it != end; ++it) {
 				it.deleted();
 			}
