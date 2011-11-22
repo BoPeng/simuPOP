@@ -37,32 +37,22 @@ bool RevertFixedSites::apply(Population & pop) const
 
 	RawIndIterator it = pop.rawIndBegin();
 	RawIndIterator it_end = pop.rawIndEnd();
-	// FIXME
-	// here we are getting all 'mutant'...
-	std::set<Allele> commonAlleles(it->genoBegin(0), it->genoEnd(0));
-	// zero is the padding one, so should be removed.
-	commonAlleles.erase(0);
-	/*
-	For the new mutant module, it should be something like
+	std::set<Allele> commonAlleles(it->genoBegin(0).getIndexIterator(), it->genoEnd(0).getIndexIterator());
 
-	std::set<ULONG> it->genotype index (location with allele)
-	*/
 	if (commonAlleles.size() == 0)
 		return true;
 
 	for (; it != it_end; ++it) {
 		// common = commonAlleles & geno0
 		std::set<Allele> common;
-		// ALL mutans in the first ploidy
-		// FIXME, get the mutant location
-		std::set<Allele> alleles1(it->genoBegin(0), it->genoEnd(0));
+		std::set<Allele> alleles1(it->genoBegin(0).getIndexIterator(), it->genoEnd(0).getIndexIterator());
 		set_intersection(commonAlleles.begin(),
 			commonAlleles.end(), alleles1.begin(), alleles1.end(),
 			std::inserter(common, common.begin()));
 		// commonAlleles = common & geno1
 		commonAlleles.clear();
 		// ALl mutants in the second ploidy
-		std::set<Allele> alleles2(it->genoBegin(1), it->genoEnd(1));
+		std::set<Allele> alleles2(it->genoBegin(1).getIndexIterator(), it->genoEnd(1).getIndexIterator());
 		set_intersection(common.begin(),
 			common.end(), alleles2.begin(), alleles2.end(),
 			std::inserter(commonAlleles, commonAlleles.begin()));
@@ -83,16 +73,25 @@ bool RevertFixedSites::apply(Population & pop) const
 	for (; it != it_end; ++it) {
 		for (size_t p = 0; p < 2; ++p) {
 			// FIXME: get old alleles
-			std::set<Allele> old_alleles(it->genoBegin(p), it->genoEnd(p));
-			old_alleles.erase(0);
+			std::set<Allele> old_alleles(it->genoBegin(p).getIndexIterator(), it->genoEnd(p).getIndexIterator());
+			//old_alleles.erase(0);
 			// FIXME: fill with all zero, do not have to do that for mutant type
-			std::fill(new_alleles.begin(), new_alleles.end(), Allele(0));
+			//std::fill(new_alleles.begin(), new_alleles.end(), Allele(0));
 			set_difference(old_alleles.begin(), old_alleles.end(),
 				commonAlleles.begin(), commonAlleles.end(), new_alleles.begin());
                         GenoIterator ptr = it->genoBegin(p);
 			// FIXME: basically, you need to remove those mutants.
-			for (vectora::iterator new_it = new_alleles.begin(); new_it != new_alleles.end(); ++new_it, ++ptr) 
-				*ptr = *new_it;
+			for (vectora::iterator new_it = new_alleles.begin(); new_it != new_alleles.end(); ++new_it, ++ptr) {
+                                if (*new_it == 0u && *ptr == 0u)
+                                        continue;
+                                else if (*new_it == 0u && *ptr != 0u)
+                                        ptr.deleted();
+                                else
+				        *ptr = *new_it;
+                        }
+                        
+			//std::copy(new_alleles.begin(), new_alleles.end(),
+		        //	it->genoBegin(p));
 		}
 	}
 	return true;
@@ -195,26 +194,12 @@ MutSpaceSelector::SelCoef MutSpaceSelector::getFitnessValue(size_t mutant) const
 double MutSpaceSelector::randomSelAddFitness(GenoIterator it, GenoIterator it_end) const
 {
 	double s = 0;
-
-	for (; it != it_end; ++it) {
-	// FIXME: the old implementation, *it is either 0 (padding), or location of
-	// mutants.
-	// I suppose you should do something like
-
-	// for (; it != it_end; it->nextMutant()) {
-	//    loc = it->pos()
-	// or
-
-	// loc_it = MutantIterator(it);
-	// for (; loc != loc_end; ++loc)
-	//    *loc is the location 
-    // this will skip 0's
-		
-	// and then
-	// replace *it by the location	
-		SelMap::iterator sit = m_selFactory.find(static_cast<unsigned int>(*it));
+        compressed_vector<size_t>::index_array_type::iterator index_it = it.getIndexIterator();
+        compressed_vector<size_t>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
+	for (; index_it != index_it_end; ++index_it) {
+		SelMap::iterator sit = m_selFactory.find(static_cast<unsigned int>(*index_it));
 		if (sit == m_selFactory.end())
-			s += getFitnessValue(*it).first / 2.;
+			s += getFitnessValue(*index_it).first / 2.;
 		else
 			s += sit->second.first / 2;
 	}
@@ -226,14 +211,14 @@ double MutSpaceSelector::randomSelExpFitness(GenoIterator it, GenoIterator it_en
 {
 	double s = 0;
 
-	// FIXME, 
-	//
-	for (; it != it_end; ++it) {
-		if (*it == 0u)
+        compressed_vector<size_t>::index_array_type::iterator index_it = it.getIndexIterator();
+        compressed_vector<size_t>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
+	for (; index_it != index_it_end; ++index_it) {
+		if (*index_it == 0)
 			continue;
-		SelMap::iterator sit = m_selFactory.find(static_cast<unsigned int>(*it));
+		SelMap::iterator sit = m_selFactory.find(static_cast<unsigned int>(*index_it));
 		if (sit == m_selFactory.end())
-			s += getFitnessValue(*it).first / 2.;
+			s += getFitnessValue(*index_it).first / 2.;
 		else
 			s += sit->second.first / 2;
 	}
@@ -244,14 +229,14 @@ double MutSpaceSelector::randomSelExpFitness(GenoIterator it, GenoIterator it_en
 double MutSpaceSelector::randomSelMulFitnessExt(GenoIterator it, GenoIterator it_end) const
 {
 	MutCounter cnt;
-
-	// FIXME
-	for (; it != it_end; ++it) {
-		if (*it == 0u)
+        compressed_vector<size_t>::index_array_type::iterator index_it = it.getIndexIterator();
+        compressed_vector<size_t>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
+	for (; index_it != index_it_end; ++index_it) {
+		if (*index_it == 0)
 			continue;
-		MutCounter::iterator mit = cnt.find(*it);
+		MutCounter::iterator mit = cnt.find(*index_it);
 		if (mit == cnt.end())
-			cnt[*it] = 1;
+			cnt[*index_it] = 1;
 		else
 			++mit->second;
 	}
@@ -281,14 +266,14 @@ double MutSpaceSelector::randomSelMulFitnessExt(GenoIterator it, GenoIterator it
 double MutSpaceSelector::randomSelAddFitnessExt(GenoIterator it, GenoIterator it_end) const
 {
 	MutCounter cnt;
-	
-	// FIXME
-	for (; it != it_end; ++it) {
-		if (*it == 0u)
+        compressed_vector<size_t>::index_array_type::iterator index_it = it.getIndexIterator();
+        compressed_vector<size_t>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
+	for (; index_it != index_it_end; ++index_it) {
+		if (*index_it == 0)
 			continue;
-		MutCounter::iterator mit = cnt.find(*it);
+		MutCounter::iterator mit = cnt.find(*index_it);
 		if (mit == cnt.end())
-			cnt[*it] = 1;
+			cnt[*index_it] = 1;
 		else
 			++mit->second;
 	}
@@ -318,13 +303,14 @@ double MutSpaceSelector::randomSelAddFitnessExt(GenoIterator it, GenoIterator it
 double MutSpaceSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it_end) const
 {
 	MutCounter cnt;
-	// FIXME
-	for (; it != it_end; ++it) {
-		if (*it == 0u)
+        compressed_vector<size_t>::index_array_type::iterator index_it = it.getIndexIterator();
+        compressed_vector<size_t>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
+	for (; index_it != index_it_end; ++index_it) {
+		if (*index_it == 0)
 			continue;
-		MutCounter::iterator mit = cnt.find(*it);
+		MutCounter::iterator mit = cnt.find(*index_it);
 		if (mit == cnt.end())
-			cnt[*it] = 1;
+			cnt[*index_it] = 1;
 		else
 			++mit->second;
 	}
@@ -392,12 +378,12 @@ bool MutSpaceMutator::apply(Population & pop) const
 {
 	// FIXME:
 	// 
-	//const matrixi & ranges = m_ranges.elems();
-	//vectoru width(ranges.size());
+	const matrixi & ranges = m_ranges.elems();
+	vectoru width(ranges.size());
 
-	//width[0] = ranges[0][1] - ranges[0][0];
-	//for (size_t i = 1; i < width.size(); ++i)
-	//	width[i] = ranges[i][1] - ranges[i][0] + width[i - 1];
+	width[0] = ranges[0][1] - ranges[0][0];
+	for (size_t i = 1; i < width.size(); ++i)
+		width[i] = ranges[i][1] - ranges[i][0] + width[i - 1];
 	// 
 	// FIXME: width[i] is the accumulative number of loci on each chromosome
 	//
@@ -405,10 +391,12 @@ bool MutSpaceMutator::apply(Population & pop) const
 	// width[i] = 0, 500, 1500, 35000
 	//
 	//  ploidy with = totalNumLoci()
-	size_t ploidyWidth = width.back();
+	//size_t ploidyWidth = width.back();
 	//
-	// indWitdh = pop.genoSize()
-	size_t indWidth = pop.ploidy() * ploidyWidth;
+	//size_t indWidth = pop.ploidy() * ploidyWidth;
+
+	size_t indWidth = pop.genoSize();
+	size_t ploidyWidth = pop.totNumLoci();
 
 	ostream * out = NULL;
 	if (!noOutput())
@@ -416,7 +404,7 @@ bool MutSpaceMutator::apply(Population & pop) const
 
 	// build a set of existing mutants
 	std::set<size_t> mutants;
-	bool saturated = false;
+	//bool saturated = false;
 
 	subPopList subPops = applicableSubPops(pop);
 	subPopList::const_iterator sp = subPops.begin();
@@ -496,61 +484,12 @@ bool MutSpaceMutator::apply(Population & pop) const
 					mutants.insert(mutLoc);
 				}
 			*/
-				GenoIterator geno = ind.genoBegin(p, ch);
-				// FIXME: geno.setAllele(mutLoc, p, ch) 
-				//
-				// the following is complicated, because it has to adjust for padding stuff, and
-				// has to growth the 'chromosome' for everyone if there is no room left for the
-				// new mutant
-				/*
-				size_t nLoci = pop.numLoci(ch);
-				if (*(geno + nLoci - 1) != 0u) {
-					// if the number of mutants at this individual exceeds reserved numbers
-					DBG_DO(DBG_MUTATOR, cerr << "Adding 10 loci to region " << ch << endl);
-					vectorf added(10);
-					for (size_t j = 0; j < 10; ++j)
-						added[j] = static_cast<double>(nLoci + j + 1);
-					vectoru addedChrom(10, ch);
-					pop.addLoci(addedChrom, added);
-					// individual might be shifted...
-					ind = pop.individual(indIndex);
-					geno = ind.genoBegin(p, ch);
-					nLoci += 10;
-				}
-				// find the first non-zero location
-				for (size_t j = 0; j < nLoci; ++j) {
-					if (*(geno + j) == 0u) {
-						// record mutation here
-						DBG_FAILIF(mutLoc >= ModuleMaxAllele, RuntimeError,
-							"Location can not be saved because it exceed max allowed allele.");
-						*(geno + j) = ToAllele(mutLoc);
-						if (out)
-							(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t0\n";
-						break;
-					} else if (static_cast<size_t>(*(geno + j)) == mutLoc) {
-						// back mutation
-						//  from A b c d 0
-						//  to   d b c d 0
-						//  to   d b c 0 0
-						for (size_t k = j + 1; k < nLoci; ++k)
-							if (*(geno + k) == 0u) {
-								*(geno + j) = *(geno + k - 1);
-								*(geno + k - 1) = 0;
-								if (out)
-									(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t1\n";
-								break;
-							}
-						DBG_DO(DBG_MUTATOR, cerr << "Back mutation happens at generation " << pop.gen() << " on individual " << indIndex << endl);
-						break;
-					}
-				}
-				*/
+                                ind.setAllele(1, mutLoc, p, ch);
 			}   // while
 		}       // each individual
 	}           // each subpopulation
 	if (out)
 		closeOstream();
-#endif
 	return true;
 }
 

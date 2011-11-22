@@ -103,28 +103,35 @@ class mutant_vector
 			protected:
 				compressed_vector<T> * m_container;
 				mutable size_t m_index;
+				mutable ssize_t m_con_index;
 				
 			public:
 				
-				iterator (compressed_vector<T> * c) : m_container(c), m_index(0)
+				iterator (compressed_vector<T> * c) : m_container(c), m_index(0), m_con_index(-1)
 				{
 				// m_com_index is the smallest index of mutants (or -1 is nothing is there)
 				}
 
-				iterator (const compressed_vector<T> * c) : m_container(c), m_index(0)
+				iterator (const compressed_vector<T> * c) : m_container(c), m_index(0), m_con_index(-1)
 				{
 				}
 
 				iterator (compressed_vector<T> * c, size_t index) : m_container(c), m_index(index)
 				{
+					typename compressed_vector<size_t>::index_array_type::iterator lower = 
+						std::lower_bound(m_container->index_data().begin(), m_container->index_data().end(), index); 
+					m_con_index = lower - m_container->index_data().begin();
 				// find the smallest m_com_index  that is larger than index
 				}
 
 				iterator (const compressed_vector<T> * c, size_t index) : m_container(c), m_index(index)
 				{
+					typename compressed_vector<size_t>::index_array_type::iterator lower = 
+						std::lower_bound(m_container->index_data().begin(), m_container->index_data().end(), index); 
+					m_con_index = lower - m_container->index_data().begin();
 				}
 
-				iterator () : m_container(NULL), m_index(0)
+				iterator () : m_container(NULL), m_index(0), m_con_index(-1)
 				{
 				}
 
@@ -155,8 +162,7 @@ class mutant_vector
 					return false;
 				}
 
-				bool operator <= (const iterator & iter) const 
-				{
+				bool operator <= (const iterator & iter) const {
 					if (m_index <= iter.m_index)
 						return true;
 					return false;
@@ -176,23 +182,22 @@ class mutant_vector
 					return false;
 				}
 
+				typename compressed_vector<T>::const_reference operator* () const
+				{
+					static const T zero = 0;
+					if (m_index < m_container->value_data()[m_con_index])
+						return zero;
+					else
+						return m_container->value_data()[m_con_index];
+
+				}
+
 				typename compressed_vector<T>::reference operator* () 
 				{
-					// 
-					// 
-					// something like:
-					//  if m_index < m_con_index
-					//     return 0
-					//  else
-					//     return *m_con_index
 					return (*m_container)[m_index];
 				}
 				
 
-				typename compressed_vector<T>::const_reference operator* () const
-				{
-					return (*m_container)[m_index];
-				}
 
 				typename compressed_vector<T>::reference operator [] (const size_t i)
 				{
@@ -207,18 +212,17 @@ class mutant_vector
 				/// CPPONLY pre-incrment return by-reference 
 				iterator & operator++ () 
 				{
-					// if m_index points to a real mutant, ++ will be compared with the next one.
-					//
-					// if m_index == *m_con_index
-					//     ++ m_con_index;
 					++m_index;
-					//
+					if (m_index == m_container->value_data()[m_con_index])
+						++ m_con_index;
 					return *this;
 				}
 
 				const iterator & operator++ () const
 				{
 					++m_index;
+					if (m_index == m_container->value_data()[m_con_index])
+						++ m_con_index;
 					return *this;
 				}
 
@@ -242,6 +246,20 @@ class mutant_vector
 					m_index+=iter.m_index;
 					if (m_index > m_container->size())
 						m_index = m_container->size();
+					while (true) {
+						if (m_con_index < (int)m_container->filled())
+							if (m_index < m_container->value_data()[m_con_index]) {
+								break;
+							}
+							else if (m_index == m_container->value_data()[m_con_index]) {
+								++m_con_index;
+								break;
+							} else {
+								++m_con_index;
+							}
+						else
+							break;
+					}
 					return *this;
 				}
 
@@ -250,6 +268,21 @@ class mutant_vector
 					m_index+=iter.m_index;
 					if (m_index > m_container->size())
 						m_index = m_container->size();
+					while (true) {
+						if (m_con_index < (int)m_container->filled())
+							if (m_index < m_container->value_data()[m_con_index]) {
+								break;
+							}
+							else if (m_index == m_container->value_data()[m_con_index]) {
+								++m_con_index;
+								break;
+							} else {
+								++m_con_index;
+							}
+						else
+							break;
+					}
+
 					return *this;
 				}
 
@@ -258,6 +291,21 @@ class mutant_vector
 					m_index+=size;
 					if (m_index > m_container->size())
 						m_index = m_container->size();
+					while (true) {
+						if (m_con_index < (int)m_container->filled())
+							if (m_index < m_container->value_data()[m_con_index]) {
+								break;
+							}
+							else if (m_index == m_container->value_data()[m_con_index]) {
+								++m_con_index;
+								break;
+							} else {
+								++m_con_index;
+							}
+						else
+							break;
+					}
+
 					return *this;
 				} 
 
@@ -266,6 +314,21 @@ class mutant_vector
 					m_index+=size;
 					if (m_index > m_container->size())
 						m_index = m_container->size();
+					while (true) {
+						if (m_con_index < (int)m_container->filled())
+							if (m_index < m_container->value_data()[m_con_index]) {
+								break;
+							}
+							else if (m_index == m_container->value_data()[m_con_index]) {
+								++m_con_index;
+								break;
+							} else {
+								++m_con_index;
+							}
+						else
+							break;
+					}
+
 					return *this;
 				} 
 
@@ -325,12 +388,15 @@ class mutant_vector
 					return 0;
 				}	
 
+
 				typename compressed_vector<T>::index_array_type::iterator getIndexIterator () {
-					return m_container->index_data().begin() + findPositionIndexData();
+					//return m_container->index_data().begin() + findPositionIndexData();
+					return std::lower_bound(m_container->index_data().begin(), m_container->index_data().end(), m_index);
 				}	
 
 				typename compressed_vector<T>::value_array_type::iterator getValueIterator () {
-					return m_container->value_data().begin() + findPositionIndexData();
+					//return m_container->value_data().begin() + findPositionIndexData();
+					return m_container->value_data().begin() + (getIndexIterator() - m_container->index_data.begin());
 				}	
 
 				typename compressed_vector<T>::iterator getCompressedVectorIterator()
