@@ -1599,8 +1599,6 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 	// scrtach will have the right structure.
 	if (!prepareScratchPop(pop, scratch))
 		return false;
-	vectormating::const_iterator it = m_matingSchemes.begin();
-	vectormating::const_iterator it_end = m_matingSchemes.end();
 
 	for (size_t sp = 0; sp < static_cast<size_t>(pop.numSubPop()); ++sp) {
 		vectormating m;

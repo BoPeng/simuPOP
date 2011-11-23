@@ -296,6 +296,13 @@ StepwiseMutator::StepwiseMutator(const floatList & rates, const lociList & loci,
 
 void StepwiseMutator::mutate(AlleleRef allele, size_t) const
 {
+#ifdef BINARYALLELE
+	if (getRNG().randUniform() < m_incProb)
+		allele = 1;
+	// decrease
+	else
+		allele = 0;
+#else
 	UINT step = 1;
 
 	if (m_mutStep.size() == 1)
@@ -309,29 +316,21 @@ void StepwiseMutator::mutate(AlleleRef allele, size_t) const
 			"Invalid Python function for StepwiseMutator");
 		step = m_mutStep.func() (PyObj_As_Int, "(i)", static_cast<int>(allele));
 	}
-
 	// increase
 	if (getRNG().randUniform() < m_incProb) {
-#ifdef BINARYALLELE
-		allele = 1;
-#else
 		if (static_cast<UINT>(allele + step) < m_maxAllele)
 			AlleleAdd(allele, step);
 		else
 			allele = ToAllele(m_maxAllele);
-#endif
 	}
 	// decrease
 	else {
-#ifdef BINARYALLELE
-		allele = 0;
-#else
 		if (allele > step)
 			AlleleMinus(allele, step);
 		else
 			allele = 0;
-#endif
 	}
+#endif
 }
 
 
