@@ -54,22 +54,22 @@ class mutant_vector
 
 		typename mutant_vector<T>::iterator  begin() 
 		{
-			return mutant_vector<T>::iterator(&m_container, 0); 
+			return typename mutant_vector<T>::iterator(&m_container, 0); 
 		}
 
 		const typename mutant_vector<T>::iterator  begin() const
 		{
-			return mutant_vector<T>::iterator(const_cast<compressed_vector<T> *>(&m_container), 0); 
+			return typename mutant_vector<T>::iterator(const_cast<compressed_vector<T> *>(&m_container), 0); 
 		}
 
 		typename mutant_vector<T>::iterator  end() 
 		{
-			return mutant_vector<T>::iterator(&m_container, m_container.size()); 
+			return typename mutant_vector<T>::iterator(&m_container, m_container.size()); 
 		}
 	
 		const typename mutant_vector<T>::iterator  end() const
 		{
-			return mutant_vector<T>::iterator(const_cast<compressed_vector<T> *>(&m_container), m_container.size()); 
+			return typename mutant_vector<T>::iterator(const_cast<compressed_vector<T> *>(&m_container), m_container.size()); 
 		}
 
 		typename compressed_vector<T>::reference operator [] (size_t i)
