@@ -705,3 +705,7 @@ TestMigratorByProportion, 2011-09-13 10:37:58,598, ubuntu, x86_64-1threads, pyth
 TestMigratorByProportion, 2011-09-13 10:38:28,409, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, long, 2.40683412552, 26.9157719612
 TestMigratorByProportion, 2011-09-13 10:39:03,404, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, binary, 2.32115483284, 32.2616999149
 TestMigratorByProportion, 2011-09-13 10:39:31,022, ubuntu, x86_64-1threads, python2.7.2, simuPOP-1.0.6, rev4259-gcc, mutant, 2.14464998245, 25.0359089375
+TestGenoIterator, 2011-11-22 18:10:38,949, ubuntu64, x86_64-1threads, python2.7.2+, simuPOP-1.0.6, rev4259-gcc, short, 0.262627124786, 2.57423520088, 2.61378192902
+TestGenoIterator, 2011-11-22 18:10:44,654, ubuntu64, x86_64-1threads, python2.7.2+, simuPOP-1.0.6, rev4259-gcc, long, 0.261785984039, 2.61322593689, 2.59142494202
+TestGenoIterator, 2011-11-22 18:10:50,761, ubuntu64, x86_64-1threads, python2.7.2+, simuPOP-1.0.6, rev4259-gcc, binary, 0.280632019043, 2.79212808609, 2.78501987457
+TestGenoIterator, 2011-11-22 18:11:01,384, ubuntu64, x86_64-1threads, python2.7.2+, simuPOP-1.0.6, rev4259-gcc, mutant, 0.419852018356, 4.15662407875, 5.84405088425

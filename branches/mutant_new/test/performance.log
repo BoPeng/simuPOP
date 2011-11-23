@@ -9259,3 +9259,43 @@ TestMigratorByProportion : size=1000000: 2.14464998245
 TestMigratorByProportion : size=10000000: 25.0359089375
 TestMigratorByProportion : 2.14464998245, 25.0359089375
 TestMigratorByProportion : End of test TestMigratorByProportion
+TestGenoIterator : Host: ubuntu64 (Linux, x86_64, x86_64)
+TestGenoIterator : Time: Tue Nov 22 18:10:33 2011
+TestGenoIterator : Python: 2.7.2+ [GCC 4.6.1]
+TestGenoIterator : simuPOP: 1.0.6 (rev 4259, module short, optimized, 1 threads)
+TestGenoIterator : Test: Test the performance of iterating through genotypesThe results are time of iterating for 100 times
+TestGenoIterator : args=(10000, 10, 100): 0.262627124786
+TestGenoIterator : args=(10000, 100, 100): 2.57423520088
+TestGenoIterator : args=(1000, 1000, 10000): 2.61378192902
+TestGenoIterator : 0.262627124786, 2.57423520088, 2.61378192902
+TestGenoIterator : End of test TestGenoIterator
+TestGenoIterator : Host: ubuntu64 (Linux, x86_64, x86_64)
+TestGenoIterator : Time: Tue Nov 22 18:10:39 2011
+TestGenoIterator : Python: 2.7.2+ [GCC 4.6.1]
+TestGenoIterator : simuPOP: 1.0.6 (rev 4259, module long, optimized, 1 threads)
+TestGenoIterator : Test: Test the performance of iterating through genotypesThe results are time of iterating for 100 times
+TestGenoIterator : args=(10000, 10, 100): 0.261785984039
+TestGenoIterator : args=(10000, 100, 100): 2.61322593689
+TestGenoIterator : args=(1000, 1000, 10000): 2.59142494202
+TestGenoIterator : 0.261785984039, 2.61322593689, 2.59142494202
+TestGenoIterator : End of test TestGenoIterator
+TestGenoIterator : Host: ubuntu64 (Linux, x86_64, x86_64)
+TestGenoIterator : Time: Tue Nov 22 18:10:44 2011
+TestGenoIterator : Python: 2.7.2+ [GCC 4.6.1]
+TestGenoIterator : simuPOP: 1.0.6 (rev 4259, module binary, optimized, 1 threads)
+TestGenoIterator : Test: Test the performance of iterating through genotypesThe results are time of iterating for 100 times
+TestGenoIterator : args=(10000, 10, 100): 0.280632019043
+TestGenoIterator : args=(10000, 100, 100): 2.79212808609
+TestGenoIterator : args=(1000, 1000, 10000): 2.78501987457
+TestGenoIterator : 0.280632019043, 2.79212808609, 2.78501987457
+TestGenoIterator : End of test TestGenoIterator
+TestGenoIterator : Host: ubuntu64 (Linux, x86_64, x86_64)
+TestGenoIterator : Time: Tue Nov 22 18:10:50 2011
+TestGenoIterator : Python: 2.7.2+ [GCC 4.6.1]
+TestGenoIterator : simuPOP: 1.0.6 (rev 4259, module mutant, optimized, 1 threads)
+TestGenoIterator : Test: Test the performance of iterating through genotypesThe results are time of iterating for 100 times
+TestGenoIterator : args=(10000, 10, 100): 0.419852018356
+TestGenoIterator : args=(10000, 100, 100): 4.15662407875
+TestGenoIterator : args=(1000, 1000, 10000): 5.84405088425
+TestGenoIterator : 0.419852018356, 4.15662407875, 5.84405088425
+TestGenoIterator : End of test TestGenoIterator
