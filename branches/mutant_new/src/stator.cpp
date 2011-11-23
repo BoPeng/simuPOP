@@ -28,6 +28,9 @@
 #include <sstream>
 using std::ostringstream;
 
+#include <set>
+using std::set;
+
 namespace simuPOP {
 
 string PyEval::describe(bool /* format */) const
@@ -328,6 +331,8 @@ Stat::Stat(
 	bool numOfMales,
 	//
 	bool numOfAffected,
+    //
+    const lociList & numOfSegSites,
 	//
 	const lociList & alleleFreq,
 	//
@@ -367,6 +372,7 @@ Stat::Stat(
 	m_popSize(popSize, subPops, vars, suffix),
 	m_numOfMales(numOfMales, subPops, vars, suffix),
 	m_numOfAffected(numOfAffected, subPops, vars, suffix),
+    m_numOfSegSites(numOfSegSites, subPops, vars, suffix),
 	m_alleleFreq(alleleFreq, subPops, vars, suffix),
 	m_heteroFreq(heteroFreq, homoFreq, subPops, vars, suffix),
 	m_genoFreq(genoFreq, subPops, vars, suffix),
@@ -391,6 +397,7 @@ string Stat::describe(bool /* format */) const
 	descs.push_back(m_popSize.describe(false));
 	descs.push_back(m_numOfMales.describe(false));
 	descs.push_back(m_numOfAffected.describe(false));
+	descs.push_back(m_numOfSegSites.describe(false));
 	descs.push_back(m_alleleFreq.describe(false));
 	descs.push_back(m_heteroFreq.describe(false));
 	descs.push_back(m_genoFreq.describe(false));
@@ -415,6 +422,7 @@ bool Stat::apply(Population & pop) const
 	return m_popSize.apply(pop) &&
 	       m_numOfMales.apply(pop) &&
 	       m_numOfAffected.apply(pop) &&
+           m_numOfSegSites.apply(pop) &&
 	       m_alleleFreq.apply(pop) &&
 	       m_heteroFreq.apply(pop) &&
 	       m_genoFreq.apply(pop) &&
@@ -648,6 +656,72 @@ bool statNumOfAffected::apply(Population & pop) const
 		pop.getVars().setVar(propOfUnaffected_String + m_suffix,
 			allTotalCnt == 0 ? 0 : static_cast<double>(allUnaffectedCnt) / allTotalCnt);
 
+	return true;
+}
+
+
+statNumOfSegSites::statNumOfSegSites(const lociList & loci, const subPopList & subPops,
+	const stringList & vars, const string & suffix)
+	: m_loci(loci), m_subPops(subPops), m_vars(), m_suffix(suffix)
+{
+	const char * allowedVars[] = {
+		numOfSegSites_String,	   numOfSegSites_sp_String, ""
+	};
+	const char * defaultVars[] = { numOfSegSites_String, "" };
+
+	m_vars.obtainFrom(vars, allowedVars, defaultVars);
+}
+
+
+string statNumOfSegSites::describe(bool /* format */) const
+{
+	if (m_loci.allAvail())
+        return "count number of segregating sites in all loci";
+    else if (m_loci.size() > 0)
+        return "count number of segregating sites in specified loci";
+    return "";
+}
+
+
+bool statNumOfSegSites::apply(Population & pop) const
+{
+	if (m_loci.unspecified())
+		return true;
+
+    // get actual list of loci
+    const vectoru & loci = m_loci.elems(&pop);
+	DBG_DO(DBG_STATOR, cerr << "Count number of segregating sites for " << loci.size() << " loci " << endl);
+
+	std::set<ULONG> allSegSites;
+	// for each subpopulation.
+	subPopList subPops = m_subPops.expandFrom(pop);
+	subPopList::const_iterator sp = subPops.begin();
+	subPopList::const_iterator spEnd = subPops.end();
+	for (; sp != spEnd; ++sp) {
+		std::set<ULONG> segSites;
+		pop.activateVirtualSubPop(*sp);
+
+        // go through all loci
+        for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
+			size_t loc = loci[idx];
+            IndAlleleIterator a = pop.alleleIterator(loc, sp->subPop());
+            for (; a.valid(); ++a)
+                if (*a != 0u) {
+                    segSites.insert(loc);
+                    break;
+                }
+        }
+		pop.deactivateVirtualSubPop(sp->subPop());
+
+		if (m_vars.contains(numOfSegSites_sp_String))
+			pop.getVars().setVar(subPopVar_String(*sp, numOfSegSites_String) + m_suffix, segSites.size());
+
+		allSegSites.insert(segSites.begin(), segSites.end());
+	}
+
+	// output whole population
+	if (m_vars.contains(numOfSegSites_String))
+		pop.getVars().setVar(numOfSegSites_String + m_suffix, allSegSites.size());
 	return true;
 }
 

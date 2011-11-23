@@ -401,6 +401,30 @@ private:
 
 
 /// CPPONLY
+class statNumOfSegSites
+{
+private:
+#define  numOfSegSites_String        "numOfSegSites"
+#define  numOfSegSites_sp_String     "numOfSegSites_sp"
+
+public:
+	statNumOfSegSites(const lociList & loci, const subPopList & subPops,
+		const stringList & vars, const string & suffix);
+
+	string describe(bool format = true) const;
+
+	bool apply(Population & pop) const;
+
+private:
+	/// whether or not to apply number of affected
+	lociList m_loci;
+	subPopList m_subPops;
+	stringList m_vars;
+	string m_suffix;
+};
+
+
+/// CPPONLY
 class statAlleleFreq
 {
 private:
@@ -935,6 +959,15 @@ public:
 	 *  \li \c propOfUnaffected_sp: Proportion of unaffected individuals in
 	 *       each (virtual) subpopulation.
 	 *
+     *  <b>numOfSegSites</b>: Parameter \e numOfSegSites accepts a list of loci
+     *  (loci indexes, names, or \c ALL_AVAIL) and count the number of loci with
+     *  at least one non-zero allele (segregating sites) for individuals in all
+     *  or specified (virtual) subpopulations. This parameter sets variables
+     *  \li \c numOfSegSites (default): Number of segregating sites in all or
+     *      specified (virtual) subpopulations.
+     *  \li \c numOfSegSites_sp: Number of segregating sites in each (virtual)
+     *      subpopulation.
+     *
 	 *  <b>alleleFreq</b>: This parameter accepts a list of loci (loci indexes,
 	 *  names, or \c ALL_AVAIL), at which allele frequencies will be calculated.
 	 *  This statistic outputs the following variables, all of which are
@@ -1207,6 +1240,8 @@ public:
 		bool numOfMales = false,
 		//
 		bool numOfAffected = false,
+        //
+        const lociList & numOfSegSites = vectoru(),
 		//
 		const lociList & alleleFreq = vectoru(),
 		//
@@ -1269,6 +1304,7 @@ private:
 	const statPopSize m_popSize;
 	const statNumOfMales m_numOfMales;
 	const statNumOfAffected m_numOfAffected;
+    const statNumOfSegSites m_numOfSegSites;
 	const statAlleleFreq m_alleleFreq;
 	const statHeteroFreq m_heteroFreq;
 	const statGenoFreq m_genoFreq;

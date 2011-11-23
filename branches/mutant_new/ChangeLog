@@ -6,6 +6,10 @@ Known Bugs:
 
 version 1.0.7 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 
+New features:
+  - New option numOfSegSites to operator Stat to calculate the number of segragating
+    sites.
+
 version 1.0.6 - Rev 4260 (July 11, 2011)
 Major new feature:
   - Multi-thread support that allows simuPOP to take advantage of multi-core CPUs.

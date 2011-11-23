@@ -11,6 +11,8 @@
 import math
 import unittest, os, sys
 from simuOpt import setOptions
+from random import randint
+
 setOptions(quiet=True) 
 new_argv = []
 for arg in sys.argv:
@@ -31,7 +33,7 @@ try:
 except:
     has_rpy = False
 
-class Teststat(unittest.TestCase):
+class TestStat(unittest.TestCase):
 
     def testPopSize(self):
         'Testing calculation of population (subpopulation) size'
@@ -121,6 +123,36 @@ class Teststat(unittest.TestCase):
         self.assertEqual(pop.dvars([0, 0]).numOfAffected, 50)
         self.assertEqual(pop.dvars([0, 0]).propOfUnaffected, 0.5)
         self.assertEqual(pop.dvars([1, 1]).numOfUnaffected, 350)
+
+    def testNumOfSegSites(self):
+        'Testing the number of segregating sites'
+        pop = Population(size=1000, loci=[10]*10)
+        # 100 mutations
+        for i in range(100):
+            pop.individual(randint(0, 999)).setAllele(i + 1, i)
+        # number of segragation site should be 100
+        stat(pop, numOfSegSites=ALL_AVAIL)
+        self.assertEqual(pop.dvars().numOfSegSites, 100)
+        #
+        # male only?
+        pop = Population(size=1000, loci=[10]*100)
+        # 500 males and 500 females
+        initSex(pop, sex=[MALE, FEMALE])
+        pop.setVirtualSplitter(SexSplitter())
+        # 100 mutations
+        for i in range(100):
+            # male ...
+            pop.individual(i*2).setAllele(i + 1, i)
+        # number of segragation site should be 100
+        stat(pop, numOfSegSites=ALL_AVAIL)
+        self.assertEqual(pop.dvars().numOfSegSites, 100)
+        stat(pop, numOfSegSites=ALL_AVAIL, subPops=[(0,0), (0,1)], vars='numOfSegSites_sp')
+        self.assertEqual(pop.dvars().numOfSegSites, 100)
+        self.assertEqual(pop.dvars((0,0)).numOfSegSites, 100)
+        self.assertEqual(pop.dvars((0,1)).numOfSegSites, 0)
+        # selected loci
+        stat(pop, numOfSegSites=range(100, 1000))
+        self.assertEqual(pop.dvars().numOfSegSites, 0)
 
     def testDefDict(self):
         'Testing the default dictionary feature of statistics'
