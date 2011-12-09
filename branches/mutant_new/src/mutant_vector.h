@@ -392,12 +392,12 @@ class mutant_vector
 
 				typename compressed_vector<T>::index_array_type::iterator getIndexIterator () {
 					//return m_container->index_data().begin() + findPositionIndexData();
-					return std::lower_bound(m_container->index_data().begin(), m_container->index_data().end(), m_index);
+					return std::lower_bound(m_container->index_data().begin(), m_container->index_data().begin() + m_container->filled(), m_index);
 				}	
 
 				typename compressed_vector<T>::value_array_type::iterator getValueIterator () {
-					//return m_container->value_data().begin() + findPositionIndexData();
-					return m_container->value_data().begin() + (getIndexIterator() - m_container->index_data.begin());
+					return m_container->value_data().begin() + findPositionIndexData();
+					//return m_container->value_data().begin() + (getIndexIterator() - m_container->index_data().begin());
 				}	
 
 				typename compressed_vector<T>::iterator getCompressedVectorIterator()

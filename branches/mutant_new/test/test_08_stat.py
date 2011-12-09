@@ -13,7 +13,7 @@ import unittest, os, sys
 from simuOpt import setOptions
 from random import randint
 
-setOptions(quiet=True) 
+#setOptions(quiet=True) 
 new_argv = []
 for arg in sys.argv:
     if arg in ['short', 'long', 'binary', 'mutant']:
@@ -153,6 +153,25 @@ class TestStat(unittest.TestCase):
         # selected loci
         stat(pop, numOfSegSites=range(100, 1000))
         self.assertEqual(pop.dvars().numOfSegSites, 0)
+
+
+    def testNumOfMutants(self):
+        'Testing the number of segregating sites'
+        pop = Population(size=10000, loci=[1000]*100)
+        # 100 mutations
+        for i in range(100):
+            pop.individual(randint(0, 999)).setAllele(i+1, i*1000)
+        # number of Mutants should be 100
+        #for i in pop.individuals():
+        #    print i.genotype()
+        stat(pop, numOfMutants=ALL_AVAIL)
+        self.assertEqual(pop.dvars().numOfMutants, 100)
+        pop = Population(size=10000, loci=[1000]*5)
+        for i in range(5):
+            pop.individual(randint(0, 999)).setAllele(i+1, i*1000)
+        stat(pop, numOfMutants=[0,1000,2000,3000,4000])
+        self.assertEqual(pop.dvars().numOfMutants, 5)
+
 
     def testDefDict(self):
         'Testing the default dictionary feature of statistics'

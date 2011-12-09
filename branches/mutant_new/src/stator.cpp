@@ -331,8 +331,10 @@ Stat::Stat(
 	bool numOfMales,
 	//
 	bool numOfAffected,
-    //
-    const lociList & numOfSegSites,
+        //
+        const lociList & numOfSegSites,
+        //
+        const lociList & numOfMutants,
 	//
 	const lociList & alleleFreq,
 	//
@@ -372,7 +374,8 @@ Stat::Stat(
 	m_popSize(popSize, subPops, vars, suffix),
 	m_numOfMales(numOfMales, subPops, vars, suffix),
 	m_numOfAffected(numOfAffected, subPops, vars, suffix),
-    m_numOfSegSites(numOfSegSites, subPops, vars, suffix),
+        m_numOfSegSites(numOfSegSites, subPops, vars, suffix),
+        m_numOfMutants(numOfMutants, subPops, vars, suffix),
 	m_alleleFreq(alleleFreq, subPops, vars, suffix),
 	m_heteroFreq(heteroFreq, homoFreq, subPops, vars, suffix),
 	m_genoFreq(genoFreq, subPops, vars, suffix),
@@ -398,6 +401,7 @@ string Stat::describe(bool /* format */) const
 	descs.push_back(m_numOfMales.describe(false));
 	descs.push_back(m_numOfAffected.describe(false));
 	descs.push_back(m_numOfSegSites.describe(false));
+	descs.push_back(m_numOfMutants.describe(false));
 	descs.push_back(m_alleleFreq.describe(false));
 	descs.push_back(m_heteroFreq.describe(false));
 	descs.push_back(m_genoFreq.describe(false));
@@ -422,7 +426,8 @@ bool Stat::apply(Population & pop) const
 	return m_popSize.apply(pop) &&
 	       m_numOfMales.apply(pop) &&
 	       m_numOfAffected.apply(pop) &&
-           m_numOfSegSites.apply(pop) &&
+               m_numOfSegSites.apply(pop) &&
+               m_numOfMutants.apply(pop) &&
 	       m_alleleFreq.apply(pop) &&
 	       m_heteroFreq.apply(pop) &&
 	       m_genoFreq.apply(pop) &&
@@ -685,44 +690,130 @@ string statNumOfSegSites::describe(bool /* format */) const
 
 bool statNumOfSegSites::apply(Population & pop) const
 {
-	if (m_loci.unspecified())
-		return true;
+        if (m_loci.empty())
+                return true;
 
-    // get actual list of loci
-    const vectoru & loci = m_loci.elems(&pop);
-	DBG_DO(DBG_STATOR, cerr << "Count number of segregating sites for " << loci.size() << " loci " << endl);
+        // get actual list of loci
+        const vectoru & loci = m_loci.elems(&pop);
+        DBG_DO(DBG_STATOR, cerr << "Count number of segregating sites for " << loci.size() << " loci " << endl);
 
-	std::set<ULONG> allSegSites;
-	// for each subpopulation.
-	subPopList subPops = m_subPops.expandFrom(pop);
-	subPopList::const_iterator sp = subPops.begin();
-	subPopList::const_iterator spEnd = subPops.end();
-	for (; sp != spEnd; ++sp) {
-		std::set<ULONG> segSites;
-		pop.activateVirtualSubPop(*sp);
+        std::set<ULONG> allSegSites;
+        // for each subpopulation.
+        subPopList subPops = m_subPops.expandFrom(pop);
+        subPopList::const_iterator sp = subPops.begin();
+        subPopList::const_iterator spEnd = subPops.end();
+        for (; sp != spEnd; ++sp) {
+                std::set<ULONG> segSites;
+                pop.activateVirtualSubPop(*sp);
 
-        // go through all loci
-        for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
-			size_t loc = loci[idx];
-            IndAlleleIterator a = pop.alleleIterator(loc, sp->subPop());
-            for (; a.valid(); ++a)
-                if (*a != 0u) {
-                    segSites.insert(loc);
-                    break;
+                // go through all loci
+                for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
+                        size_t loc = loci[idx];
+                        IndAlleleIterator a = pop.alleleIterator(loc, sp->subPop());
+                        for (; a.valid(); ++a)
+                                if (*a != 0u) {
+                                        segSites.insert(loc);
+                                        break;
+                                }
+                }
+                pop.deactivateVirtualSubPop(sp->subPop());
+
+                if (m_vars.contains(numOfSegSites_sp_String))
+                        pop.getVars().setVar(subPopVar_String(*sp, numOfSegSites_String) + m_suffix, segSites.size());
+
+                allSegSites.insert(segSites.begin(), segSites.end());
+        }
+
+        // output whole population
+        if (m_vars.contains(numOfSegSites_String))
+                pop.getVars().setVar(numOfSegSites_String + m_suffix, allSegSites.size());
+        return true;
+}
+
+
+statNumOfMutants::statNumOfMutants(const lociList & loci, const subPopList & subPops,
+	const stringList & vars, const string & suffix)
+	: m_loci(loci), m_subPops(subPops), m_vars(), m_suffix(suffix)
+{
+        const char * allowedVars[] = {
+                numOfMutants_String,	   numOfMutants_sp_String, ""
+        };
+        const char * defaultVars[] = { numOfMutants_String, "" };
+
+        m_vars.obtainFrom(vars, allowedVars, defaultVars);
+}
+
+
+string statNumOfMutants::describe(bool /* format */) const
+{
+        if (m_loci.allAvail())
+                return "count number of mutants in all loci";
+        else if (m_loci.size() > 0)
+                return "count number of mutants sites in specified loci";
+        return "";
+}
+
+
+bool statNumOfMutants::apply(Population & pop) const
+{
+        if (m_loci.empty())
+               return true;
+
+        const vectoru & loci = m_loci.elems(&pop);
+
+        size_t mutantCount = 0; 
+        
+	if (m_loci.allAvail()) {
+        // ALL_AVAIL
+                GenoIterator it = pop.genoBegin(false);
+                GenoIterator it_end = pop.genoEnd(false);
+#ifdef MUTANTALLELE
+                compressed_vector<Allele>::value_array_type::iterator value_it = it.getValueIterator();
+                compressed_vector<Allele>::value_array_type::iterator value_it_end = it_end.getValueIterator();
+                for (;value_it != value_it_end; ++value_it) {
+                        if (*value_it != 0) 
+                                mutantCount++;
+                }
+#else
+                for (;it != it_end; ++it) {
+                        if (*it != 0) 
+                                mutantCount++;
+                }
+#endif
+        } else {
+                subPopList subPops = m_subPops.expandFrom(pop);
+                subPopList::const_iterator sp = subPops.begin();
+                subPopList::const_iterator spEnd = subPops.end();
+
+                for ( ; sp != spEnd; ++sp) {
+                        for (size_t indIndex = 0; indIndex < pop.subPopSize(sp->subPop()); ++indIndex) {
+                                Individual & ind = pop.individual(indIndex);
+                                GenoIterator it = ind.genoBegin();
+                                GenoIterator it_end = ind.genoEnd();
+#ifdef MUTANTALLELE
+                                compressed_vector<Allele>::index_array_type::iterator index_it = it.getIndexIterator();
+                                compressed_vector<Allele>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
+                                compressed_vector<Allele>::value_array_type::iterator value_it = it.getValueIterator();
+                                size_t indIndex = it.getIndex();
+                                for (;index_it != index_it_end; ++index_it, ++value_it) {
+                                        for (size_t idx = 0; idx < loci.size(); ++idx) {
+                                                size_t loc = indIndex + loci[idx];  
+                                                if (*index_it == loc && *value_it != 0)
+                                                        mutantCount++; }
+                                }
+#else
+                                for (size_t idx = 0; idx < loci.size(); ++idx) {
+                                        size_t loc = loci[idx];  
+                                        if (*(it + loc) != 0)
+                                                mutantCount++;
+                                }
+#endif
+                        }
                 }
         }
-		pop.deactivateVirtualSubPop(sp->subPop());
-
-		if (m_vars.contains(numOfSegSites_sp_String))
-			pop.getVars().setVar(subPopVar_String(*sp, numOfSegSites_String) + m_suffix, segSites.size());
-
-		allSegSites.insert(segSites.begin(), segSites.end());
-	}
-
-	// output whole population
-	if (m_vars.contains(numOfSegSites_String))
-		pop.getVars().setVar(numOfSegSites_String + m_suffix, allSegSites.size());
-	return true;
+        if (m_vars.contains(numOfMutants_String))
+                pop.getVars().setVar(numOfMutants_String + m_suffix, mutantCount);
+        return true;
 }
 
 
