@@ -157,21 +157,39 @@ class TestStat(unittest.TestCase):
 
     def testNumOfMutants(self):
         'Testing the number of segregating sites'
-        pop = Population(size=10000, loci=[1000]*100)
+        pop = Population(size=1000, loci=[100]*100)
         # 100 mutations
         for i in range(100):
-            pop.individual(randint(0, 999)).setAllele(i+1, i*1000)
+            pop.individual(randint(0, 999)).setAllele(i+1, i*100)
         # number of Mutants should be 100
         #for i in pop.individuals():
         #    print i.genotype()
         stat(pop, numOfMutants=ALL_AVAIL)
         self.assertEqual(pop.dvars().numOfMutants, 100)
-        pop = Population(size=10000, loci=[1000]*5)
+        pop = Population(size=10000, loci=[100]*5)
         for i in range(5):
-            pop.individual(randint(0, 999)).setAllele(i+1, i*1000)
-        stat(pop, numOfMutants=[0,1000,2000,3000,4000])
+            pop.individual(randint(0, 999)).setAllele(i+1, i*100)
+        stat(pop, numOfMutants=[0,100,200,300,400])
         self.assertEqual(pop.dvars().numOfMutants, 5)
-
+        #
+        # male only?
+        pop = Population(size=1000, loci=[10]*100)
+        # 500 males and 500 females
+        initSex(pop, sex=[MALE, FEMALE])
+        pop.setVirtualSplitter(SexSplitter())
+        # 100 mutations
+        for i in range(100):
+            # male ...
+            pop.individual(i*2).setAllele(i + 1, i)
+        stat(pop, numOfMutants=ALL_AVAIL)
+        self.assertEqual(pop.dvars().numOfMutants, 100)
+        stat(pop, numOfMutants=ALL_AVAIL, subPops=[(0,0), (0,1)], vars='numOfMutants_sp')
+        self.assertEqual(pop.dvars().numOfMutants, 100)
+        self.assertEqual(pop.dvars((0,0)).numOfMutants, 100)
+        self.assertEqual(pop.dvars((0,1)).numOfMutants, 0)
+        # selected loci
+        stat(pop, numOfMutants=range(100, 1000))
+        self.assertEqual(pop.dvars().numOfMutants, 0)
 
     def testDefDict(self):
         'Testing the default dictionary feature of statistics'
