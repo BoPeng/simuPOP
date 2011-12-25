@@ -305,6 +305,12 @@ public:
 		m_genoStruIdx = static_cast<TraitIndexType>(idx);
 	}
 
+	/// CPPONLY set geno stru
+	void swapGenoStru(GenoStruTrait & rhs)
+	{
+		std::swap(m_genoStruIdx, rhs.m_genoStruIdx);
+	}
+
 
 	/** Return the distance between loci \e locus1 and \e locus2 on the
 	 *  same chromosome. A negative value will be returned if \e locus1 is

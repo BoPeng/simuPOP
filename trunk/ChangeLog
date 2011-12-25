@@ -6,6 +6,10 @@ Known Bugs:
 
 version 1.0.7 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 
+BUG:
+ - Fix a bug that prevents the correct handling of population structure when evolving
+   populations with changing population structure.
+
 version 1.0.6 - Rev 4260 (July 11, 2011)
 Major new feature:
   - Multi-thread support that allows simuPOP to take advantage of multi-core CPUs.
