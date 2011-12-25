@@ -373,11 +373,11 @@ private:
 	typedef std::tr1::unordered_map<unsigned int, int> MutCounter;
 #endif
 	// use when m_rate = 0.5
-	void transmitGenotype0(Population & offPop, const Individual & parent,
+	void transmitGenotype0(Population & pop, Population & offPop, const Individual & parent,
 		size_t offIndex, int ploidy) const;
 
 	// use when m_rate < 1e-4
-	void transmitGenotype1(Population & offPop, const Individual & parent,
+	void transmitGenotype1(Population & pop, Population & offPop, const Individual & parent,
 		size_t offIndex, int ploidy) const;
 
 private:
@@ -702,11 +702,11 @@ private:
 	typedef std::tr1::unordered_map<unsigned int, int> MutCounter;
 #endif
 	// use when m_rate = 0.5
-	void transmitGenotype0(Population & offPop, const Individual & parent,
+	void transmitGenotype0(Population & pop, Population & offPop, const Individual & parent,
 		size_t offIndex, int ploidy) const;
 
 	// use when m_rate < 1e-4
-	void transmitGenotype1(Population & offPop, const Individual & parent,
+	void transmitGenotype1(Population & pop, Population & offPop, const Individual & parent,
 		size_t offIndex, int ploidy) const;
 
 private:

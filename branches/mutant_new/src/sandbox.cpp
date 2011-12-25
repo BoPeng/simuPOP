@@ -1267,6 +1267,7 @@ void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individu
 				added[j] = static_cast<double>(offPop.numLoci(ch) + j + 1);
 			vectoru addedChrom(sz, ch);
 			offPop.addLoci(addedChrom, added);
+			pop.addLoci(addedChrom, added);
 		}
 		//
 		GenoIterator it = offPop.individual(offIndex).genoBegin(ploidy, ch);
@@ -1280,7 +1281,7 @@ void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individu
 }
 
 
-void MutSpaceRecombinator::transmitGenotype1(Population & offPop, const Individual & parent,
+void MutSpaceRecombinator::transmitGenotype1(Population & pop, Population & offPop, const Individual & parent,
                                              size_t offIndex, int ploidy) const
 {
 #ifdef BINARYALLELE
@@ -1380,6 +1381,7 @@ void MutSpaceRecombinator::transmitGenotype1(Population & offPop, const Individu
 				added[j] = static_cast<double>(offPop.numLoci(ch) + j + 1);
 			vectoru addedChrom(sz, ch);
 			offPop.addLoci(addedChrom, added);
+			pop.addLoci(addedChrom, added);
 		}
 		//
 		it = offPop.individual(offIndex).genoBegin(ploidy, ch);
@@ -1410,11 +1412,11 @@ bool MutSpaceRecombinator::applyDuringMating(Population & pop, Population & offP
 			copyChromosome(*dad, getRNG().randBit(), *offspring, 1, ch);
 		}
 	} else if (m_rate == 0.5) {
-		transmitGenotype0(offPop, *mom, offspring - offPop.rawIndBegin(), 0);
-		transmitGenotype0(offPop, *dad, offspring - offPop.rawIndBegin(), 1);
+		transmitGenotype0(pop, offPop, *mom, offspring - offPop.rawIndBegin(), 0);
+		transmitGenotype0(pop, offPop, *dad, offspring - offPop.rawIndBegin(), 1);
 	} else {
-		transmitGenotype1(offPop, *mom, offspring - offPop.rawIndBegin(), 0);
-		transmitGenotype1(offPop, *dad, offspring - offPop.rawIndBegin(), 1);
+		transmitGenotype1(pop, offPop, *mom, offspring - offPop.rawIndBegin(), 0);
+		transmitGenotype1(pop, offPop, *dad, offspring - offPop.rawIndBegin(), 1);
 	}
 	return true;
 }
