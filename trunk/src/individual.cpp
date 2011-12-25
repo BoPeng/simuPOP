@@ -49,7 +49,11 @@ Individual & Individual::operator=(const Individual & rhs)
 Individual & Individual::copyFrom(const Individual & rhs)
 {
 	m_flags = rhs.m_flags;
+#ifdef MUTANTALLELE
+	simuPOP::copy(rhs.genoBegin(), rhs.genoEnd(), genoBegin());
+#else
 	copy(rhs.genoBegin(), rhs.genoEnd(), genoBegin());
+#endif
 	copy(rhs.infoBegin(), rhs.infoEnd(), infoBegin());
 	// also copy genoStru pointer...
 	this->setGenoStruIdx(rhs.genoStruIdx());
@@ -234,6 +238,7 @@ PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 }
 
 
+
 PyObject * Individual::genoAtLoci(const lociList & lociList)
 {
 	ssize_t ply = ploidy();
@@ -295,16 +300,28 @@ void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 		"A valid ploidy index has to be specified if chrom is non-positive");
 	if (p < 0) {
 		CHECKRANGEGENOSIZE(idx);
+#ifdef MUTANTALLELE
+		(m_genoPtr + idx).assign(allele);
+#else
 		*(m_genoPtr + idx) = allele;
+#endif
 	} else if (chrom < 0) {
 		CHECKRANGEABSLOCUS(idx);
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
+#ifdef MUTANTALLELE
+		(m_genoPtr + idx + p * totNumLoci()).assign(allele);
+#else
 		*(m_genoPtr + idx + p * totNumLoci()) = allele;
+#endif
 	} else {
 		CHECKRANGELOCUS(static_cast<size_t>(chrom), idx);
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
 		CHECKRANGECHROM(static_cast<size_t>(chrom));
-		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)) = allele;
+#ifdef MUTANTALLELE
+		(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)).assign(allele); 
+#else
+		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)) = allele; 
+#endif
 	}
 }
 
@@ -344,9 +361,8 @@ void Individual::setGenotype(const uintList & genoList, const uintList & ply, co
 		for (size_t j = 0; j < chroms.size(); ++j) {
 			size_t chrom = chroms[j];
 			GenoIterator ptr = m_genoPtr + p * totNumLoci() + chromBegin(chrom);
-
 			for (size_t i = 0; i < numLoci(chrom); i++, ++idx)
-				*(ptr + i) = ToAllele(geno[idx % sz]);
+				*(ptr + i) = ToAllele(geno[idx % sz]); 
 		}
 	}
 }

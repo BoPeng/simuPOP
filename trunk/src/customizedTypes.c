@@ -715,7 +715,11 @@ PyObject * newcarrayobject(GenoIterator begin, GenoIterator end)
 	}
 	//
 	op->ob_iter = begin;
+#ifdef MUTANTALLELE
+	Py_SIZE(op) = end.getIndex() - begin.getIndex();
+#else
 	Py_SIZE(op) = end - begin;
+#endif
 	return (PyObject *)op;
 }
 

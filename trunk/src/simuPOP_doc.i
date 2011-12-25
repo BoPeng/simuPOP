@@ -3398,6 +3398,82 @@ Usage:
 
 %ignore simuPOP::intMatrix::elems() const;
 
+%feature("docstring") simuPOP::mutantvector::iterator "
+
+"; 
+
+%feature("docstring") simuPOP::mutantvector::iterator::iterator "
+
+Usage:
+
+    iterator(c)
+
+"; 
+
+%feature("docstring") simuPOP::mutantvector::iterator::findPositionIndexData "
+
+Usage:
+
+    x.findPositionIndexData()
+
+"; 
+
+%feature("docstring") simuPOP::mutantvector::iterator::getIndexIterator "
+
+Usage:
+
+    x.getIndexIterator()
+
+"; 
+
+%feature("docstring") simuPOP::mutantvector::iterator::getValueIterator "
+
+Usage:
+
+    x.getValueIterator()
+
+"; 
+
+%feature("docstring") simuPOP::mutantvector::iterator::getCompressedVectorIterator "
+
+Usage:
+
+    x.getCompressedVectorIterator()
+
+"; 
+
+%feature("docstring") simuPOP::mutantvector::iterator::getIndex "
+
+Usage:
+
+    x.getIndex()
+
+"; 
+
+%feature("docstring") simuPOP::mutantvector::iterator::getContainer "
+
+Usage:
+
+    x.getContainer()
+
+"; 
+
+%feature("docstring") simuPOP::mutantvector::iterator::deleted "
+
+Usage:
+
+    x.deleted()
+
+"; 
+
+%feature("docstring") simuPOP::mutantvector::iterator::assign "
+
+Usage:
+
+    x.assign(value)
+
+"; 
+
 %feature("docstring") simuPOP::KAlleleMutator "
 
 Details:
@@ -4225,6 +4301,104 @@ Usage:
 %feature("docstring") simuPOP::MlSelector::describe "Obsolete or undocumented function."
 
 %ignore simuPOP::MlSelector::parallelizable() const;
+
+%ignore simuPOP::mutantvector;
+
+%feature("docstring") simuPOP::mutantvector::mutantvector "
+
+Usage:
+
+    mutant_vector()
+
+"; 
+
+%feature("docstring") simuPOP::mutantvector::resize "
+
+Usage:
+
+    x.resize(size)
+
+"; 
+
+%feature("docstring") simuPOP::mutantvector::reserve "
+
+Usage:
+
+    x.reserve(size)
+
+"; 
+
+%feature("docstring") simuPOP::mutantvector::size "
+
+Usage:
+
+    x.size()
+
+"; 
+
+%feature("docstring") simuPOP::mutantvector::begin "
+
+Usage:
+
+    x.begin()
+
+"; 
+
+%feature("docstring") simuPOP::mutantvector::end "
+
+Usage:
+
+    x.end()
+
+"; 
+
+%feature("docstring") simuPOP::mutantvector::pushback "
+
+Usage:
+
+    x.push_back(i, t)
+
+"; 
+
+%feature("docstring") simuPOP::mutantvector::swap "
+
+Usage:
+
+    x.swap(vec)
+
+"; 
+
+%feature("docstring") simuPOP::mutantvector::getContainer "
+
+Usage:
+
+    x.getContainer()
+
+"; 
+
+%feature("docstring") simuPOP::mutantvector::erase "
+
+Usage:
+
+    x.erase(begin, end)
+
+"; 
+
+%feature("docstring") simuPOP::mutantvector::insert "
+
+Usage:
+
+    x.insert(it, begin, end)
+
+"; 
+
+%feature("docstring") simuPOP::mutantvector::serialize "
+
+Usage:
+
+    x.serialize(ar, int)
+
+"; 
 
 %feature("docstring") simuPOP::MutSpaceMutator "
 
@@ -7356,7 +7530,7 @@ Details:
 
 Usage:
 
-    PyQuanTrait(func, loci=[], ancGens=ALL_AVAIL, begin=0, end=-1,
+    PyQuanTrait(func, loci=[], ancGens=UNSPECIFIED, begin=0, end=-1,
       step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
@@ -8842,8 +9016,8 @@ Details:
 Usage:
 
     Stat(popSize=False, numOfMales=False, numOfAffected=False,
-      alleleFreq=[], heteroFreq=[], homoFreq=[], genoFreq=[],
-      haploFreq=[], haploHeteroFreq=[], haploHomoFreq=[],
+      numOfSegSites=[], alleleFreq=[], heteroFreq=[], homoFreq=[],
+      genoFreq=[], haploFreq=[], haploHeteroFreq=[], haploHomoFreq=[],
       sumOfInfo=[], meanOfInfo=[], varOfInfo=[], maxOfInfo=[],
       minOfInfo=[], LD=[], association=[], neutrality=[],
       structure=[], HWE=[], vars=ALL_AVAIL, suffix=\"\", output=\"\",
@@ -8937,8 +9111,16 @@ Details:
     *   propOfAffected_sp: Proportion of affected individuals in each
     (virtual) subpopulation.
     *   propOfUnaffected_sp: Proportion of unaffected individuals in
-    each (virtual) subpopulation.alleleFreq: This parameter accepts a
-    list of loci (loci indexes, names, or ALL_AVAIL), at which allele
+    each (virtual) subpopulation.numOfSegSites: Parameter
+    numOfSegSites accepts a list of loci (loci indexes, names, or
+    ALL_AVAIL) and count the number of loci with at least one non-zero
+    allele (segregating sites) for individuals in all or specified
+    (virtual) subpopulations. This parameter sets variables
+    *   numOfSegSites (default): Number of segregating sites in all or
+    specified (virtual) subpopulations.
+    *   numOfSegSites_sp: Number of segregating sites in each
+    (virtual) subpopulation.alleleFreq: This parameter accepts a list
+    of loci (loci indexes, names, or ALL_AVAIL), at which allele
     frequencies will be calculated. This statistic outputs the
     following variables, all of which are dictionary (with loci
     indexes as keys) of default dictionaries (with alleles as keys).
@@ -9552,6 +9734,32 @@ Usage:
 Usage:
 
     x.describe(format=True)
+
+"; 
+
+%ignore simuPOP::statNumOfSegSites;
+
+%feature("docstring") simuPOP::statNumOfSegSites::statNumOfSegSites "
+
+Usage:
+
+    statNumOfSegSites(loci, subPops, vars, suffix)
+
+"; 
+
+%feature("docstring") simuPOP::statNumOfSegSites::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statNumOfSegSites::apply "
+
+Usage:
+
+    x.apply(pop)
 
 "; 
 

@@ -63,8 +63,13 @@ void GenoTransmitter::clearChromosome(const Individual & ind, int ploidy, size_t
 	clearGenotype(ind.genoBegin(ploidy) + m_chromIdx[chrom], m_lociToCopy[chrom]);
 #else
 	DBG_FAILIF(m_chromIdx.empty(), ValueError, "GenoTransmitter is not initialized properly");
+#  ifdef MUTANTALLELE
+	simuPOP::fill(ind.genoBegin(ploidy) + m_chromIdx[chrom],
+		ind.genoBegin(ploidy) + m_chromIdx[chrom + 1], 0);
+#  else
 	fill(ind.genoBegin(ploidy) + m_chromIdx[chrom],
 		ind.genoBegin(ploidy) + m_chromIdx[chrom + 1], 0);
+#  endif
 #endif
 }
 
@@ -81,9 +86,15 @@ void GenoTransmitter::copyChromosome(const Individual & parent, int parPloidy,
 #else
 	DBG_FAILIF(m_chromIdx.empty(), ValueError,
 		"GenoTransmitter is not properly initialized.");
+#  ifdef MUTANTALLELE
+	simuPOP::copy(parent.genoBegin(parPloidy) + m_chromIdx[chrom],
+		parent.genoBegin(parPloidy) + m_chromIdx[chrom + 1],
+		offspring.genoBegin(ploidy) + m_chromIdx[chrom]);
+#  else
 	copy(parent.genoBegin(parPloidy) + m_chromIdx[chrom],
 		parent.genoBegin(parPloidy) + m_chromIdx[chrom + 1],
 		offspring.genoBegin(ploidy) + m_chromIdx[chrom]);
+#  endif
 #endif
 }
 
@@ -100,11 +111,16 @@ void GenoTransmitter::copyChromosomes(const Individual & parent,
 				continue;
 			GenoIterator par = parent.genoBegin(parPloidy, ch);
 			GenoIterator off = offspring.genoBegin(ploidy, ch);
+
 #ifdef BINARYALLELE
 			copyGenotype(par, off, m_lociToCopy[ch]);
 #else
 			GenoIterator par_end = parent.genoEnd(parPloidy, ch);
+#  ifdef MUTANTALLELE
+			simuPOP::copy(par, par_end, off);
+#  else
 			copy(par, par_end, off);
+#  endif
 #endif
 		}
 	} else {             // easy
@@ -112,7 +128,11 @@ void GenoTransmitter::copyChromosomes(const Individual & parent,
 		copyGenotype(parent.genoBegin(parPloidy), offspring.genoBegin(ploidy),
 			offspring.totNumLoci());
 #else
+#  ifdef MUTANTALLELE
+		simuPOP::copy(parent.genoBegin(parPloidy), parent.genoEnd(parPloidy), offspring.genoBegin(ploidy));
+#  else
 		copy(parent.genoBegin(parPloidy), parent.genoEnd(parPloidy), offspring.genoBegin(ploidy));
+#  endif
 #endif
 	}
 }
@@ -150,7 +170,11 @@ bool CloneGenoTransmitter::applyDuringMating(Population & pop, Population & offP
 				copyGenotype(par, off, offspring->numLoci(ch));
 #else
 				GenoIterator par_end = parent->genoEnd(p, ch);
+#  ifdef MUTANTALLELE
+				simuPOP::copy(par, par_end, off);
+#  else
 				copy(par, par_end, off);
+#  endif
 #endif
 			}
 		}
@@ -165,7 +189,11 @@ bool CloneGenoTransmitter::applyDuringMating(Population & pop, Population & offP
 				copyGenotype(par, off, m_lociToCopy[ch]);
 #else
 				GenoIterator par_end = parent->genoEnd(p, ch);
+#  ifdef MUTANTALLELE
+				simuPOP::copy(par, par_end, off);
+#  else
 				copy(par, par_end, off);
+#  endif
 #endif
 			}
 		}
@@ -174,9 +202,13 @@ bool CloneGenoTransmitter::applyDuringMating(Population & pop, Population & offP
 		copyGenotype(parent->genoBegin(), offspring->genoBegin(),
 			offspring->genoSize());
 #else
-		copy(parent->genoBegin(), parent->genoEnd(), offspring->genoBegin());
+#  ifdef MUTANTALLELE
+                simuPOP::copy(parent->genoBegin(), parent->genoEnd(), offspring->genoBegin());
+#  else
+                copy(parent->genoBegin(), parent->genoEnd(), offspring->genoBegin());
+#  endif
 #endif
-	}
+        }
 	// for clone transmitter, sex is also transmitted
 	offspring->setSex(parent->sex());
 	if (infoFields().allAvail()) {
@@ -214,8 +246,7 @@ void MendelianGenoTransmitter::transmitGenotype(const Individual & parent,
 	if (m_chromX < 0 && m_chromY < 0 && !m_hasCustomizedChroms) {
 		// pointer to parental, and offspring chromosome copies
 		GenoIterator par[2];
-		GenoIterator off;
-
+		GenoIterator off; 
 		//
 		par[0] = parent.genoBegin(0);
 		par[1] = parent.genoBegin(1);
@@ -402,7 +433,11 @@ bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop, Populatio
 		copyGenotype(par, off, m_numLoci);
 #else
 		GenoIterator par_end = mom->genoEnd(0, m_mitoChroms[src]);
+#  ifdef MUTANTALLELE
+		simuPOP::copy(par, par_end, off);
+#  else
 		copy(par, par_end, off);
+#  endif
 #endif
 		for (size_t p = 1; p < pldy; ++p)
 			clearChromosome(*offspring, 1, static_cast<int>(*it));
