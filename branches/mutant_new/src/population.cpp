@@ -2525,9 +2525,11 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 
 void Population::push(Population & rhs)
 {
-	DBG_ASSERT(rhs.genoStruIdx() == genoStruIdx(), ValueError,
-		"Evolution can not continue because the new generation has different \n"
-		"genotypic structure.\n");
+	if (rhs.genoStruIdx() != genoStruIdx()) {
+		if (m_ancestralGens > 0)
+			throw ValueError("Cannot save a population with different structure as an ancestral population to the existing population");
+		swapGenoStru(rhs);
+	}
 
 	DBG_FAILIF(this == &rhs, ValueError,
 		"Passed population is a reference of current population, population.push failed.");
