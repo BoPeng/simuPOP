@@ -1190,7 +1190,7 @@ bool MutSpaceMutator::apply(Population & pop) const
 }
 
 
-void MutSpaceRecombinator::transmitGenotype0(Population & offPop, const Individual & parent,
+void MutSpaceRecombinator::transmitGenotype0(Population & pop, Population & offPop, const Individual & parent,
                                              size_t offIndex, int ploidy) const
 {
 #ifdef BINARYALLELE
