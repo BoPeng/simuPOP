@@ -70,10 +70,11 @@ else:
     output = ferr.readlines()[-1].decode('utf8')
     try:
         version = re.match('.*gcc version\s*(\d+).(\d+).(\d+).*', output).groups()
+        if int(version[0]) < 4 or int(version[1]) < 2:
+            print('Support for openMP is turned off because version %s.%s.%s of gcc does not support this feature' % version)
+            USE_OPENMP = False
     except:
-        print('Can not obtain version of gcc.')
-    if int(version[0]) < 4 or int(version[1]) < 2:
-        print('Support for openMP is turned off because version %s.%s.%s of gcc does not support this feature' % version)
+        print('Can not obtain version of gcc, and openMP is disable')
         USE_OPENMP = False
 
 USE_ICC = False
@@ -192,6 +193,7 @@ def replaceIntHeader(file):
 #
 
 HEADER_FILES = [
+    'mutant_vector.h',
     'simuPOP_cfg.h',
     'utility.h',
     'genoStru.h',
@@ -236,7 +238,7 @@ SOURCE_FILES = [
     'pedigree.cpp',
     'virtualSubPop.cpp',
     'sandbox.cpp',
-    'main.cpp',
+#    'main.cpp',
 ]
 
 # since it is troublesome to link to external gsl library,
@@ -418,6 +420,11 @@ MACROS = {
                 ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 0)],
     'baop':   [('SIMUPOP_MODULE', 'simuPOP_baop'), ('BINARYALLELE', None), ('OPTIMIZED', None),
                 ('_SECURE_SCL', 0), ('_HAS_ITERATOR_DEBUGGING', 0)],
+    'mu':     [('SIMUPOP_MODULE', 'simuPOP_mu'), ('MUTANTALLELE', None), 
+                ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 0)],
+    'muop':   [('SIMUPOP_MODULE', 'simuPOP_muop'), ('MUTANTALLELE', None), ('OPTIMIZED', None),
+                ('_SECURE_SCL', 0), ('_HAS_ITERATOR_DEBUGGING', 0)],
+ 
 }
  
 WRAP_INFO = {
@@ -427,6 +434,8 @@ WRAP_INFO = {
     'laop':   ['src/simuPOP_laop_wrap.cpp', 'src/simuPOP_laop.i', '-DLONGALLELE -DOPTIMIZED'],
     'ba':     ['src/simuPOP_ba_wrap.cpp', 'src/simuPOP_ba.i', '-DBINARYALLELE'],
     'baop':   ['src/simuPOP_baop_wrap.cpp', 'src/simuPOP_baop.i', '-DBINARYALLELE -DOPTIMIZED'],
+    'mu':     ['src/simuPOP_mu_wrap.cpp', 'src/simuPOP_mu.i', '-DMUTANTALLELE'],
+    'muop':   ['src/simuPOP_muop_wrap.cpp', 'src/simuPOP_muop.i', '-DMUTANTALLELE -DOPTIMIZED'],
 }
 
 if os.name == 'nt':
@@ -501,7 +510,7 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
         if USE_OPENMP:
             res['extra_compile_args'].append('/Qopenmp' if USE_ICC else '/openmp')   
     else:
-        res['extra_compile_args'] = ['-O3', '-Wall', '-Wno-unknown-pragmas']
+        res['extra_compile_args'] = ['-O3', '-Wall', '-Wno-unknown-pragmas', '-Wno-unused-parameter']
         if not USE_ICC:   # for gcc, turn on extra warning message
             res['extra_compile_args'].append('-Wextra')
         if USE_OPENMP:
@@ -544,7 +553,7 @@ if os.name == 'nt':    # Windows
 if __name__ == '__main__':
     SIMUPOP_VER, SIMUPOP_REV = simuPOP_version()
     # create source file for each module
-    MODULES = ['std', 'op', 'la', 'laop', 'ba', 'baop']
+    MODULES = ['std', 'op', 'la', 'laop', 'ba', 'baop', 'mu', 'muop']
     #
     # Generate Wrapping files
     #

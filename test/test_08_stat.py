@@ -11,7 +11,9 @@
 import math
 import unittest, os, sys
 from simuOpt import setOptions
-setOptions(quiet=True) 
+from random import randint
+
+#setOptions(quiet=True) 
 new_argv = []
 for arg in sys.argv:
     if arg in ['short', 'long', 'binary', 'mutant']:
@@ -31,7 +33,7 @@ try:
 except:
     has_rpy = False
 
-class Teststat(unittest.TestCase):
+class TestStat(unittest.TestCase):
 
     def testPopSize(self):
         'Testing calculation of population (subpopulation) size'
@@ -121,6 +123,73 @@ class Teststat(unittest.TestCase):
         self.assertEqual(pop.dvars([0, 0]).numOfAffected, 50)
         self.assertEqual(pop.dvars([0, 0]).propOfUnaffected, 0.5)
         self.assertEqual(pop.dvars([1, 1]).numOfUnaffected, 350)
+
+    def testNumOfSegSites(self):
+        'Testing the number of segregating sites'
+        pop = Population(size=1000, loci=[10]*10)
+        # 100 mutations
+        for i in range(100):
+            pop.individual(randint(0, 999)).setAllele(i + 1, i)
+        # number of segragation site should be 100
+        stat(pop, numOfSegSites=ALL_AVAIL)
+        self.assertEqual(pop.dvars().numOfSegSites, 100)
+        #
+        # male only?
+        pop = Population(size=1000, loci=[10]*100)
+        # 500 males and 500 females
+        initSex(pop, sex=[MALE, FEMALE])
+        pop.setVirtualSplitter(SexSplitter())
+        # 100 mutations
+        for i in range(100):
+            # male ...
+            pop.individual(i*2).setAllele(i + 1, i)
+        # number of segragation site should be 100
+        stat(pop, numOfSegSites=ALL_AVAIL)
+        self.assertEqual(pop.dvars().numOfSegSites, 100)
+        stat(pop, numOfSegSites=ALL_AVAIL, subPops=[(0,0), (0,1)], vars='numOfSegSites_sp')
+        self.assertEqual(pop.dvars().numOfSegSites, 100)
+        self.assertEqual(pop.dvars((0,0)).numOfSegSites, 100)
+        self.assertEqual(pop.dvars((0,1)).numOfSegSites, 0)
+        # selected loci
+        stat(pop, numOfSegSites=range(100, 1000))
+        self.assertEqual(pop.dvars().numOfSegSites, 0)
+
+
+    def testNumOfMutants(self):
+        'Testing the number of segregating sites'
+        pop = Population(size=1000, loci=[100]*100)
+        # 100 mutations
+        for i in range(100):
+            pop.individual(randint(0, 999)).setAllele(i+1, i*100)
+        # number of Mutants should be 100
+        #for i in pop.individuals():
+        #    print i.genotype()
+        stat(pop, numOfMutants=ALL_AVAIL)
+        self.assertEqual(pop.dvars().numOfMutants, 100)
+        pop = Population(size=10000, loci=[100]*5)
+        for i in range(5):
+            pop.individual(randint(0, 999)).setAllele(i+1, i*100)
+        stat(pop, numOfMutants=[0,100,200,300,400])
+        self.assertEqual(pop.dvars().numOfMutants, 5)
+        #
+        # male only?
+        pop = Population(size=1000, loci=[10]*100)
+        # 500 males and 500 females
+        initSex(pop, sex=[MALE, FEMALE])
+        pop.setVirtualSplitter(SexSplitter())
+        # 100 mutations
+        for i in range(100):
+            # male ...
+            pop.individual(i*2).setAllele(i + 1, i)
+        stat(pop, numOfMutants=ALL_AVAIL)
+        self.assertEqual(pop.dvars().numOfMutants, 100)
+        stat(pop, numOfMutants=ALL_AVAIL, subPops=[(0,0), (0,1)], vars='numOfMutants_sp')
+        self.assertEqual(pop.dvars().numOfMutants, 100)
+        self.assertEqual(pop.dvars((0,0)).numOfMutants, 100)
+        self.assertEqual(pop.dvars((0,1)).numOfMutants, 0)
+        # selected loci
+        stat(pop, numOfMutants=range(100, 1000))
+        self.assertEqual(pop.dvars().numOfMutants, 0)
 
     def testDefDict(self):
         'Testing the default dictionary feature of statistics'

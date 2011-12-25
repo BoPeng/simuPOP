@@ -114,6 +114,7 @@ using boost::cmatch;
 #ifndef STANDALONE_EXECUTABLE
 // these functions are defined in customizedTypes.c which is included
 // in simuPOP_wrap.cpp
+
 extern "C" PyObject * newcarrayobject(GenoIterator begin, GenoIterator end);
 
 extern "C" PyObject * PyDefDict_New();
@@ -123,11 +124,11 @@ extern "C" bool is_defdict(PyTypeObject * type);
 extern "C" int initCustomizedTypes(void);
 
 #else
+
 PyObject * newcarrayobject(GenoIterator, GenoIterator)
 {
 	return NULL;
 }
-
 
 PyObject * PyDefDict_New()
 {
@@ -164,7 +165,11 @@ using std::sort;
 using std::greater;
 
 // global constant variables
+#ifdef MUTANTALLELE
+const unsigned long ModuleMaxAllele = 256;
+#else
 const unsigned long ModuleMaxAllele = std::numeric_limits<Allele>::max();
+#endif
 const unsigned long MaxRandomNumber = std::numeric_limits<int32_t>::max();
 const unsigned char MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
 const size_t InvalidValue = ~size_t(0);
@@ -448,6 +453,12 @@ RNG g_RNG;
 void setOptions(const int numThreads, const char * name, unsigned long seed)
 {
 #ifdef _OPENMP
+#  ifdef MUTANTALLELE
+	// mutant alleletype doesn't support multi-threads
+	(void)numThreads; // avoid an unused parameter warning
+	g_numThreads = 1;
+	omp_set_num_threads(1);
+#  else
 	// if numThreads is zero, all threads will be used.
 	if (numThreads == 0) {
 		g_numThreads = omp_get_max_threads();
@@ -455,6 +466,8 @@ void setOptions(const int numThreads, const char * name, unsigned long seed)
 		omp_set_num_threads(numThreads);
 		g_numThreads = numThreads;
 	}
+#  endif
+
 #  if THREADPRIVATE_SUPPORT == 0
 	g_RNGs.resize(g_numThreads);
 	seed = g_RNGs[0] == NULL ? RNG::generateRandomSeed() : g_RNGs[0]->seed();
@@ -1210,7 +1223,6 @@ void PyObj_As_IntArray(PyObject * obj, vectori & val)
 		PyObj_As_Int(obj, val[0]);
 	}
 }
-
 
 PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end)
 {
@@ -4143,8 +4155,10 @@ PyObject * moduleInfo()
 #ifdef LONGALLELE
 	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("long"));
 #else
-#  ifdef BINARYALLELE
+#  if defined BINARYALLELE
 	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("binary"));
+#  elif defined MUTANTALLELE
+	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("mutant"));
 #  else
 	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("short"));
 #  endif

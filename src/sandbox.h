@@ -44,6 +44,9 @@
 
 namespace simuPOP {
 
+#ifdef MUTANTALLELE
+
+
 /** This operator looks into a population in mutational space and revert a mutant
  *  to wildtype allele if it is fixed in the population. If a valid output is
  *  specifieid, fixed alleles will be outputed with a leading generation number.
@@ -711,6 +714,8 @@ private:
 	const double m_rate;
 	const intMatrix m_ranges;
 };
+
+#endif
 
 }
 #endif

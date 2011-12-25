@@ -6,6 +6,10 @@ Known Bugs:
 
 version 1.0.7 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 
+New features:
+  - New option numOfSegSites to operator Stat to calculate the number of segragating
+    sites.
+
 BUG:
  - Fix a bug that prevents the correct handling of population structure when evolving
    populations with changing population structure.

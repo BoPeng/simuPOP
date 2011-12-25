@@ -343,7 +343,6 @@ public:
 		m_infoPtr[idx] = value;
 	}
 
-
 	/// CPPONLY start of alleles
 	GenoIterator genoBegin() const
 	{
@@ -363,7 +362,6 @@ public:
 	{
 		CHECKRANGEPLOIDY(p);
 		return m_genoPtr + p * totNumLoci();
-
 	}
 
 
@@ -393,7 +391,6 @@ public:
 		return m_genoPtr + p * totNumLoci() + chromEnd(chrom);
 
 	}
-
 
 	/// CPPONLY start of info
 	InfoIterator infoBegin() const
@@ -903,12 +900,11 @@ public:
 	typedef Allele value_type;
 	typedef long int difference_type;
 	typedef AlleleRef reference;
-	typedef GenoIterator pointer;
+	//typedef GenoIterator pointer;
 
 	CombinedAlleleIterator()
 	{
 	}
-
 
 	CombinedAlleleIterator(size_t shift, GenoIterator ptr, GenoIterator ptrEnd, size_t size)
 		: m_useGappedIterator(true), m_valid(true), m_shift(shift),

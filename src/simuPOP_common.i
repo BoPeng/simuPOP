@@ -30,6 +30,7 @@
 %{
 
 #include "config.h"
+#include "mutant_vector.h"
 #include "simuPOP_cfg.h"
 #include "genoStru.h"
 #include "individual.h"
@@ -157,6 +158,7 @@ def _swig_repr(self):
 %include "std_map.i"
 
 %include "config.h"
+%include "mutant_vector.h"
 %include "simuPOP_cfg.h"
 
 typedef long ssize_t;
@@ -226,7 +228,7 @@ namespace std
 
 %newobject loadPopulation;
 
-// %newobject simuPOP::Population::extract;
+//%newobject simuPOP::Population::extract;
 %newobject simuPOP::Population::extractSubPops;
 %newobject simuPOP::Population::extractIndividuals;
 %newobject simuPOP::Population::clone;
