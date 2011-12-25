@@ -773,8 +773,8 @@ bool statNumOfMutants::apply(Population & pop) const
 		IndIterator ind = pop.indIterator(sp->subPop());
 		for (; ind.valid(); ++ind) {
 			GenoIterator it = ind->genoBegin();
-			GenoIterator it_end = ind->genoEnd();
 #ifdef MUTANTALLELE
+			GenoIterator it_end = ind->genoEnd();
 			compressed_vector<Allele>::index_array_type::iterator index_it = it.getIndexIterator();
 			compressed_vector<Allele>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
 			compressed_vector<Allele>::value_array_type::iterator value_it = it.getValueIterator();
