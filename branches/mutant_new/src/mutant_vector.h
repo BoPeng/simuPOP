@@ -119,17 +119,25 @@ class mutant_vector
 
 				iterator (compressed_vector<T> * c, size_t index) : m_container(c), m_index(index)
 				{
-					typename compressed_vector<size_t>::index_array_type::iterator lower = 
-						std::lower_bound(m_container->index_data().begin(), m_container->index_data().begin() + m_container->filled(), index); 
-					m_com_index = lower - m_container->index_data().begin();
+					if (index == 0) {
+						m_com_index = -1;
+					} else {	
+						typename compressed_vector<size_t>::index_array_type::iterator lower = 
+							std::lower_bound(m_container->index_data().begin(), m_container->index_data().begin() + m_container->filled(), index); 
+						m_com_index = lower - m_container->index_data().begin();
+					}
 				// find the smallest m_com_index  that is larger than index
 				}
 
 				iterator (const compressed_vector<T> * c, size_t index) : m_container(c), m_index(index)
 				{
-					typename compressed_vector<size_t>::index_array_type::iterator lower = 
-						std::lower_bound(m_container->index_data().begin(), m_container->index_data().begin() + m_container->filled(), index); 
-					m_com_index = lower - m_container->index_data().begin();
+					if (index == 0) {
+						m_com_index = -1;
+					} else {	
+						typename compressed_vector<size_t>::index_array_type::iterator lower = 
+							std::lower_bound(m_container->index_data().begin(), m_container->index_data().begin() + m_container->filled(), index); 
+						m_com_index = lower - m_container->index_data().begin();
+					}
 				}
 
 				iterator () : m_container(NULL), m_index(0), m_com_index(-1)
@@ -186,7 +194,9 @@ class mutant_vector
 				typename compressed_vector<T>::const_reference operator* () const
 				{
 					static const T zero = 0;
-					if (m_index < m_container->index_data()[m_com_index])
+					if (m_com_index == -1)
+						return zero;
+					else if (m_index < m_container->index_data()[m_com_index])
 						return zero;
 					else
 						return m_container->value_data()[m_com_index];
@@ -214,7 +224,12 @@ class mutant_vector
 				iterator & operator++ () 
 				{
 					++m_index;
-					if (m_index >= m_container->index_data()[m_com_index]) 
+					if (m_container->index_data().size() != 0 && m_com_index == -1) { 
+						m_com_index = 0;
+						if (m_index > m_container->index_data()[m_com_index])
+							++m_com_index;
+					}
+					else if (m_container->index_data().size() != 0 && m_com_index < (int)m_container->index_data().size() && m_index > m_container->index_data()[m_com_index]) 
 						++m_com_index;
 					return *this;
 				}
@@ -222,7 +237,12 @@ class mutant_vector
 				const iterator & operator++ () const
 				{
 					++m_index;
-					if (m_index >= m_container->index_data()[m_com_index]) 
+					if (m_container->index_data().size() != 0 && m_com_index == -1) { 
+						m_com_index = 0;
+						if (m_index > m_container->index_data()[m_com_index])
+							++m_com_index;
+					}
+					else if (m_container->index_data().size() != 0 && m_com_index < (int)m_container->index_data().size() && m_index > m_container->index_data()[m_com_index]) 
 						++m_com_index;
 					return *this;
 				}
