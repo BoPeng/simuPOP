@@ -494,7 +494,7 @@ bool MutSpaceMutator::apply(Population & pop) const
 }
 
 
-void MutSpaceRecombinator::transmitGenotype0(Population & pop, Population & offPop, const Individual & parent,
+void MutSpaceRecombinator::transmitGenotype0(Population &, Population & offPop, const Individual & parent,
                                              size_t offIndex, int ploidy) const
 {
 	size_t nCh = parent.numChrom();
@@ -577,7 +577,7 @@ void MutSpaceRecombinator::transmitGenotype0(Population & pop, Population & offP
 }
 
 
-void MutSpaceRecombinator::transmitGenotype1(Population & pop, Population & offPop, const Individual & parent,
+void MutSpaceRecombinator::transmitGenotype1(Population &, Population & offPop, const Individual & parent,
                                              size_t offIndex, int ploidy) const
 {
 	const matrixi & ranges = m_ranges.elems();
@@ -1178,6 +1178,7 @@ void MutSpaceRecombinator::transmitGenotype0(Population & pop, Population & offP
 	(void)parent;       // avoid warning about unused parameter
 	(void)offIndex;     // avoid warning about unused parameter
 	(void)ploidy;       // avoid warning about unused parameter
+	(void)pop;          // avoid warning about unused parameter
   #else
 	size_t nCh = parent.numChrom();
 
@@ -1269,6 +1270,7 @@ void MutSpaceRecombinator::transmitGenotype1(Population & pop, Population & offP
 	(void)parent;       // avoid warning about unused parameter
 	(void)offIndex;     // avoid warning about unused parameter
 	(void)ploidy;       // avoid warning about unused parameter
+	(void)pop;          // avoid warning about unused parameter
   #else
 	const matrixi & ranges = m_ranges.elems();
 
