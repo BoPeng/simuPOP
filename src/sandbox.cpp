@@ -497,12 +497,6 @@ bool MutSpaceMutator::apply(Population & pop) const
 void MutSpaceRecombinator::transmitGenotype0(Population & pop, Population & offPop, const Individual & parent,
                                              size_t offIndex, int ploidy) const
 {
-#ifdef BINARYALLELE
-	(void)offPop;       // avoid warning about unused parameter
-	(void)parent;       // avoid warning about unused parameter
-	(void)offIndex;     // avoid warning about unused parameter
-	(void)ploidy;       // avoid warning about unused parameter
-#else
 	size_t nCh = parent.numChrom();
 
 	// count duplicates...
@@ -580,19 +574,12 @@ void MutSpaceRecombinator::transmitGenotype0(Population & pop, Population & offP
 		// fill the rest with 0.
 		std::fill(it, it_end, 0);
 	}
-#endif
 }
 
 
 void MutSpaceRecombinator::transmitGenotype1(Population & pop, Population & offPop, const Individual & parent,
                                              size_t offIndex, int ploidy) const
 {
-#ifdef BINARYALLELE
-	(void)offPop;       // avoid warning about unused parameter
-	(void)parent;       // avoid warning about unused parameter
-	(void)offIndex;     // avoid warning about unused parameter
-	(void)ploidy;       // avoid warning about unused parameter
-#else
 	const matrixi & ranges = m_ranges.elems();
 
 	for (size_t ch = 0; ch < parent.numChrom(); ++ch) {
@@ -693,7 +680,6 @@ void MutSpaceRecombinator::transmitGenotype1(Population & pop, Population & offP
 		// fill the rest with 0.
 		std::fill(it, it_end, 0);
 	}
-#endif
 }
 
 
@@ -772,14 +758,8 @@ bool RevertFixedSites::apply(Population & pop) const
 			std::fill(new_alleles.begin(), new_alleles.end(), Allele(0));
 			set_difference(old_alleles.begin(), old_alleles.end(),
 				commonAlleles.begin(), commonAlleles.end(), new_alleles.begin());
-#ifdef MUTANTALLELE
-                        GenoIterator ptr = it->genoBegin(p);
-			for (vectora::iterator new_it = new_alleles.begin(); new_it != new_alleles.end(); ++new_it, ++ptr) 
-				*ptr = *new_it;
-#else
 			std::copy(new_alleles.begin(), new_alleles.end(),
 				it->genoBegin(p));
-#endif
 		}
 	}
 	return true;
@@ -1050,9 +1030,9 @@ size_t MutSpaceMutator::locateVacantLocus(Population & /* pop */, size_t beg, si
 
 bool MutSpaceMutator::apply(Population & pop) const
 {
-#ifdef BINARYALLELE
+  #ifdef BINARYALLELE
 	(void)pop;      // avoid warning about unused parameter
-#else
+  #else
 	const matrixi & ranges = m_ranges.elems();
 	vectoru width(ranges.size());
 
@@ -1185,7 +1165,7 @@ bool MutSpaceMutator::apply(Population & pop) const
 	}           // each subpopulation
 	if (out)
 		closeOstream();
-#endif
+  #endif
 	return true;
 }
 
@@ -1193,12 +1173,12 @@ bool MutSpaceMutator::apply(Population & pop) const
 void MutSpaceRecombinator::transmitGenotype0(Population & pop, Population & offPop, const Individual & parent,
                                              size_t offIndex, int ploidy) const
 {
-#ifdef BINARYALLELE
+  #ifdef BINARYALLELE
 	(void)offPop;       // avoid warning about unused parameter
 	(void)parent;       // avoid warning about unused parameter
 	(void)offIndex;     // avoid warning about unused parameter
 	(void)ploidy;       // avoid warning about unused parameter
-#else
+  #else
 	size_t nCh = parent.numChrom();
 
 	// count duplicates...
@@ -1277,19 +1257,19 @@ void MutSpaceRecombinator::transmitGenotype0(Population & pop, Population & offP
 		// fill the rest with 0.
 		std::fill(it, it_end, 0);
 	}
-#endif
+  #endif
 }
 
 
 void MutSpaceRecombinator::transmitGenotype1(Population & pop, Population & offPop, const Individual & parent,
                                              size_t offIndex, int ploidy) const
 {
-#ifdef BINARYALLELE
+  #ifdef BINARYALLELE
 	(void)offPop;       // avoid warning about unused parameter
 	(void)parent;       // avoid warning about unused parameter
 	(void)offIndex;     // avoid warning about unused parameter
 	(void)ploidy;       // avoid warning about unused parameter
-#else
+  #else
 	const matrixi & ranges = m_ranges.elems();
 
 	for (size_t ch = 0; ch < parent.numChrom(); ++ch) {
@@ -1391,7 +1371,7 @@ void MutSpaceRecombinator::transmitGenotype1(Population & pop, Population & offP
 		// fill the rest with 0.
 		std::fill(it, it_end, 0);
 	}
-#endif
+  #endif
 }
 
 

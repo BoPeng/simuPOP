@@ -707,15 +707,43 @@ bool statNumOfSegSites::apply(Population & pop) const
                 pop.activateVirtualSubPop(*sp);
 
                 // go through all loci
+#ifdef MUTANTALLELE
+		IndIterator ind = pop.indIterator(sp->subPop());
+		for (; ind.valid(); ++ind) {
+			GenoIterator it = ind->genoBegin();
+			GenoIterator it_end = ind->genoEnd();
+			compressed_vector<Allele>::index_array_type::iterator index_it = it.getIndexIterator();
+			compressed_vector<Allele>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
+			compressed_vector<Allele>::value_array_type::iterator value_it = it.getValueIterator();
+			size_t indIndex = it.getIndex();
+			for (;index_it != index_it_end; ++index_it, ++value_it) {
+				if (m_loci.allAvail()) {
+					if (*value_it != 0) {
+						segSites.insert(*index_it - indIndex);
+					}		
+				} else {
+					for (size_t idx = 0; idx < loci.size(); ++idx) {
+						if (*index_it == indIndex + loci[idx] && *value_it != 0) {
+							segSites.insert(loci[idx]);
+							break;
+						}
+					}
+				}
+			}
+
+                }
+
+#else
                 for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
                         size_t loc = loci[idx];
                         IndAlleleIterator a = pop.alleleIterator(loc, sp->subPop());
                         for (; a.valid(); ++a)
-                                if (*a != 0u) {
-                                        segSites.insert(loc);
+                                if (*a != 0) {
+                                        segSites.insert((ULONG)loc);
                                         break;
                                 }
                 }
+#endif
                 pop.deactivateVirtualSubPop(sp->subPop());
 
                 if (m_vars.contains(numOfSegSites_sp_String))
@@ -766,33 +794,44 @@ bool statNumOfMutants::apply(Population & pop) const
 	subPopList subPops = m_subPops.expandFrom(pop);
 	subPopList::const_iterator sp = subPops.begin();
 	subPopList::const_iterator spEnd = subPops.end();
-
 	for ( ; sp != spEnd; ++sp) {
 		size_t mutantCount = 0; 
 		pop.activateVirtualSubPop(*sp);
 		IndIterator ind = pop.indIterator(sp->subPop());
 		for (; ind.valid(); ++ind) {
 			GenoIterator it = ind->genoBegin();
-#ifdef MUTANTALLELE
 			GenoIterator it_end = ind->genoEnd();
+#ifdef MUTANTALLELE
 			compressed_vector<Allele>::index_array_type::iterator index_it = it.getIndexIterator();
 			compressed_vector<Allele>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
 			compressed_vector<Allele>::value_array_type::iterator value_it = it.getValueIterator();
 			size_t indIndex = it.getIndex();
 			for (;index_it != index_it_end; ++index_it, ++value_it) {
-				for (size_t idx = 0; idx < loci.size(); ++idx) {
-					size_t loc = indIndex + loci[idx];  
-					if (*index_it == loc && *value_it != 0) {
+				if (m_loci.allAvail()) {
+					if (*value_it != 0)
 						mutantCount++; 
-						break;
+				} else {
+					for (size_t idx = 0; idx < loci.size(); ++idx) {
+						size_t loc = indIndex + loci[idx];  
+						if (*index_it == loc && *value_it != 0) {
+							mutantCount++; 
+							break;
+						}
 					}
 				}
 			}
 #else
-			for (size_t idx = 0; idx < loci.size(); ++idx) {
-				size_t loc = loci[idx];  
-				if (*(it + loc) != 0)
-					mutantCount++;
+			if (m_loci.allAvail()) {
+				for (;it != it_end; ++it) {
+					if (*it != 0)
+						mutantCount++;
+				}
+			} else {
+				for (size_t idx = 0; idx < loci.size(); ++idx) {
+					size_t loc = loci[idx];  
+					if (*(it + loc) != 0)
+						mutantCount++;
+				}
 			}
 #endif
 		}
