@@ -739,7 +739,7 @@ bool statNumOfSegSites::apply(Population & pop) const
                         IndAlleleIterator a = pop.alleleIterator(loc, sp->subPop());
                         for (; a.valid(); ++a)
                                 if (*a != 0) {
-                                        segSites.insert(loc);
+                                        segSites.insert((ULONG)loc);
                                         break;
                                 }
                 }
