@@ -1,5 +1,5 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
-\lyxformat 345
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
 \begin_document
 \begin_header
 \textclass manual
@@ -44,18 +44,26 @@ Last modified \\
 \subsubsectionfont{\color{TitleColor}}
 \end_preamble
 \use_default_options false
+\maintain_unincluded_children false
 \language english
+\language_package default
 \inputencoding auto
+\fontencoding global
 \font_roman default
 \font_sans default
 \font_typewriter beramono
 \font_default_family default
+\use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 70
 
 \graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
 \float_placement h
 \paperfontsize default
 \spacing single
@@ -77,13 +85,22 @@ Last modified \\
 \use_geometry false
 \use_amsmath 1
 \use_esint 0
+\use_mhchem 1
+\use_mathdots 1
 \cite_engine natbib_authoryear
 \use_bibtopic false
+\use_indices false
 \paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
 \secnumdepth 2
 \tocdepth 3
 \paragraph_separation indent
-\defskip medskip
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -91,8 +108,9 @@ Last modified \\
 \listings_params "alsoletter={>.},backgroundcolor={\color{VerbatimBackgroundColor}},basicstyle={\ttfamily\color{VerbatimColor}},commentstyle={\small\color{VerbatimCommentColor}\slshape},emph={[2]>>>,...},emphstyle={[2]\color{VerbatimPromptColor}\bf},language=Python,otherkeywords={>>>,...},showspaces=false,showstringspaces=false,showtabs=false,stringstyle={\color{VerbatimStringColor}},xleftmargin=10pt"
 \tracking_changes false
 \output_changes false
-\author "" 
-\author "" 
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
 \end_header
 
 \begin_body
@@ -108,6 +126,7 @@ hor_pos "c"
 has_inner_box 1
 inner_pos "c"
 use_parbox 0
+use_makebox 0
 width "100col%"
 special "none"
 height "1pt"
@@ -931,15 +950,7 @@ status open
 
 \begin_layout Plain Layout
 
-print(
-\begin_inset Quotes eld
-\end_inset
-
-Population size is %d
-\begin_inset Quotes erd
-\end_inset
-
- % size)
+print(Population size is %d % size)
 \end_layout
 
 \end_inset
@@ -951,15 +962,7 @@ status open
 
 \begin_layout Plain Layout
 
-print 
-\begin_inset Quotes eld
-\end_inset
-
-Population size is
-\begin_inset Quotes erd
-\end_inset
-
-, size
+print Population size is, size
 \end_layout
 
 \end_inset
@@ -1532,7 +1535,7 @@ quiet
 SIMUALLELETYPE
 \family default
 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -2425,7 +2428,7 @@ Another two important concepts are the
 absolute index
 \emph default
 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -2439,7 +2442,7 @@ index!absolute
 relative index
 \emph default
 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -2470,7 +2473,7 @@ absLocusIndex(chrom,index)
 absolute index
 \emph default
 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -2484,7 +2487,7 @@ index!absolute
 relative index
 \emph default
 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -2994,7 +2997,7 @@ name "sec:Genotypic-structure"
 \end_inset
 
  
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -3012,7 +3015,7 @@ Genotypic structure refers to structural information shared by all individuals
  
 \family typewriter
 ploidy
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -3022,7 +3025,7 @@ GenoStruTrait!ploidy
 \end_inset
 
 (), ploidyName
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -3037,7 +3040,7 @@ GenoStruTrait!ploidyName
  
 \family typewriter
 numChrom
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -3047,7 +3050,7 @@ GenoStruTrait!numChrom
 \end_inset
 
 (), chromType()
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -3057,7 +3060,7 @@ GenoStruTrait!chromType
 \end_inset
 
 , chromName
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -3072,7 +3075,7 @@ GenoStruTrait!chromName
  
 \family typewriter
 numLoci
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -3086,7 +3089,7 @@ GenoStruTrait!numLoci
  
 \family typewriter
 locusPos
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -3105,7 +3108,7 @@ locusName(loc)
  
 \family typewriter
 infoField
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -3115,7 +3118,7 @@ GenoStruTrait!infoField
 \end_inset
 
 (idx), infoFields
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -3990,7 +3993,7 @@ Population
 The 
 \family typewriter
 Population
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5127,7 +5130,7 @@ Each simuPOP population has a Python dictionary that can be used to store
  For example, the 
 \family typewriter
 Stat
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5155,7 +5158,7 @@ read from this dictionary and act upon its information.
 simuPOP provides two functions, namely 
 \family typewriter
 Population.vars
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5169,7 +5172,7 @@ Population!vars
  and 
 \family typewriter
 Population.
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -5321,7 +5324,7 @@ Save and load a population
 simuPOP populations can be saved to and loaded from disk files using 
 \family typewriter
 Population.save
-\begin_inset Index
+\begin_inset Index idx
 status open
 
 \begin_layout Plain Layout
@@ -5337,7 +5340,7 @@ Population!save
 loadPopulation
 \family default
 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -6877,7 +6880,7 @@ name "sec:Mating-Schemes"
 \end_inset
 
 
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -7328,8 +7331,10 @@ numOffspring=(GEOMETRIC_DISTRIBUTION, p)
 \end_inset
 
 : 
-\begin_inset Formula \[
-\mbox{Pr}\left(k\right)=p\left(1-p\right)^{k-1}\;\textrm{ for }k\geq1\]
+\begin_inset Formula 
+\[
+\mbox{Pr}\left(k\right)=p\left(1-p\right)^{k-1}\;\textrm{ for }k\geq1
+\]
 
 \end_inset
 
@@ -7352,16 +7357,20 @@ numOffspring=(POISSON_DISTRIBUTION, p)
 
 .
  The distribution is
-\begin_inset Formula \[
-\mbox{Pr}\left(k\right)=\frac{p^{k}e^{-p}}{k!}\;\textrm{ for}k\geq0\]
+\begin_inset Formula 
+\[
+\mbox{Pr}\left(k\right)=\frac{p^{k}e^{-p}}{k!}\;\textrm{ for}k\geq0
+\]
 
 \end_inset
 
 Note that, however, because families with zero offspring are ignored, the
  distribution of the observed number of offspring (excluding zero) follows
  a zero-truncated Poission distribution with probability
-\begin_inset Formula \[
-\mbox{Pr}\left(k\right)=\frac{p^{k}e^{-p}}{k!\left(1-e^{-p}\right)}\;\textrm{ for}k\geq1\]
+\begin_inset Formula 
+\[
+\mbox{Pr}\left(k\right)=\frac{p^{k}e^{-p}}{k!\left(1-e^{-p}\right)}\;\textrm{ for}k\geq1
+\]
 
 \end_inset
 
@@ -7392,8 +7401,10 @@ The number of offspring for each mating event follows a Binomial distribution
 
 .
  
-\begin_inset Formula \[
-\mbox{Pr}\left(k\right)=\frac{n!}{k!\left(n-k\right)!}p^{k}\left(1-p\right)^{n-k}\;\textrm{ for }n\geq k\geq0\]
+\begin_inset Formula 
+\[
+\mbox{Pr}\left(k\right)=\frac{n!}{k!\left(n-k\right)!}p^{k}\left(1-p\right)^{n-k}\;\textrm{ for }n\geq k\geq0
+\]
 
 \end_inset
 
@@ -7422,8 +7433,10 @@ numOffspring=(UNIFORM_DISTRIBUTION, a, b):
 
 .
  
-\begin_inset Formula \[
-\mbox{Pr}\left(k\right)=\frac{1}{b-a+1}\;\textrm{ for }b\geq k\geq a\]
+\begin_inset Formula 
+\[
+\mbox{Pr}\left(k\right)=\frac{1}{b-a+1}\;\textrm{ for }b\geq k\geq a
+\]
 
 \end_inset
 
@@ -10636,13 +10649,16 @@ migrIslandRates(r, n)
 \end_inset
 
  migration matrix
-\begin_inset Formula \[
+\begin_inset Formula 
+\[
 \left(\begin{array}{ccccc}
 1-r & \frac{r}{n-1} & ... & ... & \frac{r}{n-1}\\
 \frac{r}{n-1} & 1-r & ... & ... & \frac{r}{n-1}\\
  &  & ...\\
 \frac{r}{n-1} & ... & ... & 1-r & \frac{r}{n-1}\\
-\frac{r}{n-1} & ... & ... & \frac{r}{n-1} & 1-r\end{array}\right)\]
+\frac{r}{n-1} & ... & ... & \frac{r}{n-1} & 1-r
+\end{array}\right)
+\]
 
 \end_inset
 
@@ -10705,13 +10721,16 @@ migrHierarchicalIslandRates([r11, r12], r2, [3, 2])
 \end_inset
 
  migration matrix
-\begin_inset Formula \[
+\begin_inset Formula 
+\[
 \left(\begin{array}{ccccc}
 1-r_{11}-r_{2} & \frac{r_{11}}{2} & \frac{r_{11}}{2} & \frac{r_{2}}{2} & \frac{r_{2}}{2}\\
 \frac{r_{11}}{2} & 1-r_{11}-r_{2} & \frac{r_{11}}{2} & \frac{r_{2}}{2} & \frac{r_{2}}{2}\\
 \frac{r_{11}}{2} & \frac{r_{11}}{2} & 1-r_{11}-r_{2} & \frac{r_{2}}{2} & \frac{r_{2}}{2}\\
 \frac{r_{2}}{3} & \frac{r_{2}}{3} & \frac{r_{2}}{3} & 1-r_{12}-r_{2} & r_{12}\\
-\frac{r_{2}}{3} & \frac{r_{2}}{3} & \frac{r_{2}}{3} & r_{12} & 1-r_{12}-r_{2}\end{array}\right)\]
+\frac{r_{2}}{3} & \frac{r_{2}}{3} & \frac{r_{2}}{3} & r_{12} & 1-r_{12}-r_{2}
+\end{array}\right)
+\]
 
 \end_inset
 
@@ -10728,13 +10747,16 @@ migrSteppingStoneRates(r, n, circular=False)
 \end_inset
 
  migration matrix
-\begin_inset Formula \[
+\begin_inset Formula 
+\[
 \left(\begin{array}{ccccc}
 1-r & r\\
 r/2 & 1-r & r/2\\
  &  & ...\\
  &  & r/2 & 1-r & r/2\\
- &  &  & r & 1-r\end{array}\right)\]
+ &  &  & r & 1-r
+\end{array}\right)
+\]
 
 \end_inset
 
@@ -10743,13 +10765,16 @@ and if
 circular=True
 \family default
 , returns
-\begin_inset Formula \[
+\begin_inset Formula 
+\[
 \left(\begin{array}{ccccc}
 1-r & r/2 &  &  & r/2\\
 r/2 & 1-r & r/2\\
  &  & ...\\
  &  & r/2 & 1-r & r/2\\
-r/2 &  &  & r/2 & 1-r\end{array}\right)\]
+r/2 &  &  & r/2 & 1-r
+\end{array}\right)
+\]
 
 \end_inset
 
@@ -10933,7 +10958,7 @@ SplitSubPops
 Operator 
 \family typewriter
 SplitSubPops
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -11132,6 +11157,91 @@ reference "ResizeSubPops"
 LatexCommand lstinputlisting
 filename "log/ResizeSubPops.log"
 lstparams "caption={Resize subpopulation sizes},label={ResizeSubPops}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Time-dependent migration rate
+\end_layout
+
+\begin_layout Standard
+In evolutionary scenarios with complex demographic models, number of subpopulati
+ons and migration rate might change from generation to generation.
+ For example, if one of the subpopulations is split into two, the migration
+ matrix has to be changed to accommendate increased number of subpopulations.
+\end_layout
+
+\begin_layout Standard
+If there are a limited number of demographic changes and a few number of
+ pre-determined migration matrices.
+ You can use a number of 
+\family typewriter
+Migrators
+\family default
+ that are applied at different generations.
+ For example, you can use the following operators to apply the first migration
+ scheme during first ten generations (0, ..., 9), and the second migration
+ scheme during the rest of the evolutionary process: 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+preOps=[
+\end_layout
+
+\begin_layout Plain Layout
+
+    Migrator(rate=M1, end=9),
+\end_layout
+
+\begin_layout Plain Layout
+
+    Migrator(rate=M2, begin=10),
+\end_layout
+
+\begin_layout Plain Layout
+
+]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If changes of demographies are frequent or stochastic so that migration
+ matrices can only be determined programmatically, it is easier to use a
+ 
+\family typewriter
+PyOperator
+\family default
+ to migrate populations using the function form of a 
+\family typewriter
+Migrator
+\family default
+.
+ This is demonstrated in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "varyingMigr"
+
+\end_inset
+
+ where migration matrixes are computed dynamically due to random split of
+ subpopulations.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/VaryingMigr.log"
+lstparams "caption={Varying migration rate},label={varyingMigr}"
 
 \end_inset
 
@@ -12022,12 +12132,15 @@ A
 \end_inset
 
  at a locus and mutate between them using rate matrix 
-\begin_inset Formula \[
+\begin_inset Formula 
+\[
 p_{ij}=\left(\begin{array}{cccc}
 1-\mu & \frac{\mu}{k-1} & \cdots & \frac{\mu}{k-1}\\
 \frac{\mu}{k-1} & 1-\mu & \cdots & \frac{\mu}{k-1}\\
 \vdots & \vdots & \ddots & \vdots\\
-\frac{\mu}{k-1} & \frac{\mu}{k-1} & \cdots & 1-\mu\end{array}\right)\]
+\frac{\mu}{k-1} & \frac{\mu}{k-1} & \cdots & 1-\mu
+\end{array}\right)
+\]
 
 \end_inset
 
@@ -12142,10 +12255,13 @@ SNPMutator
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula \[
+\begin_inset Formula 
+\[
 R=\left(\begin{array}{cc}
 1-u & u\\
-v & 1-v\end{array}\right).\]
+v & 1-v
+\end{array}\right).
+\]
 
 \end_inset
 
@@ -12213,13 +12329,16 @@ AcgtMutator
 
 \begin_layout Standard
 \align center
-\begin_inset Formula \[
+\begin_inset Formula 
+\[
 \begin{array}{ccccc}
  & A & C & G & T\\
 A & - & x_{1} & x_{2} & x_{3}\\
 C & x_{4} & - & x_{5} & x_{6}\\
 G & x_{7} & x_{8} & - & x_{9}\\
-T & x_{10} & x_{11} & x_{12} & -\end{array}\]
+T & x_{10} & x_{11} & x_{12} & -
+\end{array}
+\]
 
 \end_inset
 
@@ -12299,12 +12418,15 @@ The Jukes and Cantor model is similar to a
 , an allele will have equal probability to mutate to any of the 4 allelic
  states.
  
-\begin_inset Formula \[
+\begin_inset Formula 
+\[
 R=\left(\begin{array}{cccc}
 - & \frac{\mu}{4} & \frac{\mu}{4} & \frac{\mu}{4}\\
 \frac{\mu}{4} & - & \frac{\mu}{4} & \frac{\mu}{4}\\
 \frac{\mu}{4} & \frac{\mu}{4} & - & \frac{\mu}{4}\\
-\frac{\mu}{4} & \frac{\mu}{4} & \frac{\mu}{4} & -\end{array}\right)\]
+\frac{\mu}{4} & \frac{\mu}{4} & \frac{\mu}{4} & -
+\end{array}\right)
+\]
 
 \end_inset
 
@@ -12360,12 +12482,15 @@ Kimura 's model distinguishes transitions (
 \end_inset
 
 .
-\begin_inset Formula \[
+\begin_inset Formula 
+\[
 R=\left(\begin{array}{cccc}
 - & \frac{\mu}{4} & \frac{\mu}{4}\kappa & \frac{\mu}{4}\\
 \frac{\mu}{4} & - & \frac{\mu}{4} & \frac{\mu}{4}\kappa\\
 \frac{\mu}{4}\kappa & \frac{\mu}{4} & - & \frac{\mu}{4}\\
-\frac{\mu}{4} & \frac{\mu}{4}\kappa & \frac{\mu}{4} & -\end{array}\right)\]
+\frac{\mu}{4} & \frac{\mu}{4}\kappa & \frac{\mu}{4} & -
+\end{array}\right)
+\]
 
 \end_inset
 
@@ -12420,12 +12545,15 @@ This model assumes different base frequencies but the same probabilities
 
 .
  
-\begin_inset Formula \[
+\begin_inset Formula 
+\[
 R=\left(\begin{array}{cccc}
 - & \mu\pi_{C} & \mu\pi_{G} & \mu\pi_{T}\\
 \mu\pi_{A} & - & \mu\pi_{G} & \mu\pi_{T}\\
 \mu\pi_{A} & \mu\pi_{C} & - & \mu\pi_{T}\\
-\mu\pi_{A} & \mu\pi_{C} & \mu\pi_{G} & -\end{array}\right)\]
+\mu\pi_{A} & \mu\pi_{C} & \mu\pi_{G} & -
+\end{array}\right)
+\]
 
 \end_inset
 
@@ -12465,12 +12593,15 @@ model='HKY85'
 \begin_layout Standard
 This model replaces 1/4 frequency used in the Kimura's 2-parameter model
  with nucleotide-specific frequencies.
-\begin_inset Formula \[
+\begin_inset Formula 
+\[
 R=\left(\begin{array}{cccc}
 - & \mu\pi_{C} & \mu\kappa\pi_{G} & \mu\pi_{T}\\
 \mu\pi_{A} & - & \mu\pi_{G} & \mu\kappa\pi_{T}\\
 \mu\kappa\pi_{A} & \mu\pi_{C} & - & \mu\pi_{T}\\
-\mu\pi_{A} & \mu\kappa\pi_{C} & \mu\pi_{G} & -\end{array}\right)\]
+\mu\pi_{A} & \mu\kappa\pi_{C} & \mu\pi_{G} & -
+\end{array}\right)
+\]
 
 \end_inset
 
@@ -12505,12 +12636,15 @@ This model is a HKY85 model with
 \end_inset
 
 ,
-\begin_inset Formula \[
+\begin_inset Formula 
+\[
 R=\left(\begin{array}{cccc}
 - & \frac{1}{2}\mu\pi_{GC} & \frac{1}{2}\mu\nu\pi_{GC} & \frac{1}{2}\mu\pi_{AT}\\
 \frac{1}{2}\mu\pi_{AT} & - & \frac{1}{2}\mu\pi_{GC} & \frac{1}{2}\mu\nu\pi_{AT}\\
 \frac{1}{2}\mu\nu\pi_{AT} & \frac{1}{2}\mu\pi_{GC} & - & \frac{1}{2}\mu\pi_{AT}\\
-\frac{1}{2}\mu\pi_{AT} & \frac{1}{2}\mu\nu\pi_{GC} & \frac{1}{2}\mu\pi_{GC} & -\end{array}\right)\]
+\frac{1}{2}\mu\pi_{AT} & \frac{1}{2}\mu\nu\pi_{GC} & \frac{1}{2}\mu\pi_{GC} & -
+\end{array}\right)
+\]
 
 \end_inset
 
@@ -12573,12 +12707,15 @@ This model extends the HKY1985 model by distinguishing
 \end_inset
 
 .
-\begin_inset Formula \[
+\begin_inset Formula 
+\[
 R=\left(\begin{array}{cccc}
 - & \mu\pi_{C} & \mu\kappa_{1}\pi_{G} & \mu\pi_{T}\\
 \mu\pi_{A} & - & \mu\pi_{G} & \mu\kappa_{2}\pi_{T}\\
 \mu\kappa_{1}\pi_{A} & \mu\pi_{C} & - & \mu\pi_{T}\\
-\mu\pi_{A} & \mu\kappa_{2}\pi_{C} & \mu\pi_{G} & -\end{array}\right)\]
+\mu\pi_{A} & \mu\kappa_{2}\pi_{C} & \mu\pi_{G} & -
+\end{array}\right)
+\]
 
 \end_inset
 
@@ -12639,12 +12776,15 @@ The generalized time reviersible model is the most general neutral, indepdendent
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula \[
+\begin_inset Formula 
+\[
 R=\left(\begin{array}{cccc}
 - & \frac{\pi_{A}x_{1}}{\pi_{C}} & \frac{\pi_{A}x_{2}}{\pi_{G}} & \frac{\pi_{A}x_{3}}{\pi_{T}}\\
 x_{1} & - & \frac{\pi_{C}x_{4}}{\pi_{G}} & \frac{\pi_{C}x_{5}}{\pi_{T}}\\
 x_{2} & x_{4} & - & \frac{\pi_{G}x_{6}}{\pi_{T}}\\
-x_{3} & x_{5} & x_{6} & -\end{array}\right)\]
+x_{3} & x_{5} & x_{6} & -
+\end{array}\right)
+\]
 
 \end_inset
 
@@ -12711,12 +12851,15 @@ model='general'
 \begin_deeper
 \begin_layout Standard
 This is the most general model with 12 parameters:
-\begin_inset Formula \[
+\begin_inset Formula 
+\[
 R=\left(\begin{array}{cccc}
 - & x_{1} & x_{2} & x_{3}\\
 x_{4} & - & x_{5} & x_{6}\\
 x_{7} & x_{8} & - & x_{9}\\
-x_{10} & x_{11} & x_{12} & -\end{array}\right)\]
+x_{10} & x_{11} & x_{12} & -
+\end{array}\right)
+\]
 
 \end_inset
 
@@ -13599,10 +13742,13 @@ When a mutation event happens, mutation allele
 \end_inset
 
  with probability 
-\begin_inset Formula \[
+\begin_inset Formula 
+\[
 \mbox{Pr}\left(i\rightarrow j\right)=\begin{cases}
 1-\frac{1}{\mu}\left(1-p_{ii}\right) & \mbox{if }i=j\\
-\frac{p_{ij}}{\mu} & \mbox{if }i\ne j\end{cases}\]
+\frac{p_{ij}}{\mu} & \mbox{if }i\ne j
+\end{cases}
+\]
 
 \end_inset
 
@@ -13611,8 +13757,10 @@ When a mutation event happens, mutation allele
 
 \begin_layout Standard
 Because steps 1 and 2 are independent, it is easy to verify that
-\begin_inset Formula \[
-p_{ij}=\mu\mbox{Pr}\left(i\rightarrow j\right)\]
+\begin_inset Formula 
+\[
+p_{ij}=\mu\mbox{Pr}\left(i\rightarrow j\right)
+\]
 
 \end_inset
 
@@ -13621,8 +13769,10 @@ if
 \end_inset
 
  and 
-\begin_inset Formula \[
-p_{ii}=\left(1-\mu\right)+\mu\mbox{Pr}\left(i\rightarrow i\right)\]
+\begin_inset Formula 
+\[
+p_{ii}=\left(1-\mu\right)+\mu\mbox{Pr}\left(i\rightarrow i\right)
+\]
 
 \end_inset
 
@@ -13653,12 +13803,15 @@ For example, for a
 \end_inset
 
 -allele model with 
-\begin_inset Formula \[
+\begin_inset Formula 
+\[
 p_{ij}=\left(\begin{array}{cccc}
 1-\mu & \frac{\mu}{k-1} & \cdots & \frac{\mu}{k-1}\\
 \frac{\mu}{k-1} & 1-\mu & \cdots & \frac{\mu}{k-1}\\
 \vdots & \vdots & \ddots & \vdots\\
-\frac{\mu}{k-1} & \frac{\mu}{k-1} & \cdots & 1-\mu\end{array}\right)\]
+\frac{\mu}{k-1} & \frac{\mu}{k-1} & \cdots & 1-\mu
+\end{array}\right)
+\]
 
 \end_inset
 
@@ -13671,10 +13824,13 @@ p_{ij}=\left(\begin{array}{cccc}
 \end_inset
 
  for the first step and 
-\begin_inset Formula \[
+\begin_inset Formula 
+\[
 \mbox{Pr}\left(i\rightarrow j\right)=\begin{cases}
 0 & \mbox{if }i=j\\
-\frac{1}{k-1} & \mbox{if }i\ne j\end{cases}\]
+\frac{1}{k-1} & \mbox{if }i\ne j
+\end{cases}
+\]
 
 \end_inset
 
@@ -13702,10 +13858,13 @@ For a classical mutation model with
 \end_inset
 
 , 
-\begin_inset Formula \[
+\begin_inset Formula 
+\[
 p_{ij}=\left(\begin{array}{cc}
 1-u & u\\
-v & 1-v\end{array}\right)\]
+v & 1-v
+\end{array}\right)
+\]
 
 \end_inset
 
@@ -13722,10 +13881,13 @@ if
 \end_inset
 
 ,
-\begin_inset Formula \[
+\begin_inset Formula 
+\[
 \mbox{Pr}\left(i\rightarrow j\right)=\left(\begin{array}{cc}
 0 & 1\\
-\frac{v}{u}=0.5 & 1-\frac{v}{u}=0.5\end{array}\right)\]
+\frac{v}{u}=0.5 & 1-\frac{v}{u}=0.5
+\end{array}\right)
+\]
 
 \end_inset
 
@@ -14905,20 +15067,26 @@ Assuming a diallelic marker with three genotypes
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula \[
-P_{AA}'=\frac{P_{AA}w_{AA}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}\]
+\begin_inset Formula 
+\[
+P_{AA}'=\frac{P_{AA}w_{AA}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}
+\]
 
 \end_inset
 
 
-\begin_inset Formula \[
-P_{Aa}'=\frac{P_{Aa}w_{Aa}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}\]
+\begin_inset Formula 
+\[
+P_{Aa}'=\frac{P_{Aa}w_{Aa}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}
+\]
 
 \end_inset
 
 
-\begin_inset Formula \[
-P_{aa}'=\frac{P_{aa}w_{aa}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}\]
+\begin_inset Formula 
+\[
+P_{aa}'=\frac{P_{aa}w_{aa}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}
+\]
 
 \end_inset
 
@@ -14937,14 +15105,18 @@ Now, if we select through parents, the proportion of parents with genotype
 \end_inset
 
  individuals times its probability to be chosen: 
-\begin_inset Formula \[
-n_{AA}\frac{w_{AA}}{\sum_{n=1}^{N}w_{n}}\]
+\begin_inset Formula 
+\[
+n_{AA}\frac{w_{AA}}{\sum_{n=1}^{N}w_{n}}
+\]
 
 \end_inset
 
 This is, however, exactly 
-\begin_inset Formula \[
-n_{AA}\frac{w_{AA}}{\sum_{n=1}^{N}w_{n}}=\frac{n_{AA}w_{AA}}{n_{AA}w_{AA}+n_{Aa}w_{Aa}+n_{aa}w_{aa}}=\frac{P_{AA}w_{AA}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}=P_{AA}'\]
+\begin_inset Formula 
+\[
+n_{AA}\frac{w_{AA}}{\sum_{n=1}^{N}w_{n}}=\frac{n_{AA}w_{AA}}{n_{AA}w_{AA}+n_{Aa}w_{Aa}+n_{aa}w_{aa}}=\frac{P_{AA}w_{AA}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}=P_{AA}'
+\]
 
 \end_inset
 
@@ -15012,8 +15184,10 @@ reference "MapSelector"
 \end_inset
 
 , the stable allele frequency of allele 0 is
-\begin_inset Formula \[
-p=\frac{s_{2}}{s_{1}+s_{2}}\]
+\begin_inset Formula 
+\[
+p=\frac{s_{2}}{s_{1}+s_{2}}
+\]
 
 \end_inset
 
@@ -17540,8 +17714,10 @@ Basic LD measure
 \end_inset
 
 : 
-\begin_inset Formula \[
-D=P_{AB}-P_{A}P_{B}\]
+\begin_inset Formula 
+\[
+D=P_{AB}-P_{A}P_{B}
+\]
 
 \end_inset
 
@@ -17567,10 +17743,13 @@ Lewontin's
 \end_inset
 
  where 
-\begin_inset Formula \[
+\begin_inset Formula 
+\[
 D_{max}=\begin{cases}
 \min\left(P_{A}\left(1-P_{B}\right),\left(1-P_{A}\right)P_{B}\right) & \textrm{if }D>0\\
-\min\left(P_{A}P_{B},\left(1-P_{A}\right)\left(1-P_{B}\right)\right) & \textrm{if }D<0\end{cases}\]
+\min\left(P_{A}P_{B},\left(1-P_{A}\right)\left(1-P_{B}\right)\right) & \textrm{if }D<0
+\end{cases}
+\]
 
 \end_inset
 
@@ -17610,8 +17789,10 @@ key "Devlin1995"
 \end_inset
 
 ) 
-\begin_inset Formula \[
-r^{2}=\frac{D^{2}}{P_{A}\left(1-P_{A}\right)P_{B}\left(1-P_{B}\right)}\]
+\begin_inset Formula 
+\[
+r^{2}=\frac{D^{2}}{P_{A}\left(1-P_{A}\right)P_{B}\left(1-P_{B}\right)}
+\]
 
 \end_inset
 
@@ -17650,8 +17831,10 @@ If primary alleles are not specified, these LD measures are calculated as
 \end_inset
 
  is
-\begin_inset Formula \[
-r^{2}=\sum_{i}\sum_{j}P_{i}P_{j}\left|r_{ij}^{2}\right|=\sum_{i}\sum_{j}\frac{D_{ij}^{2}}{\left(1-P_{i}\right)\left(1-P_{j}\right)}\]
+\begin_inset Formula 
+\[
+r^{2}=\sum_{i}\sum_{j}P_{i}P_{j}\left|r_{ij}^{2}\right|=\sum_{i}\sum_{j}\frac{D_{ij}^{2}}{\left(1-P_{i}\right)\left(1-P_{j}\right)}
+\]
 
 \end_inset
 
@@ -17806,8 +17989,10 @@ Cramer V statistic (variable
 CramerV
 \family default
 ): 
-\begin_inset Formula \[
-V=\sqrt{\frac{\chi^{2}}{N\times\mbox{min}\left(m-1,n-1\right)}}\]
+\begin_inset Formula 
+\[
+V=\sqrt{\frac{\chi^{2}}{N\times\mbox{min}\left(m-1,n-1\right)}}
+\]
 
 \end_inset
 
@@ -21572,8 +21757,10 @@ Offspring ancestry values are the average of their parents.
 \begin_layout Itemize
 Offspring with higher ancestry value tend to move to the right.
  More specifically, locations of an offspring will be 
-\begin_inset Formula \[
-\frac{\left(x_{1}+x_{2}\right)}{2}+N\left(\frac{a_{1}+a_{2}}{2}-0.5,0.1\right),\frac{\left(y_{1}+y_{2}\right)}{2}+N\left(0,0.1\right)\]
+\begin_inset Formula 
+\[
+\frac{\left(x_{1}+x_{2}\right)}{2}+N\left(\frac{a_{1}+a_{2}}{2}-0.5,0.1\right),\frac{\left(y_{1}+y_{2}\right)}{2}+N\left(0,0.1\right)
+\]
 
 \end_inset
 
@@ -23517,8 +23704,10 @@ key "Reich2001a"
  statistic, we will have to calculate it manually.
  Fortunately, this is not difficult because effective number of alleles
  can be calculated from existing allele frequencies, using formula
-\begin_inset Formula \[
-n_{e}=\left(\sum_{i=1}^{\infty}\left(\frac{f_{i}}{1-f_{0}}\right)^{2}\right)^{-1}\]
+\begin_inset Formula 
+\[
+n_{e}=\left(\sum_{i=1}^{\infty}\left(\frac{f_{i}}{1-f_{0}}\right)^{2}\right)^{-1}
+\]
 
 \end_inset
 
@@ -24303,7 +24492,7 @@ mt19937
 moduleInfo()['availableRNGs']
 \family default
 
-\begin_inset Index
+\begin_inset Index idx
 status open
 
 \begin_layout Plain Layout
@@ -24317,7 +24506,7 @@ moduleInfo
 setRNG(name, seed)
 \family default
 
-\begin_inset Index
+\begin_inset Index idx
 status open
 
 \begin_layout Plain Layout
@@ -25784,22 +25973,14 @@ status open
 
 \begin_layout Plain Layout
 
-python setup.py build_ext --swig-opts=
-\begin_inset Quotes erd
-\end_inset
-
--O -templatereduce 
+python setup.py build_ext --swig-opts=-O -templatereduce 
 \backslash
 
 \end_layout
 
 \begin_layout Plain Layout
 
-    -shadow -c++ -keyword -nodefaultctor
-\begin_inset Quotes erd
-\end_inset
-
- install
+    -shadow -c++ -keyword -nodefaultctor install
 \end_layout
 
 \end_inset
@@ -26264,6 +26445,7 @@ options "plainnat"
 \begin_layout Standard
 \begin_inset CommandInset index_print
 LatexCommand printindex
+type "idx"
 
 \end_inset
 

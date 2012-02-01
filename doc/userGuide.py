@@ -2495,6 +2495,48 @@ pop.evolve(
 )
 #end_file
 
+
+#begin_file log/VaryingMigr.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+
+from simuPOP.utils import migrIslandRates
+import random
+
+def demo(pop):
+  # this function randomly split populations
+  numSP = pop.numSubPop()
+  if random.random() > 0.3:
+      pop.splitSubPop(random.randint(0, numSP-1), [0.5, 0.5])
+  return pop.subPopSizes()
+
+def migr(pop):
+  numSP = pop.numSubPop()
+  sim.migrate(pop, migrIslandRates(0.01, numSP))
+  return True
+
+pop = sim.Population(10000, infoFields='migrate_to')
+pop.evolve(
+    initOps=sim.InitSex(),
+    preOps=[
+        sim.PyOperator(func=migr),
+        sim.Stat(popSize=True),
+        sim.PyEval(r'"Gen %d:\t%s\n" % (gen, subPopSize)')
+    ],
+    matingScheme=sim.RandomMating(subPopSize=demo),
+    gen = 5
+)
+#end_file
+
+
+
+
 #begin_file log/recRate.py
 #begin_ignore
 import simuOpt
