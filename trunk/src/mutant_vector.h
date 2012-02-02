@@ -5,7 +5,6 @@ using boost::numeric::ublas::sparse_vector_element;
 #ifndef _MUTANT_VECTOR_H
 #define _MUTANT_VECTOR_H
 
-
 namespace simuPOP {
 
 /// CPPONLY
@@ -500,18 +499,32 @@ class mutant_vector
 
 		void insert(typename mutant_vector<T>::iterator it, typename mutant_vector<T>::iterator begin, typename mutant_vector<T>::iterator end)
 		{
-			compressed_vector<size_t>::index_array_type::iterator it_src_begin = begin.getIndexIterator();
-			compressed_vector<size_t>::index_array_type::iterator iend   = end.getIndexIterator();
-			size_t src_begin = *it_src_begin;
-			size_t src_index = *it_src_begin != begin.getIndex() ? *it_src_begin - begin.getIndex() : 0;	
-			size_t dest_begin = it.getIndex();
+			typename compressed_vector<T>::index_array_type::iterator src_index_begin = begin.getIndexIterator();
+			typename compressed_vector<T>::index_array_type::iterator src_index_end   = end.getIndexIterator();
+			typename compressed_vector<T>::value_array_type::iterator src_value_begin = begin.getValueIterator();
+			typename compressed_vector<T>::value_array_type::iterator src_value_end = end.getValueIterator();
+			size_t insert_size = end - begin;
+			size_t index_insert_size = src_index_end - src_index_begin;
+			size_t filled_size = m_container.filled(); 
 
-			m_container.resize(m_container.size() + (end.getIndex() - begin.getIndex()));
+			m_container.resize(m_container.size() + insert_size);
+			m_container.reserve(filled_size + index_insert_size);
+			
+			typename compressed_vector<T>::index_array_type::iterator dest_index_begin = it.getIndexIterator();
+			typename compressed_vector<T>::index_array_type::iterator dest_index_end = this->end().getIndexIterator();
+			typename compressed_vector<T>::value_array_type::iterator dest_value_begin = it.getValueIterator();
 
-			for (;it_src_begin  != iend; ++it_src_begin) {
-				m_container.push_back(((*it_src_begin + src_index) - src_begin) + dest_begin, (*begin.getContainer())[*it_src_begin]);
+			std::copy_backward(dest_index_begin, it.getContainer()->index_data().begin() + filled_size, it.getContainer()->index_data().begin() + filled_size + index_insert_size);
+			for (size_t i = 0; i < (size_t)(dest_index_end - dest_index_begin); i++) {
+				*(dest_index_begin + index_insert_size + i) += index_insert_size;
 			}
-
+			for (size_t i = 0; i < index_insert_size; i++) {
+				size_t range = *(src_index_begin + i) - begin.getIndex();
+				*(dest_index_begin+i) = it.getIndex() + range;
+			}
+			std::copy_backward(dest_value_begin, it.getContainer()->value_data().begin() + filled_size, it.getContainer()->value_data().begin() + filled_size + index_insert_size); 
+			std::copy(src_value_begin, src_value_end, dest_value_begin);
+			m_container.set_filled(filled_size + index_insert_size);
 		}
 
 		template<class Archive>
@@ -543,10 +556,10 @@ inline void copy(mutant_vectora::iterator begin, mutant_vectora::iterator end, m
 	if (it_end.getIndex() <= it_end.getContainer()->size()) {
 		compressed_vector<Allele>::value_array_type::iterator src_value_begin = begin.getValueIterator();
 		compressed_vector<Allele>::value_array_type::iterator src_value_end = end.getValueIterator();
+		compressed_vector<Allele>::index_array_type::iterator src_index_begin = begin.getIndexIterator();
 		compressed_vector<Allele>::value_array_type::iterator dest_value_begin = it.getValueIterator();
 		compressed_vector<Allele>::value_array_type::iterator dest_value_end = it_end.getValueIterator();
-		compressed_vector<Allele>::index_array_type::iterator src_index_begin = begin.getIndexIterator();
-		compressed_vector<Allele>::index_array_type::iterator dest_index_begin = it.getIndexIterator();
+		compressed_vector<Allele>::index_array_type::iterator dest_index_begin;
 		size_t src_size = src_value_end - src_value_begin;
 		size_t dest_size = dest_value_end - dest_value_begin;
 		size_t src_idx_num_begin = begin.getIndex();
@@ -571,7 +584,6 @@ inline void copy(mutant_vectora::iterator begin, mutant_vectora::iterator end, m
 			size_t diff_size = dest_size - src_size;
 			size_t filled_size = it.getContainer()->filled(); 
 			dest_index_begin = it.getIndexIterator();
-			dest_value_begin = it.getValueIterator();
 			std::copy(dest_index_begin + diff_size, it.getContainer()->index_data().begin() + filled_size, dest_index_begin);
 			for (size_t i = 0; i < src_size; i++) {
 				size_t range = *(src_index_begin + i) - src_idx_num_begin;
@@ -583,7 +595,6 @@ inline void copy(mutant_vectora::iterator begin, mutant_vectora::iterator end, m
 
 		} else {
 			dest_index_begin = it.getIndexIterator();
-			dest_value_begin = it.getValueIterator();
 			for (size_t i = 0; i < src_size; i++) {
 				size_t range = *(src_index_begin + i) - src_idx_num_begin;
 				*(dest_index_begin + i) = dest_idx_num_begin + range;
