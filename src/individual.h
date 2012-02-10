@@ -346,7 +346,13 @@ public:
 	/// CPPONLY start of alleles
 	GenoIterator genoBegin() const
 	{
+#ifdef MUTANTALLELE
+		// Call + operator in order to find the correct m_com_index; 
+		// more information see operator+ function in mutant_vector.h
+		return m_genoPtr + 0;
+#else
 		return m_genoPtr;
+#endif
 	}
 
 

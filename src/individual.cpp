@@ -238,7 +238,7 @@ PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 }
 
 
-
+// Fix me: This one has to optimize
 PyObject * Individual::genoAtLoci(const lociList & lociList)
 {
 	ssize_t ply = ploidy();
