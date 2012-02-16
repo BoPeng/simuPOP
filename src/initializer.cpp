@@ -241,12 +241,10 @@ bool InitGenotype::apply(Population & pop) const
 #else
 				IndIterator it = pop.indIterator(sp->subPop());
 #endif
-				std::cout << "Start init!!!!!!!\n";
 				for (size_t ii=0; it.valid(); ++it,++ii )
 					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
 						for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++idx)
 							it->setAllele(ToAllele(m_genotype[idx % sz]), *loc, static_cast<int>(*p));
-				std::cout << "End init!!!!!!!\n";
 
 			}
 #ifdef _OPENMP
