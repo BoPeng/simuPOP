@@ -1094,6 +1094,42 @@ pop.evolve(
 )
 #end_file
 
+#begin_file log/demoBySelection.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+def demo(pop):
+    return int(pop.popSize() * 1.05)
+
+pop = sim.Population(size=10000, loci=1)
+pop.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.InitGenotype(freq=[0.7, 0.3])
+    ],
+    preOps=[
+        sim.Stat(popSize=True),
+        sim.PyEval(r'"%d %s --> " % (gen, subPopSize)'),
+        sim.ResizeSubPops(0, proportions=[0.5], at=2),
+        sim.MaPenetrance(loci=0, penetrance=[0.01, 0.2, 0.6], begin=4),
+        sim.DiscardIf('ind.affected()', exposeInd='ind', begin=4),
+        sim.Stat(popSize=True),
+        sim.PyEval(r'"%s --> " % subPopSize'),
+    ],
+    matingScheme=sim.RandomMating(subPopSize=demo),
+    postOps=[
+        sim.Stat(popSize=True),
+        sim.PyEval(r'"%s\n" % subPopSize')
+    ],
+    gen = 6
+)
+#end_file
+
 #begin_file log/demoFunc.py
 #begin_ignore
 import simuOpt
