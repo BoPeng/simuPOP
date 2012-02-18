@@ -7029,7 +7029,15 @@ A mating scheme goes through each subpopulation and populates the subpopulations
 A simuPOP mating scheme, by default, produces an offspring generation that
  has the same subpopulation sizes as the parental generation.
  This does not guarantee a constant population size because some operators,
- such as a Migrator, can change population or subpopulation sizes.
+ such as a 
+\family typewriter
+Migrator
+\family default
+ and 
+\family typewriter
+DiscardIf
+\family default
+ can change population or subpopulation sizes.
 \end_layout
 
 \begin_layout Itemize
@@ -7183,6 +7191,58 @@ reference "demoFunc1"
 LatexCommand lstinputlisting
 filename "log/demoFunc1.log"
 lstparams "caption={Use parental population to determine the size of offspring population},label={demoFunc1}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In all the above examples, migration and demographic changes are introduced
+ manually to influence the evolution of populations.
+ However, the demographic changes might be driven by other factors such
+ as natural selection so that it is difficult to predict the size of offspring
+ generations in advance.
+ In this case, you can manually remove individuals from parental (or offspring)
+ populations using appropriate operators.
+\end_layout
+
+\begin_layout Standard
+For example, a population in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "demoBySelection"
+
+\end_inset
+
+ suffers from a sudden reduction of population size (due to perhaps a famine)
+ at generation 3, and a gradual reduction of population size (due to perhaps
+ an outburst of an infectious disease) after generation 5.
+ The first event is implemented using a 
+\family typewriter
+ResizeSubPops
+\family default
+ operator that directly shrink the population size in half.
+ The second event is implemented using a 
+\family typewriter
+MaPenetrance
+\family default
+ and a 
+\family typewriter
+DiscardIf
+\family default
+ operator.
+ The first operator assigns affection status of each individual using a
+ disease model that involves individual genotype.
+ The second operator discard all individuals that are affected with the
+ disease.
+ Despite of these unfortunate events, the population tries to expand exponential
+ly with offspring population sizes set to 105% of their parental populations.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/demoBySelection.log"
+lstparams "caption={Change of  population size caused by natural selection},label={demoBySelection}"
 
 \end_inset
 
