@@ -244,6 +244,7 @@ __all__ = [
     # RNG Related
     'RNG',
     'getRNG',
+    'setRNG',
     #
     'closeOutput',
     'describeEvolProcess',
