@@ -1019,6 +1019,11 @@ public:
 					break;
 			p = 1;
 			valid = it.valid();
+		} else if (m_chromType == MITOCHONDRIAL) {
+			// only the first homologous copy is valid
+			DBG_ASSERT(p == 0, SystemError, "Only the first homologous copy of mitochondrial DNA can be iterated.");
+			++ it;
+			valid = it.valid();
 		}
 	}
 

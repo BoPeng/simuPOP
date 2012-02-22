@@ -387,8 +387,12 @@ void MitochondrialGenoTransmitter::initialize(const Individual & ind) const
 	GenoTransmitter::initialize(ind);
 	if (m_chroms.allAvail()) {
 		for (size_t ch = 0; ch < ind.numChrom(); ++ch)
-			if (ind.chromType(ch) == CUSTOMIZED)
+			if (ind.chromType(ch) == MITOCHONDRIAL)
 				m_mitoChroms.push_back(ch);
+		if (m_mitoChroms.empty())
+			for (size_t ch = 0; ch < ind.numChrom(); ++ch)
+				if (ind.chromType(ch) == CUSTOMIZED)
+					m_mitoChroms.push_back(ch);
 	} else
 		m_mitoChroms = m_chroms.elems();
 	DBG_DO(DBG_TRANSMITTER, cerr << "Mitochondrial chromosomes " << m_mitoChroms << endl);

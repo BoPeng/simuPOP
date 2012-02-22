@@ -1071,8 +1071,8 @@ bool statHeteroFreq::apply(Population & pop) const
 
 #ifndef OPTIMIZED
 			size_t chromType = pop.chromType(pop.chromLocusPair(loc).first);
-			DBG_FAILIF(chromType == CHROMOSOME_X || chromType == CHROMOSOME_Y,
-				ValueError, "Heterozygosity count for sex chromosomes is not supported.");
+			DBG_FAILIF(chromType == CHROMOSOME_X || chromType == CHROMOSOME_Y || chromType == MITOCHONDRIAL,
+				ValueError, "Heterozygosity count for sex and mitochondrial chromosomes is not supported.");
 #endif
 			size_t hetero = 0;
 			size_t homo = 0;
@@ -1229,6 +1229,8 @@ bool statGenoFreq::apply(Population & pop) const
 						if (((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
 						     (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
 							continue;
+						if (chromTypes[idx] == MITOCHONDRIAL && p > 0)
+							continue;
 						genotype.push_back(ind->allele(loc, p));
 					}
 					genotypes[genotype]++;
@@ -1381,6 +1383,8 @@ bool statHaploFreq::apply(Population & pop) const
 						continue;
 					if (((chromType == CHROMOSOME_X && p == 1) ||
 					     (chromType == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
+						continue;
+					if (chromType == MITOCHONDRIAL && p > 0)
 						continue;
 					for (size_t idx = 0; idx < nLoci; ++idx)
 						haplotype[idx] = ind->allele(loci[idx], p);
@@ -2202,6 +2206,8 @@ bool statLD::apply(Population & pop) const
 					if (ply == 2 && ((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
 					                 (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
 						continue;
+					if (chromTypes[idx] == MITOCHONDRIAL && p > 0)
+						continue;
 					alleleCnt[idx][*(geno + loci[idx])]++;
 				}
 				// haplotype frequency
@@ -2211,6 +2217,8 @@ bool statLD::apply(Population & pop) const
 						continue;
 					if (((chromType == CHROMOSOME_X && p == 1) ||
 					     (chromType == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
+						continue;
+					if (chromType == MITOCHONDRIAL && p > 0)
 						continue;
 					haploCnt[idx][HAPLOCNT::key_type(*(geno + m_LD[idx][0]), *(geno + m_LD[idx][1]))]++;
 				}
@@ -2515,6 +2523,8 @@ bool statAssociation::apply(Population & pop) const
 						if (ply == 2 && ((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
 						                 (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
 							continue;
+						if (chromTypes[idx] == MITOCHONDRIAL && p > 0)
+							continue;
 						if (ind->affected())
 							caseAlleleCnt[idx][*(geno + loci[idx])]++;
 						else
@@ -2527,7 +2537,7 @@ bool statAssociation::apply(Population & pop) const
 				GenoIterator geno1 = ind->genoBegin(0);
 				GenoIterator geno2 = ind->genoBegin(1);
 				for (size_t idx = 0; idx < nLoci; ++idx) {
-					if (chromTypes[idx] == CHROMOSOME_X || chromTypes[idx] == CHROMOSOME_Y)
+					if (chromTypes[idx] == CHROMOSOME_X || chromTypes[idx] == CHROMOSOME_Y || chromTypes[idx] == MITOCHONDRIAL)
 						continue;
 					Allele a1 = *(geno1 + loci[idx]);
 					Allele a2 = *(geno2 + loci[idx]);
@@ -2735,6 +2745,8 @@ bool statNeutrality::apply(Population & pop) const
 				if (((chromType == CHROMOSOME_X && p == 1) ||
 				     (chromType == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
 					continue;
+				if (chromType == MITOCHONDRIAL && p > 0)
+					continue;
 				for (size_t idx = 0; idx < nLoci; ++idx)
 					haplotype[idx] = ToAllele(ind->allele(loci[idx], p));
 				allHaplotypes.push_back(haplotype);
@@ -2926,7 +2938,7 @@ bool statStructure::apply(Population & pop) const
 #ifndef OPTIMIZED
 	for (size_t idx = 0; idx < loci.size(); ++idx) {
 		size_t chromType = pop.chromType(pop.chromLocusPair(loci[idx]).first);
-		DBG_FAILIF(chromType == CHROMOSOME_X || chromType == CHROMOSOME_Y, ValueError,
+		DBG_FAILIF(chromType == CHROMOSOME_X || chromType == CHROMOSOME_Y || chromType == MITOCHONDRIAL, ValueError,
 			"Fst can not be esimated from markers on sex chromosomes");
 	}
 #endif
@@ -3079,8 +3091,8 @@ bool statHWE::apply(Population & pop) const
 #ifndef OPTIMIZED
 	for (size_t i = 0; i < loci.size(); ++i) {
 		size_t chromType = pop.chromType(pop.chromLocusPair(loci[i]).first);
-		DBG_FAILIF(chromType == CHROMOSOME_X || chromType == CHROMOSOME_Y, ValueError,
-			"Can not run HWE test on loci on sex chromosomes.");
+		DBG_FAILIF(chromType == CHROMOSOME_X || chromType == CHROMOSOME_Y || chromType == MITOCHONDRIAL, ValueError,
+			"Can not run HWE test on loci on sex and mitochondrial chromosomes.");
 	}
 #endif
 	// count for all specified subpopulations
