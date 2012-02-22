@@ -3478,6 +3478,41 @@ pop.evolve(
 )
 #end_file
 
+#begin_file log/statChromTypes.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+pop = sim.Population(1000, loci=[5]*4,
+    chromTypes=[sim.AUTOSOME, sim.CHROMOSOME_X, sim.CHROMOSOME_Y, sim.CUSTOMIZED])
+pop.setVirtualSplitter(sim.SexSplitter())
+pop.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.InitGenotype(haplotypes=[ [0, 1, 2, 0, 1]*4, [2, 1, 0, 2, 3]*4 ],
+            prop=[0.4, 0.6]),
+    ],
+    matingScheme=sim.RandomMating(
+        ops=[
+            sim.MendelianGenoTransmitter(),
+            sim.MitochondrialGenoTransmitter()]),
+    preOps=[
+        sim.Stat(neutrality=range(5)),
+        sim.Stat(neutrality=range(5, 10), suffix='_X'),
+        sim.Stat(neutrality=range(10, 15), suffix='_Y'),
+        sim.Stat(neutrality=range(15, 20), subPops=[(0, 'Female')], suffix='_mt'),
+        sim.PyEval(r'"%.3f %.3f %.3f %.3f\n" % (Pi, Pi_X, Pi_Y, Pi_mt)'),
+    ],
+    gen = 2
+)
+#end_file
+
+
+
 #begin_file log/InheritTagger.py
 #begin_ignore
 import simuOpt

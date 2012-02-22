@@ -16967,7 +16967,7 @@ will calculate the frequencies of alleles at locus 0, among Individuals
 SexSplitter
 \family default
 ), the above operator will calculate allele frequency among all males in
- the first and second subpopulations.
+ the first and second subpopulations (not separately!).
  If 
 \family typewriter
 subPops
@@ -17053,6 +17053,10 @@ Population.dvars(sp)
 By default, the same variables will be set for a statistic, regardless of
  the values of the 
 \family typewriter
+loci
+\family default
+ and 
+\family typewriter
 subPops
 \family default
  parameter.
@@ -17061,7 +17065,8 @@ subPops
 Stat
 \family default
  operators are used to calculate the same statistics for different sets
- of subpopulations.
+ of loci (e.g.
+ for each chromosome) or subpopulations.
  To avoid name conflict, you can use parameter 
 \emph on
 suffix
@@ -18631,6 +18636,138 @@ If performance becomes a problem, you might want to have a look at the source
  If you believe that your statistics are popular enough, please send your
  implementation to the simuPOP mailinglist for possible inclusion of your
  statistics into simuPOP.
+\end_layout
+
+\begin_layout Subsection
+Support for sex and customized chromosome types
+\end_layout
+
+\begin_layout Standard
+simuPOP supports statistics calculation for loci on sex chromosomes.
+ For example, when pair-wise difference between haplotypes is calculated
+ using parameter 
+\family typewriter
+neutrality
+\family default
+, it will pick the right haplotypes for X, and Y chromosomes.
+ However, because neutrality is calculated based on a group of haplotypes
+ of all specified loci, even if the loci are collected across chromosomes,
+ you can not use operator 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Stat(neutrality=ALL_AVAIL)
+\end_layout
+
+\end_inset
+
+if the loci are selected from chromosomes of different types, because different
+ numbers of haplotypes exists on these chromosomes.
+ To calculate 
+\family typewriter
+Pi
+\family default
+ for these chromosomes, you would have to calculate them separately, using
+ operators such as
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Stat(neutrality=range(30,40), suffix='_X')
+\end_layout
+
+\begin_layout Plain Layout
+
+Stat(neutrality=range(40,50), suffix='_Y')
+\end_layout
+
+\end_inset
+
+so that all specified loci are on the same type of chromosomes.
+ Here we use parameter 
+\family typewriter
+suffix
+\family default
+ to avoid conflict of variable names because both operator would produce
+ the same variable 
+\family typewriter
+Pi
+\family default
+ without this parameter.
+\end_layout
+
+\begin_layout Standard
+The case with customized chromosomes are more complex because the meaning
+ of these chromosomes are defined by users.
+ If these chromosomes are mitochondrial DNAs, only chromosomes from the
+ females are carrying useful information.
+ If you would like to calculate, for example, the 
+\family typewriter
+Pi
+\family default
+ statistics for these chromosomes, you will have to explicitly selected
+ females for calculation.
+ This can be done by operator
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Stat(neutrality=range(50,60), vsps=[(ALL_AVAIL, 'FEMALE')], suffix='_mt')
+\end_layout
+
+\end_inset
+
+if VSPs have been created by a 
+\family typewriter
+SexSplitter
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "statChromTypes"
+
+\end_inset
+
+ demonstrates the use of these operators.
+ This example intentionally initializes all individuals with the same haplotypes
+ on all chromosomes (the 
+\family typewriter
+InitGenotype
+\family default
+ operator ignores chromosome types).
+ Because of different chromosome types, four 
+\family typewriter
+Stat
+\family default
+ operators are used to get the 
+\family typewriter
+Pi
+\family default
+ statistics for them.
+ These operators return different results because different sets of haplotypes
+ are picked for the calculation of this statistics.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/statChromTypes.log"
+lstparams "caption={Statistics for sex and customized chromosome types},label={statChromTypes}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
