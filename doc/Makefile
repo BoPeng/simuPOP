@@ -48,7 +48,7 @@ checkout:
 	fi
 	@if [ ! -d tools/converter ]; then \
 	  echo "Checking out converter..."; \
-	  svn checkout $(SVNROOT)/doctools/converter/converter tools/converter; \
+	  svn checkout -r 76658 $(SVNROOT)/doctools/converter/converter tools/converter; \
 	fi
 
 update: checkout
