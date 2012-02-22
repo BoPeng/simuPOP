@@ -120,8 +120,8 @@ else:
     wrapper_flags = ['-Wno-unused-parameter', '-Wno-missing-field-initializers']
     extra_path = [os.path.join(os.path.split(lib_dest)[:-1])]
     # during development, output symbols (for profiling and debugging)
-    # treat warning as error...
-    extra_flags = ['-g', '-Werror']
+    # treat warning as error... (although an unused parameter warning from boost has to be allowed)
+    extra_flags = ['-g', '-Wno-unused-parameter', '-Werror']
     #
     # GNU gcc:
     #
