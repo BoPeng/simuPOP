@@ -73,6 +73,9 @@ else:
         if int(version[0]) < 4 or int(version[1]) < 2:
             print('Support for openMP is turned off because version %s.%s.%s of gcc does not support this feature' % version)
             USE_OPENMP = False
+        if int(version[0]) == 4 and int(version[1]) == 2 and int(version[2]) == 1 and 'LLVM' in output:
+            print('Support for openMP is turned off because of a bug in LLVM-gcc version 4.2.1.')
+            USE_OPENMP = False
     except:
         print('Can not obtain version of gcc, and openMP is disable')
         USE_OPENMP = False
@@ -84,7 +87,7 @@ if distutils.sysconfig.get_config_var('CC') is not None:
 # simuPOP works with these boost versions. Newer versions will be used if these
 # versions are not available, and will most likely work just fine.
 boost_versions = ['1_35_0', '1_36_0', '1_37_0', '1_38_0', '1_39_0', '1_40_0',
-    '1_42_0', '1_43_0', '1_44_0', '1_45_0', '1_46_0', '1_46_1']
+    '1_42_0', '1_43_0', '1_44_0', '1_45_0', '1_46_0', '1_46_1', '1_47_0', '1_48_0']
 invalid_boost_versions = ['1_41_0']
 
 included_version = [x for x in boost_versions if os.path.isdir('boost_' + x)]
