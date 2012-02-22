@@ -1665,6 +1665,8 @@ Details:
 
 %ignore simuPOP::GenoStruTrait::setGenoStruIdx(size_t idx);
 
+%ignore simuPOP::GenoStruTrait::swapGenoStru(GenoStruTrait &rhs);
+
 %feature("docstring") simuPOP::GenoStruTrait::lociDist "
 
 Usage:
@@ -3406,7 +3408,7 @@ Usage:
 
 Usage:
 
-    iterator(c)
+    iterator(iter)
 
 "; 
 
@@ -3447,6 +3449,14 @@ Usage:
 Usage:
 
     x.getIndex()
+
+"; 
+
+%feature("docstring") simuPOP::mutantvector::iterator::getComIndex "
+
+Usage:
+
+    x.getComIndex()
 
 "; 
 
@@ -9016,12 +9026,12 @@ Details:
 Usage:
 
     Stat(popSize=False, numOfMales=False, numOfAffected=False,
-      numOfSegSites=[], alleleFreq=[], heteroFreq=[], homoFreq=[],
-      genoFreq=[], haploFreq=[], haploHeteroFreq=[], haploHomoFreq=[],
-      sumOfInfo=[], meanOfInfo=[], varOfInfo=[], maxOfInfo=[],
-      minOfInfo=[], LD=[], association=[], neutrality=[],
-      structure=[], HWE=[], vars=ALL_AVAIL, suffix=\"\", output=\"\",
-      begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      numOfSegSites=[], numOfMutants=[], alleleFreq=[], heteroFreq=[],
+      homoFreq=[], genoFreq=[], haploFreq=[], haploHeteroFreq=[],
+      haploHomoFreq=[], sumOfInfo=[], meanOfInfo=[], varOfInfo=[],
+      maxOfInfo=[], minOfInfo=[], LD=[], association=[],
+      neutrality=[], structure=[], HWE=[], vars=ALL_AVAIL, suffix=\"\",
+      output=\"\", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
       subPops=ALL_AVAIL, infoFields=[])
 
 Details:
@@ -9734,6 +9744,32 @@ Usage:
 Usage:
 
     x.describe(format=True)
+
+"; 
+
+%ignore simuPOP::statNumOfMutants;
+
+%feature("docstring") simuPOP::statNumOfMutants::statNumOfMutants "
+
+Usage:
+
+    statNumOfMutants(loci, subPops, vars, suffix)
+
+"; 
+
+%feature("docstring") simuPOP::statNumOfMutants::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statNumOfMutants::apply "
+
+Usage:
+
+    x.apply(pop)
 
 "; 
 

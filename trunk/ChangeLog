@@ -9,6 +9,8 @@ version 1.0.7 - Not released, available at https://simupop.svn.sourceforge.net/s
 New features:
   - New option numOfSegSites to operator Stat to calculate the number of segragating
     sites.
+  - Add MITOCHONDRIAL as a natural chromosome type so that operators such as
+	Stat can handle them correctly.
 
 BUG:
  - Fix a bug that prevents the correct handling of population structure when evolving

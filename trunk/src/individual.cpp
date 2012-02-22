@@ -125,7 +125,8 @@ bool Individual::validIndex(size_t /* idx */, size_t p, size_t ch) const
 	size_t t = chromType(ch);
 	if ((s == FEMALE && t == CHROMOSOME_Y) ||       // female chromsome Y
 	    (s == MALE &&                               // second copy of chromosome X and first copy of chromosome Y
-	     ((p == 1 && t == CHROMOSOME_X) || (p == 0 && t == CHROMOSOME_Y))))
+	     ((p == 1 && t == CHROMOSOME_X) || (p == 0 && t == CHROMOSOME_Y))) ||
+		 (p > 0 && t == MITOCHONDRIAL))             // mitochondiral DNA only uses the first homologous copy
 		return false;
 
 	return true;
@@ -261,6 +262,8 @@ PyObject * Individual::genoAtLoci(const lociList & lociList)
 					if (((chType == CHROMOSOME_X && p == 1) ||
 					     (chType == CHROMOSOME_Y && p == 0)) && sex() == MALE)
 						continue;
+					if (chType == MITOCHONDRIAL && p > 0)
+						continue;
 					alleles.push_back(allele(idx, p, ch));
 				}
 			}
@@ -281,6 +284,8 @@ PyObject * Individual::genoAtLoci(const lociList & lociList)
 					continue;
 				if (((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
 				     (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && sex() == MALE)
+					continue;
+				if (chromTypes[idx] == MITOCHONDRIAL && p > 0)
 					continue;
 				alleles.push_back(allele(loci[idx], p));
 			}

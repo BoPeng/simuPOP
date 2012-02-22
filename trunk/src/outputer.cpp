@@ -64,6 +64,9 @@ void Dumper::displayStructure(const Population & pop, ostream & out) const
 		case CUSTOMIZED:
 			out << " (CUSTOMIZED, ";
 			break;
+		case MITOCHONDRIAL:
+			out << " (MITOCHONDRIAL, ";
+			break;
 		default:
 			throw ValueError("Wrong chromosome type");
 		}

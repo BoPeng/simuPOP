@@ -146,8 +146,8 @@ typedef unsigned int UINT;
 // according to MSVC manual, unsigned int is 32 bit, regardless of
 // platform. Because uint32_t is not handled correctly by swig under
 // windows, I am using unsigned int here.
-typedef unsigned int Allele;
-typedef unsigned int & AlleleRef;
+typedef unsigned long Allele;
+typedef unsigned long & AlleleRef;
 //#  else
 // under a unix platform, uint32_t seems to work fine.
 //typedef uint32_t Allele;
@@ -219,7 +219,8 @@ enum ChromType {
 	CUSTOMIZED = 11,
 	AUTOSOME = 12,
 	CHROMOSOME_X = 13,
-	CHROMOSOME_Y = 14
+	CHROMOSOME_Y = 14,
+	MITOCHONDRIAL = 15,
 };
 
 // For numOffspring and gene conversion

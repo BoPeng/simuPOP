@@ -87,6 +87,8 @@ double MapSelector::indFitness(Population & /* pop */, Individual * ind) const
 			if (((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
 			     (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && ind->sex() == MALE)
 				continue;
+			if (chromTypes[idx] == MITOCHONDRIAL && p > 0)
+				continue;
 			alleles.push_back(ind->allele(loci[idx], p));
 		}
 	}
@@ -112,6 +114,8 @@ double MapSelector::indFitness(Population & /* pop */, Individual * ind) const
 					else
 						++end_idx;
 				} else if (chromTypes[i] == CHROMOSOME_X && ind->sex() == MALE)
+					++end_idx;
+				else if (chromTypes[i] == MITOCHONDRIAL)
 					++end_idx;
 				else
 					end_idx += ply;

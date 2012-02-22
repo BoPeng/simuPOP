@@ -367,8 +367,10 @@ private:
 };
 
 
-/** This geno transmitter assumes that the first homologous copy of several (or
- *  all) \c Customized chromosomes are copies of mitochondrial chromosomes. It
+/** This geno transmitter transmits the first homologous copy of \c Mitochondrial
+ *  chromosomes. For backward-compatibility, it assumes that the first homologous
+ *  copy of several (or all) \c Customized chromosomes are copies of mitochondrial
+ *  chromosomes if no chromosome of type \c Mitochondrial is specified. This operator
  *  transmits these chromosomes randomly from the female parent to offspring.
  *  If this transmitter is applied to populations with more than one homologous
  *  copies of chromosomes, it transmits the first homologous copy of
@@ -377,8 +379,9 @@ private:
 class MitochondrialGenoTransmitter : public GenoTransmitter
 {
 public:
-	/** Createa a mitochondrial genotype transmitter that treats all Customized
-	 *  chromosomes, or a list of chromosomes specified by \e chroms, as human
+	/** Createa a mitochondrial genotype transmitter that treats all Mitochondiral
+	 *  chromosomes, Customized chromosomes if no Mitochondrial chromosomes are
+	 *  specified, or a list of chromosomes specified by \e chroms, as human
 	 *  mitochondrial chromosomes. These chromosomes should have the same
 	 *  length and the same number of loci. This operator transmits these
 	 *  chromosomes randomly from the female parent to offspring of both sexes.
