@@ -411,16 +411,23 @@ void MitochondrialGenoTransmitter::initialize(const Individual & ind) const
 
 
 bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
-                                                     Individual * /* dad */, Individual * mom) const
+                                                     Individual * dad, Individual * mom) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
 	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
 	initializeIfNeeded(*offspring);
 
-	(void)mom;  // avoid a warning message of unused varible in optimized modules
-	DBG_FAILIF(mom == NULL, ValueError,
-		"MitochondrialGenoTransmitter requires valid female parent.");
+    Individual * parent = NULL;
+    if (dad != NULL && mom == NULL)
+        // the case of single parent inheritance. Does not care about sex.
+        parent = dad;
+    else if (dad != NULL && mom != NULL)
+        parent = mom;
+    else {
+    	DBG_FAILIF(true, ValueError,
+	    	"MitochondrialGenoTransmitter requires single parent, or valid female parent.");
+    }
 
 	if (m_numLoci == 0)
 		return true;
@@ -431,12 +438,12 @@ bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop, Populatio
 	vectoru::iterator it_end = m_mitoChroms.end();
 	for (; it != it_end; ++it) {
 		size_t src = getRNG().randInt(static_cast<ULONG>(m_mitoChroms.size()));
-		GenoIterator par = mom->genoBegin(0, m_mitoChroms[src]);
+		GenoIterator par = parent->genoBegin(0, m_mitoChroms[src]);
 		GenoIterator off = offspring->genoBegin(0, *it);
 #ifdef BINARYALLELE
 		copyGenotype(par, off, m_numLoci);
 #else
-		GenoIterator par_end = mom->genoEnd(0, m_mitoChroms[src]);
+		GenoIterator par_end = parent->genoEnd(0, m_mitoChroms[src]);
 #  ifdef MUTANTALLELE
 		simuPOP::copy(par, par_end, off);
 #  else

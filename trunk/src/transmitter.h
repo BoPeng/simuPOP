@@ -367,20 +367,22 @@ private:
 };
 
 
-/** This geno transmitter transmits the first homologous copy of \c Mitochondrial
- *  chromosomes. For backward-compatibility, it assumes that the first homologous
- *  copy of several (or all) \c Customized chromosomes are copies of mitochondrial
- *  chromosomes if no chromosome of type \c Mitochondrial is specified. This operator
- *  transmits these chromosomes randomly from the female parent to offspring.
- *  If this transmitter is applied to populations with more than one homologous
- *  copies of chromosomes, it transmits the first homologous copy of
- *  chromosomes and clears alleles (set to zero) on other homologous copies.
+/** This geno transmitter transmits the first homologous copy of a \c Mitochondrial
+ *  chromosome. If no mitochondrial chromosome is present, it assumes that the first
+ *  homologous copy of several (or all) \c Customized chromosomes are copies of
+ *  mitochondrial chromosomes. This operator transmits the mitochondrial chromosome
+ *  from the female parent to offspring for sexsual reproduction, and any parent to
+ *  offspring for asexual reproduction. If there are multiple chromosomes, the
+ *  organelles are selected randomly. If this transmitter is applied to populations
+ *  with more than one homologous copies of chromosomes, it transmits the first
+ *  homologous copy of chromosomes and clears alleles (set to zero) on other 
+ *  homologous copies.
  */
 class MitochondrialGenoTransmitter : public GenoTransmitter
 {
 public:
-	/** Createa a mitochondrial genotype transmitter that treats all Mitochondiral
-	 *  chromosomes, Customized chromosomes if no Mitochondrial chromosomes are
+	/** Createa a mitochondrial genotype transmitter that treats the Mitochondiral
+	 *  chromosome, or Customized chromosomes if no Mitochondrial chromosome is
 	 *  specified, or a list of chromosomes specified by \e chroms, as human
 	 *  mitochondrial chromosomes. These chromosomes should have the same
 	 *  length and the same number of loci. This operator transmits these

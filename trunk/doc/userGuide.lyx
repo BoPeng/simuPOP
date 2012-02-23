@@ -3425,7 +3425,8 @@ lstparams "caption={An example of haplodiploid population},keywordstyle={\\ttfam
 \end_layout
 
 \begin_layout Subsection
-Autosomes, sex chromosomes, and other types of chromosomes *
+Autosomes, sex chromosomes, mitochondrial, and other types of chromosomes
+ *
 \end_layout
 
 \begin_layout Standard
@@ -3434,13 +3435,13 @@ The default chromosome type is autosome, which is the
 normal
 \emph default
  chromosomes in diploid, and in haploid populations.
- simuPOP supports three other types of chromosomes, namely 
+ simuPOP supports four other types of chromosomes, namely 
 \emph on
 chromosome X
 \emph default
 , 
 \emph on
-chromosome Y
+chromosome Y, mitochondrial,
 \emph default
  and
 \emph on
@@ -3449,6 +3450,8 @@ chromosome Y
  chromosome types.
  Sex chromosomes are only valid in haploid populations where chromosomes
  X and Y are used to determine the sex of an offspring.
+ Mitochondrial DNAs can exists in haploid or diploid populations, and are
+ inherited maternally.
  Customized chromosomes rely on user defined functions and operators to
  be passed from parents to offspring.
 \end_layout
@@ -3504,9 +3507,31 @@ The sex of offspring is determined by the types of sex chromosomes he/she
 \end_layout
 
 \begin_layout Standard
-As an advanced feature of simuPOP, chromosomes that do not follow the inheritanc
-e patterns of autosomes or sex chromosomes can be handled separately (see
- section 
+The evolution of mitochonrial DNAs follow the following rules
+\end_layout
+
+\begin_layout Itemize
+There can be only one copy of mitochondrial DNA, exists for both males and
+ females.
+\end_layout
+
+\begin_layout Itemize
+In a non-haploid population where all chromosomes have multiple homologous
+ copies, only the first copy is used for mitochondrial DNA.
+\end_layout
+
+\begin_layout Itemize
+mtDNAs are inherited maternally
+\end_layout
+
+\begin_layout Standard
+Customized chromosomes are used to model more complex types of chromosomes.
+ They rely on customized operators for inheritence.
+ For example, if you would like to model multiple copies of mitochondrial
+ DNAs (cytohets with multiple organellar chromosomes) in a cell, and the
+ process of genetic drift of somatic cytoplasmic segregation of mtDNAs,
+ you can use multiple customized chromosomes to model multiple cytohets
+ (see section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Pre-defined-genotype-transmitters"
@@ -11444,9 +11469,9 @@ haplodiploid
 \family typewriter
 MitochondrialGenoTransmitter
 \family default
-: Treat all customized chromosomes or specified chromosomes as mitochondrial
- chromosomes and transmit maternal mitochondrial chromosomes randomly to
- an offspring.
+: Treat a single mitochondrial chromosome, or all customized chromosomes,
+ or specified chromosomes as mitochondrial chromosomes and transmit maternal
+ mitochondrial chromosomes randomly to an offspring.
  This genotype transmitter can be applied to populations of 
 \series bold
 any ploidy
@@ -25019,6 +25044,167 @@ lstparams "caption={Turn on and off debug information during evolution.},label={
 \end_layout
 
 \begin_layout Section
+Simulation of mitochondrial DNAs (mtDNAs)
+\end_layout
+
+\begin_layout Standard
+Mitochondrial DNAs resides in human mitochondrion.
+ A zygote inherits its organelles from the cytoplasm of the egg, and thus
+ organelle inheritance is generally maternal.
+ Whereas there is only one copy of a nuclear chromosome per gamete, there
+ are man copies of an organellar chromosome, forming a population of identical
+ organelle chromosomes that is transmitted to the offspring through the
+ egg.
+ Because these organellar chromosomes are identical, they are modelled in
+ simuPOP as a single chromosome with type 
+\family typewriter
+MITOCHONDRIAL
+\family default
+.
+ In order to simulate mitochondrial DNAs, it is important to remember:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MendelianGenoTransmitter
+\family default
+ and 
+\family typewriter
+Recombinator
+\family default
+ do not handle mitochondrial DNAs so you will have to explicitly use 
+\family typewriter
+MitochondrialGenoTransmitter
+\family default
+ to transmit the mitochondrial DNAs from mother to offspring.
+ Note that 
+\family typewriter
+CloneGenoTransmitter
+\family default
+ is a special transmitter that will copy everything including sex, information
+ fields to offspring.
+\end_layout
+
+\begin_layout Itemize
+The 
+\family typewriter
+Stat
+\family default
+ operator recognizes this chromosome type and will report allele, haplotype,
+ and genotype counts, and other statistics correctly, although some diploid-spec
+ific statistics are not applicable.
+\end_layout
+
+\begin_layout Itemize
+Natural selections on mtDNAs is usually performed using operator 
+\family typewriter
+MapSelector
+\family default
+ where single alleles are assigned a fitness value.
+ Operator 
+\family typewriter
+MaSelector
+\family default
+ assumes two alleles and is not applicable.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "mitochondrial"
+
+\end_inset
+
+ demonstrates the use of a 
+\family typewriter
+Recombinator
+\family default
+ to recombine an autosome and two sex chromosomes, and a 
+\family typewriter
+MitochondrialGenoTransmitter
+\family default
+ to transmit mitochondrial chromosomes.
+ Natural selection is applied to allele 3 at the 3rd locus on the mitochondrial
+ DNA, whose frequency in the population decreases as a result.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mitochondrial.log"
+lstparams "caption={Transmission of mitochondrial chromosomes},label={mitochondrial}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You might wonder how a mutation can change the allele of all organelles
+ in the mitochondrion.
+ This is generally believed to be done through natural drift during cytoplasmic
+ segreagation, which is not a mitotic process because it takes place in
+ dividing asexual cells.
+ Because only one mitochondrial chromosome is allowed in simuPOP, you will
+ have to use customized chromosome types if you would like to simulate this
+ process.
+ Fortunately, operator 
+\family typewriter
+MitochondrialGenoTransmitter
+\family default
+ can select random organelles from multiple customized chromosomes, if no
+ chromosome of type 
+\family typewriter
+MITOCHONDRIAL
+\family default
+ is present.
+ 
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "mtDNA_evolve"
+
+\end_inset
+
+ demonstrates the fixation of mutant in cells with multiple organelles.
+ Althogh mutations are introduced to only one of the organelles, after a
+ number of cell divisions, the majority of the cells now have only one type
+ of allele.
+ This example uses a 
+\family typewriter
+RandomSelection
+\family default
+ mating scheme to select cells randomly from the parental population.
+ Because no sexual reproduction is involved, 
+\family typewriter
+MitochondrialGenoTransmitter
+\family default
+ passes the parental genotype to offspring regardless of sex of parent.
+ This example also demonstrates a disadvantage of using customized chromosomes
+ in that you will have to calculate statistics by yourself because only
+ you know the meaning of these chromosomes.
+ In this example, a function is written to count the number of mutants in
+ each cell (individual), and summarize the number of cells with 0, 1, 2,
+ 3, 4, and 5 copies of the mutant.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mtDNA_evolve.log"
+lstparams "caption={Evolution of multiple organelles in mitochondrion},label={mtDNA_evolve}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 Import and export dataset in other formats
 \end_layout
 
@@ -25633,7 +25819,7 @@ lstparams "caption={A controlled random mating scheme},label={controlledOffGener
 \end_layout
 
 \begin_layout Subsection
-Pre-defined genotype transmitters *
+Genotype transmitters *
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:Pre-defined-genotype-transmitters"
@@ -25658,80 +25844,6 @@ genotype transmitters
  selfing, haplodiploid, genotype transmitter, and a Recombinator.
  They are usually used implicitly in a mating scheme, but they can also
  be used explicitly.
-\end_layout
-
-\begin_layout Standard
-All genotype transmitters only handle known chromosome types such as 
-\family typewriter
-AUTOSOME
-\family default
-, 
-\family typewriter
-CHROMOSOME_X
-\family default
- and 
-\family typewriter
-CHROMOSOME_Y
-\family default
-.
- Customized chromosomes are left untouched because simuPOP does not know
- how they should be transmitted from parents to offspring.
- In case that Customized chromosomes are treated as mitochondrial chromosomes,
- a 
-\family typewriter
-MitochondrialGenoTransmitter
-\family default
- can be used to transmit customized chromosomes randomly from mother to
- offspring.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "mitochondrial.log"
-
-\end_inset
-
- demonstrates the use of a 
-\family typewriter
-Recombinator
-\family default
- to recombine an autosome and two sex chromosomes, and a 
-\family typewriter
-MitochondrialGenoTransmitter
-\family default
- to transmit mitochondrial chromosomes.
- Note that the default 
-\family typewriter
-MendelianGenoTransmitter
-\family default
- is replaced by these two operators.
- It will be (wastefully) applied if the new during-mating operators are
- used in the 
-\family typewriter
-Simulator.evolve
-\family default
- function.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/mitochondrial.log"
-lstparams "caption={Transmission of mitochondrial chromosomes},label={mitochondrial.log}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Customized genotype transmitter **
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:Customized-genotype-transmitter"
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
