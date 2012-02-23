@@ -183,14 +183,18 @@ class TestGenoStru(unittest.TestCase):
 
     def testChromType(self):
         'Testing genoStruTrait::chromType(chron), chromTypes()'
-        pop = Population(size=100, ploidy=2, loci=[2, 3, 2, 4],
-        chromTypes=[AUTOSOME, CHROMOSOME_X, CHROMOSOME_Y, CUSTOMIZED])
+        pop = Population(size=100, ploidy=2, loci=[2, 3, 2, 4, 4],
+            chromTypes=[AUTOSOME, CHROMOSOME_X, CHROMOSOME_Y, MITOCHONDRIAL, CUSTOMIZED])
         self.assertEqual(pop.chromType(0), AUTOSOME)
         self.assertEqual(pop.chromType(1), CHROMOSOME_X)
         self.assertEqual(pop.chromType(2), CHROMOSOME_Y)
-        self.assertEqual(pop.chromType(3), CUSTOMIZED)
+        self.assertEqual(pop.chromType(3), MITOCHONDRIAL)
+        self.assertEqual(pop.chromType(4), CUSTOMIZED)
         self.assertRaises(ValueError, Population, ploidy=4,
             chromTypes=[AUTOSOME, CHROMOSOME_X, CHROMOSOME_Y, CUSTOMIZED])
+        #
+        self.assertRaises(ValueError, Population, loci=[3, 4],
+            chromTypes=[MITOCHONDRIAL]*2)
 
     def testNumChrom(self):
         'Testing genoStruTrait::numChrom()'
