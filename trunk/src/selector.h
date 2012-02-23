@@ -182,7 +182,8 @@ public:
 	 *  \c ALL_AVAIL. For each individual (parents if this operator is applied
 	 *  before mating, and offspring if this operator is applied during
 	 *  mating), genotypes at \e loci are collected one by one (e.g.
-	 *  p0_loc0, p1_loc0, p0_loc1, p1_loc1... for a diploid individual) and
+	 *  p0_loc0, p1_loc0, p0_loc1, p1_loc1... for a diploid individual, with
+	 *  number of alleles varying for sex and mitochondrial DNAs) and
 	 *  are looked up in the dictionary. If a genotype cannot be found, it
 	 *  will be looked up again without phase information (e.g.
 	 *  <tt>(1,0)</tt> will match key <tt>(0,1)</tt>). If the genotype
