@@ -219,8 +219,9 @@ import simuPOP as sim
 #begin_ignore
 sim.setRNG(seed=12345)
 #end_ignore
-pop = sim.Population(size=6, ploidy=2, loci=[3, 3, 6, 4, 4, 4],
-    chromTypes=[sim.AUTOSOME]*2 + [sim.CHROMOSOME_X, sim.CHROMOSOME_Y] + [sim.CUSTOMIZED]*2)
+pop = sim.Population(size=6, ploidy=2, loci=[3, 3, 3, 2, 2, 4, 4],
+    chromTypes=[sim.AUTOSOME]*2 + [sim.CHROMOSOME_X, sim.CHROMOSOME_Y, sim.MITOCHONDRIAL]
+        + [sim.CUSTOMIZED]*2)
 sim.initGenotype(pop, freq=[0.3, 0.7])
 sim.dump(pop, structure=False) # does not display genotypic structure information
 #end_file
@@ -3488,7 +3489,7 @@ import simuPOP as sim
 sim.setRNG(seed=12345)
 #end_ignore
 pop = sim.Population(1000, loci=[5]*4,
-    chromTypes=[sim.AUTOSOME, sim.CHROMOSOME_X, sim.CHROMOSOME_Y, sim.CUSTOMIZED])
+    chromTypes=[sim.AUTOSOME, sim.CHROMOSOME_X, sim.CHROMOSOME_Y, sim.MITOCHONDRIAL])
 pop.setVirtualSplitter(sim.SexSplitter())
 pop.evolve(
     initOps=[
@@ -3504,7 +3505,7 @@ pop.evolve(
         sim.Stat(neutrality=range(5)),
         sim.Stat(neutrality=range(5, 10), suffix='_X'),
         sim.Stat(neutrality=range(10, 15), suffix='_Y'),
-        sim.Stat(neutrality=range(15, 20), subPops=[(0, 'Female')], suffix='_mt'),
+        sim.Stat(neutrality=range(15, 20), suffix='_mt'),
         sim.PyEval(r'"%.3f %.3f %.3f %.3f\n" % (Pi, Pi_X, Pi_Y, Pi_mt)'),
     ],
     gen = 2
@@ -5394,6 +5395,72 @@ sim.turnOffDebug("DBG_MUTATOR")
 #end_file
 
 
+#begin_file log/mitochondrial.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+pop = sim.Population(1000, loci=[5]*4,
+    # one autosome, two sex chromosomes, and one mitochondrial chromosomes
+    chromTypes=[sim.AUTOSOME, sim.CHROMOSOME_X, sim.CHROMOSOME_Y, sim.MITOCHONDRIAL],
+    infoFields=['fitness'])
+pop.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.InitGenotype(freq=[0.25]*4)
+    ],
+    preOps=[
+        sim.MapSelector(loci=17, fitness={(0,): 1, (1,): 1, (2,): 1, (3,): 0.4})
+    ],
+    matingScheme=sim.RandomMating(ops= [
+        sim.Recombinator(rates=0.1),
+        sim.MitochondrialGenoTransmitter(),
+    ]),
+    postOps=[
+        sim.Stat(alleleFreq=17, step=10),
+        sim.PyEval(r'"%.2f %.2f %.2f %.2f\n" % (alleleNum[17][0],'
+            'alleleNum[17][1], alleleNum[17][2], alleleNum[17][3])', step=10),
+    ],
+    gen = 100
+)
+#end_file
+
+#begin_file log/mtDNA_evolve.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+
+def alleleCount(pop):
+    summary = [0]* 6
+    for ind in pop.individuals():
+        geno = ind.genotype(ploidy=0)
+        summary[geno[0] + geno[2] + geno[4] + geno[6] + geno[8]] += 1
+    print('%d %s' % (pop.dvars().gen, summary))
+    return True
+
+pop = sim.Population(1000, loci=[2]*5, chromTypes=[sim.CUSTOMIZED]*5)
+pop.evolve(
+    # every one has miDNAs 10, 00, 00, 00, 00
+    initOps=[
+        sim.InitGenotype(haplotypes=[[1]+[0]*9]),
+    ],
+    # random select cells for cytoplasmic segregation
+    matingScheme=sim.RandomSelection(ops= [
+        sim.MitochondrialGenoTransmitter(),
+    ]),
+    postOps=sim.PyOperator(func=alleleCount, step=10),
+    gen = 51
+)
+#end_file
 
 #begin_file log/importData.py
 #begin_ignore
@@ -5574,34 +5641,6 @@ pop.evolve(
         sim.PyEval(r'"%.2f\t%.2f\n" % (alleleFreq[5][0], alleleFreq[15][0])')
     ],
     gen = 5
-)
-#end_file
-
-#begin_file log/mitochondrial.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.setRNG(seed=12345)
-#end_ignore
-pop = sim.Population(10, loci=[5]*5,
-    # one autosome, two sex chromosomes, and two mitochondrial chromosomes
-    chromTypes=[sim.AUTOSOME, sim.CHROMOSOME_X, sim.CHROMOSOME_Y] + [sim.CUSTOMIZED]*2,
-    infoFields=['father_idx', 'mother_idx'])
-pop.evolve(
-    initOps=[
-        sim.InitSex(),
-        sim.InitGenotype(freq=[0.4] + [0.2]*3)
-    ],
-    matingScheme=sim.RandomMating(ops= [
-        sim.Recombinator(rates=0.1),
-        sim.MitochondrialGenoTransmitter(),
-        sim.ParentsTagger()
-    ]),
-    postOps=sim.Dumper(structure=False),
-    gen = 2
 )
 #end_file
 

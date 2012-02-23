@@ -73,7 +73,7 @@ class GenoStructure
 public:
 	/// CPPONLY serialization library requires a default constructor
 	GenoStructure() : m_ploidy(2), m_totNumLoci(0),
-		m_numLoci(0), m_chromTypes(), m_chromX(-1), m_chromY(-1), m_mitochondrial(), m_customized(), 
+		m_numLoci(0), m_chromTypes(), m_chromX(-1), m_chromY(-1), m_mitochondrial(-1), m_customized(), 
 		m_haplodiploid(false), m_lociPos(0), m_chromIndex(0),
 		m_chromNames(), m_alleleNames(), m_lociNames(), m_lociNameMap(), m_infoFields(0),
 		m_refCount(0)
@@ -208,7 +208,7 @@ private:
 	int m_chromY;
 
 	/// indexes of mitochondrial chromosomes
-	vectoru m_mitochondrial;
+	int m_mitochondrial;
 
 	/// indexes of customized chromosomes
 	vectoru m_customized;
@@ -482,7 +482,7 @@ public:
 	 *  Return the indexes of mitochondrial chromosomes.
 	 *  <group>2-chromosome</group>
 	 */
-	vectoru mitochondrialChroms() const
+	int mitochondrial() const
 	{
 		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 			"totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
