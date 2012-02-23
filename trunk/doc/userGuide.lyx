@@ -18516,6 +18516,9 @@ F_is
 F_it
 \family default
 ) .
+ When hetergozygote count is unavailable (non-diploid population, loci on
+ sex chromosomes and mitochondrial chromosomes), simuPOP uses expected heterozyg
+osity to estimate this quantity.
 \end_layout
 
 \begin_layout Standard

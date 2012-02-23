@@ -2932,16 +2932,14 @@ bool statStructure::apply(Population & pop) const
 
 	const vectoru & loci = m_loci.elems(&pop);
 
-	DBG_ASSERT(pop.ploidy() == 2, ValueError,
-		"Fst statistics is available only for diploid populations.");
-
-#ifndef OPTIMIZED
+    bool use_observed_het;
 	for (size_t idx = 0; idx < loci.size(); ++idx) {
 		size_t chromType = pop.chromType(pop.chromLocusPair(loci[idx]).first);
-		DBG_FAILIF(chromType == CHROMOSOME_X || chromType == CHROMOSOME_Y || chromType == MITOCHONDRIAL, ValueError,
-			"Fst can not be esimated from markers on sex chromosomes");
+        if (idx == 0)
+            use_observed_het = pop.ploidy() == 2 and (chromType == AUTOSOME || chromType == CUSTOMIZED);
+        else if ((pop.ploidy() == 2 and (chromType == AUTOSOME || chromType == CUSTOMIZED)) != use_observed_het)
+            throw ValueError("Structure statistics can only be estimated from loci on chromosomes of the same type, because other wise the observed number of alleles will be different.");
 	}
-#endif
 
 	// selected (virtual) subpopulatons.
 	subPopList subPops = m_subPops.expandFrom(pop);
@@ -2968,32 +2966,54 @@ bool statStructure::apply(Population & pop) const
 			ALLELES & alleles = allAlleles[idx];
 			size_t cnt = 0;
 
-			// go through all alleles
-			IndAlleleIterator a = pop.alleleIterator(loc, it->subPop());
-			for (; a.valid(); ++cnt) {
-				Allele a1 = *a++;
-				Allele a2 = *a++;
-				++af[a1];
-				++af[a2];
-				hf[a1] += a1 != a2;
-				hf[a2] += a1 != a2;
-				alleles[a1] = true;
-				alleles[a2] = true;
-			}
-			// heterozygote frequency
-			map<size_t, float>::iterator it = af.begin();
-			map<size_t, float>::iterator itEnd = af.end();
-			for (; it != itEnd; ++it)
-				it->second /= 2 * cnt;
-			// heterozygote frequency
-			it = hf.begin();
-			itEnd = hf.end();
-			for (; it != itEnd; ++it)
-				it->second /= cnt;
-			//
-			DBG_FAILIF(spSize != 0 && spSize != cnt, SystemError,
-				"Subpopulation size counts are inconsistent. (locus not on autosome?)");
-			spSize = cnt;
+            if (use_observed_het) {
+                // go through all alleles
+                IndAlleleIterator a = pop.alleleIterator(loc, it->subPop());
+                for (; a.valid(); ++cnt) {
+                    Allele a1 = *a++;
+                    Allele a2 = *a++;
+                    ++af[a1];
+                    ++af[a2];
+                    hf[a1] += a1 != a2;
+                    hf[a2] += a1 != a2;
+                    alleles[a1] = true;
+                    alleles[a2] = true;
+                }
+                // allele frequency
+                map<size_t, float>::iterator it = af.begin();
+                map<size_t, float>::iterator itEnd = af.end();
+                for (; it != itEnd; ++it)
+                    it->second /= 2 * cnt;
+                // heterozygote frequency
+                it = hf.begin();
+                itEnd = hf.end();
+                for (; it != itEnd; ++it)
+                    it->second /= cnt;
+                //
+                spSize = cnt;
+            } else {
+                // go through all alleles
+                IndAlleleIterator a = pop.alleleIterator(loc, it->subPop());
+                for (; a.valid(); ++cnt) {
+                    Allele c = *a++;
+                    ++af[c];
+                    ++hf[c];
+                    alleles[c] = true;
+                }
+                // allele frequency
+                map<size_t, float>::iterator it = af.begin();
+                map<size_t, float>::iterator itEnd = af.end();
+                for (; it != itEnd; ++it)
+                    // h_a = 2 * f_a * (1 - f_a)
+                    it->second /= cnt;
+                // heterozygote frequency calculate from allele frequency
+                it = hf.begin();
+                itEnd = hf.end();
+                for (; it != itEnd; ++it)
+                    it->second = 2 * (it->second / cnt) * (1 - it->second / cnt);
+                //
+                spSize = cnt;
+            }
 		}
 		// (virtual) subpopulation size
 		n_i.push_back(spSize);
