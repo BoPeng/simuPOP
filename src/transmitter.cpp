@@ -653,11 +653,15 @@ void Recombinator::initialize(const Individual & ind) const
 	//
 	// In addition, the second algorithm is really difficult in the
 	// handling of sex chromosomes etc.
+#ifdef MUTANTALLELE
+	m_algorithm = 1;
+#else
 	if (std::accumulate(vecP.begin(), vecP.end(), 0.) > ind.numChrom()
 	    || m_chromX > 0 || m_customizedBegin > 0)
 		m_algorithm = 0;
 	else
 		m_algorithm = 1;
+#endif
 	DBG_DO(DBG_TRANSMITTER, cerr << "Algorithm " << m_algorithm << " is being used " << endl);
 }
 
@@ -802,8 +806,12 @@ void Recombinator::transmitGenotype(const Individual & parent,
 		size_t convEnd;
 		if (pos != Bernullitrials::npos) {
 			// first piece
+#  ifdef MUTANTALLELE
+			simuPOP::copy(cp[curCp] + gt, cp[curCp] + gt + m_recBeforeLoci[pos], off + gt);
+#  else
 			for (; gt < m_recBeforeLoci[pos]; ++gt)
 				off[gt] = cp[curCp][gt];
+#  endif
 			curCp = (curCp + 1) % 2;
 			if (m_debugOutput)
 				*m_debugOutput << ' ' << gt - 1;
@@ -821,8 +829,12 @@ void Recombinator::transmitGenotype(const Individual & parent,
 				if (convCount > 0) {
 					convEnd = gt + convCount;
 					if (convEnd < gtEnd) {
+#  ifdef MUTANTALLELE
+						simuPOP::copy(cp[curCp] + gt, cp[curCp] + gt + convEnd, off + gt);
+#  else
 						for (; gt < convEnd; ++gt)
 							off[gt] = cp[curCp][gt];
+#  endif
 						curCp = (curCp + 1) % 2;
 						if (m_debugOutput)
 							*m_debugOutput << ' ' << gt - 1;
@@ -831,8 +843,12 @@ void Recombinator::transmitGenotype(const Individual & parent,
 					convCount = -1;
 				}
 				// copy from the end of conversion to this recombination point
+#  ifdef MUTANTALLELE
+				simuPOP::copy(cp[curCp] + gt, cp[curCp] + gt + gtEnd, off + gt);
+#  else
 				for (; gt < gtEnd; ++gt)
 					off[gt] = cp[curCp][gt];
+#  endif
 				curCp = (curCp + 1) % 2;
 				if (m_debugOutput)
 					*m_debugOutput << ' ' << gt - 1;
@@ -852,15 +868,23 @@ void Recombinator::transmitGenotype(const Individual & parent,
 		if (convCount > 0) {
 			convEnd = gt + convCount;
 			if (convEnd < gtEnd) {
+#  ifdef MUTANTALLELE
+				simuPOP::copy(cp[curCp] + gt, cp[curCp] + gt + convEnd, off + gt);
+#  else
 				for (; gt < convEnd; ++gt)
 					off[gt] = cp[curCp][gt];
+#  endif
 				curCp = (curCp + 1) % 2;
 				if (m_debugOutput)
 					*m_debugOutput << ' ' << gt - 1;
 			}
 		}
+#  ifdef MUTANTALLELE
+		simuPOP::copy(cp[curCp] + gt, cp[curCp] + gt + gtEnd, off + gt);
+#  else
 		for (; gt < gtEnd; ++gt)
 			off[gt] = cp[curCp][gt];
+#  endif
 #else
 		size_t gt = 0, gtEnd = 0;
 		size_t pos = bt.probFirstSucc();
