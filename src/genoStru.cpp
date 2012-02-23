@@ -257,12 +257,17 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 		"Chromosome X and Y should be both present for sexual transmission to work.");
 	//
 	m_mitochondrial.clear();
+	size_t mt_len = 0;
 	for (size_t i = 0; i < m_chromTypes.size(); ++i) {
 		if (m_chromTypes[i] == MITOCHONDRIAL) {
 			DBG_FAILIF(!m_mitochondrial.empty() && m_mitochondrial.back() != i - 1,
 				ValueError,
 				"There can be several mitochondrial chromosmes, but they need to be adjacent to each other.");
 			m_mitochondrial.push_back(static_cast<ULONG>(i));
+			if (mt_len == 0)
+				mt_len = m_numLoci[i];
+			else if (m_numLoci[i] != mt_len)
+				throw ValueError("All mitochondrial DNAs should have the same length");
 		}
 	}
 	//

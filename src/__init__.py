@@ -39,6 +39,7 @@ __all__ = [
     'AUTOSOME',
     'CHROMOSOME_X',
     'CHROMOSOME_Y',
+    'MITOCHONDRIAL',
     #
     'CONSTANT',
     'BINOMIAL_DISTRIBUTION',
