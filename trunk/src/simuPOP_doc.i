@@ -1762,6 +1762,8 @@ Details:
 
 %ignore simuPOP::GenoStruTrait::customizedChroms() const;
 
+%ignore simuPOP::GenoStruTrait::mitochondrial() const;
+
 %feature("docstring") simuPOP::GenoStruTrait::sexChrom "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::GenoStruTrait::isHaplodiploid "Obsolete or undocumented function."
@@ -1904,7 +1906,7 @@ Usage:
 Details:
 
     return the type of a chromosome chrom (CUSTOMIZED, AUTOSOME,
-    CHROMOSOME_X, or CHROMOSOME_Y).
+    CHROMOSOME_X, CHROMOSOME_Y or MITOCHONDRIAL.
 
 "; 
 
@@ -1917,7 +1919,7 @@ Usage:
 Details:
 
     return the type of all chromosomes (CUSTOMIZED, AUTOSOME,
-    CHROMOSOME_X or CHROMOSOME_Y).
+    CHROMOSOME_X, CHROMOSOME_Y, or MITOCHONDRIAL).
 
 "; 
 
@@ -3714,13 +3716,14 @@ Details:
     ALL_AVAIL. For each individual (parents if this operator is
     applied before mating, and offspring if this operator is applied
     during mating), genotypes at loci are collected one by one (e.g.
-    p0_loc0, p1_loc0, p0_loc1, p1_loc1... for a diploid individual)
-    and are looked up in the dictionary. If a genotype cannot be
-    found, it will be looked up again without phase information (e.g.
-    (1,0) will match key (0,1)). If the genotype still can not be
-    found, a ValueError will be raised. This operator supports sex
-    chromosomes and haplodiploid populations. In these cases, only
-    valid genotypes should be used to generator the dictionary keys.
+    p0_loc0, p1_loc0, p0_loc1, p1_loc1... for a diploid individual,
+    with number of alleles varying for sex and mitochondrial DNAs) and
+    are looked up in the dictionary. If a genotype cannot be found, it
+    will be looked up again without phase information (e.g. (1,0) will
+    match key (0,1)). If the genotype still can not be found, a
+    ValueError will be raised. This operator supports sex chromosomes
+    and haplodiploid populations. In these cases, only valid genotypes
+    should be used to generator the dictionary keys.
 
 "; 
 
@@ -4126,13 +4129,18 @@ Usage:
 
 Details:
 
-    This geno transmitter assumes that the first homologous copy of
-    several (or all) Customized chromosomes are copies of
-    mitochondrial chromosomes. It transmits these chromosomes randomly
-    from the female parent to offspring. If this transmitter is
-    applied to populations with more than one homologous copies of
-    chromosomes, it transmits the first homologous copy of chromosomes
-    and clears alleles (set to zero) on other homologous copies.
+    This geno transmitter transmits the first homologous copy of a
+    Mitochondrial chromosome. If no mitochondrial chromosome is
+    present, it assumes that the first homologous copy of several (or
+    all) Customized chromosomes are copies of mitochondrial
+    chromosomes. This operator transmits the mitochondrial chromosome
+    from the female parent to offspring for sexsual reproduction, and
+    any parent to offspring for asexual reproduction. If there are
+    multiple chromosomes, the organelles are selected randomly. If
+    this transmitter is applied to populations with more than one
+    homologous copies of chromosomes, it transmits the first
+    homologous copy of chromosomes and clears alleles (set to zero) on
+    other homologous copies.
 
 "; 
 
@@ -4146,12 +4154,13 @@ Usage:
 
 Details:
 
-    Createa a mitochondrial genotype transmitter that treats all
-    Customized chromosomes, or a list of chromosomes specified by
-    chroms, as human mitochondrial chromosomes. These chromosomes
-    should have the same length and the same number of loci. This
-    operator transmits these chromosomes randomly from the female
-    parent to offspring of both sexes.
+    Createa a mitochondrial genotype transmitter that treats the
+    Mitochondiral chromosome, or Customized chromosomes if no
+    Mitochondrial chromosome is specified, or a list of chromosomes
+    specified by chroms, as human mitochondrial chromosomes. These
+    chromosomes should have the same length and the same number of
+    loci. This operator transmits these chromosomes randomly from the
+    female parent to offspring of both sexes.
 
 "; 
 
