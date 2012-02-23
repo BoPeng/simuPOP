@@ -11,6 +11,7 @@ New features:
     sites.
   - Add MITOCHONDRIAL as a natural chromosome type so that operators such as
 	Stat can handle them correctly.
+  - Extend Stat(structure) to handle haploid population and non-autosomal chromosomes.
 
 BUG:
  - Fix a bug that prevents the correct handling of population structure when evolving
