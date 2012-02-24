@@ -258,7 +258,7 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 	//
 	m_mitochondrial = -1;
 	size_t mt_len = 0;
-	for (size_t i = 0; i < m_chromTypes.size(); ++i) {
+	for (int i = 0; i < static_cast<int>(m_chromTypes.size()); ++i) {
 		if (m_chromTypes[i] == MITOCHONDRIAL) {
 			DBG_ASSERT(m_mitochondrial == -1, ValueError,
 				"Only one mitochondrial chromosome can be specified");
