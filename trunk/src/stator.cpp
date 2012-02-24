@@ -697,13 +697,13 @@ bool statNumOfSegSites::apply(Population & pop) const
         const vectoru & loci = m_loci.elems(&pop);
         DBG_DO(DBG_STATOR, cerr << "Count number of segregating sites for " << loci.size() << " loci " << endl);
 
-        std::set<ULONG> allSegSites;
+        std::set<size_t> allSegSites;
         // for each subpopulation.
         subPopList subPops = m_subPops.expandFrom(pop);
         subPopList::const_iterator sp = subPops.begin();
         subPopList::const_iterator spEnd = subPops.end();
         for (; sp != spEnd; ++sp) {
-                std::set<ULONG> segSites;
+                std::set<size_t> segSites;
                 pop.activateVirtualSubPop(*sp);
 
                 // go through all loci
@@ -2936,8 +2936,8 @@ bool statStructure::apply(Population & pop) const
 	for (size_t idx = 0; idx < loci.size(); ++idx) {
 		size_t chromType = pop.chromType(pop.chromLocusPair(loci[idx]).first);
         if (idx == 0)
-            use_observed_het = pop.ploidy() == 2 and (chromType == AUTOSOME || chromType == CUSTOMIZED);
-        else if ((pop.ploidy() == 2 and (chromType == AUTOSOME || chromType == CUSTOMIZED)) != use_observed_het)
+            use_observed_het = pop.ploidy() == 2 && (chromType == AUTOSOME || chromType == CUSTOMIZED);
+        else if ((pop.ploidy() == 2 && (chromType == AUTOSOME || chromType == CUSTOMIZED)) != use_observed_het)
             throw ValueError("Structure statistics can only be estimated from loci on chromosomes of the same type, because other wise the observed number of alleles will be different.");
 	}
 

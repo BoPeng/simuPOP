@@ -484,7 +484,7 @@ bool MutSpaceMutator::apply(Population & pop) const
 					mutants.insert(mutLoc);
 				}
 			*/
-                                ind.setAllele(1, mutLoc, p, ch);
+                                ind.setAllele(1, mutLoc, int(p), int(ch));
 			}   // while
 		}       // each individual
 	}           // each subpopulation
