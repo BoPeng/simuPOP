@@ -268,8 +268,8 @@ public:
 	 *  \li and in general 2**n for diploid and 3**n for haploid cases if there
 	 *       are \c n loci.
 	 *
-	 *  This operator does not support haplodiploid populations and sex
-	 *  chromosomes.
+	 *  This operator does not support haplodiploid populations, sex and
+	 *  mitochondrial chromosomes.
 	 */
 	MaSelector(const lociList & loci, const vectorf & fitness, const uintList & wildtype = vectoru(1, 0),
 		int begin = 0, int end = -1, int step = 1,

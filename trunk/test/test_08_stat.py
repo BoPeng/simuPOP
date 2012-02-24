@@ -426,7 +426,7 @@ class TestStat(unittest.TestCase):
         for hap in [(0,1,4), (2,5)]:
             homo = sum([[ind.allele(x, 0) for x in hap] == [ind.allele(x, 1) for x in hap] for ind in pop.individuals()])
             self.assertEqual(pop.dvars().haploHeteroNum[hap], 6000 - homo)
-            self.assertEqual(pop.dvars().haploHeteroFreq[hap], 1 - homo / 6000.)
+            self.assertAlmostEqual(pop.dvars().haploHeteroFreq[hap], 1 - homo / 6000., 6)
         pop.setVirtualSplitter(SexSplitter())
         stat(pop, haploHomoFreq=[(0,1,4), (2,5)], subPops=[(0,0)])
         for hap in [(0,1,4), (2,5)]:
