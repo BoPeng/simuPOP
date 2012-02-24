@@ -116,8 +116,8 @@ class TestSelector(unittest.TestCase):
                 elif ind.allele(2,1) == 2 and ind.sex() == MALE:
                     self.assertEqual(ind.fitness, 0.8)
             # mitochondrial DNA
-            pop = Population(size=1000, loci=[1, 2, 2], infoFields=['a', 'fitness', 'b'],
-                chromTypes=[AUTOSOME, MITOCHONDRIAL, MITOCHONDRIAL])
+            pop = Population(size=1000, loci=[1, 2], infoFields=['a', 'fitness', 'b'],
+                chromTypes=[AUTOSOME, MITOCHONDRIAL])
             initSex(pop)
             initGenotype(pop, freq=[.2, 0, .8])
             MapSelector(loci=[2], fitness={(0,):0.9, (1,):0.8}).apply(pop)
@@ -232,8 +232,8 @@ class TestSelector(unittest.TestCase):
                 elif ind.allele(2,1) == 2 and ind.sex() == MALE:
                     self.assertEqual(ind.fitness, 0.8)
             # mitochondrial DNA
-            pop = Population(size=1000, loci=[1, 2, 2], infoFields=['a', 'fitness', 'b'],
-                chromTypes=[AUTOSOME, MITOCHONDRIAL, MITOCHONDRIAL])
+            pop = Population(size=1000, loci=[1, 2], infoFields=['a', 'fitness', 'b'],
+                chromTypes=[AUTOSOME, MITOCHONDRIAL])
             initSex(pop)
             initGenotype(pop, freq=[.2, 0, .8])
             MapSelector(loci=[2], fitness={(0,):0.9, (1,):0.8, (2,):0.4}).apply(pop)

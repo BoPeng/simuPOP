@@ -16,6 +16,7 @@ New features:
 BUG:
  - Fix a bug that prevents the correct handling of population structure when evolving
    populations with changing population structure.
+ - Ensure 2^64 maximum allele states for the long module under 64 bit system
 
 version 1.0.6 - Rev 4260 (July 11, 2011)
 Major new feature:
