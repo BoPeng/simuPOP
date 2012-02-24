@@ -2932,7 +2932,7 @@ bool statStructure::apply(Population & pop) const
 
 	const vectoru & loci = m_loci.elems(&pop);
 
-    bool use_observed_het;
+    bool use_observed_het = true;
 	for (size_t idx = 0; idx < loci.size(); ++idx) {
 		size_t chromType = pop.chromType(pop.chromLocusPair(loci[idx]).first);
         if (idx == 0)
