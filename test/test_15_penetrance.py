@@ -116,7 +116,6 @@ class TestPenetrance(unittest.TestCase):
         maPenetrance(pop, loci=[3,5], wildtype=0,
             penetrance=[0, .3, .5, 0.3, 0.6, 0.8, 0.1, 1, 0.8])
 
-
     def testMlPenetrance(self):
         'Testing multi-locus penetrance'
         pop = Population(1000, loci=[3,5], infoFields=['penetrance'])
@@ -138,6 +137,42 @@ class TestPenetrance(unittest.TestCase):
                 penetrance={(0,0):0, (0,1):1, (1,1):1})
             ],
             mode=MULTIPLICATIVE
+        )
+
+    def testEvolveMaPenetrance(self):
+        'Testing using MaPenetrance in evolve function'
+        pop = Population(1000, loci=[3,5])
+        pop.evolve(
+            initOps=[
+                InitSex(),
+                InitGenotype(freq=[.3, .7]),
+            ],
+            #
+            preOps= MaPenetrance(loci = 0,    wildtype=0,
+                    penetrance=[0, .3, .5]),
+            matingScheme=RandomMating(),
+            gen=4
+        )
+
+    def testEvolveMlPenetrance(self):
+        'Testing using MlPenetrance in evolve function'
+        pop = Population(1000, loci=[3,5])
+        pop.evolve(
+            initOps=[
+                InitSex(),
+                InitGenotype(freq=[.3, .7]),
+            ],
+            #
+            preOps=MlPenetrance(ops=[
+                MaPenetrance(loci = 0,    wildtype=0,
+                    penetrance=[0, .3, .5]),
+                MapPenetrance(loci = 1,
+                    penetrance={(0,0):0, (0,1):1, (1,1):1})
+                ],
+                mode=ADDITIVE
+            ),
+            matingScheme=RandomMating(),
+            gen=4
         )
 
     def testPyPenetrance(self):

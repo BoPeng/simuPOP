@@ -330,7 +330,7 @@ public:
 	/// HIDDEN Deep copy of a multi-loci penetrance operator
 	virtual BaseOperator * clone() const
 	{
-		throw ValueError("Multi-loci penetrance operator can not be nested.");
+		return new MlPenetrance(*this);
 	}
 
 
