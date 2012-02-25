@@ -5408,9 +5408,14 @@ lstparams "caption={Save and load a population},label={savePop}"
 The native simuPOP format is portable across different platforms but is
  not human readable and is not recognized by other applications.
  If you need to save a simuPOP population in a format that is recognizable
- by a particular software, please check the simuPOP online bookbook and
- see if there is an existing supporting module.
- Otherwise, you could write your own import and export function using population
+ by a particular software, you can use the 
+\family typewriter
+saveCSV
+\family default
+ function to export to a general comma or tab-delimited format, or check
+ the simuPOP online cookbook and see if there is an existing supporting
+ module.
+ You could also write your own import and export function using population
  functions.
  
 \end_layout
@@ -7071,8 +7076,8 @@ If fixed subpopulation sizes are given to parameter
 subPopSize
 \family default
 .
- A mating scheme will generation an offspring generation with specified
- sizes even if an operator has changed parental population sizes.
+ A mating scheme will generate an offspring generation with specified sizes
+ even if an operator has changed parental population sizes.
 \end_layout
 
 \begin_layout Itemize
