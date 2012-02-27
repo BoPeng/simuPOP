@@ -19679,6 +19679,8 @@ most options can be set by environmental variables and command line options
 Class 
 \family typewriter
 simuOpt.Params
+\family default
+ (deprecated)
 \end_layout
 
 \begin_layout Standard
@@ -19755,6 +19757,30 @@ Using
 \end_layout
 
 \begin_layout Standard
+NOTE: 
+\family typewriter
+simuOpt.Params
+\family default
+ was designed when 
+\family typewriter
+getopt
+\family default
+ was the only parameter handling module of python.
+ Although it still has some unique features (gui mode, validation etc) compared
+ to the newly introduced standard module 
+\family typewriter
+argparse
+\family default
+, it is less extensible and powerful than 
+\family typewriter
+argparse
+\family default
+.
+ This class is therefore deprecated although it will be kept in simuPOP
+ for backward-compatibility reasons.
+\end_layout
+
+\begin_layout Standard
 The following sections describes how to use the 
 \family typewriter
 simuOpt
@@ -19762,7 +19788,7 @@ simuOpt
  class in a simuPOP script.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsubsection
 Define a parameter specification list.
 \end_layout
 
@@ -20101,7 +20127,7 @@ lstparams "caption={Using simuOpt.param to specify parameters},label={paramFunc}
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsubsection
 Get parameters (function 
 \family typewriter
 Params.getParam
@@ -20380,7 +20406,7 @@ simu.py --pop=YRI
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsubsection
 Access, manipulate and extract parameters
 \end_layout
 
