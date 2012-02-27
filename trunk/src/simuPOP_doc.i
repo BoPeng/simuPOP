@@ -3781,7 +3781,7 @@ Details:
     aabb for diploid two-locus cases,
     *   and in general 2**n for diploid and 3**n for haploid cases if
     there are n loci. This operator does not support haplodiploid
-    populations and sex chromosomes.
+    populations, sex and mitochondrial chromosomes.
 
 "; 
 
@@ -9370,7 +9370,13 @@ Details:
     Wright's fixation index but it is extended for multi-allele (more
     than two alleles) and multi-loci cases. This statistics should be
     used if you would like to obtain a true Fst value of a large
-    Population.
+    Population. Nei's Gst uses only allele frequency information so it
+    is available for all population type (haploid, diploid etc). Weir
+    and Cockerham's Fst uses heterozygosity frequency so it is best
+    for autosome of diploid populations. For non-diploid population,
+    sex, and mitochondrial DNAs, simuPOP uses expected heterozygosity
+    (1 - sum p_i^2) when heterozygosity is needed. These statistics
+    output the following variables:
     *   F_st (default) The WC84 Fst statistic estimated for all
     specified loci.
     *   F_is The WC84 Fis statistic estimated for all specified loci.

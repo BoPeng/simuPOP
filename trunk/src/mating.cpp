@@ -1647,6 +1647,7 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 					DBG_WARNIF(spSize == 0, "WARNING: One of the parental (virtual) subpopulation is empty and will not "
 					                 "produce any offspring.");
 					w_pos[i] = static_cast<double>(spSize);
+				}
 		}
 		DBG_DO(DBG_DEVEL, cerr	<< "Positive mating scheme weights: " << w_pos << '\n'
 			                    << "Negative mating scheme weights: " << w_neg << endl);
