@@ -1058,12 +1058,14 @@ void applyDuringMatingOperator(const BaseOperator & op,
 	BaseOperator * opPtr = op.clone();
 
 	opPtr->initializeIfNeeded(*pop->rawIndBegin());
+	// NOTE: putting d and m in the applyDuringMating function will cause
+	// compiling error gor gcc/llvm under mac.
+	Individual * d = dad < 0 ? NULL : &pop->individual(static_cast<size_t>(dad));
+	Individual * m = mom < 0 ? NULL : &pop->individual(static_cast<size_t>(mom));
 #pragma omp parallel for
 	// i needs to be int since some openMP implementation does not handle unsigned index
 	for (int i = static_cast<int>(off.first); i < static_cast<int>(off.second); ++i)
-		opPtr->applyDuringMating(*pop, *offPop, pop->rawIndBegin() + i,
-			dad < 0 ? NULL : &pop->individual(static_cast<size_t>(dad)),
-			mom < 0 ? NULL : &pop->individual(static_cast<size_t>(mom)));
+		opPtr->applyDuringMating(*pop, *offPop, pop->rawIndBegin() + i, d, m);
 }
 
 
