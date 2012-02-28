@@ -197,7 +197,9 @@ public:
 	 */
 	PyObject * genotype(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
 
-
+#ifdef MUTANTALLELE
+	mutantList mutants(const uintList & ploidy = uintList(), const uintList & chroms = uintList());	
+#endif
 	/** CPPONLY
 	 *  Return a Python object with alleles at specified loci. This function
 	 *  is usually used to collect alleles to send to a user-provided function.
