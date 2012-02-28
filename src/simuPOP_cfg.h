@@ -367,7 +367,7 @@ typedef std::map<string, double>           strDict;
 typedef std::map<int, double>              intDict;
 typedef std::map<size_t, double>           uintDict;
 typedef std::map<vectori, double>          tupleDict;
-typedef std::map<size_t, size_t>           alleleDict;
+typedef std::vector<std::pair<size_t, size_t> > mutantList;
 
 #define ValidPyObject(obj)   (obj != NULL && obj != Py_None)
 #define InvalidPyObject(obj) (obj == NULL || obj == Py_None)
