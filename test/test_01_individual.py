@@ -151,6 +151,29 @@ class TestIndividual(unittest.TestCase):
         pop.individual(0).setGenotype(0)
         self.assertEqual(pop.individual(0).allele(0), 0)
 
+    def testMutants(self):
+        'Testing individual::genotype(), genotype(p), genotype(p, chrom)'
+        pop = self.getPop()
+        ind = pop.individual(0)
+        ind.setGenotype([2, 3, 4])
+        gt = ind.mutants()
+        self.assertEqual(gt, ((0,2),(1,3),(2,4),(3,2),(4,3),(5,4),(6,2),(7,3),(8,4),(9,2),(10,3),(11,4),(12,2),(13,3),(14,4),(15,2),(16,3),(17,4),(18,2),(19,3),(20,4),(21,2),(22,3),(23,4)))
+        # ploidy 1
+        gt = ind.mutants(1)
+        self.assertEqual(gt, ((12,2),(13,3),(14,4),(15,2),(16,3),(17,4),(18,2),(19,3),(20,4),(21,2),(22,3),(23,4)))
+        # ploidy 1, ch 1
+        gt = ind.mutants(1, 1)
+        self.assertEqual(gt, ((17,4),(18,2),(19,3),(20,4),(21,2),(22,3),(23,4)))
+        #
+        self.assertRaises(IndexError, ind.mutants, 2)
+        self.assertRaises(IndexError, ind.mutants, 0, 2)
+        # accept single form
+        pop.setGenotype(1)
+        self.assertEqual(pop.individual(0).allele(0), 1)
+        pop.individual(0).setGenotype(0)
+        self.assertEqual(pop.individual(0).allele(0), 0)
+
+
     def testSetGenotype(self):
         'Testing individual::setGenotype(geno), setgenotype(geno, p), '
         'setGenotype(geno, p, chrom)'
