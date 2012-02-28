@@ -241,11 +241,6 @@ PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 #ifdef MUTANTALLELE
 mutantList Individual::mutants(const uintList & ply, const uintList & ch) {
 	mutantList mutantAllele;
-	DBG_WARNIF(true, "The returned object of function Individual.genotype() is a special "
-		             "carray object that reflects the underlying genotype of an individual. "
-		             "It will become invalid once the population changes. Please use "
-		             "list(ind.genotype()) if you would like to keep a copy of genotypes");
-
 	size_t beginP = 0;
 	size_t endP = 0;
 	size_t beginCh = 0;
@@ -308,7 +303,6 @@ mutantList Individual::mutants(const uintList & ply, const uintList & ch) {
 		mutantAllele.reserve(idx_endP - idx_beginP);
 		for(;idx_beginP != idx_endP; ++idx_beginP, ++value_beginP)
 			mutantAllele.push_back(std::pair<size_t, size_t>(*idx_beginP, *value_beginP));
-			//mutantAllele[*idx_beginP] = *value_beginP;//.insert(std::pair<size_t, size_t>(*idx_beginP, *value_beginP);
 		return mutantAllele;
 	}
 }
