@@ -171,6 +171,7 @@ namespace std
     %template()         vector<double>;     /* e.g. lociPos */
     %template()         vector<long>;       /* e.g. vspID(vectori) */
     %template()         map<vector<long>, double>; /* e.g. MapSelector */
+    %template()         map<size_t, size_t>; /* e.g. mutant list */
 }
 
 
