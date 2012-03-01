@@ -14,9 +14,11 @@ import unittest, os, sys
 from simuOpt import setOptions
 setOptions(quiet=True)
 new_argv = []
+alleleType = 'short'
 for arg in sys.argv:
     if arg in ['short', 'long', 'binary', 'mutant']:
         setOptions(alleleType = arg)
+        alleleType = arg
     elif arg.startswith('-j'):
         setOptions(numThreads = int(arg[2:]))
     else:
@@ -153,25 +155,35 @@ class TestIndividual(unittest.TestCase):
 
     def testMutants(self):
         'Testing individual::genotype(), genotype(p), genotype(p, chrom)'
-        pop = self.getPop()
-        ind = pop.individual(0)
-        ind.setGenotype([2, 3, 4])
-        gt = ind.mutants()
-        self.assertEqual(gt, ((0,2),(1,3),(2,4),(3,2),(4,3),(5,4),(6,2),(7,3),(8,4),(9,2),(10,3),(11,4),(12,2),(13,3),(14,4),(15,2),(16,3),(17,4),(18,2),(19,3),(20,4),(21,2),(22,3),(23,4)))
-        # ploidy 1
-        gt = ind.mutants(1)
-        self.assertEqual(gt, ((12,2),(13,3),(14,4),(15,2),(16,3),(17,4),(18,2),(19,3),(20,4),(21,2),(22,3),(23,4)))
-        # ploidy 1, ch 1
-        gt = ind.mutants(1, 1)
-        self.assertEqual(gt, ((17,4),(18,2),(19,3),(20,4),(21,2),(22,3),(23,4)))
-        #
-        self.assertRaises(IndexError, ind.mutants, 2)
-        self.assertRaises(IndexError, ind.mutants, 0, 2)
-        # accept single form
-        pop.setGenotype(1)
-        self.assertEqual(pop.individual(0).allele(0), 1)
-        pop.individual(0).setGenotype(0)
-        self.assertEqual(pop.individual(0).allele(0), 0)
+        if alleleType == 'mutant':
+            pop = self.getPop()
+            ind = pop.individual(0)
+            ind.setGenotype([2, 3, 4])
+            gt = ind.mutants()
+            self.assertEqual(gt, ((0,2),(1,3),(2,4),(3,2),(4,3),(5,4),(6,2),(7,3),(8,4),(9,2),(10,3),(11,4),(12,2),(13,3),(14,4),(15,2),(16,3),(17,4),(18,2),(19,3),(20,4),(21,2),(22,3),(23,4)))
+            # ploidy 1
+            gt = ind.mutants(1)
+            self.assertEqual(gt, ((12,2),(13,3),(14,4),(15,2),(16,3),(17,4),(18,2),(19,3),(20,4),(21,2),(22,3),(23,4)))
+            # ploidy 1, ch 1
+            gt = ind.mutants(1, 1)
+            self.assertEqual(gt, ((17,4),(18,2),(19,3),(20,4),(21,2),(22,3),(23,4)))
+            #
+            self.assertRaises(IndexError, ind.mutants, 2)
+            self.assertRaises(IndexError, ind.mutants, 0, 2)
+            # accept single form
+            pop.setGenotype(1)
+            self.assertEqual(pop.individual(0).allele(0), 1)
+            pop.individual(0).setGenotype(0)
+            self.assertEqual(pop.individual(0).allele(0), 0)
+
+            #  case: Genotype has zero value
+            ind.setGenotype([2, 0, 4, 0, 6])
+            gt = ind.mutants()
+            self.assertEqual(gt,((0, 2), (2, 4), (4, 6), (5, 2), (7, 4), (9, 6), (10, 2), (12, 4), (14, 6), (15, 2), (17, 4), (19, 6), (20, 2), (22, 4)))
+            gt = ind.mutants(1)
+            self.assertEqual(gt,((12, 4), (14, 6), (15, 2), (17, 4), (19, 6), (20, 2), (22, 4)))
+            gt = ind.mutants(1, 1)
+            self.assertEqual(gt,((17, 4), (19, 6), (20, 2), (22, 4)))
 
 
     def testSetGenotype(self):

@@ -289,17 +289,21 @@ mutantList Individual::mutants(const uintList & ply, const uintList & ch) {
 		// has to be all chromosomes
 		DBG_FAILIF(beginCh != 0 || endCh != numChrom(), ValueError,
 			"If multiple ploidy are chosen, all chromosomes has to be chosen.");
-		compressed_vector<Allele>::index_array_type::iterator idx_beginP = (m_genoPtr + beginP * totNumLoci()).getIndexIterator();
-		compressed_vector<Allele>::index_array_type::iterator idx_endP = (m_genoPtr + endP * totNumLoci()).getIndexIterator();
-		compressed_vector<Allele>::value_array_type::iterator value_beginP = (m_genoPtr + beginP * totNumLoci()).getValueIterator();
+		size_t begin = beginP * totNumLoci();
+		size_t end = endP * totNumLoci();
+		compressed_vector<Allele>::index_array_type::iterator idx_beginP = (m_genoPtr + begin).getIndexIterator();
+		compressed_vector<Allele>::index_array_type::iterator idx_endP = (m_genoPtr + end).getIndexIterator();
+		compressed_vector<Allele>::value_array_type::iterator value_beginP = (m_genoPtr + begin).getValueIterator();
 		mutantAllele.reserve(idx_endP - idx_beginP);
 		for(;idx_beginP != idx_endP; ++idx_beginP, ++value_beginP)
 			mutantAllele.push_back(std::pair<size_t, size_t>(*idx_beginP, *value_beginP));
 		return mutantAllele;
 	} else {
-		compressed_vector<Allele>::index_array_type::iterator idx_beginP = (m_genoPtr + beginP * totNumLoci() + chromBegin(beginCh)).getIndexIterator();
-		compressed_vector<Allele>::index_array_type::iterator idx_endP = (m_genoPtr + endP * totNumLoci() + chromEnd(endCh -1)).getIndexIterator();
-		compressed_vector<Allele>::value_array_type::iterator value_beginP = (m_genoPtr + beginP * totNumLoci() + chromBegin(beginCh)).getValueIterator();
+		size_t begin = beginP * totNumLoci() + chromBegin(beginCh);
+		size_t end = beginP * totNumLoci() + chromEnd(endCh -1);
+		compressed_vector<Allele>::index_array_type::iterator idx_beginP = (m_genoPtr + begin).getIndexIterator();
+		compressed_vector<Allele>::index_array_type::iterator idx_endP = (m_genoPtr + end).getIndexIterator();
+		compressed_vector<Allele>::value_array_type::iterator value_beginP = (m_genoPtr + begin).getValueIterator();
 		mutantAllele.reserve(idx_endP - idx_beginP);
 		for(;idx_beginP != idx_endP; ++idx_beginP, ++value_beginP)
 			mutantAllele.push_back(std::pair<size_t, size_t>(*idx_beginP, *value_beginP));
@@ -435,8 +439,20 @@ void Individual::setGenotype(const uintList & genoList, const uintList & ply, co
 		for (size_t j = 0; j < chroms.size(); ++j) {
 			size_t chrom = chroms[j];
 			GenoIterator ptr = m_genoPtr + p * totNumLoci() + chromBegin(chrom);
+#ifdef MUTANTALLELE
+			mutant_vectora ctmp;
+			ctmp.resize(numLoci(chrom));
+			for (size_t i = 0; i < numLoci(chrom); i++, ++idx) {
+				Allele atmp = ToAllele(geno[idx % sz]); 
+				if (atmp != 0)
+					ctmp.push_back(i, atmp); 
+			}
+			simuPOP::copy(ctmp.begin(), ctmp.end(), ptr);
+#else
 			for (size_t i = 0; i < numLoci(chrom); i++, ++idx)
 				*(ptr + i) = ToAllele(geno[idx % sz]); 
+#endif
+
 		}
 	}
 }
