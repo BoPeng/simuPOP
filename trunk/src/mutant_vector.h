@@ -576,13 +576,14 @@ inline void copy(mutant_vectora::iterator begin, mutant_vectora::iterator end, m
 	mutant_vectora::iterator it_end = it + size;
 	if (it_end.getIndex() <= it_end.getContainer()->size()) {
 		compressed_vector<Allele>::index_array_type::const_iterator src_index_begin = begin.getIndexIterator();
+		compressed_vector<Allele>::index_array_type::const_iterator src_index_end = end.getIndexIterator();
 		compressed_vector<Allele>::value_array_type::const_iterator src_value_begin = begin.getValueIterator();
 		compressed_vector<Allele>::value_array_type::const_iterator src_value_end = end.getValueIterator();
-		compressed_vector<Allele>::value_array_type::iterator dest_value_begin = it.getValueIterator();
-		compressed_vector<Allele>::value_array_type::iterator dest_value_end = it_end.getValueIterator();
 		compressed_vector<Allele>::index_array_type::iterator dest_index_begin = it.getIndexIterator();
-		size_t src_size = src_value_end - src_value_begin;
-		size_t dest_size = dest_value_end - dest_value_begin;
+		compressed_vector<Allele>::index_array_type::iterator dest_index_end = it_end.getIndexIterator();
+		compressed_vector<Allele>::value_array_type::iterator dest_value_begin = it.getValueIterator();
+		size_t src_size = src_index_end - src_index_begin;
+		size_t dest_size = dest_index_end - dest_index_begin;
 		size_t src_idx_num_begin = begin.getIndex();
 		size_t dest_idx_num_begin = it.getIndex();
 		if (src_size > dest_size) {

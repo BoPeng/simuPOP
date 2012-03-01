@@ -995,7 +995,7 @@ void Population::removeSubPops(const subPopList & subPops)
 					if (oldInd != newInd) {
 						*newInd = *oldInd;
 #ifdef MUTANTALLELE
-						simuPOP::copy(oldPtr, oldPtr + step, newPtr);
+						simuPOP::copy(oldPtr + 0, oldPtr + step, newPtr);
 #else
 						copy(oldPtr, oldPtr + step, newPtr);
 #endif
@@ -1021,7 +1021,7 @@ void Population::removeSubPops(const subPopList & subPops)
 			// do not remove.
 			if (oldPtr != newPtr) {
 #ifdef MUTANTALLELE
-				simuPOP::copy(oldPtr, oldPtr + step * spSize, newPtr);
+				simuPOP::copy(oldPtr + 0, oldPtr + step * spSize, newPtr);
 #else
 				copy(oldPtr, oldPtr + step * spSize, newPtr);
 #endif
@@ -1076,7 +1076,7 @@ void Population::removeMarkedIndividuals()
 				if (oldInd != newInd) {
 					*newInd = *oldInd;
 #ifdef MUTANTALLELE
-					simuPOP::copy(oldPtr, oldPtr + step, newPtr);
+					simuPOP::copy(oldPtr + 0, oldPtr + step, newPtr);
 #else
 					copy(oldPtr, oldPtr + step, newPtr);
 #endif
@@ -1763,7 +1763,7 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 				//
 				copy(oldInd, oldInd + spSize, newInd);
 #ifdef MUTANTALLELE
-				simuPOP::copy(oldPtr, oldPtr + step * spSize, newPtr);
+				simuPOP::copy(oldPtr + 0, oldPtr + step * spSize, newPtr);
 #else
 				copy(oldPtr, oldPtr + step * spSize, newPtr);
 #endif
@@ -1793,7 +1793,7 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 						++newSize;
 						*newInd = *oldInd;
 #ifdef MUTANTALLELE
-						simuPOP::copy(oldPtr, oldPtr + step, newPtr);
+						simuPOP::copy(oldPtr + 0, oldPtr + step, newPtr);
 #else
 						copy(oldPtr, oldPtr + step, newPtr);
 #endif
