@@ -645,17 +645,19 @@ private:
 };
 
 
-/** This operator checks all loci of a population and revert a mutant to
- *  wildtype allele if it is fixed in the population. If a list of (virtual)
- *  subpopulations are specified, alleles are reverted in each subpopulation,
- *  regardless if the allele is fixed in other subpopulations. 
+/** This operator checks all or specified loci of a population and revert all
+ *  mutants at loci to wildtype alleles if they are fixed in the population.
+ *  If a list of (virtual) subpopulations are specified, alleles are reverted
+ *  if they are fixed in each subpopulation, regardless if the alleles are
+ *  fixed in other subpopulations.
  */
 class RevertFixedSites : public BaseOperator
 {
 public:
-	/** Create an operator to revert alleles at fixed loci from value non-zero to zero.
-	 *  If parameter \e subPops are specified, only individuals in these subpopulations
-	 *  are considered.
+	/** Create an operator to set all alleles to zero at specified (parameter
+	 *  \e loci) or all loci if they are fixed (having no zero-allele) at these
+	 *  loci. If parameter \e subPops are specified, only individuals in these
+	 *  subpopulations are considered.
 	 */
 	RevertFixedSites(const lociList & loci = lociList(), 
 		const stringFunc & output = "", int begin = 0, int end = -1, int step = 1,
@@ -688,7 +690,7 @@ public:
 	string describe(bool format = true) const
 	{
 		(void)format;  // avoid warning about unused parameter
-		return "Revert fixed alleles to wildtype allele if it is fixed in the population.";
+		return "Revert fixed alleles to wildtype allele 0 if they are fixed in the population.";
 	}
 
 private:
