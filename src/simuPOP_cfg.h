@@ -352,7 +352,7 @@ typedef long LONG;
 typedef std::vector<long>                                vectori;
 typedef std::vector<double>                              vectorf;
 typedef std::vector<Allele>                              vectora;
-typedef compressed_vector<unsigned int> 		 compressed_vectora;
+typedef compressed_vector<unsigned int>          compressed_vectora;
 typedef std::vector<size_t>                              vectoru;
 typedef std::vector<std::string>                         vectorstr;
 typedef std::pair<size_t, size_t>                        pairu;

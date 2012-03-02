@@ -331,10 +331,10 @@ Stat::Stat(
 	bool numOfMales,
 	//
 	bool numOfAffected,
-        //
-        const lociList & numOfSegSites,
-        //
-        const lociList & numOfMutants,
+	//
+	const lociList & numOfSegSites,
+	//
+	const lociList & numOfMutants,
 	//
 	const lociList & alleleFreq,
 	//
@@ -374,8 +374,8 @@ Stat::Stat(
 	m_popSize(popSize, subPops, vars, suffix),
 	m_numOfMales(numOfMales, subPops, vars, suffix),
 	m_numOfAffected(numOfAffected, subPops, vars, suffix),
-        m_numOfSegSites(numOfSegSites, subPops, vars, suffix),
-        m_numOfMutants(numOfMutants, subPops, vars, suffix),
+	m_numOfSegSites(numOfSegSites, subPops, vars, suffix),
+	m_numOfMutants(numOfMutants, subPops, vars, suffix),
 	m_alleleFreq(alleleFreq, subPops, vars, suffix),
 	m_heteroFreq(heteroFreq, homoFreq, subPops, vars, suffix),
 	m_genoFreq(genoFreq, subPops, vars, suffix),
@@ -426,8 +426,8 @@ bool Stat::apply(Population & pop) const
 	return m_popSize.apply(pop) &&
 	       m_numOfMales.apply(pop) &&
 	       m_numOfAffected.apply(pop) &&
-               m_numOfSegSites.apply(pop) &&
-               m_numOfMutants.apply(pop) &&
+	       m_numOfSegSites.apply(pop) &&
+	       m_numOfMutants.apply(pop) &&
 	       m_alleleFreq.apply(pop) &&
 	       m_heteroFreq.apply(pop) &&
 	       m_genoFreq.apply(pop) &&
@@ -670,7 +670,7 @@ statNumOfSegSites::statNumOfSegSites(const lociList & loci, const subPopList & s
 	: m_loci(loci), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
-		numOfSegSites_String,	   numOfSegSites_sp_String, ""
+		numOfSegSites_String, numOfSegSites_sp_String,		""
 	};
 	const char * defaultVars[] = { numOfSegSites_String, "" };
 
@@ -681,32 +681,32 @@ statNumOfSegSites::statNumOfSegSites(const lociList & loci, const subPopList & s
 string statNumOfSegSites::describe(bool /* format */) const
 {
 	if (m_loci.allAvail())
-        return "count number of segregating sites in all loci";
-    else if (m_loci.size() > 0)
-        return "count number of segregating sites in specified loci";
-    return "";
+		return "count number of segregating sites in all loci";
+	else if (m_loci.size() > 0)
+		return "count number of segregating sites in specified loci";
+	return "";
 }
 
 
 bool statNumOfSegSites::apply(Population & pop) const
 {
-        if (m_loci.empty())
-                return true;
+	if (m_loci.empty())
+		return true;
 
-        // get actual list of loci
-        const vectoru & loci = m_loci.elems(&pop);
-        DBG_DO(DBG_STATOR, cerr << "Count number of segregating sites for " << loci.size() << " loci " << endl);
+	// get actual list of loci
+	const vectoru & loci = m_loci.elems(&pop);
+	DBG_DO(DBG_STATOR, cerr << "Count number of segregating sites for " << loci.size() << " loci " << endl);
 
-        std::set<size_t> allSegSites;
-        // for each subpopulation.
-        subPopList subPops = m_subPops.expandFrom(pop);
-        subPopList::const_iterator sp = subPops.begin();
-        subPopList::const_iterator spEnd = subPops.end();
-        for (; sp != spEnd; ++sp) {
-                std::set<size_t> segSites;
-                pop.activateVirtualSubPop(*sp);
+	std::set<size_t> allSegSites;
+	// for each subpopulation.
+	subPopList subPops = m_subPops.expandFrom(pop);
+	subPopList::const_iterator sp = subPops.begin();
+	subPopList::const_iterator spEnd = subPops.end();
+	for (; sp != spEnd; ++sp) {
+		std::set<size_t> segSites;
+		pop.activateVirtualSubPop(*sp);
 
-                // go through all loci
+		// go through all loci
 #ifdef MUTANTALLELE
 		IndIterator ind = pop.indIterator(sp->subPop());
 		for (; ind.valid(); ++ind) {
@@ -716,11 +716,11 @@ bool statNumOfSegSites::apply(Population & pop) const
 			compressed_vector<Allele>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
 			compressed_vector<Allele>::value_array_type::iterator value_it = it.getValueIterator();
 			size_t indIndex = it.getIndex();
-			for (;index_it != index_it_end; ++index_it, ++value_it) {
+			for (; index_it != index_it_end; ++index_it, ++value_it) {
 				if (m_loci.allAvail()) {
 					if (*value_it != 0) {
 						segSites.insert(*index_it - indIndex);
-					}		
+					}
 				} else {
 					for (size_t idx = 0; idx < loci.size(); ++idx) {
 						if (*index_it == indIndex + loci[idx] && *value_it != 0) {
@@ -731,31 +731,31 @@ bool statNumOfSegSites::apply(Population & pop) const
 				}
 			}
 
-                }
+		}
 
 #else
-                for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
-                        size_t loc = loci[idx];
-                        IndAlleleIterator a = pop.alleleIterator(loc, sp->subPop());
-                        for (; a.valid(); ++a)
-                                if (*a != 0) {
-                                        segSites.insert((ULONG)loc);
-                                        break;
-                                }
-                }
+		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
+			size_t loc = loci[idx];
+			IndAlleleIterator a = pop.alleleIterator(loc, sp->subPop());
+			for (; a.valid(); ++a)
+				if (*a != 0) {
+					segSites.insert((ULONG)loc);
+					break;
+				}
+		}
 #endif
-                pop.deactivateVirtualSubPop(sp->subPop());
+		pop.deactivateVirtualSubPop(sp->subPop());
 
-                if (m_vars.contains(numOfSegSites_sp_String))
-                        pop.getVars().setVar(subPopVar_String(*sp, numOfSegSites_String) + m_suffix, segSites.size());
+		if (m_vars.contains(numOfSegSites_sp_String))
+			pop.getVars().setVar(subPopVar_String(*sp, numOfSegSites_String) + m_suffix, segSites.size());
 
-                allSegSites.insert(segSites.begin(), segSites.end());
-        }
+		allSegSites.insert(segSites.begin(), segSites.end());
+	}
 
-        // output whole population
-        if (m_vars.contains(numOfSegSites_String))
-                pop.getVars().setVar(numOfSegSites_String + m_suffix, allSegSites.size());
-        return true;
+	// output whole population
+	if (m_vars.contains(numOfSegSites_String))
+		pop.getVars().setVar(numOfSegSites_String + m_suffix, allSegSites.size());
+	return true;
 }
 
 
@@ -763,39 +763,39 @@ statNumOfMutants::statNumOfMutants(const lociList & loci, const subPopList & sub
 	const stringList & vars, const string & suffix)
 	: m_loci(loci), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
-        const char * allowedVars[] = {
-                numOfMutants_String,	   numOfMutants_sp_String, ""
-        };
-        const char * defaultVars[] = { numOfMutants_String, "" };
+	const char * allowedVars[] = {
+		numOfMutants_String, numOfMutants_sp_String,	   ""
+	};
+	const char * defaultVars[] = { numOfMutants_String, "" };
 
-        m_vars.obtainFrom(vars, allowedVars, defaultVars);
+	m_vars.obtainFrom(vars, allowedVars, defaultVars);
 }
 
 
 string statNumOfMutants::describe(bool /* format */) const
 {
-        if (m_loci.allAvail())
-                return "count number of mutants in all loci";
-        else if (m_loci.size() > 0)
-                return "count number of mutants sites in specified loci";
-        return "";
+	if (m_loci.allAvail())
+		return "count number of mutants in all loci";
+	else if (m_loci.size() > 0)
+		return "count number of mutants sites in specified loci";
+	return "";
 }
 
 
 bool statNumOfMutants::apply(Population & pop) const
 {
-        if (m_loci.empty())
-               return true;
+	if (m_loci.empty())
+		return true;
 
-        const vectoru & loci = m_loci.elems(&pop);
+	const vectoru & loci = m_loci.elems(&pop);
 
-        size_t allMutantCount = 0; 
+	size_t allMutantCount = 0;
 
 	subPopList subPops = m_subPops.expandFrom(pop);
 	subPopList::const_iterator sp = subPops.begin();
 	subPopList::const_iterator spEnd = subPops.end();
 	for ( ; sp != spEnd; ++sp) {
-		size_t mutantCount = 0; 
+		size_t mutantCount = 0;
 		pop.activateVirtualSubPop(*sp);
 		IndIterator ind = pop.indIterator(sp->subPop());
 		for (; ind.valid(); ++ind) {
@@ -806,15 +806,15 @@ bool statNumOfMutants::apply(Population & pop) const
 			compressed_vector<Allele>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
 			compressed_vector<Allele>::value_array_type::iterator value_it = it.getValueIterator();
 			size_t indIndex = it.getIndex();
-			for (;index_it != index_it_end; ++index_it, ++value_it) {
+			for (; index_it != index_it_end; ++index_it, ++value_it) {
 				if (m_loci.allAvail()) {
 					if (*value_it != 0)
-						mutantCount++; 
+						mutantCount++;
 				} else {
 					for (size_t idx = 0; idx < loci.size(); ++idx) {
-						size_t loc = indIndex + loci[idx];  
+						size_t loc = indIndex + loci[idx];
 						if (*index_it == loc && *value_it != 0) {
-							mutantCount++; 
+							mutantCount++;
 							break;
 						}
 					}
@@ -822,13 +822,13 @@ bool statNumOfMutants::apply(Population & pop) const
 			}
 #else
 			if (m_loci.allAvail()) {
-				for (;it != it_end; ++it) {
+				for (; it != it_end; ++it) {
 					if (*it != 0)
 						mutantCount++;
 				}
 			} else {
 				for (size_t idx = 0; idx < loci.size(); ++idx) {
-					size_t loc = loci[idx];  
+					size_t loc = loci[idx];
 					if (*(it + loc) != 0)
 						mutantCount++;
 				}
@@ -841,9 +841,9 @@ bool statNumOfMutants::apply(Population & pop) const
 
 		allMutantCount += mutantCount;
 	}
-        if (m_vars.contains(numOfMutants_String))
-                pop.getVars().setVar(numOfMutants_String + m_suffix, allMutantCount);
-        return true;
+	if (m_vars.contains(numOfMutants_String))
+		pop.getVars().setVar(numOfMutants_String + m_suffix, allMutantCount);
+	return true;
 }
 
 
@@ -2932,13 +2932,13 @@ bool statStructure::apply(Population & pop) const
 
 	const vectoru & loci = m_loci.elems(&pop);
 
-    bool use_observed_het = true;
+	bool use_observed_het = true;
 	for (size_t idx = 0; idx < loci.size(); ++idx) {
 		size_t chromType = pop.chromType(pop.chromLocusPair(loci[idx]).first);
-        if (idx == 0)
-            use_observed_het = pop.ploidy() == 2 && (chromType == AUTOSOME || chromType == CUSTOMIZED);
-        else if ((pop.ploidy() == 2 && (chromType == AUTOSOME || chromType == CUSTOMIZED)) != use_observed_het)
-            throw ValueError("Structure statistics can only be estimated from loci on chromosomes of the same type, because other wise the observed number of alleles will be different.");
+		if (idx == 0)
+			use_observed_het = pop.ploidy() == 2 && (chromType == AUTOSOME || chromType == CUSTOMIZED);
+		else if ((pop.ploidy() == 2 && (chromType == AUTOSOME || chromType == CUSTOMIZED)) != use_observed_het)
+			throw ValueError("Structure statistics can only be estimated from loci on chromosomes of the same type, because other wise the observed number of alleles will be different.");
 	}
 
 	// selected (virtual) subpopulatons.
@@ -2966,54 +2966,54 @@ bool statStructure::apply(Population & pop) const
 			ALLELES & alleles = allAlleles[idx];
 			size_t cnt = 0;
 
-            if (use_observed_het) {
-                // go through all alleles
-                IndAlleleIterator a = pop.alleleIterator(loc, it->subPop());
-                for (; a.valid(); ++cnt) {
-                    Allele a1 = *a++;
-                    Allele a2 = *a++;
-                    ++af[a1];
-                    ++af[a2];
-                    hf[a1] += a1 != a2;
-                    hf[a2] += a1 != a2;
-                    alleles[a1] = true;
-                    alleles[a2] = true;
-                }
-                // allele frequency
-                map<size_t, float>::iterator it = af.begin();
-                map<size_t, float>::iterator itEnd = af.end();
-                for (; it != itEnd; ++it)
-                    it->second /= 2 * cnt;
-                // heterozygote frequency
-                it = hf.begin();
-                itEnd = hf.end();
-                for (; it != itEnd; ++it)
-                    it->second /= cnt;
-                //
-                spSize = cnt;
-            } else {
-                // go through all alleles
-                IndAlleleIterator a = pop.alleleIterator(loc, it->subPop());
-                for (; a.valid(); ++cnt) {
-                    Allele c = *a++;
-                    ++af[c];
-                    ++hf[c];
-                    alleles[c] = true;
-                }
-                // allele frequency
-                map<size_t, float>::iterator it = af.begin();
-                map<size_t, float>::iterator itEnd = af.end();
-                for (; it != itEnd; ++it)
-                    // h_a = 2 * f_a * (1 - f_a)
-                    it->second /= cnt;
-                // heterozygote frequency calculate from allele frequency
-                it = hf.begin();
-                itEnd = hf.end();
-                for (; it != itEnd; ++it)
-                    it->second = 2 * (it->second / cnt) * (1 - it->second / cnt);
-                //
-                spSize = cnt;
-            }
+			if (use_observed_het) {
+				// go through all alleles
+				IndAlleleIterator a = pop.alleleIterator(loc, it->subPop());
+				for (; a.valid(); ++cnt) {
+					Allele a1 = *a++;
+					Allele a2 = *a++;
+					++af[a1];
+					++af[a2];
+					hf[a1] += a1 != a2;
+					hf[a2] += a1 != a2;
+					alleles[a1] = true;
+					alleles[a2] = true;
+				}
+				// allele frequency
+				map<size_t, float>::iterator it = af.begin();
+				map<size_t, float>::iterator itEnd = af.end();
+				for (; it != itEnd; ++it)
+					it->second /= 2 * cnt;
+				// heterozygote frequency
+				it = hf.begin();
+				itEnd = hf.end();
+				for (; it != itEnd; ++it)
+					it->second /= cnt;
+				//
+				spSize = cnt;
+			} else {
+				// go through all alleles
+				IndAlleleIterator a = pop.alleleIterator(loc, it->subPop());
+				for (; a.valid(); ++cnt) {
+					Allele c = *a++;
+					++af[c];
+					++hf[c];
+					alleles[c] = true;
+				}
+				// allele frequency
+				map<size_t, float>::iterator it = af.begin();
+				map<size_t, float>::iterator itEnd = af.end();
+				for (; it != itEnd; ++it)
+					// h_a = 2 * f_a * (1 - f_a)
+					it->second /= cnt;
+				// heterozygote frequency calculate from allele frequency
+				it = hf.begin();
+				itEnd = hf.end();
+				for (; it != itEnd; ++it)
+					it->second = 2 * (it->second / cnt) * (1 - it->second / cnt);
+				//
+				spSize = cnt;
+			}
 		}
 		// (virtual) subpopulation size
 		n_i.push_back(spSize);

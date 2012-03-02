@@ -298,13 +298,14 @@ public:
 #ifdef MUTANTALLELE
 		// compressed_vectora must be setGenoPtr after swap
 		GenoIterator ptr = m_genotype.begin();
-		for (size_t i = 0; i < m_inds.size(); ++i, ptr += genoSize()) 
+		for (size_t i = 0; i < m_inds.size(); ++i, ptr += genoSize())
 			m_inds[i].setGenoPtr(ptr);
 		ptr = rhs.m_genotype.begin();
-		for (size_t i = 0; i < rhs.m_inds.size(); ++i, ptr += rhs.genoSize()) 
+		for (size_t i = 0; i < rhs.m_inds.size(); ++i, ptr += rhs.genoSize())
 			rhs.m_inds[i].setGenoPtr(ptr);
 #endif
 	}
+
 
 	/// destroy a population
 	~Population();
@@ -830,7 +831,6 @@ public:
 
 	/// CPPONLY allele begin, for given subPop
 	IndAlleleIterator alleleIterator(size_t locus, size_t subPop);
-
 
 
 	///  CPPONLY allele iterator, go through all allels one by one, without subPop info
@@ -1470,7 +1470,8 @@ public:
 	void execute(const string & stmts = string())
 	{
 		Expression("", stmts, m_vars.dict()).evaluate();
-	} 
+	}
+
 
 private:
 	friend class boost::serialization::access;

@@ -203,12 +203,12 @@ bool CloneGenoTransmitter::applyDuringMating(Population & pop, Population & offP
 			offspring->genoSize());
 #else
 #  ifdef MUTANTALLELE
-                simuPOP::copy(parent->genoBegin(), parent->genoEnd(), offspring->genoBegin());
+		simuPOP::copy(parent->genoBegin(), parent->genoEnd(), offspring->genoBegin());
 #  else
-                copy(parent->genoBegin(), parent->genoEnd(), offspring->genoBegin());
+		copy(parent->genoBegin(), parent->genoEnd(), offspring->genoBegin());
 #  endif
 #endif
-        }
+	}
 	// for clone transmitter, sex is also transmitted
 	offspring->setSex(parent->sex());
 	if (infoFields().allAvail()) {
@@ -246,7 +246,7 @@ void MendelianGenoTransmitter::transmitGenotype(const Individual & parent,
 	if (m_chromX < 0 && m_chromY < 0 && !m_hasCustomizedChroms) {
 		// pointer to parental, and offspring chromosome copies
 		GenoIterator par[2];
-		GenoIterator off; 
+		GenoIterator off;
 		//
 		par[0] = parent.genoBegin(0);
 		par[1] = parent.genoBegin(1);
@@ -418,16 +418,16 @@ bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop, Populatio
 		return true;
 	initializeIfNeeded(*offspring);
 
-    Individual * parent = NULL;
-    if (dad != NULL && mom == NULL)
-        // the case of single parent inheritance. Does not care about sex.
-        parent = dad;
-    else if (dad != NULL && mom != NULL)
-        parent = mom;
-    else {
-    	DBG_FAILIF(true, ValueError,
-	    	"MitochondrialGenoTransmitter requires single parent, or valid female parent.");
-    }
+	Individual * parent = NULL;
+	if (dad != NULL && mom == NULL)
+		// the case of single parent inheritance. Does not care about sex.
+		parent = dad;
+	else if (dad != NULL && mom != NULL)
+		parent = mom;
+	else {
+		DBG_FAILIF(true, ValueError,
+			"MitochondrialGenoTransmitter requires single parent, or valid female parent.");
+	}
 
 	if (m_numLoci == 0)
 		return true;

@@ -1645,7 +1645,7 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 				if (w_neg[i] == 0) {
 					size_t spSize = pop.subPopSize(sps[i]);
 					DBG_WARNIF(spSize == 0, "WARNING: One of the parental (virtual) subpopulation is empty and will not "
-					                 "produce any offspring.");
+						                    "produce any offspring.");
 					w_pos[i] = static_cast<double>(spSize);
 				}
 		}
@@ -1666,7 +1666,7 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 			if (fcmp_gt(w_neg[i], 0.)) {
 				vspSize[i] = static_cast<ULONG>(pop.subPopSize(sps[i]) * w_neg[i]);
 				DBG_ASSERT(all >= vspSize[i], ValueError,
-					"Mating scheme with a negative weight of " + toStr(w_neg[i]) + 
+					"Mating scheme with a negative weight of " + toStr(w_neg[i]) +
 					" would like to produce " + toStr(vspSize[i]) +
 					" offspring, but there are only " + toStr(all) +
 					" unclaimed offspring left.")
@@ -1679,7 +1679,7 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 			if (all > 0 && fcmp_gt(w_pos[i], 0.)) {
 				vspSize[i] = static_cast<ULONG>(all_pos * w_pos[i] / overall_pos);
 				DBG_ASSERT(all >= vspSize[i], ValueError,
-					"Mating scheme with a positive weight of " + toStr(w_pos[i]) + 
+					"Mating scheme with a positive weight of " + toStr(w_pos[i]) +
 					" would like to produce " + toStr(vspSize[i]) +
 					" offspring, but there are only " + toStr(all) +
 					" unclaimed offspring left.")

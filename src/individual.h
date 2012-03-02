@@ -198,7 +198,8 @@ public:
 	PyObject * genotype(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
 
 #ifdef MUTANTALLELE
-	mutantList mutants(const uintList & ploidy = uintList(), const uintList & chroms = uintList());	
+	mutantList mutants(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
+
 #endif
 	/** CPPONLY
 	 *  Return a Python object with alleles at specified loci. This function
@@ -345,11 +346,12 @@ public:
 		m_infoPtr[idx] = value;
 	}
 
+
 	/// CPPONLY start of alleles
 	GenoIterator genoBegin() const
 	{
 #ifdef MUTANTALLELE
-		// Call + operator in order to find the correct m_com_index; 
+		// Call + operator in order to find the correct m_com_index;
 		// more information see operator+ function in mutant_vector.h
 		return m_genoPtr + 0;
 #else
@@ -370,6 +372,7 @@ public:
 	{
 		CHECKRANGEPLOIDY(p);
 		return m_genoPtr + p * totNumLoci();
+
 	}
 
 
@@ -399,6 +402,7 @@ public:
 		return m_genoPtr + p * totNumLoci() + chromEnd(chrom);
 
 	}
+
 
 	/// CPPONLY start of info
 	InfoIterator infoBegin() const
@@ -914,6 +918,7 @@ public:
 	{
 	}
 
+
 	CombinedAlleleIterator(size_t shift, GenoIterator ptr, GenoIterator ptrEnd, size_t size)
 		: m_useGappedIterator(true), m_valid(true), m_shift(shift),
 		m_ptr(ptr), m_ptrEnd(ptrEnd), m_size(size),
@@ -1024,7 +1029,7 @@ public:
 		} else if (m_chromType == MITOCHONDRIAL) {
 			// only the first homologous copy is valid
 			DBG_ASSERT(p == 0, SystemError, "Only the first homologous copy of mitochondrial DNA can be iterated.");
-			++ it;
+			++it;
 			valid = it.valid();
 		}
 	}

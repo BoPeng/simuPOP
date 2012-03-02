@@ -73,7 +73,7 @@ class GenoStructure
 public:
 	/// CPPONLY serialization library requires a default constructor
 	GenoStructure() : m_ploidy(2), m_totNumLoci(0),
-		m_numLoci(0), m_chromTypes(), m_chromX(-1), m_chromY(-1), m_mitochondrial(-1), m_customized(), 
+		m_numLoci(0), m_chromTypes(), m_chromX(-1), m_chromY(-1), m_mitochondrial(-1), m_customized(),
 		m_haplodiploid(false), m_lociPos(0), m_chromIndex(0),
 		m_chromNames(), m_alleleNames(), m_lociNames(), m_lociNameMap(), m_infoFields(0),
 		m_refCount(0)
@@ -308,6 +308,7 @@ public:
 		m_genoStruIdx = static_cast<TraitIndexType>(idx);
 	}
 
+
 	/// CPPONLY set geno stru
 	void swapGenoStru(GenoStruTrait & rhs)
 	{
@@ -478,6 +479,7 @@ public:
 		return s_genoStruRepository[m_genoStruIdx].m_customized;
 	}
 
+
 	/** CPPONLY
 	 *  Return the indexes of mitochondrial chromosomes.
 	 *  <group>2-chromosome</group>
@@ -489,7 +491,6 @@ public:
 
 		return s_genoStruRepository[m_genoStruIdx].m_mitochondrial;
 	}
-
 
 
 	/// HIDDEN

@@ -126,7 +126,7 @@ bool Individual::validIndex(size_t /* idx */, size_t p, size_t ch) const
 	if ((s == FEMALE && t == CHROMOSOME_Y) ||       // female chromsome Y
 	    (s == MALE &&                               // second copy of chromosome X and first copy of chromosome Y
 	     ((p == 1 && t == CHROMOSOME_X) || (p == 0 && t == CHROMOSOME_Y))) ||
-		 (p > 0 && t == MITOCHONDRIAL))             // mitochondiral DNA only uses the first homologous copy
+	    (p > 0 && t == MITOCHONDRIAL))              // mitochondiral DNA only uses the first homologous copy
 		return false;
 
 	return true;
@@ -238,8 +238,10 @@ PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 			m_genoPtr + beginP * totNumLoci() + chromEnd(endCh - 1));
 }
 
+
 #ifdef MUTANTALLELE
-mutantList Individual::mutants(const uintList & ply, const uintList & ch) {
+mutantList Individual::mutants(const uintList & ply, const uintList & ch)
+{
 	mutantList mutantAllele;
 	size_t beginP = 0;
 	size_t endP = 0;
@@ -295,21 +297,23 @@ mutantList Individual::mutants(const uintList & ply, const uintList & ch) {
 		compressed_vector<Allele>::index_array_type::iterator idx_endP = (m_genoPtr + end).getIndexIterator();
 		compressed_vector<Allele>::value_array_type::iterator value_beginP = (m_genoPtr + begin).getValueIterator();
 		mutantAllele.reserve(idx_endP - idx_beginP);
-		for(;idx_beginP != idx_endP; ++idx_beginP, ++value_beginP)
+		for (; idx_beginP != idx_endP; ++idx_beginP, ++value_beginP)
 			mutantAllele.push_back(std::pair<size_t, size_t>(*idx_beginP, *value_beginP));
 		return mutantAllele;
 	} else {
 		size_t begin = beginP * totNumLoci() + chromBegin(beginCh);
-		size_t end = beginP * totNumLoci() + chromEnd(endCh -1);
+		size_t end = beginP * totNumLoci() + chromEnd(endCh - 1);
 		compressed_vector<Allele>::index_array_type::iterator idx_beginP = (m_genoPtr + begin).getIndexIterator();
 		compressed_vector<Allele>::index_array_type::iterator idx_endP = (m_genoPtr + end).getIndexIterator();
 		compressed_vector<Allele>::value_array_type::iterator value_beginP = (m_genoPtr + begin).getValueIterator();
 		mutantAllele.reserve(idx_endP - idx_beginP);
-		for(;idx_beginP != idx_endP; ++idx_beginP, ++value_beginP)
+		for (; idx_beginP != idx_endP; ++idx_beginP, ++value_beginP)
 			mutantAllele.push_back(std::pair<size_t, size_t>(*idx_beginP, *value_beginP));
 		return mutantAllele;
 	}
 }
+
+
 #endif
 
 // Fix me: This one has to optimize
@@ -396,9 +400,9 @@ void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
 		CHECKRANGECHROM(static_cast<size_t>(chrom));
 #ifdef MUTANTALLELE
-		(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)).assign(allele); 
+		(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)).assign(allele);
 #else
-		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)) = allele; 
+		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)) = allele;
 #endif
 	}
 }
@@ -439,18 +443,19 @@ void Individual::setGenotype(const uintList & genoList, const uintList & ply, co
 		for (size_t j = 0; j < chroms.size(); ++j) {
 			size_t chrom = chroms[j];
 			GenoIterator ptr = m_genoPtr + p * totNumLoci() + chromBegin(chrom);
+
 #ifdef MUTANTALLELE
 			mutant_vectora ctmp;
 			ctmp.resize(numLoci(chrom));
 			for (size_t i = 0; i < numLoci(chrom); i++, ++idx) {
-				Allele atmp = ToAllele(geno[idx % sz]); 
+				Allele atmp = ToAllele(geno[idx % sz]);
 				if (atmp != 0)
-					ctmp.push_back(i, atmp); 
+					ctmp.push_back(i, atmp);
 			}
 			simuPOP::copy(ctmp.begin(), ctmp.end(), ptr);
 #else
 			for (size_t i = 0; i < numLoci(chrom); i++, ++idx)
-				*(ptr + i) = ToAllele(geno[idx % sz]); 
+				*(ptr + i) = ToAllele(geno[idx % sz]);
 #endif
 
 		}

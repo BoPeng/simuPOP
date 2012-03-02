@@ -659,7 +659,7 @@ public:
 	 *  loci. If parameter \e subPops are specified, only individuals in these
 	 *  subpopulations are considered.
 	 */
-	RevertFixedSites(const lociList & loci = lociList(), 
+	RevertFixedSites(const lociList & loci = lociList(),
 		const stringFunc & output = "", int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
@@ -693,11 +693,11 @@ public:
 		return "Revert fixed alleles to wildtype allele 0 if they are fixed in the population.";
 	}
 
+
 private:
 	lociList m_loci;
 
 };
-
 
 
 /** This is an infite site mutation model in mutational space. The alleles
