@@ -405,7 +405,9 @@ class statNumOfSegSites
 {
 private:
 #define  numOfSegSites_String        "numOfSegSites"
+#define  numOfFixedSites_String      "numOfFixedSites"
 #define  numOfSegSites_sp_String     "numOfSegSites_sp"
+#define  numOfFixedSites_sp_String   "numOfFixedSites_sp"
 
 public:
 	statNumOfSegSites(const lociList & loci, const subPopList & subPops,

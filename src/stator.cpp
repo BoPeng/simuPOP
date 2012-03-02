@@ -670,9 +670,10 @@ statNumOfSegSites::statNumOfSegSites(const lociList & loci, const subPopList & s
 	: m_loci(loci), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
-		numOfSegSites_String, numOfSegSites_sp_String,		""
+		numOfSegSites_String,   numOfSegSites_sp_String, 
+		numOfFixedSites_String, numOfFixedSites_sp_String,""
 	};
-	const char * defaultVars[] = { numOfSegSites_String, "" };
+	const char * defaultVars[] = { numOfSegSites_String, numOfFixedSites_String,"" };
 
 	m_vars.obtainFrom(vars, allowedVars, defaultVars);
 }
@@ -697,12 +698,14 @@ bool statNumOfSegSites::apply(Population & pop) const
 	const vectoru & loci = m_loci.elems(&pop);
 	DBG_DO(DBG_STATOR, cerr << "Count number of segregating sites for " << loci.size() << " loci " << endl);
 
+	std::set<size_t> allFixedSites;
 	std::set<size_t> allSegSites;
 	// for each subpopulation.
 	subPopList subPops = m_subPops.expandFrom(pop);
 	subPopList::const_iterator sp = subPops.begin();
 	subPopList::const_iterator spEnd = subPops.end();
 	for (; sp != spEnd; ++sp) {
+		std::set<size_t> fixedSites;
 		std::set<size_t> segSites;
 		pop.activateVirtualSubPop(*sp);
 
@@ -710,6 +713,8 @@ bool statNumOfSegSites::apply(Population & pop) const
 #ifdef MUTANTALLELE
 		IndIterator ind = pop.indIterator(sp->subPop());
 		for (; ind.valid(); ++ind) {
+			std::set<size_t> indFixedSitesPrev;
+			std::set<size_t> indFixedSitesCurr;
 			GenoIterator it = ind->genoBegin();
 			GenoIterator it_end = ind->genoEnd();
 			compressed_vector<Allele>::index_array_type::iterator index_it = it.getIndexIterator();
@@ -717,42 +722,52 @@ bool statNumOfSegSites::apply(Population & pop) const
 			compressed_vector<Allele>::value_array_type::iterator value_it = it.getValueIterator();
 			size_t indIndex = it.getIndex();
 			for (; index_it != index_it_end; ++index_it, ++value_it) {
-				if (m_loci.allAvail()) {
-					if (*value_it != 0) {
-						segSites.insert(*index_it - indIndex);
-					}
-				} else {
-					for (size_t idx = 0; idx < loci.size(); ++idx) {
-						if (*index_it == indIndex + loci[idx] && *value_it != 0) {
-							segSites.insert(loci[idx]);
-							break;
-						}
+				for (size_t idx = 0; idx < loci.size(); ++idx) {
+					if (*index_it == indIndex + loci[idx] && *value_it != 0) {
+						segSites.insert(loci[idx]);
+						indFixedSitesCurr.insert(loci[idx]);
+						break;
 					}
 				}
 			}
 
+			if (ind == pop.indIterator(sp->subPop()))
+				indFixedSitesPrev = indFixedSitesCurr;
+			else {
+				set_intersection(indFixedSitesCurr.begin(), indFixedSitesCurr.end(),
+					indFixedSitesPrev.begin(), indFixedSitesPrev.end(),
+					std::inserter(fixedSites, fixedSites.begin()));
+				indFixedSitesPrev = fixedSites;
+			}
 		}
 
 #else
 		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
 			size_t loc = loci[idx];
+			size_t siteCount = 0;
 			IndAlleleIterator a = pop.alleleIterator(loc, sp->subPop());
 			for (; a.valid(); ++a)
-				if (*a != 0) {
-					segSites.insert((ULONG)loc);
-					break;
-				}
+				if (*a != 0) siteCount++;
+			if (siteCount == pop.subPopSize(sp->subPop()) * pop.ploidy())
+				fixedSites.insert((ULONG)loc);
+			else if (siteCount > 0)
+				segSites.insert((ULONG)loc);
 		}
 #endif
 		pop.deactivateVirtualSubPop(sp->subPop());
 
+		if (m_vars.contains(numOfFixedSites_sp_String))
+			pop.getVars().setVar(subPopVar_String(*sp, numOfFixedSites_String) + m_suffix, fixedSites.size());
 		if (m_vars.contains(numOfSegSites_sp_String))
 			pop.getVars().setVar(subPopVar_String(*sp, numOfSegSites_String) + m_suffix, segSites.size());
 
+		allFixedSites.insert(fixedSites.begin(), fixedSites.end());
 		allSegSites.insert(segSites.begin(), segSites.end());
 	}
 
 	// output whole population
+	if (m_vars.contains(numOfFixedSites_String))
+		pop.getVars().setVar(numOfFixedSites_String + m_suffix, allFixedSites.size());
 	if (m_vars.contains(numOfSegSites_String))
 		pop.getVars().setVar(numOfSegSites_String + m_suffix, allSegSites.size());
 	return true;
