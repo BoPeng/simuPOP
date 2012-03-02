@@ -30,7 +30,7 @@ namespace simuPOP {
 
 #ifdef MUTANTALLELE
 
-bool RevertFixedSites::apply(Population & pop) const
+bool SB_RevertFixedSites::apply(Population & pop) const
 {
 	if (pop.popSize() == 0 || pop.totNumLoci() == 0)
 		return true;
@@ -712,7 +712,7 @@ bool MutSpaceRecombinator::applyDuringMating(Population & pop, Population & offP
 // ########################### THE OLD VERSION FOR LONG ALLELE TYPE ####
 #else
 
-bool RevertFixedSites::apply(Population & pop) const
+bool SB_RevertFixedSites::apply(Population & pop) const
 {
 	if (pop.popSize() == 0 || pop.totNumLoci() == 0)
 		return true;

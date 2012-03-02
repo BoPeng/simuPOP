@@ -459,4 +459,44 @@ bool PointMutator::apply(Population & pop) const
 }
 
 
+bool RevertFixedSites::apply(Population & pop) const
+{
+	if (pop.popSize() == 0 || pop.totNumLoci() == 0)
+		return true;
+
+	const vectoru & loci = m_loci.elems(&pop);
+
+	const subPopList subPops = applicableSubPops(pop);
+	subPopList::const_iterator sp = subPops.begin();
+	subPopList::const_iterator spEnd = subPops.end();
+	
+	for (; sp != spEnd; ++sp) {
+		if (sp->isVirtual())
+			pop.activateVirtualSubPop(*sp);
+		
+		for (size_t idx = 0; idx < loci.size(); ++idx) {
+			size_t loc = loci[idx];
+			bool fixed = true;
+			IndAlleleIterator a = pop.alleleIterator(loc, sp->subPop());
+			for (; a.valid(); ++a) {
+				if (! (*a)) {
+					fixed = false;
+					break;
+				}
+			}
+			// revert fixed allele
+			if (fixed) {
+				IndAlleleIterator a = pop.alleleIterator(loc, sp->subPop());
+				for (; a.valid(); ++a)
+					*a = 0;
+			}
+		}
+		
+		if (sp->isVirtual())
+			pop.deactivateVirtualSubPop(sp->subPop());
+	}
+	return true;
+}
+
+
 }
