@@ -986,12 +986,18 @@ public:
 	 *
 	 *  <b>numOfSegSites</b>: Parameter \e numOfSegSites accepts a list of loci
 	 *  (loci indexes, names, or \c ALL_AVAIL) and count the number of loci with
-	 *  at least one non-zero allele (segregating sites) for individuals in all
-	 *  or specified (virtual) subpopulations. This parameter sets variables
+	 *  at least two different alleles (segregating sites) or loci with at least
+	 *  one non-zero allele (non-zero sites, which includes all segregating sites,
+	 *  and sites with fixed non-zero alleles) for individuals in all or
+	 *  specified (virtual) subpopulations. This parameter sets variables
 	 *  \li \c numOfSegSites (default): Number of segregating sites in all or
 	 *      specified (virtual) subpopulations.
 	 *  \li \c numOfSegSites_sp: Number of segregating sites in each (virtual)
 	 *      subpopulation.
+	 *  \li \c numOfNonZeroSites: Number of sites with at least one non-zero
+	 *      allele, in all or specified (virtual) subpopulations.
+	 *  \li \c numOfNonZeroSites_sp: Number of sites with at least one non-zero
+	 *      allele in each (virtual) subpopulations.
 	 *
 	 *  <b>alleleFreq</b>: This parameter accepts a list of loci (loci indexes,
 	 *  names, or \c ALL_AVAIL), at which allele frequencies will be calculated.
