@@ -309,5 +309,11 @@ namespace std
 %include "qtrait.h"
 %include "penetrance.h"
 %include "pedigree.h"
+
+%rename(sb_RevertFixedSites)      simuPOP::sandbox::RevertFixedSites;
+%rename(sb_MutSpaceSelector)      simuPOP::sandbox::MutSpaceSelector;
+%rename(sb_MutSpaceMutator)       simuPOP::sandbox::MutSpaceMutator;
+%rename(sb_MutSpaceRecombinator)  simuPOP::sandbox::MutSpaceRecombinator;
+
 %include "sandbox.h"
 

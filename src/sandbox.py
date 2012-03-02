@@ -34,9 +34,11 @@ include Python version of them so that they can be used when the sandbox
 version is no longer available.
 """
 
-__all__ = [
-    'sb_revertFixedSites',
-    'SB_RevertFixedSites',
+__all__ = []
+
+__long__all__ = [
+    'revertFixedSites',
+    'RevertFixedSites',
     'MutSpaceMutator',
     'MutSpaceSelector',
     'MutSpaceRecombinator',
@@ -48,31 +50,39 @@ import os, sys
 
 #
 # These classes are available in binary modules but are not exposed
-# in simuPOP.
+# in simuPOP. Existing functions are only available in long module.
 #
 if simuOptions['Optimized']:
     if simuOptions['AlleleType'] == 'short':
-        from simuPOP_op import *
+        pass
     elif simuOptions['AlleleType'] == 'long':
-        from simuPOP_laop import *
+        from simuPOP_laop import sb_RevertFixedSites as RevertFixedSites
+        from simuPOP_laop import sb_MutSpaceMutator as MutSpaceMutator
+        from simuPOP_laop import sb_MutSpaceSelector as MutSpaceSelector
+        from simuPOP_laop import sb_MutSpaceRecombinator as MutSpaceRecombinator
+        __all__.extend(__long__all__)
     elif simuOptions['AlleleType'] == 'binary':
-        from simuPOP_baop import *
+        pass
     elif simuOptions['AlleleType'] == 'mutant':
-        from simuPOP_muop import *
+        pass
     else:
-        from simuPOP_op import *
+        pass
 else:
     if simuOptions['AlleleType'] == 'short':
-        from simuPOP_std import *
+        pass
     elif simuOptions['AlleleType'] == 'long':
-        from simuPOP_la import *
+        from simuPOP_la import sb_RevertFixedSites as RevertFixedSites
+        from simuPOP_la import sb_MutSpaceMutator as MutSpaceMutator
+        from simuPOP_la import sb_MutSpaceSelector as MutSpaceSelector
+        from simuPOP_la import sb_MutSpaceRecombinator as MutSpaceRecombinator
+        __all__.extend(__long__all__)
     elif simuOptions['AlleleType'] == 'binary':
-        from simuPOP_ba import *
+        pass
     elif simuOptions['AlleleType'] == 'mutant':
-        from simuPOP_mu import *
+        pass
     else:
-        from simuPOP_std import *
+        pass
 
-def sb_revertFixedSites(pop):
+def revertFixedSites(pop):
     '''Apply operator ``RevertFixedSites`` to ``pop``'''
-    SB_RevertFixedSites().apply(pop)
+    RevertFixedSites().apply(pop)
