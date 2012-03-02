@@ -499,4 +499,162 @@ bool RevertFixedSites::apply(Population & pop) const
 }
 
 
+size_t MutSpaceMutator::locateVacantLocus(Population & /* pop */, size_t beg, size_t end, std::set<size_t> & mutants) const
+{
+	// FIXME: IGNORE this for now
+	// this get a random locations
+	size_t loc = getRNG().randInt(static_cast<ULONG>(end - beg)) + beg;
+
+	// see if it exists in existing mutants.
+	std::set<size_t>::iterator it= std::find(mutants.begin(), mutants.end(), loc);
+	if (it == mutants.end())
+		return loc;
+	// 
+	// FIXME:
+	//
+	//   assume mutants have   100 105 106 107
+	//   and loc = 106,
+	//  goes back and 104, and return
+	//
+	// look forward and backward
+	size_t loc1 = loc + 1;
+	std::set<size_t>::iterator it1(it);
+	++it1;
+	for (; it1 != mutants.end() && loc1 != end; ++it1, ++loc1) {
+		if (*it1 != loc1)
+			return loc1;
+	}
+	size_t loc2 = loc - 1;
+	std::set<size_t>::reverse_iterator it2(it);
+	--it2;
+	for (; it2 != mutants.rend() && loc2 != beg; --it2, --loc2) {
+		if (*it2 != loc2)
+			return loc2;
+	}
+	// still cannot find
+	return 0;
+}
+
+
+bool MutSpaceMutator::apply(Population & pop) const
+{
+	// FIXME:
+	// 
+	const matrixi & ranges = m_ranges.elems();
+	vectoru width(ranges.size());
+
+	width[0] = ranges[0][1] - ranges[0][0];
+	for (size_t i = 1; i < width.size(); ++i)
+		width[i] = ranges[i][1] - ranges[i][0] + width[i - 1];
+	// 
+	// FIXME: width[i] is the accumulative number of loci on each chromosome
+	//
+	// for three ranges(chromsomes) with loci: 500, 1000, 2000
+	// width[i] = 0, 500, 1500, 35000
+	//
+	//  ploidy with = totalNumLoci()
+	//size_t ploidyWidth = width.back();
+	//
+	//size_t indWidth = pop.ploidy() * ploidyWidth;
+
+	size_t indWidth = pop.genoSize();
+	size_t ploidyWidth = pop.totNumLoci();
+
+	ostream * out = NULL;
+	if (!noOutput())
+		out = &getOstream(pop.dict());
+
+	// build a set of existing mutants
+	std::set<size_t> mutants;
+	//bool saturated = false;
+
+	subPopList subPops = applicableSubPops(pop);
+	subPopList::const_iterator sp = subPops.begin();
+	subPopList::const_iterator spEnd = subPops.end();
+	for (; sp != spEnd; ++sp) {
+		DBG_FAILIF(sp->isVirtual(), ValueError, "This operator does not support virtual subpopulation.");
+		for (size_t indIndex = 0; indIndex < pop.subPopSize(sp->subPop()); ++indIndex) {
+			size_t loc = 0;
+			while (true) {
+				// using a geometric distribution to determine mutants
+				loc += getRNG().randGeometric(m_rate);
+				if (loc > indWidth)
+					break;
+				Individual & ind = pop.individual(indIndex);
+				size_t p = (loc - 1) / ploidyWidth;
+				// chromosome and position on chromosome?
+				size_t mutLoc = (loc - 1) - p * ploidyWidth;
+				size_t ch = 0;
+				for (size_t reg = 0; reg < width.size(); ++reg) {
+					if (mutLoc < width[reg]) {
+						ch = reg;
+						break;
+					}
+				}
+				mutLoc += ranges[ch][0];
+				if (ch > 0)
+					mutLoc -= width[ch - 1];
+
+	// FIXME: as the first step, ignore model 2, so you do not have to figure out
+	// the function locateVacantLocus... 
+	/*
+				// mutLoci is the location of the mutant, for individual ..., chromsome ...
+				if (m_model == 2) {
+					// under an infinite-site model
+					if (saturated) {
+						if (out)
+							(*out)	<< pop.gen() << '\t' << mutLoc << '\t' << indIndex
+							        << "\t3\n";
+						continue;
+					}
+					bool ok = false;
+					//
+					// if the first time
+					if (mutants.empty()) {
+						// first try our luck...
+						// FIXME:
+						// Here we are checing all genotypes (mutant), if mutLoc exists.
+						// for the new module, yo uneed to check pop.mutBegin()??? (iterate through all
+						// loci with non-zero allele)
+						ok = find(pop.genoBegin(false), pop.genoEnd(false), ToAllele(mutLoc)) == pop.genoEnd(false);
+						if (!ok) {
+							std::set<size_t> existing(pop.genoBegin(false), pop.genoEnd(false));
+							mutants.swap(existing);
+							mutants.erase(0);
+							saturated = mutants.size() == ploidyWidth;
+							if (saturated)
+								cerr << "Failed to introduce new mutants at generation " << pop.gen() << " because all loci have existing mutants." << endl;
+						}
+					}
+					if (!ok && mutants.find(mutLoc) != mutants.end()) {
+						
+						size_t newLoc = locateVacantLocus(pop, ranges[ch][0], ranges[ch][1], mutants);
+						// nothing is found
+						if (out)
+							(*out)	<< pop.gen() << '\t' << mutLoc << '\t' << indIndex
+							        << (newLoc == 0 ? "\t3\n" : "\t2\n");
+						if (newLoc != 0)
+							mutLoc = newLoc;
+						else {
+							cerr << "Failed to introduce a new mutant at generation " << pop.gen() << " because all loci have existing mutants." << endl;
+							// ignore this mutation, and subsequent mutations...
+							saturated = true;
+							continue;
+						}
+						// if there is no existing mutant, new mutant is allowed
+					}
+					mutants.insert(mutLoc);
+				}
+			*/
+                                ind.setAllele(1, mutLoc, int(p), int(ch));
+			}   // while
+		}       // each individual
+	}           // each subpopulation
+	if (out)
+		closeOstream();
+	return true;
+}
+
+
+
 }

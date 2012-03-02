@@ -45,10 +45,7 @@
 namespace simuPOP {
 namespace sandbox {
 
-#ifdef MUTANTALLELE
-
-/// ######################################
-#else
+#ifdef LONGALLELE
 
 /** This operator looks into a population in mutational space and revert a mutant
  *  to wildtype allele if it is fixed in the population. If a valid output is
