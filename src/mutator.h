@@ -700,5 +700,105 @@ private:
 
 
 
+/** This is an infite site mutation model in mutational space. The alleles
+ *  in the population is assumed to be locations of mutants. A mutation
+ *  rate is given that mutate alleles in 'regions'. If number of mutants
+ *  for an individual exceed the number of loci, 10 loci will be added
+ *  to everyone in the population.
+ */
+class MutSpaceMutator : public BaseOperator
+{
+public:
+	/** This operator accepts a list of ranges which is the 'real range' of
+	 *  each chromosome. Mutation happens with muation rate \e rate and mutants
+	 *  will be recorded to the population (instead of alleles). By default,
+	 *  this mutator assumes an finite-allele model where all mutations are
+	 *  allowed and if a mutant (allele 1) is mutated, it will be mutated to
+	 *  allele 0 (back mutation). Alternatively (\e model = 2), an
+	 *  infinite-sites mutation model can be used where mutations can happen
+	 *  only at a new locus. Mutations happen at a locus with existing mutants
+	 *  will be moved to a random locus without existing mutant. A warning
+	 *  message will be printed if there is no vacant locus available. If a
+	 *  valid \e output is given, mutants will be outputted in the format of
+	 *  "gen mutant ind type" where type is 0 for forward (0->1), 1 for
+	 *  backward (1->0), 2 for relocated mutations, and 3 for ignored mutation
+	 *  because no vacent locus is available. The second mode  has the
+	 *  advantage that all mutants in the simulated population can be traced
+	 *  to a single mutation event. If the regions are reasonably wide and
+	 *  mutation rates are low, these two mutation models should yield
+	 *  similar results.
+	 */
+	MutSpaceMutator(double rate,
+		// FIXME: we should not have ranges, because ranges are just
+		// chromosomes, so, ranges=[1, 63000], [5000, 50000] shouldbe
+		// loci=[63000, 450000], lociPos=range(63000) + range(5000, 500000)
+		//
+		// The problem is that you need to optimize the storage of loci positions
+		// by saving ranges, not every locations in genoStru.h/cpp.
+		//
+		const intMatrix & ranges,
+		int model = 1,
+		const stringFunc & output = "",
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = vectorstr()) :
+		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
+		m_rate(rate), m_ranges(ranges), m_model(model)
+	{
+		const matrixi & rngs = m_ranges.elems();
+
+		for (size_t i = 0; i < rngs.size(); ++i) {
+			DBG_FAILIF(rngs[i].size() != 2, ValueError, "Ranges should have two elements");
+			for (size_t j = i + 1; j < rngs.size(); ++j) {
+				DBG_FAILIF(rngs[j].size() != 2, ValueError, "Ranges should have two elements");
+				if (i == j)
+					continue;
+				if (rngs[i][0] >= rngs[j][0] && rngs[i][0] <= rngs[j][1])
+					throw ValueError("Overlapping ranges are currently not supported because of potential conflict of mutant locations on different chromosomes.");
+				if (rngs[i][1] >= rngs[j][0] && rngs[i][1] <= rngs[j][1])
+					throw ValueError("Overlapping ranges are currently not supported because of potential conflict of mutant locations on different chromosomes.");
+			}
+		}
+#ifdef BINARYALLELE
+		DBG_FAILIF(true, ValueError, "This operator does not work in binary allele type.");
+#endif
+	}
+
+
+	/// destructor.
+	~MutSpaceMutator()
+	{
+	}
+
+
+	virtual bool apply(Population & pop) const;
+
+	/// HIDDEN Deep copy of a \c MutSpaceMutator
+	virtual BaseOperator * clone() const
+	{
+		return new MutSpaceMutator(*this);
+	}
+
+
+	/// HIDDEN
+	string describe(bool format = true) const
+	{
+		(void)format;  // avoid warning about unused parameter
+		return "<simuPOP.MutSpaceMutator>";
+	}
+
+
+private:
+	size_t locateVacantLocus(Population & pop, size_t beg, size_t end, std::set<size_t> & mutants) const;
+
+private:
+	const double m_rate;
+
+	const intMatrix m_ranges;
+
+	const int m_model;
+};
+
+
 }
 #endif
