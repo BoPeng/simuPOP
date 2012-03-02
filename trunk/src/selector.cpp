@@ -268,7 +268,6 @@ double PySelector::indFitness(Population & pop, Individual * ind) const
 }
 
 
-#ifdef MUTANTALLELE
 double RandomFitnessSelector::indFitness(Population & /* pop */, Individual * ind) const
 {
 	if (m_mode == MULTIPLICATIVE) {

@@ -499,7 +499,7 @@ bool RevertFixedSites::apply(Population & pop) const
 }
 
 
-size_t MutSpaceMutator::locateVacantLocus(Population & /* pop */, size_t beg, size_t end, std::set<size_t> & mutants) const
+size_t FiniteSitesMutator::locateVacantLocus(Population & /* pop */, size_t beg, size_t end, std::set<size_t> & mutants) const
 {
 	// FIXME: IGNORE this for now
 	// this get a random locations
@@ -536,7 +536,7 @@ size_t MutSpaceMutator::locateVacantLocus(Population & /* pop */, size_t beg, si
 }
 
 
-bool MutSpaceMutator::apply(Population & pop) const
+bool FiniteSitesMutator::apply(Population & pop) const
 {
 	// FIXME:
 	// 

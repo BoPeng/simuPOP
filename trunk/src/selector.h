@@ -36,6 +36,16 @@
 #include <numeric>
 using std::min;
 
+#if TR1_SUPPORT == 0
+#  include <map>
+#elif TR1_SUPPORT == 1
+#  include <unordered_map>
+#else
+#  include <tr1/unordered_map>
+#endif
+
+#include <set>
+
 namespace simuPOP {
 
 /** This class is the base class to all selectors, namely operators that

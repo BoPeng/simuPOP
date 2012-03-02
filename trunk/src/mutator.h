@@ -706,7 +706,7 @@ private:
  *  for an individual exceed the number of loci, 10 loci will be added
  *  to everyone in the population.
  */
-class MutSpaceMutator : public BaseOperator
+class FiniteSitesMutator : public BaseOperator
 {
 public:
 	/** This operator accepts a list of ranges which is the 'real range' of
@@ -728,7 +728,7 @@ public:
 	 *  mutation rates are low, these two mutation models should yield
 	 *  similar results.
 	 */
-	MutSpaceMutator(double rate,
+	FiniteSitesMutator(double rate,
 		// FIXME: we should not have ranges, because ranges are just
 		// chromosomes, so, ranges=[1, 63000], [5000, 50000] shouldbe
 		// loci=[63000, 450000], lociPos=range(63000) + range(5000, 500000)
@@ -766,17 +766,17 @@ public:
 
 
 	/// destructor.
-	~MutSpaceMutator()
+	~FiniteSitesMutator()
 	{
 	}
 
 
 	virtual bool apply(Population & pop) const;
 
-	/// HIDDEN Deep copy of a \c MutSpaceMutator
+	/// HIDDEN Deep copy of a \c FiniteSitesMutator
 	virtual BaseOperator * clone() const
 	{
-		return new MutSpaceMutator(*this);
+		return new FiniteSitesMutator(*this);
 	}
 
 
@@ -784,7 +784,7 @@ public:
 	string describe(bool format = true) const
 	{
 		(void)format;  // avoid warning about unused parameter
-		return "<simuPOP.MutSpaceMutator>";
+		return "<simuPOP.FiniteSitesMutator>";
 	}
 
 
