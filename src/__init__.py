@@ -175,11 +175,13 @@ __all__ = [
     'ContextMutator',
     'KAlleleMutator',
     'RevertFixedSites',
+    'FiniteSitesMutator',
     #
     'MapSelector',
     'MaSelector',
     'MlSelector',
     'PySelector',
+    'RandomFitnessSelector',
     #
     'MaPenetrance',
     'MapPenetrance',
