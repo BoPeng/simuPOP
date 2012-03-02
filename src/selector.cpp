@@ -363,8 +363,8 @@ RandomFitnessSelector::SelCoef RandomFitnessSelector::getFitnessValue(size_t mut
 
 double RandomFitnessSelector::randomSelAddFitness(GenoIterator it, GenoIterator it_end) const
 {
+#ifdef MUTANTALLELE
 	double s = 0;
-
 	compressed_vector<size_t>::index_array_type::iterator index_it = it.getIndexIterator();
 	compressed_vector<size_t>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
 	for (; index_it != index_it_end; ++index_it) {
@@ -375,11 +375,17 @@ double RandomFitnessSelector::randomSelAddFitness(GenoIterator it, GenoIterator 
 			s += sit->second.first / 2;
 	}
 	return 1 - s > 0 ? 1 - s : 0;
+#else
+	(void)it;
+	(void)it_end;
+	return 0;
+#endif
 }
 
 
 double RandomFitnessSelector::randomSelExpFitness(GenoIterator it, GenoIterator it_end) const
 {
+#ifdef MUTANTALLELE
 	double s = 0;
 
 	compressed_vector<size_t>::index_array_type::iterator index_it = it.getIndexIterator();
@@ -394,11 +400,17 @@ double RandomFitnessSelector::randomSelExpFitness(GenoIterator it, GenoIterator 
 			s += sit->second.first / 2;
 	}
 	return exp(-s);
+#else
+	(void)it;
+	(void)it_end;
+	return 0;
+#endif
 }
 
 
 double RandomFitnessSelector::randomSelMulFitnessExt(GenoIterator it, GenoIterator it_end) const
 {
+#ifdef MUTANTALLELE
 	MutCounter cnt;
 
 	compressed_vector<size_t>::index_array_type::iterator index_it = it.getIndexIterator();
@@ -432,11 +444,17 @@ double RandomFitnessSelector::randomSelMulFitnessExt(GenoIterator it, GenoIterat
 		}
 	}
 	return s;
+#else
+	(void)it;
+	(void)it_end;
+	return 0;
+#endif
 }
 
 
 double RandomFitnessSelector::randomSelAddFitnessExt(GenoIterator it, GenoIterator it_end) const
 {
+#ifdef MUTANTALLELE
 	MutCounter cnt;
 
 	compressed_vector<size_t>::index_array_type::iterator index_it = it.getIndexIterator();
@@ -470,11 +488,17 @@ double RandomFitnessSelector::randomSelAddFitnessExt(GenoIterator it, GenoIterat
 		}
 	}
 	return 1 - s > 0 ? 1 - s : 0;
+#else
+	(void)it;
+	(void)it_end;
+	return 0;
+#endif
 }
 
 
 double RandomFitnessSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it_end) const
 {
+#ifdef MUTANTALLELE
 	MutCounter cnt;
 
 	compressed_vector<size_t>::index_array_type::iterator index_it = it.getIndexIterator();
@@ -508,6 +532,11 @@ double RandomFitnessSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterat
 		}
 	}
 	return exp(-s);
+#else
+	(void)it;
+	(void)it_end;
+	return 0;
+#endif
 }
 
 
