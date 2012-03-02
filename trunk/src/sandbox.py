@@ -35,8 +35,8 @@ version is no longer available.
 """
 
 __all__ = [
-    'revertFixedSites',
-    'RevertFixedSites',
+    'sb_revertFixedSites',
+    'SB_RevertFixedSites',
     'MutSpaceMutator',
     'MutSpaceSelector',
     'MutSpaceRecombinator',
@@ -73,6 +73,6 @@ else:
     else:
         from simuPOP_std import *
 
-def revertFixedSites(pop):
+def sb_revertFixedSites(pop):
     '''Apply operator ``RevertFixedSites`` to ``pop``'''
-    RevertFixedSites().apply(pop)
+    SB_RevertFixedSites().apply(pop)

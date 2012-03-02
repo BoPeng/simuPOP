@@ -51,13 +51,13 @@ namespace simuPOP {
  *  to wildtype allele if it is fixed in the population. If a valid output is
  *  specifieid, fixed alleles will be outputed with a leading generation number.
  */
-class RevertFixedSites : public BaseOperator
+class SB_RevertFixedSites : public BaseOperator
 {
 public:
 	/** Create an operator to revert alleles at fixed loci from value 1 to 0.
 	 *  Parameter \e subPops is ignored.
 	 */
-	RevertFixedSites(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1,
+	SB_RevertFixedSites(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr())
@@ -67,7 +67,7 @@ public:
 
 
 	/// destructor
-	virtual ~RevertFixedSites()
+	virtual ~SB_RevertFixedSites()
 	{
 	}
 
@@ -75,7 +75,7 @@ public:
 	/// HIDDEN Deep copy of a Migrator
 	virtual BaseOperator * clone() const
 	{
-		return new RevertFixedSites(*this);
+		return new SB_RevertFixedSites(*this);
 	}
 
 
@@ -394,13 +394,13 @@ private:
  *  to wildtype allele if it is fixed in the population. If a valid output is
  *  specifieid, fixed alleles will be outputed with a leading generation number.
  */
-class RevertFixedSites : public BaseOperator
+class SB_RevertFixedSites : public BaseOperator
 {
 public:
 	/** Create an operator to revert alleles at fixed loci from value 1 to 0.
 	 *  Parameter \e subPops is ignored.
 	 */
-	RevertFixedSites(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1,
+	SB_RevertFixedSites(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr())
@@ -410,7 +410,7 @@ public:
 
 
 	/// destructor
-	virtual ~RevertFixedSites()
+	virtual ~SB_RevertFixedSites()
 	{
 	}
 
@@ -418,7 +418,7 @@ public:
 	/// HIDDEN Deep copy of a Migrator
 	virtual BaseOperator * clone() const
 	{
-		return new RevertFixedSites(*this);
+		return new SB_RevertFixedSites(*this);
 	}
 
 

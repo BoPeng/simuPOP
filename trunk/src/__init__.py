@@ -174,6 +174,7 @@ __all__ = [
     'AminoAcidMutator',
     'ContextMutator',
     'KAlleleMutator',
+    'RevertFixedSites',
     #
     'MapSelector',
     'MaSelector',
@@ -237,6 +238,7 @@ __all__ = [
     'stepwiseMutate',
     'snpMutate',
     'acgtMutate',
+    'revertFixedSites',
     #
     'stat',
     #
@@ -1105,6 +1107,10 @@ def contextMutate(pop, *args, **kwargs):
 def pointMutate(pop, *args, **kwargs):
     'Function form of operator ``PointMutator``'
     PointMutator(*args, **kwargs).apply(pop)
+
+def revertFixedSites(pop, *args, **kwargs):
+    'Function form of operator ``RevertFixedSites``'
+    RevertFixedSites(*args, **kwargs).apply(pop)
 
 def stat(pop, *args, **kwargs):
     '''Apply operator ``Stat`` with specified parameters to population *pop*.

@@ -533,6 +533,163 @@ class TestOperator(unittest.TestCase):
             else:
                 self.assertEqual(ind.a, 2.0)
 
+    def testRevertFixedSites(self):
+        'Testing operator TestRevertFixedSites'
+        #
+        # for diploid
+        pop = Population([1000]*2, loci=10)
+        initGenotype(pop, freq=[0.4, 0.6])
+        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        revertFixedSites(pop)
+        stat(pop, alleleFreq=ALL_AVAIL)
+        for loc in range(10):
+            if loc in [2, 4]:
+                self.assertEqual(pop.dvars().alleleFreq[loc][0], 1)
+            else:
+                self.assertNotEqual(pop.dvars().alleleFreq[loc][0], 0)
+        # for one subpopulation
+        pop = Population([1000]*2, loci=10)
+        initGenotype(pop, freq=[0.4, 0.6])
+        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        revertFixedSites(pop, subPops=[1])
+        stat(pop, alleleFreq=ALL_AVAIL)
+        for loc in range(10):
+            if loc in [2, 4]:
+                self.assertEqual(pop.dvars().alleleFreq[loc][0], 0.5)
+            else:
+                self.assertNotEqual(pop.dvars().alleleFreq[loc][0], 1)
+        # parameter loci
+        pop = Population([1000]*2, loci=10)
+        initGenotype(pop, freq=[0.4, 0.6])
+        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        revertFixedSites(pop, loci=range(4))
+        stat(pop, alleleFreq=ALL_AVAIL)
+        for loc in range(10):
+            if loc == 2:
+                self.assertEqual(pop.dvars().alleleFreq[loc][0], 1)
+            else:
+                self.assertNotEqual(pop.dvars().alleleFreq[loc][0], 1)
+        # for one virtual subpopulation
+        #
+        pop = Population([1000]*2, loci=10)
+        initSex(pop, sex=[MALE, FEMALE])
+        pop.setVirtualSplitter(SexSplitter())
+        initGenotype(pop, freq=[0.4, 0.6])
+        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        revertFixedSites(pop, subPops=[(0,0), (1,1)])
+        stat(pop, alleleFreq=ALL_AVAIL, vars='alleleFreq_sp')
+        for loc in range(10):
+            if loc == 2:
+                self.assertEqual(pop.dvars(0).alleleFreq[loc][0], 0.5)
+                self.assertEqual(pop.dvars(1).alleleFreq[loc][0], 0.5)
+            else:
+                self.assertNotEqual(pop.dvars(0).alleleFreq[loc][0], 0)
+                self.assertNotEqual(pop.dvars(1).alleleFreq[loc][0], 0)
+        # 
+        # haploid, sex chromosome etc
+        #
+        pop = Population([1000]*2, ploidy=1, loci=10)
+        initGenotype(pop, freq=[0.4, 0.6])
+        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        revertFixedSites(pop)
+        stat(pop, alleleFreq=ALL_AVAIL)
+        for loc in range(10):
+            if loc in [2, 4]:
+                self.assertEqual(pop.dvars().alleleFreq[loc][0], 1)
+            else:
+                self.assertNotEqual(pop.dvars().alleleFreq[loc][0], 0)
+        # for one subpopulation
+        pop = Population([1000]*2,ploidy=1,  loci=10)
+        initGenotype(pop, freq=[0.4, 0.6])
+        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        revertFixedSites(pop, subPops=[1])
+        stat(pop, alleleFreq=ALL_AVAIL)
+        for loc in range(10):
+            if loc in [2, 4]:
+                self.assertEqual(pop.dvars().alleleFreq[loc][0], 0.5)
+            else:
+                self.assertNotEqual(pop.dvars().alleleFreq[loc][0], 1)
+        # parameter loci
+        pop = Population([1000]*2, ploidy=1, loci=10)
+        initGenotype(pop, freq=[0.4, 0.6])
+        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        revertFixedSites(pop, loci=range(4))
+        stat(pop, alleleFreq=ALL_AVAIL)
+        for loc in range(10):
+            if loc == 2:
+                self.assertEqual(pop.dvars().alleleFreq[loc][0], 1)
+            else:
+                self.assertNotEqual(pop.dvars().alleleFreq[loc][0], 1)
+        # for one virtual subpopulation
+        #
+        pop = Population([1000]*2, ploidy=1, loci=10)
+        initSex(pop, sex=[MALE, FEMALE])
+        pop.setVirtualSplitter(SexSplitter())
+        initGenotype(pop, freq=[0.4, 0.6])
+        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        revertFixedSites(pop, subPops=[(0,0), (1,1)])
+        stat(pop, alleleFreq=ALL_AVAIL, vars='alleleFreq_sp')
+        for loc in range(10):
+            if loc == 2:
+                self.assertEqual(pop.dvars(0).alleleFreq[loc][0], 0.5)
+                self.assertEqual(pop.dvars(1).alleleFreq[loc][0], 0.5)
+            else:
+                self.assertNotEqual(pop.dvars(0).alleleFreq[loc][0], 0)
+                self.assertNotEqual(pop.dvars(1).alleleFreq[loc][0], 0)
+        # 
+        # sex chromosome
+        #
+        pop = Population([1000]*2, loci=[3, 7], chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
+        initGenotype(pop, freq=[0.4, 0.6])
+        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        revertFixedSites(pop)
+        stat(pop, alleleFreq=ALL_AVAIL)
+        for loc in range(10):
+            if loc in [2, 4]:
+                self.assertEqual(pop.dvars().alleleFreq[loc][0], 1)
+            else:
+                self.assertNotEqual(pop.dvars().alleleFreq[loc][0], 0)
+        # for one subpopulation
+        pop = Population([1000]*2, loci=[3, 7], chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
+        initGenotype(pop, freq=[0.4, 0.6])
+        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        revertFixedSites(pop, subPops=[1])
+        stat(pop, alleleFreq=ALL_AVAIL)
+        for loc in range(10):
+            if loc in [2, 4]:
+                self.assertEqual(pop.dvars().alleleFreq[loc][0], 0.5)
+            else:
+                self.assertNotEqual(pop.dvars().alleleFreq[loc][0], 1)
+        # parameter loci
+        pop = Population([1000]*2, loci=[3, 7], chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
+        initGenotype(pop, freq=[0.4, 0.6])
+        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        revertFixedSites(pop, loci=range(4))
+        stat(pop, alleleFreq=ALL_AVAIL)
+        for loc in range(10):
+            if loc == 2:
+                self.assertEqual(pop.dvars().alleleFreq[loc][0], 1)
+            else:
+                self.assertNotEqual(pop.dvars().alleleFreq[loc][0], 1)
+        # for one virtual subpopulation
+        #
+        pop = Population([1000]*2, loci=[3, 7], chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
+        initSex(pop, sex=[MALE, FEMALE])
+        pop.setVirtualSplitter(SexSplitter())
+        initGenotype(pop, freq=[0.4, 0.6])
+        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        revertFixedSites(pop, subPops=[(0,0), (1,0)])
+        stat(pop, alleleFreq=ALL_AVAIL, subPops=[(0,0), (1,0)], vars='alleleFreq_sp')
+        for loc in range(10):
+            if loc in [2, 4]:
+                self.assertEqual(pop.dvars((0,0)).alleleFreq[loc][0], 1)
+                self.assertEqual(pop.dvars((1,0)).alleleFreq[loc][0], 1)
+            else:
+                self.assertNotEqual(pop.dvars((0,0)).alleleFreq[loc][0], 0)
+                self.assertNotEqual(pop.dvars((1,0)).alleleFreq[loc][0], 0)
+
+
+
 if __name__ == '__main__':
     unittest.main()
 

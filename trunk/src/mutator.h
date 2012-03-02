@@ -644,5 +644,59 @@ private:
 	vectoru m_inds;
 };
 
+
+/** This operator checks all loci of a population and revert a mutant to
+ *  wildtype allele if it is fixed in the population. If a list of (virtual)
+ *  subpopulations are specified, alleles are reverted in each subpopulation,
+ *  regardless if the allele is fixed in other subpopulations. 
+ */
+class RevertFixedSites : public BaseOperator
+{
+public:
+	/** Create an operator to revert alleles at fixed loci from value non-zero to zero.
+	 *  If parameter \e subPops are specified, only individuals in these subpopulations
+	 *  are considered.
+	 */
+	RevertFixedSites(const lociList & loci = lociList(), 
+		const stringFunc & output = "", int begin = 0, int end = -1, int step = 1,
+		const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = vectorstr())
+		: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
+		m_loci(loci)
+	{
+	}
+
+
+	/// destructor
+	virtual ~RevertFixedSites()
+	{
+	}
+
+
+	/// HIDDEN Deep copy of a Migrator
+	virtual BaseOperator * clone() const
+	{
+		return new RevertFixedSites(*this);
+	}
+
+
+	/// HIDDEN apply the Migrator to populaiton \e pop.
+	virtual bool apply(Population & pop) const;
+
+	/// HIDDEN
+	string describe(bool format = true) const
+	{
+		(void)format;  // avoid warning about unused parameter
+		return "Revert fixed alleles to wildtype allele if it is fixed in the population.";
+	}
+
+private:
+	lociList m_loci;
+
+};
+
+
+
 }
 #endif
