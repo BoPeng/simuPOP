@@ -475,6 +475,10 @@ bool RevertFixedSites::apply(Population & pop) const
 		if (sp->isVirtual())
 			pop.activateVirtualSubPop(*sp);
 
+		// alleleIterator is very slow for mutant modules but this iterator will
+		// return 0 for most loci and continue to the next, so performance
+		// should be tolerable. The advantage of using an alleleIterator is that
+		// it will automatically handle different chromosome types.
 		for (size_t idx = 0; idx < loci.size(); ++idx) {
 			size_t loc = loci[idx];
 			bool fixed = true;
