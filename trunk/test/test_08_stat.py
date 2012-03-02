@@ -153,10 +153,26 @@ class TestStat(unittest.TestCase):
         # selected loci
         stat(pop, numOfSegSites=range(100, 1000))
         self.assertEqual(pop.dvars().numOfSegSites, 0)
+        #
+        # number of non-zero sites
+        pop = Population(size=1000, loci=[10]*10)
+        # 20 segreagating sites with 0
+        initGenotype(pop, loci= range(20), freq=[0.5, 0.5])
+        # 10 segragating sites without 0, fixed for binary module
+        initGenotype(pop, loci= range(30, 40), freq=[0, 0.5, 0.5])
+        # 10 fixed sites
+        initGenotype(pop, loci= range(50, 60), freq=[0, 1])
+        stat(pop, numOfSegSites=ALL_AVAIL, vars=['numOfSegSites', 'numOfFixedSites'])
+        if moduleInfo()['alleleType'] == 'binary':
+            self.assertEqual(pop.dvars().numOfSegSites, 20)
+            self.assertEqual(pop.dvars().numOfFixedSites, 20)
+        else:
+            self.assertEqual(pop.dvars().numOfSegSites, 30)
+            self.assertEqual(pop.dvars().numOfFixedSites, 10)
 
 
     def testNumOfMutants(self):
-        'Testing the number of segregating sites'
+        'Testing the number of mutants'
         pop = Population(size=1000, loci=[100]*100)
         # 100 mutations
         for i in range(100):
