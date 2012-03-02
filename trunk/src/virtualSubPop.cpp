@@ -348,16 +348,16 @@ CombinedSplitter::CombinedSplitter(const vectorsplitter & splitters,
 				// find out which splitter and which vsp
 				ssize_t lower = 0;
 				ssize_t higher = 0;
-#ifndef OPTIMIZED				
+#ifndef OPTIMIZED
 				bool done = false;
-#endif				
+#endif
 				for (size_t s = 0; s < splitters.size(); ++s) {
 					higher += splitters[s]->numVirtualSubPop();
 					if (vspMap[i][j] >= lower && vspMap[i][j] < higher) {
 						list.push_back(vspPair(s, vspMap[i][j] - lower));
-#ifndef OPTIMIZED				
+#ifndef OPTIMIZED
 						done = true;
-#endif				
+#endif
 						break;
 					}
 					lower = higher;

@@ -984,16 +984,16 @@ public:
 	 *  \li \c propOfUnaffected_sp: Proportion of unaffected individuals in
 	 *       each (virtual) subpopulation.
 	 *
-         *  <b>numOfSegSites</b>: Parameter \e numOfSegSites accepts a list of loci
-         *  (loci indexes, names, or \c ALL_AVAIL) and count the number of loci with
-         *  at least one non-zero allele (segregating sites) for individuals in all
-         *  or specified (virtual) subpopulations. This parameter sets variables
-         *  \li \c numOfSegSites (default): Number of segregating sites in all or
-         *      specified (virtual) subpopulations.
-         *  \li \c numOfSegSites_sp: Number of segregating sites in each (virtual)
-         *      subpopulation.
-         *
-         *  <b>alleleFreq</b>: This parameter accepts a list of loci (loci indexes,
+	 *  <b>numOfSegSites</b>: Parameter \e numOfSegSites accepts a list of loci
+	 *  (loci indexes, names, or \c ALL_AVAIL) and count the number of loci with
+	 *  at least one non-zero allele (segregating sites) for individuals in all
+	 *  or specified (virtual) subpopulations. This parameter sets variables
+	 *  \li \c numOfSegSites (default): Number of segregating sites in all or
+	 *      specified (virtual) subpopulations.
+	 *  \li \c numOfSegSites_sp: Number of segregating sites in each (virtual)
+	 *      subpopulation.
+	 *
+	 *  <b>alleleFreq</b>: This parameter accepts a list of loci (loci indexes,
 	 *  names, or \c ALL_AVAIL), at which allele frequencies will be calculated.
 	 *  This statistic outputs the following variables, all of which are
 	 *  dictionary (with loci indexes as keys) of default dictionaries (with
@@ -1239,14 +1239,14 @@ public:
 	 *       than two alleles) and multi-loci cases. This statistics should
 	 *       be used if you would like to obtain a \e true Fst value of a large
 	 *       Population.
-     *  Nei's Gst uses only allele frequency information so it is available
-     *  for all population type (haploid, diploid etc). Weir and Cockerham's
-     *  Fst uses heterozygosity frequency so it is best for autosome of 
-     *  diploid populations. For non-diploid population, sex, and mitochondrial
-     *  DNAs, simuPOP uses expected heterozygosity (1 - sum p_i^2) when
-     *  heterozygosity is needed. These statistics output the following
-     *  variables:
-     *
+	 *  Nei's Gst uses only allele frequency information so it is available
+	 *  for all population type (haploid, diploid etc). Weir and Cockerham's
+	 *  Fst uses heterozygosity frequency so it is best for autosome of
+	 *  diploid populations. For non-diploid population, sex, and mitochondrial
+	 *  DNAs, simuPOP uses expected heterozygosity (1 - sum p_i^2) when
+	 *  heterozygosity is needed. These statistics output the following
+	 *  variables:
+	 *
 	 *  \li \c F_st (default) The WC84 \e Fst statistic estimated for all
 	 *       specified loci.
 	 *  \li \c F_is The WC84 \e Fis statistic estimated for all specified loci.
@@ -1273,10 +1273,10 @@ public:
 		bool numOfMales = false,
 		//
 		bool numOfAffected = false,
-                //
-                const lociList & numOfSegSites = vectoru(),
-                //
-                const lociList & numOfMutants = vectoru(),
+		//
+		const lociList & numOfSegSites = vectoru(),
+		//
+		const lociList & numOfMutants = vectoru(),
 		//
 		const lociList & alleleFreq = vectoru(),
 		//
@@ -1339,8 +1339,8 @@ private:
 	const statPopSize m_popSize;
 	const statNumOfMales m_numOfMales;
 	const statNumOfAffected m_numOfAffected;
-        const statNumOfSegSites m_numOfSegSites;
-        const statNumOfMutants m_numOfMutants;
+	const statNumOfSegSites m_numOfSegSites;
+	const statNumOfMutants m_numOfMutants;
 	const statAlleleFreq m_alleleFreq;
 	const statHeteroFreq m_heteroFreq;
 	const statGenoFreq m_genoFreq;

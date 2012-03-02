@@ -192,14 +192,14 @@ private:
 
 	int m_mode;
 	///
-#if TR1_SUPPORT == 0
+#  if TR1_SUPPORT == 0
 	typedef std::map<unsigned int, SelCoef> SelMap;
 	typedef std::map<unsigned int, int> MutCounter;
-#else
+#  else
 	// this is faster than std::map
 	typedef std::tr1::unordered_map<size_t, SelCoef> SelMap;
 	typedef std::tr1::unordered_map<size_t, size_t> MutCounter;
-#endif
+#  endif
 	mutable SelMap m_selFactory;
 	mutable vectoru m_newMutants;
 	// whether or not all markers are additive.
@@ -257,9 +257,9 @@ public:
 					throw ValueError("Overlapping ranges are currently not supported because of potential conflict of mutant locations on different chromosomes.");
 			}
 		}
-#ifdef BINARYALLELE
+#  ifdef BINARYALLELE
 		DBG_FAILIF(true, ValueError, "This operator does not work in binary allele type.");
-#endif
+#  endif
 	}
 
 
@@ -318,9 +318,9 @@ public:
 		m_rate(rate), m_ranges(ranges)
 	{
 		DBG_FAILIF(rate > 0.5 || rate < 0, ValueError, "Recombination rate should be between 0 and 0.5");
-#ifdef BINARYALLELE
+#  ifdef BINARYALLELE
 		DBG_FAILIF(true, ValueError, "This operator does not work in binary allele type.");
-#endif
+#  endif
 	}
 
 
@@ -352,12 +352,12 @@ public:
 		Individual * dad, Individual * mom) const;
 
 private:
-#if TR1_SUPPORT == 0
+#  if TR1_SUPPORT == 0
 	typedef std::map<unsigned int, int> MutCounter;
-#else
+#  else
 	// this is faster than std::map
 	typedef std::tr1::unordered_map<unsigned int, int> MutCounter;
-#endif
+#  endif
 	// use when m_rate = 0.5
 	void transmitGenotype0(Population & pop, Population & offPop, const Individual & parent,
 		size_t offIndex, int ploidy) const;

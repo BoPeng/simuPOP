@@ -375,7 +375,7 @@ private:
  *  offspring for asexual reproduction. If there are multiple chromosomes, the
  *  organelles are selected randomly. If this transmitter is applied to populations
  *  with more than one homologous copies of chromosomes, it transmits the first
- *  homologous copy of chromosomes and clears alleles (set to zero) on other 
+ *  homologous copy of chromosomes and clears alleles (set to zero) on other
  *  homologous copies.
  */
 class MitochondrialGenoTransmitter : public GenoTransmitter

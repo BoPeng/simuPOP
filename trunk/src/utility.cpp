@@ -130,6 +130,7 @@ PyObject * newcarrayobject(GenoIterator, GenoIterator)
 	return NULL;
 }
 
+
 PyObject * PyDefDict_New()
 {
 	return NULL;
@@ -1223,6 +1224,7 @@ void PyObj_As_IntArray(PyObject * obj, vectori & val)
 		PyObj_As_Int(obj, val[0]);
 	}
 }
+
 
 PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end)
 {
