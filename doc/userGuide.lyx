@@ -17279,6 +17279,58 @@ lstparams "caption={Count individuals by sex and/or affection status},label={sta
 \end_layout
 
 \begin_layout Subsection
+Number of segregating and fixed sites
+\end_layout
+
+\begin_layout Standard
+Parameter 
+\shape italic
+numOfSegSites
+\shape default
+ counts the number of segregating sites for specified or all loci, for all
+ individuals or individuals in specified (virtual) subpopulations.
+ It can also be used to count the number of fixed sites (loci with only
+ one non-zero allele).
+ This parameter sets variables 
+\family typewriter
+numOfSegSites
+\family default
+ and 
+\family typewriter
+numOfFixedSites
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "numSegSites"
+
+\end_inset
+
+ demonstrates how to use this operator to calculate the number of segregating
+ sites (sites with alleles 0 and 1), number of fixed sites (sites with only
+ allele 1), and number of loci with only wildtype alleles (loci with only
+ allele 0).
+ As you can see, the population starts with 100 segregating sites.
+ During evolution, some alleles get lost and some get fixed, and there should
+ be no segregating site if we evolve the population for long enough.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/statNumOfSegSites.log"
+lstparams "caption={Count number of segregating and fixed sites},label={numSegSites}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Allele count and frequency
 \end_layout
 

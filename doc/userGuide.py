@@ -3232,6 +3232,36 @@ sim.stat(pop, popSize=True, subPops=[(0, x) for x in range(4)])
 print(pop.dvars().subPopSize)
 #end_file
 
+
+#begin_file log/statNumOfSegSites.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+pop = sim.Population(100, loci=[1]*100)
+pop.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.InitGenotype(freq=[0.4, 0.6])
+        sim.PyOutput('#all 0\t#seg sites\t#all 1\n'),
+    ],
+    matingScheme=sim.RandomMating(),
+    postOps=[
+        sim.Stat(numSegSites=sim.ALL_AVAIL,
+            vars=['numOfSegSites', 'numOfFixedSites']),
+        sim.PyEval(r'"%d\t%d\t%d\n" % (1-numOfSegSites-numOfFixedSites,'
+            'numOfSegSites, numOfFixedSites)',
+            step=10)
+        ],
+    gen=100
+)
+#end_file
+
+
 #begin_file log/statAlleleFreq.py
 #begin_ignore
 import simuOpt
