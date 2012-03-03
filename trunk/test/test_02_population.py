@@ -15,7 +15,7 @@ from simuOpt import setOptions
 setOptions(quiet=True)
 new_argv = []
 for arg in sys.argv:
-    if arg in ['short', 'long', 'binary', 'mutant']:
+    if arg in ['short', 'long', 'binary', 'mutant', 'lineage']:
         setOptions(alleleType = arg)
     elif arg.startswith('-j'):
         setOptions(numThreads = int(arg[2:]))
@@ -1558,6 +1558,51 @@ class TestPopulation(unittest.TestCase):
         pop.evolve(preOps=InitSex(),
             matingScheme=RandomMating(), dryrun=True)
         sys.stdout = tmp
+
+    def testLineage(self):
+        if moduleInfo()['alleleType'] != 'lineage':
+            return
+        IdTagger().reset(1)
+        pop = Population(100, infoFields=['ind_id'], loci=10)
+        tagID(pop)
+        self.assertEqual(pop.lineage(), [0] * 2000)
+        for ind in pop.allIndividuals():
+            self.assertEqual(ind.lineage(), [0] * 20)
+        InitGenotype(freq=[0.5, 0.5]).apply(pop)
+        expLineage = [[x] * 20 for x in range(1, 101)]
+        expLineage = list(item for iter_ in expLineage for item in iter_)
+        # test lineage assignment in genotype initialization
+        self.assertEqual(pop.lineage(), expLineage)
+        for ind in pop.allIndividuals():
+            self.assertEqual(ind.lineage(), [ind.ind_id] * 20)
+        # pretend that we advance a generation
+        tagID(pop)
+        self.assertEqual(pop.lineage(), expLineage)
+        for ind in pop.allIndividuals():
+            self.assertEqual(ind.lineage(), [ind.ind_id - 100] * 20)
+        # mutate all the alleles
+        SNPMutator(u=1, v=1).apply(pop)
+        # test lineage assignment in mutation
+        for ind in pop.allIndividuals():
+            self.assertEqual(ind.lineage(), [ind.ind_id] * 20)
+        # set the genotype to all 1's
+        InitGenotype(freq=[0, 1]).apply(pop)
+        # pretend that we advance a generation
+        tagID(pop)
+        # apply point mutation to all 0's
+        PointMutator(range(10), 0, range(2), range(200)).apply(pop)
+        # test lineage assignment in mutation
+        for ind in pop.allIndividuals():
+            self.assertEqual(ind.lineage(), [ind.ind_id] * 20)
+        # pretend that we advance a generation
+        tagID(pop)
+        mom = pop.individual(0)
+        dad = pop.individual(1)
+        child = pop.individual(2)
+        MendelianGenoTransmitter().transmitGenotype(mom, child, 0)
+        MendelianGenoTransmitter().transmitGenotype(dad, child, 1)
+        # test lineage assignment in genotype transition
+        self.assertEqual(child.lineage(), (list(mom.lineage(0)) + list(dad.lineage(1))))
 
     def testAllIndividuals(self):
         'Testing population::allIndividuals'
