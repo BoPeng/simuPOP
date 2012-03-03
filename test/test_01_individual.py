@@ -16,13 +16,13 @@ setOptions(quiet=True)
 new_argv = []
 alleleType = 'short'
 for arg in sys.argv:
-    if arg in ['short', 'long', 'binary', 'mutant']:
+    if arg in ['short', 'long', 'binary', 'mutant', 'lineage']:
         setOptions(alleleType = arg)
         alleleType = arg
     elif arg.startswith('-j'):
         setOptions(numThreads = int(arg[2:]))
     else:
-        new_argv.append(arg) 
+        new_argv.append(arg)
 
 sys.argv=new_argv
 from simuPOP import *
