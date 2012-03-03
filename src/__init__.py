@@ -294,6 +294,8 @@ if simuOptions['Optimized']:
         from simuPOP.simuPOP_baop import *
     elif simuOptions['AlleleType'] == 'mutant':
         from simuPOP.simuPOP_muop import *
+    elif simuOptions['AlleleType'] == 'lineage':
+        from simuPOP.simuPOP_linop import *
     else:
         from simuPOP.simuPOP_op import *
 else:
@@ -305,6 +307,8 @@ else:
         from simuPOP.simuPOP_ba import *
     elif simuOptions['AlleleType'] == 'mutant':
         from simuPOP.simuPOP_mu import *
+    elif simuOptions['AlleleType'] == 'lineage':
+        from simuPOP.simuPOP_lin import *
     else:
         from simuPOP.simuPOP_std import *
 
