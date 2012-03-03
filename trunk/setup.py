@@ -424,6 +424,10 @@ MACROS = {
                 ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 0)],
     'muop':   [('SIMUPOP_MODULE', 'simuPOP_muop'), ('MUTANTALLELE', None), ('OPTIMIZED', None),
                 ('_SECURE_SCL', 0), ('_HAS_ITERATOR_DEBUGGING', 0)],
+    'lin':    [('SIMUPOP_MODULE', 'simuPOP_lin'), ('LINEAGE', None), 
+                ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 0)],
+    'linop':  [('SIMUPOP_MODULE', 'simuPOP_linop'), ('LINEAGE', None), ('OPTIMIZED', None),
+                ('_SECURE_SCL', 0), ('_HAS_ITERATOR_DEBUGGING', 0)],
  
 }
  
@@ -436,6 +440,8 @@ WRAP_INFO = {
     'baop':   ['src/simuPOP_baop_wrap.cpp', 'src/simuPOP_baop.i', '-DBINARYALLELE -DOPTIMIZED'],
     'mu':     ['src/simuPOP_mu_wrap.cpp', 'src/simuPOP_mu.i', '-DMUTANTALLELE'],
     'muop':   ['src/simuPOP_muop_wrap.cpp', 'src/simuPOP_muop.i', '-DMUTANTALLELE -DOPTIMIZED'],
+    'lin':    ['src/simuPOP_lin_wrap.cpp', 'src/simuPOP_lin.i', '-DLINEAGE'],
+    'linop':  ['src/simuPOP_linop_wrap.cpp', 'src/simuPOP_linop.i', '-DLINEAGE -DOPTIMIZED'],
 }
 
 if os.name == 'nt':
@@ -553,7 +559,7 @@ if os.name == 'nt':    # Windows
 if __name__ == '__main__':
     SIMUPOP_VER, SIMUPOP_REV = simuPOP_version()
     # create source file for each module
-    MODULES = ['std', 'op', 'la', 'laop', 'ba', 'baop', 'mu', 'muop']
+    MODULES = ['std', 'op', 'la', 'laop', 'ba', 'baop', 'mu', 'muop', 'lin', 'linop']
     #
     # Generate Wrapping files
     #

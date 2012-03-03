@@ -42,6 +42,8 @@ include src/sandbox.h
 
 # source files
 include src/customizedTypes.c
+include src/customizedLineageTypes.c
+include src/customizedTemplates.cpp
 include src/utility.cpp
 include src/genoStru.cpp
 include src/individual.cpp
@@ -78,6 +80,8 @@ include src/simuPOP_la.py
 include src/simuPOP_laop.py 
 include src/simuPOP_ba.py
 include src/simuPOP_baop.py
+include src/simuPOP_lin.py
+include src/simuPOP_linop.py
 include src/gsl_wrap.c
 
 # source wrap files
@@ -89,6 +93,8 @@ include src/simuPOP_la.i
 include src/simuPOP_laop.i
 include src/simuPOP_ba.i
 include src/simuPOP_baop.i
+include src/simuPOP_lin.i
+include src/simuPOP_linop.i
 include src/gsl.i
 
 # source python files (modules)
