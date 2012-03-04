@@ -60,6 +60,10 @@
 
 ////////////////////////// DEFINE CARRAY //////////////////////////
 %{
+// templates are used to define array types for genotype and lineage
+// because python types uses C functions, they need to be redefined with
+// different names when templates are instantiated for these types.
+#include "customizedTemplates.cpp"
 extern "C"
 {
 #include "customizedTypes.c"

@@ -697,7 +697,7 @@ public:
 	 *  returned.
 	 *  <group>4-allele</group>
 	 */
-	string alleleName(const UINT allele, const size_t locus = 0) const;
+	string alleleName(const ULONG allele, const size_t locus = 0) const;
 
 	/** CPPONLY
 	 *  Return all allele names
@@ -804,7 +804,6 @@ public:
 		return s_genoStruRepository[m_genoStruIdx].m_infoFields[idx];
 	}
 
-
 	/** return the index of information field \e name. Raise an \c IndexError
 	 * if \e name is not one of the information fields.
 	 *  <group>5-info</group>
@@ -818,7 +817,7 @@ public:
 	 */
 	const GenoStructure gsAddInfoFields(const vectorstr & fields);
 
-	/// CPPONLY should should only be called from population
+	/// CPPONLY should only be called from population
 	const GenoStructure gsSetInfoFields(const vectorstr & fields);
 
 	/// CPPONLY swap a geno structure with the current one

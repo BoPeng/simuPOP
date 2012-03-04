@@ -117,6 +117,8 @@ using boost::cmatch;
 
 extern "C" PyObject * newcarrayobject(GenoIterator begin, GenoIterator end);
 
+extern "C" PyObject * newcarrayobject_lineage(LineageIterator begin, LineageIterator end);
+
 extern "C" PyObject * PyDefDict_New();
 
 extern "C" bool is_defdict(PyTypeObject * type);
@@ -130,6 +132,10 @@ PyObject * newcarrayobject(GenoIterator, GenoIterator)
 	return NULL;
 }
 
+PyObject * newcarrayobject_lineage(LineageIterator, LineageIterator)
+{
+	return NULL;
+}
 
 PyObject * PyDefDict_New()
 {
@@ -1234,6 +1240,13 @@ PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end)
 	return res;
 }
 
+PyObject * Lineage_Vec_As_NumArray(LineageIterator begin, LineageIterator end)
+{
+	PyObject * res = newcarrayobject_lineage(begin, end);
+
+	DBG_FAILIF(res == NULL, ValueError, "Can not convert buf to Lineage num array");
+	return res;
+}
 
 string PyObj_AsString(PyObject * str)
 {
@@ -4156,14 +4169,14 @@ PyObject * moduleInfo()
 	// AlleleType
 #ifdef LONGALLELE
 	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("long"));
-#else
-#  if defined BINARYALLELE
+#  elif defined BINARYALLELE
 	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("binary"));
 #  elif defined MUTANTALLELE
 	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("mutant"));
+#  elif defined LINEAGE
+	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("lineage"));
 #  else
 	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("short"));
-#  endif
 #endif
 
 #ifndef COMPILER

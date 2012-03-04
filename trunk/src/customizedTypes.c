@@ -42,19 +42,12 @@
 #if PY_VERSION_HEX < 0x03000000
 
 /// CPPONLY
-struct arrayobject;                                                             /* Forward */
+typedef struct arrayobject_template<GenoIterator> arrayobject;                                  /* Forward */
 
 #  if PY_VERSION_HEX < 0x02060000
 #    define Py_SIZE(obj) (((PyVarObject *)(obj))->ob_size)
 #  endif
 
-/// CPPONLY
-typedef struct arrayobject
-{
-	PyObject_VAR_HEAD
-	// pointer to the beginning of the genotype
-	GenoIterator ob_iter;
-} arrayobject;
 
 /// CPPONLY
 bool is_carrayobject(PyObject * op);
@@ -63,12 +56,7 @@ bool is_carrayobject(PyObject * op);
 static PyObject *
 getarrayitem(arrayobject * op, Py_ssize_t i)
 {
-	register arrayobject * ap;
-
-	assert(is_carrayobject(op));
-	ap = (arrayobject *)op;
-	assert(i >= 0 && i < Py_SIZE(ap));
-	return PyInt_FromLong(*(ap->ob_iter + i) );
+	return getarrayitem_template<GenoIterator>(op, i);
 }
 
 
@@ -76,41 +64,23 @@ getarrayitem(arrayobject * op, Py_ssize_t i)
 static int
 setarrayitem(arrayobject * ap, Py_ssize_t i, PyObject * v)
 {
-	// right now, the longest allele is uint16_t, but we need to be careful.
-	int x;
-
-	/* PyArg_Parse's 'b' formatter is for an unsigned char, therefore
-	     must use the next size up that is signed ('h') and manually do
-	     the overflow checking */
-	if (!PyArg_Parse(v, "i;array item must be integer", &x))
-		return -1;
-	// force the value to bool to avoid a warning
-#  ifdef BINARYALLELE
-	*(ap->ob_iter + i) = (x != 0);
-#  else
-	*(ap->ob_iter + i) = Allele(x);
-#  endif
-	return 0;
+	return setarrayitem_template<GenoIterator>(ap, i, v);
 }
 
 
 /// CPPONLY
 static PyObject *
-carray_new(PyTypeObject * /* type */, PyObject * /* args */, PyObject * /* kwds */)
+carray_new(PyTypeObject * a, PyObject * b, PyObject * c)
 {
-	PyErr_SetString(PyExc_TypeError,
-		"Can not create carray object from python.");
-	return NULL;
+	return carray_new_template<GenoIterator>(a, b, c);
 }
 
 
 /// CPPONLY
 static PyObject *
-carray_init(PyTypeObject * /* type */, PyObject * /* args */, PyObject * /* kwds */)
+carray_init(PyTypeObject * a, PyObject * b, PyObject * c)
 {
-	PyErr_SetString(PyExc_TypeError,
-		"Can not create carray object from python.");
-	return NULL;
+	return carray_init_template<GenoIterator>(a, b, c);
 }
 
 
@@ -121,7 +91,7 @@ PyObject * newcarrayobject(GenoIterator begin, GenoIterator end);
 static void
 array_dealloc(arrayobject * op)
 {
-	PyObject_Del(op);
+	array_dealloc_template<GenoIterator>(op);
 }
 
 
@@ -129,338 +99,63 @@ array_dealloc(arrayobject * op)
 static PyObject *
 array_richcompare(PyObject * v, PyObject * w, int op)
 {
-	// will really has this case?
-	if (!is_carrayobject(v) && !is_carrayobject(w)) {
-		Py_INCREF(Py_NotImplemented);
-		return Py_NotImplemented;
-	}
-
-	// both are array
-	if (is_carrayobject(v) && is_carrayobject(w) ) {
-		arrayobject * va, * wa;
-		PyObject * vi = NULL;
-		PyObject * wi = NULL;
-		int i, k;
-		PyObject * res;
-
-		va = (arrayobject *)v;
-		wa = (arrayobject *)w;
-
-		if (Py_SIZE(va) != Py_SIZE(wa) && (op == Py_EQ || op == Py_NE)) {
-			/* Shortcut: if the lengths differ, the arrays differ */
-			if (op == Py_EQ)
-				res = Py_False;
-			else
-				res = Py_True;
-			Py_INCREF(res);
-			return res;
-		}
-
-		/* Search for the first index where items are different */
-		k = 1;
-		for (i = 0; i < Py_SIZE(va) && i < Py_SIZE(wa); i++) {
-			vi = getarrayitem((arrayobject *)v, i);
-			wi = getarrayitem((arrayobject *)w, i);
-			if (vi == NULL || wi == NULL) {
-				Py_XDECREF(vi);
-				Py_XDECREF(wi);
-				return NULL;
-			}
-			k = PyObject_RichCompareBool(vi, wi, Py_EQ);
-			if (k == 0)
-				break;                                                                        /* Keeping vi and wi alive! */
-			Py_DECREF(vi);
-			Py_DECREF(wi);
-			if (k < 0)
-				return NULL;
-		}
-
-		if (k) {
-			/* No more items to compare -- compare sizes */
-			Py_ssize_t vs = Py_SIZE(va);
-			Py_ssize_t ws = Py_SIZE(wa);
-			int cmp;
-			switch (op) {
-			case Py_LT: cmp = vs < ws; break;
-			case Py_LE: cmp = vs <= ws; break;
-			case Py_EQ: cmp = vs == ws; break;
-			case Py_NE: cmp = vs != ws; break;
-			case Py_GT: cmp = vs > ws; break;
-			case Py_GE: cmp = vs >= ws; break;
-			default: return NULL;                                             /* cannot happen */
-			}
-			if (cmp)
-				res = Py_True;
-			else
-				res = Py_False;
-			Py_INCREF(res);
-			return res;
-		}
-		/* We have an item that differs.    First, shortcuts for EQ/NE */
-		if (op == Py_EQ) {
-			Py_INCREF(Py_False);
-			res = Py_False;
-		} else if (op == Py_NE) {
-			Py_INCREF(Py_True);
-			res = Py_True;
-		} else {
-			/* Compare the final item again using the proper operator */
-			res = PyObject_RichCompare(vi, wi, op);
-		}
-		Py_DECREF(vi);
-		Py_DECREF(wi);
-		return res;
-	} else {
-		arrayobject * va;
-		PyObject * wa, * res;
-		bool dir;
-		Py_ssize_t vs, ws;                                                                     // direction
-
-		// one of them is not array
-		if (is_carrayobject(v) ) {
-			va = (arrayobject *)v;
-			wa = w;
-			dir = true;
-		} else {
-			va = (arrayobject *)w;
-			wa = v;
-			dir = false;
-		}
-
-		if (!PySequence_Check(wa) ) {
-			// use automatic increase of size?
-			PyErr_SetString(PyExc_IndexError, "only sequence can be compared");
-			return NULL;
-		}
-
-		vs = Py_SIZE(va);
-		ws = PySequence_Size(wa);
-
-		if (vs != ws && (op == Py_EQ || op == Py_NE)) {
-			/* Shortcut: if the lengths differ, the arrays differ */
-			if (op == Py_EQ)
-				res = Py_False;
-			else
-				res = Py_True;
-			Py_INCREF(res);
-			return res;
-		}
-
-		/* Search for the first index where items are different */
-		PyObject * vi = NULL;
-		PyObject * wi = NULL;
-		int k = 1;
-		for (int i = 0; i < vs && i < ws; i++) {
-			vi = getarrayitem(va, i);
-			wi = PySequence_GetItem(wa, i);
-			if (vi == NULL || wi == NULL) {
-				Py_XDECREF(vi);
-				Py_XDECREF(wi);
-				return NULL;
-			}
-			k = PyObject_RichCompareBool(vi, wi, Py_EQ);
-			if (k == 0)
-				break;                                                                        /* Keeping vi and wi alive! */
-			Py_DECREF(vi);
-			Py_DECREF(wi);
-			// -1 for error
-			if (k < 0)
-				return NULL;
-		}
-
-		if (k) {                                                                              // if equal
-			/* No more items to compare -- compare sizes */
-			int cmp;
-			switch (op) {
-			case Py_LT: cmp = vs < ws; break;
-			case Py_LE: cmp = vs <= ws; break;
-			case Py_EQ: cmp = vs == ws; break;
-			case Py_NE: cmp = vs != ws; break;
-			case Py_GT: cmp = vs > ws; break;
-			case Py_GE: cmp = vs >= ws; break;
-			default: return NULL;                                             /* cannot happen */
-			}
-			if ((cmp && dir) || (!cmp && !dir))
-				res = Py_True;
-			else
-				res = Py_False;
-			Py_INCREF(res);
-			return res;
-		}
-
-		/* We have an item that differs.    First, shortcuts for EQ/NE */
-		if (op == Py_EQ) {
-			Py_INCREF(Py_False);
-			res = Py_False;
-		} else if (op == Py_NE) {
-			Py_INCREF(Py_True);
-			res = Py_True;
-		} else {
-			/* Compare the final item again using the proper operator */
-			int r = PyObject_RichCompareBool(vi, wi, op);
-			if ( (r == 0 && dir) || (r != 0 && !dir) ) {           // false
-				Py_INCREF(Py_False);
-				res = Py_False;
-			} else {
-				Py_INCREF(Py_True);
-				res = Py_True;
-			}
-		}
-		Py_DECREF(vi);
-		Py_DECREF(wi);
-		return res;
-	}
+	return(array_richcompare_template<GenoIterator>(v, w, op));
 }
 
 
 /// CPPONLY
 static Py_ssize_t array_length(arrayobject * a)
 {
-	return Py_SIZE(a);
+	return(array_length_template<GenoIterator>(a));
 }
 
 
 /// CPPONLY
-static PyObject * array_concat(arrayobject * , PyObject * )
+static PyObject * array_concat(arrayobject * a, PyObject * o)
 {
-	PyErr_SetString(PyExc_TypeError,
-		"Can not concat carray object.");
-	return NULL;
+	return(array_concat_template<GenoIterator>(a, o));
 }
 
 
 /// CPPONLY
-static PyObject * array_repeat(arrayobject * , Py_ssize_t )
+static PyObject * array_repeat(arrayobject * a, Py_ssize_t i)
 {
-	PyErr_SetString(PyExc_TypeError,
-		"Can not repeat carray object.");
-	return NULL;
+	return(array_repeat_template<GenoIterator>(a, i));
 }
 
 
 /// CPPONLY
 static PyObject * array_item(arrayobject * a, Py_ssize_t i)
 {
-	if (i < 0 || i >= Py_SIZE(a)) {
-		PyErr_SetString(PyExc_IndexError, "array index out of range");
-		return NULL;
-	}
-	return getarrayitem(a, i);
+	return(array_item_template<GenoIterator>(a, i));
 }
 
 
 /// CPPONLY
 static PyObject * array_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh)
 {
-	arrayobject * np;
-
-	if (ilow < 0)
-		ilow = 0;
-	else if (ilow > Py_SIZE(a))
-		ilow = Py_SIZE(a);
-	if (ihigh < 0)
-		ihigh = 0;
-	if (ihigh < ilow)
-		ihigh = ilow;
-	else if (ihigh > Py_SIZE(a))
-		ihigh = Py_SIZE(a);
-	np = (arrayobject *)newcarrayobject(a->ob_iter + ilow, a->ob_iter + ihigh);
-	if (np == NULL)
-		return NULL;
-	return (PyObject *)np;
+	return(array_slice_template<GenoIterator>(a, ilow, ihigh));
 }
 
 
 /// CPPONLY
 static int array_ass_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh, PyObject * v)
 {
-	if (v == NULL || a == (arrayobject *)v) {
-		PyErr_BadArgument();
-		return -1;
-	}
-
-	if (ilow < 0)
-		ilow = 0;
-	else if (ilow > Py_SIZE(a))
-		ilow = Py_SIZE(a);
-	if (ihigh < 0)
-		ihigh = 0;
-	if (ihigh < ilow)
-		ihigh = ilow;
-	else if (ihigh > Py_SIZE(a))
-		ihigh = Py_SIZE(a);
-
-	// use a single number to propagate v
-	if (PyNumber_Check(v) ) {
-		for (Py_ssize_t i = ilow; i < ihigh; ++i)
-			setarrayitem(a, i, v);
-		return 0;
-	}
-#  define b ((arrayobject *)v)
-	if (is_carrayobject(v)) {                                                  /* v is of array type */
-		Py_ssize_t n = Py_SIZE(b);
-		if (n != ihigh - ilow) {
-			PyErr_SetString(PyExc_ValueError, "Can not extend or thrink slice");
-			return -1;
-		}
-		for (Py_ssize_t i = 0; i < n; ++i)
-			setarrayitem(a, i + ilow, getarrayitem(b, i) );
-		return 0;
-	}
-#  undef b
-	/* a general sequence */
-	if (PySequence_Check(v) ) {
-		Py_ssize_t n = PySequence_Size(v);
-		if (n != ihigh - ilow) {
-			PyErr_SetString(PyExc_ValueError, "Can not extend or thrink slice");
-			return -1;
-		}
-		// iterator sequence
-		for (Py_ssize_t i = 0; i < n; ++i) {
-			PyObject * item = PySequence_GetItem(v, i);
-			setarrayitem(a, i + ilow, item);
-			Py_DECREF(item);
-		}
-		return 0;
-	}
-	PyErr_SetString(PyExc_ValueError, "Only number or list can be assigned");
-	return -1;
+	return(array_ass_slice_template<GenoIterator>(a, ilow, ihigh, v));
 }
 
 
 /// CPPONLY
 static Py_ssize_t array_ass_item(arrayobject * a, Py_ssize_t i, PyObject * v)
 {
-	if (i < 0 || i >= Py_SIZE(a)) {
-		PyErr_SetString(PyExc_IndexError,
-			"array assignment index out of range");
-		return -1;
-	}
-	if (v == NULL)
-		return array_ass_slice(a, i, i + 1, v);
-	return setarrayitem(a, i, v);
+	return(array_ass_item_template<GenoIterator>(a, i, v));
 }
 
 
 /// CPPONLY
 static PyObject * array_count(arrayobject * self, PyObject * args)
 {
-	int count = 0;
-	int i;
-	PyObject * v;
-
-	if (!PyArg_ParseTuple(args, "O:count", &v))
-		return NULL;
-	for (i = 0; i < Py_SIZE(self); i++) {
-		PyObject * selfi = getarrayitem(self, i);
-		int cmp = PyObject_RichCompareBool(selfi, v, Py_EQ);
-		Py_DECREF(selfi);
-		if (cmp > 0)
-			count++;
-		else if (cmp < 0)
-			return NULL;
-	}
-	return PyInt_FromLong((long)count);
+	return(array_count_template<GenoIterator>(self, args));
 }
 
 
@@ -473,30 +168,7 @@ Return number of occurences of x in the array."                                 
 /// CPPONLY
 static PyObject * array_index(arrayobject * self, PyObject * args)
 {
-	Py_ssize_t i;
-	PyObject * v;
-	Py_ssize_t start = 0, stop = Py_SIZE(self);
-
-	if (!PyArg_ParseTuple(args, "O|O&O&:index", &v,
-			_PyEval_SliceIndex, &start, _PyEval_SliceIndex, &stop))
-		return NULL;
-	if (start < 0) {
-		start += Py_SIZE(self);
-		if (start < 0)
-			start = 0;
-	}
-
-	for (i = start; i < stop; i++) {
-		PyObject * selfi = getarrayitem(self, i);
-		int cmp = PyObject_RichCompareBool(selfi, v, Py_EQ);
-		Py_DECREF(selfi);
-		if (cmp > 0) {
-			return PyInt_FromLong((long)i);
-		} else if (cmp < 0)
-			return NULL;
-	}
-	PyErr_SetString(PyExc_ValueError, "array.index(x): x not in list");
-	return NULL;
+	return(array_index_template<GenoIterator>(self, args));
 }
 
 
@@ -508,22 +180,7 @@ Return index of first occurence of x in the array.";
 /// CPPONLY
 static PyObject * array_tolist(arrayobject * self, PyObject * args)
 {
-	PyObject * list = PyList_New(Py_SIZE(self));
-	int i;
-
-	if (!PyArg_ParseTuple(args, ":tolist"))
-		return NULL;
-	if (list == NULL)
-		return NULL;
-	for (i = 0; i < Py_SIZE(self); i++) {
-		PyObject * v = getarrayitem(self, i);
-		if (v == NULL) {
-			Py_DECREF(list);
-			return NULL;
-		}
-		PyList_SetItem(list, i, v);
-	}
-	return list;
+	return(array_tolist_template<GenoIterator>(self, args));
 }
 
 
@@ -564,27 +221,9 @@ static PyObject * array_getattr(arrayobject * a, char * name)
 
 
 /// CPPONLY
-static int array_print(arrayobject * a, FILE * fp, int /* flags */)
+static int array_print(arrayobject * a, FILE * fp, int flags)
 {
-	int ok = 0;
-	Py_ssize_t i, len;
-	PyObject * v;
-
-	len = Py_SIZE(a);
-	if (len == 0) {
-		fprintf(fp, "[]");
-		return ok;
-	}
-	fprintf(fp, "[");
-	for (i = 0; i < len && ok == 0; i++) {
-		if (i > 0)
-			fprintf(fp, ", ");
-		v = getarrayitem(a, i);
-		ok = PyObject_Print(v, fp, 0);
-		Py_XDECREF(v);
-	}
-	fprintf(fp, "]");
-	return ok;
+	return(array_print_template<GenoIterator>(a, fp, flags));
 }
 
 
@@ -592,29 +231,7 @@ static int array_print(arrayobject * a, FILE * fp, int /* flags */)
 static PyObject *
 array_repr(arrayobject * a)
 {
-	char buf[256];
-	PyObject * s, * t, * comma, * v;
-	Py_ssize_t i, len;
-
-	len = Py_SIZE(a);
-	if (len == 0) {
-		PyOS_snprintf(buf, sizeof(buf), "[]");
-		return PyString_FromString(buf);
-	}
-	PyOS_snprintf(buf, sizeof(buf), "[");
-	s = PyString_FromString(buf);
-	comma = PyString_FromString(", ");
-	for (i = 0; i < len && !PyErr_Occurred(); i++) {
-		if (i > 0)
-			PyString_Concat(&s, comma);
-		v = getarrayitem(a, i);
-		t = PyObject_Repr(v);
-		Py_XDECREF(v);
-		PyString_ConcatAndDel(&s, t);
-	}
-	Py_XDECREF(comma);
-	PyString_ConcatAndDel(&s, PyString_FromString("]"));
-	return s;
+	return(array_repr_template<GenoIterator>(a));
 }
 
 
@@ -698,29 +315,296 @@ PyTypeObject Arraytype =
 /// CPPONLY
 bool is_carrayobject(PyObject * op)
 {
-	return op->ob_type == &Arraytype;
+	return is_carrayobject_template<GenoIterator>(op);
 }
 
 
 /// CPPONLY
 PyObject * newcarrayobject(GenoIterator begin, GenoIterator end)
 {
-	// create an object and copy data
-	arrayobject * op;
+	return(newcarrayobject_template<GenoIterator>(begin, end));
+}
 
-	op = PyObject_New(arrayobject, &Arraytype);
-	if (op == NULL) {
-		PyObject_Del(op);
-		return PyErr_NoMemory();
+/* lineage array type ***************************/
+
+/// CPPONLY
+typedef struct arrayobject_template<LineageIterator> arrayobject_lineage;                      /* Forward */
+
+
+/// CPPONLY
+bool is_carrayobject_lineage(PyObject * op);
+
+/// CPPONLY
+static PyObject *
+getarrayitem_lineage(arrayobject_lineage * op, Py_ssize_t i)
+{
+	return getarrayitem_template<LineageIterator>(op, i);
+}
+
+
+/// CPPONLY
+static int
+setarrayitem_lineage(arrayobject_lineage * ap, Py_ssize_t i, PyObject * v)
+{
+	return setarrayitem_template<LineageIterator>(ap, i, v);
+}
+
+
+/// CPPONLY
+static PyObject *
+carray_new_lineage(PyTypeObject * a, PyObject * b, PyObject * c)
+{
+	return carray_new_template<LineageIterator>(a, b, c);
+}
+
+
+/// CPPONLY
+static PyObject *
+carray_init_lineage(PyTypeObject * a, PyObject * b, PyObject * c)
+{
+	return carray_init_template<LineageIterator>(a, b, c);
+}
+
+
+/// CPPONLY
+PyObject * newcarrayobject_lineage(LineageIterator begin, LineageIterator end);
+
+/// CPPONLY
+static void
+array_dealloc_lineage(arrayobject_lineage * op)
+{
+	array_dealloc_template<LineageIterator>(op);
+}
+
+
+/// CPPONLY
+static PyObject *
+array_richcompare_lineage(PyObject * v, PyObject * w, int op)
+{
+	return(array_richcompare_template<LineageIterator>(v, w, op));
+}
+
+
+/// CPPONLY
+static Py_ssize_t array_length_lineage(arrayobject_lineage * a)
+{
+	return(array_length_template<LineageIterator>(a));
+}
+
+
+/// CPPONLY
+static PyObject * array_concat_lineage(arrayobject_lineage * a, PyObject * o)
+{
+	return(array_concat_template<LineageIterator>(a, o));
+}
+
+
+/// CPPONLY
+static PyObject * array_repeat_lineage(arrayobject_lineage * a, Py_ssize_t i)
+{
+	return(array_repeat_template<LineageIterator>(a, i));
+}
+
+
+/// CPPONLY
+static PyObject * array_item_lineage(arrayobject_lineage * a, Py_ssize_t i)
+{
+	return(array_item_template<LineageIterator>(a, i));
+}
+
+
+/// CPPONLY
+static PyObject * array_slice_lineage(arrayobject_lineage * a, Py_ssize_t ilow, Py_ssize_t ihigh)
+{
+	return(array_slice_template<LineageIterator>(a, ilow, ihigh));
+}
+
+
+/// CPPONLY
+static int array_ass_slice_lineage(arrayobject_lineage * a, Py_ssize_t ilow, Py_ssize_t ihigh, PyObject * v)
+{
+	return(array_ass_slice_template<LineageIterator>(a, ilow, ihigh, v));
+}
+
+
+/// CPPONLY
+static Py_ssize_t array_ass_item_lineage(arrayobject_lineage * a, Py_ssize_t i, PyObject * v)
+{
+	return(array_ass_item_template<LineageIterator>(a, i, v));
+}
+
+
+/// CPPONLY
+static PyObject * array_count_lineage(arrayobject_lineage * self, PyObject * args)
+{
+	return(array_count_template<LineageIterator>(self, args));
+}
+
+
+/// CPPONLY
+static char count_doc_lineage [] =
+    "count(x)\n\
+\n\
+Return number of occurences of x in the array."                                          ;
+
+/// CPPONLY
+static PyObject * array_index_lineage(arrayobject_lineage * self, PyObject * args)
+{
+	return(array_index_template<LineageIterator>(self, args));
+}
+
+
+static char index_doc_lineage [] =
+    "index(x, [start, [stop]])\n\
+\n\
+Return index of first occurence of x in the array.";
+
+/// CPPONLY
+static PyObject * array_tolist_lineage(arrayobject_lineage * self, PyObject * args)
+{
+	return(array_tolist_template<LineageIterator>(self, args));
+}
+
+
+static char tolist_doc_lineage [] =
+    "tolist() -> list\n\
+\n\
+Convert array to an ordinary list with the same items."                                                          ;
+
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+PyMethodDef array_methods_lineage[] =
+{
+	{
+		"count", (PyCFunction)array_count_lineage, METH_VARARGS,
+		count_doc_lineage
+	},
+	{
+		"index", (PyCFunction)array_index_lineage, METH_VARARGS,
+		index_doc_lineage
+	},
+	{
+		"tolist",    (PyCFunction)array_tolist_lineage,    METH_VARARGS,
+		tolist_doc_lineage
+	},
+	{                                                                                             /* sentinel */
+		NULL,        NULL
 	}
-	//
-	op->ob_iter = begin;
-#ifdef MUTANTALLELE
-	Py_SIZE(op) = end.getIndex() - begin.getIndex();
-#else
-	Py_SIZE(op) = end - begin;
-#endif
-	return (PyObject *)op;
+};
+
+/// CPPONLY
+static PyObject * array_getattr_lineage(arrayobject_lineage * a, char * name)
+{
+	if (strcmp(name, "__members__") == 0) {
+		PyObject * list = PyList_New(0);
+		return list;
+	}
+	return Py_FindMethod(array_methods_lineage, (PyObject *)a, name);
+}
+
+
+/// CPPONLY
+static int array_print_lineage(arrayobject_lineage * a, FILE * fp, int flags)
+{
+	return(array_print_template<LineageIterator>(a, fp, flags));
+}
+
+
+/// CPPONLY
+static PyObject *
+array_repr_lineage(arrayobject_lineage * a)
+{
+	return(array_repr_template<LineageIterator>(a));
+}
+
+
+static PySequenceMethods array_as_sequence_lineage =
+{
+#  if PY_VERSION_HEX < 0x02050000
+	(inquiry)array_length_lineage,                                                      /*sq_length*/
+	(binaryfunc)array_concat_lineage,                                                   /*sq_concat*/
+	(intargfunc)array_repeat_lineage,                                                   /*sq_repeat*/
+	(intargfunc)array_item_lineage,                                                     /*sq_item*/
+	(intintargfunc)array_slice_lineage,                                                 /*sq_slice*/
+	(intobjargproc)array_ass_item_lineage,                                              /*sq_ass_item*/
+	(intintobjargproc)array_ass_slice_lineage,                                          /*sq_ass_slice*/
+#  else
+	(lenfunc)array_length_lineage,                                                      /*sq_length*/
+	(binaryfunc)array_concat_lineage,                                                   /*sq_concat*/
+	(ssizeargfunc)array_repeat_lineage,                                                 /*sq_repeat*/
+	(ssizeargfunc)array_item_lineage,                                                   /*sq_item*/
+	(ssizessizeargfunc)array_slice_lineage,                                             /*sq_slice*/
+	(ssizeobjargproc)array_ass_item_lineage,                                            /*sq_ass_item*/
+	(ssizessizeobjargproc)array_ass_slice_lineage,                                      /*sq_ass_slice*/
+#  endif
+};
+
+static char arraytype_doc_lineage [] =
+    "An array represents underlying memory of simuPOP structure \n\
+so that you can edit the values in python. The type will behave \n\
+very much like lists, except that you can change its size.\n\
+\n\
+Methods:\n\
+\n\
+count() -- return number of occurences of an object\n\
+index() -- return index of first occurence of an object\n\
+tolist() -- return the array converted to an ordinary list\n\
+        "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ;
+
+PyTypeObject LineageArraytype =
+{
+	PyObject_HEAD_INIT(NULL)
+	0,
+	"simuPOP.carray_lineage",   /* mudule.type name */
+	sizeof(arrayobject_lineage),
+	0,
+	(destructor)array_dealloc_lineage,  /* tp_dealloc */
+	(printfunc)array_print_lineage,     /* tp_print */
+	(getattrfunc)array_getattr_lineage, /* tp_getattr */
+	0,                          /* tp_setattr */
+	0,                          /* tp_compare */
+	(reprfunc)array_repr_lineage,       /* tp_repr */
+	0,                          /* tp_as _number*/
+	&array_as_sequence_lineage, /* tp_as _sequence*/
+	0,                          /* tp_as _mapping*/
+	0,                          /* tp_hash */
+	0,                          /* tp_call */
+	0,                          /* tp_str */
+	0,                          /* tp_getattro */
+	0,                          /* tp_setattro */
+	0,                          /* tp_as_buffer*/
+	Py_TPFLAGS_DEFAULT,         /* tp_flags */
+	arraytype_doc_lineage,      /* tp_doc */
+	0,                          /* tp_traverse */
+	0,                          /* tp_clear */
+	array_richcompare_lineage,  /* tp_richcompare */
+	0,                          /* tp_weaklistoffset */
+	0,                          /* tp_iter */
+	0,                          /* tp_iternext */
+	0,                          /* tp_methods */
+	0,                          /* tp_members */
+	0,                          /* tp_getset */
+	0,                          /* tp_base */
+	0,                          /* tp_dict */
+	0,                          /* tp_descr_get */
+	0,                          /* tp_descr_set */
+	0,                          /* tp_dictoffset */
+	(initproc)carray_init_lineage,      /* tp_init */
+	0,                          /* tp_alloc */
+	carray_new_lineage,         /* tp_new */
+};
+
+
+/// CPPONLY
+bool is_carrayobject_lineage(PyObject * op)
+{
+	return is_carrayobject_template<LineageIterator>(op);
+}
+
+
+/// CPPONLY
+PyObject * newcarrayobject_lineage(LineageIterator begin, LineageIterator end)
+{
+	return(newcarrayobject_template<LineageIterator>(begin, end));
 }
 
 
@@ -904,7 +788,8 @@ int initCustomizedTypes(void)
 	// this will be done in PyType_Ready() is your read this
 	// from python reference manual.
 	Arraytype.ob_type = &PyType_Type;
-	if (PyType_Ready(&Arraytype) < 0)
+	LineageArraytype.ob_type = &PyType_Type;
+	if (PyType_Ready(&Arraytype) < 0 || PyType_Ready(&LineageArraytype) < 0)
 		return -1;
 	//
 	defdict_type.ob_type = &PyType_Type;
@@ -921,14 +806,7 @@ int initCustomizedTypes(void)
 #else  // for Python 3
 /* Array object implementation */
 
-struct arrayobject; /* Forward */
-
-typedef struct arrayobject
-{
-	PyObject_VAR_HEAD
-	// pointer to the beginning of the genotype
-	GenoIterator ob_iter;
-} arrayobject;
+typedef struct arrayobject_template<GenoIterator> arrayobject;
 
 bool is_carrayobject(PyObject * op);
 
@@ -937,12 +815,7 @@ PyObject * newcarrayobject(GenoIterator begin, GenoIterator end);
 static PyObject *
 getarrayitem(PyObject * op, Py_ssize_t i)
 {
-	register arrayobject * ap;
-
-	assert(is_carrayobject(op));
-	ap = (arrayobject *)op;
-	assert(i >= 0 && i < Py_SIZE(ap));
-	return PyInt_FromLong(*(ap->ob_iter + i) );
+	return getarrayitem_template<GenoIterator>(op, i);
 }
 
 
@@ -950,348 +823,65 @@ getarrayitem(PyObject * op, Py_ssize_t i)
 static int
 setarrayitem(arrayobject * ap, int i, PyObject * v)
 {
-	// right now, the longest allele is uint16_t, but we need to be careful.
-	int x;
-
-	/* PyArg_Parse's 'b' formatter is for an unsigned char, therefore
-	     must use the next size up that is signed ('h') and manually do
-	     the overflow checking */
-	if (!PyArg_Parse(v, "i;array item must be integer", &x))
-		return -1;
-	// force the value to bool to avoid a warning
-#  ifdef BINARYALLELE
-	*(ap->ob_iter + i) = (x != 0);
-#  else
-	*(ap->ob_iter + i) = Allele(x);
-#  endif
-	return 0;
+	return setarrayitem_template<GenoIterator>(ap, i, v);
 }
-
 
 /* Methods */
 
 static void
 array_dealloc(arrayobject * op)
 {
-	Py_TYPE(op)->tp_free((PyObject *)op);
+	array_dealloc_template<GenoIterator>(op);
 }
 
 
 static PyObject *
 array_richcompare(PyObject * v, PyObject * w, int op)
 {
-	// will really has this case?
-	if (!is_carrayobject(v) && !is_carrayobject(w)) {
-		Py_INCREF(Py_NotImplemented);
-		return Py_NotImplemented;
-	}
+	return array_richcompare_template<GenoIterator>(v, w, op);
 
-	// both are array
-	if (is_carrayobject(v) && is_carrayobject(w) ) {
-		arrayobject * va, * wa;
-		PyObject * vi = NULL;
-		PyObject * wi = NULL;
-		int i, k;
-		PyObject * res;
-
-		va = (arrayobject *)v;
-		wa = (arrayobject *)w;
-
-		if (Py_SIZE(va) != Py_SIZE(wa) && (op == Py_EQ || op == Py_NE)) {
-			/* Shortcut: if the lengths differ, the arrays differ */
-			if (op == Py_EQ)
-				res = Py_False;
-			else
-				res = Py_True;
-			Py_INCREF(res);
-			return res;
-		}
-
-		/* Search for the first index where items are different */
-		k = 1;
-		for (i = 0; i < Py_SIZE(va) && i < Py_SIZE(wa); i++) {
-			vi = getarrayitem(v, i);
-			wi = getarrayitem(w, i);
-			if (vi == NULL || wi == NULL) {
-				Py_XDECREF(vi);
-				Py_XDECREF(wi);
-				return NULL;
-			}
-			k = PyObject_RichCompareBool(vi, wi, Py_EQ);
-			if (k == 0)
-				break;                                                                        /* Keeping vi and wi alive! */
-			Py_DECREF(vi);
-			Py_DECREF(wi);
-			if (k < 0)
-				return NULL;
-		}
-
-		if (k) {
-			/* No more items to compare -- compare sizes */
-			int vs = Py_SIZE(va);
-			int ws = Py_SIZE(wa);
-			int cmp;
-			switch (op) {
-			case Py_LT: cmp = vs < ws; break;
-			case Py_LE: cmp = vs <= ws; break;
-			case Py_EQ: cmp = vs == ws; break;
-			case Py_NE: cmp = vs != ws; break;
-			case Py_GT: cmp = vs > ws; break;
-			case Py_GE: cmp = vs >= ws; break;
-			default: return NULL;                                             /* cannot happen */
-			}
-			if (cmp)
-				res = Py_True;
-			else
-				res = Py_False;
-			Py_INCREF(res);
-			return res;
-		}
-		/* We have an item that differs.    First, shortcuts for EQ/NE */
-		if (op == Py_EQ) {
-			Py_INCREF(Py_False);
-			res = Py_False;
-		} else if (op == Py_NE) {
-			Py_INCREF(Py_True);
-			res = Py_True;
-		} else {
-			/* Compare the final item again using the proper operator */
-			res = PyObject_RichCompare(vi, wi, op);
-		}
-		Py_DECREF(vi);
-		Py_DECREF(wi);
-		return res;
-	} else {
-		arrayobject * va;
-		PyObject * wa, * res;
-		bool dir;
-		int vs, ws;                                                                     // direction
-
-		// one of them is not array
-		if (is_carrayobject(v) ) {
-			va = (arrayobject *)v;
-			wa = w;
-			dir = true;
-		} else {
-			va = (arrayobject *)w;
-			wa = v;
-			dir = false;
-		}
-
-		if (!PySequence_Check(wa) ) {
-			// use automatic increase of size?
-			PyErr_SetString(PyExc_IndexError, "only sequence can be compared");
-			return NULL;
-		}
-
-		vs = Py_SIZE(va);
-		ws = PySequence_Size(wa);
-
-		if (vs != ws && (op == Py_EQ || op == Py_NE)) {
-			/* Shortcut: if the lengths differ, the arrays differ */
-			if (op == Py_EQ)
-				res = Py_False;
-			else
-				res = Py_True;
-			Py_INCREF(res);
-			return res;
-		}
-
-		/* Search for the first index where items are different */
-		PyObject * vi = NULL;
-		PyObject * wi = NULL;
-		int k = 1;
-		for (int i = 0; i < vs && i < ws; i++) {
-			vi = PyInt_FromLong(*(va->ob_iter + i));
-			wi = PySequence_GetItem(wa, i);
-			if (vi == NULL || wi == NULL) {
-				Py_XDECREF(vi);
-				Py_XDECREF(wi);
-				return NULL;
-			}
-			k = PyObject_RichCompareBool(vi, wi, Py_EQ);
-			if (k == 0)
-				break;                                                                        /* Keeping vi and wi alive! */
-			Py_DECREF(vi);
-			Py_DECREF(wi);
-			// -1 for error
-			if (k < 0)
-				return NULL;
-		}
-
-		if (k) {                                                                              // if equal
-			/* No more items to compare -- compare sizes */
-			int cmp;
-			switch (op) {
-			case Py_LT: cmp = vs < ws; break;
-			case Py_LE: cmp = vs <= ws; break;
-			case Py_EQ: cmp = vs == ws; break;
-			case Py_NE: cmp = vs != ws; break;
-			case Py_GT: cmp = vs > ws; break;
-			case Py_GE: cmp = vs >= ws; break;
-			default: return NULL;                                             /* cannot happen */
-			}
-			if ((cmp && dir) || (!cmp && !dir))
-				res = Py_True;
-			else
-				res = Py_False;
-			Py_INCREF(res);
-			return res;
-		}
-
-		/* We have an item that differs.    First, shortcuts for EQ/NE */
-		if (op == Py_EQ) {
-			Py_INCREF(Py_False);
-			res = Py_False;
-		} else if (op == Py_NE) {
-			Py_INCREF(Py_True);
-			res = Py_True;
-		} else {
-			/* Compare the final item again using the proper operator */
-			int r = PyObject_RichCompareBool(vi, wi, op);
-			if ( (r == 0 && dir) || (r != 0 && !dir) ) {           // false
-				Py_INCREF(Py_False);
-				res = Py_False;
-			} else {
-				Py_INCREF(Py_True);
-				res = Py_True;
-			}
-		}
-		Py_DECREF(vi);
-		Py_DECREF(wi);
-		return res;
-	}
 }
 
 
 static Py_ssize_t
 array_length(arrayobject * a)
 {
-	return Py_SIZE(a);
+	return array_length_template<GenoIterator>(a);
 }
 
 
 static PyObject *
 array_item(arrayobject * a, Py_ssize_t i)
 {
-	if (i < 0 || i >= Py_SIZE(a)) {
-		PyErr_SetString(PyExc_IndexError, "array index out of range");
-		return NULL;
-	}
-	return getarrayitem((PyObject *)a, i);
+	return array_item_template<GenoIterator>(a);
 }
 
 
 static PyObject *
 array_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh)
 {
-	arrayobject * np;
-
-	if (ilow < 0)
-		ilow = 0;
-	else if (ilow > Py_SIZE(a))
-		ilow = Py_SIZE(a);
-	if (ihigh < 0)
-		ihigh = 0;
-	if (ihigh < ilow)
-		ihigh = ilow;
-	else if (ihigh > Py_SIZE(a))
-		ihigh = Py_SIZE(a);
-	np = (arrayobject *)newcarrayobject(a->ob_iter + ilow, a->ob_iter + ihigh);
-	if (np == NULL)
-		return NULL;
-	return (PyObject *)np;
+	return array_slice_template<GenoIterator>(a, ilow, ihigh);
 }
 
 
 static int
 array_ass_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh, PyObject * v)
 {
-	if (v == NULL || a == (arrayobject *)v) {
-		PyErr_BadArgument();
-		return -1;
-	}
-
-	if (ilow < 0)
-		ilow = 0;
-	else if (ilow > Py_SIZE(a))
-		ilow = Py_SIZE(a);
-	if (ihigh < 0)
-		ihigh = 0;
-	if (ihigh < ilow)
-		ihigh = ilow;
-	else if (ihigh > Py_SIZE(a))
-		ihigh = Py_SIZE(a);
-
-	// use a single number to propagate v
-	if (PyNumber_Check(v) ) {
-		for (int i = ilow; i < ihigh; ++i)
-			setarrayitem(a, i, v);
-		return 0;
-	}
-#  define b ((arrayobject *)v)
-	if (is_carrayobject(v)) {                                                  /* v is of array type */
-		int n = Py_SIZE(b);
-		if (n != ihigh - ilow) {
-			PyErr_SetString(PyExc_ValueError, "Can not extend or thrink slice");
-			return -1;
-		}
-		for (int i = 0; i < n; ++i)
-			setarrayitem(a, i + ilow, getarrayitem(v, i) );
-		return 0;
-	}
-#  undef b
-	/* a general sequence */
-	if (PySequence_Check(v) ) {
-		int n = PySequence_Size(v);
-		if (n != ihigh - ilow) {
-			PyErr_SetString(PyExc_ValueError, "Can not extend or thrink slice");
-			return -1;
-		}
-		// iterator sequence
-		for (int i = 0; i < n; ++i) {
-			PyObject * item = PySequence_GetItem(v, i);
-			setarrayitem(a, i + ilow, item);
-			Py_DECREF(item);
-		}
-		return 0;
-	}
-	PyErr_SetString(PyExc_ValueError, "Only number or list can be assigned");
-	return -1;
-
+	return array_ass_slice_template<GenoIterator>(a, ilow, ihigh, v);
 }
 
 
 static int
 array_ass_item(arrayobject * a, Py_ssize_t i, PyObject * v)
 {
-	if (i < 0 || i >= Py_SIZE(a)) {
-		PyErr_SetString(PyExc_IndexError,
-			"array assignment index out of range");
-		return -1;
-	}
-	if (v == NULL)
-		return array_ass_slice(a, i, i + 1, v);
-	return setarrayitem(a, i, v);
+	return array_ass_item_template<GenoIterator>(a, i, v);
 }
 
 
 static PyObject *
 array_count(arrayobject * self, PyObject * v)
 {
-	Py_ssize_t count = 0;
-	Py_ssize_t i;
-
-	for (i = 0; i < Py_SIZE(self); i++) {
-		PyObject * selfi = getarrayitem((PyObject *)self, i);
-		int cmp = PyObject_RichCompareBool(selfi, v, Py_EQ);
-		Py_DECREF(selfi);
-		if (cmp > 0)
-			count++;
-		else if (cmp < 0)
-			return NULL;
-	}
-	return PyLong_FromSsize_t(count);
+	return array_count_template<GenoIterator>(self, v);
 }
 
 
@@ -1303,19 +893,7 @@ Return number of occurrences of x in the array."                     );
 static PyObject *
 array_index(arrayobject * self, PyObject * v)
 {
-	Py_ssize_t i;
-
-	for (i = 0; i < Py_SIZE(self); i++) {
-		PyObject * selfi = getarrayitem((PyObject *)self, i);
-		int cmp = PyObject_RichCompareBool(selfi, v, Py_EQ);
-		Py_DECREF(selfi);
-		if (cmp > 0) {
-			return PyLong_FromLong((long)i);
-		}else if (cmp < 0)
-			return NULL;
-	}
-	PyErr_SetString(PyExc_ValueError, "array.index(x): x not in list");
-	return NULL;
+	return array_index_template<GenoIterator>(self, v);
 }
 
 
@@ -1327,20 +905,7 @@ Return index of first occurrence of x in the array."                     );
 static PyObject *
 array_tolist(arrayobject * self, PyObject * unused)
 {
-	PyObject * list = PyList_New(Py_SIZE(self));
-	Py_ssize_t i;
-
-	if (list == NULL)
-		return NULL;
-	for (i = 0; i < Py_SIZE(self); i++) {
-		PyObject * v = getarrayitem((PyObject *)self, i);
-		if (v == NULL) {
-			Py_DECREF(list);
-			return NULL;
-		}
-		PyList_SetItem(list, i, v);
-	}
-	return list;
+	return array_tolist_template<GenoIterator>(self, unused);
 }
 
 
@@ -1363,11 +928,7 @@ static PyMethodDef array_methods[] = {
 static PyObject *
 array_repr(arrayobject * a)
 {
-	PyObject * s, * v = NULL;
-	v = array_tolist(a, NULL);
-	s = PyUnicode_FromFormat("%R", v);
-	Py_DECREF(v);
-	return s;
+	return array_repr_template<GenoIterator>(a);
 }
 
 
@@ -1388,152 +949,14 @@ static PySequenceMethods array_as_sequence = {
 static PyObject*
 array_subscr(arrayobject* self, PyObject* item)
 {
-	if (PyIndex_Check(item)) {
-		Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
-		if (i==-1 && PyErr_Occurred()) {
-			return NULL;
-		}
-		if (i < 0)
-			i += Py_SIZE(self);
-		return array_item(self, i);
-	}
-	else if (PySlice_Check(item)) {
-		Py_ssize_t start, stop, step, slicelength;
-#if PY_VERSION_HEX >= 0x03020000
-		if (PySlice_GetIndicesEx((PyObject*)item, Py_SIZE(self),
-				 &start, &stop, &step, &slicelength) < 0) {
-			return NULL;
-		}
-#else
-		if (PySlice_GetIndicesEx((PySliceObject*)item, Py_SIZE(self),
-				 &start, &stop, &step, &slicelength) < 0) {
-			return NULL;
-		}
-#endif
-		if (step > 1) {
-			PyErr_SetString(PyExc_TypeError,
-					"Slice with step > 1 is not supported for type simuPOP.array");
-			return NULL;
-		}
-
-		if (slicelength <= 0)
-			return newcarrayobject(self->ob_iter, self->ob_iter);
-		return newcarrayobject(self->ob_iter + start,
-						self->ob_iter + stop);
-	}
-	else {
-		PyErr_SetString(PyExc_TypeError, 
-				"array indices must be integers");
-		return NULL;
-	}
+	return array_subscr_template<GenoIterator>(self, item);
 }
 
 
 static int
 array_ass_subscr(arrayobject* self, PyObject* item, PyObject* value)
 {
-	Py_ssize_t start, stop, step, slicelength, needed;
-	arrayobject* other = NULL;
-
-	if (PyIndex_Check(item)) {
-		Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
-		
-		if (i == -1 && PyErr_Occurred())
-			return -1;
-		if (i < 0)
-			i += Py_SIZE(self);
-		if (i < 0 || i >= Py_SIZE(self)) {
-			PyErr_SetString(PyExc_IndexError,
-				"array assignment index out of range");
-			return -1;
-		}
-		if (value == NULL) {
-			/* Fall through to slice assignment */
-			start = i;
-			stop = i + 1;
-			step = 1;
-			slicelength = 1;
-		}
-		else
-			return setarrayitem(self, i, value);
-	}
-	else if (PySlice_Check(item)) {
-#if PY_VERSION_HEX >= 0x03020000
-		if (PySlice_GetIndicesEx((PyObject *)item,
-					 Py_SIZE(self), &start, &stop,
-					 &step, &slicelength) < 0) {
-			return -1;
-		}
-#else
-		if (PySlice_GetIndicesEx((PySliceObject *)item,
-					 Py_SIZE(self), &start, &stop,
-					 &step, &slicelength) < 0) {
-			return -1;
-		}
-#endif
-	}
-	else {
-		PyErr_SetString(PyExc_TypeError,
-				"array indices must be integer");
-		return -1;
-	}
-	if (value == NULL) {
-		other = NULL;
-		needed = 0;
-	}
-	else if (is_carrayobject(value)) {
-		other = (arrayobject *)value;
-		needed = Py_SIZE(other);
-		if (self == other) {
-			/* Special case "self[i:j] = self" -- copy self first */
-			int ret;
-			value = array_slice(other, 0, needed);
-			if (value == NULL)
-				return -1;
-			ret = array_ass_subscr(self, item, value);
-			Py_DECREF(value);
-			return ret;
-		}
-	}
-	else if (PyLong_Check(value)) {
-		for (Py_ssize_t i = 0; start + i < stop; ++i)
-			setarrayitem(self, start + i, value);
-		return 0;
-	} else if (PySequence_Check(value)) {
-		needed = PySequence_Size(value);
-	}
-       	else {
-		PyErr_Format(PyExc_TypeError,
-	     "can only assign array (not \"%.200s\") to array slice",
-			     Py_TYPE(value)->tp_name);
-		return -1;
-	}
-	/* for 'a[2:1] = ...', the insertion point is 'start', not 'stop' */
-	if ((step > 0 && stop < start) ||
-	    (step < 0 && stop > start))
-		stop = start;
-
-	if (step != 1) {
-		PyErr_SetString(PyExc_BufferError, 
-			"Slice with step > 1 is not supported for type simuPOP.array.");
-		return -1;
-	}
-
-	if (slicelength != needed) {
-		PyErr_SetString(PyExc_BufferError, 
-			"Slice size must match.");
-		return -1;
-	}
-	if (needed > 0) {
-		// copy sequence
-		if (is_carrayobject(value))
-			std::copy(other->ob_iter, other->ob_iter + stop - start, self->ob_iter + start);
-		else {
-			for (Py_ssize_t i = 0; start + i < stop; ++i)
-				setarrayitem(self, start + i, PySequence_GetItem(value, i));
-		}
-	}
-	return 0;
+	return array_ass_subscr_template<GenoIterator>(self, item, value);
 }
 
 static PyMappingMethods array_as_mapping = {
@@ -1544,7 +967,7 @@ static PyMappingMethods array_as_mapping = {
 
 PyObject * array_new(PyTypeObject * type, PyObject * args, PyObject * kwds)
 {
-	return NULL;
+	return array_new_template<GenoIterator>(type, args, kwds);
 }
 
 
@@ -1620,27 +1043,485 @@ static PyTypeObject Arraytype = {
 
 bool is_carrayobject(PyObject * op)
 {
-	return PyObject_TypeCheck(op, &Arraytype);
+	return is_carrayobject_template<GenoIterator>(op);
 }
 
 
 /// CPPONLY
 PyObject * newcarrayobject(GenoIterator begin, GenoIterator end)
 {
-	// create an object and copy data
-	arrayobject * op;
-
-	op = PyObject_New(arrayobject, &Arraytype);
-	if (op == NULL) {
-		PyObject_Del(op);
-		return PyErr_NoMemory();
-	}
-	//
-	op->ob_iter = begin;
-	Py_SIZE(op) = end - begin;
-	return (PyObject *)op;
+	return newcarrayobject_template<GenoIterator>(begin, end);
 }
 
+
+/** lineage array type does not work yet */
+
+typedef struct arrayobject_template<LineageIterator> arrayobject_lineage;
+
+bool is_carrayobject(PyObject * op);
+
+PyObject * newcarrayobject(LineageIterator begin, LineageIterator end);
+
+static PyObject *
+getarrayitem(PyObject * op, Py_ssize_t i)
+{
+	return getarrayitem_template<LineageIterator>(op, i);
+}
+
+
+/// CPPONLY
+static int
+setarrayitem(arrayobject * ap, int i, PyObject * v)
+{
+	return setarrayitem_template<LineageIterator>(ap, i, v);
+}
+
+/* Methods */
+
+static void
+array_dealloc(arrayobject * op)
+{
+	array_dealloc_template<LineageIterator>(op);
+}
+
+
+static PyObject *
+array_richcompare(PyObject * v, PyObject * w, int op)
+{
+	return array_richcompare_template<LineageIterator>(v, w, op);
+
+}
+
+
+static Py_ssize_t
+array_length(arrayobject * a)
+{
+	return array_length_template<LineageIterator>(a);
+}
+
+
+static PyObject *
+array_item(arrayobject * a, Py_ssize_t i)
+{
+	return array_item_template<LineageIterator>(a);
+}
+
+
+static PyObject *
+array_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh)
+{
+	return array_slice_template<LineageIterator>(a, ilow, ihigh);
+}
+
+
+static int
+array_ass_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh, PyObject * v)
+{
+	return array_ass_slice_template<LineageIterator>(a, ilow, ihigh, v);
+}
+
+
+static int
+array_ass_item(arrayobject * a, Py_ssize_t i, PyObject * v)
+{
+	return array_ass_item_template<LineageIterator>(a, i, v);
+}
+
+
+static PyObject *
+array_count(arrayobject * self, PyObject * v)
+{
+	return array_count_template<LineageIterator>(self, v);
+}
+
+
+PyDoc_STRVAR(count_doc,
+	"count(x)\n\
+\n\
+Return number of occurrences of x in the array."                     );
+
+static PyObject *
+array_index(arrayobject * self, PyObject * v)
+{
+	return array_index_template<LineageIterator>(self, v);
+}
+
+
+PyDoc_STRVAR(index_doc,
+	"index(x)\n\
+\n\
+Return index of first occurrence of x in the array."                     );
+
+static PyObject *
+array_tolist(arrayobject * self, PyObject * unused)
+{
+	return array_tolist_template<LineageIterator>(self, unused);
+}
+
+
+PyDoc_STRVAR(tolist_doc,
+	"tolist() -> list\n\
+\n\
+Convert array to an ordinary list with the same items."                             );
+
+
+static PyMethodDef array_methods[] = {
+	{ "count",	(PyCFunction)array_count,	METH_O,
+	  count_doc },
+	{ "index",	(PyCFunction)array_index,	METH_O,
+	  index_doc },
+	{ "tolist", (PyCFunction)array_tolist,	METH_NOARGS,
+	  tolist_doc },
+	{ NULL,		NULL }      /* sentinel */
+};
+
+static PyObject *
+array_repr(arrayobject * a)
+{
+	return array_repr_template<LineageIterator>(a);
+}
+
+
+static PySequenceMethods array_as_sequence = {
+	(lenfunc)array_length,                  /*sq_length*/
+	0,                                      /*sq_concat*/
+	0,                                      /*sq_repeat*/
+	(ssizeargfunc)array_item,               /*sq_item*/
+	0,                                      /*sq_slice*/
+	(ssizeobjargproc)array_ass_item,        /*sq_ass_item*/
+	0,					/*sq_ass_slice*/
+	0,                                      /*sq_contains*/
+	0,                                      /*sq_inplace_concat*/
+	0                                       /*sq_inplace_repeat*/
+};
+
+
+static PyObject*
+array_subscr(arrayobject* self, PyObject* item)
+{
+	return array_subscr_template<LineageIterator>(self, item);
+}
+
+
+static int
+array_ass_subscr(arrayobject* self, PyObject* item, PyObject* value)
+{
+	return array_ass_subscr_template<LineageIterator>(self, item, value);
+}
+
+static PyMappingMethods array_as_mapping = {
+	(lenfunc)array_length,
+	(binaryfunc)array_subscr,
+	(objobjargproc)array_ass_subscr
+};
+
+PyObject * array_new(PyTypeObject * type, PyObject * args, PyObject * kwds)
+{
+	return array_new_template<LineageIterator>(type, args, kwds);
+}
+
+
+PyDoc_STRVAR(arraytype_doc,
+	" \n\
+\n\
+Methods:\n\
+\n\
+append() -- append a new item to the end of the array\n\
+buffer_info() -- return information giving the current memory info\n\
+byteswap() -- byteswap all the items of the array\n\
+count() -- return number of occurrences of an object\n\
+extend() -- extend array by appending multiple elements from an iterable\n\
+fromfile() -- read items from a file object\n\
+fromlist() -- append items from the list\n\
+fromstring() -- append items from the string\n\
+index() -- return index of first occurrence of an object\n\
+insert() -- insert a new item into the array at a provided position\n\
+pop() -- remove and return item (default last)\n\
+remove() -- remove first occurrence of an object\n\
+reverse() -- reverse the order of the items in the array\n\
+tofile() -- write all items to a file object\n\
+tolist() -- return the array converted to an ordinary list\n\
+tostring() -- return the array converted to a string\n\
+\n\
+Attributes:\n\
+\n\
+itemsize -- the length in bytes of one array item\n\
+"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        );
+
+static PyTypeObject Arraytype = {
+	PyVarObject_HEAD_INIT(NULL, 0)
+	"simuPOP.array",
+	sizeof(arrayobject),
+	0,
+	(destructor)array_dealloc,                  /* tp_dealloc */
+	0,                                          /* tp_print */
+	0,                                          /* tp_getattr */
+	0,                                          /* tp_setattr */
+	0,                                          /* tp_reserved */
+	(reprfunc)array_repr,                       /* tp_repr */
+	0,                                          /* tp_as_number*/
+	&array_as_sequence,                         /* tp_as_sequence*/
+	&array_as_mapping,                          /* tp_as_mapping*/
+	0,                                          /* tp_hash */
+	0,                                          /* tp_call */
+	0,                                          /* tp_str */
+	PyObject_GenericGetAttr,                    /* tp_getattro */
+	0,                                          /* tp_setattro */
+	0,                                          /* tp_as_buffer*/
+	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
+	arraytype_doc,                              /* tp_doc */
+	0,                                          /* tp_traverse */
+	0,                                          /* tp_clear */
+	array_richcompare,                          /* tp_richcompare */
+	0,                                          /* tp_weaklistoffset */
+	0,                                          /* tp_iter */
+	0,                                          /* tp_iternext */
+	array_methods,                              /* tp_methods */
+	0,                                          /* tp_members */
+	0,                                          /* tp_getset */
+	0,                                          /* tp_base */
+	0,                                          /* tp_dict */
+	0,                                          /* tp_descr_get */
+	0,                                          /* tp_descr_set */
+	0,                                          /* tp_dictoffset */
+	0,                                          /* tp_init */
+	PyType_GenericAlloc,                        /* tp_alloc */
+	array_new,                                  /* tp_new */
+	PyObject_Del,                               /* tp_free */
+};
+
+
+bool is_carrayobject(PyObject * op)
+{
+	return is_carrayobject_template<LineageIterator>(op);
+}
+
+
+/// CPPONLY
+PyObject * newcarrayobject(LineageIterator begin, LineageIterator end)
+{
+	return newcarrayobject_template<LineageIterator>(begin, end);
+}
+
+
+typedef struct
+{
+	PyDictObject dict;
+} defdictobject;
+
+//static PyTypeObject defdict_type; /* Forward */
+
+PyDoc_STRVAR(defdict_missing_doc,
+	"__missing__(key) # Called by __getitem__ for missing key; pseudo-code:\n\
+  Return 0\n\
+"                                                                                             );
+
+static PyObject *
+defdict_missing(defdictobject * dd, PyObject * key)
+{
+	return PyInt_FromLong(0);
+}
+
+
+PyDoc_STRVAR(defdict_copy_doc, "D.copy() -> a shallow copy of D.");
+
+static PyObject *
+defdict_copy(defdictobject * dd)
+{
+	/* This calls the object's class.  That only works for subclasses
+	   whose class constructor has the same signature.  Subclasses that
+	   define a different constructor signature must override copy().
+	 */
+	return PyObject_CallFunctionObjArgs((PyObject *)Py_TYPE(dd), Py_None, dd, NULL);
+}
+
+
+static PyObject *
+defdict_reduce(defdictobject * dd)
+{
+	/* __reduce__ must return a 5-tuple as follows:
+
+	   - additional state (here None)
+	   - sequence iterator (here None)
+	   - dictionary iterator (yielding successive (key, value) pairs
+
+	   This API is used by pickle.py and copy.py.
+	 */
+	PyObject * items;
+	PyObject * iter;
+	PyObject * result;
+
+	items = PyObject_CallMethod((PyObject *)dd, "items", "()");
+	if (items == NULL)
+		return NULL;
+	iter = PyObject_GetIter(items);
+	if (iter == NULL) {
+		Py_DECREF(items);
+		return NULL;
+	}
+	result = PyTuple_Pack(4, Py_TYPE(dd),
+		Py_None, Py_None, iter);
+	Py_DECREF(iter);
+	Py_DECREF(items);
+	return result;
+}
+
+
+static PyMethodDef defdict_methods[] = {
+	{ "__missing__", (PyCFunction)defdict_missing, METH_O,
+	  defdict_missing_doc },
+	{ "copy",		 (PyCFunction)defdict_copy,	   METH_NOARGS,
+	  defdict_copy_doc },
+	{ "__copy__",	 (PyCFunction)defdict_copy,	   METH_NOARGS,
+	  defdict_copy_doc },
+	{ "__reduce__",	 (PyCFunction)defdict_reduce,  METH_NOARGS,
+	  "" },
+	{ NULL }
+};
+
+static PyMemberDef defdict_members[] = {
+	{ NULL }
+};
+
+static void
+defdict_dealloc(defdictobject * dd)
+{
+	PyDict_Type.tp_dealloc((PyObject *)dd);
+}
+
+
+static PyObject *
+defdict_repr(defdictobject * dd)
+{
+	PyObject * baserepr;
+	PyObject * result;
+
+	baserepr = PyDict_Type.tp_repr((PyObject *)dd);
+	if (baserepr == NULL)
+		return NULL;
+	result = PyUnicode_FromFormat("defdict(%U)",
+		baserepr);
+	Py_DECREF(baserepr);
+	return result;
+}
+
+
+static int
+defdict_traverse(PyObject * self, visitproc visit, void * arg)
+{
+	return PyDict_Type.tp_traverse(self, visit, arg);
+}
+
+
+static int
+defdict_tp_clear(defdictobject * dd)
+{
+	return PyDict_Type.tp_clear((PyObject *)dd);
+}
+
+
+static int
+defdict_init(PyObject * self, PyObject * args, PyObject * kwds)
+{
+	return PyDict_Type.tp_init(self, args, kwds);
+}
+
+
+PyDoc_STRVAR(defdict_doc,
+	"defdict() --> dict with default value\n\
+\n\
+The default value is returned when an invalid key is used.\n\
+"                                                                                                                );
+
+/* See comment in xxsubtype.c */
+#  define DEFERRED_ADDRESS(ADDR) 0
+
+static PyTypeObject defdict_type = {
+	PyVarObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type),		   0)
+	"simuPOP.defaultdict",                                          /* tp_name */
+	sizeof(defdictobject),                                          /* tp_basicsize */
+	0,                                                              /* tp_itemsize */
+	/* methods */
+	(destructor)defdict_dealloc,                                    /* tp_dealloc */
+	0,                                                              /* tp_print */
+	0,                                                              /* tp_getattr */
+	0,                                                              /* tp_setattr */
+	0,                                                              /* tp_reserved */
+	(reprfunc)defdict_repr,                                         /* tp_repr */
+	0,                                                              /* tp_as_number */
+	0,                                                              /* tp_as_sequence */
+	0,                                                              /* tp_as_mapping */
+	0,                                                              /* tp_hash */
+	0,                                                              /* tp_call */
+	0,                                                              /* tp_str */
+	PyObject_GenericGetAttr,                                        /* tp_getattro */
+	0,                                                              /* tp_setattro */
+	0,                                                              /* tp_as_buffer */
+	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
+	/* tp_flags */
+	defdict_doc,                                                    /* tp_doc */
+	defdict_traverse,                                               /* tp_traverse */
+	(inquiry)defdict_tp_clear,                                      /* tp_clear */
+	0,                                                              /* tp_richcompare */
+	0,                                                              /* tp_weaklistoffset*/
+	0,                                                              /* tp_iter */
+	0,                                                              /* tp_iternext */
+	defdict_methods,                                                /* tp_methods */
+	defdict_members,                                                /* tp_members */
+	0,                                                              /* tp_getset */
+	DEFERRED_ADDRESS(&PyDict_Type),                                 /* tp_base */
+	0,                                                              /* tp_dict */
+	0,                                                              /* tp_descr_get */
+	0,                                                              /* tp_descr_set */
+	0,                                                              /* tp_dictoffset */
+	defdict_init,                                                   /* tp_init */
+	PyType_GenericAlloc,                                            /* tp_alloc */
+	0,                                                              /* tp_new */
+	PyObject_GC_Del,                                                /* tp_free */
+};
+
+bool is_defdict(PyTypeObject * type)
+{
+	return type == &defdict_type;
+}
+
+
+PyObject * PyDefDict_New()
+{
+	defdictobject * obj;
+
+	// This should call PyDict_Type.tp_new and create an object
+	obj = (defdictobject *)defdict_type.tp_new((PyTypeObject *)(&defdict_type), NULL, NULL);
+	if (obj == NULL) {
+		PyObject_Del(obj);
+		return PyErr_NoMemory();
+	}
+	// initialize this object (call PyDict_Type.tp_init)
+	PyObject * args = PyTuple_New(0);
+	PyDict_Type.tp_init((PyObject *)obj, args, NULL);
+	Py_DECREF(args);
+	return (PyObject *)obj;
+}
+
+
+int initCustomizedTypes(void)
+{
+	Py_TYPE(&Arraytype) = &PyType_Type;
+	if (PyType_Ready(&Arraytype) < 0)
+		return -1;
+	//
+	Py_TYPE(&defdict_type) = &PyType_Type;
+	defdict_type.tp_base = &PyDict_Type;
+
+	if (PyType_Ready(&defdict_type) < 0)
+		return -1;
+	//Py_INCREF(&defdict_type);
+	return 0;
+}
+
+
+
+/**  defdict type ******************************/
 
 typedef struct
 {
