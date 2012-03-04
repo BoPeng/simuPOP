@@ -991,6 +991,9 @@ void PyObj_As_IntArray(PyObject * obj, vectori & val);
 PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
 
 /// CPPONLY
+PyObject * Lineage_Vec_As_NumArray(LineageIterator begin, LineageIterator end);
+
+/// CPPONLY
 string PyObj_AsString(PyObject * str);
 
 // ///////////////////////////////////////////////////////

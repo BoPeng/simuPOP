@@ -844,7 +844,7 @@ pairu GenoStruTrait::chromLocusPair(size_t locus) const
 }
 
 
-string GenoStruTrait::alleleName(const UINT allele, const size_t locus) const
+string GenoStruTrait::alleleName(const ULONG allele, const size_t locus) const
 {
 	DBG_FAILIF(allele > ModuleMaxAllele,
 		IndexError, "Allele " + toStr(allele) + " out of range of 0 ~ " +

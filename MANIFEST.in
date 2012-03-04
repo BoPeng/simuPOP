@@ -42,7 +42,6 @@ include src/sandbox.h
 
 # source files
 include src/customizedTypes.c
-include src/customizedLineageTypes.c
 include src/customizedTemplates.cpp
 include src/utility.cpp
 include src/genoStru.cpp
