@@ -40,6 +40,7 @@ Individual & Individual::operator=(const Individual & rhs)
 	m_flags = rhs.m_flags;
 	setGenoPtr(rhs.genoPtr());
 	setInfoPtr(rhs.infoPtr());
+	LINEAGE_EXPR(setLineagePtr(rhs.lineagePtr()));
 	// also copy genoStru pointer...
 	this->setGenoStruIdx(rhs.genoStruIdx());
 	return *this;
@@ -55,6 +56,7 @@ Individual & Individual::copyFrom(const Individual & rhs)
 	copy(rhs.genoBegin(), rhs.genoEnd(), genoBegin());
 #endif
 	copy(rhs.infoBegin(), rhs.infoEnd(), infoBegin());
+	LINEAGE_EXPR(copy(rhs.lineageBegin(), rhs.lineageEnd(), lineageBegin()));
 	// also copy genoStru pointer...
 	this->setGenoStruIdx(rhs.genoStruIdx());
 	return *this;
@@ -80,6 +82,12 @@ bool Individual::operator==(const Individual & rhs) const
 	for (size_t i = 0, iEnd = genoSize(); i < iEnd; ++i)
 		if (*(m_genoPtr + i) != *(rhs.m_genoPtr + i))
 			return false;
+
+#ifdef LINEAGE
+	for (size_t i = 0, iEnd = genoSize(); i < iEnd; ++i)
+		if (*(m_lineagePtr + i) != *(rhs.m_lineagePtr + i))
+			return false;
+#endif
 
 	for (size_t i = 0, iEnd = infoSize(); i < iEnd; ++i)
 		if (*(m_infoPtr + i) != *(rhs.m_infoPtr + i)) {
@@ -133,22 +141,22 @@ bool Individual::validIndex(size_t /* idx */, size_t p, size_t ch) const
 }
 
 
-UINT Individual::allele(size_t idx, ssize_t p, ssize_t chrom) const
+ULONG Individual::allele(size_t idx, ssize_t p, ssize_t chrom) const
 {
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
 		"A valid ploidy index has to be specified if chrom is non-positive");
 	if (p < 0) {
 		CHECKRANGEGENOSIZE(idx);
-		return static_cast<UINT>(*(m_genoPtr + idx));
+		return static_cast<ULONG>(*(m_genoPtr + idx));
 	} else if (chrom < 0) {
 		CHECKRANGEABSLOCUS(idx);
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
-		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci()));
+		return static_cast<ULONG>(*(m_genoPtr + idx + p * totNumLoci()));
 	} else {
 		CHECKRANGELOCUS(chrom, idx);
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
 		CHECKRANGECHROM(static_cast<size_t>(chrom));
-		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)));
+		return static_cast<ULONG>(*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)));
 	}
 }
 
@@ -316,6 +324,72 @@ mutantList Individual::mutants(const uintList & ply, const uintList & ch)
 
 #endif
 
+#ifdef LINEAGE
+PyObject * Individual::lineage(const uintList & ply, const uintList & ch)
+{
+	DBG_WARNIF(true, "The returned object of function Individual.lineage() is a special "
+		             "carray_lineage object that reflects the underlying genotype lineage of an individual. "
+		             "It will become invalid once the population changes. Please use "
+		             "list(ind.lineage()) if you would like to keep a copy of lineages");
+
+	size_t beginP = 0;
+	size_t endP = 0;
+	size_t beginCh = 0;
+	size_t endCh = 0;
+
+	if (ply.allAvail())
+		endP = ploidy();
+	else {
+		const vectoru & ploidys = ply.elems();
+		if (ploidys.empty()) {
+			Py_INCREF(Py_None);
+			return Py_None;
+		}
+		beginP = ploidys[0];
+		endP = ploidys[0];
+		CHECKRANGEPLOIDY(static_cast<size_t>(beginP));
+		for (size_t i = 1; i < ploidys.size(); ++i) {
+			CHECKRANGEPLOIDY(static_cast<size_t>(ploidys[i]));
+			if (beginP > ploidys[i])
+				beginP = ploidys[i];
+			if (endP < ploidys[i])
+				endP = ploidys[i];
+		}
+		++endP;
+	}
+	if (ch.allAvail())
+		endCh = numChrom();
+	else {
+		const vectoru & chroms = ch.elems();
+		if (chroms.empty()) {
+			Py_INCREF(Py_None);
+			return Py_None;
+		}
+		beginCh = chroms[0];
+		endCh = chroms[0];
+		CHECKRANGECHROM(static_cast<size_t>(beginCh));
+		for (size_t i = 1; i < chroms.size(); ++i) {
+			CHECKRANGECHROM(static_cast<size_t>(chroms[i]));
+			if (beginCh > chroms[i])
+				beginCh = chroms[i];
+			if (endCh < chroms[i])
+				endCh = chroms[i];
+		}
+		++endCh;
+	}
+
+	if (endP > beginP + 1) {
+		// has to be all chromosomes
+		DBG_FAILIF(beginCh != 0 || endCh != numChrom(), ValueError,
+			"If multiple ploidy are chosen, all chromosomes has to be chosen.");
+		return Lineage_Vec_As_NumArray(m_lineagePtr + beginP * totNumLoci(),
+			m_lineagePtr + endP * totNumLoci());
+	} else
+		return Lineage_Vec_As_NumArray(m_lineagePtr + beginP * totNumLoci() + chromBegin(beginCh),
+			m_lineagePtr + beginP * totNumLoci() + chromEnd(endCh - 1));
+}
+#endif
+
 // Fix me: This one has to optimize
 PyObject * Individual::genoAtLoci(const lociList & lociList)
 {
@@ -324,7 +398,7 @@ PyObject * Individual::genoAtLoci(const lociList & lociList)
 	if (isHaplodiploid() && sex() == MALE)
 		ply = 1;
 
-	vector<UINT> alleles;
+	vector<ULONG> alleles;
 
 	if (lociList.allAvail()) {
 
@@ -407,6 +481,26 @@ void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 	}
 }
 
+#ifdef LINEAGE
+void Individual::setLineage(long lineage, size_t idx, int p, int chrom)
+{
+	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
+		"A valid ploidy index has to be specified if chrom is non-positive");
+	if (p < 0) {
+		CHECKRANGEGENOSIZE(idx);
+		*(m_lineagePtr + idx) = lineage;
+	} else if (chrom < 0) {
+		CHECKRANGEABSLOCUS(idx);
+		CHECKRANGEPLOIDY(static_cast<size_t>(p));
+		*(m_lineagePtr + idx + p * totNumLoci()) = lineage;
+	} else {
+		CHECKRANGELOCUS(static_cast<size_t>(chrom), idx);
+		CHECKRANGEPLOIDY(static_cast<size_t>(p));
+		CHECKRANGECHROM(static_cast<size_t>(chrom));
+		*(m_lineagePtr + idx + p * totNumLoci() + chromBegin(chrom)) = lineage; 
+	}
+}
+#endif
 
 void Individual::setGenotype(const uintList & genoList, const uintList & ply, const uintList & ch)
 {
@@ -472,13 +566,22 @@ void Individual::swap(Individual & ind, bool swapContent)
 
 	if (swapContent) {
 		Allele tmp;
+		LINEAGE_EXPR(long tmpLineage);
 		for (size_t i = 0, iEnd = genoSize(); i < iEnd; i++) {
 			tmp = m_genoPtr[i];
 			m_genoPtr[i] = ind.m_genoPtr[i];
 			ind.m_genoPtr[i] = tmp;
 		}
+#ifdef LINEAGE
+		for (size_t i = 0, iEnd = genoSize(); i < iEnd; i++) {
+			tmpLineage = m_lineagePtr[i];
+			m_lineagePtr[i] = ind.m_lineagePtr[i];
+			ind.m_lineagePtr[i] = tmpLineage;
+		}
+#endif
 	} else {
 		std::swap(m_genoPtr, ind.m_genoPtr);
+		LINEAGE_EXPR(std::swap(m_lineagePtr, ind.m_lineagePtr));
 	}
 }
 
