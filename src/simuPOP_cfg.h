@@ -122,6 +122,12 @@ using std::string;
 
 #define toID(val)  (static_cast<size_t>((val) + 0.5))
 
+#ifdef LINEAGE
+#define LINEAGE_EXPR(expr) expr
+#else
+#define LINEAGE_EXPR(expr)
+#endif
+
 /// needed by the following typedefs
 #include <vector>
 using std::vector;
@@ -342,6 +348,8 @@ extern const unsigned char MaxTraitIndex;
 // if this is changed Info_Var_As_Numarray in utility.cpp also needs to be changed.
 typedef std::vector<double>::iterator InfoIterator;
 typedef std::vector<double>::const_iterator ConstInfoIterator;
+typedef std::vector<long>::iterator   LineageIterator;
+typedef std::vector<long>::const_iterator ConstLineageIterator;
 extern const size_t InvalidValue;
 
 // FIXME: I need a type that is 32 or 64 bit long depending on platform
@@ -557,7 +565,9 @@ namespace simuPOP {
 #define CHECKRANGEABSLOCUS(locus) DBG_FAILIF(locus >= totNumLoci(), IndexError, "absolute locus index (" + toStr(locus) + ") out of range of 0 ~ " + toStr(totNumLoci() - 1))
 #define CHECKRANGEGENOSIZE(p) DBG_FAILIF(p >= genoSize(), IndexError, "locus index  (" + toStr(p) + ") out of range of 0 ~ " + toStr(genoSize() - 1))
 #define CHECKRANGESUBPOPMEMBER(ind, sp) DBG_FAILIF(subPopSize(sp) > 0 && ind >= subPopSize(sp), IndexError, "individual index (" + toStr(ind) + ") out of range 0 ~" + toStr(subPopSize(sp) - 1) + " in subpopulation " + toStr(sp))
-#define CHECKRANGEIND(ind) DBG_FAILIF(ind >= popSize(), IndexError, "individual index (" + toStr(ind) + ") out of range of 0 ~ " + toStr(popSize() - 1))
-#define CHECKRANGEINFO(ind) DBG_FAILIF(ind >= infoSize(), IndexError, "info index (" + toStr(ind) + ") out of range of 0 ~ " + toStr(infoSize() - 1))
+#define CHECKRANGEIND(ind) DBG_FAILIF(ind >= popSize(), IndexError, "individual index (" + toStr(ind) + ") " \
+	+ (popSize() > 0 ? (" out of range of 0 ~ " + toStr(popSize() - 1)) : "invoked on a population without any individual."))
+#define CHECKRANGEINFO(ind) DBG_FAILIF(ind >= infoSize(), IndexError, "info index (" + toStr(ind) + ") " \
+    + (infoSize() > 0 ? (" out of range of 0 ~ " + toStr(infoSize() - 1)) : "invoked on a population without any information field."))
 }
 #endif

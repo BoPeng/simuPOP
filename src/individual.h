@@ -109,6 +109,9 @@ public:
 	Individual(const Individual & ind) :
 		GenoStruTrait(ind), m_flags(ind.m_flags),
 		m_genoPtr(ind.m_genoPtr),
+#ifdef LINEAGE
+		m_lineagePtr(ind.m_lineagePtr),
+#endif
 		m_infoPtr(ind.m_infoPtr)
 	{
 	}
@@ -126,6 +129,13 @@ public:
 		m_genoPtr = pos;
 	}
 
+#ifdef LINEAGE
+	/// CPPONLY set lineage pointer 
+	void setLineagePtr(LineageIterator pos)
+	{
+		m_lineagePtr = pos;
+	}
+#endif
 
 	/// CPPONLY set pointer to individual info
 	void setInfoPtr(InfoIterator pos)
@@ -150,6 +160,13 @@ public:
 		return m_genoPtr;
 	}
 
+#ifdef LINEAGE
+	/// CPPONLY pointer to lineage
+	LineageIterator lineagePtr() const
+	{
+		return m_lineagePtr;
+	}
+#endif
 
 	/// CPPONLY
 	InfoIterator infoPtr() const
@@ -170,7 +187,7 @@ public:
 	 *
 	 * <group>1-allele</group>
 	 */
-	UINT allele(size_t idx, ssize_t ploidy = -1, ssize_t chrom = -1) const;
+	ULONG allele(size_t idx, ssize_t ploidy = -1, ssize_t chrom = -1) const;
 
 
 	/** return the name of <tt>allele(idx, ploidy, chrom)</tt>. If idx is
@@ -188,6 +205,18 @@ public:
 	 */
 	void setAllele(Allele allele, size_t idx, int ploidy = -1, int chrom = -1);
 
+#ifdef LINEAGE
+	/** set lineage \e lineage to an ID, using its absolute index \e idx.
+	 *  If a ploidy \e ploidy and/or a chromosome indexes are given, \e idx is
+	 *  relative to the beginning of specified homologous copy of chromosomes
+	 *  (if \e chrom=-1) or the beginning of the specified homologous copy of
+	 *  specified chromosome (if \e chrom >= 0). <bf>This function is only
+	 *  available in modules with lineage allele type.</bf> 
+	 *  <group>1-allele</group>
+	 */
+	void setLineage(long lineage, size_t idx, int ploidy = -1, int chrom = -1);
+#endif
+
 	/** return an editable array (a \c carray object) that represents all
 	 *  alleles of an individual. If \e ploidy or \e chroms is given, only
 	 *  alleles on the specified chromosomes and homologous copy of chromosomes
@@ -201,6 +230,19 @@ public:
 	mutantList mutants(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
 
 #endif
+
+#ifdef LINEAGE
+	/** return an editable array (a \c carray_lineage object) that represents the
+	 *  lineages of all alleles of an individual. If \e ploidy or \e chroms is 
+	 *  given, only lineages on the specified chromosomes and homologous copy of 
+	 *  chromosomes will be returned. If multiple chromosomes are specified, 
+	 *  there should not be gaps between chromosomes. <bf>This function is only
+	 *  available in modules with lineage allele type.</bf>
+	 *  <group>2-genotype</group>
+	 */
+	PyObject * lineage(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
+#endif
+
 	/** CPPONLY
 	 *  Return a Python object with alleles at specified loci. This function
 	 *  is usually used to collect alleles to send to a user-provided function.
@@ -366,6 +408,19 @@ public:
 		return m_genoPtr + genoSize();
 	}
 
+#ifdef LINEAGE
+	/// CPPONLY start of lineage
+	LineageIterator lineageBegin() const
+	{
+		return m_lineagePtr;
+	}
+
+	/// CPPONLY end of lineage
+	LineageIterator lineageEnd() const
+	{
+		return m_lineagePtr + genoSize();
+	}
+#endif
 
 	/// CPPONLY start of allele of the pth set of chromosome
 	GenoIterator genoBegin(size_t p) const
@@ -383,6 +438,22 @@ public:
 		return m_genoPtr + (p + 1) * totNumLoci();
 	}
 
+#ifdef LINEAGE
+	/// CPPONLY start of lineage of the pth set of chromosome
+	LineageIterator lineageBegin(size_t p) const
+	{
+		CHECKRANGEPLOIDY(p);
+		return m_lineagePtr + p * totNumLoci();
+	}
+
+
+	/// CPPONLY end of lineage of the pth set of chromosome
+	LineageIterator lineageEnd(size_t p) const
+	{
+		CHECKRANGEPLOIDY(p);
+		return m_lineagePtr + (p + 1) * totNumLoci();
+	}
+#endif
 
 	/// CPPONLY start of allele of the pth set of chromosome, chrom ch
 	GenoIterator genoBegin(size_t p, size_t chrom) const
@@ -403,6 +474,26 @@ public:
 
 	}
 
+#ifdef LINEAGE
+	/// CPPONLY start of lineage of the pth set of chromosome, chrom ch
+	LineageIterator lineageBegin(size_t p, size_t chrom) const
+	{
+		CHECKRANGEPLOIDY(p);
+		CHECKRANGECHROM(chrom);
+		return m_lineagePtr + p * totNumLoci() + chromBegin(chrom);
+
+	}
+
+
+	/// CPPONLY end of lineage of the pth set of chromosome
+	LineageIterator lineageEnd(size_t p, size_t chrom) const
+	{
+		CHECKRANGEPLOIDY(p);
+		CHECKRANGECHROM(chrom);
+		return m_lineagePtr + p * totNumLoci() + chromEnd(chrom);
+
+	}
+#endif
 
 	/// CPPONLY start of info
 	InfoIterator infoBegin() const
@@ -507,6 +598,11 @@ protected:
 
 	/// pointer to genotype.
 	GenoIterator m_genoPtr;
+
+#ifdef LINEAGE
+	/// pointer to lineage.
+	LineageIterator m_lineagePtr;
+#endif
 
 	/// pointer to info
 	InfoIterator m_infoPtr;
@@ -1157,6 +1253,274 @@ private:
 typedef CombinedAlleleIterator<RawIndIterator> IndAlleleIterator;
 typedef CombinedAlleleIterator<ConstRawIndIterator> ConstIndAlleleIterator;
 
+#ifdef LINEAGE
+/* This is the lineageIterator version of the CombinedAlleleIterator. It cannot
+ * be derived from the previous template because of the use of lineage specific
+ * functions such as LineageBegin().
+ */
+template <typename T>
+class CombinedLineageIterator
+{
+public:
+	typedef std::forward_iterator_tag iterator_category;
+	typedef long value_type;
+	typedef long int difference_type;
+	typedef long & reference;
+	//typedef GenoIterator pointer;
+
+	CombinedLineageIterator()
+	{
+	}
+
+	CombinedLineageIterator(size_t shift, IndividualIterator<T> it,
+			LineageIterator ptr, LineageIterator ptrEnd, size_t size)
+		: m_useGappedIterator(true), m_valid(true), m_shift(shift),
+		m_ptr(ptr), m_ptrBegin(ptr), m_ptrEnd(ptrEnd), m_size(size), m_it(it),
+		// ignored
+		m_index(0), m_ploidy(0), m_chromType(0),
+		m_haplodiploid(false), m_p(0)
+	{
+		m_valid = m_ptr != m_ptrEnd;
+		m_ploidy = it->ploidy();
+	}
+
+
+	CombinedLineageIterator(size_t idx, IndividualIterator<T> it)
+		: m_useGappedIterator(false), m_valid(true), m_shift(),
+		m_ptr(), m_ptrBegin(), m_ptrEnd(), m_size(0), // belong to a previous one
+		m_it(it), m_index(idx), m_ploidy(0), m_chromType(0),
+		m_haplodiploid(false), m_p(0)
+	{
+		if (!it.valid()) {
+			m_valid = false;
+			return;
+		}
+
+		m_size = it->totNumLoci();
+		m_ploidy = it->ploidy();
+		m_haplodiploid = it->isHaplodiploid();
+		m_chromType = it->chromType(it->chromLocusPair(idx).first);
+		// we do not know anything about customized chromosome
+		// so we just assume it is autosome.
+		if (m_chromType == CUSTOMIZED)
+			m_chromType = AUTOSOME;
+		//
+		if (m_chromType == CHROMOSOME_Y) {
+			if (m_it->sex() == FEMALE) {
+				while (m_it.valid())
+					if ((++m_it)->sex() == MALE)
+						break;
+				m_valid = m_it.valid();
+			}
+			m_p = 1;
+		}
+	}
+
+
+	bool valid()
+	{
+		return m_valid;
+	}
+
+	IndividualIterator<T> individual()
+	{
+		if (m_useGappedIterator) {
+			int offset = (m_ptr - m_ptrBegin) / (m_size * m_ploidy);
+			return(m_it + offset);
+		} else {
+			return(m_it);
+		}
+	}
+
+	// this is the most important part!
+	long & operator *() const
+	{
+		if (m_useGappedIterator)
+			return *(m_ptr + m_shift);
+		else {
+			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
+			return *(m_it->lineageBegin() + m_index + m_p * m_size);
+		}
+	}
+
+
+	LineageIterator ptr()
+	{
+		if (m_useGappedIterator)
+			return m_ptr + m_shift;
+		else
+			return m_it->lineageBegin() + m_index + m_p * m_size;
+	}
+
+
+	void advance(IndividualIterator<T> & it, size_t & p, bool & valid)
+	{
+		DBG_ASSERT(valid, RuntimeError, "Can not advance invalid allele iterator");
+		if (m_chromType == AUTOSOME) {
+			++p;
+			if (p == m_ploidy) {
+				p = 0;
+				++it;
+				valid = it.valid();
+			}
+		} else if (m_chromType == CHROMOSOME_X) {
+			if (it->sex() == FEMALE) {
+				// X0 -> X1
+				if (p == 0)
+					++p;
+				// X1 -> X0 of next ind (male or female)
+				else {
+					p = 0;
+					++it;
+					valid = it.valid();
+				}
+			} else {
+				// male, no X1.
+				DBG_ASSERT(p == 0, SystemError,
+					"Male Individual only has the first homologous copy of chromosome X");
+				// next Individual, ploidy 0, sex does not matter.
+				++it;
+				valid = it.valid();
+			}
+		} else if (m_chromType == CHROMOSOME_Y) {
+			DBG_ASSERT(it->sex() == MALE, SystemError,
+				"There is no chromosome Y for FEMALE Individuals");
+			while ((++it).valid())
+				if (it->sex() == MALE)
+					break;
+			p = 1;
+			valid = it.valid();
+		} else if (m_chromType == MITOCHONDRIAL) {
+			// only the first homologous copy is valid
+			DBG_ASSERT(p == 0, SystemError, "Only the first homologous copy of mitochondrial DNA can be iterated.");
+			++ it;
+			valid = it.valid();
+		}
+	}
+
+
+	// return, then advance.
+	CombinedLineageIterator operator++(int)
+	{
+		// save current state
+		CombinedLineageIterator tmp(*this);
+
+		if (!valid())
+			return tmp;
+
+		if (m_useGappedIterator) {
+			m_ptr += m_size;
+			m_valid = m_ptr != m_ptrEnd;
+		} else {
+			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
+			advance(m_it, m_p, m_valid);
+		}
+		return tmp;
+	}
+
+
+	CombinedLineageIterator operator++()
+	{
+		if (!valid())
+			return *this;
+		if (m_useGappedIterator) {
+			m_ptr += m_size;
+			m_valid = m_ptr != m_ptrEnd;
+		} else {
+			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
+			advance(m_it, m_p, m_valid);
+		}
+		return *this;
+	}
+
+
+	CombinedLineageIterator & operator+=(difference_type diff)
+	{
+		if (!valid())
+			return *this;
+		if (m_useGappedIterator) {
+			m_ptr += diff * m_size;
+			if (m_ptr > m_ptrEnd)
+				m_ptr = m_ptrEnd;
+			m_valid = m_ptr != m_ptrEnd;
+		} else {
+			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
+			for (int i = 0; i < diff && m_valid; ++i)
+				advance(m_it, m_p, m_valid);
+		}
+		return *this;
+	}
+
+
+	CombinedLineageIterator operator+(difference_type diff)
+	{
+		CombinedLineageIterator tmp(*this);
+
+		if (!valid())
+			return tmp;
+
+		if (m_useGappedIterator) {
+			tmp.m_ptr += diff * m_size;
+			if (tmp.m_ptr > tmp.m_ptrEnd)
+				tmp.m_ptr = tmp.m_ptrEnd;
+			tmp.m_valid = tmp.m_ptr != tmp.m_ptrEnd;
+		} else {
+			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
+			for (int i = 0; i < diff && tmp.m_valid; ++i)
+				advance(tmp.m_it, tmp.m_p, tmp.m_valid);
+		}
+		return tmp;
+	}
+
+
+	bool operator!=(const CombinedLineageIterator & rhs)
+	{
+		if (m_useGappedIterator)
+			return m_ptr != rhs.m_ptr || m_shift != rhs.m_shift;
+		else {
+			//DBG_FAILIF(m_it.valid() && rhs.m_it.valid() &&
+			//	(m_ploidy != rhs.m_ploidy || m_size != rhs.m_size
+			//	|| m_chromType != rhs.m_chromType), ValueError,
+			//	"Iterator comparison fails");
+			return !(m_index == rhs.m_index && m_it == rhs.m_it &&
+			         (m_p == rhs.m_p || !m_it.valid() || !rhs.m_it.valid()));
+		}
+	}
+
+
+private:
+	///
+	bool m_useGappedIterator;
+	///
+	bool m_valid;
+	//
+	size_t m_shift;
+	//
+	LineageIterator m_ptr;
+	//
+	LineageIterator m_ptrBegin;
+	//
+	LineageIterator m_ptrEnd;
+	// genosize
+	size_t m_size;
+	//
+	// The second iteration method
+	// Individual iterator
+	IndividualIterator<T> m_it;
+	// index of the locus
+	size_t m_index;
+	// overall ploidy
+	size_t m_ploidy;
+	// chromosome type
+	size_t m_chromType;
+	//
+	bool m_haplodiploid;
+	// current ploidy, used in individualiterator
+	size_t m_p;
+};
+
+typedef CombinedLineageIterator<RawIndIterator> IndLineageIterator;
+#endif
 
 }
 
