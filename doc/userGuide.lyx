@@ -692,6 +692,13 @@ simuPOP provides three types of modules that use 1, 8 or 32/64 bits to store
 \end_layout
 
 \begin_layout Enumerate
+[NEW in simuPOP 1.0.7] simuPOP provides modules to store a large number of
+ rare variants in a compressed manner (the mutant module), and to store
+ origin of each allele so that it is easy to track allelic lineage during
+ evolution.
+\end_layout
+
+\begin_layout Enumerate
 The core of simuPOP is implemented in C++ which is heavily optimized for
  large-scale simulations.
  simuPOP can be executed in multiple threads with boosted performance on
@@ -1405,18 +1412,25 @@ Loading simuPOP modules
 \end_layout
 
 \begin_layout Subsection
-Short, long and binary modules and their optimized versions
+Short, long, binary, mutant and lineage modules and their optimized versions
 \end_layout
 
 \begin_layout Standard
-There are six flavors of the core simuPOP module: short, long and binary
- allele modules, and their optimized versions.
- The short allele modules use 8 bits to store each allele which limits the
+There are ten flavors of the core simuPOP module: short, long, binary, mutant,
+ and lineage allele modules, and their optimized versions.
+ 
+\end_layout
+
+\begin_layout Itemize
+The short allele modules use 8 bits to store each allele which limits the
  possible allele states to 256.
- This is enough most of the times but not so if you need to simulate models
- such as the infinite allele model.
- In those cases, you should use the long allele version of the modules,
- which use 32 or 64 bits for each allele and can have 
+ This is enough most of the times so this is the default module of simuPOP.
+\end_layout
+
+\begin_layout Itemize
+If you need to a large number of allele states, e.g.
+ the infinite allele model, you should use the long allele version of the
+ modules, which use 32 or 64 bits for each allele and can have 
 \begin_inset Formula $2^{32}$
 \end_inset
 
@@ -1424,12 +1438,34 @@ There are six flavors of the core simuPOP module: short, long and binary
 \begin_inset Formula $2^{64}$
 \end_inset
 
- possible allele states depending on your platform .
- On the other hand, if you would like to simulate a large number of binary
- (SNP) markers, binary libraries can save you a lot of RAM because they
- use 1 bit for each allele.
- Despite of differences in internal memory layout, all these modules have
- the same interface.
+ possible allele states depending on your platform.
+\end_layout
+
+\begin_layout Itemize
+If you would like to simulate a large number of binary (SNP) markers, binary
+ libraries can save you a lot of RAM because they use 1 bit for each allele.
+\end_layout
+
+\begin_layout Itemize
+If you are simulating long sequence regions with rare variants, you can
+ use the mutant module.
+ This module uses compression technology that ignores wildtype alleles and
+ is not efficient if you need to traverse all alleles frequently.
+ The maximum allele state is 255 for this module.
+\end_layout
+
+\begin_layout Itemize
+If you are interested in tracing the lineage of each allele (e.g.
+ the ID of individuals to whom the allele was introduced), you can use the
+ lineage module for which each allele is attached with information about
+ its origin.
+ The maximum allele state is 255 for this module.
+\end_layout
+
+\begin_layout Standard
+Despite of differences in internal memory layout, all these modules have
+ the same interface, although some functions behave differently in terms
+ of functionality and performance.
 \end_layout
 
 \begin_layout Standard
@@ -25123,6 +25159,87 @@ True
 LatexCommand lstinputlisting
 filename "log/debug.log"
 lstparams "caption={Turn on and off debug information during evolution.},label={debug}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Tracing allelic lineage
+\end_layout
+
+\begin_layout Standard
+Lineage of alleles consists of information such as the distribution of alleles
+ (how many people carry this allele, and the relationship between carriers)
+ and age of alleles (when the alleles are introduced to the population).
+ These information are important for the study of evolutionary history of
+ mutants.
+ They are not readily available for normal simulations, and even if you
+ can track the age when mutants are introduced, alleles in the present generatio
+n that are of the same type (Identity by Stat, IBS) do not necessarily have
+ the same ancestral origin (Identity by Decent, IBD).
+\end_layout
+
+\begin_layout Standard
+The lineage modules of simuPOP provides facilities to track allelic lineage.
+ More specific, it provides
+\end_layout
+
+\begin_layout Itemize
+Each allele is associated with an integer number that is used to store the
+ origin (e.g.
+ ID of the ancestor to which the allele was introduced) of the allele.
+\end_layout
+
+\begin_layout Itemize
+The origin and each allele is transmitted along with the allele during evolution.
+ New alleles will be introduced with their own origins, even if they share
+ the same states with the existing alleles.
+\end_layout
+
+\begin_layout Itemize
+Origin of alleles can be accessed using member functions of the 
+\family typewriter
+Individual
+\family default
+ and 
+\family typewriter
+Population
+\family default
+ classes.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "geneticContribution"
+
+\end_inset
+
+ demonstrates how to determine the contribution of genetic information from
+ each ancestor.
+ For this simulation, the alleles of each ancestor are associated with individua
+l-specific numbers.
+ This is achieved by assigning an ID to each ancestor, and use the IDs to
+ tag each allele these IDs.
+ During evolution, some alleles might get lost, some are copied, and pieces
+ of chromosomes are mixed due to genetic recombination.
+ At the end of simulation, the average number of 'contributors' of genetic
+ information to each individual is calculated, as well as the percent of
+ genetic information from each ancestor.
+ Although this particular simulation can be mimicked using pure-genotype
+ simulations by using special alleles for each ancestor, the combined informatio
+n regarding the state and origin of each allele will be very useful for
+ genetic studies that involves IBD and IBS.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/geneticContribution.log"
+lstparams "caption={Contribution of genetic information from ancestors },label={geneticContribution}"
 
 \end_inset
 
