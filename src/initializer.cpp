@@ -163,10 +163,12 @@ InitGenotype::InitGenotype(const vectorf & freq,
 	const uintList & ploidy,
 	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops,
-	const stringList & infoFields)
+	const stringList & infoFields,
+	const string & lineageField)
 	: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 	m_freq(freq), m_genotype(genotype.elems()), m_prop(prop),
-	m_haplotypes(haplotypes.elems()), m_loci(loci), m_ploidy(ploidy)
+	m_haplotypes(haplotypes.elems()), m_loci(loci), 
+	m_ploidy(ploidy), m_lineageField(lineageField)
 {
 	for (size_t i = 0; i < m_freq.size(); ++i)
 		PARAM_FAILIF(fcmp_lt(m_freq[i], 0) || fcmp_gt(m_freq[i], 1), ValueError,
@@ -306,6 +308,25 @@ bool InitGenotype::apply(Population & pop) const
 					}
 			}
 		}
+#ifdef LINEAGE
+#pragma omp parallel if(numThreads() > 1)
+		{
+#ifdef _OPENMP
+			IndIterator it = pop.indIterator(sp->subPop(), omp_get_thread_num());
+#else
+			IndIterator it = pop.indIterator(sp->subPop());
+#endif
+			bool assignLineage = ! m_lineageField.empty();
+			int idIdx = assignLineage ? pop.infoIdx(m_lineageField) : 0;
+
+			for (; it.valid(); ++it) {
+				long lineage = assignLineage ? toID(it->info(idIdx)) : 0;
+				for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) 
+					for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc) 
+						it->setLineage(lineage, *loc, static_cast<int>(*p));
+			}			
+		}
+#endif // LINEAGE
 		pop.deactivateVirtualSubPop(sp->subPop());
 	}
 	return true;
