@@ -189,7 +189,6 @@ public:
 	 */
 	ULONG allele(size_t idx, ssize_t ploidy = -1, ssize_t chrom = -1) const;
 
-
 	/** return the name of <tt>allele(idx, ploidy, chrom)</tt>. If idx is
 	 *  invalid (e.g. second homologus copy of chromosome Y), '_' is returned.
 	 *  <group>1-allele</group>
@@ -205,7 +204,19 @@ public:
 	 */
 	void setAllele(Allele allele, size_t idx, int ploidy = -1, int chrom = -1);
 
-	/** set lineage \e lineage to an ID, using its absolute index \e idx.
+	/** return the lineage of the allele at a locus, using its absolute index
+	 *  \e idx. If a ploidy \e ploidy and/or a chromosome indexes is given,
+	 *  \e idx is relative to the beginning of specified homologous copy of 
+	 *  chromosomes (if \e chrom=-1) or the beginning of the specified
+	 *  homologous copy of specified chromosome (if \e chrom >= 0). <bf>
+	 *  This function returns 0 for modules without lineage information.</bf>
+	 *
+	 * <group>1-allele</group>
+	 */
+	long alleleLineage(size_t idx, ssize_t ploidy = -1, ssize_t chrom = -1) const;
+
+
+	/** set lineage \e lineage to an allele, using its absolute index \e idx.
 	 *  If a ploidy \e ploidy and/or a chromosome indexes are given, \e idx is
 	 *  relative to the beginning of specified homologous copy of chromosomes
 	 *  (if \e chrom=-1) or the beginning of the specified homologous copy of
@@ -213,7 +224,7 @@ public:
 	 *  for modules without lineage information.</bf> 
 	 *  <group>1-allele</group>
 	 */
-	void setLineage(long lineage, size_t idx, int ploidy = -1, int chrom = -1);
+	void setAlleleLineage(long lineage, size_t idx, int ploidy = -1, int chrom = -1);
 
 	/** return an editable array (a \c carray object) that represents all
 	 *  alleles of an individual. If \e ploidy or \e chroms is given, only
@@ -253,6 +264,17 @@ public:
 	 *  <group>2-genotype</group>
 	 */
 	void setGenotype(const uintList & geno, const uintList & ploidy = uintList(), const uintList & chroms = uintList());
+
+	/** Fill the lineage of an individual using a list of IDs \e lineage.
+	 *  If parameters \e ploidy and/or \e chroms are specified, lineages will
+	 *  be copied to only all or specified chromosomes on selected homologous
+	 *  copies of chromosomes. \c lineage will be reused if its length is less than
+	 *  number of allelic lineage to be filled. <bf>This function does nothing
+	 *  for modules without lineage information.</bf> 
+	 *  <group>2-genotype</group>
+	 */
+	void setLineage(const uintList & lineage, const uintList & ploidy = uintList(), const uintList & chroms = uintList());
+
 
 	/** return the sex of an individual, \c 1 for male and \c 2 for female.
 	 * <group>3-sex</group>

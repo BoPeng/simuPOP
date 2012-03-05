@@ -161,6 +161,32 @@ ULONG Individual::allele(size_t idx, ssize_t p, ssize_t chrom) const
 }
 
 
+long Individual::alleleLineage(size_t idx, ssize_t p, ssize_t chrom) const
+{
+#ifdef LINEAGE	
+	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
+		"A valid ploidy index has to be specified if chrom is non-positive");
+	if (p < 0) {
+		CHECKRANGEGENOSIZE(idx);
+		return *(m_lineagePtr + idx);
+	} else if (chrom < 0) {
+		CHECKRANGEABSLOCUS(idx);
+		CHECKRANGEPLOIDY(static_cast<size_t>(p));
+		return *(m_lineagePtr + idx + p * totNumLoci());
+	} else {
+		CHECKRANGELOCUS(chrom, idx);
+		CHECKRANGEPLOIDY(static_cast<size_t>(p));
+		CHECKRANGECHROM(static_cast<size_t>(chrom));
+		return *(m_lineagePtr + idx + p * totNumLoci() + chromBegin(chrom));
+	}
+#else
+	(void) idx;
+	(void) p;
+	(void) chrom;
+	return 0;
+#endif
+}
+
 string Individual::alleleChar(size_t idx, ssize_t p, ssize_t chrom) const
 {
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
@@ -486,7 +512,7 @@ void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 	}
 }
 
-void Individual::setLineage(long lineage, size_t idx, int p, int chrom)
+void Individual::setAlleleLineage(long lineage, size_t idx, int p, int chrom)
 {
 #ifdef LINEAGE
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
@@ -564,6 +590,55 @@ void Individual::setGenotype(const uintList & genoList, const uintList & ply, co
 
 		}
 	}
+}
+
+
+void Individual::setLineage(const uintList & lineageList, const uintList & ply, const uintList & ch)
+{
+#ifdef LINEAGE
+	const vectoru & lineage = lineageList.elems();
+
+	size_t sz = lineage.size();
+	size_t idx = 0;
+
+	vectoru ploidys = ply.elems();
+
+	if (ply.allAvail()) {
+		for (size_t i = 0; i < ploidy(); ++i)
+			ploidys.push_back(i);
+	} else {
+#ifndef OPTIMIZED
+		for (size_t i = 0; i < ploidys.size(); ++i) {
+			CHECKRANGEPLOIDY(static_cast<size_t>(ploidys[i]));
+		}
+#endif
+	}
+	vectoru chroms = ch.elems();
+	if (ch.allAvail()) {
+		for (size_t i = 0; i < numChrom(); ++i)
+			chroms.push_back(i);
+	} else {
+#ifndef OPTIMIZED
+		for (size_t i = 0; i < chroms.size(); ++i) {
+			CHECKRANGECHROM(static_cast<size_t>(chroms[i]));
+		}
+#endif
+	}
+	for (size_t i = 0; i < ploidys.size(); ++i) {
+		size_t p = ploidys[i];
+		for (size_t j = 0; j < chroms.size(); ++j) {
+			size_t chrom = chroms[j];
+			LineageIterator ptr = m_lineagePtr + p * totNumLoci() + chromBegin(chrom);
+
+			for (size_t i = 0; i < numLoci(chrom); i++, ++idx)
+				*(ptr + i) = static_cast<long>(lineage[idx % sz]);
+		}
+	}
+#else
+	(void) lineageList;
+	(void) ply;
+	(void) ch;
+#endif
 }
 
 

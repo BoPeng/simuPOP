@@ -323,7 +323,7 @@ bool InitGenotype::apply(Population & pop) const
 				long lineage = assignLineage ? toID(it->info(idIdx)) : 0;
 				for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) 
 					for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc) 
-						it->setLineage(lineage, *loc, static_cast<int>(*p));
+						it->setAlleleLineage(lineage, *loc, static_cast<int>(*p));
 			}			
 		}
 #endif // LINEAGE
