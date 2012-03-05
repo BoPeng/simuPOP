@@ -712,8 +712,9 @@ bool statNumOfSegSites::apply(Population & pop) const
 		// go through all loci
 #ifdef MUTANTALLELE
 		IndIterator ind = pop.indIterator(sp->subPop());
+		std::set<size_t> sites;
+		std::set<size_t> indFixedSitesPrev;
 		for (; ind.valid(); ++ind) {
-			std::set<size_t> indFixedSitesPrev;
 			std::set<size_t> indFixedSitesCurr;
 			GenoIterator it = ind->genoBegin();
 			GenoIterator it_end = ind->genoEnd();
@@ -722,24 +723,32 @@ bool statNumOfSegSites::apply(Population & pop) const
 			compressed_vector<Allele>::value_array_type::iterator value_it = it.getValueIterator();
 			size_t indIndex = it.getIndex();
 			for (; index_it != index_it_end; ++index_it, ++value_it) {
-				for (size_t idx = 0; idx < loci.size(); ++idx) {
-					if (*index_it == indIndex + loci[idx] && *value_it != 0) {
-						segSites.insert(loci[idx]);
-						indFixedSitesCurr.insert(loci[idx]);
-						break;
+				if (m_loci.allAvail()) {
+					size_t lociValue = *index_it - indIndex;
+					if (*value_it != 0 && lociValue < loci.size()) {
+						indFixedSitesCurr.insert(lociValue);
+					}
+				} else {
+					for (size_t idx = 0; idx < loci.size(); ++idx) {
+						if (*index_it == indIndex + loci[idx] && *value_it != 0) {
+							//sites.insert(loci[idx]);
+							indFixedSitesCurr.insert(loci[idx]);
+							break;
+						}
 					}
 				}
 			}
-
 			if (ind == pop.indIterator(sp->subPop()))
 				indFixedSitesPrev = indFixedSitesCurr;
-			else {
-				set_intersection(indFixedSitesCurr.begin(), indFixedSitesCurr.end(),
-					indFixedSitesPrev.begin(), indFixedSitesPrev.end(),
-					std::inserter(fixedSites, fixedSites.begin()));
-				indFixedSitesPrev = fixedSites;
-			}
+			sites.insert(indFixedSitesCurr.begin(), indFixedSitesCurr.end());
+			fixedSites.clear();
+			set_intersection(indFixedSitesCurr.begin(), indFixedSitesCurr.end(),
+				indFixedSitesPrev.begin(), indFixedSitesPrev.end(),
+				std::inserter(fixedSites, fixedSites.begin()));
+			indFixedSitesPrev = fixedSites;
 		}
+		set_difference(sites.begin(), sites.end(), fixedSites.begin(), fixedSites.end(),
+			std::inserter(segSites, segSites.begin()));
 
 #else
 		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
