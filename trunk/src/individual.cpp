@@ -324,9 +324,9 @@ mutantList Individual::mutants(const uintList & ply, const uintList & ch)
 
 #endif
 
-#ifdef LINEAGE
 PyObject * Individual::lineage(const uintList & ply, const uintList & ch)
 {
+#ifdef LINEAGE
 	DBG_WARNIF(true, "The returned object of function Individual.lineage() is a special "
 		             "carray_lineage object that reflects the underlying genotype lineage of an individual. "
 		             "It will become invalid once the population changes. Please use "
@@ -387,8 +387,13 @@ PyObject * Individual::lineage(const uintList & ply, const uintList & ch)
 	} else
 		return Lineage_Vec_As_NumArray(m_lineagePtr + beginP * totNumLoci() + chromBegin(beginCh),
 			m_lineagePtr + beginP * totNumLoci() + chromEnd(endCh - 1));
-}
+#else
+        (void) ply;
+        (void) ch;
+        Py_INCREF(Py_None);
+        return Py_None;
 #endif
+}
 
 // Fix me: This one has to optimize
 PyObject * Individual::genoAtLoci(const lociList & lociList)
@@ -481,9 +486,9 @@ void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 	}
 }
 
-#ifdef LINEAGE
 void Individual::setLineage(long lineage, size_t idx, int p, int chrom)
 {
+#ifdef LINEAGE
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
 		"A valid ploidy index has to be specified if chrom is non-positive");
 	if (p < 0) {
@@ -499,8 +504,13 @@ void Individual::setLineage(long lineage, size_t idx, int p, int chrom)
 		CHECKRANGECHROM(static_cast<size_t>(chrom));
 		*(m_lineagePtr + idx + p * totNumLoci() + chromBegin(chrom)) = lineage; 
 	}
-}
+#else
+    (void) lineage;
+    (void) idx;
+    (void) p;
+    (void) chrom;
 #endif
+}
 
 void Individual::setGenotype(const uintList & genoList, const uintList & ply, const uintList & ch)
 {

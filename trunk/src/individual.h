@@ -205,17 +205,15 @@ public:
 	 */
 	void setAllele(Allele allele, size_t idx, int ploidy = -1, int chrom = -1);
 
-#ifdef LINEAGE
 	/** set lineage \e lineage to an ID, using its absolute index \e idx.
 	 *  If a ploidy \e ploidy and/or a chromosome indexes are given, \e idx is
 	 *  relative to the beginning of specified homologous copy of chromosomes
 	 *  (if \e chrom=-1) or the beginning of the specified homologous copy of
-	 *  specified chromosome (if \e chrom >= 0). <bf>This function is only
-	 *  available in modules with lineage allele type.</bf> 
+	 *  specified chromosome (if \e chrom >= 0). <bf>This function does nothing
+	 *  for modules without lineage information.</bf> 
 	 *  <group>1-allele</group>
 	 */
 	void setLineage(long lineage, size_t idx, int ploidy = -1, int chrom = -1);
-#endif
 
 	/** return an editable array (a \c carray object) that represents all
 	 *  alleles of an individual. If \e ploidy or \e chroms is given, only
@@ -231,17 +229,15 @@ public:
 
 #endif
 
-#ifdef LINEAGE
 	/** return an editable array (a \c carray_lineage object) that represents the
 	 *  lineages of all alleles of an individual. If \e ploidy or \e chroms is 
 	 *  given, only lineages on the specified chromosomes and homologous copy of 
 	 *  chromosomes will be returned. If multiple chromosomes are specified, 
-	 *  there should not be gaps between chromosomes. <bf>This function is only
-	 *  available in modules with lineage allele type.</bf>
+	 *  there should not be gaps between chromosomes. <bf>A \c None object will be
+	 *  returned for modules without lineage information.</bf>
 	 *  <group>2-genotype</group>
 	 */
 	PyObject * lineage(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
-#endif
 
 	/** CPPONLY
 	 *  Return a Python object with alleles at specified loci. This function
