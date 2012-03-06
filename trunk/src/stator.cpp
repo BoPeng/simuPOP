@@ -731,7 +731,6 @@ bool statNumOfSegSites::apply(Population & pop) const
 				} else {
 					for (size_t idx = 0; idx < loci.size(); ++idx) {
 						if (*index_it == indIndex + loci[idx] && *value_it != 0) {
-							//sites.insert(loci[idx]);
 							indFixedSitesCurr.insert(loci[idx]);
 							break;
 						}
@@ -753,13 +752,23 @@ bool statNumOfSegSites::apply(Population & pop) const
 #else
 		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
 			size_t loc = loci[idx];
-			size_t siteCount = 0;
+			int isSeg = 2;
+			int isFixed = 2;
 			IndAlleleIterator a = pop.alleleIterator(loc, sp->subPop());
-			for (; a.valid(); ++a)
-				if (*a != 0) siteCount++;
-			if (siteCount == pop.subPopSize(sp->subPop()) * pop.ploidy())
+			Allele first = *a++;
+			if (first == 0)
+				isFixed = 0;
+			for (; a.valid(); ++a) {
+				if (*a != first) {
+					isSeg = 1;
+					isFixed = 0;
+				}
+				if (isSeg != 2 && isFixed != 2)	
+					break;
+			}
+			if (isFixed == 2)
 				fixedSites.insert((ULONG)loc);
-			else if (siteCount > 0)
+			else if (isSeg == 1)
 				segSites.insert((ULONG)loc);
 		}
 #endif
