@@ -31,6 +31,17 @@ using std::ostringstream;
 #include <set>
 using std::set;
 
+#if TR1_SUPPORT == 0
+#  include <map>
+typedef std::map<ULONG, pair<ULONG, ULONG> > IndexMap;
+#elif TR1_SUPPORT == 1
+#  include <unordered_map>
+typedef std::tr1::unordered_map<size_t, pair<size_t, size_t> > IndexMap;
+#else
+#  include <tr1/unordered_map>
+typedef std::tr1::unordered_map<size_t, pair<size_t, size_t> > IndexMap;
+#endif
+
 namespace simuPOP {
 
 string PyEval::describe(bool /* format */) const
@@ -712,10 +723,8 @@ bool statNumOfSegSites::apply(Population & pop) const
 		// go through all loci
 #ifdef MUTANTALLELE
 		IndIterator ind = pop.indIterator(sp->subPop());
-		std::set<size_t> sites;
-		std::set<size_t> indFixedSitesPrev;
+		IndexMap indexMap;
 		for (; ind.valid(); ++ind) {
-			std::set<size_t> indFixedSitesCurr;
 			GenoIterator it = ind->genoBegin();
 			GenoIterator it_end = ind->genoEnd();
 			compressed_vector<Allele>::index_array_type::iterator index_it = it.getIndexIterator();
@@ -726,28 +735,41 @@ bool statNumOfSegSites::apply(Population & pop) const
 				if (m_loci.allAvail()) {
 					size_t lociValue = *index_it - indIndex;
 					if (*value_it != 0 && lociValue < loci.size()) {
-						indFixedSitesCurr.insert(lociValue);
+						IndexMap::iterator map_it = indexMap.find(lociValue);
+						if (map_it  == indexMap.end()) {
+							indexMap.insert(IndexMap::value_type(lociValue, std::make_pair(*value_it, 1)));
+						} else {
+							if (map_it->second.first == *value_it) {
+								map_it->second.second++;
+								if (map_it->second.second == pop.subPopSize(sp->subPop()))
+									fixedSites.insert(lociValue);
+							}
+						}
 					}
 				} else {
 					for (size_t idx = 0; idx < loci.size(); ++idx) {
 						if (*index_it == indIndex + loci[idx] && *value_it != 0) {
-							indFixedSitesCurr.insert(loci[idx]);
+							IndexMap::iterator map_it = indexMap.find(loci[idx]);
+							if (map_it  == indexMap.end()) {
+								indexMap.insert(IndexMap::value_type(loci[idx], std::make_pair(*value_it, 1)));
+							} else {
+								if (map_it->second.first == *value_it) {
+									map_it->second.second++;
+									if (map_it->second.second == pop.subPopSize(sp->subPop()))
+										fixedSites.insert(loci[idx]);
+								}
+							}
 							break;
 						}
 					}
 				}
 			}
-			if (ind == pop.indIterator(sp->subPop()))
-				indFixedSitesPrev = indFixedSitesCurr;
-			sites.insert(indFixedSitesCurr.begin(), indFixedSitesCurr.end());
-			fixedSites.clear();
-			set_intersection(indFixedSitesCurr.begin(), indFixedSitesCurr.end(),
-				indFixedSitesPrev.begin(), indFixedSitesPrev.end(),
-				std::inserter(fixedSites, fixedSites.begin()));
-			indFixedSitesPrev = fixedSites;
 		}
-		set_difference(sites.begin(), sites.end(), fixedSites.begin(), fixedSites.end(),
-			std::inserter(segSites, segSites.begin()));
+
+		for (IndexMap::iterator map_it = indexMap.begin(); map_it != indexMap.end(); ++map_it) {
+			if (map_it->second.second != pop.subPopSize(sp->subPop()))
+				segSites.insert(map_it->first);
+		}
 
 #else
 		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
@@ -755,16 +777,21 @@ bool statNumOfSegSites::apply(Population & pop) const
 			int isSeg = 2;
 			int isFixed = 2;
 			IndAlleleIterator a = pop.alleleIterator(loc, sp->subPop());
-			Allele first = *a++;
-			if (first == 0)
-				isFixed = 0;
-			for (; a.valid(); ++a) {
-				if (*a != first) {
-					isSeg = 1;
+			if (a.valid()) {
+				Allele first = *a++;
+				if (first == 0)
 					isFixed = 0;
+				for (; a.valid(); ++a) {
+					if (*a != first) {
+						isSeg = 1;
+						isFixed = 0;
+					}
+					if (isSeg != 2 && isFixed != 2)	
+						break;
 				}
-				if (isSeg != 2 && isFixed != 2)	
-					break;
+			} else {
+				isSeg = 0;
+				isFixed = 0;
 			}
 			if (isFixed == 2)
 				fixedSites.insert((ULONG)loc);
