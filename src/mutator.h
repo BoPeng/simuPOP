@@ -86,6 +86,13 @@ public:
 	 *  between a large number of alleles and advanced models such as random
 	 *  emission of alleles.
 	 *
+	 *  If a valid information field is specified for parameter \e lineageField
+	 *  (default to \c ind_id) for modules with lineage allele type, the lineage
+	 *  of the mutated alleles will be the ID (stored in field \e linkageField)
+	 *  of individuals that harbor the mutated alleles. The lineage information
+	 *  will be transmitted along with the alleles so this feature allows you to
+	 *  track the source of mutants during evolution.
+	 *
 	 *  Some mutation models are context dependent. Namely, how an allele
 	 *  mutates will depend on its adjecent alleles. Whereas most simuPOP
 	 *  mutators are context independent, some of them accept a parameter
@@ -101,10 +108,11 @@ public:
 		int context = 0, const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = vectorstr())
+		const stringList & infoFields = vectorstr(),
+		const string & lineageField = "ind_id")
 		: BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_rates(rates.elems()), m_loci(loci), m_mapIn(mapIn), m_mapOut(mapOut),
-		m_context(context * 2)
+ 		m_lineageField(lineageField), m_context(context * 2)
 	{
 		// NOTE: empty rates is allowed because a mutator might be
 		// used in a mixed mutator.
@@ -188,6 +196,8 @@ protected:
 
 	const uintListFunc m_mapOut;
 
+	const string m_lineageField;
+
 	// Be careful about this variable, which is not constant.
 	mutable vectoru m_context;
 };
@@ -220,7 +230,7 @@ public:
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = vectorstr());
+		const stringList & infoFields = vectorstr(), const string & lineageField = "ind_id");
 
 	/// destructor.
 	~MatrixMutator()
@@ -273,9 +283,10 @@ public:
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
-		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
+		const intList & reps = intList(), const subPopList & subPops = subPopList(), 
+		const stringList & infoFields = vectorstr(), const string & lineageField = "ind_id")
 		: BaseMutator(rates, loci, mapIn, mapOut, 0, output, begin, end, step, at,
-		              reps, subPops, infoFields), m_k(k)
+		              reps, subPops, infoFields, lineageField), m_k(k)
 	{
 #ifndef BINARYALLELE
 		if (m_k > 1 && static_cast<ULONG>(m_k - 1) > ModuleMaxAllele)
@@ -354,7 +365,7 @@ public:
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = vectorstr());
+		const stringList & infoFields = vectorstr(), const string & lineageField = "ind_id");
 
 	~StepwiseMutator()
 	{
@@ -415,8 +426,10 @@ public:
 		PyObject * func = NULL, int context = 0, const uintListFunc & mapIn = uintListFunc(),
 		const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
-		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: BaseMutator(rates, loci, mapIn, mapOut, context, output, begin, end, step, at, reps, subPops, infoFields),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = vectorstr(), const string & lineageField = "ind_id")
+		: BaseMutator(rates, loci, mapIn, mapOut, context, output, begin, end, 
+				step, at, reps, subPops, infoFields, lineageField),
 		m_func(func)
 	{
 		DBG_ASSERT(m_func.isValid(), ValueError,
@@ -469,8 +482,10 @@ public:
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		int context = 0, const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
-		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: BaseMutator(rates, loci, mapIn, mapOut, context, output, begin, end, step, at, reps, subPops, infoFields),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = vectorstr(), const string & lineageField = "ind_id")
+		: BaseMutator(rates, loci, mapIn, mapOut, context, output, begin, end,
+				step, at, reps, subPops, infoFields, lineageField),
 		m_mutators(mutators), m_sampler()
 	{
 		DBG_FAILIF(m_mutators.size() != prob.size(), ValueError,
@@ -539,8 +554,10 @@ public:
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
-		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr())
-		: BaseMutator(rates, loci, mapIn, mapOut, 0, output, begin, end, step, at, reps, subPops, infoFields),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = vectorstr(), const string & lineageField = "ind_id")
+		: BaseMutator(rates, loci, mapIn, mapOut, 0, output, begin, end, 
+				step, at, reps, subPops, infoFields, lineageField),
 		m_mutators(mutators), m_contexts(contexts.elems())
 	{
 		if (m_contexts.size() != 0) {
@@ -605,9 +622,10 @@ public:
 		const uintList & inds = vectoru(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = 0,
-		const stringList & infoFields = vectorstr())
+		const stringList & infoFields = vectorstr(), const string & lineageField = "ind_id")
 		: BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
-		m_loci(loci), m_allele(allele), m_ploidy(ploidy.elems()), m_inds(inds.elems())
+		m_lineageField(lineageField), m_loci(loci), m_allele(allele), 
+		m_ploidy(ploidy.elems()), m_inds(inds.elems())
 	{
 	}
 
@@ -638,6 +656,8 @@ public:
 
 private:
 	/// applicable loci.
+	const string m_lineageField;
+
 	lociList m_loci;
 	Allele m_allele;
 	vectoru m_ploidy;
@@ -741,8 +761,8 @@ public:
 		const stringFunc & output = "",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = vectorstr()) :
-		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
+		const stringList & infoFields = vectorstr(), const string & lineageField = "ind_it") :
+		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields, lineageField),
 		m_rate(rate), m_ranges(ranges), m_model(model)
 	{
 		const matrixi & rngs = m_ranges.elems();

@@ -316,15 +316,16 @@ bool InitGenotype::apply(Population & pop) const
 #else
 			IndIterator it = pop.indIterator(sp->subPop());
 #endif
-			bool assignLineage = ! m_lineageField.empty();
-			int idIdx = assignLineage ? pop.infoIdx(m_lineageField) : 0;
+			if (pop.hasInfoField(m_lineageField)) {
+				int idIdx = pop.infoIdx(m_lineageField);
 
-			for (; it.valid(); ++it) {
-				long lineage = assignLineage ? toID(it->info(idIdx)) : 0;
-				for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) 
-					for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc) 
-						it->setAlleleLineage(lineage, *loc, static_cast<int>(*p));
-			}			
+				for (; it.valid(); ++it) {
+					long lineage = toID(it->info(idIdx));
+					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) 
+						for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc) 
+							it->setAlleleLineage(lineage, *loc, static_cast<int>(*p));
+				}
+			}
 		}
 #endif // LINEAGE
 		pop.deactivateVirtualSubPop(sp->subPop());
