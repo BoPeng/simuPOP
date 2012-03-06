@@ -93,6 +93,11 @@ bool BaseMutator::apply(Population & pop) const
 {
 	DBG_DO(DBG_MUTATOR, cerr << "Mutate replicate " << pop.rep() << endl);
 
+#ifdef LINEAGE
+	bool assignLineage = pop.hasInfoField(m_lineageField);
+	int lineageIdx = assignLineage ? pop.infoIdx(m_lineageField) : 0;
+#endif
+
 	// mapIn and mapOut
 	bool mapIn = !m_mapIn.empty() || m_mapIn.func().isValid();
 	vectoru const & mapInList = m_mapIn.elems();
@@ -142,12 +147,22 @@ bool BaseMutator::apply(Population & pop) const
 			size_t pos = bt.trialFirstSucc(i);
 			size_t lastPos = 0;
 			IndAlleleIterator ptr = pop.alleleIterator(locus, sp);
+			LINEAGE_EXPR(IndLineageIterator lineagePtr = pop.lineageIterator(locus, sp));
 			if (pos != Bernullitrials::npos) {
 				do {
+#ifdef LINEAGE
+					long lineage = 0;
+					if (assignLineage) {
+						lineagePtr += static_cast<IndLineageIterator::difference_type>(pos - lastPos);
+						lineage = toID(lineagePtr.individual()->info(lineageIdx));
+					}
+#endif
 					ptr += static_cast<IndAlleleIterator::difference_type>(pos - lastPos);
 					lastPos = pos;
 					if (!ptr.valid())
 						continue;
+					Allele alleleValue = *ptr;
+					(void) alleleValue; // suppress a warning for unused variable
 					DBG_DO(DBG_MUTATOR, cerr << "Allele " << int(*ptr) << " at locus " << locus);
 					if (mapIn) {
 						if (numMapInAllele > 0) {
@@ -171,7 +186,15 @@ bool BaseMutator::apply(Population & pop) const
 									static_cast<int>(*ptr)));
 						}
 					}
-					DBG_DO(DBG_MUTATOR, cerr << " is mutated to " << int(*ptr) << endl);
+					DBG_DO(DBG_MUTATOR, cerr << " is mutated from ");
+					DBG_DO(DBG_MUTATOR, cerr << int(alleleValue) << " to " << int(*ptr) << endl);
+#ifdef LINEAGE
+					if (assignLineage && alleleValue != *ptr) {
+						DBG_DO(DBG_MUTATOR, cerr << "Lineage updated from " << *lineagePtr);
+						DBG_DO(DBG_MUTATOR, cerr << " to " << lineage << endl);
+						*lineagePtr = lineage;
+					}
+#endif
 				} while ( (pos = bt.trialNextSucc(i, pos)) != Bernullitrials::npos);
 			}                                                                                           // succ.any
 		}
@@ -188,9 +211,10 @@ MatrixMutator::MatrixMutator(const floatMatrix & rate,
 	const stringFunc & output,
 	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops,
-	const stringList & infoFields)
+	const stringList & infoFields,
+	const string & idField)
 	: BaseMutator(vectorf(1, 0), loci, mapIn, mapOut, 0, output, begin, end, step,
-	              at, reps, subPops, infoFields)
+	              at, reps, subPops, infoFields, idField)
 {
 	matrixf rateMatrix = rate.elems();
 	// step 0, determine mu
@@ -270,8 +294,11 @@ StepwiseMutator::StepwiseMutator(const floatList & rates, const lociList & loci,
 	double incProb, UINT maxAllele, const floatListFunc & mutStep,
 	const uintListFunc & mapIn, const uintListFunc & mapOut, const stringFunc & output,
 	int begin, int end, int step, const intList & at,
-	const intList & reps, const subPopList & subPops, const stringList & infoFields)
-	: BaseMutator(rates, loci, mapIn, mapOut, 0, output, begin, end, step, at, reps, subPops, infoFields),
+	const intList & reps, const subPopList & subPops, 
+	const stringList & infoFields,
+	const string & idField)
+	: BaseMutator(rates, loci, mapIn, mapOut, 0, output, begin, end, 
+		step, at, reps, subPops, infoFields, idField),
 	m_incProb(incProb), m_maxAllele(maxAllele), m_mutStep(mutStep)
 {
 #ifdef BINARYALLELE
@@ -421,6 +448,11 @@ bool PointMutator::apply(Population & pop) const
 	subPopList::const_iterator sp = subPops.begin();
 	subPopList::const_iterator spEnd = subPops.end();
 
+#ifdef LINEAGE
+	bool assignLineage = pop.hasInfoField(m_lineageField);
+	int lineageIdx = assignLineage ? pop.infoIdx(m_lineageField) : 0;
+#endif
+
 	for (; sp != spEnd; ++sp) {
 		if (sp->isVirtual())
 			pop.activateVirtualSubPop(*sp);
@@ -431,9 +463,14 @@ bool PointMutator::apply(Population & pop) const
 			IndIterator ind = pop.indIterator(sp->subPop()) + static_cast<IndIterator::difference_type>(*it);
 			if (!ind.valid())
 				continue;
+			LINEAGE_EXPR(long lineage = assignLineage ? toID(ind->info(lineageIdx)) : 0);
 			for (size_t p = 0; p < m_ploidy.size(); ++p) {
 				if (m_loci.allAvail()) {
 					for (size_t i = 0; i < pop.totNumLoci(); ++i) {
+#ifdef LINEAGE
+						if (assignLineage && m_allele != ind->allele(i, static_cast<int>(m_ploidy[p])))
+								ind->setAlleleLineage(lineage, i, static_cast<int>(m_ploidy[p]));
+#endif
 						ind->setAllele(m_allele, i, static_cast<int>(m_ploidy[p]));
 						DBG_DO(DBG_MUTATOR,
 							cerr	<< "Mutate locus " << i << " at ploidy " << m_ploidy[p]
@@ -443,6 +480,10 @@ bool PointMutator::apply(Population & pop) const
 				} else {
 					const vectoru & loci = m_loci.elems(&pop);
 					for (size_t i = 0; i < loci.size(); ++i) {
+#ifdef LINEAGE
+						if (assignLineage && m_allele != ind->allele(loci[i], static_cast<int>(m_ploidy[p])))
+							ind->setAlleleLineage(lineage, loci[i], static_cast<int>(m_ploidy[p]));
+#endif
 						ind->setAllele(m_allele, loci[i], static_cast<int>(m_ploidy[p]));
 						DBG_DO(DBG_MUTATOR,
 							cerr	<< "Mutate locus " << loci[i] << " at ploidy " << m_ploidy[p]

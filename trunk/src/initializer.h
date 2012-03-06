@@ -184,9 +184,9 @@ public:
 	 *  If the length of a haplotype is not enough to fill all loci, the
 	 *  haplotype will be reused. If a list (or a single) haplotypes are
 	 *  specified without \e freq or \e prop, they are used with equal
-	 *  probability. If \e lineageFrom is set for modules with lineage
-	 *  information, allele lineage (source) will be set to IDs in the
-	 *  specified information field (usually \e ind_id).
+	 *  probability. For modules with lineage allele type, if individual IDs
+	 *  are assigned to a field \e lineageField (default to \c ind_id), its
+	 *  value will be saved as the lineage of modified alleles.
 	 *
 	 *  In the last case, if a sequence of genotype is specified, it will be
 	 *  uesd repeatedly to initialize all alleles sequentially. This works
@@ -201,7 +201,7 @@ public:
 		int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr(),
-		const string & lineageField = "");
+		const string & lineageField = "ind_id");
 
 
 	~InitGenotype()
