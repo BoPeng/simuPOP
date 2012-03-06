@@ -1343,6 +1343,9 @@ public:
 	IndividualIterator<T> individual()
 	{
 		if (m_useGappedIterator) {
+			// NOTE: this iterator is used only when indOrdered() is set to true for
+			// the whole population (see Population.lineageIterator()). It is therefore
+			// possible to get the index of individual from index of m_ptr.
 			int offset = (m_ptr - m_ptrBegin) / (m_size * m_ploidy);
 			return(m_it + offset);
 		} else {
