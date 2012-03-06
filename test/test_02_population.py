@@ -571,6 +571,19 @@ class TestPopulation(unittest.TestCase):
         pop.removeSubPops([(1,1), 2])
         self.assertEqual(pop.numSubPop(), 2)
         self.assertEqual(pop.subPopSizes(), (0, 0))
+        #
+        # test if allele lineage is correctly removed
+        if moduleInfo()['alleleType'] != 'lineage':
+            return
+        pop = Population([10]*10, loci=10)
+        pop.lineage()[:] = range(2000)
+        pop.removeSubPops(range(1, 10, 2))
+        # 0, 1, .... 20 | ... | 199
+        # removed 200 ... 399
+        # 400 ... 599
+        for sp in range(5):
+            for idx, ind in enumerate(pop.individuals(sp)):
+                self.assertEqual(ind.lineage(), range(200*2*sp + idx*20, 200*2*sp + idx*20 + 20))
         
     def testRemoveIndividuals(self):
         'Testing Population::removeIndividuals(inds)'
@@ -675,6 +688,17 @@ class TestPopulation(unittest.TestCase):
         pop.removeIndividuals(filter=lambda ind: ind.x in [3, 4])
         self.assertEqual(pop.popSize(), 5)
         self.assertEqual(pop.indInfo('x'), (1, 2, 2, 5, 2))
+        # test if allele lineage is correctly removed
+        if moduleInfo()['alleleType'] != 'lineage':
+            return
+        pop = Population([10]*10, loci=10)
+        pop.lineage()[:] = range(2000)
+        pop.removeIndividuals(range(0, 100,2))
+        lin = list(pop.lineage())
+        self.assertEqual(len(lin), 1000)
+        # the lineage of the remaining individuals are correctly handled
+        for idx,ind in enumerate(pop.individuals()):
+            self.assertEqual(ind.lineage(), range((idx*2+1)*20, (idx*2+2)*20))
 
     def testExtractSubPops(self):
         'Testing Population::extractSubPops()'
@@ -1563,12 +1587,12 @@ class TestPopulation(unittest.TestCase):
         if moduleInfo()['alleleType'] != 'lineage':
             return
         IdTagger().reset(1)
-        pop = Population(100, infoFields=['ind_id'], loci=10)
+        pop = Population(100, infoFields='ind_id', loci=10)
         tagID(pop)
         self.assertEqual(pop.lineage(), [0] * 2000)
         for ind in pop.allIndividuals():
             self.assertEqual(ind.lineage(), [0] * 20)
-        InitGenotype(freq=[0.5, 0.5]).apply(pop)
+        initGenotype(pop, freq=[0.5, 0.5])
         expLineage = [[x] * 20 for x in range(1, 101)]
         expLineage = list(item for iter_ in expLineage for item in iter_)
         # test lineage assignment in genotype initialization
@@ -1581,12 +1605,14 @@ class TestPopulation(unittest.TestCase):
         for ind in pop.allIndividuals():
             self.assertEqual(ind.lineage(), [ind.ind_id - 100] * 20)
         # mutate all the alleles
-        SNPMutator(u=1, v=1).apply(pop)
+        print 'begin'
+        snpMutate(pop, u=1, v=1)
         # test lineage assignment in mutation
         for ind in pop.allIndividuals():
             self.assertEqual(ind.lineage(), [ind.ind_id] * 20)
+        return
         # set the genotype to all 1's
-        InitGenotype(freq=[0, 1]).apply(pop)
+        initGenotype(pop, freq=[0, 1])
         # pretend that we advance a generation
         tagID(pop)
         # apply point mutation to all 0's
