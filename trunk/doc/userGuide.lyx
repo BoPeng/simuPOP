@@ -25222,8 +25222,6 @@ reference "geneticContribution"
  each ancestor.
  For this simulation, the alleles of each ancestor are associated with individua
 l-specific numbers.
- This is achieved by assigning an ID to each ancestor, and use the IDs to
- tag each allele these IDs.
  During evolution, some alleles might get lost, some are copied, and pieces
  of chromosomes are mixed due to genetic recombination.
  At the end of simulation, the average number of 'contributors' of genetic
