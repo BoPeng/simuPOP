@@ -56,6 +56,9 @@ Population::Population(const uintList & size,
 	m_subPopIndex(size.elems().size() + 1),
 	m_vspSplitter(NULL),
 	m_genotype(0),
+#ifdef LINEAGE
+	m_lineage(0),
+#endif
 	m_info(0),
 	m_inds(0),
 	m_ancestralGens(ancGen),
@@ -113,6 +116,9 @@ Population::Population(const Population & rhs) :
 	m_subPopIndex(rhs.m_subPopIndex),
 	m_vspSplitter(NULL),
 	m_genotype(0),
+#ifdef LINEAGE
+	m_lineage(0),
+#endif
 	m_info(0),
 	m_inds(0),
 	m_ancestralGens(rhs.m_ancestralGens),
@@ -128,6 +134,7 @@ Population::Population(const Population & rhs) :
 	try {
 		m_inds.resize(rhs.m_popSize);
 		m_genotype.resize(m_popSize * genoSize());
+		LINEAGE_EXPR(m_lineage.resize(m_popSize * genoSize()));
 		// have 0 length for mpi/non-head node
 		m_info.resize(rhs.m_popSize * infoSize());
 	} catch (...) {
@@ -147,7 +154,13 @@ Population::Population(const Population & rhs) :
 	size_t infoStep = infoSize();
 	size_t step = genoSize();
 	GenoIterator ptr = m_genotype.begin();
+#ifdef LINEAGE
+	LineageIterator lineagePtr = m_lineage.begin();
+	for (size_t i = 0; i < m_popSize; ++i, ptr += step, lineagePtr += step, infoPtr += infoStep) {
+		m_inds[i].setLineagePtr(lineagePtr);
+#else
 	for (size_t i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep) {
+#endif
 		m_inds[i].setGenoPtr(ptr);
 		m_inds[i].setInfoPtr(infoPtr);
 		m_inds[i].copyFrom(rhs.m_inds[i]);
@@ -166,6 +179,11 @@ Population::Population(const Population & rhs) :
 			const vector<Individual> & rinds = rp.m_inds;
 			GenoIterator lg = lp.m_genotype.begin();
 			ConstGenoIterator rg = rp.m_genotype.begin();
+#ifdef LINEAGE
+			LineageIterator llin = lp.m_lineage.begin();
+			ConstLineageIterator rlin = rp.m_lineage.begin();
+#endif
+
 			InfoIterator li = lp.m_info.begin();
 			ConstInfoIterator ri = rp.m_info.begin();
 
@@ -174,6 +192,7 @@ Population::Population(const Population & rhs) :
 			for (size_t i = 0; i < ps; ++i) {
 				linds[i].setGenoPtr(rinds[i].genoPtr() - rg + lg);
 				linds[i].setInfoPtr(rinds[i].infoPtr() - ri + li);
+				LINEAGE_EXPR(linds[i].setLineagePtr(rinds[i].lineagePtr() - rlin + llin));
 			}
 		}
 	} catch (...) {
@@ -200,6 +219,7 @@ void Population::popData::swap(Population & pop)
 	pop.m_subPopSize.swap(m_subPopSize);
 	pop.m_subPopNames.swap(m_subPopNames);
 	pop.m_genotype.swap(m_genotype);
+	LINEAGE_EXPR(pop.m_lineage.swap(m_lineage));
 	pop.m_info.swap(m_info);
 	pop.m_inds.swap(m_inds);
 	std::swap(pop.m_indOrdered, m_indOrdered);
@@ -533,7 +553,7 @@ IndAlleleIterator Population::alleleIterator(size_t locus, size_t subPop)
 	size_t ct = chromType(chromLocusPair(locus).first);
 	// this is a complex case
 	if (hasActivatedVirtualSubPop() || !indOrdered()
-	    || (ct != AUTOSOME && ct != CUSTOMIZED) || isHaplodiploid())
+	    || (ct != AUTOSOME && ct != CUSTOMIZED && ct != MITOCHONDRIAL) || isHaplodiploid())
 		// this is a complex case
 		return IndAlleleIterator(locus, indIterator(subPop));
 	else
@@ -542,6 +562,64 @@ IndAlleleIterator Population::alleleIterator(size_t locus, size_t subPop)
 			m_genotype.begin() + m_subPopIndex[subPop] * genoSize(),
 			m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize(),
 			totNumLoci());
+}
+
+#ifdef LINEAGE
+
+/// CPPONLY allele begin, for given subPop
+IndLineageIterator Population::lineageIterator(size_t locus, size_t subPop)
+{
+	CHECKRANGEABSLOCUS(locus);
+	CHECKRANGESUBPOP(subPop);
+
+	size_t ct = chromType(chromLocusPair(locus).first);
+	// this is a complex case
+	if (hasActivatedVirtualSubPop() || !indOrdered()
+	    || (ct != AUTOSOME && ct != CUSTOMIZED && ct != MITOCHONDRIAL) || isHaplodiploid())
+		// this is a complex case
+		return IndLineageIterator(locus, indIterator(subPop));
+	else
+		// this is a complex case
+		return IndLineageIterator(locus,
+			indIterator(subPop),
+			m_lineage.begin() + m_subPopIndex[subPop] * genoSize(),
+			m_lineage.begin() + m_subPopIndex[subPop + 1] * genoSize(),
+			totNumLoci());
+}
+#endif // LINEAGE
+
+PyObject * Population::lineage(vspID subPopID)
+{
+#ifdef LINEAGE
+	DBG_WARNIF(true, "The returned object of function Population.lineage() is a special "
+		             "carray_lineage object that reflects the underlying lineage of a "
+		             "population's alleles. It will become invalid once the population changes. "
+		             "Please use list(pop.lineage()) if you would like to keep a copy of lineages");
+
+	vspID vsp = subPopID.resolve(*this);
+
+	DBG_FAILIF(vsp.isVirtual(), ValueError,
+		"Function genotype currently does not support virtual subpopulation");
+	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+		"This operation is not allowed when there is an activated virtual subpopulation");
+
+	syncIndPointers();
+	if (!vsp.valid()) {
+		// directly expose values. Do not copy data over.
+		return Lineage_Vec_As_NumArray(m_lineage.begin(), m_lineage.end());
+	} else {
+		size_t subPop = vsp.subPop();
+		CHECKRANGESUBPOP(subPop);
+		// directly expose values. Do not copy data over.
+		return Lineage_Vec_As_NumArray(lineageBegin(subPop, true), lineageEnd(subPop, true));
+	}
+	Py_INCREF(Py_None);
+	return Py_None;
+#else
+	(void) subPopID;
+	Py_INCREF(Py_None);
+	return Py_None;
+#endif
 }
 
 
@@ -612,6 +690,48 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 }
 
 
+void Population::setLineage(const uintList & lineageList, vspID subPopID)
+{
+#ifdef LINEAGE
+	const vectoru & lineage = lineageList.elems();
+
+	vspID subPop = subPopID.resolve(*this);
+
+	syncIndPointers();
+	if (!subPop.valid()) {
+		LineageIterator ptr = m_lineage.begin();
+		size_t sz = lineage.size();
+		for (size_t i = 0; i < popSize() * genoSize(); ++i)
+			*(ptr++) = static_cast<long>(lineage[i % sz]);
+		return;
+	}
+
+	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+		"This operation is not allowed when there is an activated virtual subpopulation");
+
+	size_t sp = subPop.subPop();
+	CHECKRANGESUBPOP(sp);
+
+	size_t sz = lineage.size();
+	if (!subPop.isVirtual()) {
+		LineageIterator ptr = lineageBegin(sp, true);
+		for (size_t i = 0; i < subPopSize(sp) * genoSize(); ++i)
+			*(ptr++) = static_cast<long>(lineage[i % sz]);
+	} else {
+		activateVirtualSubPop(subPop);
+		IndIterator it = indIterator(sp);
+		size_t i = 0;
+		for (; it.valid(); ++it)
+			for (LineageIterator git = it->lineageBegin(); git != it->lineageEnd(); ++git, ++i)
+				*git = static_cast<long>(lineage[i % sz]);
+		deactivateVirtualSubPop(subPop.subPop());
+	}
+#else
+	(void) lineageList;
+	(void) subPopID;
+#endif
+}
+
 void Population::validate(const string & msg) const
 {
 #ifdef OPTIMIZED
@@ -658,6 +778,7 @@ void Population::fitSubPopStru(const vectoru & newSubPopSizes,
 			if (step != 0 && m_popSize > MaxIndexSize / step)
 				throw RuntimeError("Population size times number of loci exceed maximum index size.");
 			m_genotype.resize(m_popSize * step);
+			LINEAGE_EXPR(m_lineage.resize(m_popSize * step));
 			m_info.resize(m_popSize * is);
 			m_inds.resize(m_popSize);
 		} catch (...) {
@@ -678,7 +799,13 @@ void Population::fitSubPopStru(const vectoru & newSubPopSizes,
 		// reset individual pointers
 		InfoIterator infoPtr = m_info.begin();
 		GenoIterator ptr = m_genotype.begin();
+#ifdef LINEAGE
+		LineageIterator lineagePtr = m_lineage.begin();
+		for (size_t i = 0; i < m_popSize; ++i, ptr += step, infoPtr += is, lineagePtr += step) {
+			m_inds[i].setLineagePtr(lineagePtr);
+#else
 		for (size_t i = 0; i < m_popSize; ++i, ptr += step, infoPtr += is) {
+#endif
 			m_inds[i].setGenoPtr(ptr);
 			m_inds[i].setInfoPtr(infoPtr);
 			m_inds[i].setGenoStruIdx(genoStruIdx());
@@ -713,14 +840,22 @@ void Population::fitGenoStru(size_t stru)
 
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
-		if (oldSize != newSize)
+		if (oldSize != newSize) {
 			m_genotype.resize(newSize * popSize());
+			LINEAGE_EXPR(m_lineage.resize(newSize * popSize()));
+		}
 		if (oldInfoSize != newInfoSize)
 			m_info.resize(newInfoSize * popSize());
 		// reset structure
 		InfoIterator infoPtr = m_info.begin();
 		GenoIterator ptr = m_genotype.begin();
+#ifdef LINEAGE
+		LineageIterator lineagePtr = m_lineage.begin();
+		for (size_t i = 0; i < m_popSize; ++i, ptr += newSize, infoPtr += newInfoSize, lineagePtr += newSize) {
+			m_inds[i].setLineagePtr(lineagePtr);
+#else
 		for (size_t i = 0; i < m_popSize; ++i, ptr += newSize, infoPtr += newInfoSize) {
+#endif
 			m_inds[i].setGenoStruIdx(stru);
 			m_inds[i].setGenoPtr(ptr);
 			m_inds[i].setInfoPtr(infoPtr);
@@ -841,6 +976,7 @@ void Population::setSubPopByIndInfo(const string & field)
 #else
 		vectora newGenotype(genoSize() * newPopSize);
 #endif
+		LINEAGE_EXPR(vectori newLineage(genoSize() * newPopSize));
 		vectorf newInfo(newPopSize * infoSize());
 		vector<Individual> newInds(newPopSize);
 
@@ -849,17 +985,23 @@ void Population::setSubPopByIndInfo(const string & field)
 		size_t step = genoSize();
 		size_t infoStep = infoSize();
 		GenoIterator ptr = newGenotype.begin();
+#ifdef LINEAGE
+		LineageIterator lineagePtr = newLineage.begin();
+		for (size_t i = 0; i < newPopSize; ++i, ptr += step, ++it, lineagePtr += step, infoPtr += infoStep) {
+			newInds[i].setLineagePtr(lineagePtr);
+#else
 		for (size_t i = 0; i < newPopSize; ++i, ptr += step, ++it, infoPtr += infoStep) {
+#endif
 			newInds[i].setGenoStruIdx(genoStruIdx());
 			newInds[i].setGenoPtr(ptr);
 			newInds[i].setInfoPtr(infoPtr);
 			newInds[i].copyFrom(*it);                         // copy everything, with info value
 		}
-
 		// now, switch!
 		m_genotype.swap(newGenotype);
 		m_info.swap(newInfo);
 		m_inds.swap(newInds);
+		LINEAGE_EXPR(m_lineage.swap(newLineage));
 		m_popSize = newPopSize;
 		setIndOrdered(true);
 #ifdef MUTANTALLELE
@@ -958,6 +1100,10 @@ void Population::removeSubPops(const subPopList & subPops)
 	RawIndIterator newInd = m_inds.begin();
 	GenoIterator oldPtr = m_genotype.begin();
 	GenoIterator newPtr = m_genotype.begin();
+#ifdef LINEAGE
+	LineageIterator oldLineagePtr = m_lineage.begin();
+	LineageIterator newLineagePtr = m_lineage.begin();
+#endif
 	InfoIterator oldInfoPtr = m_info.begin();
 	InfoIterator newInfoPtr = m_info.begin();
 
@@ -976,6 +1122,7 @@ void Population::removeSubPops(const subPopList & subPops)
 			oldInd += spSize;
 			oldPtr += step * spSize;
 			oldInfoPtr += infoStep * spSize;
+			LINEAGE_EXPR(oldLineagePtr += step * spSize);
 		} else if (subPops.overlap(sp)) {
 			// partial removal
 			//
@@ -1000,14 +1147,17 @@ void Population::removeSubPops(const subPopList & subPops)
 						copy(oldPtr, oldPtr + step, newPtr);
 #endif
 						copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
+						LINEAGE_EXPR(copy(oldLineagePtr, oldLineagePtr + step, newLineagePtr));
 					}
 					++newInd;
 					newPtr += step;
 					newInfoPtr += infoStep;
+					LINEAGE_EXPR(newLineagePtr += step);
 				}
 				++oldInd;
 				oldPtr += step;
 				oldInfoPtr += infoStep;
+				LINEAGE_EXPR(oldLineagePtr += step);
 			}
 			//
 			new_size.push_back(newSize);
@@ -1027,6 +1177,7 @@ void Population::removeSubPops(const subPopList & subPops)
 #endif
 				copy(oldInd, oldInd + spSize, newInd);
 				copy(oldInfoPtr, oldInfoPtr + infoStep * spSize, newInfoPtr);
+				LINEAGE_EXPR(copy(oldLineagePtr, oldLineagePtr + step * spSize, newLineagePtr));
 			}
 			newInd += spSize;
 			newPtr += step * spSize;
@@ -1034,18 +1185,27 @@ void Population::removeSubPops(const subPopList & subPops)
 			oldInd += spSize;
 			oldPtr += step * spSize;
 			oldInfoPtr += infoStep * spSize;
+			LINEAGE_EXPR(newLineagePtr += step * spSize);
+			LINEAGE_EXPR(oldLineagePtr += step * spSize);
 		}
 	}
 	//
 	m_inds.erase(newInd, m_inds.end());
 	m_genotype.erase(newPtr, m_genotype.end());
 	m_info.erase(newInfoPtr, m_info.end());
+	LINEAGE_EXPR(m_lineage.erase(newLineagePtr, m_lineage.end()));
 	m_popSize = std::accumulate(new_size.begin(), new_size.end(), size_t(0));
 	setSubPopStru(new_size, new_spNames);
 	//
 	InfoIterator infoPtr = m_info.begin();
 	GenoIterator ptr = m_genotype.begin();
+#ifdef LINEAGE
+	LineageIterator lineagePtr = m_lineage.begin();
+	for (size_t i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep, lineagePtr += step) {
+		m_inds[i].setLineagePtr(lineagePtr);
+#else
 	for (size_t i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep) {
+#endif
 		m_inds[i].setGenoPtr(ptr);
 		m_inds[i].setInfoPtr(infoPtr);
 	}
@@ -1065,6 +1225,10 @@ void Population::removeMarkedIndividuals()
 	InfoIterator newInfoPtr = m_info.begin();
 	GenoIterator oldPtr = m_genotype.begin();
 	GenoIterator newPtr = m_genotype.begin();
+#ifdef LINEAGE
+	LineageIterator oldLineagePtr = m_lineage.begin();
+	LineageIterator newLineagePtr = m_lineage.begin();
+#endif
 	//
 	for (size_t sp = 0; sp < numSubPop(); ++sp) {
 		size_t newSize = 0;
@@ -1081,14 +1245,17 @@ void Population::removeMarkedIndividuals()
 					copy(oldPtr, oldPtr + step, newPtr);
 #endif
 					copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
+					LINEAGE_EXPR(copy(oldLineagePtr, oldLineagePtr + step, newLineagePtr));
 				}
 				++newInd;
 				newPtr += step;
 				newInfoPtr += infoStep;
+				LINEAGE_EXPR(newLineagePtr += step);
 			}
 			++oldInd;
 			oldPtr += step;
 			oldInfoPtr += infoStep;
+			LINEAGE_EXPR(oldLineagePtr += step);
 		}
 		new_size[sp] = newSize;
 	}
@@ -1096,6 +1263,7 @@ void Population::removeMarkedIndividuals()
 	m_inds.erase(newInd, m_inds.end());
 	m_genotype.erase(newPtr, m_genotype.end());
 	m_info.erase(newInfoPtr, m_info.end());
+	LINEAGE_EXPR(m_lineage.erase(newLineagePtr, m_lineage.end()));
 	m_popSize = std::accumulate(new_size.begin(), new_size.end(), size_t(0));
 	setSubPopStru(new_size, m_subPopNames);
 	//
@@ -1105,6 +1273,12 @@ void Population::removeMarkedIndividuals()
 		m_inds[i].setGenoPtr(ptr);
 		m_inds[i].setInfoPtr(infoPtr);
 	}
+#ifdef LINEAGE
+	LineageIterator lineagePtr = m_lineage.begin();
+	for (size_t i = 0; i < m_popSize; ++i, lineagePtr += step) {
+		m_inds[i].setLineagePtr(lineagePtr);
+	}
+#endif
 }
 
 
@@ -1268,6 +1442,10 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 	vectora new_genotype;
 	new_genotype.reserve(step * popSize());
 #endif
+#ifdef LINEAGE
+	vectori new_lineage;
+	new_lineage.reserve(step * popSize());
+#endif
 	new_inds.reserve(popSize());
 	new_info.reserve(infoStep * popSize());
 
@@ -1278,6 +1456,7 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 		// do not remove.
 		new_inds.insert(new_inds.end(), rawIndBegin(src), rawIndEnd(src));
 		new_genotype.insert(new_genotype.end(), genoBegin(src, true), genoEnd(src, true));
+		LINEAGE_EXPR(new_lineage.insert(new_lineage.end(), lineageBegin(src, true), lineageEnd(src, true)));
 
 		if (infoStep > 0)
 			new_info.insert(new_info.end(),
@@ -1292,6 +1471,7 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 	m_inds.swap(new_inds);
 	m_genotype.swap(new_genotype);
 	m_info.swap(new_info);
+	LINEAGE_EXPR(m_lineage.swap(new_lineage));
 	setSubPopStru(new_size, new_names);
 	//
 	InfoIterator infoPtr = m_info.begin();
@@ -1300,6 +1480,12 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 		m_inds[i].setGenoPtr(ptr);
 		m_inds[i].setInfoPtr(infoPtr);
 	}
+#ifdef LINEAGE
+	LineageIterator lineagePtr = m_lineage.begin();
+	for (size_t i = 0; i < m_popSize; ++i, lineagePtr += step) {
+		m_inds[i].setLineagePtr(lineagePtr);
+	}
+#endif
 	return sps[0];
 }
 
@@ -1328,6 +1514,10 @@ void Population::addChromFrom(const Population & pop)
 #endif
 		// append pop2 chromosomes to the first one
 		GenoIterator ptr = newGenotype.begin();
+#ifdef LINEAGE
+		vectori newLineage(genoSize() * m_popSize);
+		LineageIterator lineagePtr = newLineage.begin();
+#endif
 
 		size_t pEnd = ploidy();
 		for (size_t i = 0; i < m_popSize; ++i) {
@@ -1336,15 +1526,25 @@ void Population::addChromFrom(const Population & pop)
 			GenoIterator ptr1 = m_inds[i].genoPtr();
 			GenoIterator ptr2 = pop.m_inds[i].genoPtr();
 			m_inds[i].setGenoPtr(ptr);
+#ifdef LINEAGE
+			LineageIterator linPtr1 = m_inds[i].lineagePtr();
+			LineageIterator linPtr2 = pop.m_inds[i].lineagePtr();
+			m_inds[i].setLineagePtr(lineagePtr);
+#endif
 			for (size_t p = 0; p < pEnd; ++p) {
-				for (size_t j = 0; j < numLoci1; ++j)
+				for (size_t j = 0; j < numLoci1; ++j) {
 					*(ptr++) = *(ptr1++);
-				for (size_t j = 0; j < numLoci2; ++j)
-					*(ptr++) = *(ptr2++);
+					LINEAGE_EXPR(*(lineagePtr++) = *(linPtr1++));
+				}
+				for (size_t j = 0; j < numLoci2; ++j) {
+					*(ptr++) = *(ptr2++); 
+					LINEAGE_EXPR(*(lineagePtr++) = *(linPtr2++));
+				}
 			}
 
 		}
 		m_genotype.swap(newGenotype);
+		LINEAGE_EXPR(m_lineage.swap(newLineage));
 #ifdef MUTANTALLELE
 		// compressed_vectora must be setGenoPtr after swap
 		ptr = m_genotype.begin();
@@ -1379,6 +1579,7 @@ void Population::addIndFrom(const Population & pop)
 		m_inds.insert(m_inds.end(), pop.m_inds.begin(), pop.m_inds.end());
 		m_genotype.insert(m_genotype.end(), pop.m_genotype.begin(), pop.m_genotype.end());
 		m_info.insert(m_info.end(), pop.m_info.begin(), pop.m_info.end());
+		LINEAGE_EXPR(m_lineage.insert(m_lineage.end(), pop.m_lineage.begin(), pop.m_lineage.end()));
 		// iterators ready
 		InfoIterator infoPtr = m_info.begin();
 		size_t step = genoSize();
@@ -1390,6 +1591,12 @@ void Population::addIndFrom(const Population & pop)
 			m_inds[i].setGenoPtr(ptr);
 			m_inds[i].setInfoPtr(infoPtr);
 		}
+#ifdef LINEAGE
+		LineageIterator lineagePtr = m_lineage.begin();
+		for (size_t i = 0; i < m_popSize; ++i, lineagePtr += step) {
+			m_inds[i].setLineagePtr(lineagePtr);
+		}
+#endif
 		// rebuild index
 		m_subPopIndex.resize(numSubPop() + 1);
 		size_t j = 1;
@@ -1439,6 +1646,10 @@ void Population::addLociFrom(const Population & pop)
 #endif
 		// merge chromosome by chromosome
 		GenoIterator ptr = newGenotype.begin();
+#ifdef LINEAGE
+		vectori newLineage(genoSize() * m_popSize);
+		LineageIterator lineagePtr = newLineage.begin();
+#endif
 		size_t pEnd = ploidy();
 		size_t newSize = totNumLoci();
 		for (size_t i = 0; i < m_popSize; ++i) {
@@ -1448,16 +1659,27 @@ void Population::addLociFrom(const Population & pop)
 			GenoIterator ptr2 = pop.m_inds[i].genoPtr();
 			// new genotype
 			m_inds[i].setGenoPtr(ptr);
+#ifdef LINEAGE
+			m_inds[i].setLineagePtr(lineagePtr);
+			LineageIterator lineagePtr1 = m_inds[i].lineagePtr();
+			LineageIterator lineagePtr2 = pop.m_inds[i].lineagePtr();
+#endif
 			// copy each allele
 			for (size_t p = 0; p < pEnd; ++p) {
-				for (size_t i = 0; i < size1; ++i)
+				for (size_t i = 0; i < size1; ++i) {
 					ptr[indexes1[i]] = *(ptr1++);
-				for (size_t i = 0; i < size2; ++i)
+					LINEAGE_EXPR(lineagePtr[indexes1[i]] = *(lineagePtr1++));
+				}
+				for (size_t i = 0; i < size2; ++i) {
 					ptr[indexes2[i]] = *(ptr2++);
+					LINEAGE_EXPR(lineagePtr[indexes2[i]] = *(lineagePtr2++));
+				}
 				ptr += newSize;
+				LINEAGE_EXPR(lineagePtr += newSize);
 			}
 		}
 		m_genotype.swap(newGenotype);
+		LINEAGE_EXPR(m_lineage.swap(newLineage));
 #ifdef MUTANTALLELE
 		// compressed_vectora must be setGenoPtr after swap
 		ptr = m_genotype.begin();
@@ -1499,6 +1721,10 @@ void Population::addChrom(const floatList & lociPosList, const stringList & loci
 
 		// copy data over
 		GenoIterator newPtr = newGenotype.begin();
+#ifdef LINEAGE
+		vectori newLineage(newPopGenoSize, 0);
+		LineageIterator newLineagePtr = newLineage.begin();
+#endif
 
 		size_t pEnd = ploidy();
 		size_t gap = totNumLoci() - oldNumLoci;
@@ -1509,15 +1735,21 @@ void Population::addChrom(const floatList & lociPosList, const stringList & loci
 			GenoIterator oldPtr = m_inds[i].genoPtr();
 			// new genotype
 			m_inds[i].setGenoPtr(newPtr);
+			LINEAGE_EXPR(LineageIterator oldLineagePtr = m_inds[i].lineagePtr());
+			LINEAGE_EXPR(m_inds[i].setLineagePtr(newLineagePtr));
 			// copy each chromosome
 			for (size_t p = 0; p < pEnd; ++p) {
-				for (size_t i = 0; i < oldNumLoci; ++i)
+				for (size_t i = 0; i < oldNumLoci; ++i) {
 					*(newPtr++) = *(oldPtr++);
+					LINEAGE_EXPR(*(newLineagePtr++) = *(oldLineagePtr++));
+				}
 				newPtr += gap;
+				LINEAGE_EXPR(newLineagePtr += gap);
 			}
 
 		}
 		m_genotype.swap(newGenotype);
+		LINEAGE_EXPR(m_lineage.swap(newLineage));
 #ifdef MUTANTALLELE
 		// compressed_vectora must be setGenoPtr after swap
 		GenoIterator ptr = m_genotype.begin();
@@ -1571,6 +1803,10 @@ vectoru Population::addLoci(const uintList & chromList, const floatList & posLis
 #endif
 		// copy data over
 		GenoIterator newPtr = newGenotype.begin();
+#ifdef LINEAGE
+		vectori newLineage(newPopGenoSize, 0);
+		LineageIterator newLineagePtr = newLineage.begin();
+#endif
 		size_t pEnd = ploidy();
 		for (size_t i = 0; i < m_popSize; ++i) {
 			// set new geno structure
@@ -1578,15 +1814,21 @@ vectoru Population::addLoci(const uintList & chromList, const floatList & posLis
 			GenoIterator oldPtr = m_inds[i].genoPtr();
 			// new genotype
 			m_inds[i].setGenoPtr(newPtr);
+			LINEAGE_EXPR(LineageIterator oldLineagePtr = m_inds[i].lineagePtr());
+			LINEAGE_EXPR(m_inds[i].setLineagePtr(newLineagePtr));
 			// copy each chromosome
 			for (size_t p = 0; p < pEnd; ++p) {
 				vectoru::iterator loc = loci.begin();
-				for (; loc != loci.end(); ++loc)
+				for (; loc != loci.end(); ++loc) {
 					newPtr[*loc] = *(oldPtr++);
+					LINEAGE_EXPR(newLineagePtr[*loc] = *(oldLineagePtr++));
+				}
 				newPtr += totNumLoci();
+				LINEAGE_EXPR(newLineagePtr += totNumLoci());
 			}
 		}
 		m_genotype.swap(newGenotype);
+		LINEAGE_EXPR(m_lineage.swap(newLineage));
 #ifdef MUTANTALLELE
 		// compressed_vectora must be setGenoPtr after swap
 		GenoIterator ptr = m_genotype.begin();
@@ -1631,6 +1873,13 @@ void Population::resize(const uintList & sizeList, bool propagate)
 		// set pointers
 		newInds[i].setInfoPtr(infoPtr);
 	}
+#ifdef LINEAGE
+	vectori newLineage(genoSize() * newPopSize);
+	LineageIterator lineagePtr = newLineage.begin();
+	for (size_t i = 0; i < newPopSize; ++i, lineagePtr += step) {
+		newInds[i].setLineagePtr(lineagePtr);
+	}
+#endif
 	// copy stuff over
 	size_t startSP = 0;
 	for (size_t sp = 0; sp < numSubPop(); ++sp) {
@@ -1648,6 +1897,7 @@ void Population::resize(const uintList & sizeList, bool propagate)
 	m_genotype.swap(newGenotype);
 	m_info.swap(newInfo);
 	m_inds.swap(newInds);
+	LINEAGE_EXPR(m_lineage.swap(newLineage));
 	m_popSize = newPopSize;
 	setIndOrdered(true);
 	m_subPopSize = newSubPopSizes;
@@ -1694,6 +1944,7 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 #else
 	vectora new_genotype;
 #endif
+	LINEAGE_EXPR(vectori new_lineage);
 	vectorf new_info;
 
 	if (rearrange) {
@@ -1710,10 +1961,12 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 		new_inds.resize(sz);
 		new_genotype.resize(sz * step);
 		new_info.resize(sz * infoStep);
+		LINEAGE_EXPR(new_lineage.resize(sz * step));
 		//
 		RawIndIterator newInd = new_inds.begin();
 		GenoIterator newPtr = new_genotype.begin();
 		InfoIterator newInfoPtr = new_info.begin();
+		LINEAGE_EXPR(LineageIterator newLineagePtr = new_lineage.begin());
 
 		it = subPops.begin();
 		for (; it != itEnd; ++it) {
@@ -1727,9 +1980,11 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 				copy(oldInd->genoBegin(), oldInd->genoEnd(), newPtr);
 #endif
 				copy(oldInd->infoBegin(), oldInd->infoEnd(), newInfoPtr);
+				LINEAGE_EXPR(copy(oldInd->lineageBegin(), oldInd->lineageEnd(), newLineagePtr));
 				++newInd;
 				newPtr += step;
 				newInfoPtr += infoStep;
+				LINEAGE_EXPR(newLineagePtr += step);
 			}
 			deactivateVirtualSubPop(it->subPop());
 		}
@@ -1743,15 +1998,18 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 		new_inds.resize(sz);
 		new_genotype.resize(sz * step);
 		new_info.resize(sz * infoStep);
+		LINEAGE_EXPR(new_lineage.resize(sz * step));
 		//
 		RawIndIterator newInd = new_inds.begin();
 		GenoIterator newPtr = new_genotype.begin();
 		InfoIterator newInfoPtr = new_info.begin();
+		LINEAGE_EXPR(LineageIterator newLineagePtr = new_lineage.begin());
 
 		//
 		ConstRawIndIterator oldInd = m_inds.begin();
 		ConstGenoIterator oldPtr = m_genotype.begin();
 		ConstInfoIterator oldInfoPtr = m_info.begin();
+		LINEAGE_EXPR(ConstLineageIterator oldLineagePtr = m_lineage.begin());
 		for (size_t sp = 0; sp < numSubPop(); ++sp) {
 			size_t spSize = subPopSize(sp);
 			if (subPops.contains(sp)) {
@@ -1767,13 +2025,16 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 				copy(oldPtr, oldPtr + step * spSize, newPtr);
 #endif
 				copy(oldInfoPtr, oldInfoPtr + infoStep * spSize, newInfoPtr);
+				LINEAGE_EXPR(copy(oldLineagePtr, oldLineagePtr + step * spSize, newLineagePtr));
 
 				oldInd += spSize;
 				oldPtr += step * spSize;
 				oldInfoPtr += infoStep * spSize;
+				LINEAGE_EXPR(oldLineagePtr += step * spSize);
 				newInd += spSize;
 				newPtr += step * spSize;
 				newInfoPtr += infoStep * spSize;
+				LINEAGE_EXPR(newLineagePtr += step * spSize);
 			} else if (subPops.overlap(sp)) {
 				// partial copy
 				//
@@ -1797,13 +2058,16 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 						copy(oldPtr, oldPtr + step, newPtr);
 #endif
 						copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
+						LINEAGE_EXPR(copy(oldLineagePtr, oldLineagePtr + step, newLineagePtr));
 						++newInd;
 						newPtr += step;
 						newInfoPtr += infoStep;
+						LINEAGE_EXPR(newLineagePtr += step);
 					}
 					++oldInd;
 					oldPtr += step;
 					oldInfoPtr += infoStep;
+					LINEAGE_EXPR(oldLineagePtr += step);
 				}
 				//
 				new_size.push_back(newSize);
@@ -1814,6 +2078,7 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 				oldInd += spSize;
 				oldPtr += step * spSize;
 				oldInfoPtr += infoStep * spSize;
+				LINEAGE_EXPR(oldLineagePtr += step * spSize);
 			}
 		}
 	}
@@ -1821,10 +2086,12 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 	new_inds.resize(sz);
 	new_genotype.resize(sz * step);
 	new_info.resize(sz * infoStep);
+	LINEAGE_EXPR(new_lineage.resize(sz * step));
 	//
 	pop.m_inds.swap(new_inds);
 	pop.m_genotype.swap(new_genotype);
 	pop.m_info.swap(new_info);
+	LINEAGE_EXPR(pop.m_lineage.swap(new_lineage));
 	pop.m_popSize = sz;
 	pop.setSubPopStru(new_size, new_spNames);
 	//
@@ -1834,7 +2101,12 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 		pop.m_inds[i].setGenoPtr(ptr);
 		pop.m_inds[i].setInfoPtr(infoPtr);
 	}
-
+#ifdef LINEAGE
+	LineageIterator lineagePtr = pop.m_lineage.begin();
+	for (size_t i = 0; i < pop.m_popSize; ++i, lineagePtr += step) {
+		pop.m_inds[i].setLineagePtr(lineagePtr);
+	}
+#endif
 	return pop;
 }
 
@@ -1854,6 +2126,7 @@ Population & Population::extractMarkedIndividuals() const
 	size_t infoStep = infoSize();
 	ConstRawIndIterator oldInd = m_inds.begin();
 	ConstGenoIterator oldPtr = m_genotype.begin();
+	LINEAGE_EXPR(ConstLineageIterator oldLineagePtr = m_lineage.begin());
 	ConstInfoIterator oldInfoPtr = m_info.begin();
 
 	size_t sz = 0;
@@ -1869,10 +2142,12 @@ Population & Population::extractMarkedIndividuals() const
 #else
 	vectora new_genotype(sz * step);
 #endif
+	LINEAGE_EXPR(vectori new_lineage(sz * step));
 	vectorf new_info(sz * infoStep);
 
 	RawIndIterator newInd = new_inds.begin();
 	GenoIterator newPtr = new_genotype.begin();
+	LINEAGE_EXPR(LineageIterator newLineagePtr = new_lineage.begin());
 	InfoIterator newInfoPtr = new_info.begin();
 	//
 	for (size_t sp = 0; sp < numSubPop(); ++sp) {
@@ -1889,13 +2164,16 @@ Population & Population::extractMarkedIndividuals() const
 				copy(oldPtr, oldPtr + step, newPtr);
 #endif
 				copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
+				LINEAGE_EXPR(copy(oldLineagePtr, oldLineagePtr + step, newLineagePtr));
 				++newInd;
 				newPtr += step;
 				newInfoPtr += infoStep;
+				LINEAGE_EXPR(newLineagePtr += step);
 			}
 			++oldInd;
 			oldPtr += step;
 			oldInfoPtr += infoStep;
+			LINEAGE_EXPR(oldLineagePtr += step);
 		}
 		new_size.push_back(newSize);
 	}
@@ -1903,6 +2181,7 @@ Population & Population::extractMarkedIndividuals() const
 	pop.m_inds.swap(new_inds);
 	pop.m_genotype.swap(new_genotype);
 	pop.m_info.swap(new_info);
+	LINEAGE_EXPR(pop.m_lineage.swap(new_lineage));
 	pop.m_popSize = std::accumulate(new_size.begin(), new_size.end(), size_t(0));
 	pop.setSubPopStru(new_size, m_subPopNames);
 	//
@@ -1912,6 +2191,12 @@ Population & Population::extractMarkedIndividuals() const
 		pop.m_inds[i].setGenoPtr(ptr);
 		pop.m_inds[i].setInfoPtr(infoPtr);
 	}
+#ifdef LINEAGE
+	LineageIterator lineagePtr = pop.m_lineage.begin();
+	for (size_t i = 0; i < pop.m_popSize; ++i, lineagePtr += step) {
+		pop.m_inds[i].setLineagePtr(lineagePtr);
+	}
+#endif
 	return pop;
 }
 
@@ -2160,6 +2445,10 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 		vectora new_genotype;
 		new_genotype.reserve(size * step);
 #endif
+#ifdef LINEAGE
+		vectori new_lineage;
+		new_lineage.reserve(size * step);
+#endif
 		vectorf new_info;
 
 		new_inds.reserve(size);
@@ -2168,21 +2457,24 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 		if (!removeInd) {
 			new_inds.insert(new_inds.end(), m_inds.begin(), m_inds.end());
 			// handle genotype
-			if (!removeLoci)
+			if (!removeLoci) {
 				new_genotype.insert(new_genotype.end(), m_genotype.begin(), m_genotype.end());
-			else {
+				LINEAGE_EXPR(new_lineage.insert(new_lineage.end(), m_lineage.begin(), m_lineage.end()));
+			} else {
 				ConstRawIndIterator it = rawIndBegin();
 				ConstRawIndIterator it_end = rawIndEnd();
 				for (; it != it_end; ++it) {
 					GenoIterator ptr = it->genoBegin();
+					LINEAGE_EXPR(LineageIterator lineagePtr = it->lineageBegin());
 					for (size_t p = 0; p < pEnd; p += pStep) {
-						for (lociPtr = new_loci.begin(); lociPtr != lociEnd; ++lociPtr)
+						for (lociPtr = new_loci.begin(); lociPtr != lociEnd; ++lociPtr) {
 #ifdef MUTANTALLELE
 							new_genotype.push_back(newIdx++, *(ptr + *lociPtr + p));
 #else
 							new_genotype.push_back(*(ptr + *lociPtr + p));
 #endif
-
+							LINEAGE_EXPR(new_lineage.push_back(*(lineagePtr + *lociPtr + p)));
+						}
 					}
 				}
 			}
@@ -2208,11 +2500,14 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 				vectoru::iterator it_end = idx.end();
 				for (; it != it_end; ++it) {
 					new_inds.push_back(m_inds[*it]);
-					if (!removeLoci)
+					if (!removeLoci) {
 						new_genotype.insert(new_genotype.end(),
 							indGenoBegin(*it), indGenoEnd(*it));
-					else {
+						LINEAGE_EXPR(new_lineage.insert(new_lineage.end(),
+							indLineageBegin(*it), indLineageEnd(*it)));
+					} else {
 						GenoIterator ptr = indGenoBegin(*it);
+						LINEAGE_EXPR(LineageIterator lineagePtr = indLineageBegin(*it));
 						for (size_t p = 0; p < pEnd; p += pStep) {
 							for (lociPtr = new_loci.begin(); lociPtr != lociEnd; ++lociPtr)
 #ifdef MUTANTALLELE
@@ -2220,6 +2515,7 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 #else
 								new_genotype.push_back(*(ptr + *lociPtr + p));
 #endif
+								LINEAGE_EXPR(new_lineage.push_back(*(lineagePtr + *lociPtr + p)));
 						}
 					}
 					if (!removeInfo)
@@ -2250,6 +2546,12 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 			new_inds[i].setGenoPtr(ptr);
 			new_inds[i].setInfoPtr(infoPtr);
 		}
+#ifdef LINEAGE
+		vectori::iterator lineagePtr = new_lineage.begin();
+		for (size_t i = 0; i < size; ++i, lineagePtr += step) {
+			new_inds[i].setLineagePtr(lineagePtr);
+		}
+#endif
 		// the arrays are ready, are they?
 		DBG_ASSERT(new_inds.size() == size && (new_genotype.size() == size * step)
 			&& (new_info.size() == size * infoStep), SystemError,
@@ -2262,6 +2564,7 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 			pop.m_inds.swap(new_inds);
 			pop.m_genotype.swap(new_genotype);
 			pop.m_info.swap(new_info);
+			LINEAGE_EXPR(pop.m_lineage.swap(new_lineage));
 #ifdef MUTANTALLELE
 			// compressed_vectora must be setGenoPtr after swap
 			GenoIterator ptr = pop.m_genotype.begin();
@@ -2275,6 +2578,7 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 			pd.m_subPopSize.swap(spSizes);
 			pd.m_genotype.swap(new_genotype);
 			pd.m_info.swap(new_info);
+			LINEAGE_EXPR(pd.m_lineage.swap(new_lineage));
 			pd.m_inds.swap(new_inds);
 #ifdef MUTANTALLELE
 			// compressed_vectora must be setGenoPtr after swap
@@ -2338,22 +2642,32 @@ void Population::removeLoci(const lociList & removeList, const lociList & keepLi
 #endif
 		// copy data over
 		GenoIterator newPtr = newGenotype.begin();
+#ifdef LINEAGE
+		vectori newLineage(genoSize() * m_popSize);
+		LineageIterator newLineagePtr = newLineage.begin();
+#endif
 		size_t pEnd = ploidy();
 		for (size_t i = 0; i < m_popSize; ++i) {
 			// set new geno structure
 			m_inds[i].setGenoStruIdx(genoStruIdx());
 			GenoIterator oldPtr = m_inds[i].genoPtr();
+			LINEAGE_EXPR(LineageIterator oldLineagePtr = m_inds[i].lineagePtr());
 			// new genotype
 			m_inds[i].setGenoPtr(newPtr);
+			LINEAGE_EXPR(m_inds[i].setLineagePtr(newLineagePtr));
 			for (size_t p = 0; p < pEnd; ++p) {
 				vectoru::iterator loc = kept.begin();
-				for (; loc != kept.end(); ++loc)
+				for (; loc != kept.end(); ++loc) {
 					// this line needs ordered kept array
-					*(newPtr++) = oldPtr[*loc];  //assginGenotype
+					*(newPtr++) = oldPtr[*loc];  //assignGenotype
+					LINEAGE_EXPR(*(newLineagePtr++) = oldLineagePtr[*loc]);  //assignLineage
+				}
 				oldPtr += oldTotNumLoci;
+				LINEAGE_EXPR(oldLineagePtr += oldTotNumLoci);
 			}
 		}
 		m_genotype.swap(newGenotype);
+		LINEAGE_EXPR(m_lineage.swap(newLineage));
 #ifdef MUTANTALLELE
 		// compressed_vectora must be setGenoPtr after swap
 		GenoIterator ptr = m_genotype.begin();
@@ -2557,6 +2871,7 @@ void Population::push(Population & rhs)
 	m_subPopIndex.swap(rhs.m_subPopIndex);
 	std::swap(m_vspSplitter, rhs.m_vspSplitter);
 	m_genotype.swap(rhs.m_genotype);
+	LINEAGE_EXPR(m_lineage.swap(rhs.m_lineage));
 	m_info.swap(rhs.m_info);
 	m_inds.swap(rhs.m_inds);
 	std::swap(m_indOrdered, rhs.m_indOrdered);
@@ -2827,6 +3142,7 @@ void Population::keepAncestralGens(const uintList & ancGens)
 				pd1.m_subPopSize.swap(pd.m_subPopSize);
 				pd1.m_subPopNames.swap(pd.m_subPopNames);
 				pd1.m_genotype.swap(pd.m_genotype);
+				LINEAGE_EXPR(pd1.m_lineage.swap(pd.m_lineage));
 				pd1.m_info.swap(pd.m_info);
 				pd1.m_inds.swap(pd.m_inds);
 				std::swap(pd1.m_indOrdered, pd.m_indOrdered);
@@ -2884,7 +3200,7 @@ void Population::useAncestralGen(ssize_t idx)
 
 
 //template<class Archive>
-void Population::save(boost::archive::text_oarchive & ar, const unsigned int /* version */) const
+void Population::save(boost::archive::text_oarchive & ar, const unsigned int version) const
 {
 	// deep adjustment: everyone in order
 	const_cast<Population *>(this)->syncIndPointers();
@@ -2918,6 +3234,17 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int /* 
 #else
 	ar & m_genotype;
 #endif
+	if (version > 0) {
+#ifdef LINEAGE
+		bool has_lineage = true;
+		DBG_DO(DBG_POPULATION, cerr << "Handling lineage" << endl);
+		ar & has_lineage;
+		ar & m_lineage;
+#else
+		bool has_lineage = false;
+		ar & has_lineage;
+#endif
+	}
 	DBG_DO(DBG_POPULATION, cerr << "Handling information" << endl);
 	ar & m_info;
 	DBG_DO(DBG_POPULATION, cerr << "Handling Individuals" << endl);
@@ -2949,6 +3276,17 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int /* 
 #else
 		ar & m_genotype;
 #endif
+		if (version > 0) {
+#ifdef LINEAGE
+			bool has_lineage = true;
+			ar & has_lineage;
+			ar & m_lineage;
+#else
+			bool has_lineage = false;
+			ar & has_lineage;
+#endif
+		}
+
 		ar & m_info;
 		ar & m_inds;
 	}
@@ -2963,7 +3301,7 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int /* 
 
 
 //template<class Archive>
-void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* version */)
+void Population::load(boost::archive::text_iarchive & ar, const unsigned int version)
 {
 	size_t ma;
 	ar & ma;
@@ -3060,7 +3398,23 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 #  endif
 	}
 #endif
-
+	if (version > 0) {
+		bool has_lineage;
+		ar & has_lineage;
+#ifdef LINEAGE
+		if (has_lineage) {
+			DBG_DO(DBG_POPULATION, cerr << "Handling lineage" << endl);
+			ar & m_lineage;
+		} else {
+			m_lineage.resize(m_popSize * genoSize());
+		}
+#else
+		if (has_lineage) {
+			vectori lineage;
+			ar & lineage;
+		}
+#endif
+	}
 	DBG_DO(DBG_POPULATION, cerr << "Handling info" << endl);
 	ar & m_info;
 
@@ -3097,6 +3451,14 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 		m_inds[i].setGenoPtr(ptr);
 		m_inds[i].setInfoPtr(infoPtr);
 	}
+
+#ifdef LINEAGE
+	LineageIterator lineagePtr = m_lineage.begin();
+	for(size_t i = 0; i < m_popSize; ++i, lineagePtr += step) {
+		m_inds[i].setLineagePtr(lineagePtr);
+	}
+#endif
+
 	m_ancestralGens = 0;
 	m_ancestralPops.clear();
 
@@ -3189,6 +3551,23 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 #  endif
 		}
 #endif
+	if (version > 0) {
+		bool has_lineage;
+		ar & has_lineage;
+#ifdef LINEAGE
+		if (has_lineage) {
+			DBG_DO(DBG_POPULATION, cerr << "Handling lineage" << endl);
+			ar & pd.m_lineage;
+		} else {
+			pd.m_lineage.resize(pd.m_genotype.size());
+		}
+#else
+		if (has_lineage) {
+			vectori lineage;
+			ar & lineage;
+		}
+#endif
+	}
 		ar & pd.m_info;
 		ar & pd.m_inds;
 		// set pointer after copy this thing again (push_back)
@@ -3206,6 +3585,12 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int /* 
 			// set new genoStructure
 			inds[i].setGenoStruIdx(genoStruIdx());
 		}
+#ifdef LINEAGE
+		lineagePtr = p.m_lineage.begin();
+		for (size_t i = 0; i < ps; ++i, lineagePtr += step) {
+			inds[i].setLineagePtr(lineagePtr);
+		}
+#endif
 	}
 
 	// load vars from string
@@ -3351,6 +3736,11 @@ void Population::syncIndPointers(bool infoOnly) const
 		vectora tmpGenotype(m_popSize * genoSize());
 		vectora::iterator it = tmpGenotype.begin();
 #endif
+#ifdef LINEAGE
+		vectori tmpLineage(m_popSize * genoSize());
+		vectori::iterator lineagePtr = tmpLineage.begin();
+#endif
+
 		vectorf tmpInfo(m_popSize * infoSize());
 		vectorf::iterator infoPtr = tmpInfo.begin();
 
@@ -3365,9 +3755,11 @@ void Population::syncIndPointers(bool infoOnly) const
 			copy(ind->genoBegin(), ind->genoEnd(), it);
 #  endif
 #endif
-
+			LINEAGE_EXPR(copy(ind->lineageBegin(), ind->lineageEnd(), lineagePtr));
 			ind->setGenoPtr(it);
+			LINEAGE_EXPR(ind->setLineagePtr(lineagePtr));
 			it += sz;
+			LINEAGE_EXPR(lineagePtr += sz);
 			copy(ind->infoBegin(), ind->infoEnd(), infoPtr);
 			ind->setInfoPtr(infoPtr);
 			infoPtr += is;
@@ -3375,6 +3767,7 @@ void Population::syncIndPointers(bool infoOnly) const
 		// discard original genotype
 		const_cast<Population *>(this)->m_genotype.swap(tmpGenotype);
 		const_cast<Population *>(this)->m_info.swap(tmpInfo);
+		LINEAGE_EXPR(const_cast<Population *>(this)->m_lineage.swap(tmpLineage));
 	}
 	setIndOrdered(true);
 }
