@@ -257,16 +257,15 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 		"Chromosome X and Y should be both present for sexual transmission to work.");
 	//
 	m_mitochondrial = -1;
-	size_t mt_len = 0;
 	for (int i = 0; i < static_cast<int>(m_chromTypes.size()); ++i) {
 		if (m_chromTypes[i] == MITOCHONDRIAL) {
 			DBG_ASSERT(m_mitochondrial == -1, ValueError,
 				"Only one mitochondrial chromosome can be specified");
 			m_mitochondrial = i;
-			if (mt_len == 0)
-				mt_len = m_numLoci[i];
-			else if (m_numLoci[i] != mt_len)
-				throw ValueError("All mitochondrial DNAs should have the same length");
+			for (int j = i + 1; j < static_cast<int>(m_chromTypes.size()); ++j) {
+				DBG_ASSERT(m_chromTypes[j] == CUSTOMIZED, ValueError,
+					"Mitochondrial DNA must be specified after autosome and sex chromosomes.");
+			}
 		}
 	}
 	//
