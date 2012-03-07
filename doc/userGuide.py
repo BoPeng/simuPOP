@@ -5425,6 +5425,42 @@ sim.turnOffDebug("DBG_MUTATOR")
 #end_file
 
 
+#begin_file log/geneticContribution.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(alleleType='lineage', quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+pop = sim.Population(1000, loci=[10]*4)
+
+for idx,ind in enumerate(pop.individuals()):
+    ind.setLineage(idx)
+
+pop.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.InitGenotype(freq=[0.25]*4)
+    ],
+    matingScheme=sim.RandomMating(ops=sim.Recombinator(rates=0.001)),
+    gen = 100
+)
+# average number of 'contributors'
+num_contributors = [len(set(ind.lineage())) for ind in pop.individuals()]
+print('Average number of contributors is %.2f' % (sum(num_contributors) / float(pop.popSize())))
+# percent of genetic information from each ancestor (baseline is 1/1000)
+lineage = pop.lineage()
+lin_perc = [lineage.count(x)/float(len(lineage)) for x in range(1000)]
+# how many of ancestors do not have any allele left?
+print('Number of ancestors with no allele left: %d' % lin_perc.count(0.))
+# top five contributors
+lin_perc.sort()
+lin_perc.reverse()
+print('Top contributors (started with 0.001): %.5f %.5f %.5f' % (lin_perc[0], lin_perc[1], lin_perc[2]))
+#end_file
+
 #begin_file log/mitochondrial.py
 #begin_ignore
 import simuOpt
