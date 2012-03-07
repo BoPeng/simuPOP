@@ -65,14 +65,17 @@ public:
 
 	/** Clear (set alleles to zero) chromosome \e chrom on the \e ploidy-th
 	 *  homologous set of chromosomes of individual \e ind. It is equivalent to
-	 *  <tt>ind.setGenotype([0], ploidy, chrom)</tt>.
+	 *  <tt>ind.setGenotype([0], ploidy, chrom)</tt>, except that it also clears
+	 *  allele lineage if it is executed in a module with lineage allele type.
 	 */
 	void clearChromosome(const Individual & ind, int ploidy, size_t chrom) const;
 
 	/** Transmit chromosome \e chrom on the \e parPloidy set of homologous
 	 *  chromosomes from \e parent to the \e ploidy set of homologous
 	 *  chromosomes of \e offspring. It is equivalent to
-	 *  <tt>offspring.setGenotype(parent.genotype(parPloidy, chrom), polidy, chrom)</tt>.
+	 *  <tt>offspring.setGenotype(parent.genotype(parPloidy, chrom), polidy, chrom)</tt>,
+	 *  except that it also copies allelic lineage when it is executed in a 
+	 *  module with lineage allele type.
 	 */
 	void copyChromosome(const Individual & parent, int parPloidy,
 		Individual & offspring, int ploidy, size_t chrom) const;
@@ -80,7 +83,9 @@ public:
 	/** Transmit the \e parPloidy set of homologous chromosomes from \e parent
 	 *  to the \e ploidy set of homologous chromosomes of \e offspring.
 	 *  Customized chromosomes are not copied. It is equivalent to
-	 *  <tt>offspring.setGenotype(parent.genotype(parPloidy), ploidy)</tt>.
+	 *  <tt>offspring.setGenotype(parent.genotype(parPloidy), ploidy)</tt>,
+	 *  except that it also copies allelic lineage when it is executed in a 
+	 *  module with lineage allele type.
 	 */
 	void copyChromosomes(const Individual & parent, int parPloidy,
 		Individual & offspring, int ploidy) const;
@@ -149,6 +154,8 @@ public:
 	 *  is ignored. This operator by default copies genotypes on all
 	 *  autosome and sex chromosomes (excluding customized chromosomes), unless
 	 *  a parameter \e chroms is used to specify which chromosomes to copy.
+	 *  This operator also copies allelic lineage when it is executed in a
+	 *  module with lineage allele type.
 	 */
 	CloneGenoTransmitter(const stringFunc & output = "", const uintList & chroms = uintList(),
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
@@ -203,13 +210,15 @@ public:
 	/** Create a Mendelian genotype transmitter (a during-mating operator) that
 	 *  transmits genotypes from parents to offspring following Mendel's laws.
 	 *  Autosomes and sex chromosomes are handled but customized chromosomes
-	 *  are ignored. Parameters \e subPops and \e infoFields are ignored.
+	 *  are ignored. Parameters \e subPops and \e infoFields are ignored. This
+	 *  operator also copies allelic lineage when it is executed in a module
+	 *  with lineage allele type.
 	 */
 	MendelianGenoTransmitter(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr()) :
 		GenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields),
-		m_chromX(-1), m_chromY(-1), m_numChrom(0)
+		m_chromX(-1), m_chromY(-1), m_mitochondrial(-1), m_numChrom(0)
 	{
 	}
 
@@ -264,6 +273,8 @@ protected:
 
 	mutable int m_chromY;
 
+	mutable int m_mitochondrial;
+
 	mutable size_t m_numChrom;
 };
 
@@ -279,7 +290,8 @@ public:
 	/** Create a self-fertilization genotype transmitter that transmits
 	 *  genotypes of a parent to an offspring through self-fertilization.
 	 *  Cutsomized chromosomes are not handled. Parameters \e subPops and
-	 *  \e infoFields are ignored.
+	 *  \e infoFields are ignored. This operator also copies allelic lineage
+	 *  when it is executed in a module with lineage allele type.
 	 */
 	SelfingGenoTransmitter(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
@@ -327,7 +339,8 @@ public:
 	/** Create a haplodiploid genotype transmitter (during-mating operator)
 	 *  that transmit parental genotypes from parents to offspring in a
 	 *  haplodiploid population. Parameters \e subPops and \e infoFields
-	 *  are ignored.
+	 *  are ignored. This operator also copies allelic lineage when it is
+	 *  executed in a module with lineage allele type.
 	 */
 	HaplodiploidGenoTransmitter(const stringFunc & output = "", int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
@@ -387,6 +400,8 @@ public:
 	 *  mitochondrial chromosomes. These chromosomes should have the same
 	 *  length and the same number of loci. This operator transmits these
 	 *  chromosomes randomly from the female parent to offspring of both sexes.
+	 *  It also copies allelic lineage when it is executed in a module with
+	 *  lineage allele type.
 	 */
 	MitochondrialGenoTransmitter(const stringFunc & output = "",
 		const uintList & chroms = uintList(),
@@ -546,6 +561,9 @@ public:
 	 *  have two lines of output. Note that individual IDs need to be set
 	 *  (using a \c IdTagger operator) before this Recombinator is applied.
 	 *
+	 *  In addition to genotypes, this operator also copies alleleic lineage if
+	 *  it is executed in a module with lineage allele type.
+	 *
 	 *  \note conversion tract length is usually short, and is estimated to be
 	 *      between 337 and 456 bp, with overall range between maybe 50 - 2500
 	 *      bp. This is usually not enough to convert, for example, two adjacent
@@ -631,6 +649,7 @@ private:
 	// locataion of special chromosomes
 	mutable int m_chromX;
 	mutable int m_chromY;
+	mutable int m_mitochondrial;
 	mutable int m_customizedBegin;
 	mutable int m_customizedEnd;
 

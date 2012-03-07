@@ -43,10 +43,10 @@ void GenoTransmitter::initializeIfNeeded(const Individual & ind) const
 
 void GenoTransmitter::initialize(const Individual & ind) const
 {
-	m_hasCustomizedChroms = !ind.customizedChroms().empty();
+	m_hasCustomizedChroms = !ind.customizedChroms().empty() || ind.mitochondrial() > 0;
 	m_lociToCopy.clear();
 	for (size_t ch = 0; ch < ind.numChrom(); ++ch)
-		if (ind.chromType(ch) == CUSTOMIZED)
+		if (ind.chromType(ch) == CUSTOMIZED || ind.chromType(ch) == MITOCHONDRIAL)
 			m_lociToCopy.push_back(0);
 		else
 			m_lociToCopy.push_back(ind.numLoci(ch));
@@ -71,6 +71,10 @@ void GenoTransmitter::clearChromosome(const Individual & ind, int ploidy, size_t
 		ind.genoBegin(ploidy) + m_chromIdx[chrom + 1], 0);
 #  endif
 #endif
+#ifdef LINEAGE
+	fill(ind.lineageBegin(ploidy) + m_chromIdx[chrom],
+		ind.lineageBegin(ploidy) + m_chromIdx[chrom + 1], 0);
+#endif	
 }
 
 
@@ -96,6 +100,12 @@ void GenoTransmitter::copyChromosome(const Individual & parent, int parPloidy,
 		offspring.genoBegin(ploidy) + m_chromIdx[chrom]);
 #  endif
 #endif
+
+#ifdef LINEAGE
+	copy(parent.lineageBegin(parPloidy) + m_chromIdx[chrom],
+		parent.lineageBegin(parPloidy) + m_chromIdx[chrom + 1],
+		offspring.lineageBegin(ploidy) + m_chromIdx[chrom]);
+#endif
 }
 
 
@@ -112,6 +122,12 @@ void GenoTransmitter::copyChromosomes(const Individual & parent,
 			GenoIterator par = parent.genoBegin(parPloidy, ch);
 			GenoIterator off = offspring.genoBegin(ploidy, ch);
 
+#ifdef LINEAGE
+			LineageIterator parLineage  = parent.lineageBegin(parPloidy, ch);
+			LineageIterator offLineage  = offspring.lineageBegin(ploidy, ch);
+			LineageIterator lineage_end = parent.lineageEnd(parPloidy, ch);
+#endif
+
 #ifdef BINARYALLELE
 			copyGenotype(par, off, m_lociToCopy[ch]);
 #else
@@ -122,6 +138,7 @@ void GenoTransmitter::copyChromosomes(const Individual & parent,
 			copy(par, par_end, off);
 #  endif
 #endif
+			LINEAGE_EXPR(copy(parLineage, lineage_end, offLineage));
 		}
 	} else {             // easy
 #ifdef BINARYALLELE
@@ -134,6 +151,7 @@ void GenoTransmitter::copyChromosomes(const Individual & parent,
 		copy(parent.genoBegin(parPloidy), parent.genoEnd(parPloidy), offspring.genoBegin(ploidy));
 #  endif
 #endif
+		LINEAGE_EXPR(copy(parent.lineageBegin(parPloidy), parent.lineageEnd(parPloidy), offspring.lineageBegin(ploidy)));
 	}
 }
 
@@ -166,6 +184,13 @@ bool CloneGenoTransmitter::applyDuringMating(Population & pop, Population & offP
 				size_t ch = chroms[i];
 				GenoIterator par = parent->genoBegin(p, ch);
 				GenoIterator off = offspring->genoBegin(p, ch);
+
+#ifdef LINEAGE
+				LineageIterator parLineage = parent->lineageBegin(p, ch);
+				LineageIterator offLineage = offspring->lineageBegin(p, ch);
+				LineageIterator lineage_end = parent->lineageEnd(p, ch);
+#endif
+
 #ifdef BINARYALLELE
 				copyGenotype(par, off, offspring->numLoci(ch));
 #else
@@ -176,6 +201,7 @@ bool CloneGenoTransmitter::applyDuringMating(Population & pop, Population & offP
 				copy(par, par_end, off);
 #  endif
 #endif
+				LINEAGE_EXPR(copy(parLineage, lineage_end, offLineage));
 			}
 		}
 	} else if (m_hasCustomizedChroms) {
@@ -185,6 +211,13 @@ bool CloneGenoTransmitter::applyDuringMating(Population & pop, Population & offP
 					continue;
 				GenoIterator par = parent->genoBegin(p, ch);
 				GenoIterator off = offspring->genoBegin(p, ch);
+
+#ifdef LINEAGE
+				LineageIterator parLineage = parent->lineageBegin(p, ch);
+				LineageIterator offLineage = offspring->lineageBegin(p, ch);
+				LineageIterator lineage_end = parent->lineageEnd(p, ch);
+#endif
+
 #ifdef BINARYALLELE
 				copyGenotype(par, off, m_lociToCopy[ch]);
 #else
@@ -195,6 +228,7 @@ bool CloneGenoTransmitter::applyDuringMating(Population & pop, Population & offP
 				copy(par, par_end, off);
 #  endif
 #endif
+				LINEAGE_EXPR(copy(parLineage, lineage_end, offLineage));
 			}
 		}
 	} else {             // easy
@@ -208,6 +242,7 @@ bool CloneGenoTransmitter::applyDuringMating(Population & pop, Population & offP
 		copy(parent->genoBegin(), parent->genoEnd(), offspring->genoBegin());
 #  endif
 #endif
+		LINEAGE_EXPR(copy(parent->lineageBegin(), parent->lineageEnd(), offspring->lineageBegin()));
 	}
 	// for clone transmitter, sex is also transmitted
 	offspring->setSex(parent->sex());
@@ -229,6 +264,7 @@ void MendelianGenoTransmitter::initialize(const Individual & ind) const
 	GenoTransmitter::initialize(ind);
 	m_chromX = ind.chromX();
 	m_chromY = ind.chromY();
+	m_mitochondrial = ind.mitochondrial();
 	m_numChrom = ind.numChrom();
 }
 
@@ -246,11 +282,22 @@ void MendelianGenoTransmitter::transmitGenotype(const Individual & parent,
 	if (m_chromX < 0 && m_chromY < 0 && !m_hasCustomizedChroms) {
 		// pointer to parental, and offspring chromosome copies
 		GenoIterator par[2];
-		GenoIterator off;
+		GenoIterator off; 
+#ifdef LINEAGE
+		LineageIterator parLineage[2];
+		LineageIterator offLineage; 
+#endif
+
 		//
 		par[0] = parent.genoBegin(0);
 		par[1] = parent.genoBegin(1);
 		off = offspring.genoBegin(ploidy);
+#ifdef LINEAGE
+		parLineage[0] = parent.lineageBegin(0);
+		parLineage[1] = parent.lineageBegin(1);
+		offLineage = offspring.lineageBegin(ploidy);
+#endif
+
 		//
 		//
 		// 1. try to copy in blocks,
@@ -278,10 +325,15 @@ void MendelianGenoTransmitter::transmitGenotype(const Individual & parent,
 				size_t length = parEnd - parBegin;
 				//
 				// the easiest case, try to get some speed up...
-				if (length == 1)
+				if (length == 1) {
 					off[parBegin] = par[parPloidy][parBegin];
-				else
+					LINEAGE_EXPR(offLineage[parBegin] = parLineage[parPloidy][parBegin]);
+				} else {
 					copyGenotype(par[parPloidy] + parBegin, off + parBegin, length);
+					LINEAGE_EXPR(copy(parLineage[parPloidy] + parBegin, 
+						parLineage[parPloidy] + parBegin + length, 
+						offLineage + parBegin));
+				}
 				//
 				if (ch != m_numChrom - 1)
 					parPloidy = nextParPloidy;
@@ -299,7 +351,8 @@ void MendelianGenoTransmitter::transmitGenotype(const Individual & parent,
 		if ((ploidy == 0 && ch == m_chromY) ||   // maternal, Y chromosome
 		    (ploidy == 1 &&
 		     ((ch == m_chromX && offspring.sex() == MALE) ||
-		      (ch == m_chromY && offspring.sex() == FEMALE)))) {
+		      (ch == m_chromY && offspring.sex() == FEMALE) ||
+			  (ch == m_mitochondrial)))) {
 			clearChromosome(offspring, ploidy, ch);
 			continue;
 		}
@@ -440,6 +493,12 @@ bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop, Populatio
 		size_t src = getRNG().randInt(static_cast<ULONG>(m_mitoChroms.size()));
 		GenoIterator par = parent->genoBegin(0, m_mitoChroms[src]);
 		GenoIterator off = offspring->genoBegin(0, *it);
+#ifdef LINEAGE
+		LineageIterator parLineage  = parent->lineageBegin(0, m_mitoChroms[src]);
+		LineageIterator offLineage  = offspring->lineageBegin(0, *it);
+		LineageIterator lineage_end = parent->lineageEnd(0, m_mitoChroms[src]);
+#endif
+
 #ifdef BINARYALLELE
 		copyGenotype(par, off, m_numLoci);
 #else
@@ -450,6 +509,7 @@ bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop, Populatio
 		copy(par, par_end, off);
 #  endif
 #endif
+		LINEAGE_EXPR(copy(parLineage, lineage_end, offLineage));
 		for (size_t p = 1; p < pldy; ++p)
 			clearChromosome(*offspring, 1, static_cast<int>(*it));
 	}
@@ -465,7 +525,7 @@ Recombinator::Recombinator(const floatList & rates, double intensity,
 	:
 	GenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields),
 	m_intensity(intensity), m_rates(rates.elems()), m_loci(loci),
-	m_recBeforeLoci(0), m_convMode(convMode.elems()), m_chromX(-1), m_chromY(-1),
+	m_recBeforeLoci(0), m_convMode(convMode.elems()), m_chromX(-1), m_chromY(-1), m_mitochondrial(-1),
 	m_customizedBegin(-1), m_customizedEnd(-1), m_algorithm(0), m_debugOutput(NULL),
 #ifdef _OPENMP
 	m_bt(numThreads(), getRNG())
@@ -539,9 +599,16 @@ void Recombinator::initialize(const Individual & ind) const
 
 	m_chromX = ind.chromX();
 	m_chromY = ind.chromY();
+	m_mitochondrial = ind.mitochondrial();
 	if (!ind.customizedChroms().empty()) {
 		m_customizedBegin = static_cast<int>(ind.chromBegin(ind.customizedChroms()[0]));
 		m_customizedEnd = static_cast<int>(ind.chromEnd(ind.customizedChroms().back()));
+		if (m_mitochondrial > 0)
+			// mitochondrial must be the last chromosome before customized
+			m_customizedBegin -= 1;
+	} else if (m_mitochondrial > 0) {
+		m_customizedBegin = m_mitochondrial;
+		m_customizedEnd = m_mitochondrial;
 	}
 	// prepare m_bt
 	vectorf vecP;
@@ -571,9 +638,9 @@ void Recombinator::initialize(const Individual & ind) const
 		if (chBegin == chEnd)
 			continue;
 
-		if (ind.chromType(ch) == CUSTOMIZED) {
+		if (ind.chromType(ch) == CUSTOMIZED || ind.chromType(ch) == MITOCHONDRIAL) {
 			// recombine before customized chromosome.
-			if (ind.numChrom() != ch + 1 && ind.chromType(ch + 1) != CUSTOMIZED) {
+			if (ind.numChrom() != ch + 1 && (ind.chromType(ch + 1) != CUSTOMIZED || ind.chromType(ch + 1) != MITOCHONDRIAL)) {
 				m_recBeforeLoci.push_back(chEnd);
 				vecP.push_back(0.5);
 			}
@@ -677,10 +744,18 @@ void Recombinator::transmitGenotype(const Individual & parent,
 
 	// use which copy of chromosome
 	GenoIterator cp[2], off;
+#ifdef LINEAGE
+	LineageIterator lineagep[2], lineageOff;
+#endif
 
 	cp[0] = parent.genoBegin(0);
 	cp[1] = parent.genoBegin(1);
 	off = offspring.genoBegin(ploidy);
+#ifdef LINEAGE
+	lineagep[0] = parent.lineageBegin(0);
+	lineagep[1] = parent.lineageBegin(1);
+	lineageOff = offspring.lineageBegin(ploidy);
+#endif
 
 	// handling of sex chromosomes, by specifying chromsome
 	// ranges with specified ploidy.
@@ -737,9 +812,11 @@ void Recombinator::transmitGenotype(const Individual & parent,
 		for (size_t gt = 0, bl = 0; gt < gtEnd; ++gt, --convCount) {
 			// do not copy genotype in the ignored region.
 			if ((ignoreBegin < 0 || gt < static_cast<size_t>(ignoreBegin) || gt >= static_cast<size_t>(ignoreEnd)) &&
-			    (m_customizedBegin < 0 || gt < static_cast<size_t>(m_customizedBegin) || gt >= static_cast<size_t>(m_customizedEnd)))
+			    (m_customizedBegin < 0 || gt < static_cast<size_t>(m_customizedBegin) || gt >= static_cast<size_t>(m_customizedEnd))) {
 				// copy
 				off[gt] = cp[curCp][gt];
+				LINEAGE_EXPR(lineageOff[gt] = lineagep[curCp][gt]);
+			}
 			// look ahead
 			if (convCount == 0) {             // conversion ...
 				if (forceFirstBegin > 0 && gt + 1 >= static_cast<size_t>(forceFirstBegin)
@@ -807,8 +884,10 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			simuPOP::copy(cp[curCp] + gt, cp[curCp] + gt + m_recBeforeLoci[pos], off + gt);
 			gt = m_recBeforeLoci[pos];
 #  else
-			for (; gt < m_recBeforeLoci[pos]; ++gt)
+			for (; gt < m_recBeforeLoci[pos]; ++gt) {
 				off[gt] = cp[curCp][gt];
+				LINEAGE_EXPR(lineageOff[gt] = lineagep[curCp][gt]);
+			}
 #  endif
 			curCp = (curCp + 1) % 2;
 			if (m_debugOutput)
@@ -831,8 +910,10 @@ void Recombinator::transmitGenotype(const Individual & parent,
 						simuPOP::copy(cp[curCp] + gt, cp[curCp] + gt + convEnd, off + gt);
 						gt = convEnd;
 #  else
-						for (; gt < convEnd; ++gt)
+						for (; gt < convEnd; ++gt) {
 							off[gt] = cp[curCp][gt];
+							LINEAGE_EXPR(lineageOff[gt] = lineagep[curCp][gt]);
+						}
 #  endif
 						curCp = (curCp + 1) % 2;
 						if (m_debugOutput)
@@ -846,8 +927,10 @@ void Recombinator::transmitGenotype(const Individual & parent,
 				simuPOP::copy(cp[curCp] + gt, cp[curCp] + gt + gtEnd, off + gt);
 				gt = gtEnd;
 #  else
-				for (; gt < gtEnd; ++gt)
+				for (; gt < gtEnd; ++gt) {
 					off[gt] = cp[curCp][gt];
+					LINEAGE_EXPR(lineageOff[gt] = lineagep[curCp][gt]);
+				}
 #  endif
 				curCp = (curCp + 1) % 2;
 				if (m_debugOutput)
@@ -872,8 +955,10 @@ void Recombinator::transmitGenotype(const Individual & parent,
 				simuPOP::copy(cp[curCp] + gt, cp[curCp] + gt + convEnd, off + gt);
 				gt = convEnd;
 #  else
-				for (; gt < convEnd; ++gt)
+				for (; gt < convEnd; ++gt) {
 					off[gt] = cp[curCp][gt];
+					LINEAGE_EXPR(lineageOff[gt] = lineagep[curCp][gt]);
+				}
 #  endif
 				curCp = (curCp + 1) % 2;
 				if (m_debugOutput)
@@ -884,8 +969,10 @@ void Recombinator::transmitGenotype(const Individual & parent,
 		simuPOP::copy(cp[curCp] + gt, cp[curCp] + gt + gtEnd, off + gt);
 		gt = gtEnd;
 #  else
-		for (; gt < gtEnd; ++gt)
+		for (; gt < gtEnd; ++gt) {
 			off[gt] = cp[curCp][gt];
+			LINEAGE_EXPR(lineageOff[gt] = lineagep[curCp][gt]);
+		}
 #  endif
 #else
 		size_t gt = 0, gtEnd = 0;
@@ -897,6 +984,9 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			// first piece
 			gtEnd = m_recBeforeLoci[pos];
 			copyGenotype(cp[curCp] + gt, off + gt, m_recBeforeLoci[pos] - gt);
+			// for binary module, this is not needed, but it is kept here anyway, in case some
+			// people would like to implement lineage feature for binary modules
+			LINEAGE_EXPR(copy(lineagep[curCp] + gt, lineagep[curCp] + m_recBeforeLoci[pos], lineageOff + gt));
 			gt = gtEnd;
 			curCp = (curCp + 1) % 2;
 			if (m_debugOutput)
@@ -913,6 +1003,8 @@ void Recombinator::transmitGenotype(const Individual & parent,
 					convEnd = gt + convCount;
 					if (convEnd < gtEnd) {
 						copyGenotype(cp[curCp] + gt, off + gt, convCount);
+						// not used for binary module
+						LINEAGE_EXPR(copy(lineagep[curCp] + gt, lineagep[curCp] + gt + convCount, lineageOff + gt));
 						gt = convEnd;
 						curCp = (curCp + 1) % 2;
 						if (m_debugOutput)
@@ -923,6 +1015,8 @@ void Recombinator::transmitGenotype(const Individual & parent,
 				}
 				// copy from the end of conversion to the next recombination point
 				copyGenotype(cp[curCp] + gt, off + gt, m_recBeforeLoci[pos] - gt);
+				// not used for binary module
+				LINEAGE_EXPR(copy(lineagep[curCp] + gt, lineagep[curCp] + m_recBeforeLoci[pos], lineageOff + gt));
 				gt = gtEnd;
 				curCp = (curCp + 1) % 2;
 				if (m_debugOutput)
@@ -943,6 +1037,8 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			convEnd = gt + convCount;
 			if (convEnd < gtEnd) {
 				copyGenotype(cp[curCp] + gt, off + gt, convCount);
+				// not used for binary module
+				LINEAGE_EXPR(copy(lineagep[curCp] + gt, lineagep[curCp] + gt + convCount, lineageOff + gt));
 				gt = convEnd;
 				curCp = (curCp + 1) % 2;
 				if (m_debugOutput)
@@ -950,6 +1046,8 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			}
 		}
 		copyGenotype(cp[curCp] + gt, off + gt, gtEnd - gt);
+		// not used for binary module
+		LINEAGE_EXPR(copy(lineagep[curCp] + gt, lineagep[curCp] + gtEnd, lineageOff + gt));
 #endif
 	}
 	if (m_debugOutput)
