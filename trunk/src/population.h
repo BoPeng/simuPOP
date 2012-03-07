@@ -285,6 +285,9 @@ public:
 		m_subPopNames.swap(rhs.m_subPopNames);
 		m_subPopIndex.swap(rhs.m_subPopIndex);
 		m_genotype.swap(rhs.m_genotype);
+#ifdef LINEAGE
+		m_lineage.swap(rhs.m_lineage);
+#endif
 		m_info.swap(rhs.m_info);
 		m_inds.swap(rhs.m_inds);
 		std::swap(m_ancestralGens, rhs.m_ancestralGens);
@@ -832,6 +835,10 @@ public:
 	/// CPPONLY allele begin, for given subPop
 	IndAlleleIterator alleleIterator(size_t locus, size_t subPop);
 
+#ifdef LINEAGE
+	/// CPPONLY lineage begin, for given subPop
+	IndLineageIterator lineageIterator(size_t locus, size_t subPop);
+#endif
 
 	///  CPPONLY allele iterator, go through all allels one by one, without subPop info
 	/**
@@ -861,6 +868,37 @@ public:
 		return m_genotype.end();
 	}
 
+#ifdef LINEAGE
+
+	///  CPPONLY allele iterator, go through all lineages one by one, without subPop info
+	/**
+	   if order, in order
+	   otherwise, do not even respect subpopulation structure
+	 */
+	LineageIterator lineageBegin(bool order)
+	{
+		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+			"This function is not valid with an activated virtual subpopulation");
+
+		if (order && !indOrdered())
+			syncIndPointers();
+
+		return m_lineage.begin();
+	}
+
+
+	///  CPPONLY lineage iterator
+	LineageIterator lineageEnd(bool order)
+	{
+		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+			"This function is not valid with an activated virtual subpopulation");
+		if (order && !indOrdered())
+			syncIndPointers();
+
+		return m_lineage.end();
+	}
+
+#endif // LINEAGE
 
 	///  CPPONLY allele iterator, go through all allels one by one in a subpopulation
 	/**
@@ -890,6 +928,37 @@ public:
 		return m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize();
 	}
 
+#ifdef LINEAGE
+
+	///  CPPONLY lineage iterator, go through all lineages one by one in a subpopulation
+	/**
+	   if order, keep order
+	   if not order, respect subpopulation structure
+	 */
+	LineageIterator lineageBegin(size_t subPop, bool order)
+	{
+		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+			"This function is not valid with an activated virtual subpopulation");
+		CHECKRANGESUBPOP(subPop);
+
+		syncIndPointers(order);
+
+		return m_lineage.begin() + m_subPopIndex[subPop] * genoSize();
+	}
+
+
+	/// CPPONLY lineage iterator in a subpopulation.
+	LineageIterator lineageEnd(size_t subPop, bool order)
+	{
+		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+			"This function is not valid with an activated virtual subpopulation");
+		CHECKRANGESUBPOP(subPop);
+		syncIndPointers(order);
+
+		return m_lineage.begin() + m_subPopIndex[subPop + 1] * genoSize();
+	}
+
+#endif // LINEAGE
 
 	/// CPPONLY genoIterator --- beginning of individual ind.
 	GenoIterator indGenoBegin(size_t ind) const
@@ -906,6 +975,24 @@ public:
 		return m_inds[ind].genoEnd();
 	}
 
+#ifdef LINEAGE
+
+	/// CPPONLY lineageIterator --- beginning of individual ind.
+	LineageIterator indLineageBegin(size_t ind) const
+	{
+		CHECKRANGEIND(ind);
+		return m_inds[ind].lineageBegin();
+	}
+
+
+	/// CPPONLY lineageIterator -- end of individual ind.
+	LineageIterator indLineageEnd(size_t ind) const
+	{
+		CHECKRANGEIND(ind);
+		return m_inds[ind].lineageEnd();
+	}
+
+#endif 
 
 	/// CPPONLY genoIterator --- beginning of individual ind.
 	GenoIterator indGenoBegin(size_t ind, size_t subPop) const
@@ -926,6 +1013,28 @@ public:
 		return m_inds[ subPopBegin(subPop) + ind].genoEnd();
 	}
 
+#ifdef LINEAGE
+
+	/// CPPONLY lineageIterator --- beginning of individual ind.
+	LineageIterator indLineageBegin(size_t ind, size_t subPop) const
+	{
+		CHECKRANGESUBPOP(subPop);
+		CHECKRANGESUBPOPMEMBER(ind, subPop);
+
+		return m_inds[ subPopBegin(subPop) + ind].lineageBegin();
+	}
+
+
+	/// CPPONLY genoIterator -- end of individual ind.
+	LineageIterator indLineageEnd(size_t ind, size_t subPop) const
+	{
+		CHECKRANGESUBPOP(subPop);
+		CHECKRANGESUBPOPMEMBER(ind, subPop);
+
+		return m_inds[ subPopBegin(subPop) + ind].lineageEnd();
+	}
+
+#endif
 
 	/** Return an editable array of the genotype of all individuals in
 	 *  a population (if <tt>subPop=[]</tt>, default), or individuals in a
@@ -933,6 +1042,14 @@ public:
 	 *  <group>5-genotype</group>
 	 */
 	PyObject * genotype(vspID subPop = vspID());
+
+	/** Return an editable array of the lineage of alleles for all individuals in
+	 *  a population (if <tt>subPop=[]</tt>, default), or individuals in a
+	 *  subpopulation \e subPop. Virtual subpopulation is unsupported. <bf>
+	 *  This function returns \c None for modules without lineage information.</bf>
+	 *  <group>5-genotype</group>
+	 */
+	PyObject * lineage(vspID subPop = vspID());
 
 	/** Fill the genotype of all individuals in a population (if
 	 *  <tt>subPop=[]</tt>) or in a (virtual) subpopulation \e subPop (if
@@ -942,6 +1059,16 @@ public:
 	 *  <group>5-genotype</group>
 	 */
 	void setGenotype(const uintList & geno, vspID subPop = vspID());
+
+	/** Fill the lineage of all individuals in a population (if
+	 *  <tt>subPop=[]</tt>) or in a (virtual) subpopulation \e subPop (if
+	 *  <tt>subPop=sp</tt> or <tt>(sp, vsp)</tt>) using a list of IDs
+	 *  \e lineage. \e lineage will be reused if its length is less than
+	 *  <tt>subPopSize(subPop)*totNumLoci()*ploidy()</tt>. This function
+	 *  returns directly for modules without lineage information.
+	 *  <group>5-genotype</group>
+	 */
+	void setLineage(const uintList & geno, vspID subPop = vspID());
 
 	//@}
 
@@ -1505,6 +1632,10 @@ private:
 	vectora m_genotype;
 #endif
 
+#ifdef LINEAGE
+	vectori m_lineage;
+#endif
+
 	/// information
 	/// only in head node
 	vectorf m_info;
@@ -1529,6 +1660,11 @@ private:
 #else
 		vectora m_genotype;
 #endif
+
+#ifdef LINEAGE
+		vectori m_lineage;
+#endif
+
 		vectorf m_info;
 		vector<Individual> m_inds;
 		bool m_indOrdered;
@@ -1604,7 +1740,8 @@ Population & loadPopulation(const string & file);
 #ifndef SWIG
 #  ifndef _NO_SERIALIZATION_
 // version 0: base (reset for version 1.0)
-BOOST_CLASS_VERSION(simuPOP::Population, 0)
+// version 1: with lineage information for lineage-aware modules
+BOOST_CLASS_VERSION(simuPOP::Population, 1)
 #  endif
 #endif
 #endif
