@@ -652,6 +652,52 @@ PyObject * Population::genotype(vspID subPopID)
 }
 
 
+#ifdef MUTANTALLELE
+mutantList Population::mutants(vspID subPopID)
+{
+
+	DBG_WARNIF(true, "The returned object of function Population.genotype() is a special "
+		             "carray object that reflects the underlying genotype of a "
+		             "population. It will become invalid once the population changes. "
+		             "Please use list(pop.genotype()) if you would like to keep a copy of genotypes");
+
+	mutantList mutantAllele;
+	vspID vsp = subPopID.resolve(*this);
+
+	DBG_FAILIF(vsp.isVirtual(), ValueError,
+		"Function genotype currently does not support virtual subpopulation");
+	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+		"This operation is not allowed when there is an activated virtual subpopulation");
+
+	syncIndPointers();
+	if (!vsp.valid()) {
+		// directly expose values. Do not copy data over.
+		compressed_vector<Allele>::index_array_type::iterator idx_begin = m_genotype.begin().getIndexIterator();
+		compressed_vector<Allele>::index_array_type::iterator idx_end = m_genotype.end().getIndexIterator();
+		compressed_vector<Allele>::value_array_type::iterator value_begin = m_genotype.begin().getValueIterator();
+		mutantAllele.reserve(idx_end - idx_begin);
+		for (; idx_begin != idx_end; ++idx_begin, ++value_begin)
+			mutantAllele.push_back(std::pair<size_t, size_t>(*idx_begin, *value_begin));
+		return mutantAllele;
+		//return Allele_Vec_As_NumArray(m_genotype.begin(), m_genotype.end());
+	} else {
+		// directly expose values. Do not copy data over.
+		size_t subPop = vsp.subPop();
+		CHECKRANGESUBPOP(subPop);
+		compressed_vector<Allele>::index_array_type::iterator idx_begin = genoBegin(subPop, true).getIndexIterator();
+		compressed_vector<Allele>::index_array_type::iterator idx_end = genoEnd(subPop, true).getIndexIterator();
+		compressed_vector<Allele>::value_array_type::iterator value_begin = genoBegin(subPop, true).getValueIterator();
+		mutantAllele.reserve(idx_end - idx_begin);
+		for (; idx_begin != idx_end; ++idx_begin, ++value_begin)
+			mutantAllele.push_back(std::pair<size_t, size_t>(*idx_begin, *value_begin));
+		return mutantAllele;
+		//return Allele_Vec_As_NumArray(genoBegin(subPop, true), genoEnd(subPop, true));
+	}
+	return mutantAllele;
+}
+#endif
+
+
 void Population::setGenotype(const uintList & genoList, vspID subPopID)
 {
 	const vectoru & geno = genoList.elems();
@@ -662,8 +708,19 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 	if (!subPop.valid()) {
 		GenoIterator ptr = m_genotype.begin();
 		size_t sz = geno.size();
-		for (size_t i = 0; i < popSize() * genoSize(); ++i)
+		for (size_t i = 0; i < popSize() * genoSize(); ++i) {
+#ifdef MUTANTALLELE
+			if (ToAllele(geno[i % sz]) == 0u && *ptr == 0u)
+				ptr++;
+			else if (ToAllele(geno[i % sz]) == 0u && *ptr != 0u) {
+				ptr.deleted();
+				ptr++;
+			} else
+				*(ptr++) = ToAllele(geno[i % sz]);
+#else
 			*(ptr++) = ToAllele(geno[i % sz]);
+#endif
+		}
 		return;
 	}
 
