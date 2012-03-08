@@ -888,11 +888,11 @@ class ControlledRandomMating(HomoMating):
 class SNPMutator(MatrixMutator):
     '''A mutator model that assumes two alleles 0 and 1 and accepts mutation
     rate from 0 to 1, and from 1 to 0 alleles. '''
-    def __init__(self, u=0, v=0, *args, **kwargs):
+    def __init__(self, u=0, v=0, loci=lociList(), *args, **kwargs):
         '''Return a ``MatrixMutator`` with proper mutate matrix for a two-allele
         mutation model using mutation rate from allele 0 to 1 (parameter ``u``)
         and from 1 to 0 (parameter ``v``)'''
-        MatrixMutator.__init__(self, [[1-u, u], [v, 1-v]], *args, **kwargs)
+        MatrixMutator.__init__(self, [[1-u, u], [v, 1-v]], loci, *args, **kwargs)
 
 
 class AcgtMutator(MatrixMutator):
@@ -901,7 +901,7 @@ class AcgtMutator(MatrixMutator):
     Although a general model needs 12 parameters, less parameters are needed
     for specific nucleotide mutation models (parameter ``model``). The length
     and meaning of parameter ``rate`` is model dependent.'''
-    def __init__(self, rate=[], model='general', *args, **kwargs):
+    def __init__(self, rate=[], loci=lociList(), model='general', *args, **kwargs):
         '''Create a mutation model that mutates between nucleotides ``A``,
         ``C``, ``G``, and ``T`` (alleles are coded in that order as 0, 1, 2
         and 3). Currently supported models are Jukes and Cantor 1969 model
@@ -1001,15 +1001,15 @@ class AcgtMutator(MatrixMutator):
                  [rate[9], rate[10], rate[11], 0      ]]
         else:
             raise ValueError('Unrecognized nucleotide mutation model %s' % model)
-        MatrixMutator.__init__(self, m, *args, **kwargs)
+        MatrixMutator.__init__(self, m, loci, *args, **kwargs)
 
 
 class AminoAcidMutator(MatrixMutator):
     '''
     This operator has not been implemented.
     '''
-    def __init__(self, rate=[], model='general', *args, **kwargs):
-        MatrixMutator.__init__(self, rate, *args, **kwargs)
+    def __init__(self, rate=[], loci=lociList(), model='general', *args, **kwargs):
+        MatrixMutator.__init__(self, rate, loci, *args, **kwargs)
 
 #
 # functions to corresponding operators

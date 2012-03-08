@@ -406,8 +406,8 @@ class TestStat(unittest.TestCase):
         pop = Population(size=[5000,1000], ploidy=2, loci = [10])
         if moduleInfo()['alleleType'] == 'binary':
             pop.setVirtualSplitter(ProportionSplitter([.3, .7]))
-            initGenotype(pop, genotype=[0]*10, subPops=[(0,0)])
-            initGenotype(pop, genotype=[1]*10, subPops=[(0,1)])
+            initGenotype(pop, genotype=[0]*10, subPops=[(0,0), (1,0)])
+            initGenotype(pop, genotype=[1]*10, subPops=[(0,1), (1,1)])
             stat(pop, haploFreq=[[0,1,5],[2,5]])
             self.assertEqual(pop.dvars().haploFreq[(0, 1, 5)][(0, 0, 0)], 0.3)
             self.assertEqual(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)], 0.7)
