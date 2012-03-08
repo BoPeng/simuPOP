@@ -697,8 +697,8 @@ void Recombinator::initialize(const Individual & ind) const
 	DBG_ASSERT(vecP.size() == m_recBeforeLoci.size(), SystemError,
 		"Rate and before loci should have the same length.");
 
-	DBG_FAILIF(ind.chromType(ind.numChrom() - 1) != CUSTOMIZED && !m_recBeforeLoci.empty() && m_recBeforeLoci.back() != ind.totNumLoci(),
-		SystemError,
+	DBG_FAILIF((ind.chromType(ind.numChrom() - 1) != CUSTOMIZED && ind.chromType(ind.numChrom() - 1) != MITOCHONDRIAL) && 
+        !m_recBeforeLoci.empty() && m_recBeforeLoci.back() != ind.totNumLoci(), SystemError,
 		"The last beforeLoci elem should be total number of loci. (If the last chromsome is not customized");
 
 	DBG_ASSERT(vecP.back() == .5, SystemError,
