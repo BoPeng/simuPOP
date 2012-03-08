@@ -73,6 +73,9 @@ else:
         if int(version[0]) < 4 or int(version[1]) < 2:
             print('Support for openMP is turned off because version %s.%s.%s of gcc does not support this feature' % version)
             USE_OPENMP = False
+        if int(version[0]) == 4 and int(version[1]) == 2 and int(version[2]) == 1 and 'LLVM' in output:
+            print('Support for openMP is turned off because of a bug in LLVM-gcc version 4.2.1.')
+            USE_OPENMP = False
     except:
         print('Can not obtain version of gcc, and openMP is disable')
         USE_OPENMP = False
