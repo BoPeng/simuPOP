@@ -14,11 +14,9 @@ import unittest, os, sys
 from simuOpt import setOptions
 setOptions(quiet=True)
 new_argv = []
-alleleType = 'short'
 for arg in sys.argv:
     if arg in ['short', 'long', 'binary', 'mutant', 'lineage']:
         setOptions(alleleType = arg)
-        alleleType = arg
     elif arg.startswith('-j'):
         setOptions(numThreads = int(arg[2:]))
     else:
@@ -155,7 +153,7 @@ class TestIndividual(unittest.TestCase):
 
     def testMutants(self):
         'Testing individual::genotype(), genotype(p), genotype(p, chrom)'
-        if alleleType == 'mutant':
+        if moduleInfo()['alleleType'] == 'mutant':
             pop = self.getPop()
             ind = pop.individual(0)
             ind.setGenotype([2, 3, 4])

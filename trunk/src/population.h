@@ -406,7 +406,7 @@ public:
 	 *  generation (default) or a specified ancestral generation \e ancGen. If
 	 *  no \e subpop is given, it is the same as <tt>popSize(ancGen)</tt>.
 	 *  Population and virtual subpopulation names can be used.
-	 *  <group>2-subpopsize</group>
+	 *  <group>2-subpopsize</grouplociList()>
 	 */
 	size_t subPopSize(vspID subPop = vspID(), int ancGen = -1) const;
 
@@ -1042,6 +1042,10 @@ public:
 	 *  <group>5-genotype</group>
 	 */
 	PyObject * genotype(vspID subPop = vspID());
+
+#ifdef MUTANTALLELE
+	mutantList mutants(vspID subPop = vspID());
+#endif
 
 	/** Return an editable array of the lineage of alleles for all individuals in
 	 *  a population (if <tt>subPop=[]</tt>, default), or individuals in a

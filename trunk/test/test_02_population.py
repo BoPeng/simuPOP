@@ -162,6 +162,27 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(len(arr), pop.genoSize()*pop.subPopSize(1))
         self.assertRaises(IndexError, pop.genotype, 2)
 
+    def testMutants(self):
+        'Testing Population::mutants(), mutants(subPop)'
+        if moduleInfo()['alleleType'] == 'mutant':
+            pop = Population(loci=[1, 2], size=[1, 2])
+            arr = pop.mutants()
+            self.assertEqual(len(arr), 0) 
+            arr = pop.mutants(1)
+            self.assertEqual(len(arr), 0)
+            
+            pop.setGenotype([2, 3, 4])
+            arr = pop.mutants()
+            self.assertEqual(len(arr), pop.genoSize()*pop.popSize())
+            arr = pop.mutants(1)
+            self.assertEqual(len(arr), pop.genoSize()*pop.subPopSize(1))
+
+            pop.setGenotype([2, 0, 4, 0, 5])
+            arr = pop.mutants()
+            self.assertEqual(len(arr), 11)
+            arr = pop.mutants(1)
+            self.assertEqual(len(arr), 7)
+
     def testSetGenotype(self):
         'Testing Population::setGenotype(geno), setGenotype(geno, subPop)'
         pop = Population(loci=[1, 2], size=[1, 2])
