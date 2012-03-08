@@ -1605,7 +1605,6 @@ class TestPopulation(unittest.TestCase):
         for ind in pop.allIndividuals():
             self.assertEqual(ind.lineage(), [ind.ind_id - 100] * 20)
         # mutate all the alleles
-        print 'begin'
         snpMutate(pop, u=1, v=1)
         # test lineage assignment in mutation
         for ind in pop.allIndividuals():
