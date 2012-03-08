@@ -5426,10 +5426,8 @@ sim.turnOffDebug("DBG_MUTATOR")
 
 
 #begin_file log/geneticContribution.py
-#begin_ignore
 import simuOpt
 simuOpt.setOptions(alleleType='lineage', quiet=True)
-#end_ignore
 import simuPOP as sim
 #begin_ignore
 sim.setRNG(seed=12345)
@@ -5463,10 +5461,8 @@ print('Top contributors (started with 0.001): %.5f %.5f %.5f' % (lin_perc[0], li
 
 
 #begin_file log/ageOfMutants.py
-#begin_ignore
 import simuOpt
 simuOpt.setOptions(alleleType='lineage', quiet=True)
-#end_ignore
 import simuPOP as sim
 #begin_ignore
 sim.setRNG(seed=12345)
