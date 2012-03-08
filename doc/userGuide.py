@@ -3246,18 +3246,18 @@ pop = sim.Population(100, loci=[1]*100)
 pop.evolve(
     initOps=[
         sim.InitSex(),
-        sim.InitGenotype(freq=[0.4, 0.6])
+        sim.InitGenotype(freq=[0.3, 0.7]),
         sim.PyOutput('#all 0\t#seg sites\t#all 1\n'),
     ],
     matingScheme=sim.RandomMating(),
     postOps=[
-        sim.Stat(numSegSites=sim.ALL_AVAIL,
+        sim.Stat(numOfSegSites=sim.ALL_AVAIL,
             vars=['numOfSegSites', 'numOfFixedSites']),
-        sim.PyEval(r'"%d\t%d\t%d\n" % (1-numOfSegSites-numOfFixedSites,'
+        sim.PyEval(r'"%d\t%d\t%d\n" % (100-numOfSegSites-numOfFixedSites,'
             'numOfSegSites, numOfFixedSites)',
-            step=10)
+            step=50)
         ],
-    gen=100
+    gen=500
 )
 #end_file
 
@@ -5460,6 +5460,48 @@ lin_perc.sort()
 lin_perc.reverse()
 print('Top contributors (started with 0.001): %.5f %.5f %.5f' % (lin_perc[0], lin_perc[1], lin_perc[2]))
 #end_file
+
+
+#begin_file log/ageOfMutants.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(alleleType='lineage', quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+pop = sim.Population(size=10000, loci=[10]*10, infoFields='ind_id')
+# just to make sure IDs starts from 1
+sim.IdTagger().reset()
+pop.evolve(
+    initOps = [
+        sim.InitSex(),
+        sim.IdTagger(),
+        sim.InitGenotype(freq=[0.2, 0.3, 0.4, 0.1]),
+    ],
+    # an extremely high mutation rate, just for demonstration
+    preOps = sim.AcgtMutator(rate=0.01, model='JC69'),
+    matingScheme=sim.RandomMating(
+        ops=[
+            sim.IdTagger(),
+            sim.MendelianGenoTransmitter(),
+        ]
+    ),
+    gen = 10
+)
+lin = pop.lineage()
+# Number of alleles from each generation
+for gen in range(10):
+    id_start = gen*10000 + 1
+    id_end = (gen+1)*10000
+    num_mut = len([x for x in lin if x >= id_start and x <= id_end])
+    print('Gen %d: %5.2f %%' % (gen, num_mut / (2*10000*100.) * 100))
+
+#end_file
+
+
+
 
 #begin_file log/mitochondrial.py
 #begin_ignore

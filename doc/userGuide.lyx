@@ -17325,8 +17325,7 @@ numOfSegSites
 \shape default
  counts the number of segregating sites for specified or all loci, for all
  individuals or individuals in specified (virtual) subpopulations.
- It can also be used to count the number of fixed sites (loci with only
- one non-zero allele).
+ It can also be used to count the number of fixed sites .
  This parameter sets variables 
 \family typewriter
 numOfSegSites
@@ -17336,6 +17335,11 @@ numOfSegSites
 numOfFixedSites
 \family default
 .
+ Here we defined fixed sites as loci with only one non-zero allele (e.g.
+ fixed to a non-zero allele).
+ Other numbers, such as all loci with only one allele (including zero),
+ or loci with all wildtype alleles (only zero), can be derived from these
+ two counts.
 \end_layout
 
 \begin_layout Standard
@@ -17351,8 +17355,9 @@ reference "numSegSites"
  allele 1), and number of loci with only wildtype alleles (loci with only
  allele 0).
  As you can see, the population starts with 100 segregating sites.
- During evolution, some alleles get lost and some get fixed, and there should
- be no segregating site if we evolve the population for long enough.
+ During evolution, alleles at some loci get lost and some get fixed, and
+ there should be no segregating site if we evolve the population for long
+ enough.
 \end_layout
 
 \begin_layout Standard
@@ -25172,30 +25177,29 @@ Tracing allelic lineage
 \begin_layout Standard
 Lineage of alleles consists of information such as the distribution of alleles
  (how many people carry this allele, and the relationship between carriers)
- and age of alleles (when the alleles are introduced to the population).
+ and age of alleles (when the alleles were introduced to the population).
  These information are important for the study of evolutionary history of
  mutants.
  They are not readily available for normal simulations, and even if you
- can track the age when mutants are introduced, alleles in the present generatio
-n that are of the same type (Identity by Stat, IBS) do not necessarily have
- the same ancestral origin (Identity by Decent, IBD).
+ can track the generations when mutants are introduced, alleles in the present
+ generation that are of the same type (Identity by Stat, IBS) do not necessarily
+ have the same ancestral origin (Identity by Decent, IBD).
 \end_layout
 
 \begin_layout Standard
 The lineage modules of simuPOP provides facilities to track allelic lineage.
- More specific, it provides
+ More specific,
 \end_layout
 
 \begin_layout Itemize
-Each allele is associated with an integer number that is used to store the
- origin (e.g.
- ID of the ancestor to which the allele was introduced) of the allele.
+Each allele is associated with an integer number (an allelic lineage) that
+ identifies the origian, or the source of the allele.
 \end_layout
 
 \begin_layout Itemize
-The origin and each allele is transmitted along with the allele during evolution.
- New alleles will be introduced with their own origins, even if they share
- the same states with the existing alleles.
+The lineage of each allele is transmitted along with the allele during evolution.
+ New alleles will be introduced with their own lineage, even if they share
+ the same states with existing alleles.
 \end_layout
 
 \begin_layout Itemize
@@ -25230,7 +25234,7 @@ l-specific numbers.
  Although this particular simulation can be mimicked using pure-genotype
  simulations by using special alleles for each ancestor, the combined informatio
 n regarding the state and origin of each allele will be very useful for
- genetic studies that involves IBD and IBS.
+ genetic studies that involve IBD and IBS.
 \end_layout
 
 \begin_layout Standard
@@ -25238,6 +25242,88 @@ n regarding the state and origin of each allele will be very useful for
 LatexCommand lstinputlisting
 filename "log/geneticContribution.log"
 lstparams "caption={Contribution of genetic information from ancestors },label={geneticContribution}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "geneticContribution"
+
+\end_inset
+
+ uses function 
+\family typewriter
+Individual.setLineage
+\family default
+ to explictly assign lineage to alleles for each individual.
+ A more convenient, and more general method is to assign each individual
+ a unique ID.
+ If the information field that holds individual IDs is named 
+\family typewriter
+ind_id
+\family default
+ (default field used by operator 
+\family typewriter
+IdTagger
+\family default
+), 
+\end_layout
+
+\begin_layout Itemize
+Operator 
+\family typewriter
+InitGenotype
+\family default
+ will use the ID of each individual as the lineage of alleles that are initializ
+ed.
+\end_layout
+
+\begin_layout Itemize
+Mutation operators will assign the IDs of recipients of mutants as the lineage
+ of these mutants.
+\end_layout
+
+\begin_layout Standard
+To make use of these features, it is important to assign IDs to individuals
+ before these operators are applied.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ageOfMutants"
+
+\end_inset
+
+ demonstrates how to use the lineage information to determine the age of
+ mutants.
+ This example evolves a constant population of size 10,000.
+ An 
+\family typewriter
+IdTagger
+\family default
+ is used before 
+\family typewriter
+InitGenotype
+\family default
+ so individual IDs will be assigned as allelic lineages.
+ Because all offspring get their own IDs during evolution, the IDs of individual
+s are assigned to mutants as their lineages, and can be used to determine
+ the age of these mutants.
+ This is pretty easy to do in this example because of constant population
+ size.
+ For more complex demographic models, you might have to record the minimal
+ and maximum IDs of each generation in order to determine the age of mutants.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/ageOfMutants.log"
+lstparams "caption={Distribution of age of mutants},label={ageOfMutants}"
 
 \end_inset
 
