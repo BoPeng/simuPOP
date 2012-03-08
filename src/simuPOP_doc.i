@@ -74,7 +74,8 @@ Usage:
 
     BaseMutator(rates=[], loci=ALL_AVAIL, mapIn=[], mapOut=[],
       context=0, output=\">\", begin=0, end=-1, step=1, at=[],
-      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[],
+      lineageField=\"ind_id\")
 
 Details:
 
@@ -114,15 +115,21 @@ Details:
     Python function that returns a corresponding allele for a given
     allele. This allows easier mapping between a large number of
     alleles and advanced models such as random emission of alleles.
-    Some mutation models are context dependent. Namely, how an allele
-    mutates will depend on its adjecent alleles. Whereas most simuPOP
-    mutators are context independent, some of them accept a parameter
-    context which is the number of alleles to the left and right of
-    the mutated allele. For example context=1 will make the alleles to
-    the immediate left and right to a mutated allele available to a
-    mutator. These alleles will be mapped in if parameter mapIn is
-    defined. How exactly a mutator makes use of these information is
-    mutator dependent.
+    If a valid information field is specified for parameter
+    lineageField (default to ind_id) for modules with lineage allele
+    type, the lineage of the mutated alleles will be the ID (stored in
+    field linkageField) of individuals that harbor the mutated
+    alleles. The lineage information will be transmitted along with
+    the alleles so this feature allows you to track the source of
+    mutants during evolution.  Some mutation models are context
+    dependent. Namely, how an allele mutates will depend on its
+    adjecent alleles. Whereas most simuPOP mutators are context
+    independent, some of them accept a parameter context which is the
+    number of alleles to the left and right of the mutated allele. For
+    example context=1 will make the alleles to the immediate left and
+    right to a mutated allele available to a mutator. These alleles
+    will be mapped in if parameter mapIn is defined. How exactly a
+    mutator makes use of these information is mutator dependent.
 
 "; 
 
@@ -930,7 +937,9 @@ Details:
     Parameters subPops is ignored. This operator by default copies
     genotypes on all autosome and sex chromosomes (excluding
     customized chromosomes), unless a parameter chroms is used to
-    specify which chromosomes to copy.
+    specify which chromosomes to copy. This operator also copies
+    allelic lineage when it is executed in a module with lineage
+    allele type.
 
 "; 
 
@@ -1173,7 +1182,8 @@ Usage:
 
     ContextMutator(rates=[], loci=ALL_AVAIL, mutators=[],
       contexts=[], mapIn=[], mapOut=[], output=\">\", begin=0, end=-1,
-      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[],
+      lineageField=\"ind_id\")
 
 Details:
 
@@ -1465,6 +1475,78 @@ Usage:
 %ignore simuPOP::Expression::valueAsString() const;
 
 %ignore simuPOP::Expression::valueAsArray() const;
+
+%feature("docstring") simuPOP::FiniteSitesMutator "
+
+Details:
+
+    This is an infite site mutation model in mutational space. The
+    alleles in the population is assumed to be locations of mutants. A
+    mutation rate is given that mutate alleles in 'regions'. If number
+    of mutants for an individual exceed the number of loci, 10 loci
+    will be added to everyone in the population.
+
+"; 
+
+%feature("docstring") simuPOP::FiniteSitesMutator::FiniteSitesMutator "
+
+Usage:
+
+    FiniteSitesMutator(rate, ranges, model=1, output=\"\", begin=0,
+      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
+      infoFields=[], lineageField=\"ind_id\")
+
+Details:
+
+    This operator accepts a list of ranges which is the 'real range'
+    of each chromosome. Mutation happens with muation rate rate and
+    mutants will be recorded to the population (instead of alleles).
+    By default, this mutator assumes an finite-allele model where all
+    mutations are allowed and if a mutant (allele 1) is mutated, it
+    will be mutated to allele 0 (back mutation). Alternatively (model
+    = 2), an infinite-sites mutation model can be used where mutations
+    can happen only at a new locus. Mutations happen at a locus with
+    existing mutants will be moved to a random locus without existing
+    mutant. A warning message will be printed if there is no vacant
+    locus available. If a valid output is given, mutants will be
+    outputted in the format of \"gen mutant ind type\" where type is 0
+    for forward (0->1), 1 for backward (1->0), 2 for relocated
+    mutations, and 3 for ignored mutation because no vacent locus is
+    available. The second mode has the advantage that all mutants in
+    the simulated population can be traced to a single mutation event.
+    If the regions are reasonably wide and mutation rates are low,
+    these two mutation models should yield similar results.
+
+"; 
+
+%feature("docstring") simuPOP::FiniteSitesMutator::~FiniteSitesMutator "
+
+Description:
+
+    destructor.
+
+Usage:
+
+    x.~FiniteSitesMutator()
+
+"; 
+
+%feature("docstring") simuPOP::FiniteSitesMutator::apply "
+
+Usage:
+
+    x.apply(pop)
+
+Details:
+
+    Apply an operator to population pop directly, without checking its
+    applicability.
+
+"; 
+
+%feature("docstring") simuPOP::FiniteSitesMutator::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::FiniteSitesMutator::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::floatList "
 
@@ -2113,7 +2195,9 @@ Details:
 
     Clear (set alleles to zero) chromosome chrom on the ploidy-th
     homologous set of chromosomes of individual ind. It is equivalent
-    to ind.setGenotype([0], ploidy, chrom).
+    to ind.setGenotype([0], ploidy, chrom), except that it also clears
+    allele lineage if it is executed in a module with lineage allele
+    type.
 
 "; 
 
@@ -2129,7 +2213,8 @@ Details:
     chromosomes from parent to the ploidy set of homologous
     chromosomes of offspring. It is equivalent to
     offspring.setGenotype(parent.genotype(parPloidy, chrom), polidy,
-    chrom).
+    chrom), except that it also copies allelic lineage when it is
+    executed in a module with lineage allele type.
 
 "; 
 
@@ -2144,7 +2229,9 @@ Details:
     Transmit the parPloidy set of homologous chromosomes from parent
     to the ploidy set of homologous chromosomes of offspring.
     Customized chromosomes are not copied. It is equivalent to
-    offspring.setGenotype(parent.genotype(parPloidy), ploidy).
+    offspring.setGenotype(parent.genotype(parPloidy), ploidy), except
+    that it also copies allelic lineage when it is executed in a
+    module with lineage allele type.
 
 "; 
 
@@ -2329,7 +2416,8 @@ Details:
     Create a haplodiploid genotype transmitter (during-mating
     operator) that transmit parental genotypes from parents to
     offspring in a haplodiploid population. Parameters subPops and
-    infoFields are ignored.
+    infoFields are ignored. This operator also copies allelic lineage
+    when it is executed in a module with lineage allele type.
 
 "; 
 
@@ -2737,6 +2825,40 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::Individual::alleleLineage "
+
+Usage:
+
+    x.alleleLineage(idx, ploidy=-1, chrom=-1)
+
+Details:
+
+    return the lineage of the allele at a locus, using its absolute
+    index idx. If a ploidy ploidy and/or a chromosome indexes is
+    given, idx is relative to the beginning of specified homologous
+    copy of chromosomes (if chrom=-1) or the beginning of the
+    specified homologous copy of specified chromosome (if chrom >= 0).
+    This function returns 0 for modules without lineage information.
+
+"; 
+
+%feature("docstring") simuPOP::Individual::setAlleleLineage "
+
+Usage:
+
+    x.setAlleleLineage(lineage, idx, ploidy=-1, chrom=-1)
+
+Details:
+
+    set lineage lineage to an allele, using its absolute index idx. If
+    a ploidy ploidy and/or a chromosome indexes are given, idx is
+    relative to the beginning of specified homologous copy of
+    chromosomes (if chrom=-1) or the beginning of the specified
+    homologous copy of specified chromosome (if chrom >= 0). This
+    function does nothing for modules without lineage information.
+
+"; 
+
 %feature("docstring") simuPOP::Individual::genotype "
 
 Usage:
@@ -2750,6 +2872,24 @@ Details:
     alleles on the specified chromosomes and homologous copy of
     chromosomes will be returned. If multiple chromosomes are
     specified, there should not be gaps between chromosomes.
+
+"; 
+
+%feature("docstring") simuPOP::Individual::lineage "
+
+Usage:
+
+    x.lineage(ploidy=ALL_AVAIL, chroms=ALL_AVAIL)
+
+Details:
+
+    return an editable array (a carray_lineage object) that represents
+    the lineages of all alleles of an individual. If ploidy or chroms
+    is given, only lineages on the specified chromosomes and
+    homologous copy of chromosomes will be returned. If multiple
+    chromosomes are specified, there should not be gaps between
+    chromosomes. A None object will be returned for modules without
+    lineage information.
 
 "; 
 
@@ -2768,6 +2908,23 @@ Details:
     copied to only all or specified chromosomes on selected homologous
     copies of chromosomes. geno will be reused if its length is less
     than number of alleles to be filled.
+
+"; 
+
+%feature("docstring") simuPOP::Individual::setLineage "
+
+Usage:
+
+    x.setLineage(lineage, ploidy=ALL_AVAIL, chroms=ALL_AVAIL)
+
+Details:
+
+    Fill the lineage of an individual using a list of IDs lineage. If
+    parameters ploidy and/or chroms are specified, lineages will be
+    copied to only all or specified chromosomes on selected homologous
+    copies of chromosomes. lineage will be reused if its length is
+    less than number of allelic lineage to be filled. This function
+    does nothing for modules without lineage information.
 
 "; 
 
@@ -3216,7 +3373,8 @@ Usage:
 
     InitGenotype(freq=[], genotype=[], prop=[], haplotypes=[],
       loci=ALL_AVAIL, ploidy=ALL_AVAIL, begin=0, end=1, step=1, at=[],
-      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[],
+      lineageField=\"ind_id\")
 
 Details:
 
@@ -3237,11 +3395,13 @@ Details:
     If the length of a haplotype is not enough to fill all loci, the
     haplotype will be reused. If a list (or a single) haplotypes are
     specified without freq or prop, they are used with equal
-    probability.  In the last case, if a sequence of genotype is
-    specified, it will be uesd repeatedly to initialize all alleles
-    sequentially. This works similar to function
-    Population.setGenotype() except that you can limit the
-    initialization to certain loci and ploidy.
+    probability. For modules with lineage allele type, if individual
+    IDs are assigned to a field lineageField (default to ind_id), its
+    value will be saved as the lineage of modified alleles.  In the
+    last case, if a sequence of genotype is specified, it will be uesd
+    repeatedly to initialize all alleles sequentially. This works
+    similar to function Population.setGenotype() except that you can
+    limit the initialization to certain loci and ploidy.
 
 "; 
 
@@ -3503,7 +3663,7 @@ Usage:
 
     KAlleleMutator(k, rates=[], loci=ALL_AVAIL, mapIn=[], mapOut=[],
       output=\">\", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
-      subPops=ALL_AVAIL, infoFields=[])
+      subPops=ALL_AVAIL, infoFields=[], lineageField=\"ind_id\")
 
 Details:
 
@@ -3886,7 +4046,7 @@ Usage:
 
     MatrixMutator(rate, loci=ALL_AVAIL, mapIn=[], mapOut=[],
       output=\">\", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
-      subPops=ALL_AVAIL, infoFields=[])
+      subPops=ALL_AVAIL, infoFields=[], lineageField=\"ind_id\")
 
 Details:
 
@@ -3947,7 +4107,8 @@ Details:
     that transmits genotypes from parents to offspring following
     Mendel's laws. Autosomes and sex chromosomes are handled but
     customized chromosomes are ignored. Parameters subPops and
-    infoFields are ignored.
+    infoFields are ignored. This operator also copies allelic lineage
+    when it is executed in a module with lineage allele type.
 
 "; 
 
@@ -4160,7 +4321,8 @@ Details:
     specified by chroms, as human mitochondrial chromosomes. These
     chromosomes should have the same length and the same number of
     loci. This operator transmits these chromosomes randomly from the
-    female parent to offspring of both sexes.
+    female parent to offspring of both sexes. It also copies allelic
+    lineage when it is executed in a module with lineage allele type.
 
 "; 
 
@@ -4189,7 +4351,8 @@ Usage:
 
     MixedMutator(rates=[], loci=ALL_AVAIL, mutators=[], prob=[],
       mapIn=[], mapOut=[], context=0, output=\">\", begin=0, end=-1,
-      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[],
+      lineageField=\"ind_id\")
 
 Details:
 
@@ -4418,177 +4581,6 @@ Usage:
     x.serialize(ar, int)
 
 "; 
-
-%feature("docstring") simuPOP::MutSpaceMutator "
-
-Details:
-
-    This is an infite site mutation model in mutational space. The
-    alleles in the population is assumed to be locations of mutants. A
-    mutation rate is given that mutate alleles in 'regions'. If number
-    of mutants for an individual exceed the number of loci, 10 loci
-    will be added to everyone in the population.
-
-"; 
-
-%feature("docstring") simuPOP::MutSpaceMutator::MutSpaceMutator "
-
-Usage:
-
-    MutSpaceMutator(rate, ranges, model=1, output=\"\", begin=0,
-      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-      infoFields=[])
-
-Details:
-
-    This operator accepts a list of ranges which is the 'real range'
-    of each chromosome. Mutation happens with muation rate rate and
-    mutants will be recorded to the population (instead of alleles).
-    By default, this mutator assumes an finite-allele model where all
-    mutations are allowed and if a mutant (allele 1) is mutated, it
-    will be mutated to allele 0 (back mutation). Alternatively (model
-    = 2), an infinite-sites mutation model can be used where mutations
-    can happen only at a new locus. Mutations happen at a locus with
-    existing mutants will be moved to a random locus without existing
-    mutant. A warning message will be printed if there is no vacant
-    locus available. If a valid output is given, mutants will be
-    outputted in the format of \"gen mutant ind type\" where type is 0
-    for forward (0->1), 1 for backward (1->0), 2 for relocated
-    mutations, and 3 for ignored mutation because no vacent locus is
-    available. The second mode has the advantage that all mutants in
-    the simulated population can be traced to a single mutation event.
-    If the regions are reasonably wide and mutation rates are low,
-    these two mutation models should yield similar results.
-
-"; 
-
-%feature("docstring") simuPOP::MutSpaceMutator::~MutSpaceMutator "
-
-Description:
-
-    destructor.
-
-Usage:
-
-    x.~MutSpaceMutator()
-
-"; 
-
-%feature("docstring") simuPOP::MutSpaceMutator::apply "
-
-Usage:
-
-    x.apply(pop)
-
-Details:
-
-    Apply an operator to population pop directly, without checking its
-    applicability.
-
-"; 
-
-%feature("docstring") simuPOP::MutSpaceMutator::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::MutSpaceMutator::describe "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::MutSpaceRecombinator "
-
-Details:
-
-    This during mating operator recombine chromosomes, which records
-    mutant locations, using a fixed recombination rate (per base
-    pair).
-
-"; 
-
-%feature("docstring") simuPOP::MutSpaceRecombinator::MutSpaceRecombinator "
-
-Usage:
-
-    MutSpaceRecombinator(rate, ranges, output=\"\", begin=0, end=-1,
-      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
-
-Details:
-
-    Create a Recombinator (a mendelian genotype transmitter with
-    recombination and gene conversion) that passes genotypes from
-    parents (or a parent in case of self-fertilization) to offspring.
-    A recombination rate in the unit of base pair is needed.
-
-"; 
-
-%feature("docstring") simuPOP::MutSpaceRecombinator::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::MutSpaceRecombinator::~MutSpaceRecombinator "
-
-Usage:
-
-    x.~MutSpaceRecombinator()
-
-"; 
-
-%feature("docstring") simuPOP::MutSpaceRecombinator::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::MutSpaceRecombinator::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad, Individual *mom) const;
-
-%feature("docstring") simuPOP::MutSpaceSelector "
-
-Details:
-
-    This selector assumes that alleles are mutant locations in the
-    mutational space and assign fitness values to them according to a
-    random distribution. The overall individual fitness is determined
-    by either an additive, an multiplicative or an exponential model.
-
-"; 
-
-%feature("docstring") simuPOP::MutSpaceSelector::MutSpaceSelector "
-
-Usage:
-
-    MutSpaceSelector(selDist, mode=EXPONENTIAL, output=\"\", begin=0,
-      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-      infoFields=ALL_AVAIL)
-
-Details:
-
-    Create a selector that assigns individual fitness values according
-    to random fitness effects. selDist can be
-    *   (CONSTANT, s, h) where s will be used for all mutants. The
-    fitness value for genotypes AA, Aa and aa will be (1, 1-hs, 1-s).
-    If h is unspecified, a default value h=0.5 (additive model) will
-    be used.
-    *   (GAMMA_DISTRIBUTION, theta, k, h where s follows a gamma
-    distribution with scale parameter theta and shape parameter k.
-    Fitness values for genotypes AA, Aa and aa will be 1, 1-hs and
-    1-s. A default value h=0.5 will be used if h is unspecified.
-    *   a Python function, which will be called when selection
-    coefficient of a new mutant is needed. This function should return
-    a single value s (with default value h=0.5) or a sequence of (h,
-    s). Mutant location will be passed to this function if it accepts
-    a parameter loc. This allows the definition of site-specific
-    selection coefficients. Individual fitness will be combined in
-    ADDITIVE, MULTIPLICATIVE or EXPONENTIAL mode. (See MlSelector for
-    details). If an output is given, mutants and their fitness values
-    will be written to the output, in the form of 'mutant s h'.
-
-"; 
-
-%feature("docstring") simuPOP::MutSpaceSelector::~MutSpaceSelector "
-
-Usage:
-
-    x.~MutSpaceSelector()
-
-"; 
-
-%feature("docstring") simuPOP::MutSpaceSelector::clone "Obsolete or undocumented function."
-
-%ignore simuPOP::MutSpaceSelector::indFitness(Population &pop, Individual *ind) const;
-
-%feature("docstring") simuPOP::MutSpaceSelector::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::MutSpaceSelector::apply(Population &pop) const;
 
 %feature("docstring") simuPOP::NoneOp "
 
@@ -5571,7 +5563,7 @@ Usage:
 
     PointMutator(loci, allele, ploidy=0, inds=[], output=\">\",
       begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=0,
-      infoFields=[])
+      infoFields=[], lineageField=\"ind_id\")
 
 Details:
 
@@ -6209,6 +6201,22 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::Population::lineage "
+
+Usage:
+
+    x.lineage(subPop=[])
+
+Details:
+
+    Return an editable array of the lineage of alleles for all
+    individuals in a population (if subPop=[], default), or
+    individuals in a subpopulation subPop. Virtual subpopulation is
+    unsupported. This function returns None for modules without
+    lineage information.
+
+"; 
+
 %feature("docstring") simuPOP::Population::setGenotype "
 
 Usage:
@@ -6221,6 +6229,22 @@ Details:
     subPop=[]) or in a (virtual) subpopulation subPop (if subPop=sp or
     (sp, vsp)) using a list of alleles geno. geno will be reused if
     its length is less than subPopSize(subPop)*totNumLoci()*ploidy().
+
+"; 
+
+%feature("docstring") simuPOP::Population::setLineage "
+
+Usage:
+
+    x.setLineage(geno, subPop=[])
+
+Details:
+
+    Fill the lineage of all individuals in a population (if subPop=[])
+    or in a (virtual) subpopulation subPop (if subPop=sp or (sp, vsp))
+    using a list of IDs lineage. lineage will be reused if its length
+    is less than subPopSize(subPop)*totNumLoci()*ploidy(). This
+    function returns directly for modules without lineage information.
 
 "; 
 
@@ -7210,7 +7234,8 @@ Usage:
 
     PyMutator(rates=[], loci=ALL_AVAIL, func=None, context=0,
       mapIn=[], mapOut=[], output=\">\", begin=0, end=-1, step=1, at=[],
-      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[],
+      lineageField=\"ind_id\")
 
 Details:
 
@@ -7657,6 +7682,65 @@ Details:
 
 %ignore simuPOP::PyTagger::parallelizable() const;
 
+%feature("docstring") simuPOP::RandomFitnessSelector "
+
+Details:
+
+    This selector assumes that alleles are mutant locations in the
+    mutational space and assign fitness values to them according to a
+    random distribution. The overall individual fitness is determined
+    by either an additive, an multiplicative or an exponential model.
+
+"; 
+
+%feature("docstring") simuPOP::RandomFitnessSelector::RandomFitnessSelector "
+
+Usage:
+
+    RandomFitnessSelector(selDist, mode=EXPONENTIAL, output=\"\",
+      begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
+
+Details:
+
+    Create a selector that assigns individual fitness values according
+    to random fitness effects. selDist can be
+    *   (CONSTANT, s, h) where s will be used for all mutants. The
+    fitness value for genotypes AA, Aa and aa will be (1, 1-hs, 1-s).
+    If h is unspecified, a default value h=0.5 (additive model) will
+    be used.
+    *   (GAMMA_DISTRIBUTION, theta, k, h where s follows a gamma
+    distribution with scale parameter theta and shape parameter k.
+    Fitness values for genotypes AA, Aa and aa will be 1, 1-hs and
+    1-s. A default value h=0.5 will be used if h is unspecified.
+    *   a Python function, which will be called when selection
+    coefficient of a new mutant is needed. This function should return
+    a single value s (with default value h=0.5) or a sequence of (h,
+    s). Mutant location will be passed to this function if it accepts
+    a parameter loc. This allows the definition of site-specific
+    selection coefficients. Individual fitness will be combined in
+    ADDITIVE, MULTIPLICATIVE or EXPONENTIAL mode. (See MlSelector for
+    details). If an output is given, mutants and their fitness values
+    will be written to the output, in the form of 'mutant s h'.
+
+"; 
+
+%feature("docstring") simuPOP::RandomFitnessSelector::~RandomFitnessSelector "
+
+Usage:
+
+    x.~RandomFitnessSelector()
+
+"; 
+
+%feature("docstring") simuPOP::RandomFitnessSelector::clone "Obsolete or undocumented function."
+
+%ignore simuPOP::RandomFitnessSelector::indFitness(Population &pop, Individual *ind) const;
+
+%feature("docstring") simuPOP::RandomFitnessSelector::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::RandomFitnessSelector::apply(Population &pop) const;
+
 %feature("docstring") simuPOP::RandomParentChooser "
 
 Details:
@@ -7954,7 +8038,9 @@ Details:
     chromosomes. Such a record will be generated for each set of
     homologous chromosomes so an diploid offspring will have two lines
     of output. Note that individual IDs need to be set (using a
-    IdTagger operator) before this Recombinator is applied.
+    IdTagger operator) before this Recombinator is applied.  In
+    addition to genotypes, this operator also copies alleleic lineage
+    if it is executed in a module with lineage allele type.
 
 Note:
 
@@ -8058,10 +8144,12 @@ Usage:
 
 Details:
 
-    This operator looks into a population in mutational space and
-    revert a mutant to wildtype allele if it is fixed in the
-    population. If a valid output is specifieid, fixed alleles will be
-    outputed with a leading generation number.
+    This operator checks all or specified loci of a population and
+    revert all mutants at loci to wildtype alleles if they are fixed
+    in the population. If a list of (virtual) subpopulations are
+    specified, alleles are reverted if they are fixed in each
+    subpopulation, regardless if the alleles are fixed in other
+    subpopulations.
 
 "; 
 
@@ -8069,13 +8157,15 @@ Details:
 
 Usage:
 
-    RevertFixedSites(output=\"\", begin=0, end=-1, step=1, at=[],
-      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+    RevertFixedSites(loci=ALL_AVAIL, output=\"\", begin=0, end=-1,
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
-    Create an operator to revert alleles at fixed loci from value 1 to
-    0. Parameter subPops is ignored.
+    Create an operator to set all alleles to zero at specified
+    (parameter loci) or all loci if they are fixed (having no zero-
+    allele) at these loci. If parameter subPops are specified, only
+    individuals in these subpopulations are considered.
 
 "; 
 
@@ -8432,7 +8522,8 @@ Details:
     Create a self-fertilization genotype transmitter that transmits
     genotypes of a parent to an offspring through self-fertilization.
     Cutsomized chromosomes are not handled. Parameters subPops and
-    infoFields are ignored.
+    infoFields are ignored. This operator also copies allelic lineage
+    when it is executed in a module with lineage allele type.
 
 "; 
 
@@ -9132,19 +9223,25 @@ Details:
     *   propOfUnaffected_sp: Proportion of unaffected individuals in
     each (virtual) subpopulation.numOfSegSites: Parameter
     numOfSegSites accepts a list of loci (loci indexes, names, or
-    ALL_AVAIL) and count the number of loci with at least one non-zero
-    allele (segregating sites) for individuals in all or specified
-    (virtual) subpopulations. This parameter sets variables
+    ALL_AVAIL) and count the number of loci with at least two
+    different alleles (segregating sites) or loci with only one non-
+    zero allele (no zero allele, not segragating) for individuals in
+    all or specified (virtual) subpopulations. This parameter sets
+    variables
     *   numOfSegSites (default): Number of segregating sites in all or
     specified (virtual) subpopulations.
     *   numOfSegSites_sp: Number of segregating sites in each
-    (virtual) subpopulation.alleleFreq: This parameter accepts a list
-    of loci (loci indexes, names, or ALL_AVAIL), at which allele
-    frequencies will be calculated. This statistic outputs the
-    following variables, all of which are dictionary (with loci
-    indexes as keys) of default dictionaries (with alleles as keys).
-    For example, alleleFreq[loc][a] returns 0 if allele a does not
-    exist.
+    (virtual) subpopulation.
+    *   numOfFixedSites: Number of sites with one non-zero allele in
+    all or specified (virtual) subpopulations.
+    *   numOfFixedSites_sp: Number of sites with one non-zero allele
+    in in each (virtual) subpopulations.alleleFreq: This parameter
+    accepts a list of loci (loci indexes, names, or ALL_AVAIL), at
+    which allele frequencies will be calculated. This statistic
+    outputs the following variables, all of which are dictionary (with
+    loci indexes as keys) of default dictionaries (with alleles as
+    keys). For example, alleleFreq[loc][a] returns 0 if allele a does
+    not exist.
     *   alleleFreq (default): alleleFreq[loc][a] is the frequency of
     allele a at locus for all or specified (virtual) subpopulations.
     *   alleleNum (default): alleleNum[loc][a] is the number of allele
@@ -9888,7 +9985,7 @@ Usage:
     StepwiseMutator(rates=[], loci=ALL_AVAIL, incProb=0.5,
       maxAllele=0, mutStep=[], mapIn=[], mapOut=[], output=\">\",
       begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
-      subPops=ALL_AVAIL, infoFields=[])
+      subPops=ALL_AVAIL, infoFields=[], lineageField=\"ind_id\")
 
 Details:
 
@@ -10531,9 +10628,9 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::applyDuringMatingOperator "Obsolete or undocumented function."
+%feature("docstring") simuPOP::sandbox::applyDuringMatingOperator "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::loadPedigree "
+%feature("docstring") simuPOP::sandbox::loadPedigree "
 
 Usage:
 
@@ -10584,7 +10681,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::loadPopulation "
+%feature("docstring") simuPOP::sandbox::loadPopulation "
 
 Usage:
 
@@ -10596,7 +10693,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::describeEvolProcess "
+%feature("docstring") simuPOP::sandbox::describeEvolProcess "
 
 Usage:
 
@@ -10613,7 +10710,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::turnOnDebug "
+%feature("docstring") simuPOP::sandbox::turnOnDebug "
 
 Usage:
 
@@ -10627,7 +10724,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::turnOffDebug "
+%feature("docstring") simuPOP::sandbox::turnOffDebug "
 
 Usage:
 
@@ -10641,13 +10738,13 @@ Details:
 
 "; 
 
-%ignore simuPOP::debug(DBG_CODE code);
+%ignore simuPOP::sandbox::debug(DBG_CODE code);
 
-%ignore simuPOP::repeatedWarning(const string &message);
+%ignore simuPOP::sandbox::repeatedWarning(const string &message);
 
-%ignore simuPOP::initClock();
+%ignore simuPOP::sandbox::initClock();
 
-%feature("docstring") simuPOP::elapsedTime "
+%feature("docstring") simuPOP::sandbox::elapsedTime "
 
 Usage:
 
@@ -10655,7 +10752,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::setOptions "
+%feature("docstring") simuPOP::sandbox::setOptions "
 
 Usage:
 
@@ -10673,49 +10770,51 @@ Details:
 
 "; 
 
-%ignore simuPOP::numThreads();
+%ignore simuPOP::sandbox::numThreads();
 
-%ignore simuPOP::fetchAndIncrement(ATOMICLONG *val);
+%ignore simuPOP::sandbox::fetchAndIncrement(ATOMICLONG *val);
 
-%ignore simuPOP::parallelSort(T1 start, T1 end, T2 cmp);
+%ignore simuPOP::sandbox::parallelSort(T1 start, T1 end, T2 cmp);
 
-%ignore simuPOP::simuPOPkbhit();
+%ignore simuPOP::sandbox::simuPOPkbhit();
 
-%ignore simuPOP::simuPOPgetch();
+%ignore simuPOP::sandbox::simuPOPgetch();
 
-%ignore simuPOP::PyObjAsBool(PyObject *obj, bool &val);
+%ignore simuPOP::sandbox::PyObjAsBool(PyObject *obj, bool &val);
 
-%ignore simuPOP::PyObjAsInt(PyObject *obj, long &val);
+%ignore simuPOP::sandbox::PyObjAsInt(PyObject *obj, long &val);
 
-%ignore simuPOP::PyObjAsDouble(PyObject *obj, double &val);
+%ignore simuPOP::sandbox::PyObjAsDouble(PyObject *obj, double &val);
 
-%ignore simuPOP::PyObjAsString(PyObject *obj, string &val);
+%ignore simuPOP::sandbox::PyObjAsString(PyObject *obj, string &val);
 
-%ignore simuPOP::PyObjAsArray(PyObject *obj, vectorf &val);
+%ignore simuPOP::sandbox::PyObjAsArray(PyObject *obj, vectorf &val);
 
-%ignore simuPOP::PyObjAsIntArray(PyObject *obj, vectori &val);
+%ignore simuPOP::sandbox::PyObjAsIntArray(PyObject *obj, vectori &val);
 
-%ignore simuPOP::AlleleVecAsNumArray(GenoIterator begin, GenoIterator end);
+%ignore simuPOP::sandbox::AlleleVecAsNumArray(GenoIterator begin, GenoIterator end);
 
-%ignore simuPOP::PyObjAsString(PyObject *str);
+%ignore simuPOP::sandbox::LineageVecAsNumArray(LineageIterator begin, LineageIterator end);
 
-%ignore simuPOP::mainVars();
+%ignore simuPOP::sandbox::PyObjAsString(PyObject *str);
 
-%ignore simuPOP::moduleVars();
+%ignore simuPOP::sandbox::mainVars();
 
-%ignore simuPOP::pyPopObj(void *p);
+%ignore simuPOP::sandbox::moduleVars();
 
-%ignore simuPOP::pyIndObj(void *p);
+%ignore simuPOP::sandbox::pyPopObj(void *p);
 
-%ignore simuPOP::pyIndPointer(PyObject *p);
+%ignore simuPOP::sandbox::pyIndObj(void *p);
 
-%ignore simuPOP::pyPopPointer(PyObject *p);
+%ignore simuPOP::sandbox::pyIndPointer(PyObject *p);
 
-%ignore simuPOP::shorten(const string &val, size_t length=40);
+%ignore simuPOP::sandbox::pyPopPointer(PyObject *p);
 
-%ignore simuPOP::ostreamManager();
+%ignore simuPOP::sandbox::shorten(const string &val, size_t length=40);
 
-%feature("docstring") simuPOP::closeOutput "
+%ignore simuPOP::sandbox::ostreamManager();
+
+%feature("docstring") simuPOP::sandbox::closeOutput "
 
 Usage:
 
@@ -10734,7 +10833,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::getRNG "
+%feature("docstring") simuPOP::sandbox::getRNG "
 
 Description:
 
@@ -10746,17 +10845,17 @@ Usage:
 
 "; 
 
-%ignore simuPOP::chisqTest(const vector< vectoru > &table, double &chisq, double &chisq_p);
+%ignore simuPOP::sandbox::chisqTest(const vector< vectoru > &table, double &chisq, double &chisq_p);
 
-%ignore simuPOP::armitageTrendTest(const vector< vectoru > &table, const vectorf &weight);
+%ignore simuPOP::sandbox::armitageTrendTest(const vector< vectoru > &table, const vectorf &weight);
 
-%ignore simuPOP::hweTest(const vectoru &cnt);
+%ignore simuPOP::sandbox::hweTest(const vectoru &cnt);
 
-%ignore simuPOP::propToCount(vectorf::const_iterator first, vectorf::const_iterator last, size_t N, vectoru &count);
+%ignore simuPOP::sandbox::propToCount(vectorf::const_iterator first, vectorf::const_iterator last, size_t N, vectoru &count);
 
-%ignore simuPOP::formatDescription(const string &text);
+%ignore simuPOP::sandbox::formatDescription(const string &text);
 
-%feature("docstring") simuPOP::moduleInfo "
+%feature("docstring") simuPOP::sandbox::moduleInfo "
 
 Usage:
 
@@ -10786,9 +10885,9 @@ Details:
 
 "; 
 
-%ignore simuPOP::initialize();
+%ignore simuPOP::sandbox::initialize();
 
-%ignore simuPOP::cnull();
+%ignore simuPOP::sandbox::cnull();
 
 %ignore std::powthree(unsigned n);
 
