@@ -765,7 +765,7 @@ int setarrayitem_template<LineageIterator>(struct arrayobject_template<LineageIt
 
 template <typename T>
 static void
-array_dealloc_tempate(struct arrayobject_template<T> * op)
+array_dealloc_template(struct arrayobject_template<T> * op)
 {
 	Py_TYPE(op)->tp_free((PyObject *)op);
 }
@@ -1131,7 +1131,7 @@ array_tolist_template(struct arrayobject_template<T> * self, PyObject * unused)
 
 template <typename T>
 static PyObject *
-array_repr(struct arrayobject_template<T> * a)
+array_repr_template(struct arrayobject_template<T> * a)
 {
 	PyObject * s, * v = NULL;
 	v = array_tolist_template<T>(a, NULL);
@@ -1253,7 +1253,7 @@ array_ass_subscr_template(struct arrayobject_template<T>* self, PyObject* item, 
 	}
 	else if (PyLong_Check(value)) {
 		for (Py_ssize_t i = 0; start + i < stop; ++i)
-			setarrayitem(self, start + i, value);
+			setarrayitem_template(self, start + i, value);
 		return 0;
 	} else if (PySequence_Check(value)) {
 		needed = PySequence_Size(value);
@@ -1349,7 +1349,7 @@ PyObject * newcarrayobject_template<GenoIterator>(GenoIterator begin, GenoIterat
 
 /// CPPONLY
 template <>
-PyObject * newcarrayobject<LineageIterator>(LineageIterator begin, LineageIterator end)
+PyObject * newcarrayobject_template<LineageIterator>(LineageIterator begin, LineageIterator end)
 {
 	// create an object and copy data
 	struct arrayobject_template<LineageIterator> * op;
