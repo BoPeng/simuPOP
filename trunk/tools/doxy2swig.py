@@ -375,6 +375,14 @@ class Doxy2SWIG:
                     ns_node = anc.getElementsByTagName('compoundname')
                 if ns_node:
                     ns = ns_node[0].firstChild.data
+                    #
+                    # FIXME: when the sandbox namespace is introduced to sandbox.h/cpp, it somehow
+                    # manifests itself to all namespaces in this script (doxygen output is correct).
+                    # I do not know how to thoroughly fix this problem, and have to manually remove
+                    # sandbox from the namespace. Hopefully a full solution could be found later.
+                    #
+                    if ':' in ns:
+                        ns = ns.split(':')[0]
                     func_name = '%s::%s' %(ns, name)
                     self.content.append({'Name': func_name, 'type': 'global_function'})
                     self.content[-1]['Usage'] = func_name.split(':')[-1]
