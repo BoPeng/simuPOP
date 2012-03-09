@@ -853,7 +853,7 @@ array_length(arrayobject * a)
 static PyObject *
 array_item(arrayobject * a, Py_ssize_t i)
 {
-	return array_item_template<GenoIterator>(a);
+	return array_item_template<GenoIterator>(a, i);
 }
 
 
@@ -998,7 +998,7 @@ Attributes:\n\
 itemsize -- the length in bytes of one array item\n\
 "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        );
 
-static PyTypeObject Arraytype = {
+PyTypeObject Arraytype = {
 	PyVarObject_HEAD_INIT(NULL, 0)
 	"simuPOP.array",
 	sizeof(arrayobject),
@@ -1058,12 +1058,12 @@ PyObject * newcarrayobject(GenoIterator begin, GenoIterator end)
 
 typedef struct arrayobject_template<LineageIterator> arrayobject_lineage;
 
-bool is_carrayobject(PyObject * op);
+bool is_carrayobject_lineage(PyObject * op);
 
-PyObject * newcarrayobject(LineageIterator begin, LineageIterator end);
+PyObject * newcarrayobject_lineage(LineageIterator begin, LineageIterator end);
 
 static PyObject *
-getarrayitem(PyObject * op, Py_ssize_t i)
+getarrayitem_lineage(PyObject * op, Py_ssize_t i)
 {
 	return getarrayitem_template<LineageIterator>(op, i);
 }
@@ -1071,7 +1071,7 @@ getarrayitem(PyObject * op, Py_ssize_t i)
 
 /// CPPONLY
 static int
-setarrayitem(arrayobject * ap, int i, PyObject * v)
+setarrayitem_lineage(arrayobject_lineage * ap, int i, PyObject * v)
 {
 	return setarrayitem_template<LineageIterator>(ap, i, v);
 }
@@ -1079,14 +1079,14 @@ setarrayitem(arrayobject * ap, int i, PyObject * v)
 /* Methods */
 
 static void
-array_dealloc(arrayobject * op)
+array_dealloc_lineage(arrayobject_lineage * op)
 {
 	array_dealloc_template<LineageIterator>(op);
 }
 
 
 static PyObject *
-array_richcompare(PyObject * v, PyObject * w, int op)
+array_richcompare_lineage(PyObject * v, PyObject * w, int op)
 {
 	return array_richcompare_template<LineageIterator>(v, w, op);
 
@@ -1094,101 +1094,101 @@ array_richcompare(PyObject * v, PyObject * w, int op)
 
 
 static Py_ssize_t
-array_length(arrayobject * a)
+array_length_lineage(arrayobject_lineage * a)
 {
 	return array_length_template<LineageIterator>(a);
 }
 
 
 static PyObject *
-array_item(arrayobject * a, Py_ssize_t i)
+array_item_lineage(arrayobject_lineage * a, Py_ssize_t i)
 {
-	return array_item_template<LineageIterator>(a);
+	return array_item_template<LineageIterator>(a, i);
 }
 
 
 static PyObject *
-array_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh)
+array_slice_lineage(arrayobject_lineage * a, Py_ssize_t ilow, Py_ssize_t ihigh)
 {
 	return array_slice_template<LineageIterator>(a, ilow, ihigh);
 }
 
 
 static int
-array_ass_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh, PyObject * v)
+array_ass_slice_lineage(arrayobject_lineage * a, Py_ssize_t ilow, Py_ssize_t ihigh, PyObject * v)
 {
 	return array_ass_slice_template<LineageIterator>(a, ilow, ihigh, v);
 }
 
 
 static int
-array_ass_item(arrayobject * a, Py_ssize_t i, PyObject * v)
+array_ass_item_lineage(arrayobject_lineage * a, Py_ssize_t i, PyObject * v)
 {
 	return array_ass_item_template<LineageIterator>(a, i, v);
 }
 
 
 static PyObject *
-array_count(arrayobject * self, PyObject * v)
+array_count_lineage(arrayobject_lineage * self, PyObject * v)
 {
 	return array_count_template<LineageIterator>(self, v);
 }
 
 
-PyDoc_STRVAR(count_doc,
+PyDoc_STRVAR(count_doc_lineage,
 	"count(x)\n\
 \n\
 Return number of occurrences of x in the array."                     );
 
 static PyObject *
-array_index(arrayobject * self, PyObject * v)
+array_index_lineage(arrayobject_lineage * self, PyObject * v)
 {
 	return array_index_template<LineageIterator>(self, v);
 }
 
 
-PyDoc_STRVAR(index_doc,
+PyDoc_STRVAR(index_doc_lineage,
 	"index(x)\n\
 \n\
 Return index of first occurrence of x in the array."                     );
 
 static PyObject *
-array_tolist(arrayobject * self, PyObject * unused)
+array_tolist_lineage(arrayobject_lineage * self, PyObject * unused)
 {
 	return array_tolist_template<LineageIterator>(self, unused);
 }
 
 
-PyDoc_STRVAR(tolist_doc,
+PyDoc_STRVAR(tolist_doc_lineage,
 	"tolist() -> list\n\
 \n\
 Convert array to an ordinary list with the same items."                             );
 
 
-static PyMethodDef array_methods[] = {
-	{ "count",	(PyCFunction)array_count,	METH_O,
-	  count_doc },
-	{ "index",	(PyCFunction)array_index,	METH_O,
-	  index_doc },
-	{ "tolist", (PyCFunction)array_tolist,	METH_NOARGS,
-	  tolist_doc },
+static PyMethodDef array_methods_lineage[] = {
+	{ "count",	(PyCFunction)array_count_lineage,	METH_O,
+	  count_doc_lineage },
+	{ "index",	(PyCFunction)array_index_lineage,	METH_O,
+	  index_doc_lineage },
+	{ "tolist", (PyCFunction)array_tolist_lineage,	METH_NOARGS,
+	  tolist_doc_lineage },
 	{ NULL,		NULL }      /* sentinel */
 };
 
 static PyObject *
-array_repr(arrayobject * a)
+array_repr_lineage(arrayobject_lineage * a)
 {
 	return array_repr_template<LineageIterator>(a);
 }
 
 
-static PySequenceMethods array_as_sequence = {
-	(lenfunc)array_length,                  /*sq_length*/
+static PySequenceMethods array_as_sequence_lineage = {
+	(lenfunc)array_length_lineage,                  /*sq_length*/
 	0,                                      /*sq_concat*/
 	0,                                      /*sq_repeat*/
-	(ssizeargfunc)array_item,               /*sq_item*/
+	(ssizeargfunc)array_item_lineage,               /*sq_item*/
 	0,                                      /*sq_slice*/
-	(ssizeobjargproc)array_ass_item,        /*sq_ass_item*/
+	(ssizeobjargproc)array_ass_item_lineage,        /*sq_ass_item*/
 	0,					/*sq_ass_slice*/
 	0,                                      /*sq_contains*/
 	0,                                      /*sq_inplace_concat*/
@@ -1197,31 +1197,31 @@ static PySequenceMethods array_as_sequence = {
 
 
 static PyObject*
-array_subscr(arrayobject* self, PyObject* item)
+array_subscr_lineage(arrayobject_lineage* self, PyObject* item)
 {
 	return array_subscr_template<LineageIterator>(self, item);
 }
 
 
 static int
-array_ass_subscr(arrayobject* self, PyObject* item, PyObject* value)
+array_ass_subscr_lineage(arrayobject_lineage* self, PyObject* item, PyObject* value)
 {
 	return array_ass_subscr_template<LineageIterator>(self, item, value);
 }
 
-static PyMappingMethods array_as_mapping = {
-	(lenfunc)array_length,
-	(binaryfunc)array_subscr,
-	(objobjargproc)array_ass_subscr
+static PyMappingMethods array_as_mapping_lineage = {
+	(lenfunc)array_length_lineage,
+	(binaryfunc)array_subscr_lineage,
+	(objobjargproc)array_ass_subscr_lineage
 };
 
-PyObject * array_new(PyTypeObject * type, PyObject * args, PyObject * kwds)
+PyObject * array_new_lineage(PyTypeObject * type, PyObject * args, PyObject * kwds)
 {
 	return array_new_template<LineageIterator>(type, args, kwds);
 }
 
 
-PyDoc_STRVAR(arraytype_doc,
+PyDoc_STRVAR(arraytype_doc_lineage,
 	" \n\
 \n\
 Methods:\n\
@@ -1248,20 +1248,20 @@ Attributes:\n\
 itemsize -- the length in bytes of one array item\n\
 "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        );
 
-static PyTypeObject Arraytype = {
+PyTypeObject LineageArraytype = {
 	PyVarObject_HEAD_INIT(NULL, 0)
-	"simuPOP.array",
-	sizeof(arrayobject),
+	"simuPOP.array_lineage",
+	sizeof(arrayobject_lineage),
 	0,
-	(destructor)array_dealloc,                  /* tp_dealloc */
+	(destructor)array_dealloc_lineage,                  /* tp_dealloc */
 	0,                                          /* tp_print */
 	0,                                          /* tp_getattr */
 	0,                                          /* tp_setattr */
 	0,                                          /* tp_reserved */
-	(reprfunc)array_repr,                       /* tp_repr */
+	(reprfunc)array_repr_lineage,                       /* tp_repr */
 	0,                                          /* tp_as_number*/
-	&array_as_sequence,                         /* tp_as_sequence*/
-	&array_as_mapping,                          /* tp_as_mapping*/
+	&array_as_sequence_lineage,                         /* tp_as_sequence*/
+	&array_as_mapping_lineage,                          /* tp_as_mapping*/
 	0,                                          /* tp_hash */
 	0,                                          /* tp_call */
 	0,                                          /* tp_str */
@@ -1269,14 +1269,14 @@ static PyTypeObject Arraytype = {
 	0,                                          /* tp_setattro */
 	0,                                          /* tp_as_buffer*/
 	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
-	arraytype_doc,                              /* tp_doc */
+	arraytype_doc_lineage,                              /* tp_doc */
 	0,                                          /* tp_traverse */
 	0,                                          /* tp_clear */
-	array_richcompare,                          /* tp_richcompare */
+	array_richcompare_lineage,                          /* tp_richcompare */
 	0,                                          /* tp_weaklistoffset */
 	0,                                          /* tp_iter */
 	0,                                          /* tp_iternext */
-	array_methods,                              /* tp_methods */
+	array_methods_lineage,                              /* tp_methods */
 	0,                                          /* tp_members */
 	0,                                          /* tp_getset */
 	0,                                          /* tp_base */
@@ -1286,243 +1286,25 @@ static PyTypeObject Arraytype = {
 	0,                                          /* tp_dictoffset */
 	0,                                          /* tp_init */
 	PyType_GenericAlloc,                        /* tp_alloc */
-	array_new,                                  /* tp_new */
+	array_new_lineage,                                  /* tp_new */
 	PyObject_Del,                               /* tp_free */
 };
 
 
-bool is_carrayobject(PyObject * op)
+bool is_carrayobject_lineage(PyObject * op)
 {
 	return is_carrayobject_template<LineageIterator>(op);
 }
 
 
 /// CPPONLY
-PyObject * newcarrayobject(LineageIterator begin, LineageIterator end)
+PyObject * newcarrayobject_lineage(LineageIterator begin, LineageIterator end)
 {
 	return newcarrayobject_template<LineageIterator>(begin, end);
 }
 
 
-typedef struct
-{
-	PyDictObject dict;
-} defdictobject;
-
-//static PyTypeObject defdict_type; /* Forward */
-
-PyDoc_STRVAR(defdict_missing_doc,
-	"__missing__(key) # Called by __getitem__ for missing key; pseudo-code:\n\
-  Return 0\n\
-"                                                                                             );
-
-static PyObject *
-defdict_missing(defdictobject * dd, PyObject * key)
-{
-	return PyInt_FromLong(0);
-}
-
-
-PyDoc_STRVAR(defdict_copy_doc, "D.copy() -> a shallow copy of D.");
-
-static PyObject *
-defdict_copy(defdictobject * dd)
-{
-	/* This calls the object's class.  That only works for subclasses
-	   whose class constructor has the same signature.  Subclasses that
-	   define a different constructor signature must override copy().
-	 */
-	return PyObject_CallFunctionObjArgs((PyObject *)Py_TYPE(dd), Py_None, dd, NULL);
-}
-
-
-static PyObject *
-defdict_reduce(defdictobject * dd)
-{
-	/* __reduce__ must return a 5-tuple as follows:
-
-	   - additional state (here None)
-	   - sequence iterator (here None)
-	   - dictionary iterator (yielding successive (key, value) pairs
-
-	   This API is used by pickle.py and copy.py.
-	 */
-	PyObject * items;
-	PyObject * iter;
-	PyObject * result;
-
-	items = PyObject_CallMethod((PyObject *)dd, "items", "()");
-	if (items == NULL)
-		return NULL;
-	iter = PyObject_GetIter(items);
-	if (iter == NULL) {
-		Py_DECREF(items);
-		return NULL;
-	}
-	result = PyTuple_Pack(4, Py_TYPE(dd),
-		Py_None, Py_None, iter);
-	Py_DECREF(iter);
-	Py_DECREF(items);
-	return result;
-}
-
-
-static PyMethodDef defdict_methods[] = {
-	{ "__missing__", (PyCFunction)defdict_missing, METH_O,
-	  defdict_missing_doc },
-	{ "copy",		 (PyCFunction)defdict_copy,	   METH_NOARGS,
-	  defdict_copy_doc },
-	{ "__copy__",	 (PyCFunction)defdict_copy,	   METH_NOARGS,
-	  defdict_copy_doc },
-	{ "__reduce__",	 (PyCFunction)defdict_reduce,  METH_NOARGS,
-	  "" },
-	{ NULL }
-};
-
-static PyMemberDef defdict_members[] = {
-	{ NULL }
-};
-
-static void
-defdict_dealloc(defdictobject * dd)
-{
-	PyDict_Type.tp_dealloc((PyObject *)dd);
-}
-
-
-static PyObject *
-defdict_repr(defdictobject * dd)
-{
-	PyObject * baserepr;
-	PyObject * result;
-
-	baserepr = PyDict_Type.tp_repr((PyObject *)dd);
-	if (baserepr == NULL)
-		return NULL;
-	result = PyUnicode_FromFormat("defdict(%U)",
-		baserepr);
-	Py_DECREF(baserepr);
-	return result;
-}
-
-
-static int
-defdict_traverse(PyObject * self, visitproc visit, void * arg)
-{
-	return PyDict_Type.tp_traverse(self, visit, arg);
-}
-
-
-static int
-defdict_tp_clear(defdictobject * dd)
-{
-	return PyDict_Type.tp_clear((PyObject *)dd);
-}
-
-
-static int
-defdict_init(PyObject * self, PyObject * args, PyObject * kwds)
-{
-	return PyDict_Type.tp_init(self, args, kwds);
-}
-
-
-PyDoc_STRVAR(defdict_doc,
-	"defdict() --> dict with default value\n\
-\n\
-The default value is returned when an invalid key is used.\n\
-"                                                                                                                );
-
-/* See comment in xxsubtype.c */
-#  define DEFERRED_ADDRESS(ADDR) 0
-
-static PyTypeObject defdict_type = {
-	PyVarObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type),		   0)
-	"simuPOP.defaultdict",                                          /* tp_name */
-	sizeof(defdictobject),                                          /* tp_basicsize */
-	0,                                                              /* tp_itemsize */
-	/* methods */
-	(destructor)defdict_dealloc,                                    /* tp_dealloc */
-	0,                                                              /* tp_print */
-	0,                                                              /* tp_getattr */
-	0,                                                              /* tp_setattr */
-	0,                                                              /* tp_reserved */
-	(reprfunc)defdict_repr,                                         /* tp_repr */
-	0,                                                              /* tp_as_number */
-	0,                                                              /* tp_as_sequence */
-	0,                                                              /* tp_as_mapping */
-	0,                                                              /* tp_hash */
-	0,                                                              /* tp_call */
-	0,                                                              /* tp_str */
-	PyObject_GenericGetAttr,                                        /* tp_getattro */
-	0,                                                              /* tp_setattro */
-	0,                                                              /* tp_as_buffer */
-	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
-	/* tp_flags */
-	defdict_doc,                                                    /* tp_doc */
-	defdict_traverse,                                               /* tp_traverse */
-	(inquiry)defdict_tp_clear,                                      /* tp_clear */
-	0,                                                              /* tp_richcompare */
-	0,                                                              /* tp_weaklistoffset*/
-	0,                                                              /* tp_iter */
-	0,                                                              /* tp_iternext */
-	defdict_methods,                                                /* tp_methods */
-	defdict_members,                                                /* tp_members */
-	0,                                                              /* tp_getset */
-	DEFERRED_ADDRESS(&PyDict_Type),                                 /* tp_base */
-	0,                                                              /* tp_dict */
-	0,                                                              /* tp_descr_get */
-	0,                                                              /* tp_descr_set */
-	0,                                                              /* tp_dictoffset */
-	defdict_init,                                                   /* tp_init */
-	PyType_GenericAlloc,                                            /* tp_alloc */
-	0,                                                              /* tp_new */
-	PyObject_GC_Del,                                                /* tp_free */
-};
-
-bool is_defdict(PyTypeObject * type)
-{
-	return type == &defdict_type;
-}
-
-
-PyObject * PyDefDict_New()
-{
-	defdictobject * obj;
-
-	// This should call PyDict_Type.tp_new and create an object
-	obj = (defdictobject *)defdict_type.tp_new((PyTypeObject *)(&defdict_type), NULL, NULL);
-	if (obj == NULL) {
-		PyObject_Del(obj);
-		return PyErr_NoMemory();
-	}
-	// initialize this object (call PyDict_Type.tp_init)
-	PyObject * args = PyTuple_New(0);
-	PyDict_Type.tp_init((PyObject *)obj, args, NULL);
-	Py_DECREF(args);
-	return (PyObject *)obj;
-}
-
-
-int initCustomizedTypes(void)
-{
-	Py_TYPE(&Arraytype) = &PyType_Type;
-	if (PyType_Ready(&Arraytype) < 0)
-		return -1;
-	//
-	Py_TYPE(&defdict_type) = &PyType_Type;
-	defdict_type.tp_base = &PyDict_Type;
-
-	if (PyType_Ready(&defdict_type) < 0)
-		return -1;
-	//Py_INCREF(&defdict_type);
-	return 0;
-}
-
-
-
 /**  defdict type ******************************/
-
 typedef struct
 {
 	PyDictObject dict;
