@@ -1346,7 +1346,10 @@ public:
 			// NOTE: this iterator is used only when indOrdered() is set to true for
 			// the whole population (see Population.lineageIterator()). It is therefore
 			// possible to get the index of individual from index of m_ptr.
-			int offset = (m_ptr - m_ptrBegin) / (m_size * m_ploidy);
+			//
+			// There is a conversion from size_t to long (difference_type), a possible
+			// loss of data
+			difference_type offset = static_cast<difference_type>((m_ptr - m_ptrBegin) / (m_size * m_ploidy));
 			return(m_it + offset);
 		} else {
 			return(m_it);

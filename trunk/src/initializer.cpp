@@ -317,10 +317,10 @@ bool InitGenotype::apply(Population & pop) const
 			IndIterator it = pop.indIterator(sp->subPop());
 #endif
 			if (pop.hasInfoField(m_lineageField)) {
-				int idIdx = pop.infoIdx(m_lineageField);
+				size_t idIdx = pop.infoIdx(m_lineageField);
 
 				for (; it.valid(); ++it) {
-					long lineage = toID(it->info(idIdx));
+					long lineage = static_cast<long>(toID(it->info(idIdx)));
 					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) 
 						for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc) 
 							it->setAlleleLineage(lineage, *loc, static_cast<int>(*p));
