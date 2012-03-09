@@ -5931,6 +5931,7 @@ Details:
     (default) or a specified ancestral generation ancGen. If no subpop
     is given, it is the same as popSize(ancGen). Population and
     virtual subpopulation names can be used.
+    <group>2-subpopsize</grouplociList()>
 
 "; 
 
@@ -10628,9 +10629,9 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::sandbox::applyDuringMatingOperator "Obsolete or undocumented function."
+%feature("docstring") simuPOP::applyDuringMatingOperator "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::sandbox::loadPedigree "
+%feature("docstring") simuPOP::loadPedigree "
 
 Usage:
 
@@ -10681,7 +10682,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::sandbox::loadPopulation "
+%feature("docstring") simuPOP::loadPopulation "
 
 Usage:
 
@@ -10693,7 +10694,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::sandbox::describeEvolProcess "
+%feature("docstring") simuPOP::describeEvolProcess "
 
 Usage:
 
@@ -10710,7 +10711,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::sandbox::turnOnDebug "
+%feature("docstring") simuPOP::turnOnDebug "
 
 Usage:
 
@@ -10724,7 +10725,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::sandbox::turnOffDebug "
+%feature("docstring") simuPOP::turnOffDebug "
 
 Usage:
 
@@ -10738,13 +10739,13 @@ Details:
 
 "; 
 
-%ignore simuPOP::sandbox::debug(DBG_CODE code);
+%ignore simuPOP::debug(DBG_CODE code);
 
-%ignore simuPOP::sandbox::repeatedWarning(const string &message);
+%ignore simuPOP::repeatedWarning(const string &message);
 
-%ignore simuPOP::sandbox::initClock();
+%ignore simuPOP::initClock();
 
-%feature("docstring") simuPOP::sandbox::elapsedTime "
+%feature("docstring") simuPOP::elapsedTime "
 
 Usage:
 
@@ -10752,7 +10753,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::sandbox::setOptions "
+%feature("docstring") simuPOP::setOptions "
 
 Usage:
 
@@ -10770,51 +10771,51 @@ Details:
 
 "; 
 
-%ignore simuPOP::sandbox::numThreads();
+%ignore simuPOP::numThreads();
 
-%ignore simuPOP::sandbox::fetchAndIncrement(ATOMICLONG *val);
+%ignore simuPOP::fetchAndIncrement(ATOMICLONG *val);
 
-%ignore simuPOP::sandbox::parallelSort(T1 start, T1 end, T2 cmp);
+%ignore simuPOP::parallelSort(T1 start, T1 end, T2 cmp);
 
-%ignore simuPOP::sandbox::simuPOPkbhit();
+%ignore simuPOP::simuPOPkbhit();
 
-%ignore simuPOP::sandbox::simuPOPgetch();
+%ignore simuPOP::simuPOPgetch();
 
-%ignore simuPOP::sandbox::PyObjAsBool(PyObject *obj, bool &val);
+%ignore simuPOP::PyObjAsBool(PyObject *obj, bool &val);
 
-%ignore simuPOP::sandbox::PyObjAsInt(PyObject *obj, long &val);
+%ignore simuPOP::PyObjAsInt(PyObject *obj, long &val);
 
-%ignore simuPOP::sandbox::PyObjAsDouble(PyObject *obj, double &val);
+%ignore simuPOP::PyObjAsDouble(PyObject *obj, double &val);
 
-%ignore simuPOP::sandbox::PyObjAsString(PyObject *obj, string &val);
+%ignore simuPOP::PyObjAsString(PyObject *obj, string &val);
 
-%ignore simuPOP::sandbox::PyObjAsArray(PyObject *obj, vectorf &val);
+%ignore simuPOP::PyObjAsArray(PyObject *obj, vectorf &val);
 
-%ignore simuPOP::sandbox::PyObjAsIntArray(PyObject *obj, vectori &val);
+%ignore simuPOP::PyObjAsIntArray(PyObject *obj, vectori &val);
 
-%ignore simuPOP::sandbox::AlleleVecAsNumArray(GenoIterator begin, GenoIterator end);
+%ignore simuPOP::AlleleVecAsNumArray(GenoIterator begin, GenoIterator end);
 
-%ignore simuPOP::sandbox::LineageVecAsNumArray(LineageIterator begin, LineageIterator end);
+%ignore simuPOP::LineageVecAsNumArray(LineageIterator begin, LineageIterator end);
 
-%ignore simuPOP::sandbox::PyObjAsString(PyObject *str);
+%ignore simuPOP::PyObjAsString(PyObject *str);
 
-%ignore simuPOP::sandbox::mainVars();
+%ignore simuPOP::mainVars();
 
-%ignore simuPOP::sandbox::moduleVars();
+%ignore simuPOP::moduleVars();
 
-%ignore simuPOP::sandbox::pyPopObj(void *p);
+%ignore simuPOP::pyPopObj(void *p);
 
-%ignore simuPOP::sandbox::pyIndObj(void *p);
+%ignore simuPOP::pyIndObj(void *p);
 
-%ignore simuPOP::sandbox::pyIndPointer(PyObject *p);
+%ignore simuPOP::pyIndPointer(PyObject *p);
 
-%ignore simuPOP::sandbox::pyPopPointer(PyObject *p);
+%ignore simuPOP::pyPopPointer(PyObject *p);
 
-%ignore simuPOP::sandbox::shorten(const string &val, size_t length=40);
+%ignore simuPOP::shorten(const string &val, size_t length=40);
 
-%ignore simuPOP::sandbox::ostreamManager();
+%ignore simuPOP::ostreamManager();
 
-%feature("docstring") simuPOP::sandbox::closeOutput "
+%feature("docstring") simuPOP::closeOutput "
 
 Usage:
 
@@ -10833,7 +10834,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::sandbox::getRNG "
+%feature("docstring") simuPOP::getRNG "
 
 Description:
 
@@ -10845,17 +10846,17 @@ Usage:
 
 "; 
 
-%ignore simuPOP::sandbox::chisqTest(const vector< vectoru > &table, double &chisq, double &chisq_p);
+%ignore simuPOP::chisqTest(const vector< vectoru > &table, double &chisq, double &chisq_p);
 
-%ignore simuPOP::sandbox::armitageTrendTest(const vector< vectoru > &table, const vectorf &weight);
+%ignore simuPOP::armitageTrendTest(const vector< vectoru > &table, const vectorf &weight);
 
-%ignore simuPOP::sandbox::hweTest(const vectoru &cnt);
+%ignore simuPOP::hweTest(const vectoru &cnt);
 
-%ignore simuPOP::sandbox::propToCount(vectorf::const_iterator first, vectorf::const_iterator last, size_t N, vectoru &count);
+%ignore simuPOP::propToCount(vectorf::const_iterator first, vectorf::const_iterator last, size_t N, vectoru &count);
 
-%ignore simuPOP::sandbox::formatDescription(const string &text);
+%ignore simuPOP::formatDescription(const string &text);
 
-%feature("docstring") simuPOP::sandbox::moduleInfo "
+%feature("docstring") simuPOP::moduleInfo "
 
 Usage:
 
@@ -10885,9 +10886,9 @@ Details:
 
 "; 
 
-%ignore simuPOP::sandbox::initialize();
+%ignore simuPOP::initialize();
 
-%ignore simuPOP::sandbox::cnull();
+%ignore simuPOP::cnull();
 
 %ignore std::powthree(unsigned n);
 
