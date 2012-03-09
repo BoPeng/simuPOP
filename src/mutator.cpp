@@ -95,7 +95,7 @@ bool BaseMutator::apply(Population & pop) const
 
 #ifdef LINEAGE
 	bool assignLineage = pop.hasInfoField(m_lineageField);
-	int lineageIdx = assignLineage ? pop.infoIdx(m_lineageField) : 0;
+	size_t lineageIdx = assignLineage ? pop.infoIdx(m_lineageField) : 0;
 #endif
 
 	// mapIn and mapOut
@@ -154,7 +154,7 @@ bool BaseMutator::apply(Population & pop) const
 					long lineage = 0;
 					if (assignLineage) {
 						lineagePtr += static_cast<IndLineageIterator::difference_type>(pos - lastPos);
-						lineage = toID(lineagePtr.individual()->info(lineageIdx));
+						lineage = static_cast<long>(toID(lineagePtr.individual()->info(lineageIdx)));
 					}
 #endif
 					ptr += static_cast<IndAlleleIterator::difference_type>(pos - lastPos);
@@ -450,7 +450,7 @@ bool PointMutator::apply(Population & pop) const
 
 #ifdef LINEAGE
 	bool assignLineage = pop.hasInfoField(m_lineageField);
-	int lineageIdx = assignLineage ? pop.infoIdx(m_lineageField) : 0;
+	size_t lineageIdx = assignLineage ? pop.infoIdx(m_lineageField) : 0;
 #endif
 
 	for (; sp != spEnd; ++sp) {
@@ -463,7 +463,7 @@ bool PointMutator::apply(Population & pop) const
 			IndIterator ind = pop.indIterator(sp->subPop()) + static_cast<IndIterator::difference_type>(*it);
 			if (!ind.valid())
 				continue;
-			LINEAGE_EXPR(long lineage = assignLineage ? toID(ind->info(lineageIdx)) : 0);
+			LINEAGE_EXPR(long lineage = assignLineage ? static_cast<long>(toID(ind->info(lineageIdx))) : 0);
 			for (size_t p = 0; p < m_ploidy.size(); ++p) {
 				if (m_loci.allAvail()) {
 					for (size_t i = 0; i < pop.totNumLoci(); ++i) {
