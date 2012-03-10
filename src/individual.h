@@ -220,8 +220,8 @@ public:
 	 *  If a ploidy \e ploidy and/or a chromosome indexes are given, \e idx is
 	 *  relative to the beginning of specified homologous copy of chromosomes
 	 *  (if \e chrom=-1) or the beginning of the specified homologous copy of
-	 *  specified chromosome (if \e chrom >= 0). <bf>This function does nothing
-	 *  for modules without lineage information.</bf> 
+	 *  specified chromosome (if \e chrom >= 0). This function does nothing
+	 *  for modules without lineage information. 
 	 *  <group>1-allele</group>
 	 */
 	void setAlleleLineage(long lineage, size_t idx, int ploidy = -1, int chrom = -1);
@@ -230,7 +230,9 @@ public:
 	 *  alleles of an individual. If \e ploidy or \e chroms is given, only
 	 *  alleles on the specified chromosomes and homologous copy of chromosomes
 	 *  will be returned. If multiple chromosomes are specified, there should
-	 *  not be gaps between chromosomes.
+	 *  not be gaps between chromosomes. This function ignores type of
+	 *  chromosomes so it will return unused alleles for sex and mitochondrial
+	 *  chromosomes.
 	 *  <group>2-genotype</group>
 	 */
 	PyObject * genotype(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
@@ -244,8 +246,10 @@ public:
 	 *  lineages of all alleles of an individual. If \e ploidy or \e chroms is 
 	 *  given, only lineages on the specified chromosomes and homologous copy of 
 	 *  chromosomes will be returned. If multiple chromosomes are specified, 
-	 *  there should not be gaps between chromosomes. <bf>A \c None object will be
-	 *  returned for modules without lineage information.</bf>
+	 *  there should not be gaps between chromosomes. This function ignores
+	 *  type of chromosomes so it will return lineage of unused alleles for sex
+	 *  and mitochondrial chromosomes. A \c None object will be returned for
+	 *  modules without lineage information.
 	 *  <group>2-genotype</group>
 	 */
 	PyObject * lineage(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
@@ -260,7 +264,9 @@ public:
 	 *  If parameters \e ploidy and/or \e chroms are specified, alleles will
 	 *  be copied to only all or specified chromosomes on selected homologous
 	 *  copies of chromosomes. \c geno will be reused if its length is less than
-	 *  number of alleles to be filled.
+	 *  number of alleles to be filled. This function ignores type of
+	 *  chromosomes so it will set genotype for unused alleles for sex and
+	 *  mitochondrial chromosomes.
 	 *  <group>2-genotype</group>
 	 */
 	void setGenotype(const uintList & geno, const uintList & ploidy = uintList(), const uintList & chroms = uintList());
@@ -269,8 +275,10 @@ public:
 	 *  If parameters \e ploidy and/or \e chroms are specified, lineages will
 	 *  be copied to only all or specified chromosomes on selected homologous
 	 *  copies of chromosomes. \c lineage will be reused if its length is less than
-	 *  number of allelic lineage to be filled. <bf>This function does nothing
-	 *  for modules without lineage information.</bf> 
+	 *  number of allelic lineage to be filled. This function ignores type of
+	 *  chromosomes so it will set lineage to unused alleles for sex and
+	 *  mitochondrial chromosomes. It does nothing for modules without lineage
+	 *  information. 
 	 *  <group>2-genotype</group>
 	 */
 	void setLineage(const uintList & lineage, const uintList & ploidy = uintList(), const uintList & chroms = uintList());
