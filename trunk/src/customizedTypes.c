@@ -1054,7 +1054,7 @@ PyObject * newcarrayobject(GenoIterator begin, GenoIterator end)
 }
 
 
-/** lineage array type does not work yet */
+/** lineage array type ******************* */
 
 typedef struct arrayobject_template<LineageIterator> arrayobject_lineage;
 
