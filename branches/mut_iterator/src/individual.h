@@ -65,11 +65,17 @@ namespace simuPOP {
 class pyMutantIterator
 {
 public:
-	pyMutantIterator(const GenoIterator begin,
-		const GenoIterator end, size_t numLoci):
+	pyMutantIterator(GenoIterator begin,
+		GenoIterator end, size_t numLoci):
+#ifdef MUTANTALLELE
+		m_ptr(begin.getIndexIterator()),
+		m_end(end.getIndexIterator()),
+		m_value(begin.getValueIterator()),
+#else
 		m_begin(begin),
 		m_ptr(begin),
 		m_end(end),
+#endif
 		m_numLoci(numLoci)
 	{
 	}
@@ -88,6 +94,13 @@ public:
 	// python 2.x uses next()
 	pairu next()
 	{
+#ifdef MUTANTALLELE
+		if (m_ptr == m_end)
+			throw StopIteration("");
+		size_t loc = (*m_ptr++) % m_numLoci;
+		size_t val = *m_value++;
+		return pairu(loc, val);		
+#else
 		do {
 			if (m_ptr == m_end)
 				throw StopIteration("");
@@ -98,6 +111,7 @@ public:
 			} else 
 				++ m_ptr;
 		} while (true);
+#endif		
 	}
 
 	// python 3.x uses __next__ instead of next.
@@ -108,9 +122,15 @@ public:
 
 
 private:
+#ifdef MUTANTALLELE
+	compressed_vector<Allele>::index_array_type::iterator m_ptr;
+	compressed_vector<Allele>::index_array_type::iterator m_end;
+	compressed_vector<Allele>::value_array_type::iterator m_value;
+#else
 	GenoIterator m_begin;
 	GenoIterator m_ptr;
 	GenoIterator m_end;
+#endif	
 	size_t m_numLoci;
 };
 
@@ -301,13 +321,16 @@ public:
 	 */
 	PyObject * genotype(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
 
-#ifdef MUTANTALLELE
-	mutantList mutants(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
-
-#else
+	/** return an itertor that iterate through all mutants (non-zero alleles) of an
+	 *  individual. If \e ploidy or \e chroms is given, only alleles on the specified
+	 *  chromosomes and homologous copy of chromosomes will be iterated. If multiple
+	 *  chromosomes are specified, there should not be gaps between chromosomes. This
+	 *  function ignores type of chromosomes so it will return unused alleles for sex
+	 *  and mitochondrial chromosomes.
+	 *  <group>2-genotype</group>
+	 */
 	pyMutantIterator mutants(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
 	
-#endif
 
 	/** return an editable array (a \c carray_lineage object) that represents the
 	 *  lineages of all alleles of an individual. If \e ploidy or \e chroms is 

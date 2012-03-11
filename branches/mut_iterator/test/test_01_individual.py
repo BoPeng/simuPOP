@@ -246,7 +246,7 @@ class TestIndividual(unittest.TestCase):
     def testMutants(self):
         'Testing indivudal.mutants()'
         pop = Population(10, loci=20)
-        ind = pop.individual(0)
+        ind = pop.individual(5)
         ind.setGenotype([0,0,1])
         # mutants are at
         # 0 0 1=2 0 0 1=5 0 0 1 0 0 1 0 0 1 0 0 1=17 0 0

@@ -272,83 +272,6 @@ PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 			m_genoPtr + beginP * totNumLoci() + chromEnd(endCh - 1));
 }
 
-
-#ifdef MUTANTALLELE
-mutantList Individual::mutants(const uintList & ply, const uintList & ch)
-{
-	mutantList mutantAllele;
-	size_t beginP = 0;
-	size_t endP = 0;
-	size_t beginCh = 0;
-	size_t endCh = 0;
-
-	if (ply.allAvail())
-		endP = ploidy();
-	else {
-		const vectoru & ploidys = ply.elems();
-		if (ploidys.empty()) {
-			return mutantAllele;
-		}
-		beginP = ploidys[0];
-		endP = ploidys[0];
-		CHECKRANGEPLOIDY(static_cast<size_t>(beginP));
-		for (size_t i = 1; i < ploidys.size(); ++i) {
-			CHECKRANGEPLOIDY(static_cast<size_t>(ploidys[i]));
-			if (beginP > ploidys[i])
-				beginP = ploidys[i];
-			if (endP < ploidys[i])
-				endP = ploidys[i];
-		}
-		++endP;
-	}
-	if (ch.allAvail())
-		endCh = numChrom();
-	else {
-		const vectoru & chroms = ch.elems();
-		if (chroms.empty()) {
-			return mutantAllele;
-		}
-		beginCh = chroms[0];
-		endCh = chroms[0];
-		CHECKRANGECHROM(static_cast<size_t>(beginCh));
-		for (size_t i = 1; i < chroms.size(); ++i) {
-			CHECKRANGECHROM(static_cast<size_t>(chroms[i]));
-			if (beginCh > chroms[i])
-				beginCh = chroms[i];
-			if (endCh < chroms[i])
-				endCh = chroms[i];
-		}
-		++endCh;
-	}
-
-	if (endP > beginP + 1) {
-		// has to be all chromosomes
-		DBG_FAILIF(beginCh != 0 || endCh != numChrom(), ValueError,
-			"If multiple ploidy are chosen, all chromosomes has to be chosen.");
-		size_t begin = beginP * totNumLoci();
-		size_t end = endP * totNumLoci();
-		compressed_vector<Allele>::index_array_type::iterator idx_beginP = (m_genoPtr + begin).getIndexIterator();
-		compressed_vector<Allele>::index_array_type::iterator idx_endP = (m_genoPtr + end).getIndexIterator();
-		compressed_vector<Allele>::value_array_type::iterator value_beginP = (m_genoPtr + begin).getValueIterator();
-		mutantAllele.reserve(idx_endP - idx_beginP);
-		for (; idx_beginP != idx_endP; ++idx_beginP, ++value_beginP)
-			mutantAllele.push_back(std::pair<size_t, size_t>(*idx_beginP, *value_beginP));
-		return mutantAllele;
-	} else {
-		size_t begin = beginP * totNumLoci() + chromBegin(beginCh);
-		size_t end = beginP * totNumLoci() + chromEnd(endCh - 1);
-		compressed_vector<Allele>::index_array_type::iterator idx_beginP = (m_genoPtr + begin).getIndexIterator();
-		compressed_vector<Allele>::index_array_type::iterator idx_endP = (m_genoPtr + end).getIndexIterator();
-		compressed_vector<Allele>::value_array_type::iterator value_beginP = (m_genoPtr + begin).getValueIterator();
-		mutantAllele.reserve(idx_endP - idx_beginP);
-		for (; idx_beginP != idx_endP; ++idx_beginP, ++value_beginP)
-			mutantAllele.push_back(std::pair<size_t, size_t>(*idx_beginP, *value_beginP));
-		return mutantAllele;
-	}
-}
-
-#else
-
 pyMutantIterator Individual::mutants(const uintList & ply, const uintList & ch)
 {
 	size_t beginP = 0;
@@ -403,9 +326,6 @@ pyMutantIterator Individual::mutants(const uintList & ply, const uintList & ch)
 		return pyMutantIterator(m_genoPtr + beginP * totNumLoci() + chromBegin(beginCh),
 			m_genoPtr + beginP * totNumLoci() + chromEnd(endCh - 1), totNumLoci());
 }
-
-
-#endif
 
 PyObject * Individual::lineage(const uintList & ply, const uintList & ch)
 {
