@@ -119,8 +119,6 @@ extern "C" PyObject * newcarrayobject(GenoIterator begin, GenoIterator end);
 
 extern "C" PyObject * newcarrayobject_lineage(LineageIterator begin, LineageIterator end);
 
-extern "C" PyObject * newcarrayobject_mutant(MutantIterator begin, MutantIterator end);
-
 extern "C" PyObject * PyDefDict_New();
 
 extern "C" bool is_defdict(PyTypeObject * type);
@@ -138,12 +136,6 @@ PyObject * newcarrayobject_lineage(LineageIterator, LineageIterator)
 {
 	return NULL;
 }
-
-PyObject * newcarrayobject_mutant(MutantIterator, MutantIterator)
-{
-	return NULL;
-}
-
 
 PyObject * PyDefDict_New()
 {
@@ -1256,14 +1248,6 @@ PyObject * Lineage_Vec_As_NumArray(LineageIterator begin, LineageIterator end)
 	return res;
 }
 
-
-PyObject * Mutant_Vec_As_NumArray(MutantIterator begin, MutantIterator end)
-{
-	PyObject * res = newcarrayobject_mutant(begin, end);
-
-	DBG_FAILIF(res == NULL, ValueError, "Can not convert buf to mutant num array");
-	return res;
-}
 
 string PyObj_AsString(PyObject * str)
 {

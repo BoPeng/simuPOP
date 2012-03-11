@@ -51,6 +51,70 @@ using std::dec;
 using std::pair;
 
 namespace simuPOP {
+
+
+/** this class implements a Python itertor class that can be used to iterate
+ *  through individuals in a (sub)population. If allInds are true,
+ *  visiblility of individuals will not be checked. Otherwise, a functor
+ *  will be used to check if indiviudals belong to a specified virtual
+ *  subpopulation.
+ *
+ *  An instance of this class is returned by
+ *  population::Individuals() and Population::Individuals(subPop)
+ */
+class pyMutantIterator
+{
+public:
+	pyMutantIterator(const GenoIterator begin,
+		const GenoIterator end, size_t numLoci):
+		m_begin(begin),
+		m_ptr(begin),
+		m_end(end),
+		m_numLoci(numLoci)
+	{
+	}
+
+	~pyMutantIterator()
+	{
+	}
+
+
+	pyMutantIterator __iter__()
+	{
+		return *this;
+	}
+
+
+	// python 2.x uses next()
+	pairu next()
+	{
+		do {
+			if (m_ptr == m_end)
+				throw StopIteration("");
+			else if (*m_ptr != 0) {
+				GenoIterator tmp = m_ptr;
+				++m_ptr;
+				return pairu((tmp - m_begin) % m_numLoci, *tmp);
+			} else 
+				++ m_ptr;
+		} while (true);
+	}
+
+	// python 3.x uses __next__ instead of next.
+	pairu __next__()
+	{
+		return next();
+	}
+
+
+private:
+	GenoIterator m_begin;
+	GenoIterator m_ptr;
+	GenoIterator m_end;
+	size_t m_numLoci;
+};
+
+
 /**
  *  A \c Population consists of individuals with the same genotypic structure.
  *  An \c Individual object cannot be created independently, but refences to
@@ -241,7 +305,7 @@ public:
 	mutantList mutants(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
 
 #else
-	PyObject * mutants(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
+	pyMutantIterator mutants(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
 	
 #endif
 
@@ -1556,6 +1620,7 @@ private:
 
 typedef CombinedLineageIterator<RawIndIterator> IndLineageIterator;
 #endif
+
 
 }
 
