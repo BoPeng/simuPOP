@@ -652,16 +652,8 @@ PyObject * Population::genotype(vspID subPopID)
 }
 
 
-#ifdef MUTANTALLELE
-mutantList Population::mutants(vspID subPopID)
+pyMutantIterator Population::mutants(vspID subPopID)
 {
-
-	DBG_WARNIF(true, "The returned object of function Population.genotype() is a special "
-		             "carray object that reflects the underlying genotype of a "
-		             "population. It will become invalid once the population changes. "
-		             "Please use list(pop.genotype()) if you would like to keep a copy of genotypes");
-
-	mutantList mutantAllele;
 	vspID vsp = subPopID.resolve(*this);
 
 	DBG_FAILIF(vsp.isVirtual(), ValueError,
@@ -671,31 +663,14 @@ mutantList Population::mutants(vspID subPopID)
 
 	syncIndPointers();
 	if (!vsp.valid()) {
-		// directly expose values. Do not copy data over.
-		compressed_vector<Allele>::index_array_type::iterator idx_begin = m_genotype.begin().getIndexIterator();
-		compressed_vector<Allele>::index_array_type::iterator idx_end = m_genotype.end().getIndexIterator();
-		compressed_vector<Allele>::value_array_type::iterator value_begin = m_genotype.begin().getValueIterator();
-		mutantAllele.reserve(idx_end - idx_begin);
-		for (; idx_begin != idx_end; ++idx_begin, ++value_begin)
-			mutantAllele.push_back(std::pair<size_t, size_t>(*idx_begin, *value_begin));
-		return mutantAllele;
-		//return Allele_Vec_As_NumArray(m_genotype.begin(), m_genotype.end());
+		return pyMutantIterator(m_genotype.begin(), m_genotype.end(), totNumLoci());
 	} else {
-		// directly expose values. Do not copy data over.
 		size_t subPop = vsp.subPop();
 		CHECKRANGESUBPOP(subPop);
-		compressed_vector<Allele>::index_array_type::iterator idx_begin = genoBegin(subPop, true).getIndexIterator();
-		compressed_vector<Allele>::index_array_type::iterator idx_end = genoEnd(subPop, true).getIndexIterator();
-		compressed_vector<Allele>::value_array_type::iterator value_begin = genoBegin(subPop, true).getValueIterator();
-		mutantAllele.reserve(idx_end - idx_begin);
-		for (; idx_begin != idx_end; ++idx_begin, ++value_begin)
-			mutantAllele.push_back(std::pair<size_t, size_t>(*idx_begin, *value_begin));
-		return mutantAllele;
-		//return Allele_Vec_As_NumArray(genoBegin(subPop, true), genoEnd(subPop, true));
+		return pyMutantIterator(genoBegin(subPop, true), genoEnd(subPop, true), totNumLoci());
 	}
-	return mutantAllele;
+	return pyMutantIterator(m_genotype.begin(), m_genotype.begin(), 1);
 }
-#endif
 
 
 void Population::setGenotype(const uintList & genoList, vspID subPopID)
