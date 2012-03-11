@@ -243,6 +243,21 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(ind.info('fitness'), 1)
         self.assertEqual(ind.info(1), 1)
 
+    def testMutants(self):
+        'Testing indivudal.mutants()'
+        pop = Population(10, loci=20)
+        ind = pop.individual(5)
+        ind.setGenotype([0,0,1])
+        # mutants are at
+        # 0 0 1=2 0 0 1=5 0 0 1 0 0 1 0 0 1 0 0 1=17 0 0
+        # 1=0 0 0 1=3 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1=18 0
+        mutants = list(ind.mutants())
+        self.assertEqual(len(mutants), 13)
+        self.assertEqual([x[0] for x in mutants], [2, 5, 8, 11, 14, 17, 0, 3, 6, 9, 12, 15, 18])
+        #
+        mutants = list(ind.mutants(ploidy=1))
+        self.assertEqual(len(mutants), 7)
+        self.assertEqual([x[0] for x in mutants], [0, 3, 6, 9, 12, 15, 18])
 
 if __name__ == '__main__':
     unittest.main()
