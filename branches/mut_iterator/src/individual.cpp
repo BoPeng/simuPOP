@@ -347,6 +347,72 @@ mutantList Individual::mutants(const uintList & ply, const uintList & ch)
 	}
 }
 
+#else
+
+PyObject * Individual::mutants(const uintList & ply, const uintList & ch)
+{
+	DBG_WARNIF(true, "The returned object of function Individual.genotype() is a special "
+		             "carray object that reflects the underlying genotype of an individual. "
+		             "It will become invalid once the population changes. Please use "
+		             "list(ind.genotype()) if you would like to keep a copy of genotypes");
+
+	size_t beginP = 0;
+	size_t endP = 0;
+	size_t beginCh = 0;
+	size_t endCh = 0;
+
+	if (ply.allAvail())
+		endP = ploidy();
+	else {
+		const vectoru & ploidys = ply.elems();
+		if (ploidys.empty()) {
+			Py_INCREF(Py_None);
+			return Py_None;
+		}
+		beginP = ploidys[0];
+		endP = ploidys[0];
+		CHECKRANGEPLOIDY(static_cast<size_t>(beginP));
+		for (size_t i = 1; i < ploidys.size(); ++i) {
+			CHECKRANGEPLOIDY(static_cast<size_t>(ploidys[i]));
+			if (beginP > ploidys[i])
+				beginP = ploidys[i];
+			if (endP < ploidys[i])
+				endP = ploidys[i];
+		}
+		++endP;
+	}
+	if (ch.allAvail())
+		endCh = numChrom();
+	else {
+		const vectoru & chroms = ch.elems();
+		if (chroms.empty()) {
+			Py_INCREF(Py_None);
+			return Py_None;
+		}
+		beginCh = chroms[0];
+		endCh = chroms[0];
+		CHECKRANGECHROM(static_cast<size_t>(beginCh));
+		for (size_t i = 1; i < chroms.size(); ++i) {
+			CHECKRANGECHROM(static_cast<size_t>(chroms[i]));
+			if (beginCh > chroms[i])
+				beginCh = chroms[i];
+			if (endCh < chroms[i])
+				endCh = chroms[i];
+		}
+		++endCh;
+	}
+
+	if (endP > beginP + 1) {
+		// has to be all chromosomes
+		DBG_FAILIF(beginCh != 0 || endCh != numChrom(), ValueError,
+			"If multiple ploidy are chosen, all chromosomes has to be chosen.");
+		return Mutant_Vec_As_NumArray(m_genoPtr + beginP * totNumLoci(),
+			m_genoPtr + endP * totNumLoci());
+	} else
+		return Mutant_Vec_As_NumArray(m_genoPtr + beginP * totNumLoci() + chromBegin(beginCh),
+			m_genoPtr + beginP * totNumLoci() + chromEnd(endCh - 1));
+}
+
 
 #endif
 

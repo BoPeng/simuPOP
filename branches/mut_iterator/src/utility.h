@@ -994,6 +994,9 @@ PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
 PyObject * Lineage_Vec_As_NumArray(LineageIterator begin, LineageIterator end);
 
 /// CPPONLY
+PyObject * Mutant_Vec_As_NumArray(MutantIterator begin, MutantIterator end);
+
+/// CPPONLY
 string PyObj_AsString(PyObject * str);
 
 // ///////////////////////////////////////////////////////

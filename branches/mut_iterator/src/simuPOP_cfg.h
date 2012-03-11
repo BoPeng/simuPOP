@@ -201,9 +201,11 @@ typedef unsigned char & AlleleRef;
 
 #ifdef MUTANTALLELE
 typedef simuPOP::mutant_vector<Allele>::iterator GenoIterator;
+typedef simuPOP::mutant_vector<Allele>::iterator MutantIterator;
 typedef simuPOP::mutant_vector<Allele>::const_iterator ConstGenoIterator;
 #else
 typedef std::vector<Allele>::iterator GenoIterator;
+typedef std::vector<Allele>::iterator MutantIterator;
 typedef std::vector<Allele>::const_iterator ConstGenoIterator;
 #endif
 

@@ -240,6 +240,9 @@ public:
 #ifdef MUTANTALLELE
 	mutantList mutants(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
 
+#else
+	PyObject * mutants(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
+	
 #endif
 
 	/** return an editable array (a \c carray_lineage object) that represents the
