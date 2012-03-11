@@ -1043,9 +1043,14 @@ public:
 	 */
 	PyObject * genotype(vspID subPop = vspID());
 
-#ifdef MUTANTALLELE
-	mutantList mutants(vspID subPop = vspID());
-#endif
+	/** Return an iterator that iterate through mutants of all individuals in
+	 *  a population (if <tt>subPop=[]</tt>, default), or individuals in a
+	 *  subpopulation \e subPop. Virtual subpopulation is unsupported. This
+	 *  function ignores type of chromosomes so non-zero alleles in unused
+	 *  alleles of sex and mitochondrial chromosomes are also iterated.
+	 *  <group>5-genotype</group>
+	 */
+	pyMutantIterator mutants(vspID subPop = vspID());
 
 	/** Return an editable array of the lineage of alleles for all individuals in
 	 *  a population (if <tt>subPop=[]</tt>, default), or individuals in a

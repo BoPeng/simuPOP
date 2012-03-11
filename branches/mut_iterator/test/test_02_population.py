@@ -1809,6 +1809,26 @@ class TestPopulation(unittest.TestCase):
         for ind in pop.individuals():
             self.assertTrue(ind.b != 3)
 
+    def testMutants(self):
+        'Testing function Population.mutants'
+        pop = Population([4,6], loci=20)
+        pop.setGenotype([0,0,1])
+        # mutants are at
+        # 0 0 1=2 0 0 1=5 0 0 1 0 0 1 0 0 1 0 0 1=17 0 0 <- 6
+        # 1=0 0 0 1=3 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1=18 0 <- 7
+        # 0 1=1 ....................................1=19 <- 7
+        # 0 0 1=2  ......................................<- 6
+        mutants = list(pop.mutants())
+        self.assertEqual(len(mutants), 3 * 40 + 13)
+        self.assertEqual([x[0] for x in mutants][:13], [2, 5, 8, 11, 14, 17, 0, 3, 6, 9, 12, 15, 18])
+        self.assertEqual(len(mutants), pop.genotype().count(1))
+        #
+        mutants = list(pop.mutants(1))
+        self.assertEqual(len(mutants), 80)
+        self.assertEqual([x[0] for x in mutants][-13:], [2, 5, 8, 11, 14, 17, 0, 3, 6, 9, 12, 15, 18])
+        self.assertEqual(len(mutants), pop.genotype(1).count(1))
+
+        
 if __name__ == '__main__':
     unittest.main()
 
