@@ -904,7 +904,7 @@ class AcgtMutator(MatrixMutator):
     Although a general model needs 12 parameters, less parameters are needed
     for specific nucleotide mutation models (parameter ``model``). The length
     and meaning of parameter ``rate`` is model dependent.'''
-    def __init__(self, rate=[], model='general', mapIn=[], mapOut=[], output='>',
+    def __init__(self, rate=[], model='general', loci=ALL_AVAIL, mapIn=[], mapOut=[], output='>',
         begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
         infoFields=[], lineageField='ind_id'):
         '''Create a mutation model that mutates between nucleotides ``A``,
