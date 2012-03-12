@@ -1000,6 +1000,15 @@ public:
 	 *  \li \c numOfFixedSites_sp: Number of sites with one non-zero allele in
 	 *      in each (virtual) subpopulations.
 	 *
+	 *  <b>numOfMutants</b>: Parameter \e numOfMutants accepts a list of loci
+	 *  (loci indexes, names, or \c ALL_AVAIL) and count the number of mutants
+	 *  (non-zero alleles) for individuals in all or specified (virtual)
+	 *  subpopulations. It sets variables
+	 *  \li \c numOfMutants (default): Number of mutants in all or specified
+	 *      (virtual) subpopulations.
+	 *  \li \c numOfMutants_sp: Number of mutants in each (virtual)
+	 *      subpopulations.
+	 *
 	 *  <b>alleleFreq</b>: This parameter accepts a list of loci (loci indexes,
 	 *  names, or \c ALL_AVAIL), at which allele frequencies will be calculated.
 	 *  This statistic outputs the following variables, all of which are

@@ -9,9 +9,15 @@ version 1.0.7 - Not released, available at https://simupop.svn.sourceforge.net/s
 New features:
   - New option numOfSegSites to operator Stat to calculate the number of segragating
     sites.
+  - New option numOfMutants to operator Stat to count the number of mutants (non-zero
+    alleles).
   - Add MITOCHONDRIAL as a natural chromosome type so that operators such as
 	Stat can handle them correctly.
   - Extend Stat(structure) to handle haploid population and non-autosomal chromosomes.
+  - A new allele type mutant that saves only non-zero alleles for efficient simulation
+    of a large number of rare variants.
+  - A new allele type lineage to track the lineage (origin of alleles) of alleles during
+    evolution.
 
 BUG:
  - Fix a bug that prevents the correct handling of population structure when evolving
