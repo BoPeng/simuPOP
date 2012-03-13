@@ -316,12 +316,12 @@ bool InfoExec::applyDuringMating(Population & pop, Population & offPop, RawIndIt
 }
 
 
-string subPopVar_String(vspID sp, const string & var)
+string subPopVar_String(vspID sp, const string & var, const string & suffix="")
 {
 	if (sp.isVirtual())
-		return "subPop{(" + toStr(sp.subPop()) + "," + toStr(sp.virtualSubPop()) + ")}{\'" + var + "\'}";
+		return "subPop{(" + toStr(sp.subPop()) + "," + toStr(sp.virtualSubPop()) + ")}{\'" + var + suffix + "\'}";
 	else
-		return "subPop{" + toStr(sp.subPop()) + "}{\'" + var + "\'}";
+		return "subPop{" + toStr(sp.subPop()) + "}{\'" + var + suffix + "\'}";
 }
 
 
@@ -488,7 +488,7 @@ bool statPopSize::apply(Population & pop) const
 		popSize += spPopSize;
 		spSize.push_back(spPopSize);
 		if (m_vars.contains(popSize_sp_String))
-			pop.getVars().setVar(subPopVar_String(*it, popSize_String) + m_suffix, spPopSize);
+			pop.getVars().setVar(subPopVar_String(*it, popSize_String, m_suffix), spPopSize);
 	}
 	// NOTE: popSize does not have to be the total population size
 	if (m_vars.contains(popSize_String))
@@ -558,14 +558,14 @@ bool statNumOfMales::apply(Population & pop) const
 		totalCnt = maleCnt + femaleCnt;
 
 		if (m_vars.contains(numOfMales_sp_String))
-			pop.getVars().setVar(subPopVar_String(*sp, numOfMales_String) + m_suffix, maleCnt);
+			pop.getVars().setVar(subPopVar_String(*sp, numOfMales_String, m_suffix), maleCnt);
 		if (m_vars.contains(propOfMales_sp_String))
-			pop.getVars().setVar(subPopVar_String(*sp, propOfMales_String) + m_suffix,
+			pop.getVars().setVar(subPopVar_String(*sp, propOfMales_String, m_suffix),
 				totalCnt == 0 ? 0 : static_cast<double>(maleCnt) / totalCnt);
 		if (m_vars.contains(numOfFemales_sp_String))
-			pop.getVars().setVar(subPopVar_String(*sp, numOfFemales_String) + m_suffix, femaleCnt);
+			pop.getVars().setVar(subPopVar_String(*sp, numOfFemales_String, m_suffix), femaleCnt);
 		if (m_vars.contains(propOfFemales_sp_String))
-			pop.getVars().setVar(subPopVar_String(*sp, propOfFemales_String) + m_suffix,
+			pop.getVars().setVar(subPopVar_String(*sp, propOfFemales_String, m_suffix),
 				totalCnt == 0 ? 0 : static_cast<double>(femaleCnt) / totalCnt);
 
 		allMaleCnt += maleCnt;
@@ -645,14 +645,14 @@ bool statNumOfAffected::apply(Population & pop) const
 		totalCnt = affectedCnt + unaffectedCnt;
 
 		if (m_vars.contains(numOfAffected_sp_String))
-			pop.getVars().setVar(subPopVar_String(*sp, numOfAffected_String) + m_suffix, affectedCnt);
+			pop.getVars().setVar(subPopVar_String(*sp, numOfAffected_String, m_suffix), affectedCnt);
 		if (m_vars.contains(propOfAffected_sp_String))
-			pop.getVars().setVar(subPopVar_String(*sp, propOfAffected_String) + m_suffix,
+			pop.getVars().setVar(subPopVar_String(*sp, propOfAffected_String, m_suffix),
 				totalCnt == 0 ? 0 : static_cast<double>(affectedCnt) / totalCnt);
 		if (m_vars.contains(numOfUnaffected_sp_String))
-			pop.getVars().setVar(subPopVar_String(*sp, numOfUnaffected_String) + m_suffix, unaffectedCnt);
+			pop.getVars().setVar(subPopVar_String(*sp, numOfUnaffected_String, m_suffix), unaffectedCnt);
 		if (m_vars.contains(propOfUnaffected_sp_String))
-			pop.getVars().setVar(subPopVar_String(*sp, propOfUnaffected_String) + m_suffix,
+			pop.getVars().setVar(subPopVar_String(*sp, propOfUnaffected_String, m_suffix),
 				totalCnt == 0 ? 0 : static_cast<double>(unaffectedCnt) / totalCnt);
 
 		allAffectedCnt += affectedCnt;
@@ -802,9 +802,9 @@ bool statNumOfSegSites::apply(Population & pop) const
 		pop.deactivateVirtualSubPop(sp->subPop());
 
 		if (m_vars.contains(numOfFixedSites_sp_String))
-			pop.getVars().setVar(subPopVar_String(*sp, numOfFixedSites_String) + m_suffix, fixedSites.size());
+			pop.getVars().setVar(subPopVar_String(*sp, numOfFixedSites_String, m_suffix), fixedSites.size());
 		if (m_vars.contains(numOfSegSites_sp_String))
-			pop.getVars().setVar(subPopVar_String(*sp, numOfSegSites_String) + m_suffix, segSites.size());
+			pop.getVars().setVar(subPopVar_String(*sp, numOfSegSites_String, m_suffix), segSites.size());
 
 		allFixedSites.insert(fixedSites.begin(), fixedSites.end());
 		allSegSites.insert(segSites.begin(), segSites.end());
@@ -897,7 +897,7 @@ bool statNumOfMutants::apply(Population & pop) const
 		}
 		pop.deactivateVirtualSubPop(sp->subPop());
 		if (m_vars.contains(numOfMutants_sp_String))
-			pop.getVars().setVar(subPopVar_String(*sp, numOfMutants_String) + m_suffix, mutantCount);
+			pop.getVars().setVar(subPopVar_String(*sp, numOfMutants_String, m_suffix), mutantCount);
 
 		allMutantCount += mutantCount;
 	}
@@ -951,9 +951,9 @@ bool statAlleleFreq::apply(Population & pop) const
 	subPopList::const_iterator itEnd = subPops.end();
 	for (; it != itEnd; ++it) {
 		if (m_vars.contains(AlleleNum_sp_String))
-			pop.getVars().removeVar(subPopVar_String(*it, AlleleNum_String) + m_suffix);
+			pop.getVars().removeVar(subPopVar_String(*it, AlleleNum_String, m_suffix));
 		if (m_vars.contains(AlleleFreq_sp_String))
-			pop.getVars().removeVar(subPopVar_String(*it, AlleleFreq_String) + m_suffix);
+			pop.getVars().removeVar(subPopVar_String(*it, AlleleFreq_String, m_suffix));
 
 		pop.activateVirtualSubPop(*it);
 
@@ -998,7 +998,7 @@ bool statAlleleFreq::apply(Population & pop) const
 #ifdef LONGALLELE
 			if (m_vars.contains(AlleleNum_sp_String)) {
 #  pragma omp critical
-				pop.getVars().setVar(subPopVar_String(*it, AlleleNum_String) + m_suffix + "{" + toStr(loc) + "}", alleles);
+				pop.getVars().setVar(subPopVar_String(*it, AlleleNum_String, m_suffix) + "{" + toStr(loc) + "}", alleles);
 			}
 			if (m_vars.contains(AlleleFreq_sp_String)) {
 				intDict::iterator cnt = alleles.begin();
@@ -1006,7 +1006,7 @@ bool statAlleleFreq::apply(Population & pop) const
 				for ( ; cnt != cntEnd; ++cnt)
 					cnt->second /= static_cast<double>(allAlleles);
 #  pragma omp critical
-				pop.getVars().setVar(subPopVar_String(*it, AlleleFreq_String) + m_suffix + "{" + toStr(loc) + "}", alleles);
+				pop.getVars().setVar(subPopVar_String(*it, AlleleFreq_String, m_suffix) + "{" + toStr(loc) + "}", alleles);
 			}
 #else
 			if (m_vars.contains(AlleleNum_sp_String)) {
@@ -1015,7 +1015,7 @@ bool statAlleleFreq::apply(Population & pop) const
 					if (alleles[i] != 0)
 						d[i] = static_cast<double>(alleles[i]);
 #  pragma omp critical
-				pop.getVars().setVar(subPopVar_String(*it, AlleleNum_String) + m_suffix + "{" + toStr(loc) + "}", d);
+				pop.getVars().setVar(subPopVar_String(*it, AlleleNum_String, m_suffix) + "{" + toStr(loc) + "}", d);
 			}
 			if (m_vars.contains(AlleleFreq_sp_String)) {
 				uintDict d;
@@ -1023,7 +1023,7 @@ bool statAlleleFreq::apply(Population & pop) const
 					if (alleles[i] != 0)
 						d[i] = alleles[i] / static_cast<double>(allAlleles);
 #  pragma omp critical
-				pop.getVars().setVar(subPopVar_String(*it, AlleleFreq_String) + m_suffix + "{" + toStr(loc) + "}", d);
+				pop.getVars().setVar(subPopVar_String(*it, AlleleFreq_String, m_suffix) + "{" + toStr(loc) + "}", d);
 			}
 #endif
 		}
@@ -1157,9 +1157,9 @@ bool statHeteroFreq::apply(Population & pop) const
 		pop.deactivateVirtualSubPop(it->subPop());
 		// output subpopulation variable?
 		if (m_vars.contains(HeteroNum_sp_String))
-			pop.getVars().setVar(subPopVar_String(*it, HeteroNum_String) + m_suffix, heteroCnt);
+			pop.getVars().setVar(subPopVar_String(*it, HeteroNum_String, m_suffix), heteroCnt);
 		if (m_vars.contains(HomoNum_sp_String))
-			pop.getVars().setVar(subPopVar_String(*it, HomoNum_String) + m_suffix, homoCnt);
+			pop.getVars().setVar(subPopVar_String(*it, HomoNum_String, m_suffix), homoCnt);
 		if (m_vars.contains(HeteroFreq_sp_String)) {
 			uintDict freq;
 			for (size_t idx = 0; idx < loci.size(); ++idx) {
@@ -1167,7 +1167,7 @@ bool statHeteroFreq::apply(Population & pop) const
 				double all = heteroCnt[loc] + homoCnt[loc];
 				freq[loc] = all == 0. ? 0 : heteroCnt[loc] / all;
 			}
-			pop.getVars().setVar(subPopVar_String(*it, HeteroFreq_String) + m_suffix, freq);
+			pop.getVars().setVar(subPopVar_String(*it, HeteroFreq_String, m_suffix), freq);
 		}
 		if (m_vars.contains(HomoFreq_sp_String)) {
 			uintDict freq;
@@ -1176,7 +1176,7 @@ bool statHeteroFreq::apply(Population & pop) const
 				double all = heteroCnt[loc] + homoCnt[loc];
 				freq[loc] = all == 0. ? 0 : homoCnt[loc] / all;
 			}
-			pop.getVars().setVar(subPopVar_String(*it, HomoFreq_String) + m_suffix, freq);
+			pop.getVars().setVar(subPopVar_String(*it, HomoFreq_String, m_suffix), freq);
 		}
 	}
 	// for whole population.
@@ -1254,9 +1254,9 @@ bool statGenoFreq::apply(Population & pop) const
 	size_t ply = pop.ploidy();
 	for (; it != itEnd; ++it) {
 		if (m_vars.contains(GenotypeNum_sp_String))
-			pop.getVars().removeVar(subPopVar_String(*it, GenotypeNum_String) + m_suffix);
+			pop.getVars().removeVar(subPopVar_String(*it, GenotypeNum_String, m_suffix));
 		if (m_vars.contains(GenotypeFreq_sp_String))
-			pop.getVars().removeVar(subPopVar_String(*it, GenotypeFreq_String) + m_suffix);
+			pop.getVars().removeVar(subPopVar_String(*it, GenotypeFreq_String, m_suffix));
 
 		pop.activateVirtualSubPop(*it);
 
@@ -1306,8 +1306,8 @@ bool statGenoFreq::apply(Population & pop) const
 			// output variable.
 			if (m_vars.contains(GenotypeNum_sp_String)) {
 #pragma omp critical
-				pop.getVars().setVar(subPopVar_String(*it, GenotypeNum_String)
-					+ m_suffix + "{" + toStr(loc) + "}", genotypes);
+				pop.getVars().setVar(subPopVar_String(*it, GenotypeNum_String, m_suffix)
+					+ "{" + toStr(loc) + "}", genotypes);
 			}
 			// note that genotyeps is changed in place.
 			if (m_vars.contains(GenotypeFreq_sp_String)) {
@@ -1318,8 +1318,8 @@ bool statGenoFreq::apply(Population & pop) const
 						dct->second /= allGenotypes;
 				}
 #pragma omp critical
-				pop.getVars().setVar(subPopVar_String(*it, GenotypeFreq_String)
-					+ m_suffix + "{" + toStr(loc) + "}", genotypes);
+				pop.getVars().setVar(subPopVar_String(*it, GenotypeFreq_String, m_suffix)
+					+ "{" + toStr(loc) + "}", genotypes);
 			}
 		}
 		pop.deactivateVirtualSubPop(it->subPop());
@@ -1407,9 +1407,9 @@ bool statHaploFreq::apply(Population & pop) const
 	size_t ply = pop.ploidy();
 	for (; it != itEnd; ++it) {
 		if (m_vars.contains(HaplotypeNum_sp_String))
-			pop.getVars().removeVar(subPopVar_String(*it, HaplotypeNum_String) + m_suffix);
+			pop.getVars().removeVar(subPopVar_String(*it, HaplotypeNum_String, m_suffix));
 		if (m_vars.contains(HaplotypeFreq_sp_String))
-			pop.getVars().removeVar(subPopVar_String(*it, HaplotypeFreq_String) + m_suffix);
+			pop.getVars().removeVar(subPopVar_String(*it, HaplotypeFreq_String, m_suffix));
 
 		pop.activateVirtualSubPop(*it);
 
@@ -1461,7 +1461,7 @@ bool statHaploFreq::apply(Population & pop) const
 			// output variable.
 			if (m_vars.contains(HaplotypeNum_sp_String)) {
 #pragma omp critical
-				pop.getVars().setVar(subPopVar_String(*it, HaplotypeNum_String) + m_suffix + "{"
+				pop.getVars().setVar(subPopVar_String(*it, HaplotypeNum_String, m_suffix) + "{"
 					+ key + "}", haplotypes);
 			}
 			// note that genotyeps is changed in place.
@@ -1473,7 +1473,7 @@ bool statHaploFreq::apply(Population & pop) const
 						dct->second /= allHaplotypes;
 				}
 #pragma omp critical
-				pop.getVars().setVar(subPopVar_String(*it, HaplotypeFreq_String) + m_suffix + "{"
+				pop.getVars().setVar(subPopVar_String(*it, HaplotypeFreq_String, m_suffix) + "{"
 					+ key + "}", haplotypes);
 			}
 		}
@@ -1622,9 +1622,9 @@ bool statHaploHomoFreq::apply(Population & pop) const
 		pop.deactivateVirtualSubPop(it->subPop());
 		// output subpopulation variable?
 		if (m_vars.contains(HaploHeteroNum_sp_String))
-			pop.getVars().setVar(subPopVar_String(*it, HaploHeteroNum_String) + m_suffix, heteroCnt);
+			pop.getVars().setVar(subPopVar_String(*it, HaploHeteroNum_String, m_suffix), heteroCnt);
 		if (m_vars.contains(HaploHomoNum_sp_String))
-			pop.getVars().setVar(subPopVar_String(*it, HaploHomoNum_String) + m_suffix, homoCnt);
+			pop.getVars().setVar(subPopVar_String(*it, HaploHomoNum_String, m_suffix), homoCnt);
 		if (m_vars.contains(HaploHeteroFreq_sp_String)) {
 			tupleDict freq;
 			tupleDict::iterator hit = heteroCnt.begin();
@@ -1634,7 +1634,7 @@ bool statHaploHomoFreq::apply(Population & pop) const
 				double all = hit->second + homoCnt[key];
 				freq[key] = all == 0. ? 0 : hit->second / all;
 			}
-			pop.getVars().setVar(subPopVar_String(*it, HaploHeteroFreq_String) + m_suffix, freq);
+			pop.getVars().setVar(subPopVar_String(*it, HaploHeteroFreq_String, m_suffix), freq);
 		}
 		if (m_vars.contains(HaploHomoFreq_sp_String)) {
 			tupleDict freq;
@@ -1645,7 +1645,7 @@ bool statHaploHomoFreq::apply(Population & pop) const
 				double all = hit->second + heteroCnt[key];
 				freq[key] = all == 0. ? 0 : hit->second / all;
 			}
-			pop.getVars().setVar(subPopVar_String(*it, HaploHomoFreq_String) + m_suffix, freq);
+			pop.getVars().setVar(subPopVar_String(*it, HaploHomoFreq_String, m_suffix), freq);
 		}
 	}
 	if (m_vars.contains(HaploHeteroNum_String))
@@ -1889,32 +1889,32 @@ bool statInfo::apply(Population & pop) const
 			strDict dct;
 			for (size_t i = 0; i < numSumFld; ++i)
 				dct[m_sumOfInfo[i]] = sumVal[i];
-			pop.getVars().setVar(subPopVar_String(*sp, SumOfInfo_String) + m_suffix, dct);
+			pop.getVars().setVar(subPopVar_String(*sp, SumOfInfo_String, m_suffix), dct);
 		}
 		if (m_vars.contains(MeanOfInfo_sp_String)) {
 			strDict dct;
 			for (size_t i = 0; i < numMeanFld; ++i)
 				dct[m_meanOfInfo[i]] = meanNumVal[i] == 0 ? 0 : meanSumVal[i] / meanNumVal[i];
-			pop.getVars().setVar(subPopVar_String(*sp, MeanOfInfo_String) + m_suffix, dct);
+			pop.getVars().setVar(subPopVar_String(*sp, MeanOfInfo_String, m_suffix), dct);
 		}
 		if (m_vars.contains(VarOfInfo_sp_String)) {
 			strDict dct;
 			for (size_t i = 0; i < numVarFld; ++i)
 				dct[m_varOfInfo[i]] = varNumVal[i] <= 1 ? 0 :
 				                      (varSum2Val[i] - varSumVal[i] * varSumVal[i] / varNumVal[i]) / (varNumVal[i] - 1);
-			pop.getVars().setVar(subPopVar_String(*sp, VarOfInfo_String) + m_suffix, dct);
+			pop.getVars().setVar(subPopVar_String(*sp, VarOfInfo_String, m_suffix), dct);
 		}
 		if (m_vars.contains(MaxOfInfo_sp_String)) {
 			strDict dct;
 			for (size_t i = 0; i < numMaxFld; ++i)
 				dct[m_maxOfInfo[i]] = maxVal[i];
-			pop.getVars().setVar(subPopVar_String(*sp, MaxOfInfo_String) + m_suffix, dct);
+			pop.getVars().setVar(subPopVar_String(*sp, MaxOfInfo_String, m_suffix), dct);
 		}
 		if (m_vars.contains(MinOfInfo_sp_String)) {
 			strDict dct;
 			for (size_t i = 0; i < numMinFld; ++i)
 				dct[m_minOfInfo[i]] = minVal[i];
-			pop.getVars().setVar(subPopVar_String(*sp, MinOfInfo_String) + m_suffix, dct);
+			pop.getVars().setVar(subPopVar_String(*sp, MinOfInfo_String, m_suffix), dct);
 		}
 	}
 	if (m_vars.contains(SumOfInfo_String)) {
@@ -2194,11 +2194,11 @@ void statLD::outputVar(Population & pop, const string & name, const vectorf & va
 	for (size_t i = 0; i < m_LD.size(); ++i)
 		res[m_LD[i][0]][m_LD[i][1]] = value[i];
 
-	pop.getVars().removeVar(name);
+	pop.getVars().removeVar(name + m_suffix);
 	map<size_t, intDict>::const_iterator it = res.begin();
 	map<size_t, intDict>::const_iterator itEnd = res.end();
 	for (; it != itEnd; ++it)
-		pop.getVars().setVar(name + "{" + toStr(it->first) + "}", it->second);
+		pop.getVars().setVar(name + m_suffix + "{" + toStr(it->first) + "}", it->second);
 }
 
 
@@ -2244,7 +2244,7 @@ bool statLD::apply(Population & pop) const
 		};
 		for (size_t i = 0; spVars[i][0]; ++i) {
 			if (m_vars.contains(spVars[i]))
-				pop.getVars().removeVar(subPopVar_String(*it, spVars[i]));
+				pop.getVars().removeVar(subPopVar_String(*it, spVars[i], m_suffix));
 		}
 
 		pop.activateVirtualSubPop(*it);
@@ -2317,17 +2317,17 @@ bool statLD::apply(Population & pop) const
 
 		// output statistics for subpopulation
 		if (m_vars.contains(LD_sp_String))
-			outputVar(pop, subPopVar_String(*it, LD_String), LD);
+			outputVar(pop, subPopVar_String(*it, LD_String, m_suffix), LD);
 		if (m_vars.contains(LD_prime_sp_String))
-			outputVar(pop, subPopVar_String(*it, LD_prime_String), D_prime);
+			outputVar(pop, subPopVar_String(*it, LD_prime_String, m_suffix), D_prime);
 		if (m_vars.contains(R2_sp_String))
-			outputVar(pop, subPopVar_String(*it, R2_String), R2);
+			outputVar(pop, subPopVar_String(*it, R2_String, m_suffix), R2);
 		if (m_vars.contains(ChiSq_sp_String))
-			outputVar(pop, subPopVar_String(*it, ChiSq_String), ChiSq);
+			outputVar(pop, subPopVar_String(*it, ChiSq_String, m_suffix), ChiSq);
 		if (m_vars.contains(ChiSq_p_sp_String))
-			outputVar(pop, subPopVar_String(*it, ChiSq_p_String), ChiSq_p);
+			outputVar(pop, subPopVar_String(*it, ChiSq_p_String, m_suffix), ChiSq_p);
 		if (m_vars.contains(CramerV_sp_String))
-			outputVar(pop, subPopVar_String(*it, CramerV_String), CramerV);
+			outputVar(pop, subPopVar_String(*it, CramerV_String, m_suffix), CramerV);
 	}
 	// output statistics for all (virtual) subpopulations
 	// calculate statistics
@@ -2348,17 +2348,17 @@ bool statLD::apply(Population & pop) const
 
 	// output statistics for subpopulation
 	if (m_vars.contains(LD_String))
-		outputVar(pop, LD_String, LD);
+		outputVar(pop, LD_String + m_suffix, LD);
 	if (m_vars.contains(LD_prime_String))
-		outputVar(pop, LD_prime_String, D_prime);
+		outputVar(pop, LD_prime_String + m_suffix, D_prime);
 	if (m_vars.contains(R2_String))
-		outputVar(pop, R2_String, R2);
+		outputVar(pop, R2_String + m_suffix, R2);
 	if (m_vars.contains(ChiSq_String))
-		outputVar(pop, ChiSq_String, ChiSq);
+		outputVar(pop, ChiSq_String + m_suffix, ChiSq);
 	if (m_vars.contains(ChiSq_p_String))
-		outputVar(pop, ChiSq_p_String, ChiSq_p);
+		outputVar(pop, ChiSq_p_String + m_suffix, ChiSq_p);
 	if (m_vars.contains(CramerV_String))
-		outputVar(pop, CramerV_String, CramerV);
+		outputVar(pop, CramerV_String + m_suffix, CramerV);
 	return true;
 }
 
@@ -2619,9 +2619,9 @@ bool statAssociation::apply(Population & pop) const
 			for (size_t i = 0; i < loci.size(); ++i)
 				alleleChiSqTest(caseAlleleCnt[i], ctrlAlleleCnt[i], chisq[loci[i]], chisq_p[loci[i]]);
 			if (m_vars.contains(Allele_ChiSq_sp_String))
-				pop.getVars().setVar(subPopVar_String(*it, Allele_ChiSq_String) + m_suffix, chisq);
+				pop.getVars().setVar(subPopVar_String(*it, Allele_ChiSq_String, m_suffix), chisq);
 			if (m_vars.contains(Allele_ChiSq_p_sp_String))
-				pop.getVars().setVar(subPopVar_String(*it, Allele_ChiSq_p_String) + m_suffix, chisq_p);
+				pop.getVars().setVar(subPopVar_String(*it, Allele_ChiSq_p_String, m_suffix), chisq_p);
 		}
 		if (m_vars.contains(Geno_ChiSq_sp_String) || m_vars.contains(Geno_ChiSq_p_sp_String)) {
 			uintDict chisq;
@@ -2629,15 +2629,15 @@ bool statAssociation::apply(Population & pop) const
 			for (size_t i = 0; i < loci.size(); ++i)
 				genoChiSqTest(caseGenoCnt[i], ctrlGenoCnt[i], chisq[loci[i]], chisq_p[loci[i]]);
 			if (m_vars.contains(Geno_ChiSq_sp_String))
-				pop.getVars().setVar(subPopVar_String(*it, Geno_ChiSq_String) + m_suffix, chisq);
+				pop.getVars().setVar(subPopVar_String(*it, Geno_ChiSq_String, m_suffix), chisq);
 			if (m_vars.contains(Geno_ChiSq_p_sp_String))
-				pop.getVars().setVar(subPopVar_String(*it, Geno_ChiSq_p_String) + m_suffix, chisq_p);
+				pop.getVars().setVar(subPopVar_String(*it, Geno_ChiSq_p_String, m_suffix), chisq_p);
 		}
 		if (m_vars.contains(Armitage_p_sp_String)) {
 			uintDict pvalues;
 			for (size_t i = 0; i < loci.size(); ++i)
 				pvalues[loci[i]] = armitageTest(caseGenoCnt[i], ctrlGenoCnt[i]);
-			pop.getVars().setVar(subPopVar_String(*it, Armitage_p_String) + m_suffix, pvalues);
+			pop.getVars().setVar(subPopVar_String(*it, Armitage_p_String, m_suffix), pvalues);
 		}
 		// total allele count
 		if (hasAlleleTest) {
@@ -2814,7 +2814,7 @@ bool statNeutrality::apply(Population & pop) const
 		}
 		// output variable.
 		if (m_vars.contains(Neutra_Pi_sp_String))
-			pop.getVars().setVar(subPopVar_String(*it, Neutra_Pi_String) + m_suffix,
+			pop.getVars().setVar(subPopVar_String(*it, Neutra_Pi_String, m_suffix),
 				calcPi(allHaplotypes.begin() + spBegin, allHaplotypes.end()));
 		pop.deactivateVirtualSubPop(it->subPop());
 	}
@@ -3012,9 +3012,9 @@ bool statStructure::apply(Population & pop) const
 	LOCIFREQLIST heteroFreq(subPops.size());
 	for (size_t spIdx = 0; it != itEnd; ++it, ++spIdx) {
 		if (m_vars.contains(AlleleNum_sp_String))
-			pop.getVars().removeVar(subPopVar_String(*it, AlleleNum_String) + m_suffix);
+			pop.getVars().removeVar(subPopVar_String(*it, AlleleNum_String, m_suffix));
 		if (m_vars.contains(AlleleFreq_sp_String))
-			pop.getVars().removeVar(subPopVar_String(*it, AlleleFreq_String) + m_suffix);
+			pop.getVars().removeVar(subPopVar_String(*it, AlleleFreq_String, m_suffix));
 
 		pop.activateVirtualSubPop(*it);
 
@@ -3207,7 +3207,7 @@ bool statHWE::apply(Population & pop) const
 			for (size_t i = 0; i < loci.size(); ++i) {
 				hwe[loci[i]] = hweTest(mapToCount(genoCnt[i]));
 			}
-			pop.getVars().setVar(subPopVar_String(*it, HWE_String) + m_suffix, hwe);
+			pop.getVars().setVar(subPopVar_String(*it, HWE_String, m_suffix), hwe);
 		}
 		for (size_t idx = 0; idx < nLoci; ++idx) {
 			GENOCNT::const_iterator cnt = genoCnt[idx].begin();
