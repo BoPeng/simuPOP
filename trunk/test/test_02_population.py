@@ -1162,7 +1162,7 @@ class TestPopulation(unittest.TestCase):
             pop.save(localFile)
                 
         for version in [0, 1]:
-            for plat in [64]:
+            for plat in [32, 64]:
                 for mod in ['std', 'la', 'ba', 'mu', 'lin']:
                     if version == 0 and mod in ['lin', 'mu']:
                         continue
