@@ -122,7 +122,7 @@ protected:
 public:
 		typedef std::input_iterator_tag iterator_category;
 		typedef typename compressed_vector<T>::reference reference;
-		typedef typename T * pointer;
+		typedef T * pointer;
 		typedef long int difference_type;
 		typedef T value_type;
 
