@@ -3604,6 +3604,11 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 			ar & lin_value;
 		}
 #endif
+	} else {
+#ifdef LINEAGE
+		m_lineage.clear();
+		m_lineage.resize(m_genotype.size(), 0);
+#endif		
 	}
 	DBG_DO(DBG_POPULATION, cerr << "Handling info" << endl);
 	ar & m_info;
@@ -3786,6 +3791,11 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 				ar & lin_value;
 			}
 #endif
+		} else {
+#ifdef LINEAGE
+			pd.m_lineage.clear();
+			pd.m_lineage.resize(pd.m_genotype.size(), 0);
+#endif			
 		}
 		ar & pd.m_info;
 		ar & pd.m_inds;

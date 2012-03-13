@@ -1174,11 +1174,11 @@ class TestPopulation(unittest.TestCase):
                             print('Missing testing population name: %s' % popname)
                             continue
                     pop = Population()
+                    #print('%s %s %s' % (version, plat, mod))
                     try:
                         pop = loadPopulation(popname)
                     except:
                         pass
-                    print('%s %s %s' % (version, plat, mod))
                     self.assertEqual(pop.popSize(), 10000)
                     self.assertEqual(list(pop.indInfo('a')),
                         [1, 2, 3, 4, 5] * int(10000 / 5))
