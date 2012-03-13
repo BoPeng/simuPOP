@@ -519,6 +519,33 @@ public:
 				return m_container->value_data().begin() + m_com_index;
 		}
 
+		typename compressed_vector<T>::index_array_type::const_iterator getIndexIterator() const
+		{
+			//return m_container->index_data().begin() + findPositionIndexData();
+			//return std::lower_bound(m_container->index_data().begin(), m_container->index_data().begin() + m_container->filled(), m_index);
+			if (m_com_index == -1)
+				return m_container->index_data().begin();
+			else if (m_com_index > (ssize_t)m_container->filled())
+				return m_container->index_data().begin() + m_container->filled();
+			else
+				return m_container->index_data().begin() + m_com_index;
+		}
+
+
+		typename compressed_vector<T>::value_array_type::const_iterator getValueIterator() const
+		{
+			//return m_container->value_data().begin() + findPositionIndexData();
+			//size_t com_index = getIndexIterator() - m_container->index_data().begin();
+			//return m_container->value_data().begin() + com_index;
+			if (m_com_index == -1)
+				return m_container->value_data().begin();
+			else if (m_com_index > (ssize_t)m_container->filled())
+				return m_container->value_data().begin() + m_container->filled();
+			else
+				return m_container->value_data().begin() + m_com_index;
+		}
+
+
 
 		typename compressed_vector<T>::iterator getCompressedVectorIterator()
 		{

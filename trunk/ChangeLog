@@ -4,6 +4,10 @@ Known Bugs:
   - BUG: simuPOP does not respond well to Ctrl-C under windows.
   - BUG: Textbox in Tkinter help dialog does not resize.
 
+To be implemented:
+  - Dumper() dumps a range instead of single positions when the positions
+	are consecutive.
+
 version 1.0.7 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 
 New features:
@@ -18,6 +22,8 @@ New features:
     of a large number of rare variants.
   - A new allele type lineage to track the lineage (origin of alleles) of alleles during
     evolution.
+  - A new file format is introduced to accommendate the new features. This file format
+	cannot be recognized by older versions of simuPOP.
 
 BUG:
  - Fix a bug that prevents the correct handling of population structure when evolving

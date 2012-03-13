@@ -1146,24 +1146,43 @@ class TestPopulation(unittest.TestCase):
 
     def testCrossPlatformLoad(self):
         'Testing loading populations created from other platform and allele types'
-        # the populations are created by
-        # pop = Population(10000, loci=100, infoFields='a')
-        # initGenotype(pop, genotype=[0, 1, 1, 1, 0, 1, 1])
-        # initInfo(pop, values=[1, 2, 3, 4, 5], infoFields='a')
-        # pop.save('testXX_XX.pop') # for different os and module
-        for plat in [64, 32]:
-            for mod in ['std', 'la', 'ba', 'mu']:
-                popname = 'sample_%d_%s.pop' % (plat, mod)
-                pop = Population()
-                try:
-                    pop = loadPopulation(popname)
-                except:
-                    pass
-                self.assertEqual(pop.popSize(), 10000)
-                self.assertEqual(list(pop.indInfo('a')),
-                    [1, 2, 3, 4, 5] * int(10000 / 5))
-                self.assertEqual(pop.genotype(),
-                    ([0, 1, 1, 1, 0, 1, 1] * int(10000*100*2/7+1))[:10000*100*2])
+        localFile = 'sample_%d_%s_v1.pop' % ( \
+            moduleInfo()['wordsize'],
+            {'short': 'std', 
+             'binary': 'ba',
+             'long': 'la',
+             'mutant': 'mu',
+             'lineage': 'lin'
+            }[moduleInfo()['alleleType']])
+        if not os.path.isfile(localFile):
+            print 'Creating local pop file'
+            pop = Population(10000, loci=100, infoFields=['a', 'ind_id'])
+            initGenotype(pop, genotype=[0, 1, 1, 1, 0, 1, 1])
+            initInfo(pop, values=[1, 2, 3, 4, 5], infoFields='a')
+            pop.save(localFile)
+                
+        for version in [0, 1]:
+            for plat in [64, 32]:
+                for mod in ['std', 'la', 'ba', 'mu', 'lin']:
+                    if version == 0 and mod in ['lin', 'mu']:
+                        continue
+                    if version == 0:
+                        popname = 'sample_%d_%s.pop' % (plat, mod)
+                    else:
+                        popname = 'sample_%d_%s_v1.pop' % (plat, mod)
+                        if not os.path.isfile(popname):
+                            print 'Missing testing population name: %s' % popname
+                            continue
+                    pop = Population()
+                    try:
+                        pop = loadPopulation(popname)
+                    except:
+                        pass
+                    self.assertEqual(pop.popSize(), 10000)
+                    self.assertEqual(list(pop.indInfo('a')),
+                        [1, 2, 3, 4, 5] * int(10000 / 5))
+                    self.assertEqual(pop.genotype(),
+                        ([0, 1, 1, 1, 0, 1, 1] * int(10000*100*2/7+1))[:10000*100*2])
 
 
     def testVars(self):
