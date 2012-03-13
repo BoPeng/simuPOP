@@ -3240,8 +3240,6 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 	// deep adjustment: everyone in order
 	const_cast<Population *>(this)->syncIndPointers();
 
-	ar & ModuleMaxAllele;
-
 	DBG_DO(DBG_POPULATION, cerr << "Handling geno structure" << endl);
 	// GenoStructure genoStru = this->genoStru();
 	ar & genoStru();
@@ -3464,11 +3462,10 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 void Population::load(boost::archive::text_iarchive & ar, const unsigned int version)
 {
 	size_t ma;
-	ar & ma;
+	if (version == 0)
+		ar & ma;
 
-	DBG_WARNIF(ma > ModuleMaxAllele, "Warning: The population is saved in library with more allele states. \n"
-		                             "Unless all alleles are less than " + toStr(ModuleMaxAllele) +
-		", you should use the modules used to save this file. (c.f. simuOpt.setOptions()\n");
+	size_t max_allele = 0;
 
 	GenoStructure stru;
 	DBG_DO(DBG_POPULATION, cerr << "Handling geno structure" << endl);
@@ -3498,10 +3495,13 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 		vectoru mutVal;
 		//
 		ar & singleMut;
-		if (singleMut)
+		if (singleMut) {
 			ar & singleMutVal;
-		else
+			max_allele = max(max_allele, singleMutVal);
+		else {
 			ar & mutVal;
+			max_allele = max(max_allele, max(mutVal));
+		}
 		//
 		for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
 			if (mutLoc[i])
@@ -3679,10 +3679,13 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 			vectoru mutVal;
 			//
 			ar & singleMut;
-			if (singleMut)
+			if (singleMut) {
 				ar & singleMutVal;
-			else
+				max_allele = max(max_allele, singleMutVal);
+			} else {
 				ar & mutVal;
+				max_allele = max(max_allele, max(mutVal));
+			}
 			//
 			for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
 				if (mutLoc[i])
@@ -3813,6 +3816,9 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 	varsFromString(vars);
 
 	setIndOrdered(true);
+	DBG_WARNIF(max_allele > ModuleMaxAllele, "Warning: the maximum allele of the loaded population is "
+		+ toStr(max_allele) + " which is larger than the maximum allowed allele of this module. "
+		"These alleles have been truncated.");
 }
 
 
