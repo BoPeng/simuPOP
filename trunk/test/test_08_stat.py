@@ -178,8 +178,6 @@ class TestStat(unittest.TestCase):
         for i in range(100):
             pop.individual(randint(0, 999)).setAllele(i+1, i*100)
         # number of Mutants should be 100
-        #for i in pop.individuals():
-        #    print i.genotype()
         stat(pop, numOfMutants=ALL_AVAIL)
         self.assertEqual(pop.dvars().numOfMutants, 100)
         pop = Population(size=10000, loci=[100]*5)
@@ -187,6 +185,12 @@ class TestStat(unittest.TestCase):
             pop.individual(randint(0, 999)).setAllele(i+1, i*100)
         stat(pop, numOfMutants=[0,100,200,300,400])
         self.assertEqual(pop.dvars().numOfMutants, 5)
+        #
+        # if I set mutants back to zero?
+        pop.setGenotype(0)
+        stat(pop, numOfMutants=[0,100,200,300,400])
+        self.assertEqual(pop.dvars().numOfMutants, 0)
+        #
         #
         # male only?
         pop = Population(size=1000, loci=[10]*100)
@@ -206,6 +210,7 @@ class TestStat(unittest.TestCase):
         # selected loci
         stat(pop, numOfMutants=range(100, 1000))
         self.assertEqual(pop.dvars().numOfMutants, 0)
+
 
     def testDefDict(self):
         'Testing the default dictionary feature of statistics'

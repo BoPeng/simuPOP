@@ -162,26 +162,7 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(len(arr), pop.genoSize()*pop.subPopSize(1))
         self.assertRaises(IndexError, pop.genotype, 2)
 
-    def testMutants(self):
-        'Testing Population::mutants(), mutants(subPop)'
-        if moduleInfo()['alleleType'] == 'mutant':
-            pop = Population(loci=[1, 2], size=[1, 2])
-            arr = pop.mutants()
-            self.assertEqual(len(arr), 0) 
-            arr = pop.mutants(1)
-            self.assertEqual(len(arr), 0)
-            
-            pop.setGenotype([2, 3, 4])
-            arr = pop.mutants()
-            self.assertEqual(len(arr), pop.genoSize()*pop.popSize())
-            arr = pop.mutants(1)
-            self.assertEqual(len(arr), pop.genoSize()*pop.subPopSize(1))
 
-            pop.setGenotype([2, 0, 4, 0, 5])
-            arr = pop.mutants()
-            self.assertEqual(len(arr), 11)
-            arr = pop.mutants(1)
-            self.assertEqual(len(arr), 7)
 
     def testSetGenotype(self):
         'Testing Population::setGenotype(geno), setGenotype(geno, subPop)'
@@ -1827,7 +1808,31 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(len(mutants), 80)
         self.assertEqual([x[0] for x in mutants][-13:], [2, 5, 8, 11, 14, 17, 0, 3, 6, 9, 12, 15, 18])
         self.assertEqual(len(mutants), pop.genotype(1).count(1))
-
+        #
+        pop = Population(loci=[1, 2], size=[1, 2])
+        arr = list(pop.mutants())
+        self.assertEqual(len(arr), 0) 
+        arr = list(pop.mutants(1))
+        self.assertEqual(len(arr), 0)
+        #
+        pop.setGenotype([2, 3, 4])
+        arr = list(pop.mutants())
+        self.assertEqual(len(arr), pop.genoSize()*pop.popSize())
+        arr = list(pop.mutants(1))
+        self.assertEqual(len(arr), pop.genoSize()*pop.subPopSize(1))
+        #
+        pop.setGenotype([2, 0, 4, 0, 5])
+        arr = list(pop.mutants())
+        self.assertEqual(len(arr), 11)
+        arr = list(pop.mutants(1))
+        self.assertEqual(len(arr), 7)
+        # set back
+        pop.setGenotype([2, 0, 0, 0, 5])
+        arr = list(pop.mutants())
+        self.assertEqual(len(arr), 7)
+        arr = list(pop.mutants(1))
+        self.assertEqual(len(arr), 4)
+        #
         
 if __name__ == '__main__':
     unittest.main()

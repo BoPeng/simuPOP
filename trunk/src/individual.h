@@ -95,11 +95,20 @@ public:
 	pairu next()
 	{
 #ifdef MUTANTALLELE
-		if (m_ptr == m_end)
-			throw StopIteration("");
-		size_t loc = (*m_ptr++) % m_numLoci;
-		size_t val = *m_value++;
-		return pairu(loc, val);		
+		do {
+			if (m_ptr == m_end)
+				throw StopIteration("");
+			// the mutants can be mutated back to zero, in this case the mutant is
+			// not removed (because removal is an expensive operation)
+			else if (*m_value != 0) {
+				size_t loc = (*m_ptr++) % m_numLoci;
+				size_t val = *m_value++;
+				return pairu(loc, val);		
+			} else {
+				++m_ptr;
+				++m_value;
+			}
+		} while (true);
 #else
 		do {
 			if (m_ptr == m_end)
