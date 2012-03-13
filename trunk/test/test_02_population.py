@@ -1155,14 +1155,14 @@ class TestPopulation(unittest.TestCase):
              'lineage': 'lin'
             }[moduleInfo()['alleleType']])
         if not os.path.isfile(localFile):
-            print 'Creating local pop file'
+            print('Creating local pop file')
             pop = Population(10000, loci=100, infoFields=['a', 'ind_id'])
             initGenotype(pop, genotype=[0, 1, 1, 1, 0, 1, 1])
             initInfo(pop, values=[1, 2, 3, 4, 5], infoFields='a')
             pop.save(localFile)
                 
         for version in [0, 1]:
-            for plat in [64, 32]:
+            for plat in [64]:
                 for mod in ['std', 'la', 'ba', 'mu', 'lin']:
                     if version == 0 and mod in ['lin', 'mu']:
                         continue
@@ -1171,19 +1171,19 @@ class TestPopulation(unittest.TestCase):
                     else:
                         popname = 'sample_%d_%s_v1.pop' % (plat, mod)
                         if not os.path.isfile(popname):
-                            print 'Missing testing population name: %s' % popname
+                            print('Missing testing population name: %s' % popname)
                             continue
                     pop = Population()
                     try:
                         pop = loadPopulation(popname)
                     except:
                         pass
+                    print('%s %s %s' % (version, plat, mod))
                     self.assertEqual(pop.popSize(), 10000)
                     self.assertEqual(list(pop.indInfo('a')),
                         [1, 2, 3, 4, 5] * int(10000 / 5))
                     self.assertEqual(pop.genotype(),
                         ([0, 1, 1, 1, 0, 1, 1] * int(10000*100*2/7+1))[:10000*100*2])
-
 
     def testVars(self):
         'Testing Population::vars(), vars(subPop), dvars(), dvars(subPop)'
