@@ -3505,7 +3505,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 		//
 		for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
 			if (mutLoc[i])
-				m_genotype[i] = singleMut ? singleMutVal : ToAllele(mutVal[j++]);
+				m_genotype[i] = singleMut ? ToAllele(singleMutVal) : ToAllele(mutVal[j++]);
 	} else if (version == 0) {
 #ifdef BINARYALLELE
 		// binary from binary
@@ -3686,7 +3686,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 			//
 			for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
 				if (mutLoc[i])
-					pd.m_genotype[i] = singleMut ? singleMutVal : ToAllele(mutVal[j++]);
+					pd.m_genotype[i] = singleMut ? ToAllele(singleMutVal) : ToAllele(mutVal[j++]);
 		} else if (version == 0) {
 #ifdef BINARYALLELE
 			// binary from binary
@@ -3756,7 +3756,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 #endif
 		}
 		if (version > 0) {
-			bool has_lineage;
+			int has_lineage;
 			ar & has_lineage;
 #ifdef LINEAGE
 			if (has_lineage == 2) {
