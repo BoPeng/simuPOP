@@ -564,6 +564,7 @@ IndAlleleIterator Population::alleleIterator(size_t locus, size_t subPop)
 			totNumLoci());
 }
 
+
 #ifdef LINEAGE
 
 /// CPPONLY allele begin, for given subPop
@@ -586,6 +587,8 @@ IndLineageIterator Population::lineageIterator(size_t locus, size_t subPop)
 			m_lineage.begin() + m_subPopIndex[subPop + 1] * genoSize(),
 			totNumLoci());
 }
+
+
 #endif // LINEAGE
 
 PyObject * Population::lineage(vspID subPopID)
@@ -616,7 +619,7 @@ PyObject * Population::lineage(vspID subPopID)
 	Py_INCREF(Py_None);
 	return Py_None;
 #else
-	(void) subPopID;
+	(void)subPopID;
 	Py_INCREF(Py_None);
 	return Py_None;
 #endif
@@ -759,10 +762,11 @@ void Population::setLineage(const uintList & lineageList, vspID subPopID)
 		deactivateVirtualSubPop(subPop.subPop());
 	}
 #else
-	(void) lineageList;
-	(void) subPopID;
+	(void)lineageList;
+	(void)subPopID;
 #endif
 }
+
 
 void Population::validate(const string & msg) const
 {
@@ -1569,7 +1573,7 @@ void Population::addChromFrom(const Population & pop)
 					LINEAGE_EXPR(*(lineagePtr++) = *(linPtr1++));
 				}
 				for (size_t j = 0; j < numLoci2; ++j) {
-					*(ptr++) = *(ptr2++); 
+					*(ptr++) = *(ptr2++);
 					LINEAGE_EXPR(*(lineagePtr++) = *(linPtr2++));
 				}
 			}
@@ -2536,7 +2540,7 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 						new_genotype.insert(new_genotype.end(),
 							indGenoBegin(*it), indGenoEnd(*it));
 						LINEAGE_EXPR(new_lineage.insert(new_lineage.end(),
-							indLineageBegin(*it), indLineageEnd(*it)));
+								indLineageBegin(*it), indLineageEnd(*it)));
 					} else {
 						GenoIterator ptr = indGenoBegin(*it);
 						LINEAGE_EXPR(LineageIterator lineagePtr = indLineageBegin(*it));
@@ -2547,7 +2551,7 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 #else
 								new_genotype.push_back(*(ptr + *lociPtr + p));
 #endif
-								LINEAGE_EXPR(new_lineage.push_back(*(lineagePtr + *lociPtr + p)));
+							LINEAGE_EXPR(new_lineage.push_back(*(lineagePtr + *lociPtr + p)));
 						}
 					}
 					if (!removeInfo)
@@ -2691,8 +2695,8 @@ void Population::removeLoci(const lociList & removeList, const lociList & keepLi
 				vectoru::iterator loc = kept.begin();
 				for (; loc != kept.end(); ++loc) {
 					// this line needs ordered kept array
-					*(newPtr++) = oldPtr[*loc];  //assignGenotype
-					LINEAGE_EXPR(*(newLineagePtr++) = oldLineagePtr[*loc]);  //assignLineage
+					*(newPtr++) = oldPtr[*loc];                             //assignGenotype
+					LINEAGE_EXPR(*(newLineagePtr++) = oldLineagePtr[*loc]); //assignLineage
 				}
 				oldPtr += oldTotNumLoci;
 				LINEAGE_EXPR(oldLineagePtr += oldTotNumLoci);
@@ -3231,8 +3235,7 @@ void Population::useAncestralGen(ssize_t idx)
 }
 
 
-//template<class Archive>
-void Population::save(boost::archive::text_oarchive & ar, const unsigned int version) const
+void Population::save(boost::archive::text_oarchive & ar, const unsigned int) const
 {
 	// deep adjustment: everyone in order
 	const_cast<Population *>(this)->syncIndPointers();
@@ -3246,13 +3249,59 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int ver
 	ar & m_subPopSize;
 	ar & m_subPopNames;
 	DBG_DO(DBG_POPULATION, cerr << "Handling genotype" << endl);
-#ifdef BINARYALLELE
+
 	size_t size = m_genotype.size();
 	ar & size;
+
+#ifdef MUTANTALLELE
+	vector<bool> mutLoc(m_genotype.size());
+	vectoru mutVal;
+	bool singleMut = true;
+	size_t singleMutVal = 0;
+	//
+	compressed_vector<Allele>::index_array_type::const_iterator ptr = m_genotype.begin().getIndexIterator();
+	compressed_vector<Allele>::index_array_type::const_iterator end = m_genotype.end().getIndexIterator();
+	compressed_vector<Allele>::value_array_type::const_iterator value = m_genotype.begin().getValueIterator();
+	for (; ptr != end; ++ptr, ++value) {
+		if (*value != 0) {
+			mutLoc[*ptr] = 1;
+			mutVal.push_back(*value);
+			if (singleMutVal == 0)
+				singleMutVal = *value;
+			else if (*value != singleMutVal)
+				singleMut = false;
+		}
+	}
+	vector<bool>::const_iterator locPtr = mutLoc.begin();
+#elif defined(BINARYALLELE)
+	vectoru mutVal;
+	bool singleMut = true;
+	size_t singleMutVal = 1;
+	vector<bool>::const_iterator locPtr = m_genotype.begin();
+#else
+	vector<bool> mutLoc(m_genotype.size());
+	vectoru mutVal;
+	bool singleMut = true;
+	size_t singleMutVal = 0;
+	//
 	ConstGenoIterator ptr = m_genotype.begin();
+	ConstGenoIterator end = m_genotype.end();
+	size_t idx = 0;
+	for (; ptr != end; ++ptr, ++idx) {
+		if (*ptr != 0) {
+			mutLoc[idx] = 1;
+			mutVal.push_back(*ptr);
+			if (singleMutVal == 0)
+				singleMutVal = *ptr;
+			else if (*ptr != singleMutVal)
+				singleMut = false;
+		}
+	}
+	vector<bool>::const_iterator locPtr = mutLoc.begin();
+#endif
 	WORDTYPE data = 0;
 	for (size_t i = 0; i < size; ++i) {
-		data |= (*ptr++) << (i % 32);
+		data |= (*locPtr++) << (i % 32);
 		// end of block of end of data
 		if (i % 32 == 31 || i == size - 1) {
 			// on 64 systems, the upper 32bit of the data might not be 0
@@ -3263,20 +3312,36 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int ver
 			data = 0;
 		}
 	}
-#else
-	ar & m_genotype;
-#endif
-	if (version > 0) {
+	ar & singleMut;
+	if (singleMut)
+		ar & singleMutVal;
+	else
+		ar & mutVal;
+
 #ifdef LINEAGE
-		bool has_lineage = true;
-		DBG_DO(DBG_POPULATION, cerr << "Handling lineage" << endl);
+	DBG_DO(DBG_POPULATION, cerr << "Handling lineage" << endl);
+	if (!m_lineage.empty()) {
+		int has_lineage = 1;
+		long single_lineage = m_lineage[0];
+		for (size_t i = 1; i < m_lineage.size(); ++i) {
+			if (m_lineage[i] != single_lineage) {
+				has_lineage = 2;
+				break;
+			}
+		}
 		ar & has_lineage;
-		ar & m_lineage;
-#else
-		bool has_lineage = false;
+		if (has_lineage == 1)
+			ar & single_lineage;
+		else
+			ar & m_lineage;
+	} else {
+		int has_lineage = 0;
 		ar & has_lineage;
-#endif
 	}
+#else
+	int has_lineage = 0;
+	ar & has_lineage;
+#endif
 	DBG_DO(DBG_POPULATION, cerr << "Handling information" << endl);
 	ar & m_info;
 	DBG_DO(DBG_POPULATION, cerr << "Handling Individuals" << endl);
@@ -3291,33 +3356,97 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int ver
 		const_cast<Population *>(this)->syncIndPointers();
 		ar & m_subPopSize;
 		ar & m_subPopNames;
-#ifdef BINARYALLELE
 		size_t size = m_genotype.size();
 		ar & size;
-		ptr = m_genotype.begin();
+
+#ifdef MUTANTALLELE
+		vector<bool> mutLoc(m_genotype.size());
+		vectoru mutVal;
+		bool singleMut = true;
+		size_t singleMutVal = 0;
+		//
+		compressed_vector<Allele>::index_array_type::const_iterator ptr = m_genotype.begin().getIndexIterator();
+		compressed_vector<Allele>::index_array_type::const_iterator end = m_genotype.end().getIndexIterator();
+		compressed_vector<Allele>::value_array_type::const_iterator value = m_genotype.begin().getValueIterator();
+		for (; ptr != end; ++ptr, ++value) {
+			if (*value != 0) {
+				mutLoc[*ptr] = 1;
+				mutVal.push_back(*value);
+				if (singleMutVal == 0)
+					singleMutVal = *value;
+				else if (*value != singleMutVal)
+					singleMut = false;
+			}
+		}
+		vector<bool>::const_iterator locPtr = mutLoc.begin();
+#elif defined(BINARYALLELE)
+		vectoru mutVal;
+		bool singleMut = true;
+		size_t singleMutVal = 1;
+		vector<bool>::const_iterator locPtr = m_genotype.begin();
+#else
+		vector<bool> mutLoc(m_genotype.size());
+		vectoru mutVal;
+		bool singleMut = true;
+		size_t singleMutVal = 0;
+		//
+		ConstGenoIterator ptr = m_genotype.begin();
+		ConstGenoIterator end = m_genotype.end();
+		size_t idx = 0;
+		for (; ptr != end; ++ptr, ++idx) {
+			if (*ptr != 0) {
+				mutLoc[idx] = 1;
+				mutVal.push_back(*ptr);
+				if (singleMutVal == 0)
+					singleMutVal = *ptr;
+				else if (*ptr != singleMutVal)
+					singleMut = false;
+			}
+		}
+		vector<bool>::const_iterator locPtr = mutLoc.begin();
+#endif
 		WORDTYPE data = 0;
 		for (size_t i = 0; i < size; ++i) {
-			data |= (*ptr++) << (i % 32);
+			data |= (*locPtr++) << (i % 32);
 			// end of block of end of data
 			if (i % 32 == 31 || i == size - 1) {
+				// on 64 systems, the upper 32bit of the data might not be 0
+				// so we need to clear the upper 32bit so that the genotype saved
+				// on a 64bit system can be loaded on 32bit systems.
 				data &= 0xFFFFFFFF;
 				ar & data;
 				data = 0;
 			}
 		}
-#else
-		ar & m_genotype;
-#endif
-		if (version > 0) {
+		ar & singleMut;
+		if (singleMut)
+			ar & singleMutVal;
+		else
+			ar & mutVal;
+
 #ifdef LINEAGE
-			bool has_lineage = true;
+		if (!m_lineage.empty()) {
+			int has_lineage = 1;
+			long single_lineage = m_lineage[0];
+			for (size_t i = 1; i < m_lineage.size(); ++i) {
+				if (m_lineage[i] != single_lineage) {
+					has_lineage = 2;
+					break;
+				}
+			}
 			ar & has_lineage;
-			ar & m_lineage;
-#else
-			bool has_lineage = false;
+			if (has_lineage == 1)
+				ar & single_lineage;
+			else
+				ar & m_lineage;
+		} else {
+			int has_lineage = 0;
 			ar & has_lineage;
-#endif
 		}
+#else
+		int has_lineage = 0;
+		ar & has_lineage;
+#endif
 
 		ar & m_info;
 		ar & m_inds;
@@ -3332,7 +3461,6 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int ver
 }
 
 
-//template<class Archive>
 void Population::load(boost::archive::text_iarchive & ar, const unsigned int version)
 {
 	size_t ma;
@@ -3349,61 +3477,74 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 	ar & m_subPopNames;
 	DBG_DO(DBG_POPULATION, cerr << "Handling genotype" << endl);
 
-#ifdef BINARYALLELE
-	// binary from binary
-	if (ma == 1) {
+	// newer version unfied importer
+	if (version == 1) {
+		// a newer version
 		size_t size;
 		ar & size;
 		m_genotype.resize(size);
-		GenoIterator ptr = m_genotype.begin();
+
+		vector<bool> mutLoc(size);
+		vector<bool>::iterator locPtr = mutLoc.begin();
 		WORDTYPE data = 0;
 		for (size_t i = 0; i < size; ++i) {
 			if (i % 32 == 0)
 				ar & data;
-			*ptr++ = (data & (1UL << (i % 32))) != 0;
+			*locPtr++ = (data & (1UL << (i % 32))) != 0;
 		}
-		// binary from mutant
-	} else if (ma == 256) {
-		mutant_vector<unsigned int> tmpgeno;
-		ar & tmpgeno;
-		m_genotype.resize(tmpgeno.size());
-		for (size_t i = 0; i < tmpgeno.size(); ++i) {
-			unsigned int data = tmpgeno[i];
-			m_genotype[i] = ToAllele(data);
+		//
+		bool singleMut;
+		size_t singleMutVal = 0;
+		vectoru mutVal;
+		//
+		ar & singleMut;
+		if (singleMut)
+			ar & singleMutVal;
+		else
+			ar & mutVal;
+		//
+		for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
+			if (mutLoc[i])
+				m_genotype[i] = singleMut ? singleMutVal : ToAllele(mutVal[j++]);
+	} else if (version == 0) {
+#ifdef BINARYALLELE
+		// binary from binary
+		if (ma == 1) {
+			size_t size;
+			ar & size;
+			m_genotype.resize(size);
+			GenoIterator ptr = m_genotype.begin();
+			WORDTYPE data = 0;
+			for (size_t i = 0; i < size; ++i) {
+				if (i % 32 == 0)
+					ar & data;
+				*ptr++ = (data & (1UL << (i % 32))) != 0;
+			}
 		}
 		// binary from others (long types)
-	} else {
-		DBG_DO(DBG_POPULATION, cerr << "Load bin from long. " << endl);
-		vectoru tmpgeno;
-		ar & tmpgeno;
-		m_genotype.resize(tmpgeno.size());
-		for (size_t i = 0; i < tmpgeno.size(); ++i)
-			m_genotype[i] = ToAllele(tmpgeno[i]);
-	}
-#else
-	// long or mutant from binary
-	if (ma == 1) {
-		// for version 2 and higher, archive in 32bit blocks.
-		size_t size;
-		ar & size;
-		m_genotype.resize(size);
-		GenoIterator ptr = m_genotype.begin();
-		WORDTYPE data = 0;
-		for (size_t i = 0; i < size; ++i) {
-			if (i % 32 == 0)
-				ar & data;
-			*ptr++ = (data & (1UL << (i % 32))) != 0;
-		}
-	}                                                                                   // if ma == 1
-	else {                                                                              // for non-binary types, ...
-#  ifdef MUTANTALLELE
-		// mutant from mutant
-		if (ma == 256) {
-			DBG_DO(DBG_POPULATION, cerr << "Load mutant from mutant. " << endl);
-			ar & m_genotype;
-		}
-		// mutant from long
 		else {
+			DBG_DO(DBG_POPULATION, cerr << "Load bin from long. " << endl);
+			vectoru tmpgeno;
+			ar & tmpgeno;
+			m_genotype.resize(tmpgeno.size());
+			for (size_t i = 0; i < tmpgeno.size(); ++i)
+				m_genotype[i] = ToAllele(tmpgeno[i]);
+		}
+#elif defined(MUTANTALLELE)
+		// mutant from mutant
+		if (ma == 1) {
+			DBG_DO(DBG_POPULATION, cerr << "Load mutant from binary. " << endl);
+			size_t size;
+			ar & size;
+			m_genotype.resize(size);
+			GenoIterator ptr = m_genotype.begin();
+			WORDTYPE data = 0;
+			for (size_t i = 0; i < size; ++i) {
+				if (i % 32 == 0)
+					ar & data;
+				*ptr++ = (data & (1UL << (i % 32))) != 0;
+			}
+		} else {
 			DBG_DO(DBG_POPULATION, cerr << "Load mutant from long. " << endl);
 			vectora data;
 			ar & data;
@@ -3413,37 +3554,51 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 					m_genotype[i] = data[i];
 			}
 		}
-#  else
-		// long from mutant
-		if (ma == 256) {
-			DBG_DO(DBG_POPULATION, cerr << "Load long from mutant. " << endl);
-			mutant_vector<unsigned int> tmpgeno;
-			ar & tmpgeno;
-			m_genotype.resize(tmpgeno.size());
-			for (size_t i = 0; i < tmpgeno.size(); ++i)
-				m_genotype[i] = tmpgeno[i];
-			// long from long
-		} else {
+#else
+		// long from binary
+		if (ma == 1) {
+			// for version 2 and higher, archive in 32bit blocks.
+			size_t size;
+			ar & size;
+			m_genotype.resize(size);
+			GenoIterator ptr = m_genotype.begin();
+			WORDTYPE data = 0;
+			for (size_t i = 0; i < size; ++i) {
+				if (i % 32 == 0)
+					ar & data;
+				*ptr++ = (data & (1UL << (i % 32))) != 0;
+			}
+		}                                                                                   // if ma == 1
+		else {                                                                              // for non-binary types, ...
 			DBG_DO(DBG_POPULATION, cerr << "Load long from long. " << endl);
+			// long from long
 			ar & m_genotype;
 		}
-#  endif
-	}
 #endif
+	}
 	if (version > 0) {
-		bool has_lineage;
+		int has_lineage;
 		ar & has_lineage;
 #ifdef LINEAGE
-		if (has_lineage) {
+		if (has_lineage == 2) {
 			DBG_DO(DBG_POPULATION, cerr << "Handling lineage" << endl);
 			ar & m_lineage;
+		} else if (has_lineage == 1) {
+			long lin_value = 0;
+			ar & lin_value;
+			m_lineage.clear();
+			m_lineage.resize(m_genotype.size(), lin_value);
 		} else {
-			m_lineage.resize(m_popSize * genoSize());
+			m_lineage.clear();
+			m_lineage.resize(m_genotype.size(), 0);
 		}
 #else
-		if (has_lineage) {
+		if (has_lineage == 2) {
 			vectori lineage;
 			ar & lineage;
+		} else if (has_lineage == 1) {
+			long lin_value = 0;
+			ar & lin_value;
 		}
 #endif
 	}
@@ -3486,7 +3641,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 
 #ifdef LINEAGE
 	LineageIterator lineagePtr = m_lineage.begin();
-	for(size_t i = 0; i < m_popSize; ++i, lineagePtr += step) {
+	for (size_t i = 0; i < m_popSize; ++i, lineagePtr += step) {
 		m_inds[i].setLineagePtr(lineagePtr);
 	}
 #endif
@@ -3503,60 +3658,74 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 		popData pd;
 		ar & pd.m_subPopSize;
 		ar & pd.m_subPopNames;
+
+		if (version == 1) {
+			// a newer version
+			size_t size;
+			ar & size;
+			pd.m_genotype.resize(size);
+
+			vector<bool> mutLoc(size);
+			vector<bool>::iterator locPtr = mutLoc.begin();
+			WORDTYPE data = 0;
+			for (size_t i = 0; i < size; ++i) {
+				if (i % 32 == 0)
+					ar & data;
+				*locPtr++ = (data & (1UL << (i % 32))) != 0;
+			}
+			//
+			bool singleMut;
+			size_t singleMutVal = 0;
+			vectoru mutVal;
+			//
+			ar & singleMut;
+			if (singleMut)
+				ar & singleMutVal;
+			else
+				ar & mutVal;
+			//
+			for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
+				if (mutLoc[i])
+					pd.m_genotype[i] = singleMut ? singleMutVal : ToAllele(mutVal[j++]);
+		} else if (version == 0) {
 #ifdef BINARYALLELE
-		// binary from binary
-		if (ma == 1) {
-			DBG_DO(DBG_POPULATION, cerr << "Load bin from bin. " << endl);
-			size_t size;
-			ar & size;
-			pd.m_genotype.resize(size);
-			ptr = pd.m_genotype.begin();
-			WORDTYPE data = 0;
-			for (size_t i = 0; i < size; ++i) {
-				if (i % 32 == 0)
-					ar & data;
-				*ptr++ = (data & (1UL << i % 32)) != 0;
+			// binary from binary
+			if (ma == 1) {
+				DBG_DO(DBG_POPULATION, cerr << "Load bin from bin. " << endl);
+				size_t size;
+				ar & size;
+				pd.m_genotype.resize(size);
+				ptr = pd.m_genotype.begin();
+				WORDTYPE data = 0;
+				for (size_t i = 0; i < size; ++i) {
+					if (i % 32 == 0)
+						ar & data;
+					*ptr++ = (data & (1UL << i % 32)) != 0;
+				}
+			} else {
+				DBG_DO(DBG_POPULATION, cerr << "Load bin from long. " << endl);
+				// binary from long types
+				vector<unsigned char> tmpgeno;
+				ar & tmpgeno;
+				pd.m_genotype.resize(tmpgeno.size());
+				for (size_t i = 0; i < tmpgeno.size(); ++i)
+					pd.m_genotype[i] = ToAllele(tmpgeno[i]);
 			}
-			// binary from mutant
-		} else if (ma == 256) {
-			mutant_vector<unsigned int> tmpgeno;
-			ar & tmpgeno;
-			pd.m_genotype.resize(tmpgeno.size());
-			for (size_t i = 0; i < tmpgeno.size(); ++i) {
-				unsigned int data = tmpgeno[i];
-				pd.m_genotype[i] = ToAllele(data);
-			}
-			// binary from others (long types)
-		} else {
-			DBG_DO(DBG_POPULATION, cerr << "Load bin from long. " << endl);
-			// binary from long types
-			vector<unsigned char> tmpgeno;
-			ar & tmpgeno;
-			pd.m_genotype.resize(tmpgeno.size());
-			for (size_t i = 0; i < tmpgeno.size(); ++i)
-				pd.m_genotype[i] = ToAllele(tmpgeno[i]);
-		}
-#else
-		if (ma == 1) {
-			// long type from binary
-			size_t size;
-			ar & size;
-			pd.m_genotype.resize(size);
-			ptr = pd.m_genotype.begin();
-			WORDTYPE data = 0;
-			for (size_t i = 0; i < size; ++i) {
-				if (i % 32 == 0)
-					ar & data;
-				*ptr++ = (data & (1UL << i % 32)) != 0;
-			}
-		} else {
-#  ifdef MUTANTALLELE
+#elif defined(MUTANTALLELE)
 			// mutant from mutant
-			if (ma == 256) {
-				ar & pd.m_genotype;
-			}
-			// mutant from long
-			else {
+			if (ma == 1) {
+				DBG_DO(DBG_POPULATION, cerr << "Load mutant from binary. " << endl);
+				size_t size;
+				ar & size;
+				pd.m_genotype.resize(size);
+				GenoIterator ptr = pd.m_genotype.begin();
+				WORDTYPE data = 0;
+				for (size_t i = 0; i < size; ++i) {
+					if (i % 32 == 0)
+						ar & data;
+					*ptr++ = (data & (1UL << (i % 32))) != 0;
+				}
+			} else {
 				DBG_DO(DBG_POPULATION, cerr << "Load mutant from long. " << endl);
 				vectora data;
 				ar & data;
@@ -3566,40 +3735,52 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 						pd.m_genotype[i] = data[i];
 				}
 			}
-#  else
-			// long from mutant
-			if (ma == 256) {
-				DBG_DO(DBG_POPULATION, cerr << "Load long from mutant. " << endl);
-				mutant_vector<unsigned int> tmpgeno;
-				ar & tmpgeno;
-				pd.m_genotype.resize(tmpgeno.size());
-				for (size_t i = 0; i < tmpgeno.size(); ++i)
-					pd.m_genotype[i] = tmpgeno[i];
-				// long from long
+#else
+			if (ma == 1) {
+				// long type from binary
+				size_t size;
+				ar & size;
+				pd.m_genotype.resize(size);
+				ptr = pd.m_genotype.begin();
+				WORDTYPE data = 0;
+				for (size_t i = 0; i < size; ++i) {
+					if (i % 32 == 0)
+						ar & data;
+					*ptr++ = (data & (1UL << i % 32)) != 0;
+				}
 			} else {
 				DBG_DO(DBG_POPULATION, cerr << "Load long from long. " << endl);
+				// long type from long type.
 				ar & pd.m_genotype;
 			}
-#  endif
-		}
 #endif
-	if (version > 0) {
-		bool has_lineage;
-		ar & has_lineage;
+		}
+		if (version > 0) {
+			bool has_lineage;
+			ar & has_lineage;
 #ifdef LINEAGE
-		if (has_lineage) {
-			DBG_DO(DBG_POPULATION, cerr << "Handling lineage" << endl);
-			ar & pd.m_lineage;
-		} else {
-			pd.m_lineage.resize(pd.m_genotype.size());
-		}
+			if (has_lineage == 2) {
+				DBG_DO(DBG_POPULATION, cerr << "Handling lineage" << endl);
+				ar & pd.m_lineage;
+			} else if (has_lineage == 1) {
+				long lin_value = 0;
+				ar & lin_value;
+				pd.m_lineage.clear();
+				pd.m_lineage.resize(pd.m_genotype.size(), lin_value);
+			} else {
+				pd.m_lineage.clear();
+				pd.m_lineage.resize(pd.m_genotype.size(), 0);
+			}
 #else
-		if (has_lineage) {
-			vectori lineage;
-			ar & lineage;
-		}
+			if (has_lineage == 2) {
+				vectori lineage;
+				ar & lineage;
+			} else if (has_lineage == 1) {
+				long lin_value;
+				ar & lin_value;
+			}
 #endif
-	}
+		}
 		ar & pd.m_info;
 		ar & pd.m_inds;
 		// set pointer after copy this thing again (push_back)

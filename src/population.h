@@ -838,6 +838,7 @@ public:
 #ifdef LINEAGE
 	/// CPPONLY lineage begin, for given subPop
 	IndLineageIterator lineageIterator(size_t locus, size_t subPop);
+
 #endif
 
 	///  CPPONLY allele iterator, go through all allels one by one, without subPop info
@@ -867,6 +868,7 @@ public:
 
 		return m_genotype.end();
 	}
+
 
 #ifdef LINEAGE
 
@@ -898,7 +900,8 @@ public:
 		return m_lineage.end();
 	}
 
-#endif // LINEAGE
+
+#endif  // LINEAGE
 
 	///  CPPONLY allele iterator, go through all allels one by one in a subpopulation
 	/**
@@ -927,6 +930,7 @@ public:
 
 		return m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize();
 	}
+
 
 #ifdef LINEAGE
 
@@ -958,7 +962,8 @@ public:
 		return m_lineage.begin() + m_subPopIndex[subPop + 1] * genoSize();
 	}
 
-#endif // LINEAGE
+
+#endif  // LINEAGE
 
 	/// CPPONLY genoIterator --- beginning of individual ind.
 	GenoIterator indGenoBegin(size_t ind) const
@@ -974,6 +979,7 @@ public:
 		CHECKRANGEIND(ind);
 		return m_inds[ind].genoEnd();
 	}
+
 
 #ifdef LINEAGE
 
@@ -992,7 +998,8 @@ public:
 		return m_inds[ind].lineageEnd();
 	}
 
-#endif 
+
+#endif
 
 	/// CPPONLY genoIterator --- beginning of individual ind.
 	GenoIterator indGenoBegin(size_t ind, size_t subPop) const
@@ -1012,6 +1019,7 @@ public:
 
 		return m_inds[ subPopBegin(subPop) + ind].genoEnd();
 	}
+
 
 #ifdef LINEAGE
 
@@ -1033,6 +1041,7 @@ public:
 
 		return m_inds[ subPopBegin(subPop) + ind].lineageEnd();
 	}
+
 
 #endif
 
