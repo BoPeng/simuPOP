@@ -627,10 +627,11 @@ class TestStat(unittest.TestCase):
         #self.assertEqual(pop1.dvars().Pi, self.pairwiseDiff(pop1, loci=[4, 4]))
         stat(pop1, neutrality=[6, 1, 3])
         self.assertEqual(pop1.dvars().Pi, self.pairwiseDiff(pop1, loci=[6, 1, 3]))
-	# for subpopulation
-	pop1.dvars().clear()
-	stat(pop1, neutrality=[1, 3, 4], vars=['Pi_sp'], suffix='_mt')
-	self.assertEqual(pop1.dvars(0).Pi_mt, self.pairwiseDiff(pop1, loci=[1, 3, 4]))
+        # for subpopulation
+        pop1.dvars().clear()
+        stat(pop1, neutrality=[1, 3, 4], vars=['Pi_sp'], suffix='_mt')
+        pop1.removeSubPops(1)
+        self.assertEqual(pop1.dvars(0).Pi_mt, self.pairwiseDiff(pop1, loci=[1, 3, 4]))
 
 if __name__ == '__main__':
     unittest.main()

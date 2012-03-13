@@ -30,6 +30,7 @@ BUG:
    populations with changing population structure.
  - Fix a bug that prevents MlPenetrance from being used in the evolve function.
  - Ensure 2^64 maximum allele states for the long module under 64 bit system
+ - Fix a bug for the appending of suffix to subpopulation variables.
 
 version 1.0.6 - Rev 4260 (July 11, 2011)
 Major new feature:
