@@ -258,6 +258,9 @@ class TestIndividual(unittest.TestCase):
         mutants = list(ind.mutants(ploidy=1))
         self.assertEqual(len(mutants), 7)
         self.assertEqual([x[0] for x in mutants], [0, 3, 6, 9, 12, 15, 18])
+        #
+        ind.setAllele(0, 6, 1)
+        self.assertEqual([x[0] for x in ind.mutants(ploidy=1)], [0, 3, 9, 12, 15, 18])
 
 if __name__ == '__main__':
     unittest.main()
