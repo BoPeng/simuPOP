@@ -36,6 +36,7 @@
 #endif
 
 using std::max;
+using std::max_element;
 
 namespace simuPOP {
 
@@ -3502,8 +3503,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 			max_allele = max(max_allele, singleMutVal);
 		} else {
 			ar & mutVal;
-            for (size_t i = 0; i < mutVal.size(); ++i)
-                max_allele = max(max_allele, mutVal[i]);
+            max_allele = max(max_allele, *max_element(mutVal.begin(), mutVal.end()));
 		}
 		//
 		for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
@@ -3687,8 +3687,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 				max_allele = max(max_allele, singleMutVal);
 			} else {
 				ar & mutVal;
-                for (size_t i = 0; i < mutVal.size(); ++i)
-                    max_allele = max(max_allele, mutVal[i]);
+                max_allele = max(max_allele, *max_element(mutVal.begin(), mutVal.end()));
 			}
 			//
 			for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
