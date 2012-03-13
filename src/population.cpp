@@ -35,6 +35,8 @@
 #  define PyInt_FromLong(x) PyLong_FromLong(x)
 #endif
 
+using std::max;
+
 namespace simuPOP {
 
 Population::Population(const uintList & size,
@@ -3498,9 +3500,10 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 		if (singleMut) {
 			ar & singleMutVal;
 			max_allele = max(max_allele, singleMutVal);
-		else {
+		} else {
 			ar & mutVal;
-			max_allele = max(max_allele, max(mutVal));
+            for (size_t i = 0; i < mutVal.size(); ++i)
+                max_allele = max(max_allele, mutVal[i]);
 		}
 		//
 		for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
@@ -3684,7 +3687,8 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 				max_allele = max(max_allele, singleMutVal);
 			} else {
 				ar & mutVal;
-				max_allele = max(max_allele, max(mutVal));
+                for (size_t i = 0; i < mutVal.size(); ++i)
+                    max_allele = max(max_allele, mutVal[i]);
 			}
 			//
 			for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
