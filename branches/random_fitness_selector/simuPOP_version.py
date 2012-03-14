@@ -1,0 +1,2 @@
+SIMUPOP_VER = "1.0.7svn"
+SIMUPOP_REV = "4259"

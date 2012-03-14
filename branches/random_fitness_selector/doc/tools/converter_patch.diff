@@ -1,0 +1,575 @@
+Index: latexparser.py
+===================================================================
+--- latexparser.py	(revision 76658)
++++ latexparser.py	(working copy)
+@@ -17,6 +17,7 @@
+      DefinitionsNode, ProductionListNode
+ 
+ from .util import umlaut, empty
++import os, re
+ 
+ 
+ class ParserError(Exception):
+@@ -177,9 +178,16 @@
+                     raise ParserError('%s: argument %d must be text only' %
+                                       (cmdname, i), nextl)
+                 args.append(arg)
++            elif nextt == 'command':
++                # something like \small\ttfamily
++                arg = self.parse()
++                args.append(arg)
++            elif nextt == 'egroup':
++                # e.g. {\cmd}, not quite sure if this is safe here.
++                continue
+             else:
+                 if nextt != 'text':
+-                    raise ParserError('%s: non-grouped non-text arguments not '
++                    raise ParserError('%s: non-grouped non-text/command arguments not '
+                                       'supported' % cmdname, nextl)
+                 args.append(TextNode(nextv[0]))
+                 self.tokens.push((nextl, nextt, nextv[1:], nextr[1:]))
+@@ -356,6 +364,8 @@
+             'textbar': '',
+             'tilde': '',
+             'unspecified': '',
++            'textquoteleft': '',
++            'textquoteright': '',
+         },
+ 
+         IndexNode: {
+@@ -456,6 +466,14 @@
+             c = umlaut(cmdname, nextv[0])
+             self.tokens.push((nextl, nextt, nextv[1:], nextr[1:]))
+             return TextNode(c)
++        elif cmdname == '[':
++            math = ''
++            # extract text between '[\' and '\]'
++            for l, t, v, r in self.tokens:
++                if r == '\\]':
++                    break
++                math += r
++            return CommandNode('dispmath', [TextNode(math)])
+         elif cmdname == '\\':
+             return BreakNode()
+         raise ParserError('no handler for \\%s command' % cmdname,
+@@ -465,8 +483,7 @@
+         envname, = self.parse_args('begin', 'T')
+         handler = getattr(self, 'handle_%s_env' % envname.text, None)
+         if not handler:
+-            raise ParserError('no handler for %s environment' % envname.text,
+-                              self.tokens.peek()[0])
++            handler = self.handle_unrecognized(envname.text, self.tokens.peek()[0])
+         return handler()
+ 
+     # ------------------------- command handlers -----------------------------
+@@ -579,9 +596,267 @@
+             text.append(r)
+         return VerbatimNode(TextNode(''.join(text)))
+ 
++    def read_listings_options(self):
++        '''
++        process [caption={},label={},firstline=1] etc and return a dictionary of options
++        '''
++        options = {}
++        tok = self.tokens.peek()
++        if tok[1] != 'boptional':
++            return options
++        txt = ''
++        for l, t, v, r in self.tokens:
++            if t == 'boptional':
++                continue
++            elif t == 'eoptional':
++                break
++            txt += r
++        # this is NOT very robust
++        txt = txt.split(',')
++        for opt in txt:
++            if '=' not in opt:
++                continue
++            key, value = opt.split('=')
++            options[key.strip()] = value.strip().lstrip('{').rstrip('}')
++        return options
++
++
++    def handle_lstlisting_env(self):
++        '''
++        The latex code looks like
++
++        \begin{lstlisting}[caption={blah},label={blah}]
++        blah
++        \end{lstlisting}
++        '''
++        options = self.read_listings_options()
++        txt = ''
++        for l, t, v, r in self.tokens:
++            if self.environment_end(t, v):
++                break
++            txt += r
++        nodelist = []
++        if options.has_key('label'):
++            nodelist.append(CommandNode('label', [TextNode(options['label'])]))
++        if options.has_key('caption'):
++            nodelist.append(CommandNode('lst_caption', [TextNode(options['caption'])]))
++        nodelist.append(VerbatimNode(TextNode(txt)))
++        return NodeList(nodelist)
++
++
++    def handle_lstinputlisting(self):
++        '''
++        The latex code looks like:
++
++        \lstinputlisting[
++            caption={blah},
++            label={blah},
++            firstline=5,
++            lastline=20
++        ]{file.py}
++        '''
++        options = self.read_listings_options()
++        file = ''
++        for l, t, v, r in self.tokens:
++            if t == 'bgroup':
++                continue
++            elif t == 'egroup':
++                break
++            else:
++                file += r
++        #
++        language = options.setdefault('language')
++        label = options.setdefault('label')
++        caption = options.setdefault('caption')
++        firstline = options.setdefault('firstline')
++        lastline = options.setdefault('lastline')
++        #
++        nodes = []
++        if label is not None:
++            nodes.append(CommandNode('label', [TextNode(label)]))
++        if caption is not None:
++            nodes.append(CommandNode('lst_caption', [TextNode(caption)]))
++        ####################################################################
++        # The following code tries to use the 'literalinclude' directive.
++        # However, sphinx crashes with something like:
++        #
++        # File "/path/to/pygments/lexers/__init__.py", line 83, in get_lexer_by_name
++        #   raise ClassNotFound('no lexer for alias %r found' % _alias)
++        # ClassNotFound: no lexer for alias u'C' found
++        #
++        # I am therefore using a VerbatimNode instead. It actually has the
++        # advantage that we do not have to worry about filename in the writter.
++        #####################################################################
++        #
++        # Turn this to False to test .. literalinclude 
++        useVerbatim = True
++        if useVerbatim:
++            input_dir = os.path.dirname(os.path.abspath(self.filename))
++            cur_dir = os.path.abspath('.')
++            for dir in ['', input_dir, cur_dir]:
++                filename = os.path.join(dir, file)
++                if os.path.isfile(filename):
++                    file = filename
++                    break
++            try:
++                txt = open(file).read()
++                # listings starts from 1, python starts from 0.
++                if lastline is not None:
++                    txt = '\n'.join(txt.split('\n')[:(int(lastline))])
++                if firstline is not None:
++                    txt = '\n'.join(txt.split('\n')[int(firstline) - 1:])
++                nodes.append(VerbatimNode(TextNode(txt)))
++            except:
++                print "Failed to include listings ", file
++                return EmptyNode()
++        else:
++            optionNodes = []
++            lines = ''
++            if firstline is not None:
++                lines = '%s-' % firstline
++            if lastline is not None:
++                lines += '%s' % lastline
++            if lines != '':
++                optionNodes.append(TextNode(':lines: %s' % lines))
++            if language is not None:
++                optionNodes.append(TextNode(':language: %s' % language))
++            # pass absolute filename because the input and output file
++            # may not be in the same directory.
++            nodes.append(CommandNode('lstinput', [TextNode(os.path.abspath(file))]
++                + optionNodes))
++        nodes.append(CommandNode('example_url', [TextNode(file)]))
++        return NodeList(nodes)
++
++    def handle_caption(self):
++        # the trouble with caption is that \label is often nested in a caption
++        # and causes trouble.
++        data = self.parse_args('\\caption', 'M')[0]
++        # if there is a label, move it out ...
++        nodelist = []
++        if isinstance(data, NodeList):
++            for node in data.walk():
++                if not isinstance(node, TextNode):
++                    # label?
++                    nodelist.append(node)
++                else:
++                    # emph of caption
++                    nodelist = [CommandNode('fig_caption', [node])] + nodelist
++        else:
++            nodelist.append(data)
++        return NodeList(nodelist)
++    
++    def handle_includegraphics(self):
++        '''
++        The latex code looks like:
++
++        \includegraphics[width=0.9\textwidth]{chromType}
++        '''
++        file = ''
++        options = ''
++        expect_option = False
++        for l, t, v, r in self.tokens:
++            if t == 'boptional':
++                expect_option = True
++                continue
++            elif t == 'eoptional':
++                expect_option = False
++                continue
++            #
++            if expect_option:
++                options += r
++            elif t == 'bgroup':
++                continue
++            elif t == 'egroup':
++                break
++            else:
++                file += r
++        # handle option width
++        options = options.split(',')
++        # width?
++        width = None
++        height = None
++        for opt in options:
++            if opt.startswith('width='):
++                width = opt.replace('width=', ':width: ')
++                if re.match('width\s*=\s*[0-9.]+\\\\(line|text)width', opt):
++                    perc = float(re.match('width\s*=\s*([0-9.]+)\\\\(line|text)width', opt).groups()[0])*100
++                    #width = ':width: %d%%' % int(perc)
++                    # special value for simuPOP website
++                    width = ':width: 680'
++            elif opt.startswith('height='):
++                height = opt.replace('height=', ':height: ')
++                if re.match('height\s*=\s*[0-9.]+\\\\(line|text)height', opt):
++                    perc = float(re.match('height\s*=\s*([0-9.]+)\\\\(line|text)height', opt).groups()[0])*100
++                    height = ':height: %d%%' % int(perc)
++        #
++        # Latex sometimes ignore file extension so we need to figure out
++        # the exact file to include. Because we do not know where the output
++        # file will be put, absolute path is used here. (The RestWriter class
++        # can simplify the output if it knows the output path).
++        input_dir = os.path.dirname(os.path.abspath(self.filename))
++        cur_dir = os.path.abspath('.')
++        fig, ext = os.path.splitext(file)
++        for dir in [input_dir, cur_dir]:
++            for suffix in [ext, '.png', '.jpg', '.gif']:
++                filename = os.path.join(dir, fig + suffix)
++                if os.path.isfile(filename):
++                    file = os.path.abspath(filename)
++                    break
++        nodes = [TextNode(file)]
++        if width is not None:
++            nodes.append(TextNode(width))
++        if height is not None:
++            nodes.append(TextNode(height))
++        return CommandNode('figure', nodes)
++
++    def handle_figure_env(self):
++        '''
++        The latex code looks like:
++
++        \begin{figure}[h]
++        \caption{\label{stuff}this is caption}
++        \begin{centering}
++        \includegraphics[width=0.9\textwidth]{chromType}
++        \par\end{centering}
++        
++        This is legend
++        \end{figure}
++
++        Here we ignore begin{figure} etc and process the middle
++        parts. \caption and \includegraphics are handled above.
++        '''
++        nodelist = NodeList()
++        # skip the first [h] option
++        tok = self.tokens.peek()
++        if tok[1] == 'boptional':
++            for l, t, v, r in self.tokens:
++                if t == 'eoptional':
++                    break
++        # process the rest of the environment
++        for l, t, v, r in self.tokens:
++            if t == 'command' and v == 'end':
++                # there are often \end{centering} in between....
++                # this is a quick hack
++                if self.parse_args('\\end', 'T')[0].text == 'figure':
++                    break
++            if t == 'command':
++                if len(v) == 1 and not v.isalpha():
++                    nodelist.append(self.handle_special_command(v))
++                    continue
++                handler = getattr(self, 'handle_' + v, None)
++                if not handler:
++                    handler = self.handle_unrecognized(v, l)
++                nodelist.append(handler())
++            elif t == 'comment':
++                nodelist.append(CommentNode(v))
++            else:
++                # all else is appended raw
++                nodelist.append(TextNode(r))
++        return NodeList(nodelist)
++
+     # involved math markup must be corrected manually
+     def handle_displaymath_env(self):
+-        text = ['XXX: translate this math']
++        text = ''
+         for l, t, v, r in self.tokens:
+             if t == 'command' and v == 'end' :
+                 tok = self.tokens.peekmany(3)
+@@ -591,8 +866,8 @@
+                    tok[2][1] == 'egroup':
+                     self.tokens.popmany(3)
+                     break
+-            text.append(r)
+-        return VerbatimNode(TextNode(''.join(text)))
++            text += r
++        return CommandNode('dispmath', [TextNode(text)])
+ 
+     # alltt is different from verbatim because it allows markup
+     def handle_alltt_env(self):
+@@ -606,7 +881,7 @@
+                     continue
+                 handler = getattr(self, 'handle_' + v, None)
+                 if not handler:
+-                    raise ParserError('no handler for \\%s command' % v, l)
++                    handler = self.handle_unrecognized(v, l)
+                 nodelist.append(handler())
+             elif t == 'comment':
+                 nodelist.append(CommentNode(v))
+@@ -615,6 +890,26 @@
+                 nodelist.append(TextNode(r))
+         return VerbatimNode(nodelist.flatten())
+ 
++    def handle_note_env(self):
++        nodelist = NodeList()
++        for l, t, v, r in self.tokens:
++            if self.environment_end(t, v):
++                break
++            if t == 'command':
++                if len(v) == 1 and not v.isalpha():
++                    nodelist.append(self.handle_special_command(v))
++                    continue
++                handler = getattr(self, 'handle_' + v, None)
++                if not handler:
++                    handler = self.handle_unrecognized(v, l)
++                nodelist.append(handler())
++            elif t == 'comment':
++                nodelist.append(CommentNode(v))
++            else:
++                # all else is appended raw
++                nodelist.append(TextNode(r))
++        return EnvironmentNode('note', [TextNode('Note')], nodelist.flatten())
++
+     def handle_itemize_env(self, nodetype=ItemizeNode):
+         items = []
+         # a usecase for nonlocal :)
+Index: restwriter.py
+===================================================================
+--- restwriter.py	(revision 76658)
++++ restwriter.py	(working copy)
+@@ -188,9 +188,16 @@
+         """ Called if self.splitchap is True. Create a new file pointer
+             and set self.fp to it. """
+         new_fp = StringIO.StringIO()
+-        self.chapters.append(new_fp)
++        self.chapters.append([new_fp])
+         self.fp = new_fp
+ 
++    def new_section(self):
++        """ Create a new file pointer
++            and set self.fp to it. """
++        new_fp = StringIO.StringIO()
++        self.chapters[-1].append(new_fp)
++        self.fp = new_fp
++
+     def write(self, text='', nl=True, first=False):
+         """ Write a string to the output file. """
+         if first:
+@@ -464,6 +471,9 @@
+         if self.splitchap and node.cmdname.startswith('chapter'):
+             self.write_footnotes()
+             self.new_chapter()
++        if node.cmdname.startswith('section'):
++            self.write_footnotes()
++            self.new_section()
+ 
+         heading = self.get_node_text(node.args[0]).strip()
+         if self.sectionlabel:
+@@ -481,6 +491,8 @@
+         if envname == 'notice':
+             type = text(node.args[0]) or 'note'
+             self.write_directive(type, '', node.content)
++        elif envname == 'note':
++            self.write_directive('note', '', node.content)
+         elif envname in ('seealso', 'seealso*'):
+             self.write_directive('seealso', '', node.content, spabove=True)
+         elif envname == 'abstract':
+@@ -569,7 +581,7 @@
+     def visit_CommandNode(self, node):
+         cmdname = node.cmdname
+         if cmdname == 'label':
+-            labelname = self.labelprefix + text(node.args[0]).lower()
++            labelname = self.labelprefix + text(node.args[0]).replace(':', '_').replace('-', '_')
+             if self.no_flushing:
+                 # in section
+                 self.sectionlabel = labelname
+@@ -577,7 +589,50 @@
+                 self.flush_par()
+                 self.write('.. _%s:\n' % labelname)
+             return
+-
++        elif cmdname == 'dispmath':
++            math = text(node.args[0]).strip()
++            # require a new line and three leading spaces for each line
++            formatted = ''.join(['\n      ' + x for x in math.split('\n')])
++            self.flush_par()
++            self.write('.. math::\n%s\n' % formatted)
++            return
++        elif cmdname == 'lstinput':
++            #
++            # This is supposed to work with the lstinput node created by
++            # handle_lstinputlisting. However, sphinx yields an error
++            # with the .. literalinclude directive so a VerbatimNode
++            # is currently used instead.
++            #
++            file = text(node.args[0]).strip()
++            options = []
++            if len(node.args) > 1:
++                options = ['\n   ' + text(n) for n in node.args[1:]]
++            options = ''.join(options)
++            self.flush_par()
++            self.write('.. literalinclude:: %s%s\n' % (file, options))
++            return
++        elif cmdname == 'figure':
++            #
++            # node.args[0] contains the full path name of the input file
++            # Relative path can be given if this class knows the output
++            # directory.
++            #
++            self.write('.. figure:: %s' % text(node.args[0]))
++            # options
++            for arg in node.args[1:]:
++                self.write('   %s' % text(arg))
++            self.write('\n')
++            return
++        elif cmdname == 'fig_caption':
++            self.flush_par()
++            # 'Figure' should better be configurable.
++            self.write('**Figure**: *%s*\n' % text(node.args[0]).strip())
++            return
++        elif cmdname == 'lst_caption':
++            self.flush_par()
++            # 'Example' should better be configurable.
++            self.write('**Example**: *%s*\n' % text(node.args[0]).strip())
++            return
+         elif cmdname in ('declaremodule', 'modulesynopsis',
+                        'moduleauthor', 'sectionauthor', 'platform'):
+             self.flush_par(nocb=True, nocomments=True)
+@@ -706,7 +761,7 @@
+                 lines = self.get_node_text(self.get_textonly_node(
+                     node.content, warn=0)).split('\n') + ['']
+             # discard leading blank links
+-            while not lines[0].strip():
++            while len(lines) > 0 and len(lines[0].strip()) == 0:
+                 del lines[0]
+             for line in lines:
+                 self.write(line)
+@@ -889,14 +944,54 @@
+             return
+         content = node.args[0]
+         if cmdname in ('code', 'bfcode', 'samp', 'texttt', 'regexp'):
+-            self.visit_wrapped('``', self.get_textonly_node(content, 'code',
+-                                                            warn=1), '``', noescape=True)
++            node = self.get_textonly_node(content, 'code', warn=1)
++            done = False
++            if isinstance(node, TextNode):
++                for keyword in self.auto_keywords.keys():
++                    txt = text(node).split('(')[0]
++                    leftover = text(node)[len(txt):]
++                    if txt in self.auto_keywords[keyword]:
++                        self.curpar.append(':%s:`%s`' % (keyword, txt))
++                        if leftover != '':
++                            if leftover.startswith('()'):
++                                # sphinx ignores them!!
++                                self.curpar.append("()")
++                                if len(leftover) > 2:
++                                    self.curpar.append("``%s``" % leftover[2:])
++                            elif leftover.startswith('(') and leftover.endswith(')'):
++                                self.curpar.append("(``%s``)" % leftover[1:-1])
++                            else:
++                                self.curpar.append("``%s``" % leftover)
++                        done = True
++                        break
++            if not done:
++                self.visit_wrapped('``', node, '``', noescape=True)
+         elif cmdname in ('emph', 'textit', 'var'):
+             self.visit_wrapped('*', self.get_textonly_node(content, 'emph',
+                                                            warn=1), '*')
+         elif cmdname in ('strong', 'textbf'):
+-            self.visit_wrapped('**', self.get_textonly_node(content, 'strong',
+-                                                            warn=1), '**')
++            node = self.get_textonly_node(content, 'strong', warn=1)
++            done = False
++            if isinstance(node, TextNode):
++                for keyword in self.auto_keywords.keys():
++                    txt = text(node).split('(')[0]
++                    leftover = text(node)[len(txt):]
++                    if txt in self.auto_keywords[keyword]:
++                        self.curpar.append(':%s:`%s`' % (keyword, txt))
++                        if leftover != '':
++                            if leftover.startswith('()'):
++                                # sphinx ignores them!!
++                                self.curpar.append("()")
++                                if len(leftover) > 2:
++                                    self.curpar.append("``%s``" % leftover[2:])
++                            elif leftover.startswith('(') and leftover.endswith(')'):
++                                self.curpar.append("(``%s``)" % leftover[1:-1])
++                            else:
++                                self.curpar.append("``%s``" % leftover)
++                        done = True
++                        break
++            if not done:
++                self.visit_wrapped('**', node, '**')
+         elif cmdname in ('b', 'textrm', 'email'):
+             self.visit_node(content)
+         elif cmdname == 'token':
+@@ -904,8 +999,9 @@
+             self.visit_wrapped('`', self.get_textonly_node(content, 'var',
+                                                            warn=1), '`')
+         elif cmdname == 'ref':
+-            self.curpar.append(':ref:`%s%s`' % (self.labelprefix,
+-                                                text(node.args[0]).lower()))
++            ref_text = text(node.args[0]).replace(':', '_').replace('-', '_')
++            print ref_text
++            self.curpar.append(':ref:`%s <%s%s>`' % (ref_text, self.labelprefix, ref_text))
+         elif cmdname == 'refmodule':
+             self.visit_wrapped(':mod:`', node.args[1], '`', noescape=True)
+         elif cmdname == 'optional':
+Index: docnodes.py
+===================================================================
+--- docnodes.py	(revision 76658)
++++ docnodes.py	(working copy)
+@@ -163,6 +163,8 @@
+     'geq': u'\N{GREATER-THAN OR EQUAL TO}',
+     'pi': u'\N{GREEK SMALL LETTER PI}',
+     'AA': u'\N{LATIN CAPITAL LETTER A WITH RING ABOVE}',
++    'textquoteleft': "'",
++    'textquoteright': "'",
+ }
+ 
+ class SimpleCmdNode(TextNode):
