@@ -1082,7 +1082,7 @@ void lociList::locate(const GenoStruTrait * trait) const
 
 const vectoru & lociList::elems(const GenoStruTrait * trait) const
 {
-	if (trait) {
+	if (trait != m_lastTrait) {
 		if (m_status == DYNAMIC)
 			m_elems = trait->lociByNames(m_names);
 		else if (m_status == ALL_AVAIL) {
@@ -1090,6 +1090,7 @@ const vectoru & lociList::elems(const GenoStruTrait * trait) const
 			for (size_t i = 0; i < m_elems.size(); ++i)
 				m_elems[i] = i;
 		}
+		m_lastTrait = trait;
 	}
 	return m_elems;
 }

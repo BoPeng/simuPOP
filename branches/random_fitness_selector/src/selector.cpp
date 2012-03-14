@@ -289,6 +289,9 @@ double RandomFitnessSelector::indFitness(Population & /* pop */, Individual * in
 
 bool RandomFitnessSelector::apply(Population & pop) const
 {
+	DBG_ASSERT(pop.ploidy() != 2, ValueError, "Operator RandomFitnessSelector is applicable "
+		"only to diploid populations.");
+	m_numLoci = pop.totNumLoci();
 	m_newMutants.clear();
 	if (!BaseSelector::apply(pop))
 		return false;
@@ -299,7 +302,7 @@ bool RandomFitnessSelector::apply(Population & pop) const
 		vectoru::const_iterator it_end = m_newMutants.end();
 		for (; it != it_end; ++it) {
 			SelCoef s = m_selFactory[*it];
-			out << *it << '\t' << s.first << '\t' << s.second << '\n';
+			out << it->first << '\t' << it->second << '\t' << s.first << '\t' << s.second << '\n';
 		}
 		closeOstream();
 	}
@@ -307,7 +310,7 @@ bool RandomFitnessSelector::apply(Population & pop) const
 }
 
 
-RandomFitnessSelector::SelCoef RandomFitnessSelector::getFitnessValue(size_t mutant) const
+RandomFitnessSelector::SelCoef RandomFitnessSelector::getFitnessValue(const Mutant & mutant) const
 {
 	size_t sz = m_selDist.size();
 	double s = 0;
@@ -320,9 +323,9 @@ RandomFitnessSelector::SelCoef RandomFitnessSelector::getFitnessValue(size_t mut
 		if (func.numArgs() == 0)
 			res = func("()");
 		else {
-			DBG_FAILIF(func.arg(0) != "loc", ValueError,
+			DBG_FAILIF(func.arg(0) != "mut", ValueError,
 				"Only parameter loc is accepted for this user-defined function.");
-			res = func("(i)", mutant);
+			res = func("(iii)", mutant[0], mutant[1], mutant[2]);
 		}
 		if (PyNumber_Check(res)) {
 			s = PyFloat_AsDouble(res);
@@ -366,19 +369,32 @@ double RandomFitnessSelector::randomSelAddFitness(GenoIterator it, GenoIterator 
 #ifdef MUTANTALLELE
 	double s = 0;
 	compressed_vector<size_t>::index_array_type::iterator index_it = it.getIndexIterator();
+	compressed_vector<size_t>::index_value_type::iterator value_it = it.getValueIterator();
 	compressed_vector<size_t>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
-	for (; index_it != index_it_end; ++index_it) {
-		SelMap::iterator sit = m_selFactory.find(static_cast<unsigned int>(*index_it));
+	for (; index_it != index_it_end; ++index_it, ++value_it) {
+		if (*value_it == 0)
+			continue;
+		Mutant mut(*index_it, *value_it);
+		SelMap::iterator sit = m_selFactory.find(mut);
 		if (sit == m_selFactory.end())
-			s += getFitnessValue(*index_it).first / 2.;
+			s += getFitnessValue(mut).first / 2.;
 		else
 			s += sit->second.first / 2;
 	}
 	return 1 - s > 0 ? 1 - s : 0;
 #else
-	(void)it;
-	(void)it_end;
-	return 0;
+	size_t idx = 0;
+	for (; it != it_end; ++it, ++idx) {
+		if (*it != 0) {
+			Mutant mut(idx, *it);
+			SelMap::iterator sit = m_selFactory.find(mut);
+			if (sit == m_selFactory.end())
+				s += getFitnessValue(mut).first / 2.;
+			else
+				s += sit->second.first / 2;
+		}
+	}
+	return 1 - s > 0 ? 1 - s : 0;
 #endif
 }
 
@@ -389,21 +405,32 @@ double RandomFitnessSelector::randomSelExpFitness(GenoIterator it, GenoIterator 
 	double s = 0;
 
 	compressed_vector<size_t>::index_array_type::iterator index_it = it.getIndexIterator();
+	compressed_vector<size_t>::index_value_type::iterator value_it = it.getValueIterator();
 	compressed_vector<size_t>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
-	for (; index_it != index_it_end; ++index_it) {
+	for (; index_it != index_it_end; ++index_it, ++value_it) {
 		if (*index_it == 0)
 			continue;
-		SelMap::iterator sit = m_selFactory.find(static_cast<unsigned int>(*index_it));
+		Mutant mut(*index_it, *value_it);
+		SelMap::iterator sit = m_selFactory.find(mut);
 		if (sit == m_selFactory.end())
-			s += getFitnessValue(*index_it).first / 2.;
+			s += getFitnessValue(mut).first / 2.;
 		else
 			s += sit->second.first / 2;
 	}
 	return exp(-s);
 #else
-	(void)it;
-	(void)it_end;
-	return 0;
+	size_t idx = 0;
+	for (; it != it_end; ++it, ++idx) {
+		if (*it != 0) {
+			Mutant mut(idx, *it);
+			SelMap::iterator sit = m_selFactory.find(mut);
+			if (sit == m_selFactory.end())
+				s += getFitnessValue(mut).first / 2.;
+			else
+				s += sit->second.first / 2;
+		}
+	}
+	return exp(-s);
 #endif
 }
 
@@ -412,15 +439,16 @@ double RandomFitnessSelector::randomSelMulFitnessExt(GenoIterator it, GenoIterat
 {
 #ifdef MUTANTALLELE
 	MutCounter cnt;
-
 	compressed_vector<size_t>::index_array_type::iterator index_it = it.getIndexIterator();
+	compressed_vector<size_t>::index_value_type::iterator value_it = it.getValueIterator();
 	compressed_vector<size_t>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
-	for (; index_it != index_it_end; ++index_it) {
-		if (*index_it == 0)
+	for (; index_it != index_it_end; ++index_it, ++value_it) {
+		if (*value_it == 0)
 			continue;
-		MutCounter::iterator mit = cnt.find(*index_it);
+		Mutant mut(*index_it, *value_it);
+		MutCounter::iterator mit = cnt.find(mut);
 		if (mit == cnt.end())
-			cnt[*index_it] = 1;
+			cnt[mut] = 1;
 		else
 			++mit->second;
 	}
@@ -445,9 +473,18 @@ double RandomFitnessSelector::randomSelMulFitnessExt(GenoIterator it, GenoIterat
 	}
 	return s;
 #else
-	(void)it;
-	(void)it_end;
-	return 0;
+	size_t idx = 0;
+	for (; it != it_end; ++it, ++idx) {
+		if (*it != 0) {
+			Mutant mut(idx, *it);
+			SelMap::iterator sit = m_selFactory.find(mut);
+			if (sit == m_selFactory.end())
+				s += getFitnessValue(mut).first / 2.;
+			else
+				s += sit->second.first / 2;
+		}
+	}
+	return exp(-s);
 #endif
 }
 

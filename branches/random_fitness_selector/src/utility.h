@@ -549,7 +549,7 @@ public:
 	lociList(PyObject * obj = Py_True);
 
 	/// CPPONLY
-	lociList(const vectoru & values) : m_elems(values), m_names(), m_status(REGULAR)
+	lociList(const vectoru & values) : m_elems(values), m_lastTrait(NULL), m_names(), m_status(REGULAR)
 	{
 	}
 
@@ -602,6 +602,9 @@ public:
 
 protected:
 	mutable vectoru m_elems;
+
+	mutable GenoStruTrait * m_lastTrait;
+
 	vectorstr m_names;
 
 private:

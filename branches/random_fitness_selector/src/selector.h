@@ -474,10 +474,10 @@ private:
 };
 
 
-/** This selector assumes that alleles are mutant locations in the mutational
- *  space and assign fitness values to them according to a random distribution.
- *  The overall individual fitness is determined by either an additive, an
- *  multiplicative or an exponential model.
+/** This selector assign fitness values to mutants according to a random
+ *  distribution. The overall individual fitness is determined by either an
+ *  additive, an multiplicative or an exponential model. This operator is
+ *  only applicable to diploid populations.
  */
 class RandomFitnessSelector : public BaseSelector
 {
@@ -495,22 +495,26 @@ public:
 	 *  \li a Python function, which will be called when selection coefficient
 	 *      of a new mutant is needed. This function should return a single
 	 *      value s (with default value h=0.5) or a sequence of (h, s). Mutant
-	 *      location will be passed to this function if it accepts a parameter
-	 *      \c loc. This allows the definition of site-specific selection
-	 *      coefficients.
+	 *      location and value at all ploidy (e.g. (133, 0, 1) for a single
+	 *      mutant 1 at loc 133 for a diploid population) will be passed to this
+	 *      function if it accepts a parameter \c mut. This allows the definition
+	 *      of site-specific and mutant-specific selection coefficients,
+	 *      although the phase of mutants are ignored ((133, 0, 1) is equivalent
+	 *      to (133, 1, 0)).
 	 *  Individual fitness will be combined in \c ADDITIVE,
-	 *     \c MULTIPLICATIVE or \c EXPONENTIAL mode. (See \c MlSelector for
-	 *     details).
+	 *      \c MULTIPLICATIVE or \c EXPONENTIAL mode. (See \c MlSelector for
+	 *      details).
 	 *  If an output is given, mutants and their fitness values will be written
 	 *  to the output, in the form of 'mutant s h'.
 	 */
-	RandomFitnessSelector(const floatListFunc & selDist, int mode = EXPONENTIAL,
-		const stringFunc & output = "",
+	RandomFitnessSelector(const floatListFunc & selDist, const lociList & loci = lociList(),
+		int mode = EXPONENTIAL, const stringFunc & output = "",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
 		BaseSelector(output, begin, end, step, at, reps, subPops, infoFields),
-		m_selDist(selDist), m_mode(mode), m_selFactory(), m_additive(true)
+		m_selDist(selDist), m_loci(loci), m_mode(mode), m_selFactory(),
+		m_additive(true), m_numLoci(0)
 	{
 		if (m_selDist.size() == 0) {
 			DBG_FAILIF(!m_selDist.func().isValid(), ValueError,
@@ -547,15 +551,14 @@ public:
 		return "<simuPOP.RandomFitnessSelector>" ;
 	}
 
-
 	/// CPPONLY
 	bool apply(Population & pop) const;
 
 	typedef std::pair<double, double> SelCoef;
+	typedef vectoru Mutant;
 
 private:
-	SelCoef getFitnessValue(size_t mutant) const;
-
+	SelCoef getFitnessValue(const Mutant & mutant) const;
 
 	double randomSelAddFitness(GenoIterator it, GenoIterator it_end) const;
 
@@ -572,20 +575,23 @@ private:
 	///
 	floatListFunc m_selDist;
 
+	const lociList m_loci;
+
 	int m_mode;
 	///
 #if TR1_SUPPORT == 0
-	typedef std::map<unsigned int, SelCoef> SelMap;
-	typedef std::map<unsigned int, int> MutCounter;
+	typedef std::map<Mutant, SelCoef> SelMap;
+	typedef std::map<Mutant, int> MutCounter;
 #else
 	// this is faster than std::map
-	typedef std::tr1::unordered_map<size_t, SelCoef> SelMap;
-	typedef std::tr1::unordered_map<size_t, size_t> MutCounter;
+	typedef std::tr1::unordered_map<Mutant, SelCoef> SelMap;
+	typedef std::tr1::unordered_map<Mutant, size_t> MutCounter;
 #endif
 	mutable SelMap m_selFactory;
 	mutable vectoru m_newMutants;
 	// whether or not all markers are additive.
 	mutable bool m_additive;
+	mutable size_t m_numLoci;
 };
 
 
