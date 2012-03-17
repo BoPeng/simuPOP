@@ -260,6 +260,73 @@ class TestInitialization(unittest.TestCase):
         self.assertGenotypeFreq(pop, [.8, .2], [.8, .2], loci=[2, 3])
         self.assertGenotypeFreq(pop, [.2, .8], [.2, .8], loci=[4, 5])
         
+    def testInitLineage(self):
+        'Testing initializing lineage of individuals'
+        if moduleInfo()['alleleType'] != 'lineage':
+            return
+        IdTagger().reset(1)
+        pop = Population(100, infoFields='ind_id', loci=[4,6])
+        tagID(pop)
+        self.assertEqual(pop.lineage(), [0] * 2000)
+        for ind in pop.allIndividuals():
+            self.assertEqual(ind.lineage(), [0] * 20)
+        # set lineage per loci
+        initLineage(pop, range(20))
+        self.assertEqual(pop.lineage(), range(20) * 100)
+        for ind in pop.allIndividuals():
+            self.assertEqual(ind.lineage(), range(20))
+        # set lineage per chromosome
+        initLineage(pop, range(4), mode=BY_CHROMOSOME)
+        self.assertEqual(pop.lineage(), ([0]*4 + [1]*6 + [2]*4 + [3]*6) * 100)
+        for ind in pop.allIndividuals():
+            self.assertEqual(ind.lineage(), [0]*4 + [1]*6 + [2]*4 + [3]*6)
+        # set lineage per ploidy
+        initLineage(pop, range(2), mode=BY_PLOIDY)
+        self.assertEqual(pop.lineage(), (([0] * 10) + ([1] * 10)) * 100)
+        initLineage(pop, range(200), mode=BY_PLOIDY)
+        self.assertEqual(pop.lineage(), reduce(lambda x,y:x+y, [10 * [i] for i in range(200)]))
+        # set lineage per individual
+        initLineage(pop, range(100), mode=BY_INDIVIDUAL)
+        self.assertEqual(pop.lineage(), reduce(lambda x,y:x+y, [20 * [i] for i in range(100)]))
+        # set lingeage with ind_id field
+        initLineage(pop)
+        expLineage = [([2 * x] * 10) + ([2 * x + 1] * 10) for x in range(1, 101)]
+        expLineage = reduce(lambda x,y : x + y, expLineage)
+        # test lineage assignment in genotype initialization
+        self.assertEqual(pop.lineage(), expLineage)
+        for ind in pop.allIndividuals():
+            self.assertEqual(ind.lineage(), \
+				[2 * ind.ind_id] * 10 + [2 * ind.ind_id + 1] * 10)
+        #
+        # test paramter loci 
+        pop.setLineage(0)
+        initLineage(pop, range(10), loci=range(5))
+        self.assertEqual(pop.lineage(), (range(5) + [0]*5 + range(5,10) + [0]*5) * 100)
+        for ind in pop.allIndividuals():
+            self.assertEqual(ind.lineage(), range(5) + [0]*5 + range(5, 10) + [0]*5)
+        # set lineage per chromosome
+        initLineage(pop, range(4), mode=BY_CHROMOSOME, loci=range(5))
+        self.assertEqual(pop.lineage(), ([0]*4 + [1] + [0]*5 + [2]*4 + [3] + [0]*5) * 100)
+        for ind in pop.allIndividuals():
+            self.assertEqual(ind.lineage(), [0]*4 + [1] + [0]*5 + [2]*4 + [3] + [0]*5)
+        # set lineage per ploidy
+        initLineage(pop, range(2), mode=BY_PLOIDY, loci=range(5))
+        self.assertEqual(pop.lineage(), (([0] * 10) + ([1] * 5 + [0]*5)) * 100)
+        # set lineage per individual
+        initLineage(pop, range(100), mode=BY_INDIVIDUAL, loci=range(5))
+        self.assertEqual(pop.lineage(), reduce(lambda x,y:x+y, [[i]*5 + [0] * 5 + [i]*5 + [0]*5 for i in range(100)]))
+        #
+        # test vsp
+        initSex(pop)
+        initLineage(pop, 0)
+        pop.setVirtualSplitter(SexSplitter())
+        initLineage(pop, 1, subPops=[(0,0)])
+        for ind in pop.individuals():
+            if ind.sex() == MALE:
+                self.assertEqual(ind.lineage(), [1]*20)
+            else:
+                self.assertEqual(ind.lineage(), [0]*20)
+
 
 if __name__ == '__main__':
     unittest.main()
