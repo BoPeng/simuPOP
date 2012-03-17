@@ -25256,36 +25256,34 @@ reference "geneticContribution"
 
 \end_inset
 
- uses function 
+ uses operator 
 \family typewriter
-Individual.setLineage
+InitLineage
 \family default
- to explictly assign lineage to alleles for each individual.
- A more convenient, and more general method is to assign each individual
- a unique ID.
- If the information field that holds individual IDs is named 
+ to explictly assign lineage to alleles of each individual.
+ You can also track the fate of finer genetic pieces by assigning different
+ lineage values to chromosomes, or each loci using different 
+\family typewriter
+mode
+\family default
+.
+ This operator can also assign lineage of alleles to an ID stored in an
+ information field, which is usually 
 \family typewriter
 ind_id
 \family default
- (default field used by operator 
+, a field used by operators such as 
 \family typewriter
 IdTagger
 \family default
-), 
-\end_layout
-
-\begin_layout Itemize
-Operator 
+ and 
 \family typewriter
-InitGenotype
+PedigreeTagger
 \family default
- will use the ID of each individual as the lineage of alleles that are initializ
-ed.
-\end_layout
-
-\begin_layout Itemize
-Mutation operators will assign the IDs of recipients of mutants as the lineage
- of these mutants.
+ to assign and trace the pedigree (parentship) information during evolution.
+ More interesting, when such a field is present, mutation operators will
+ assign the IDs of recipients of mutants as the lineage of these mutants.
+ This makes it possible to track the origin of mutants.
 \end_layout
 
 \begin_layout Standard
