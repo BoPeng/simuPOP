@@ -464,7 +464,7 @@ bool InitLineage::apply(Population & pop) const
 #  endif
 				if (pop.hasInfoField(m_lineageField)) {
 					size_t idIdx = pop.infoIdx(m_lineageField);
-					UINT popPloidy = pop.ploidy();
+					//UINT popPloidy = pop.ploidy();
 
 					for (; it.valid(); ++it)
 						for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) {
