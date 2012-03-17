@@ -5434,13 +5434,11 @@ sim.setRNG(seed=12345)
 #end_ignore
 pop = sim.Population(1000, loci=[10]*4)
 
-for idx,ind in enumerate(pop.individuals()):
-    ind.setLineage(idx)
-
 pop.evolve(
     initOps=[
         sim.InitSex(),
-        sim.InitGenotype(freq=[0.25]*4)
+        sim.InitGenotype(freq=[0.25]*4),
+        sim.InitLineage(range(1000), mode=sim.BY_INDIVIDUAL),
     ],
     matingScheme=sim.RandomMating(ops=sim.Recombinator(rates=0.001)),
     gen = 100
@@ -5469,12 +5467,13 @@ sim.setRNG(seed=12345)
 #end_ignore
 pop = sim.Population(size=10000, loci=[10]*10, infoFields='ind_id')
 # just to make sure IDs starts from 1
-sim.IdTagger().reset()
+sim.IdTagger().reset(1)
 pop.evolve(
     initOps = [
         sim.InitSex(),
-        sim.IdTagger(),
         sim.InitGenotype(freq=[0.2, 0.3, 0.4, 0.1]),
+        sim.IdTagger(),
+        sim.InitLineage(),
     ],
     # an extremely high mutation rate, just for demonstration
     preOps = sim.AcgtMutator(rate=0.01, model='JC69'),
