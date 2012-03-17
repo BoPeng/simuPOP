@@ -468,7 +468,7 @@ bool InitLineage::apply(Population & pop) const
 
 					for (; it.valid(); ++it)
 						for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) {
-							long lineage = popPloidy * static_cast<long>(toID(it->info(idIdx))) + *p;
+							long lineage = static_cast<long>(toID(it->info(idIdx)));
 							for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc)
 								it->setAlleleLineage(lineage, *loc, static_cast<int>(*p));
 						}
