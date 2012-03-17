@@ -300,7 +300,6 @@ enum MigrMode {
 	BY_COUNTS = 94
 };
 
-
 //
 enum InheritanceType {
 	PATERNAL = 101,
@@ -312,6 +311,13 @@ enum InheritanceType {
 	MULTIPLICATION = 107,
 };
 
+// used by operator InitLineage
+enum InitMode {
+	BY_LOCI =  111,
+	BY_CHROMOSOME = 112,
+	BY_PLOIDY = 113,
+	BY_INDIVIDUAL = 114,
+};
 
 #define DBG_CODE_LENGTH 21
 

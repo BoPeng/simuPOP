@@ -184,12 +184,10 @@ public:
 	 *  If the length of a haplotype is not enough to fill all loci, the
 	 *  haplotype will be reused. If a list (or a single) haplotypes are
 	 *  specified without \e freq or \e prop, they are used with equal
-	 *  probability. For modules with lineage allele type, if individual IDs
-	 *  are assigned to a field \e lineageField (default to \c ind_id), its
-	 *  value will be saved as the lineage of modified alleles.
+	 *  probability.
 	 *
 	 *  In the last case, if a sequence of genotype is specified, it will be
-	 *  uesd repeatedly to initialize all alleles sequentially. This works
+	 *  used repeatedly to initialize all alleles sequentially. This works
 	 *  similar to function \c Population.setGenotype() except that you can
 	 *  limit the initialization to certain \e loci and \e ploidy.
 	 */
@@ -200,8 +198,7 @@ public:
 		const uintList & ploidy = uintList(),
 		int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = vectorstr(),
-		const string & lineageField = "ind_id");
+		const stringList & infoFields = vectorstr());
 
 
 	~InitGenotype()
@@ -234,6 +231,65 @@ private:
 
 	//
 	const uintList m_ploidy;
+};
+
+/** This operator assigns lineages at all or part of loci with given
+ *  values. This operator initializes all chromosomes, including unused
+ *  lineage locations and customized chromosomes.
+ */
+class InitLineage : public BaseOperator
+{
+public:
+	/** This function creates an initializer that initializes lineages
+	 *  with either a specified set of values or from the field \e lineageField
+	 *  (default to \c ind_id), whose value will be saved as the lineage of
+	 *  modified alleles. Depending on the value of parameter \e mode, each
+	 *  value in \e lineage is applied to one or more alleles so that each
+	 *  locus (\c BY_LOCI), alleles on each chromosome (\c BY_CHROMOSOME),
+	 *  on chromosomes of each ploidy (\c BY_PLOIDY), or for each individual
+	 *  (\c BY_INDIVIDUAL) have the same lineage. Values in \e lineage will be
+	 *  re-used if not enough values are provided. If \e loci, \e ploidy and/or
+	 *  \e subPop are specified, only specified loci, ploidy, and individuals in
+	 *  these (virtual) subpopulations will be initialized.
+	 */
+	InitLineage(const intList & lineage = vectori(), int mode = BY_LOCI,
+		const lociList & loci = lociList(), const uintList & ploidy = uintList(),
+		int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = vectorstr(),
+		const string & lineageField = "ind_id");
+
+
+	~InitLineage()
+	{
+	}
+
+
+	/// HIDDEN Deep copy of the operator \c InitLineage
+	virtual BaseOperator * clone() const
+	{
+		return new InitLineage(*this);
+	}
+
+
+	/// HIDDEN
+	string describe(bool format = true) const;
+
+
+	/// HIDDEN apply this operator to population \e pop
+	bool apply(Population & pop) const;
+
+private:
+	const vectori m_lineage;
+
+	//
+	const lociList m_loci;
+
+	//
+	const uintList m_ploidy;
+
+	//
+	const int m_mode;
 
 	const string m_lineageField;
 };

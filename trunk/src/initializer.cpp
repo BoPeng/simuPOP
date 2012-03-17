@@ -163,12 +163,11 @@ InitGenotype::InitGenotype(const vectorf & freq,
 	const uintList & ploidy,
 	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops,
-	const stringList & infoFields,
-	const string & lineageField)
+	const stringList & infoFields)
 	: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 	m_freq(freq), m_genotype(genotype.elems()), m_prop(prop),
-	m_haplotypes(haplotypes.elems()), m_loci(loci), 
-	m_ploidy(ploidy), m_lineageField(lineageField)
+	m_haplotypes(haplotypes.elems()), m_loci(loci),
+	m_ploidy(ploidy)
 {
 	for (size_t i = 0; i < m_freq.size(); ++i)
 		PARAM_FAILIF(fcmp_lt(m_freq[i], 0) || fcmp_gt(m_freq[i], 1), ValueError,
@@ -308,28 +307,178 @@ bool InitGenotype::apply(Population & pop) const
 					}
 			}
 		}
-#ifdef LINEAGE
-#pragma omp parallel if(numThreads() > 1)
-		{
-#ifdef _OPENMP
-			IndIterator it = pop.indIterator(sp->subPop(), omp_get_thread_num());
-#else
-			IndIterator it = pop.indIterator(sp->subPop());
-#endif
-			if (pop.hasInfoField(m_lineageField)) {
-				size_t idIdx = pop.infoIdx(m_lineageField);
+		pop.deactivateVirtualSubPop(sp->subPop());
+	}
+	return true;
+}
 
+
+InitLineage::InitLineage(const intList & lineage, int mode,
+	const lociList & loci, const uintList & ploidy,
+	int begin, int end, int step, const intList & at,
+	const intList & reps, const subPopList & subPops,
+	const stringList & infoFields,
+	const string & lineageField)
+	: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
+	m_lineage(lineage.elems()), m_loci(loci),
+	m_ploidy(ploidy), m_mode(mode), m_lineageField(lineageField)
+{
+	PARAM_ASSERT(m_mode == BY_LOCI || m_mode == BY_CHROMOSOME || m_mode == BY_PLOIDY || m_mode == BY_INDIVIDUAL, ValueError,
+		"Paramter mode of operator InitLineage can only be one of BY_LOCI, BY_CHROMOSOME, BY_PLOIDY or BY_INDIVIDUAL");
+}
+
+
+string InitLineage::describe(bool /* format */) const
+{
+	string desc = "<simuPOP.InitLineage> initialize individual lineage ";
+
+	if (!m_lineage.empty()) {
+		desc += "using specified lineage at each ";
+		if (m_mode == BY_LOCI)
+			desc += "loci";
+		else if (m_mode == BY_CHROMOSOME)
+			desc += "chromosome";
+		else if (m_mode == BY_PLOIDY)
+			desc += "ploidy";
+		else
+			desc += "individual";
+	} else {
+		desc += "using the field '" + m_lineageField + "'.";
+	}
+	return desc;
+}
+
+
+bool InitLineage::apply(Population & pop) const
+{
+#ifdef LINEAGE
+	const subPopList subPops = applicableSubPops(pop);
+
+	const vectoru & loci = m_loci.elems(&pop);
+
+	vectoru ploidy = m_ploidy.elems();
+
+	PARAM_FAILIF(m_lineage.empty() && !pop.hasInfoField(m_lineageField), ValueError,
+		"lineage argument is empty and lineageField argument is not present.");
+
+	if (m_ploidy.allAvail())
+		for (size_t i = 0 ; i < pop.ploidy(); ++i)
+			ploidy.push_back(i);
+
+	pop.syncIndPointers();
+
+	subPopList::const_iterator sp = subPops.begin();
+	subPopList::const_iterator sp_end = subPops.end();
+	size_t sz = m_lineage.size();
+
+	if (m_mode == BY_LOCI) {
+		DBG_WARNIF(sz >= 1 && sz != loci.size() && sz != loci.size() * pop.ploidy(),
+			"Lineage [" + shorten(toStr(m_lineage)) + "] specified in operator InitLineage has "
+			+ toStr(m_lineage.size()) + " lineages, which does not match number of loci of individuals. "
+			                            "This sequence will be truncated or repeated and may lead to erroneous results.");
+	} else if (m_mode == BY_PLOIDY) {
+		DBG_WARNIF(sz >= 1 && sz != pop.ploidy() && sz != pop.ploidy() * pop.popSize(),
+			"Lineage [" + shorten(toStr(m_lineage)) + "] specified in operator InitLineage has "
+			+ toStr(m_lineage.size()) + " lineages, which does not match number of ploidy of individuals. "
+			                            "This sequence will be truncated or repeated and may lead to erroneous results.");
+	} else {
+		DBG_WARNIF(sz > 1 && sz != pop.popSize(),
+			"Lineage [" + shorten(toStr(m_lineage)) + "] specified in operator InitLineage has "
+			+ toStr(m_lineage.size()) + " lineages, which does not match number of individuals. "
+			                            "This sequence will be truncated or repeated and may lead to erroneous results.");
+	}
+	size_t nCh = pop.numChrom();
+	vectoru chromIndex;
+	if (m_mode == BY_CHROMOSOME) {
+		// find the chromosome index for each locus
+		chromIndex.resize(loci.size());
+		for (size_t i = 0; i < loci.size(); ++i)
+			chromIndex[i] = pop.chromLocusPair(loci[i]).first;
+	}
+	for (size_t idx = 0; sp != sp_end; ++sp) {
+		// will go through virtual subpopulation if sp is virtual
+		pop.activateVirtualSubPop(*sp);
+		if (!m_lineage.empty()) {
+#  pragma omp parallel firstprivate(idx) if(numThreads() > 1)
+			{
+#  ifdef _OPENMP
+				size_t id = omp_get_thread_num();
+				IndIterator it = pop.indIterator(sp->subPop(), id);
+				if (m_mode == BY_LOCI)
+					idx += id * (pop.subPopSize(sp->subPop()) / numThreads()) *
+					       (ploidy.end() - ploidy.begin()) * (loci.end() - loci.begin());
+				else if (m_mode == BY_CHROMOSOME)
+					idx += id * (pop.subPopSize(sp->subPop()) / numThreads()) *
+					       (ploidy.end() - ploidy.begin()) * nCh;
+				else if (m_mode == BY_PLOIDY)
+					idx += id * (pop.subPopSize(sp->subPop()) / numThreads()) *
+					       (ploidy.end() - ploidy.begin());
+				else
+					idx += id * (pop.subPopSize(sp->subPop()) / numThreads());
+#  else
+				IndIterator it = pop.indIterator(sp->subPop());
+#  endif
 				for (; it.valid(); ++it) {
-					long lineage = static_cast<long>(toID(it->info(idIdx)));
-					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) 
-						for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc) 
-							it->setAlleleLineage(lineage, *loc, static_cast<int>(*p));
+					if (m_mode == BY_LOCI)
+						for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
+							for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++idx)
+								it->setAlleleLineage(m_lineage[idx % sz], *loc, static_cast<int>(*p));
+					else if (m_mode == BY_CHROMOSOME)
+						for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p, idx += nCh) {
+							vectoru::const_iterator loc = loci.begin();
+							vectoru::const_iterator locEnd = loci.end();
+							vectoru::const_iterator chIdx = chromIndex.begin();
+							for (; loc != locEnd; ++loc, ++chIdx)
+								it->setAlleleLineage(m_lineage[(idx + *chIdx) % sz], *loc, static_cast<int>(*p));
+						}
+					else if (m_mode == BY_PLOIDY)
+						for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p, ++idx)
+							for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc)
+								it->setAlleleLineage(m_lineage[idx % sz], *loc, static_cast<int>(*p));
+					else {
+						for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
+							for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc)
+								it->setAlleleLineage(m_lineage[idx % sz], *loc, static_cast<int>(*p));
+						++idx;
+					}
+				}
+			}
+#  ifdef _OPENMP
+			if (m_mode == BY_LOCI)
+				idx += pop.subPopSize(sp->subPop()) *
+				       (ploidy.end() - ploidy.begin()) * (loci.end() - loci.begin());
+			else if (m_mode == BY_CHROMOSOME)
+				idx += pop.subPopSize(sp->subPop()) * (ploidy.end() - ploidy.begin()) * nCh;
+			else if (m_mode == BY_PLOIDY)
+				idx += pop.subPopSize(sp->subPop()) * (ploidy.end() - ploidy.begin());
+			else
+				idx += pop.subPopSize(sp->subPop());
+#  endif
+		} else {
+#  pragma omp parallel if(numThreads() > 1)
+			{
+#  ifdef _OPENMP
+				IndIterator it = pop.indIterator(sp->subPop(), omp_get_thread_num());
+#  else
+				IndIterator it = pop.indIterator(sp->subPop());
+#  endif
+				if (pop.hasInfoField(m_lineageField)) {
+					size_t idIdx = pop.infoIdx(m_lineageField);
+					UINT popPloidy = pop.ploidy();
+
+					for (; it.valid(); ++it)
+						for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) {
+							long lineage = popPloidy * static_cast<long>(toID(it->info(idIdx))) + *p;
+							for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc)
+								it->setAlleleLineage(lineage, *loc, static_cast<int>(*p));
+						}
 				}
 			}
 		}
-#endif // LINEAGE
 		pop.deactivateVirtualSubPop(sp->subPop());
 	}
+#endif  // LINEAGE
+	(void)pop;            // avoid a compiler warning of unused variable
 	return true;
 }
 

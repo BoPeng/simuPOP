@@ -93,6 +93,11 @@ __all__ = [
     'SUMMATION',
     'MULTIPLICATION',
     # 
+    'BY_LOCI',
+    'BY_CHROMOSOME',
+    'BY_PLOIDY',
+    'BY_INDIVIDUAL',
+    #
     'HAPLODIPLOID',
     'ALL_AVAIL',
     'UNSPECIFIED',
@@ -144,6 +149,7 @@ __all__ = [
     'InitSex',
     'InitInfo',
     'InitGenotype',
+    'InitLineage',
     #
     'PyOutput',
     'PyEval',
@@ -218,6 +224,7 @@ __all__ = [
     'initSex',
     'initInfo',
     'initGenotype',
+    'initLineage',
     #
     'pyEval',
     'pyExec',
@@ -1037,6 +1044,10 @@ def initInfo(pop, *args, **kwargs):
 def initGenotype(pop, *args, **kwargs):
     'Apply operator ``InitGenotype`` to population *pop*.'
     InitGenotype(*args, **kwargs).apply(pop)
+
+def initLineage(pop, *args, **kwargs):
+    'Apply operator ``InitLineage`` to population *pop*.'
+    InitLineage(*args, **kwargs).apply(pop)
 
 def pyEval(pop, *args, **kwargs):
     '''Evaluate statements *stmts* (optional) and expression *expr* in
