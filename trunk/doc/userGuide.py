@@ -5438,7 +5438,7 @@ pop.evolve(
     initOps=[
         sim.InitSex(),
         sim.InitGenotype(freq=[0.25]*4),
-        sim.InitLineage(range(1000), mode=sim.BY_INDIVIDUAL),
+        sim.InitLineage(range(1000), mode=sim.PER_INDIVIDUAL),
     ],
     matingScheme=sim.RandomMating(ops=sim.Recombinator(rates=0.001)),
     gen = 100
@@ -5473,7 +5473,7 @@ pop.evolve(
         sim.InitSex(),
         sim.InitGenotype(freq=[0.2, 0.3, 0.4, 0.1]),
         sim.IdTagger(),
-        sim.InitLineage(),
+        sim.InitLineage(mode=sim.FROM_INFO),
     ],
     # an extremely high mutation rate, just for demonstration
     preOps = sim.AcgtMutator(rate=0.01, model='JC69'),
