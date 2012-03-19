@@ -1613,43 +1613,21 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.lineage(), [0] * 2000)
         for ind in pop.allIndividuals():
             self.assertEqual(ind.lineage(), [0] * 20)
-        initGenotype(pop, freq=[0.5, 0.5])
-        expLineage = [[x] * 20 for x in range(1, 101)]
-        expLineage = list(item for iter_ in expLineage for item in iter_)
-        # test lineage assignment in genotype initialization
-        self.assertEqual(pop.lineage(), expLineage)
+        # set lineage per loci
+        initLineage(pop, range(20))
+        self.assertEqual(pop.lineage(), range(20) * 100)
         for ind in pop.allIndividuals():
-            self.assertEqual(ind.lineage(), [ind.ind_id] * 20)
-        # pretend that we advance a generation
-        tagID(pop)
-        self.assertEqual(pop.lineage(), expLineage)
-        for ind in pop.allIndividuals():
-            self.assertEqual(ind.lineage(), [ind.ind_id - 100] * 20)
-        # mutate all the alleles
-        snpMutate(pop, u=1, v=1)
-        # test lineage assignment in mutation
-        for ind in pop.allIndividuals():
-            self.assertEqual(ind.lineage(), [ind.ind_id] * 20)
-        return
-        # set the genotype to all 1's
-        initGenotype(pop, freq=[0, 1])
-        # pretend that we advance a generation
-        tagID(pop)
-        # apply point mutation to all 0's
-        PointMutator(range(10), 0, range(2), range(200)).apply(pop)
-        # test lineage assignment in mutation
-        for ind in pop.allIndividuals():
-            self.assertEqual(ind.lineage(), [ind.ind_id] * 20)
-        # pretend that we advance a generation
-        tagID(pop)
-        mom = pop.individual(0)
-        dad = pop.individual(1)
-        child = pop.individual(2)
-        MendelianGenoTransmitter().transmitGenotype(mom, child, 0)
-        MendelianGenoTransmitter().transmitGenotype(dad, child, 1)
-        # test lineage assignment in genotype transition
-        self.assertEqual(child.lineage(), (list(mom.lineage(0)) + list(dad.lineage(1))))
+            self.assertEqual(ind.lineage(), range(20))
+        # set lineage per ploidy
+        initLineage(pop, range(2), mode=PER_PLOIDY)
+        self.assertEqual(pop.lineage(), (([0] * 10) + ([1] * 10)) * 100)
+        initLineage(pop, range(200), mode=PER_PLOIDY)
+        self.assertEqual(pop.lineage(), reduce(lambda x,y:x+y, [10 * [i] for i in range(200)]))
+        # set lineage per individual
+        initLineage(pop, range(100), mode=PER_INDIVIDUAL)
+        self.assertEqual(pop.lineage(), reduce(lambda x,y:x+y, [20 * [i] for i in range(100)]))
 
+       
     def testAllIndividuals(self):
         'Testing population::allIndividuals'
         pop = Population([100]*10, loci=3, ancGen=-1)
