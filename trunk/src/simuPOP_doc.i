@@ -74,8 +74,8 @@ Usage:
 
     BaseMutator(rates=[], loci=ALL_AVAIL, mapIn=[], mapOut=[],
       context=0, output=\">\", begin=0, end=-1, step=1, at=[],
-      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[],
-      lineageField=\"ind_id\")
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=\"ind_id\",
+      lineageMode=FROM_INFO)
 
 Details:
 
@@ -115,15 +115,18 @@ Details:
     Python function that returns a corresponding allele for a given
     allele. This allows easier mapping between a large number of
     alleles and advanced models such as random emission of alleles.
-    If a valid information field is specified for parameter
-    lineageField (default to ind_id) for modules with lineage allele
-    type, the lineage of the mutated alleles will be the ID (stored in
-    field linkageField) of individuals that harbor the mutated
-    alleles. The lineage information will be transmitted along with
-    the alleles so this feature allows you to track the source of
-    mutants during evolution.  Some mutation models are context
-    dependent. Namely, how an allele mutates will depend on its
-    adjecent alleles. Whereas most simuPOP mutators are context
+    If a valid information field is specified for parameter infoFields
+    (default to ind_id) for modules with lineage allele type, the
+    lineage of the mutated alleles will be the ID (stored in the first
+    field of infoFields) of individuals that harbor the mutated
+    alleles if lineageMode is set to FROM_INFO (default). If
+    lineageMode is set to FROM_INFO_SIGNED, the IDs will be assigned a
+    sign depending on the ploidy the mutation happens (1 for ploidy 0,
+    -1 for ploidy 1, etc). The lineage information will be transmitted
+    along with the alleles so this feature allows you to track the
+    source of mutants during evolution.A  Some mutation models are
+    context dependent. Namely, how an allele mutates will depend on
+    its adjecent alleles. Whereas most simuPOP mutators are context
     independent, some of them accept a parameter context which is the
     number of alleles to the left and right of the mutated allele. For
     example context=1 will make the alleles to the immediate left and
@@ -1182,8 +1185,8 @@ Usage:
 
     ContextMutator(rates=[], loci=ALL_AVAIL, mutators=[],
       contexts=[], mapIn=[], mapOut=[], output=\">\", begin=0, end=-1,
-      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[],
-      lineageField=\"ind_id\")
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
+      infoFields=\"ind_id\", lineageMode=FROM_INFO)
 
 Details:
 
@@ -1494,7 +1497,7 @@ Usage:
 
     FiniteSitesMutator(rate, ranges, model=1, output=\"\", begin=0,
       end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-      infoFields=[], lineageField=\"ind_id\")
+      infoFields=\"ind_id\", lineageMode=FROM_INFO)
 
 Details:
 
@@ -2871,7 +2874,27 @@ Details:
     alleles of an individual. If ploidy or chroms is given, only
     alleles on the specified chromosomes and homologous copy of
     chromosomes will be returned. If multiple chromosomes are
-    specified, there should not be gaps between chromosomes.
+    specified, there should not be gaps between chromosomes. This
+    function ignores type of chromosomes so it will return unused
+    alleles for sex and mitochondrial chromosomes.
+
+"; 
+
+%feature("docstring") simuPOP::Individual::mutants "
+
+Usage:
+
+    x.mutants(ploidy=ALL_AVAIL, chroms=ALL_AVAIL)
+
+Details:
+
+    return an itertor that iterate through all mutants (non-zero
+    alleles) of an individual. If ploidy or chroms is given, only
+    alleles on the specified chromosomes and homologous copy of
+    chromosomes will be iterated. If multiple chromosomes are
+    specified, there should not be gaps between chromosomes. This
+    function ignores type of chromosomes so it will return unused
+    alleles for sex and mitochondrial chromosomes.
 
 "; 
 
@@ -2888,6 +2911,8 @@ Details:
     is given, only lineages on the specified chromosomes and
     homologous copy of chromosomes will be returned. If multiple
     chromosomes are specified, there should not be gaps between
+    chromosomes. This function ignores type of chromosomes so it will
+    return lineage of unused alleles for sex and mitochondrial
     chromosomes. A None object will be returned for modules without
     lineage information.
 
@@ -2907,7 +2932,9 @@ Details:
     If parameters ploidy and/or chroms are specified, alleles will be
     copied to only all or specified chromosomes on selected homologous
     copies of chromosomes. geno will be reused if its length is less
-    than number of alleles to be filled.
+    than number of alleles to be filled. This function ignores type of
+    chromosomes so it will set genotype for unused alleles for sex and
+    mitochondrial chromosomes.
 
 "; 
 
@@ -2924,7 +2951,9 @@ Details:
     copied to only all or specified chromosomes on selected homologous
     copies of chromosomes. lineage will be reused if its length is
     less than number of allelic lineage to be filled. This function
-    does nothing for modules without lineage information.
+    ignores type of chromosomes so it will set lineage to unused
+    alleles for sex and mitochondrial chromosomes. It does nothing for
+    modules without lineage information.
 
 "; 
 
@@ -3373,8 +3402,7 @@ Usage:
 
     InitGenotype(freq=[], genotype=[], prop=[], haplotypes=[],
       loci=ALL_AVAIL, ploidy=ALL_AVAIL, begin=0, end=1, step=1, at=[],
-      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[],
-      lineageField=\"ind_id\")
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -3395,13 +3423,11 @@ Details:
     If the length of a haplotype is not enough to fill all loci, the
     haplotype will be reused. If a list (or a single) haplotypes are
     specified without freq or prop, they are used with equal
-    probability. For modules with lineage allele type, if individual
-    IDs are assigned to a field lineageField (default to ind_id), its
-    value will be saved as the lineage of modified alleles.  In the
-    last case, if a sequence of genotype is specified, it will be uesd
-    repeatedly to initialize all alleles sequentially. This works
-    similar to function Population.setGenotype() except that you can
-    limit the initialization to certain loci and ploidy.
+    probability.  In the last case, if a sequence of genotype is
+    specified, it will be used repeatedly to initialize all alleles
+    sequentially. This works similar to function
+    Population.setGenotype() except that you can limit the
+    initialization to certain loci and ploidy.
 
 "; 
 
@@ -3467,6 +3493,60 @@ Usage:
 %feature("docstring") simuPOP::InitInfo::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::InitInfo::apply "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::InitLineage "
+
+Details:
+
+    This operator assigns lineages at all or part of loci with given
+    values. This operator initializes all chromosomes, including
+    unused lineage locations and customized chromosomes.
+
+"; 
+
+%feature("docstring") simuPOP::InitLineage::InitLineage "
+
+Usage:
+
+    InitLineage(lineage=[], mode=PER_LOCI, loci=ALL_AVAIL,
+      ploidy=ALL_AVAIL, begin=0, end=1, step=1, at=[], reps=ALL_AVAIL,
+      subPops=ALL_AVAIL, infoFields=\"ind_id\")
+
+Details:
+
+    This function creates an initializer that initializes lineages
+    with either a specified set of values or from the field infoFields
+    (default to ind_id), whose value will be saved as the lineage of
+    modified alleles. If a list of values is specified in parameter
+    lineage, each value in this list is applied to one or more alleles
+    so that each locus (PER_LOCI), alleles on each chromosome
+    (PER_CHROMOSOME), on chromosomes of each ploidy (PER_PLOIDY), or
+    for each individual (PER_INDIVIDUAL) have the same lineage. A
+    single value is allowed and values in lineage will be re-used if
+    not enough values are provided. If a valid field is specified
+    (default to ind_id), the value of this field will be used for all
+    alleles of each individual if mode is set to FROM_INFO, or be
+    adjusted to produce positive values for alleles on the frist
+    ploidy, and negative values for the second ploidy (and so on) if
+    mode equals to FROM_INFO_SIGNED. If loci, ploidy and/or subPops
+    are specified, only specified loci, ploidy, and individuals in
+    these (virtual) subpopulations will be initialized.
+
+"; 
+
+%feature("docstring") simuPOP::InitLineage::~InitLineage "
+
+Usage:
+
+    x.~InitLineage()
+
+"; 
+
+%feature("docstring") simuPOP::InitLineage::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::InitLineage::describe "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::InitLineage::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::InitSex "
 
@@ -3663,7 +3743,7 @@ Usage:
 
     KAlleleMutator(k, rates=[], loci=ALL_AVAIL, mapIn=[], mapOut=[],
       output=\">\", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
-      subPops=ALL_AVAIL, infoFields=[], lineageField=\"ind_id\")
+      subPops=ALL_AVAIL, infoFields=\"ind_id\", lineageMode=FROM_INFO)
 
 Details:
 
@@ -4046,7 +4126,7 @@ Usage:
 
     MatrixMutator(rate, loci=ALL_AVAIL, mapIn=[], mapOut=[],
       output=\">\", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
-      subPops=ALL_AVAIL, infoFields=[], lineageField=\"ind_id\")
+      subPops=ALL_AVAIL, infoFields=\"ind_id\", lineageMode=FROM_INFO)
 
 Details:
 
@@ -4351,8 +4431,8 @@ Usage:
 
     MixedMutator(rates=[], loci=ALL_AVAIL, mutators=[], prob=[],
       mapIn=[], mapOut=[], context=0, output=\">\", begin=0, end=-1,
-      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[],
-      lineageField=\"ind_id\")
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
+      infoFields=\"ind_id\", lineageMode=FROM_INFO)
 
 Details:
 
@@ -5561,9 +5641,9 @@ Details:
 
 Usage:
 
-    PointMutator(loci, allele, ploidy=0, inds=[], output=\">\",
+    PointMutator(loci, allele, ploidy=[], 0, inds=[], output=\">\",
       begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=0,
-      infoFields=[], lineageField=\"ind_id\")
+      infoFields=\"ind_id\", lineageMode=FROM_INFO)
 
 Details:
 
@@ -6199,6 +6279,22 @@ Details:
     Return an editable array of the genotype of all individuals in a
     population (if subPop=[], default), or individuals in a
     subpopulation subPop. Virtual subpopulation is unsupported.
+
+"; 
+
+%feature("docstring") simuPOP::Population::mutants "
+
+Usage:
+
+    x.mutants(subPop=[])
+
+Details:
+
+    Return an iterator that iterate through mutants of all individuals
+    in a population (if subPop=[], default), or individuals in a
+    subpopulation subPop. Virtual subpopulation is unsupported. This
+    function ignores type of chromosomes so non-zero alleles in unused
+    alleles of sex and mitochondrial chromosomes are also iterated.
 
 "; 
 
@@ -7220,6 +7316,59 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::pyMutantIterator "
+
+Details:
+
+    this class implements a Python itertor class that can be used to
+    iterate through individuals in a (sub)population. If allInds are
+    true, visiblility of individuals will not be checked. Otherwise, a
+    functor will be used to check if indiviudals belong to a specified
+    virtual subpopulation.  An instance of this class is returned by
+    population::Individuals() and Population::Individuals(subPop)
+
+"; 
+
+%feature("docstring") simuPOP::pyMutantIterator::pyMutantIterator "
+
+Usage:
+
+    pyMutantIterator(begin, end, numLoci)
+
+"; 
+
+%feature("docstring") simuPOP::pyMutantIterator::~pyMutantIterator "
+
+Usage:
+
+    x.~pyMutantIterator()
+
+"; 
+
+%feature("docstring") simuPOP::pyMutantIterator::iter "
+
+Usage:
+
+    x.__iter__()
+
+"; 
+
+%feature("docstring") simuPOP::pyMutantIterator::next "
+
+Usage:
+
+    x.next()
+
+"; 
+
+%feature("docstring") simuPOP::pyMutantIterator::next "
+
+Usage:
+
+    x.__next__()
+
+"; 
+
 %feature("docstring") simuPOP::PyMutator "
 
 Details:
@@ -7235,8 +7384,8 @@ Usage:
 
     PyMutator(rates=[], loci=ALL_AVAIL, func=None, context=0,
       mapIn=[], mapOut=[], output=\">\", begin=0, end=-1, step=1, at=[],
-      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[],
-      lineageField=\"ind_id\")
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=\"ind_id\",
+      lineageMode=FROM_INFO)
 
 Details:
 
@@ -8159,7 +8308,8 @@ Details:
 Usage:
 
     RevertFixedSites(loci=ALL_AVAIL, output=\"\", begin=0, end=-1,
-      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
+      infoFields=\"ind_id\")
 
 Details:
 
@@ -9236,13 +9386,20 @@ Details:
     *   numOfFixedSites: Number of sites with one non-zero allele in
     all or specified (virtual) subpopulations.
     *   numOfFixedSites_sp: Number of sites with one non-zero allele
-    in in each (virtual) subpopulations.alleleFreq: This parameter
-    accepts a list of loci (loci indexes, names, or ALL_AVAIL), at
-    which allele frequencies will be calculated. This statistic
-    outputs the following variables, all of which are dictionary (with
-    loci indexes as keys) of default dictionaries (with alleles as
-    keys). For example, alleleFreq[loc][a] returns 0 if allele a does
-    not exist.
+    in in each (virtual) subpopulations.numOfMutants: Parameter
+    numOfMutants accepts a list of loci (loci indexes, names, or
+    ALL_AVAIL) and count the number of mutants (non-zero alleles) for
+    individuals in all or specified (virtual) subpopulations. It sets
+    variables
+    *   numOfMutants (default): Number of mutants in all or specified
+    (virtual) subpopulations.
+    *   numOfMutants_sp: Number of mutants in each (virtual)
+    subpopulations.alleleFreq: This parameter accepts a list of loci
+    (loci indexes, names, or ALL_AVAIL), at which allele frequencies
+    will be calculated. This statistic outputs the following
+    variables, all of which are dictionary (with loci indexes as keys)
+    of default dictionaries (with alleles as keys). For example,
+    alleleFreq[loc][a] returns 0 if allele a does not exist.
     *   alleleFreq (default): alleleFreq[loc][a] is the frequency of
     allele a at locus for all or specified (virtual) subpopulations.
     *   alleleNum (default): alleleNum[loc][a] is the number of allele
@@ -9986,7 +10143,7 @@ Usage:
     StepwiseMutator(rates=[], loci=ALL_AVAIL, incProb=0.5,
       maxAllele=0, mutStep=[], mapIn=[], mapOut=[], output=\">\",
       begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
-      subPops=ALL_AVAIL, infoFields=[], lineageField=\"ind_id\")
+      subPops=ALL_AVAIL, infoFields=\"ind_id\", lineageMode=FROM_INFO)
 
 Details:
 
