@@ -19,6 +19,7 @@ include config_win32.h
 include config_linux.h 
 include config_mac.h
 include src/simuPOP_cfg.h
+include src/mutant_vector.h
 include src/utility.h
 include src/genoStru.h
 include src/individual.h
@@ -284,10 +285,10 @@ recursive-include win32/x86 *.dll
 recursive-include win32/amd64 *.dll
 recursive-include win32/zlib-1.2.3 *.h *.c
 
-# bundle boost 1.46.1
-recursive-include boost_1_49_1/boost *.hpp *.ipp
-recursive-include boost_1_49_1/libs/iostreams/src *.cpp
-recursive-include boost_1_49_1/libs/serialization/src *.cpp *.ipp
-recursive-include boost_1_49_1/libs/regex/src *.cpp
-recursive-include boost_1_49_1/libs/detail *.cpp
+# bundle boost 1.49.0
+recursive-include boost_1_49_0/boost *.hpp *.ipp
+recursive-include boost_1_49_0/libs/iostreams/src *.cpp
+recursive-include boost_1_49_0/libs/serialization/src *.cpp *.ipp
+recursive-include boost_1_49_0/libs/regex/src *.cpp
+recursive-include boost_1_49_0/libs/detail *.cpp
 
