@@ -407,8 +407,9 @@ class TestMutator(unittest.TestCase):
         pop = Population(100, infoFields='ind_id', loci=10)
         tagID(pop, reset=1)
         initLineage(pop, mode=FROM_INFO_SIGNED)
-        expLineage = [([x] * 10) + ([- x] * 10) for x in range(1, 101)]
-        expLineage = reduce(lambda x,y : x + y, expLineage)
+        expLineage = []
+        for x in range(1, 101):
+            expLineage.extend([x] * 10 + [- x] * 10)
         # test lineage assignment in genotype initialization
         self.assertEqual(pop.lineage(), expLineage)
         for ind in pop.allIndividuals():
