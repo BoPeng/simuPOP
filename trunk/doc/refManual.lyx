@@ -1,11 +1,11 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
-\lyxformat 345
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
 \begin_document
 \begin_header
 \textclass manual
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
-\setreleaseinfo{Release 1.0.6 (\mbox{Rev: 4259})}
+\setreleaseinfo{Release 1.0.7rc1 (\mbox{Rev: 4485})}
 % file revision $Rev: 3372$
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
@@ -42,18 +42,26 @@ Last modified \\
 \setlength{\admonitionwidth}{0.7\textwidth}
 \end_preamble
 \use_default_options false
+\maintain_unincluded_children false
 \language english
+\language_package default
 \inputencoding auto
+\fontencoding global
 \font_roman default
 \font_sans default
 \font_typewriter beramono
 \font_default_family default
+\use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 70
 
 \graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
 \float_placement h
 \paperfontsize default
 \spacing single
@@ -75,13 +83,22 @@ Last modified \\
 \use_geometry false
 \use_amsmath 1
 \use_esint 0
+\use_mhchem 1
+\use_mathdots 1
 \cite_engine natbib_authoryear
 \use_bibtopic false
+\use_indices false
 \paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
-\defskip medskip
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -89,8 +106,9 @@ Last modified \\
 \listings_params "basicstyle={\ttfamily\color{VerbatimColor}},language=Python,showspaces=false,showstringspaces=false,showtabs=false,xleftmargin=15pt"
 \tracking_changes false
 \output_changes false
-\author "" 
-\author "" 
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
 \end_header
 
 \begin_body
@@ -106,6 +124,7 @@ hor_pos "c"
 has_inner_box 1
 inner_pos "c"
 use_parbox 0
+use_makebox 0
 width "100col%"
 special "none"
 height "1pt"
@@ -316,7 +335,7 @@ simuPOP Components
 
 \begin_layout Section
 Individual
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -326,7 +345,7 @@ Individual
 \end_inset
 
 , Population
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -336,7 +355,7 @@ Population
 \end_inset
 
 , pedigree
-\begin_inset Index
+\begin_inset Index idx
 status open
 
 \begin_layout Plain Layout
@@ -346,7 +365,7 @@ Pedigree
 \end_inset
 
  and Simulator
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -480,7 +499,7 @@ ProductSplitterRef
 
 \begin_layout Section
 Mating Schemes
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -804,7 +823,7 @@ BaseOperatorRef
 
 \begin_layout Section
 Initialization
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -839,6 +858,13 @@ InitInfoRef
 
 \backslash
 InitGenotypeRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+InitLineageRef
 \end_layout
 
 \end_inset
@@ -896,7 +922,7 @@ InfoExecRef
 
 \begin_layout Section
 Demographic models
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -1009,7 +1035,7 @@ RecombinatorRef
 
 \begin_layout Section
 Mutation
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -1095,6 +1121,13 @@ simuPOPSNPMutatorRef
 simuPOPAcgtMutatorRef
 \end_layout
 
+\begin_layout Plain Layout
+
+
+\backslash
+RevertFixedSitesRef
+\end_layout
+
 \end_inset
 
 
@@ -1102,7 +1135,7 @@ simuPOPAcgtMutatorRef
 
 \begin_layout Section
 Penetrance
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -1160,7 +1193,7 @@ PyPenetranceRef
 
 \begin_layout Section
 Quantitative Trait
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -1197,7 +1230,7 @@ PyQuanTraitRef
 
 \begin_layout Section
 Natural selection
-\begin_inset Index
+\begin_inset Index idx
 status collapsed
 
 \begin_layout Plain Layout
@@ -2199,35 +2232,35 @@ simuPOPsandboxRef
 
 \begin_layout Plain Layout
 
-
+%
 \backslash
 simuPOPsandboxrevertFixedSitesRef
 \end_layout
 
 \begin_layout Plain Layout
 
-
+%
 \backslash
 RevertFixedSitesRef
 \end_layout
 
 \begin_layout Plain Layout
 
-
+%
 \backslash
 MutSpaceMutatorRef
 \end_layout
 
 \begin_layout Plain Layout
 
-
+%
 \backslash
 MutSpaceSelectorRef
 \end_layout
 
 \begin_layout Plain Layout
 
-
+%
 \backslash
 MutSpaceRecombinatorRef
 \end_layout
@@ -2240,6 +2273,7 @@ MutSpaceRecombinatorRef
 \begin_layout Standard
 \begin_inset CommandInset index_print
 LatexCommand printindex
+type "idx"
 
 \end_inset
 
