@@ -73,6 +73,10 @@ include src/simuPOP_la_wrap.cpp
 include src/simuPOP_laop_wrap.cpp 
 include src/simuPOP_ba_wrap.cpp
 include src/simuPOP_baop_wrap.cpp
+include src/simuPOP_mu_wrap.cpp
+include src/simuPOP_muop_wrap.cpp
+include src/simuPOP_lin_wrap.cpp
+include src/simuPOP_linop_wrap.cpp
 include src/simuPOP_std.py
 include src/simuPOP_op.py 
 include src/simuPOP_la.py
@@ -258,6 +262,16 @@ include test/sample_32_std.pop
 include test/sample_64_ba.pop
 include test/sample_64_la.pop
 include test/sample_64_std.pop
+include test/sample_32_ba_v1.pop
+include test/sample_32_la_v1.pop
+include test/sample_32_std_v1.pop
+include test/sample_64_ba_v1.pop
+include test/sample_64_la_v1.pop
+include test/sample_64_std_v1.pop
+include test/sample_64_mu_v1.pop
+include test/sample_64_muop_v1.pop
+include test/sample_64_lin_v1.pop
+include test/sample_64_linop_v1.pop
 
 # documentations
 include doc/userGuide.pdf
@@ -271,9 +285,9 @@ recursive-include win32/amd64 *.dll
 recursive-include win32/zlib-1.2.3 *.h *.c
 
 # bundle boost 1.46.1
-recursive-include boost_1_46_1/boost *.hpp *.ipp
-recursive-include boost_1_46_1/libs/iostreams/src *.cpp
-recursive-include boost_1_46_1/libs/serialization/src *.cpp *.ipp
-recursive-include boost_1_46_1/libs/regex/src *.cpp
-recursive-include boost_1_46_1/libs/detail *.cpp
+recursive-include boost_1_49_1/boost *.hpp *.ipp
+recursive-include boost_1_49_1/libs/iostreams/src *.cpp
+recursive-include boost_1_49_1/libs/serialization/src *.cpp *.ipp
+recursive-include boost_1_49_1/libs/regex/src *.cpp
+recursive-include boost_1_49_1/libs/detail *.cpp
 
