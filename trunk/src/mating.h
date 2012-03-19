@@ -382,7 +382,8 @@ public:
 
 	UINT getNumOff(ssize_t /* gen */)
 	{
-		return getRNG().randGeometric(m_p);
+		// possible 64 bit -> 32 bit conversion
+		return static_cast<UINT>(getRNG().randGeometric(m_p));
 	}
 
 
@@ -408,7 +409,8 @@ public:
 
 	UINT getNumOff(ssize_t /* gen */)
 	{
-		return getRNG().randTruncatedPoisson(m_mu);
+		// possible 64 bit -> 32 bit conversion
+		return static_cast<UINT>(getRNG().randTruncatedPoisson(m_mu));
 	}
 
 

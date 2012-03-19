@@ -687,7 +687,7 @@ public:
 		const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr(1, "ind_id"))
-		: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
+		: BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci)
 	{
 	}
@@ -765,7 +765,7 @@ public:
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr(1, "ind_id"), int lineageMode = FROM_INFO) :
-		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
+		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields, lineageMode),
 		m_rate(rate), m_ranges(ranges), m_model(model)
 	{
 		const matrixi & rngs = m_ranges.elems();
