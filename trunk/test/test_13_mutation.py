@@ -399,5 +399,58 @@ class TestMutator(unittest.TestCase):
             cnt += pop.dvars().alleleNum[1][1]
         self.assertEqual( abs(cnt/50. - 5000*0.01) < 2, True)
 
+    def testLineage(self):
+        'Testing assigning of lineage of mutants'
+        if moduleInfo()['alleleType'] != 'lineage':
+            return
+        # set lingeage with ind_id field
+        pop = Population(100, infoFields='ind_id', loci=10)
+        tagID(pop, reset=1)
+        initLineage(pop, mode=FROM_INFO_SIGNED)
+        expLineage = [([x] * 10) + ([- x] * 10) for x in range(1, 101)]
+        expLineage = reduce(lambda x,y : x + y, expLineage)
+        # test lineage assignment in genotype initialization
+        self.assertEqual(pop.lineage(), expLineage)
+        for ind in pop.allIndividuals():
+            self.assertEqual(ind.lineage(), \
+				[ind.ind_id] * 10 + [- ind.ind_id ] * 10)
+        # pretend that we advance a generation
+        tagID(pop)
+        self.assertEqual(pop.lineage(), expLineage)
+        for ind in pop.allIndividuals():
+            self.assertEqual(ind.lineage(), \
+				[(ind.ind_id - 100)] * 10 + [ -  (ind.ind_id - 100) ] * 10)
+        # mutate all the alleles
+        snpMutate(pop, u=1, v=1, lineageMode=FROM_INFO_SIGNED)
+        # test lineage assignment in mutation
+        for ind in pop.allIndividuals():
+            self.assertEqual(ind.lineage(0), [ind.ind_id ] * 10)
+            self.assertEqual(ind.lineage(1), [- ind.ind_id ] * 10)
+        #
+        snpMutate(pop, u=1, v=1, lineageMode=FROM_INFO)
+        # test lineage assignment in mutation
+        for ind in pop.allIndividuals():
+            self.assertEqual(ind.lineage(0), [ind.ind_id ] * 10)
+            self.assertEqual(ind.lineage(1), [ind.ind_id ] * 10)
+        # set the genotype to all 1's
+        initGenotype(pop, freq=[0, 1])
+        initLineage(pop, 1)
+        # pretend that we advance a generation
+        tagID(pop, reset=1)
+        tagID(pop)
+        # apply point mutation to all 0's
+        pointMutate(pop, range(10), 0, range(2), range(200))
+        # test lineage assignment in mutation
+        for ind in pop.allIndividuals():
+            self.assertEqual(ind.lineage(0), [ind.ind_id] * 10)
+            self.assertEqual(ind.lineage(1), [ind.ind_id] * 10)
+        #
+        pointMutate(pop, range(10), 1, range(2), range(200), lineageMode=FROM_INFO_SIGNED)
+        # test lineage assignment in mutation
+        for ind in pop.allIndividuals():
+            self.assertEqual(ind.lineage(0), [ind.ind_id] * 10)
+            self.assertEqual(ind.lineage(1), [-ind.ind_id] * 10)
+
+
 if __name__ == '__main__':
     unittest.main()

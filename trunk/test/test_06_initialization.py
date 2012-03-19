@@ -276,28 +276,35 @@ class TestInitialization(unittest.TestCase):
         for ind in pop.allIndividuals():
             self.assertEqual(ind.lineage(), range(20))
         # set lineage per chromosome
-        initLineage(pop, range(4), mode=BY_CHROMOSOME)
+        initLineage(pop, range(4), mode=PER_CHROMOSOME)
         self.assertEqual(pop.lineage(), ([0]*4 + [1]*6 + [2]*4 + [3]*6) * 100)
         for ind in pop.allIndividuals():
             self.assertEqual(ind.lineage(), [0]*4 + [1]*6 + [2]*4 + [3]*6)
         # set lineage per ploidy
-        initLineage(pop, range(2), mode=BY_PLOIDY)
+        initLineage(pop, range(2), mode=PER_PLOIDY)
         self.assertEqual(pop.lineage(), (([0] * 10) + ([1] * 10)) * 100)
-        initLineage(pop, range(200), mode=BY_PLOIDY)
+        initLineage(pop, range(200), mode=PER_PLOIDY)
         self.assertEqual(pop.lineage(), reduce(lambda x,y:x+y, [10 * [i] for i in range(200)]))
         # set lineage per individual
-        initLineage(pop, range(100), mode=BY_INDIVIDUAL)
+        initLineage(pop, range(100), mode=PER_INDIVIDUAL)
         self.assertEqual(pop.lineage(), reduce(lambda x,y:x+y, [20 * [i] for i in range(100)]))
         # set lingeage with ind_id field
-        initLineage(pop)
-        expLineage = [([2 * x] * 10) + ([2 * x + 1] * 10) for x in range(1, 101)]
+        initLineage(pop, mode=FROM_INFO)
+        expLineage = []
+        [expLineage.extend([x] * 20) for x in range(1, 101)]
+        # test lineage assignment in genotype initialization
+        self.assertEqual(pop.lineage(), expLineage)
+        for ind in pop.allIndividuals():
+            self.assertEqual(ind.lineage(), [ind.ind_id] * 20)
+        #
+        initLineage(pop, mode=FROM_INFO_SIGNED)
+        expLineage = [([x] * 10) + ([- x] * 10) for x in range(1, 101)]
         expLineage = reduce(lambda x,y : x + y, expLineage)
         # test lineage assignment in genotype initialization
         self.assertEqual(pop.lineage(), expLineage)
         for ind in pop.allIndividuals():
             self.assertEqual(ind.lineage(), \
-				[2 * ind.ind_id] * 10 + [2 * ind.ind_id + 1] * 10)
-        #
+				[ind.ind_id] * 10 + [- ind.ind_id] * 10)
         # test paramter loci 
         pop.setLineage(0)
         initLineage(pop, range(10), loci=range(5))
@@ -305,15 +312,15 @@ class TestInitialization(unittest.TestCase):
         for ind in pop.allIndividuals():
             self.assertEqual(ind.lineage(), range(5) + [0]*5 + range(5, 10) + [0]*5)
         # set lineage per chromosome
-        initLineage(pop, range(4), mode=BY_CHROMOSOME, loci=range(5))
+        initLineage(pop, range(4), mode=PER_CHROMOSOME, loci=range(5))
         self.assertEqual(pop.lineage(), ([0]*4 + [1] + [0]*5 + [2]*4 + [3] + [0]*5) * 100)
         for ind in pop.allIndividuals():
             self.assertEqual(ind.lineage(), [0]*4 + [1] + [0]*5 + [2]*4 + [3] + [0]*5)
         # set lineage per ploidy
-        initLineage(pop, range(2), mode=BY_PLOIDY, loci=range(5))
+        initLineage(pop, range(2), mode=PER_PLOIDY, loci=range(5))
         self.assertEqual(pop.lineage(), (([0] * 10) + ([1] * 5 + [0]*5)) * 100)
         # set lineage per individual
-        initLineage(pop, range(100), mode=BY_INDIVIDUAL, loci=range(5))
+        initLineage(pop, range(100), mode=PER_INDIVIDUAL, loci=range(5))
         self.assertEqual(pop.lineage(), reduce(lambda x,y:x+y, [[i]*5 + [0] * 5 + [i]*5 + [0]*5 for i in range(100)]))
         #
         # test vsp

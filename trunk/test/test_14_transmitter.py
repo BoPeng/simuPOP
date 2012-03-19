@@ -973,5 +973,22 @@ class TestTransmitters(unittest.TestCase):
         for ind in simu.population(0).individuals():
             self.assertEqual(ind.genotype(1), [0]*8)
 
+    def testLineage(self):
+        'Testing the transmission of lineage information'
+        # pretend that we advance a generation
+        if moduleInfo()['alleleType'] != 'lineage':
+            return
+        # set lingeage with ind_id field
+        pop = Population(100, infoFields='ind_id', loci=10)
+        tagID(pop)
+        mom = pop.individual(0)
+        dad = pop.individual(1)
+        child = pop.individual(2)
+        MendelianGenoTransmitter().transmitGenotype(mom, child, 0)
+        MendelianGenoTransmitter().transmitGenotype(dad, child, 1)
+        # test lineage assignment in genotype transition
+        self.assertEqual(child.lineage(), (list(mom.lineage(0)) + list(dad.lineage(1))))
+       
+        
 if __name__ == '__main__':
     unittest.main()
