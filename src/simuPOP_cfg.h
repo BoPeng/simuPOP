@@ -121,6 +121,7 @@
 using std::string;
 
 #define toID(val)  (static_cast<size_t>((val) + 0.5))
+#define toLineage(val)  (static_cast<long>(val))
 
 #ifdef LINEAGE
 #define LINEAGE_EXPR(expr) expr
@@ -313,10 +314,12 @@ enum InheritanceType {
 
 // used by operator InitLineage
 enum InitMode {
-	BY_LOCI =  111,
-	BY_CHROMOSOME = 112,
-	BY_PLOIDY = 113,
-	BY_INDIVIDUAL = 114,
+	PER_LOCI =  111,
+	PER_CHROMOSOME = 112,
+	PER_PLOIDY = 113,
+	PER_INDIVIDUAL = 114,
+	FROM_INFO = 115,
+	FROM_INFO_SIGNED = 116,
 };
 
 #define DBG_CODE_LENGTH 21

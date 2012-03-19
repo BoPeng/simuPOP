@@ -94,8 +94,12 @@ bool BaseMutator::apply(Population & pop) const
 	DBG_DO(DBG_MUTATOR, cerr << "Mutate replicate " << pop.rep() << endl);
 
 #ifdef LINEAGE
-	bool assignLineage = pop.hasInfoField(m_lineageField);
-	size_t lineageIdx = assignLineage ? pop.infoIdx(m_lineageField) : 0;
+	DBG_WARNIF(infoSize() > 0 && !pop.hasInfoField(infoField(0)),
+		"Specified information field " + infoField(0) + " does not exist.");
+	bool assignLineage = infoSize() > 0 && pop.hasInfoField(infoField(0));
+	size_t lineageIdx = assignLineage ? pop.infoIdx(infoField(0)) : 0;
+	DBG_DO(DBG_MUTATOR, cerr << (assignLineage ? "Assign lineage using field " + infoField(0) :
+		                         "Not assigning lineage (number of info fields: " + toStr(infoSize()) + ")") << endl);
 #endif
 
 	// mapIn and mapOut
@@ -154,7 +158,8 @@ bool BaseMutator::apply(Population & pop) const
 					long lineage = 0;
 					if (assignLineage) {
 						lineagePtr += static_cast<IndLineageIterator::difference_type>(pos - lastPos);
-						lineage = static_cast<long>(toID(lineagePtr.individual()->info(lineageIdx)));
+						int sign = m_lineageMode == FROM_INFO ? 1 : (lineagePtr.currentPloidy() % 2 == 0 ? 1 : -1);
+						lineage = toLineage(lineagePtr.individual()->info(lineageIdx) * sign);
 					}
 #endif
 					ptr += static_cast<IndAlleleIterator::difference_type>(pos - lastPos);
@@ -162,7 +167,7 @@ bool BaseMutator::apply(Population & pop) const
 					if (!ptr.valid())
 						continue;
 					Allele alleleValue = *ptr;
-					(void) alleleValue; // suppress a warning for unused variable
+					(void)alleleValue;  // suppress a warning for unused variable
 					DBG_DO(DBG_MUTATOR, cerr << "Allele " << int(*ptr) << " at locus " << locus);
 					if (mapIn) {
 						if (numMapInAllele > 0) {
@@ -212,9 +217,9 @@ MatrixMutator::MatrixMutator(const floatMatrix & rate,
 	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops,
 	const stringList & infoFields,
-	const string & idField)
+	int lineageMode)
 	: BaseMutator(vectorf(1, 0), loci, mapIn, mapOut, 0, output, begin, end, step,
-	              at, reps, subPops, infoFields, idField)
+	              at, reps, subPops, infoFields, lineageMode)
 {
 	matrixf rateMatrix = rate.elems();
 	// step 0, determine mu
@@ -294,11 +299,10 @@ StepwiseMutator::StepwiseMutator(const floatList & rates, const lociList & loci,
 	double incProb, UINT maxAllele, const floatListFunc & mutStep,
 	const uintListFunc & mapIn, const uintListFunc & mapOut, const stringFunc & output,
 	int begin, int end, int step, const intList & at,
-	const intList & reps, const subPopList & subPops, 
-	const stringList & infoFields,
-	const string & idField)
-	: BaseMutator(rates, loci, mapIn, mapOut, 0, output, begin, end, 
-		step, at, reps, subPops, infoFields, idField),
+	const intList & reps, const subPopList & subPops,
+	const stringList & infoFields, int lineageMode)
+	: BaseMutator(rates, loci, mapIn, mapOut, 0, output, begin, end,
+	              step, at, reps, subPops, infoFields, lineageMode),
 	m_incProb(incProb), m_maxAllele(maxAllele), m_mutStep(mutStep)
 {
 #ifdef BINARYALLELE
@@ -318,7 +322,6 @@ StepwiseMutator::StepwiseMutator(const floatList & rates, const lociList & loci,
 	DBG_FAILIF(m_mutStep.size() > 1 &&
 		(fcmp_lt(m_mutStep[1], 0) || fcmp_gt(m_mutStep[1], 1)), ValueError,
 		"Probability for the geometric distribution has to be between 0 and 1");
-
 }
 
 
@@ -449,8 +452,8 @@ bool PointMutator::apply(Population & pop) const
 	subPopList::const_iterator spEnd = subPops.end();
 
 #ifdef LINEAGE
-	bool assignLineage = pop.hasInfoField(m_lineageField);
-	size_t lineageIdx = assignLineage ? pop.infoIdx(m_lineageField) : 0;
+	bool assignLineage = infoSize() > 0 && pop.hasInfoField(infoField(0));
+	size_t lineageIdx = assignLineage ? pop.infoIdx(infoField(0)) : 0;
 #endif
 
 	for (; sp != spEnd; ++sp) {
@@ -463,17 +466,27 @@ bool PointMutator::apply(Population & pop) const
 			IndIterator ind = pop.indIterator(sp->subPop()) + static_cast<IndIterator::difference_type>(*it);
 			if (!ind.valid())
 				continue;
-			LINEAGE_EXPR(long lineage = assignLineage ? static_cast<long>(toID(ind->info(lineageIdx))) : 0);
+
 			for (size_t p = 0; p < m_ploidy.size(); ++p) {
+
+				int currentPloidy = static_cast<int>(m_ploidy[p]);
+
+#ifdef LINEAGE
+				long lineage = 0;
+				if (assignLineage) {
+					int sign = m_lineageMode == FROM_INFO ? 1 : (currentPloidy % 2 == 0 ? 1 : -1);
+					lineage = toLineage(ind->info(lineageIdx) * sign);
+				}
+#endif
 				if (m_loci.allAvail()) {
 					for (size_t i = 0; i < pop.totNumLoci(); ++i) {
 #ifdef LINEAGE
-						if (assignLineage && m_allele != ind->allele(i, static_cast<int>(m_ploidy[p])))
-								ind->setAlleleLineage(lineage, i, static_cast<int>(m_ploidy[p]));
+						if (assignLineage && m_allele != ind->allele(i, currentPloidy))
+							ind->setAlleleLineage(lineage, i, currentPloidy);
 #endif
-						ind->setAllele(m_allele, i, static_cast<int>(m_ploidy[p]));
+						ind->setAllele(m_allele, i, currentPloidy);
 						DBG_DO(DBG_MUTATOR,
-							cerr	<< "Mutate locus " << i << " at ploidy " << m_ploidy[p]
+							cerr	<< "Mutate locus " << i << " at ploidy " << currentPloidy
 							        << " to allele " << int(m_allele) << " at generation "
 							        << pop.gen() << endl);
 					}
@@ -481,12 +494,12 @@ bool PointMutator::apply(Population & pop) const
 					const vectoru & loci = m_loci.elems(&pop);
 					for (size_t i = 0; i < loci.size(); ++i) {
 #ifdef LINEAGE
-						if (assignLineage && m_allele != ind->allele(loci[i], static_cast<int>(m_ploidy[p])))
-							ind->setAlleleLineage(lineage, loci[i], static_cast<int>(m_ploidy[p]));
+						if (assignLineage && m_allele != ind->allele(loci[i], currentPloidy))
+							ind->setAlleleLineage(lineage, loci[i], currentPloidy);
 #endif
-						ind->setAllele(m_allele, loci[i], static_cast<int>(m_ploidy[p]));
+						ind->setAllele(m_allele, loci[i], currentPloidy);
 						DBG_DO(DBG_MUTATOR,
-							cerr	<< "Mutate locus " << loci[i] << " at ploidy " << m_ploidy[p]
+							cerr	<< "Mutate locus " << loci[i] << " at ploidy " << currentPloidy
 							        << " to allele " << int(m_allele) << " at generation "
 							        << pop.gen() << endl);
 					}
