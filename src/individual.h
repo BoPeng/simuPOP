@@ -876,7 +876,7 @@ public:
 	IndividualIterator operator+(difference_type diff)
 	{
 		if (m_allInds)
-			return IndividualIterator(m_it + diff, m_end, m_allInds);
+			return IndividualIterator(m_end - m_it >= diff ? m_it + diff : m_end, m_end, m_allInds);
 		IndividualIterator tmp(*this);
 		DBG_ASSERT(tmp.m_it < tmp.m_end, ValueError,
 			"Can not advance invalid iterator");
