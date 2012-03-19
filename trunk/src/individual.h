@@ -1447,6 +1447,22 @@ public:
 		return m_valid;
 	}
 
+	size_t currentPloidy()
+	{
+		if (m_useGappedIterator) {
+			// NOTE: this iterator is used only when indOrdered() is set to true for
+			// the whole population (see Population.lineageIterator()). It is therefore
+			// possible to get the index of individual from index of m_ptr.
+			//
+			// There is a conversion from size_t to long (difference_type), a possible
+			// loss of data
+ 			difference_type offset = static_cast<difference_type>((m_ptr - m_ptrBegin) / m_size);
+			return static_cast<size_t>(offset % m_ploidy);
+		} else {
+			return m_p;
+		}
+	}
+
 	IndividualIterator<T> individual()
 	{
 		if (m_useGappedIterator) {

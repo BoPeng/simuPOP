@@ -86,12 +86,16 @@ public:
 	 *  between a large number of alleles and advanced models such as random
 	 *  emission of alleles.
 	 *
-	 *  If a valid information field is specified for parameter \e lineageField
+	 *  If a valid information field is specified for parameter \e infoFields
 	 *  (default to \c ind_id) for modules with lineage allele type, the lineage
-	 *  of the mutated alleles will be the ID (stored in field \e linkageField)
-	 *  of individuals that harbor the mutated alleles. The lineage information
-	 *  will be transmitted along with the alleles so this feature allows you to
-	 *  track the source of mutants during evolution.
+	 *  of the mutated alleles will be the ID (stored in the first field of
+	 *  \e infoFields) of individuals that harbor the mutated alleles if \e
+	 *  lineageMode is set to \c FROM_INFO (default). If \e lineageMode is
+	 *  set to \c FROM_INFO_SIGNED, the IDs will be assigned a sign depending
+	 *  on the ploidy the mutation happens (1 for ploidy 0, -1 for ploidy 1,
+	 *  etc). The lineage information will be transmitted along with the
+	 *  alleles so this feature allows you to track the source of mutants
+	 *  during evolution.A
 	 *
 	 *  Some mutation models are context dependent. Namely, how an allele
 	 *  mutates will depend on its adjecent alleles. Whereas most simuPOP
@@ -108,11 +112,10 @@ public:
 		int context = 0, const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = vectorstr(),
-		const string & lineageField = "ind_id")
+		const stringList & infoFields = vectorstr(1, "ind_id"), int lineageMode = FROM_INFO)
 		: BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_rates(rates.elems()), m_loci(loci), m_mapIn(mapIn), m_mapOut(mapOut),
- 		m_lineageField(lineageField), m_context(context * 2)
+		m_lineageMode(lineageMode), m_context(context * 2)
 	{
 		// NOTE: empty rates is allowed because a mutator might be
 		// used in a mixed mutator.
@@ -196,7 +199,7 @@ protected:
 
 	const uintListFunc m_mapOut;
 
-	const string m_lineageField;
+	int m_lineageMode;
 
 	// Be careful about this variable, which is not constant.
 	mutable vectoru m_context;
@@ -230,7 +233,7 @@ public:
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = vectorstr(), const string & lineageField = "ind_id");
+		const stringList & infoFields = vectorstr(1, "ind_id"), int lineageMode = FROM_INFO);
 
 	/// destructor.
 	~MatrixMutator()
@@ -283,10 +286,10 @@ public:
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
-		const intList & reps = intList(), const subPopList & subPops = subPopList(), 
-		const stringList & infoFields = vectorstr(), const string & lineageField = "ind_id")
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = vectorstr(1, "ind_id"), int lineageMode = FROM_INFO)
 		: BaseMutator(rates, loci, mapIn, mapOut, 0, output, begin, end, step, at,
-		              reps, subPops, infoFields, lineageField), m_k(k)
+		              reps, subPops, infoFields, lineageMode), m_k(k)
 	{
 #ifndef BINARYALLELE
 		if (m_k > 1 && static_cast<ULONG>(m_k - 1) > ModuleMaxAllele)
@@ -365,7 +368,7 @@ public:
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = vectorstr(), const string & lineageField = "ind_id");
+		const stringList & infoFields = vectorstr(1, "ind_id"), int lineageMode = FROM_INFO);
 
 	~StepwiseMutator()
 	{
@@ -427,9 +430,9 @@ public:
 		const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = vectorstr(), const string & lineageField = "ind_id")
-		: BaseMutator(rates, loci, mapIn, mapOut, context, output, begin, end, 
-				step, at, reps, subPops, infoFields, lineageField),
+		const stringList & infoFields = vectorstr(1, "ind_id"), int lineageMode = FROM_INFO)
+		: BaseMutator(rates, loci, mapIn, mapOut, context, output, begin, end,
+		              step, at, reps, subPops, infoFields, lineageMode),
 		m_func(func)
 	{
 		DBG_ASSERT(m_func.isValid(), ValueError,
@@ -483,9 +486,9 @@ public:
 		int context = 0, const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = vectorstr(), const string & lineageField = "ind_id")
+		const stringList & infoFields = vectorstr(1, "ind_id"), int lineageMode = FROM_INFO)
 		: BaseMutator(rates, loci, mapIn, mapOut, context, output, begin, end,
-				step, at, reps, subPops, infoFields, lineageField),
+		              step, at, reps, subPops, infoFields, lineageMode),
 		m_mutators(mutators), m_sampler()
 	{
 		DBG_FAILIF(m_mutators.size() != prob.size(), ValueError,
@@ -555,9 +558,9 @@ public:
 		const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = vectorstr(), const string & lineageField = "ind_id")
-		: BaseMutator(rates, loci, mapIn, mapOut, 0, output, begin, end, 
-				step, at, reps, subPops, infoFields, lineageField),
+		const stringList & infoFields = vectorstr(1, "ind_id"), int lineageMode = FROM_INFO)
+		: BaseMutator(rates, loci, mapIn, mapOut, 0, output, begin, end,
+		              step, at, reps, subPops, infoFields, lineageMode),
 		m_mutators(mutators), m_contexts(contexts.elems())
 	{
 		if (m_contexts.size() != 0) {
@@ -622,9 +625,9 @@ public:
 		const uintList & inds = vectoru(), const stringFunc & output = ">",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = 0,
-		const stringList & infoFields = vectorstr(), const string & lineageField = "ind_id")
+		const stringList & infoFields = vectorstr(1, "ind_id"), int lineageMode = FROM_INFO)
 		: BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
-		m_lineageField(lineageField), m_loci(loci), m_allele(allele), 
+		m_lineageMode(lineageMode), m_loci(loci), m_allele(allele),
 		m_ploidy(ploidy.elems()), m_inds(inds.elems())
 	{
 	}
@@ -656,7 +659,7 @@ public:
 
 private:
 	/// applicable loci.
-	const string m_lineageField;
+	int m_lineageMode;
 
 	lociList m_loci;
 	Allele m_allele;
@@ -683,7 +686,7 @@ public:
 		const stringFunc & output = "", int begin = 0, int end = -1, int step = 1,
 		const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = vectorstr())
+		const stringList & infoFields = vectorstr(1, "ind_id"))
 		: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci)
 	{
@@ -761,7 +764,7 @@ public:
 		const stringFunc & output = "",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = vectorstr(), const string & lineageField = "ind_id") :
+		const stringList & infoFields = vectorstr(1, "ind_id"), int lineageMode = FROM_INFO) :
 		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_rate(rate), m_ranges(ranges), m_model(model)
 	{

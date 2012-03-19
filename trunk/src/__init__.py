@@ -93,10 +93,12 @@ __all__ = [
     'SUMMATION',
     'MULTIPLICATION',
     # 
-    'BY_LOCI',
-    'BY_CHROMOSOME',
-    'BY_PLOIDY',
-    'BY_INDIVIDUAL',
+    'PER_LOCI',
+    'PER_CHROMOSOME',
+    'PER_PLOIDY',
+    'PER_INDIVIDUAL',
+    'FROM_INFO',
+    'FROM_INFO_SIGNED',
     #
     'HAPLODIPLOID',
     'ALL_AVAIL',
@@ -897,12 +899,12 @@ class SNPMutator(MatrixMutator):
     rate from 0 to 1, and from 1 to 0 alleles. '''
     def __init__(self, u=0, v=0, loci=ALL_AVAIL, mapIn=[], mapOut=[], output='>',
         begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-        infoFields=[], lineageField='ind_id'):
+        infoFields=['ind_id'], lineageMode=FROM_INFO):
         '''Return a ``MatrixMutator`` with proper mutate matrix for a two-allele
         mutation model using mutation rate from allele 0 to 1 (parameter ``u``)
         and from 1 to 0 (parameter ``v``)'''
         MatrixMutator.__init__(self, [[1-u, u], [v, 1-v]], loci, mapIn, mapOut,
-            output, begin, end, step, at, reps, subPops, infoFields, lineageField)
+            output, begin, end, step, at, reps, subPops, infoFields, lineageMode)
 
 
 class AcgtMutator(MatrixMutator):
@@ -913,7 +915,7 @@ class AcgtMutator(MatrixMutator):
     and meaning of parameter ``rate`` is model dependent.'''
     def __init__(self, rate=[], model='general', loci=ALL_AVAIL, mapIn=[], mapOut=[], output='>',
         begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-        infoFields=[], lineageField='ind_id'):
+        infoFields=['ind_id'], lineageMode=FROM_INFO):
         '''Create a mutation model that mutates between nucleotides ``A``,
         ``C``, ``G``, and ``T`` (alleles are coded in that order as 0, 1, 2
         and 3). Currently supported models are Jukes and Cantor 1969 model
@@ -1014,7 +1016,7 @@ class AcgtMutator(MatrixMutator):
         else:
             raise ValueError('Unrecognized nucleotide mutation model %s' % model)
         MatrixMutator.__init__(self, m, loci, mapIn, mapOut,
-            output, begin, end, step, at, reps, subPops, infoFields, lineageField)
+            output, begin, end, step, at, reps, subPops, infoFields, lineageMode)
 
 
 class AminoAcidMutator(MatrixMutator):
@@ -1023,9 +1025,9 @@ class AminoAcidMutator(MatrixMutator):
     '''
     def __init__(self, rate=[], model='general', loci=ALL_AVAIL, mapIn=[], mapOut=[], 
         output='>', begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-        infoFields=[], lineageField='ind_id'):
+        infoFields=['ind_id'], lineageMode=FROM_INFO):
         MatrixMutator.__init__(self, rate, loci, mapIn, mapOut,
-            output, begin, end, step, at, reps, subPops, infoFields, lineageField)
+            output, begin, end, step, at, reps, subPops, infoFields, lineageMode)
 
 #
 # functions to corresponding operators

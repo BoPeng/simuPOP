@@ -241,24 +241,28 @@ class InitLineage : public BaseOperator
 {
 public:
 	/** This function creates an initializer that initializes lineages
-	 *  with either a specified set of values or from the field \e lineageField
+	 *  with either a specified set of values or from the field \e infoFields
 	 *  (default to \c ind_id), whose value will be saved as the lineage of
-	 *  modified alleles. Depending on the value of parameter \e mode, each
-	 *  value in \e lineage is applied to one or more alleles so that each
-	 *  locus (\c BY_LOCI), alleles on each chromosome (\c BY_CHROMOSOME),
-	 *  on chromosomes of each ploidy (\c BY_PLOIDY), or for each individual
-	 *  (\c BY_INDIVIDUAL) have the same lineage. Values in \e lineage will be
-	 *  re-used if not enough values are provided. If \e loci, \e ploidy and/or
-	 *  \e subPop are specified, only specified loci, ploidy, and individuals in
-	 *  these (virtual) subpopulations will be initialized.
+	 *  modified alleles. If a list of values is specified in parameter \e
+	 *  lineage, each value in this list is applied to one or more alleles so
+	 *  that each locus (\c PER_LOCI), alleles on each chromosome (\c
+	 *  PER_CHROMOSOME), on chromosomes of each ploidy (\c PER_PLOIDY), or for
+	 *  each individual (\c PER_INDIVIDUAL) have the same lineage. A single
+	 *  value is allowed and values in \e lineage will be re-used if not enough
+	 *  values are provided. If a valid field is specified (default to \c ind_id),
+	 *  the value of this field will be used for all alleles of each individual
+	 *  if \e mode is set to  \c FROM_INFO, or be adjusted to produce positive
+	 *  values for alleles on the frist ploidy, and negative values for the
+	 *  second ploidy (and so on) if \e mode equals to \c FROM_INFO_SIGNED. If
+	 *  \e loci, \e ploidy and/or \e subPops are specified, only specified loci,
+	 *  ploidy, and individuals in these (virtual) subpopulations will be
+	 *  initialized.
 	 */
-	InitLineage(const intList & lineage = vectori(), int mode = BY_LOCI,
+	InitLineage(const intList & lineage = vectori(), int mode = PER_LOCI,
 		const lociList & loci = lociList(), const uintList & ploidy = uintList(),
 		int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = vectorstr(),
-		const string & lineageField = "ind_id");
-
+		const stringList & infoFields = vectorstr(1, "ind_id"));
 
 	~InitLineage()
 	{
@@ -290,8 +294,6 @@ private:
 
 	//
 	const int m_mode;
-
-	const string m_lineageField;
 };
 
 
