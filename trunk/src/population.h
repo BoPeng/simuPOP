@@ -1464,19 +1464,7 @@ public:
 	 *  <tt>(sp, vsp)</tt>).
 	 *  <group>8-info</group>
 	 */
-	vectorf indInfo(const uintString & field, vspID subPop = vspID())
-	{
-		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
-			"This operation is not allowed when there is an activated virtual subpopulation");
-		size_t idx = field.empty() ? field.value() : infoIdx(field.name());
-		if (subPop.valid()) {
-			activateVirtualSubPop(subPop);
-			vectorf ret(infoBegin(idx, subPop), infoEnd(idx, subPop));
-			deactivateVirtualSubPop(subPop.subPop());
-			return ret;
-		} else
-			return vectorf(infoBegin(idx), infoEnd(idx));
-	}
+	vectorf indInfo(const uintString & field, vspID subPop = vspID());
 
 
 	/** Add a list of information fields \e fields to a population and
