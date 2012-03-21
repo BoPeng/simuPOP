@@ -2940,6 +2940,22 @@ void Population::push(Population & rhs)
 }
 
 
+vectorf Population::indInfo(const uintString & field, vspID subPopID)
+{
+	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+		"This operation is not allowed when there is an activated virtual subpopulation");
+	vspID subPop = subPopID.resolve(*this);
+	size_t idx = field.empty() ? field.value() : infoIdx(field.name());
+	if (subPop.valid()) {
+		activateVirtualSubPop(subPop);
+		vectorf ret(infoBegin(idx, subPop), infoEnd(idx, subPop));
+		deactivateVirtualSubPop(subPop.subPop());
+		return ret;
+	} else
+		return vectorf(infoBegin(idx), infoEnd(idx));
+}
+
+
 void Population::addInfoFields(const stringList & fieldList, double init)
 {
 	const vectorstr & fields = fieldList.elems();
