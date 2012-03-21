@@ -147,11 +147,11 @@ public:
 	/** Create a clone genotype transmitter (a during-mating operator) that
 	 *  copies genotypes from parents to offspring. If two parents are
 	 *  specified, genotypes are copied maternally. After genotype
-	 *  transmission, offspring sex is copied from parental sex even if sex
-	 *  has been determined by an offspring generator. All or specified
-	 *  information fields (parameter \e infoFields, default to \c ALL_AVAIL)
-	 *  will also be copied from parent to offspring. Parameters \e subPops
-	 *  is ignored. This operator by default copies genotypes on all
+	 *  transmission, offspring sex and affection status is copied from the
+	 *  parent even if sex has been determined by an offspring generator. All
+	 *  or specified information fields (parameter \e infoFields, default to
+	 *  \c ALL_AVAIL) will also be copied from parent to offspring. Parameters
+	 *  \e subPops is ignored. This operator by default copies genotypes on all
 	 *  autosome and sex chromosomes (excluding customized chromosomes), unless
 	 *  a parameter \e chroms is used to specify which chromosomes to copy.
 	 *  This operator also copies allelic lineage when it is executed in a
