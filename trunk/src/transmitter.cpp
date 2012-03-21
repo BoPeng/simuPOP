@@ -246,6 +246,7 @@ bool CloneGenoTransmitter::applyDuringMating(Population & pop, Population & offP
 	}
 	// for clone transmitter, sex is also transmitted
 	offspring->setSex(parent->sex());
+	offspring->setAffected(parent->affected());
 	if (infoFields().allAvail()) {
 		for (size_t i = 0; i < parent->infoFields().size(); ++i)
 			offspring->setInfo(parent->info(i), i);
