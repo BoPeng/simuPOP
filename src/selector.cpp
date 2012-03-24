@@ -316,24 +316,20 @@ RandomFitnessSelector::RandomFitnessSelector(const floatListFunc & selDist, int 
 		else if (func.numArgs() == 1) {
 			if (func.arg(0) == "loc")
 				m_searchMode = 11;
-			else if (func.arg(0) == "allele")
+			else
+				throw ValueError("Invalid parameter for passed function " + func.name() +
+					" (allele1 and allele2 have to be specified together)");
+		} else if (func.numArgs() == 2) {
+			if (func.arg(0) == "allele1" and func.arg(1) == "allele2")
 				m_searchMode = 12;
 			else
-				throw ValueError("Invalid parameter for passed function " + func.name());
-		} else if (func.numArgs() == 2) {
-			if (func.arg(0) == "loc" and func.arg(1) == "allele")
-				m_searchMode = 13;
-			else if (func.arg(0) == "allele" and func.arg(1) == "loc")
-				m_searchMode = 14;
-			else if (func.arg(0) == "allele1" and func.arg(1) == "allele2")
-				m_searchMode = -12;
-			else
-				throw ValueError("Invalid parameters for passed function " + func.name());
+				throw ValueError("Invalid parameters for passed function " + func.name() +
+					" (allele1 and allele2 have to be specified together, in that order)");
 		} else if (func.numArgs() == 3) {
 			if (func.arg(0) == "loc" and func.arg(1) == "allele1" and func.arg(2) == "allele2")
-				m_searchMode = -10;
+				m_searchMode = 13;
 			else if (func.arg(0) == "allele1" and func.arg(1) == "allele2" and func.arg(2) == "loc")
-				m_searchMode = -11;
+				m_searchMode = 14;
 			else
 				throw ValueError("Invalid parameters for passed function " + func.name());
 		} else {
@@ -346,16 +342,16 @@ RandomFitnessSelector::RandomFitnessSelector(const floatListFunc & selDist, int 
 			if (m_selDist.size() == 2)
 				m_searchMode = 1;
 			else if (m_selDist.size() == 3)
-				m_searchMode = -1;
+				m_searchMode = 2;
 			else {
 				DBG_FAILIF(true, ValueError,
 					"CONSTANT mode can only be followed by one or two parameters");
 			}
 		} else if (mode == GAMMA_DISTRIBUTION) {
 			if (m_selDist.size() == 3)
-				m_searchMode = 2;
+				m_searchMode = 3;
 			else if (m_selDist.size() == 4)
-				m_searchMode = -2;
+				m_searchMode = 4;
 			else {
 				DBG_FAILIF(true, ValueError,
 					"GAMMA_DISTRIBUTION mode can only be followed by two or three parameters");
@@ -370,93 +366,62 @@ RandomFitnessSelector::RandomFitnessSelector(const floatListFunc & selDist, int 
 
 double RandomFitnessSelector::indFitness(Population & /* pop */, Individual * ind) const
 {
-	size_t numLoci = ind->totNumLoci();
 	FitnessAccumulator fit(m_mode);
 	const vectoru & loci = m_loci.elems(ind);
 
-	if (m_searchMode > 0) {
 #ifdef MUTANTALLELE
-		GenoIterator it = ind->genoBegin();
-		GenoIterator it_end = ind->genoEnd();
-		compressed_vector<size_t>::index_array_type::iterator index_it = it.getIndexIterator();
-		compressed_vector<Allele>::value_array_type::iterator value_it = it.getValueIterator();
-		compressed_vector<size_t>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
-		for (; index_it != index_it_end; ++index_it, ++value_it)
-			if (*value_it != 0)
-				if (m_loci.allAvail() || find(loci.begin(), loci.end(), (*index_it) % numLoci) != loci.end())
-					fit.push(getMutantFitnessValue(LocMutant((*index_it) % numLoci, *value_it)));
-#else
-		if (m_loci.allAvail()) {
-			GenoIterator it = ind->genoBegin();
-			GenoIterator it_end = ind->genoEnd();
-			for (size_t index = 0; it != it_end; ++it, ++index)
-				if (*it != 0)
-					fit.push(getMutantFitnessValue(LocMutant(index % numLoci, *it)));
+	size_t numLoci = ind->totNumLoci();
+	GenoIterator it0 = ind->genoBegin(0);
+	GenoIterator it0_end = ind->genoEnd(0);
+	GenoIterator it1 = ind->genoBegin(1);
+	GenoIterator it1_end = ind->genoEnd(1);
+	compressed_vector<size_t>::index_array_type::iterator index_it0 = it0.getIndexIterator();
+	compressed_vector<size_t>::index_array_type::iterator index_it0_end = it0_end.getIndexIterator();
+	compressed_vector<Allele>::value_array_type::iterator value_it0 = it0.getValueIterator();
+	compressed_vector<size_t>::index_array_type::iterator index_it1 = it1.getIndexIterator();
+	compressed_vector<size_t>::index_array_type::iterator index_it1_end = it1_end.getIndexIterator();
+	compressed_vector<Allele>::value_array_type::iterator value_it1 = it1.getValueIterator();
+	for (; index_it0 != index_it0_end || index_it1 != index_it1_end; ) {
+		if (index_it1 == index_it1_end || *index_it0 + numLoci < *index_it1) {
+			if (*value_it0 != 0 &&
+			    (m_loci.allAvail() || find(loci.begin(), loci.end(), (*index_it0) % numLoci) != loci.end()))
+				fit.push(getGenotypeFitnessValue(LocGenotype((*index_it0) % numLoci, std::pair<Allele, Allele>(*value_it0, ToAllele(0)))));
+			++index_it0;
+			++value_it0;
+		} else if (index_it0 == index_it0_end || *index_it0 + numLoci > *index_it1) {
+			if (*value_it1 != 0 &&
+			    (m_loci.allAvail() || find(loci.begin(), loci.end(), (*index_it1) % numLoci) != loci.end()))
+				fit.push(getGenotypeFitnessValue(LocGenotype((*index_it1) % numLoci, std::pair<Allele, Allele>(ToAllele(0), *value_it1))));
+			++index_it1;
+			++value_it1;
 		} else {
-			vectoru::const_iterator locEnd = loci.end();
-			for (size_t p = 0; p < 2; ++p) {
-				GenoIterator it = ind->genoBegin(p);
-				vectoru::const_iterator loc = loci.begin();
-				for (; loc != locEnd; ++loc)
-					if (*(it + *loc) != 0)
-						fit.push(getMutantFitnessValue(LocMutant((*loc), *(it + *loc))));
-			}
+			if ((*value_it0 != 0 || *value_it1 != 0) &&
+			    (m_loci.allAvail() || find(loci.begin(), loci.end(), (*index_it1) % numLoci) != loci.end()))
+				fit.push(getGenotypeFitnessValue(LocGenotype((*index_it1) % numLoci, std::pair<Allele, Allele>(*value_it0, *value_it1))));
+			++index_it0;
+			++value_it0;
+			++index_it1;
+			++value_it1;
 		}
-#endif
-	} else {
-#ifdef MUTANTALLELE
+	}
+#else
+	if (m_loci.allAvail()) {
 		GenoIterator it0 = ind->genoBegin(0);
 		GenoIterator it0_end = ind->genoEnd(0);
 		GenoIterator it1 = ind->genoBegin(1);
-		GenoIterator it1_end = ind->genoEnd(1);
-		compressed_vector<size_t>::index_array_type::iterator index_it0 = it0.getIndexIterator();
-		compressed_vector<size_t>::index_array_type::iterator index_it0_end = it0_end.getIndexIterator();
-		compressed_vector<Allele>::value_array_type::iterator value_it0 = it0.getValueIterator();
-		compressed_vector<size_t>::index_array_type::iterator index_it1 = it1.getIndexIterator();
-		compressed_vector<size_t>::index_array_type::iterator index_it1_end = it1_end.getIndexIterator();
-		compressed_vector<Allele>::value_array_type::iterator value_it1 = it1.getValueIterator();
-		for (; index_it0 != index_it0_end || index_it1 != index_it1_end; ) {
-			if (index_it1 == index_it1_end || *index_it0 + numLoci < *index_it1) {
-				if (*value_it0 != 0 &&
-				    (m_loci.allAvail() || find(loci.begin(), loci.end(), (*index_it0) % numLoci) != loci.end()))
-					fit.push(getGenotypeFitnessValue(LocGenotype((*index_it0) % numLoci, std::pair<Allele, Allele>(*value_it0, ToAllele(0)))));
-				++index_it0;
-				++value_it0;
-			} else if (index_it0 == index_it0_end || *index_it0 + numLoci > *index_it1) {
-				if (*value_it1 != 0 &&
-				    (m_loci.allAvail() || find(loci.begin(), loci.end(), (*index_it1) % numLoci) != loci.end()))
-					fit.push(getGenotypeFitnessValue(LocGenotype((*index_it1) % numLoci, std::pair<Allele, Allele>(ToAllele(0), *value_it1))));
-				++index_it1;
-				++value_it1;
-			} else {
-				if ((*value_it0 != 0 || *value_it1 != 0) &&
-				    (m_loci.allAvail() || find(loci.begin(), loci.end(), (*index_it1) % numLoci) != loci.end()))
-					fit.push(getGenotypeFitnessValue(LocGenotype((*index_it1) % numLoci, std::pair<Allele, Allele>(*value_it0, *value_it1))));
-				++index_it0;
-				++value_it0;
-				++index_it1;
-				++value_it1;
-			}
-		}
-#else
-		if (m_loci.allAvail()) {
-			GenoIterator it0 = ind->genoBegin(0);
-			GenoIterator it0_end = ind->genoEnd(0);
-			GenoIterator it1 = ind->genoBegin(1);
-			for (size_t index = 0; it0 != it0_end; ++it0, ++it1, ++index)
-				if (*it0 != 0 || *it1 != 0)
-					fit.push(getGenotypeFitnessValue(LocGenotype(index, std::pair<Allele, Allele>(*it0, *it1))));
-		} else {
-			GenoIterator it0 = ind->genoBegin(0);
-			GenoIterator it1 = ind->genoBegin(1);
-			vectoru::const_iterator loc = loci.begin();
-			vectoru::const_iterator locEnd = loci.end();
-			for (; loc != locEnd; ++loc)
-				if (*(it0 + *loc) != 0 || *(it1 + *loc) != 0)
-					fit.push(getGenotypeFitnessValue(LocGenotype((*loc), std::pair<Allele, Allele>(*(it0 + *loc), *(it1 + *loc)))));
-		}
-#endif
+		for (size_t index = 0; it0 != it0_end; ++it0, ++it1, ++index)
+			if (*it0 != 0 || *it1 != 0)
+				fit.push(getGenotypeFitnessValue(LocGenotype(index, std::pair<Allele, Allele>(*it0, *it1))));
+	} else {
+		GenoIterator it0 = ind->genoBegin(0);
+		GenoIterator it1 = ind->genoBegin(1);
+		vectoru::const_iterator loc = loci.begin();
+		vectoru::const_iterator locEnd = loci.end();
+		for (; loc != locEnd; ++loc)
+			if (*(it0 + *loc) != 0 || *(it1 + *loc) != 0)
+				fit.push(getGenotypeFitnessValue(LocGenotype((*loc), std::pair<Allele, Allele>(*(it0 + *loc), *(it1 + *loc)))));
 	}
+#endif
 	return fit.value();
 }
 
@@ -483,60 +448,21 @@ bool RandomFitnessSelector::apply(Population & pop) const
 }
 
 
-double RandomFitnessSelector::getMutantFitnessValue(const LocMutant & mutant) const
-{
-	if (m_searchMode == 1)
-		return 1 - m_selDist[1];
-	else if (m_searchMode == 2) {
-		MutSelMap::iterator sit = m_mutSelFactory.find(mutant);
-		if (sit == m_mutSelFactory.end()) {
-			double s = 1 - getRNG().randGamma(m_selDist[1], m_selDist[2]);
-			m_mutSelFactory[mutant] = s;
-			return s;
-		} else
-			return sit->second;
-	} else {
-		MutSelMap::iterator sit = m_mutSelFactory.find(mutant);
-		if (sit == m_mutSelFactory.end()) {
-			const pyFunc & func = m_selDist.func();
-			PyObject * res = NULL;
-			if (m_searchMode == 10)
-				res = func("()");
-			else if (m_searchMode == 11)
-				res = func("(i)", mutant.first);
-			else if (m_searchMode == 12)
-				res = func("(i)", mutant.second);
-			else if (m_searchMode == 13)
-				res = func("(ii)", mutant.first, mutant.second);
-			else if (m_searchMode == 14)
-				res = func("(ii)", mutant.second, mutant.first);
-			double s = PyFloat_AsDouble(res);
-			Py_DECREF(res);
-			m_mutSelFactory[mutant] = s;
-			return s;
-		} else {
-			return sit->second;
-		}
-	}
-	return 1;
-}
-
-
 double RandomFitnessSelector::getGenotypeFitnessValue(const LocGenotype & geno) const
 {
-	if (m_searchMode == -1) {
+	if (m_searchMode == 1 or m_searchMode == 2) {
 		if (geno.second.first != 0 && geno.second.second != 0)
 			return 1 - m_selDist[1];
 		else
-			return 1 - m_selDist[1] * m_selDist[2];
-	} else if (m_searchMode == -2) {
+			return 1 - m_selDist[1] * (m_searchMode == 1 ? 0.5 : m_selDist[2]);
+	} else if (m_searchMode == 3 or m_searchMode == 4) {
 		GenoSelMap::iterator sit = m_genoSelFactory.find(geno);
 		if (sit == m_genoSelFactory.end()) {
 			double s = getRNG().randGamma(m_selDist[1], m_selDist[2]);
 			if (geno.second.first != 0 && geno.second.second != 0)
 				s = 1 - s;
 			else
-				s = 1 - s * m_selDist[3];
+				s = 1 - s * (m_searchMode == 3 ? 0.5 : m_selDist[3]);
 			m_genoSelFactory[geno] = s;
 			return s;
 		} else
@@ -546,12 +472,16 @@ double RandomFitnessSelector::getGenotypeFitnessValue(const LocGenotype & geno) 
 		if (sit == m_genoSelFactory.end()) {
 			const pyFunc & func = m_selDist.func();
 			PyObject * res = NULL;
-			if (m_searchMode == -10)
-				res = func("(iii)", geno.first, geno.second.first, geno.second.second);
-			else if (m_searchMode == -11)
-				res = func("(iii)", geno.second.first, geno.second.second, geno.first);
-			else if (m_searchMode == -12)
+			if (m_searchMode == 10)
+				res = func("()");
+			else if (m_searchMode == 11)
+				res = func("(i)", geno.first);
+			else if (m_searchMode == 12)
 				res = func("(ii)", geno.second.first, geno.second.second);
+			else if (m_searchMode == 13)
+				res = func("(iii)", geno.first, geno.second.first, geno.second.second);
+			else if (m_searchMode == 14)
+				res = func("(iii)", geno.second.first, geno.second.second, geno.first);
 			double s = PyFloat_AsDouble(res);
 			Py_DECREF(res);
 			m_genoSelFactory[geno] = s;
