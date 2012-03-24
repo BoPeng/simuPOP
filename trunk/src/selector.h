@@ -428,7 +428,8 @@ public:
 	 */
 	PySelector(PyObject * func, lociList loci = vectoru(),
 		int begin = 0, int end = -1, int step = 1,
-		const intList & at = vectori(), const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const intList & at = vectori(), const intList & reps = intList(),
+		const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
 		BaseSelector("", begin, end, step, at, reps, subPops, infoFields),
 		m_func(func), m_loci(loci)
@@ -484,44 +485,52 @@ class RandomFitnessSelector : public BaseSelector
 public:
 	/** Create a selector that assigns individual fitness values according to
 	 *  random fitness effects. \e selDist can be
-	 *  \li <tt>(CONSTANT, s, h)</tt> where s will be used for all mutants. The
-	 *      fitness value for genotypes AA, Aa and aa will be (1, 1-hs, 1-s).
-	 *      If h is unspecified, a default value h=0.5 (additive model) will
-	 *      be used.
-	 *  \li <tt>(GAMMA_DISTRIBUTION, theta, k, h</tt> where s follows a gamma
+	 *  \li <tt>(CONSTANT, s)</tt> where s will be used for all mutants. The
+	 *      fitness penalty for each non-zero allele will be s, regardless of
+	 *      the number of mutants at each locus. For example, the overall fitness
+	 *      for an individual with three mutatns will be 1-3s.
+	 *  \li <tt>(GAMMA_DISTRIBUTION, theta, k)</tt> where s follows a gamma
 	 *      distribution with scale parameter theta and shape parameter k.
-	 *      Fitness values for genotypes AA, Aa and aa will be 1, 1-hs and 1-s.
-	 *      A default value h=0.5 will be used if h is unspecified.
+	 *      Fitness penalty for each non-zero allele will be s, regardless the
+	 *      number of mutants at each locus. For example, the overall fitness for an
+	 *      indiviudal with three mutants will be 1-s_1-s_2-s_3 where s_i follows
+	 *      the distribution.
+	 *  \li <tt>(CONSTANT, s, h)</tt> where the fitness at each locus will be
+	 *      1, 1-hs and 1-s for genotypes 00, 0a, aa (a > 0). The overall
+	 *      fitness are summaized from loci-specific values. Note that (\c
+	 *      CONSTANT s 0.5) differs from (\c CONSTANT s) at both fitness penalty
+	 *      for mutant (s/2 vs. s), and the way overall fitness values are
+	 *      calculated.
+	 *  \li <tt>(GAMMA_DISTRIBUTION, theta, k, h)</tt> where s follows a gamma
+	 *      distribution with scale parameter theta and shape parameter k.
+	 *      Fitness values at each locus will be 1, 1-hs, and 1-s for genotypes 00,
+	 *      0a and aa (a > 0). The overall fitness are summaized from loci-specifc
+	 *      values. Note that (\c GAMMA_DISTRIBUTION, theta, k, 0.5) differs
+	 *      from (\c ALLELE_GAMMA_DISTRIBUTION, theta, k) at both fitness
+	 *      penalty (s/2 vs s), and the way overall fitness values are calculated.
 	 *  \li a Python function, which will be called when selection coefficient
-	 *      of a new mutant is needed. This function should return a single
-	 *      value s (with default value h=0.5) or a sequence of (h, s). Mutant
-	 *      location will be passed to this function if it accepts a parameter
-	 *      \c loc. This allows the definition of site-specific selection
-	 *      coefficients.
-	 *  Individual fitness will be combined in \c ADDITIVE,
-	 *     \c MULTIPLICATIVE or \c EXPONENTIAL mode. (See \c MlSelector for
-	 *     details).
-	 *  If an output is given, mutants and their fitness values will be written
-	 *  to the output, in the form of 'mutant s h'.
+	 *      of a new mutant is needed. This function should accept parameter
+	 *      \e loc or \e allele (fitness calculated based on single mutant),
+	 *      or \e allele1 and \e allele2 (fitness calculated based on locus).
+	 *      If no parameter is given, the return value will be assumed to be
+	 *      fitness for each mutant. simuPOP will pass appropriate information
+	 *      to the function with such parameters. The function should return the
+	 *      fitness for each mutant or genotype (e.g. 1-hs for muts=(50, 0, 1)).
+	 *
+	 *  The fitness values for each mutant or genotype will be cached so the same
+	 *  fitness values will be assigned to mutants or genotypes with previously
+	 *  assigned values.
+	 *
+	 *  Individual fitness will be combined in \c ADDITIVE, \c MULTIPLICATIVE
+	 *  or \c EXPONENTIAL mode from mutant or genotype fitness (See \c MlSelector
+	 *  for details). If an output is given, mutants and their fitness values
+	 *  will be written to the output, in the form of 'mutant s h'.
 	 */
 	RandomFitnessSelector(const floatListFunc & selDist, int mode = EXPONENTIAL,
-		const stringFunc & output = "",
+		const lociList & loci = lociList(), const stringFunc & output = "",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = stringList("fitness")) :
-		BaseSelector(output, begin, end, step, at, reps, subPops, infoFields),
-		m_selDist(selDist), m_mode(mode), m_selFactory(), m_additive(true)
-	{
-		if (m_selDist.size() == 0) {
-			DBG_FAILIF(!m_selDist.func().isValid(), ValueError,
-				"Please specify either a distribution with parameter or a function.");
-		} else if (static_cast<int>(m_selDist[0]) == CONSTANT) {
-			DBG_FAILIF(m_selDist.size() < 2, ValueError, "At least one parameter is needed for constant selection coefficient.");
-		} else if (static_cast<int>(m_selDist[0]) == GAMMA_DISTRIBUTION) {
-			DBG_FAILIF(m_selDist.size() < 3, ValueError, "At least two parameters are needed for gamma distribution.");
-		}
-	}
-
+		const stringList & infoFields = stringList("fitness"));
 
 	virtual ~RandomFitnessSelector()
 	{
@@ -551,41 +560,33 @@ public:
 	/// CPPONLY
 	bool apply(Population & pop) const;
 
-	typedef std::pair<double, double> SelCoef;
+	typedef std::pair<size_t, Allele> LocMutant;
+	typedef std::pair<size_t, std::pair<Allele, Allele> > LocGenotype;
+
+	typedef std::pair<double, double> GenoSelCoef;
 
 private:
-	SelCoef getFitnessValue(size_t mutant) const;
+	double getMutantFitnessValue(const LocMutant &) const;
 
+	double getGenotypeFitnessValue(const LocGenotype &) const;
 
-	double randomSelAddFitness(GenoIterator it, GenoIterator it_end) const;
-
-	double randomSelExpFitness(GenoIterator it, GenoIterator it_end) const;
-
-	// extended models does not assume additivity (h != 0.5)
-	double randomSelMulFitnessExt(GenoIterator it, GenoIterator it_end) const;
-
-	double randomSelAddFitnessExt(GenoIterator it, GenoIterator it_end) const;
-
-	double randomSelExpFitnessExt(GenoIterator it, GenoIterator it_end) const;
-
-private:
 	///
 	floatListFunc m_selDist;
 
 	int m_mode;
-	///
-#if TR1_SUPPORT == 0
-	typedef std::map<unsigned int, SelCoef> SelMap;
-	typedef std::map<unsigned int, int> MutCounter;
-#else
-	// this is faster than std::map
-	typedef std::tr1::unordered_map<size_t, SelCoef> SelMap;
-	typedef std::tr1::unordered_map<size_t, size_t> MutCounter;
-#endif
-	mutable SelMap m_selFactory;
-	mutable vectoru m_newMutants;
-	// whether or not all markers are additive.
-	mutable bool m_additive;
+
+	lociList m_loci;
+
+	int m_searchMode;
+
+	/// tr1 map cannot be used because LocMutant etc are not hashable
+	typedef std::map<LocMutant, double> MutSelMap;
+	typedef std::map<LocGenotype, double> GenoSelMap;
+
+	mutable std::vector<LocMutant> m_newMutants;
+	mutable std::vector<LocGenotype> m_newGenotypes;
+	mutable MutSelMap m_mutSelFactory;
+	mutable GenoSelMap m_genoSelFactory;
 };
 
 

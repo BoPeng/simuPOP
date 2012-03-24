@@ -24,6 +24,7 @@ for arg in sys.argv:
 
 sys.argv=new_argv
 from simuPOP import *
+import math
 
 class TestSelector(unittest.TestCase):
 
@@ -839,6 +840,96 @@ class TestSelector(unittest.TestCase):
             ],
             gen=1
         )
+
+    def assertFitness(self, sel, val):
+        pop = Population(size=200, ploidy=2, loci=[100], infoFields='fitness')
+        for idx, ind in enumerate(pop.individuals()):
+            ind.setGenotype([1] * idx + [0] * (200 - idx))
+        sel.apply(pop)
+        self.assertEqual(len(val), pop.popSize())
+        for a, b in zip(pop.indInfo('fitness'), val):
+            self.assertAlmostEqual(a, b, 6)
+        
+    def testRandomFitnessSelector(self):
+        'Testing random fitness selector'
+        sel = RandomFitnessSelector(selDist=(CONSTANT, 0.001))
+        fit = [math.exp(- x*0.001) for x in range(200)]
+        self.assertFitness(sel, fit)
+        #
+        sel = RandomFitnessSelector(selDist=(CONSTANT, 0.001), mode=ADDITIVE)
+        fit = [max(0, 1- x*0.001) for x in range(200)]
+        self.assertFitness(sel, fit)
+        #
+        sel = RandomFitnessSelector(selDist=(CONSTANT, 0.001), mode=MULTIPLICATIVE)
+        fit = [(1-0.001)**x for x in range(200)]
+        self.assertFitness(sel, fit)
+        #
+        sel = RandomFitnessSelector(selDist=(CONSTANT, 0.001), mode=HETEROGENEITY)
+        fit = [1-(0.001)**x for x in range(200)]
+        self.assertFitness(sel, fit)
+        #
+        # loci
+        sel = RandomFitnessSelector(selDist=(CONSTANT, 0.001), mode=ADDITIVE, loci=range(10))
+        fit = [max(0, 1- min(x, 10)*0.001) for x in range(100)] + \
+            [max(0, 1 - 0.01 - min(x, 10)*0.001) for x in range(100)] 
+        self.assertFitness(sel, fit)
+        #
+        # genotype ... one of two allele does not matter (h=1)
+        sel = RandomFitnessSelector(selDist=(CONSTANT, 0.001, 1), mode=ADDITIVE, loci=range(10))
+        fit = [max(0, 1- min(x, 10)*0.001) for x in range(200)]
+        self.assertFitness(sel, fit)
+        # genotype ... h = 0.5
+        sel = RandomFitnessSelector(selDist=(CONSTANT, 0.001, 0.5), mode=ADDITIVE, loci=range(10))
+        fit = [max(0, 1- min(x, 10)*0.0005) for x in range(100)] + \
+            [max(0, 1 - 0.005 - min(x, 10)*0.0005) for x in range(100)] 
+        self.assertFitness(sel, fit)
+        #
+        #  gamma distribution, not tested
+        #
+        # function
+        def fun():
+            return 1-0.001
+        def fun1(allele1, allele2):
+            return 1-0.001
+        def fun2(allele1, allele2):
+            if allele1 > 0 and allele2 > 0:
+                return 1 - 0.001
+            else:
+                return 1 - 0.0005
+        #
+        sel = RandomFitnessSelector(selDist=fun)
+        fit = [math.exp(- x*0.001) for x in range(200)]
+        self.assertFitness(sel, fit)
+        #
+        sel = RandomFitnessSelector(selDist=fun, mode=ADDITIVE)
+        fit = [max(0, 1- x*0.001) for x in range(200)]
+        self.assertFitness(sel, fit)
+        #
+        sel = RandomFitnessSelector(selDist=fun, mode=MULTIPLICATIVE)
+        fit = [(1-0.001)**x for x in range(200)]
+        self.assertFitness(sel, fit)
+        #
+        sel = RandomFitnessSelector(selDist=fun, mode=HETEROGENEITY)
+        fit = [1-(0.001)**x for x in range(200)]
+        self.assertFitness(sel, fit)
+        #
+        # loci
+        sel = RandomFitnessSelector(selDist=fun, mode=ADDITIVE, loci=range(10))
+        fit = [max(0, 1- min(x, 10)*0.001) for x in range(100)] + \
+            [max(0, 1 - 0.01 - min(x, 10)*0.001) for x in range(100)] 
+        self.assertFitness(sel, fit)
+        #
+        # genotype ... one of two allele does not matter (h=1)
+        sel = RandomFitnessSelector(selDist=fun1, mode=ADDITIVE, loci=range(10))
+        fit = [max(0, 1- min(x, 10)*0.001) for x in range(200)]
+        self.assertFitness(sel, fit)
+        # genotype ... h = 0.5
+        sel = RandomFitnessSelector(selDist=fun2, mode=ADDITIVE, loci=range(10))
+        fit = [max(0, 1- min(x, 10)*0.0005) for x in range(100)] + \
+            [max(0, 1 - 0.005 - min(x, 10)*0.0005) for x in range(100)] 
+        self.assertFitness(sel, fit)
+
+
 
 
 if __name__ == '__main__':

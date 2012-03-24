@@ -206,35 +206,65 @@ double MaSelector::indFitness(Population & /* pop */, Individual * ind) const
 }
 
 
+/** CPPONLY
+ *  An accumulator class to generate overall fitness values from existing
+ *  ones.
+ */
+class FitnessAccumulator
+{
+public:
+	FitnessAccumulator(int mode) : m_mode(mode)
+	{
+		m_value = m_mode == EXPONENTIAL ? 0 : 1;
+	}
+
+
+	void push(double val)
+	{
+		if (m_mode == MULTIPLICATIVE)
+			m_value *= val;
+		else if (m_mode == ADDITIVE)
+			m_value -= 1 - val;
+		else if (m_mode == HETEROGENEITY)
+			m_value *= 1 - val;
+		else if (m_mode == EXPONENTIAL)
+			m_value += 1 - val;
+	}
+
+
+	double value()
+	{
+		if (m_mode == MULTIPLICATIVE)
+			return m_value;
+		else if (m_mode == ADDITIVE)
+			return m_value < 0 ? 0. : m_value;
+		else if (m_mode == HETEROGENEITY)
+			return m_value < 1 ? 1 - m_value : 0;
+		else if (m_mode == EXPONENTIAL)
+			return exp(-m_value);
+		else
+			throw ValueError("Unrecognized accumulation mode");
+		return 0;
+	}
+
+
+private:
+	int m_mode;
+
+	double m_value;
+};
+
+
 double MlSelector::indFitness(Population & pop, Individual * ind) const
 {
-	if (m_mode == MULTIPLICATIVE) {
-		double fit = 1;
-		for (opList::const_iterator s = m_selectors.begin(), sEnd = m_selectors.end();
-		     s != sEnd; ++s)
-			fit *= dynamic_cast<const BaseSelector * >(*s)->indFitness(pop, ind);
-		return fit;
-	} else if (m_mode == ADDITIVE) {
-		double fit = 1;
-		for (opList::const_iterator s = m_selectors.begin(), sEnd = m_selectors.end();
-		     s != sEnd; ++s)
-			fit -= 1 - dynamic_cast<const BaseSelector * >(*s)->indFitness(pop, ind);
-		return fit < 0 ? 0. : fit;
-	} else if (m_mode == HETEROGENEITY) {
-		double fit = 1;
-		for (opList::const_iterator s = m_selectors.begin(), sEnd = m_selectors.end();
-		     s != sEnd; ++s)
-			fit *= 1 - dynamic_cast<const BaseSelector * >(*s)->indFitness(pop, ind);
-		return fit < 1 ? 1 - fit : 0;
-	} else if (m_mode == EXPONENTIAL) {
-		double fit = 0;
-		for (opList::const_iterator s = m_selectors.begin(), sEnd = m_selectors.end();
-		     s != sEnd; ++s)
-			fit += 1 - dynamic_cast<const BaseSelector * >(*s)->indFitness(pop, ind);
-		return exp(-fit);
-	}
-	// this is the case for none.
-	return 1.0;
+	FitnessAccumulator fit(m_mode);
+
+	opList::const_iterator s = m_selectors.begin();
+	opList::const_iterator sEnd = m_selectors.end();
+
+	for (; s != sEnd; ++s)
+		fit.push(dynamic_cast<const BaseSelector * >(*s)->indFitness(pop, ind));
+	return fit.value();
 }
 
 
@@ -268,30 +298,175 @@ double PySelector::indFitness(Population & pop, Individual * ind) const
 }
 
 
+RandomFitnessSelector::RandomFitnessSelector(const floatListFunc & selDist, int mode,
+	const lociList & loci, const stringFunc & output, int begin, int end, int step, const intList & at,
+	const intList & reps, const subPopList & subPops, const stringList & infoFields) :
+	m_selDist(selDist), m_mode(mode), m_loci(loci), m_searchMode(0), m_newMutants(),
+	m_newGenotypes(), m_mutSelFactory(), m_genoSelFactory()
+{
+	size_t sz = selDist.size();
+
+	if (sz == 0) {
+		// a function ?
+		DBG_ASSERT(selDist.func().isValid(), ValueError,
+			"A Python function or a list is expected for parameter selDist.");
+		const pyFunc & func = m_selDist.func();
+		if (func.numArgs() == 0)
+			m_searchMode = 10;
+		else if (func.numArgs() == 1) {
+			if (func.arg(0) == "loc")
+				m_searchMode = 11;
+			else if (func.arg(0) == "allele")
+				m_searchMode = 12;
+			else
+				throw ValueError("Invalid parameter for passed function " + func.name());
+		} else if (func.numArgs() == 2) {
+			if (func.arg(0) == "loc" and func.arg(1) == "allele")
+				m_searchMode = 13;
+			else if (func.arg(0) == "allele" and func.arg(1) == "loc")
+				m_searchMode = 14;
+			else if (func.arg(0) == "allele1" and func.arg(1) == "allele2")
+				m_searchMode = -12;
+			else
+				throw ValueError("Invalid parameters for passed function " + func.name());
+		} else if (func.numArgs() == 3) {
+			if (func.arg(0) == "loc" and func.arg(1) == "allele1" and func.arg(2) == "allele2")
+				m_searchMode = -10;
+			else if (func.arg(0) == "allele1" and func.arg(1) == "allele2" and func.arg(2) == "loc")
+				m_searchMode = -11;
+			else
+				throw ValueError("Invalid parameters for passed function " + func.name());
+		} else {
+			DBG_FAILIF(true, ValueError,
+				"Python function for selDist only accepts paramters loc, allele, allele1, or allele2");
+		}
+	} else {
+		int mode = static_cast<int>(m_selDist[0]);
+		if (mode == CONSTANT) {
+			if (m_selDist.size() == 2)
+				m_searchMode = 1;
+			else if (m_selDist.size() == 3)
+				m_searchMode = -1;
+			else {
+				DBG_FAILIF(true, ValueError,
+					"CONSTANT mode can only be followed by one or two parameters");
+			}
+		} else if (mode == GAMMA_DISTRIBUTION) {
+			if (m_selDist.size() == 3)
+				m_searchMode = 2;
+			else if (m_selDist.size() == 4)
+				m_searchMode = -2;
+			else {
+				DBG_FAILIF(true, ValueError,
+					"GAMMA_DISTRIBUTION mode can only be followed by two or three parameters");
+			}
+		} else {
+			DBG_FAILIF(true, ValueError,
+				"selDist only accept CONSTANT or GAMMA_DISTRIBUTION modes");
+		}
+	}
+}
+
+
 double RandomFitnessSelector::indFitness(Population & /* pop */, Individual * ind) const
 {
-	if (m_mode == MULTIPLICATIVE) {
-		return randomSelMulFitnessExt(ind->genoBegin(), ind->genoEnd());
-	} else if (m_mode == ADDITIVE) {
-		if (m_additive)
-			return randomSelAddFitness(ind->genoBegin(), ind->genoEnd());
-		else
-			return randomSelAddFitnessExt(ind->genoBegin(), ind->genoEnd());
-	} else if (m_mode == EXPONENTIAL) {
-		if (m_additive)
-			return randomSelExpFitness(ind->genoBegin(), ind->genoEnd());
-		else
-			return randomSelExpFitnessExt(ind->genoBegin(), ind->genoEnd());
+	size_t numLoci = ind->totNumLoci();
+	FitnessAccumulator fit(m_mode);
+	const vectoru & loci = m_loci.elems(ind);
+
+	if (m_searchMode > 0) {
+#ifdef MUTANTALLELE
+		GenoIterator it = ind->genoBegin();
+		GenoIterator it_end = ind->genoEnd();
+		compressed_vector<size_t>::index_array_type::iterator index_it = it.getIndexIterator();
+		compressed_vector<Allele>::value_array_type::iterator value_it = it.getValueIterator();
+		compressed_vector<size_t>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
+		for (; index_it != index_it_end; ++index_it, ++value_it)
+			if (*value_it != 0)
+				if (m_loci.allAvail() || find(loci.begin(), loci.end(), (*index_it) % numLoci) != loci.end())
+					fit.push(getMutantFitnessValue(LocMutant((*index_it) % numLoci, *value_it)));
+#else
+		if (m_loci.allAvail()) {
+			GenoIterator it = ind->genoBegin();
+			GenoIterator it_end = ind->genoEnd();
+			for (size_t index = 0; it != it_end; ++it, ++index)
+				if (*it != 0)
+					fit.push(getMutantFitnessValue(LocMutant(index % numLoci, *it)));
+		} else {
+			vectoru::const_iterator locEnd = loci.end();
+			for (size_t p = 0; p < 2; ++p) {
+				GenoIterator it = ind->genoBegin(p);
+				vectoru::const_iterator loc = loci.begin();
+				for (; loc != locEnd; ++loc)
+					if (*(it + *loc) != 0)
+						fit.push(getMutantFitnessValue(LocMutant((*loc), *(it + *loc))));
+			}
+		}
+#endif
+	} else {
+#ifdef MUTANTALLELE
+		GenoIterator it0 = ind->genoBegin(0);
+		GenoIterator it0_end = ind->genoEnd(0);
+		GenoIterator it1 = ind->genoBegin(1);
+		GenoIterator it1_end = ind->genoEnd(1);
+		compressed_vector<size_t>::index_array_type::iterator index_it0 = it0.getIndexIterator();
+		compressed_vector<size_t>::index_array_type::iterator index_it0_end = it0_end.getIndexIterator();
+		compressed_vector<Allele>::value_array_type::iterator value_it0 = it0.getValueIterator();
+		compressed_vector<size_t>::index_array_type::iterator index_it1 = it1.getIndexIterator();
+		compressed_vector<size_t>::index_array_type::iterator index_it1_end = it1_end.getIndexIterator();
+		compressed_vector<Allele>::value_array_type::iterator value_it1 = it1.getValueIterator();
+		for (; index_it0 != index_it0_end || index_it1 != index_it1_end; ) {
+			if (index_it1 == index_it1_end || *index_it0 + numLoci < *index_it1) {
+				if (*value_it0 != 0 &&
+				    (m_loci.allAvail() || find(loci.begin(), loci.end(), (*index_it0) % numLoci) != loci.end()))
+					fit.push(getGenotypeFitnessValue(LocGenotype((*index_it0) % numLoci, std::pair<Allele, Allele>(*value_it0, ToAllele(0)))));
+				++index_it0;
+				++value_it0;
+			} else if (index_it0 == index_it0_end || *index_it0 + numLoci > *index_it1) {
+				if (*value_it1 != 0 &&
+				    (m_loci.allAvail() || find(loci.begin(), loci.end(), (*index_it1) % numLoci) != loci.end()))
+					fit.push(getGenotypeFitnessValue(LocGenotype((*index_it1) % numLoci, std::pair<Allele, Allele>(ToAllele(0), *value_it1))));
+				++index_it1;
+				++value_it1;
+			} else {
+				if ((*value_it0 != 0 || *value_it1 != 0) &&
+				    (m_loci.allAvail() || find(loci.begin(), loci.end(), (*index_it1) % numLoci) != loci.end()))
+					fit.push(getGenotypeFitnessValue(LocGenotype((*index_it1) % numLoci, std::pair<Allele, Allele>(*value_it0, *value_it1))));
+				++index_it0;
+				++value_it0;
+				++index_it1;
+				++value_it1;
+			}
+		}
+#else
+		if (m_loci.allAvail()) {
+			GenoIterator it0 = ind->genoBegin(0);
+			GenoIterator it0_end = ind->genoEnd(0);
+			GenoIterator it1 = ind->genoBegin(1);
+			for (size_t index = 0; it0 != it0_end; ++it0, ++it1, ++index)
+				if (*it0 != 0 || *it1 != 0)
+					fit.push(getGenotypeFitnessValue(LocGenotype(index, std::pair<Allele, Allele>(*it0, *it1))));
+		} else {
+			GenoIterator it0 = ind->genoBegin(0);
+			GenoIterator it1 = ind->genoBegin(1);
+			vectoru::const_iterator loc = loci.begin();
+			vectoru::const_iterator locEnd = loci.end();
+			for (; loc != locEnd; ++loc)
+				if (*(it0 + *loc) != 0 || *(it1 + *loc) != 0)
+					fit.push(getGenotypeFitnessValue(LocGenotype((*loc), std::pair<Allele, Allele>(*(it0 + *loc), *(it1 + *loc)))));
+		}
+#endif
 	}
-	return 0;
+	return fit.value();
 }
 
 
 bool RandomFitnessSelector::apply(Population & pop) const
 {
-	m_newMutants.clear();
 	if (!BaseSelector::apply(pop))
 		return false;
+#if 0
+	m_newMutants.clear();
 	// output NEW mutant...
 	if (!m_newMutants.empty() && !noOutput()) {
 		ostream & out = getOstream(pop.dict());
@@ -303,240 +478,89 @@ bool RandomFitnessSelector::apply(Population & pop) const
 		}
 		closeOstream();
 	}
+#endif
 	return true;
 }
 
 
-RandomFitnessSelector::SelCoef RandomFitnessSelector::getFitnessValue(size_t mutant) const
+double RandomFitnessSelector::getMutantFitnessValue(const LocMutant & mutant) const
 {
-	size_t sz = m_selDist.size();
-	double s = 0;
-	double h = 0.5;
-
-	if (sz == 0) {
-		// call a function
-		const pyFunc & func = m_selDist.func();
-		PyObject * res;
-		if (func.numArgs() == 0)
-			res = func("()");
-		else {
-			DBG_FAILIF(func.arg(0) != "loc", ValueError,
-				"Only parameter loc is accepted for this user-defined function.");
-			res = func("(i)", mutant);
-		}
-		if (PyNumber_Check(res)) {
-			s = PyFloat_AsDouble(res);
-		} else if (PySequence_Check(res)) {
-			size_t sz = PySequence_Size(res);
-			DBG_FAILIF(sz == 0, RuntimeError, "Function return an empty list.");
-			PyObject * item = PySequence_GetItem(res, 0);
-			s = PyFloat_AsDouble(item);
-			Py_DECREF(item);
-			if (sz > 1) {
-				item = PySequence_GetItem(res, 1);
-				h = PyFloat_AsDouble(item);
-				Py_DECREF(item);
-			}
-		}
-		Py_DECREF(res);
+	if (m_searchMode == 1)
+		return 1 - m_selDist[1];
+	else if (m_searchMode == 2) {
+		MutSelMap::iterator sit = m_mutSelFactory.find(mutant);
+		if (sit == m_mutSelFactory.end()) {
+			double s = 1 - getRNG().randGamma(m_selDist[1], m_selDist[2]);
+			m_mutSelFactory[mutant] = s;
+			return s;
+		} else
+			return sit->second;
 	} else {
-		int mode = static_cast<int>(m_selDist[0]);
-		if (mode == CONSTANT) {
-			// constant
-			s = m_selDist[1];
-			if (m_selDist.size() > 2)
-				h = m_selDist[2];
+		MutSelMap::iterator sit = m_mutSelFactory.find(mutant);
+		if (sit == m_mutSelFactory.end()) {
+			const pyFunc & func = m_selDist.func();
+			PyObject * res = NULL;
+			if (m_searchMode == 10)
+				res = func("()");
+			else if (m_searchMode == 11)
+				res = func("(i)", mutant.first);
+			else if (m_searchMode == 12)
+				res = func("(i)", mutant.second);
+			else if (m_searchMode == 13)
+				res = func("(ii)", mutant.first, mutant.second);
+			else if (m_searchMode == 14)
+				res = func("(ii)", mutant.second, mutant.first);
+			double s = PyFloat_AsDouble(res);
+			Py_DECREF(res);
+			m_mutSelFactory[mutant] = s;
+			return s;
 		} else {
-			// a gamma distribution
-			s = getRNG().randGamma(m_selDist[1], m_selDist[2]);
-			if (m_selDist.size() > 3)
-				h = m_selDist[3];
+			return sit->second;
 		}
 	}
-	m_selFactory[mutant] = SelCoef(s, h);
-	m_newMutants.push_back(mutant);
-	if (m_additive && h != 0.5)
-		m_additive = false;
-	return SelCoef(s, h);
+	return 1;
 }
 
 
-double RandomFitnessSelector::randomSelAddFitness(GenoIterator it, GenoIterator it_end) const
+double RandomFitnessSelector::getGenotypeFitnessValue(const LocGenotype & geno) const
 {
-#ifdef MUTANTALLELE
-	double s = 0;
-	compressed_vector<size_t>::index_array_type::iterator index_it = it.getIndexIterator();
-	compressed_vector<size_t>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
-	for (; index_it != index_it_end; ++index_it) {
-		SelMap::iterator sit = m_selFactory.find(static_cast<unsigned int>(*index_it));
-		if (sit == m_selFactory.end())
-			s += getFitnessValue(*index_it).first / 2.;
+	if (m_searchMode == -1) {
+		if (geno.second.first != 0 && geno.second.second != 0)
+			return 1 - m_selDist[1];
 		else
-			s += sit->second.first / 2;
-	}
-	return 1 - s > 0 ? 1 - s : 0;
-#else
-	(void)it;
-	(void)it_end;
-	return 0;
-#endif
-}
-
-
-double RandomFitnessSelector::randomSelExpFitness(GenoIterator it, GenoIterator it_end) const
-{
-#ifdef MUTANTALLELE
-	double s = 0;
-
-	compressed_vector<size_t>::index_array_type::iterator index_it = it.getIndexIterator();
-	compressed_vector<size_t>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
-	for (; index_it != index_it_end; ++index_it) {
-		if (*index_it == 0)
-			continue;
-		SelMap::iterator sit = m_selFactory.find(static_cast<unsigned int>(*index_it));
-		if (sit == m_selFactory.end())
-			s += getFitnessValue(*index_it).first / 2.;
-		else
-			s += sit->second.first / 2;
-	}
-	return exp(-s);
-#else
-	(void)it;
-	(void)it_end;
-	return 0;
-#endif
-}
-
-
-double RandomFitnessSelector::randomSelMulFitnessExt(GenoIterator it, GenoIterator it_end) const
-{
-#ifdef MUTANTALLELE
-	MutCounter cnt;
-
-	compressed_vector<size_t>::index_array_type::iterator index_it = it.getIndexIterator();
-	compressed_vector<size_t>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
-	for (; index_it != index_it_end; ++index_it) {
-		if (*index_it == 0)
-			continue;
-		MutCounter::iterator mit = cnt.find(*index_it);
-		if (mit == cnt.end())
-			cnt[*index_it] = 1;
-		else
-			++mit->second;
-	}
-
-	double s = 1;
-	MutCounter::iterator mit = cnt.begin();
-	MutCounter::iterator mit_end = cnt.end();
-	for (; mit != mit_end; ++mit) {
-		SelMap::iterator sit = m_selFactory.find(mit->first);
-		if (sit == m_selFactory.end()) {
-			SelCoef sf = getFitnessValue(mit->first);
-			if (mit->second == 1)
-				s *= 1 - sf.first * sf.second;
+			return 1 - m_selDist[1] * m_selDist[2];
+	} else if (m_searchMode == -2) {
+		GenoSelMap::iterator sit = m_genoSelFactory.find(geno);
+		if (sit == m_genoSelFactory.end()) {
+			double s = getRNG().randGamma(m_selDist[1], m_selDist[2]);
+			if (geno.second.first != 0 && geno.second.second != 0)
+				s = 1 - s;
 			else
-				s *= 1 - sf.first;
+				s = 1 - s * m_selDist[3];
+			m_genoSelFactory[geno] = s;
+			return s;
+		} else
+			return sit->second;
+	} else {
+		GenoSelMap::iterator sit = m_genoSelFactory.find(geno);
+		if (sit == m_genoSelFactory.end()) {
+			const pyFunc & func = m_selDist.func();
+			PyObject * res = NULL;
+			if (m_searchMode == -10)
+				res = func("(iii)", geno.first, geno.second.first, geno.second.second);
+			else if (m_searchMode == -11)
+				res = func("(iii)", geno.second.first, geno.second.second, geno.first);
+			else if (m_searchMode == -12)
+				res = func("(ii)", geno.second.first, geno.second.second);
+			double s = PyFloat_AsDouble(res);
+			Py_DECREF(res);
+			m_genoSelFactory[geno] = s;
+			return s;
 		} else {
-			if (mit->second == 1)
-				s *= 1 - sit->second.first * sit->second.second;
-			else
-				s *= 1 - sit->second.first;
+			return sit->second;
 		}
 	}
-	return s;
-#else
-	(void)it;
-	(void)it_end;
-	return 0;
-#endif
-}
-
-
-double RandomFitnessSelector::randomSelAddFitnessExt(GenoIterator it, GenoIterator it_end) const
-{
-#ifdef MUTANTALLELE
-	MutCounter cnt;
-
-	compressed_vector<size_t>::index_array_type::iterator index_it = it.getIndexIterator();
-	compressed_vector<size_t>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
-	for (; index_it != index_it_end; ++index_it) {
-		if (*index_it == 0)
-			continue;
-		MutCounter::iterator mit = cnt.find(*index_it);
-		if (mit == cnt.end())
-			cnt[*index_it] = 1;
-		else
-			++mit->second;
-	}
-
-	double s = 0;
-	MutCounter::iterator mit = cnt.begin();
-	MutCounter::iterator mit_end = cnt.end();
-	for (; mit != mit_end; ++mit) {
-		SelMap::iterator sit = m_selFactory.find(mit->first);
-		if (sit == m_selFactory.end()) {
-			SelCoef sf = getFitnessValue(mit->first);
-			if (mit->second == 1)
-				s += sf.first * sf.second;
-			else
-				s += sf.first;
-		} else {
-			if (mit->second == 1)
-				s += sit->second.first * sit->second.second;
-			else
-				s += sit->second.first;
-		}
-	}
-	return 1 - s > 0 ? 1 - s : 0;
-#else
-	(void)it;
-	(void)it_end;
-	return 0;
-#endif
-}
-
-
-double RandomFitnessSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it_end) const
-{
-#ifdef MUTANTALLELE
-	MutCounter cnt;
-
-	compressed_vector<size_t>::index_array_type::iterator index_it = it.getIndexIterator();
-	compressed_vector<size_t>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
-	for (; index_it != index_it_end; ++index_it) {
-		if (*index_it == 0)
-			continue;
-		MutCounter::iterator mit = cnt.find(*index_it);
-		if (mit == cnt.end())
-			cnt[*index_it] = 1;
-		else
-			++mit->second;
-	}
-
-	double s = 0;
-	MutCounter::iterator mit = cnt.begin();
-	MutCounter::iterator mit_end = cnt.end();
-	for (; mit != mit_end; ++mit) {
-		SelMap::iterator sit = m_selFactory.find(mit->first);
-		if (sit == m_selFactory.end()) {
-			SelCoef sf = getFitnessValue(mit->first);
-			if (mit->second == 1)
-				s += sf.first * sf.second;
-			else
-				s += sf.first;
-		} else {
-			if (mit->second == 1)
-				s += sit->second.first * sit->second.second;
-			else
-				s += sit->second.first;
-		}
-	}
-	return exp(-s);
-#else
-	(void)it;
-	(void)it_end;
-	return 0;
-#endif
+	return 1;
 }
 
 
