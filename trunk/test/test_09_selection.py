@@ -852,26 +852,28 @@ class TestSelector(unittest.TestCase):
         
     def testRandomFitnessSelector(self):
         'Testing random fitness selector'
+        # a default additive model is used with CONSTANT
+        # 
         sel = RandomFitnessSelector(selDist=(CONSTANT, 0.001))
-        fit = [math.exp(- x*0.001) for x in range(200)]
+        fit = [math.exp(- x*0.0005) for x in range(200)]
         self.assertFitness(sel, fit)
         #
         sel = RandomFitnessSelector(selDist=(CONSTANT, 0.001), mode=ADDITIVE)
-        fit = [max(0, 1- x*0.001) for x in range(200)]
+        fit = [max(0, 1- x*0.0005) for x in range(200)]
         self.assertFitness(sel, fit)
-        #
+        # first 100, all heterozygote
         sel = RandomFitnessSelector(selDist=(CONSTANT, 0.001), mode=MULTIPLICATIVE)
-        fit = [(1-0.001)**x for x in range(200)]
+        fit = [(1-0.0005)**x for x in range(100)] + [(1-0.001)**(x-100)*(1-0.0005)**(200-x) for x in range(100, 200)]
         self.assertFitness(sel, fit)
         #
         sel = RandomFitnessSelector(selDist=(CONSTANT, 0.001), mode=HETEROGENEITY)
-        fit = [1-(0.001)**x for x in range(200)]
+        fit = [1-(0.0005)**x for x in range(100)] + [1-(0.001)**(x-100)*(1-0.0005**(200-x) for x in range(100, 200)]
         self.assertFitness(sel, fit)
         #
         # loci
         sel = RandomFitnessSelector(selDist=(CONSTANT, 0.001), mode=ADDITIVE, loci=range(10))
-        fit = [max(0, 1- min(x, 10)*0.001) for x in range(100)] + \
-            [max(0, 1 - 0.01 - min(x, 10)*0.001) for x in range(100)] 
+        fit = [max(0, 1- min(x, 10)*0.0005) for x in range(100)] + \
+            [max(0, 1 - 0.005 - min(x, 10)*0.0005) for x in range(100)] 
         self.assertFitness(sel, fit)
         #
         # genotype ... one of two allele does not matter (h=1)
@@ -898,25 +900,21 @@ class TestSelector(unittest.TestCase):
                 return 1 - 0.0005
         #
         sel = RandomFitnessSelector(selDist=fun)
-        fit = [math.exp(- x*0.001) for x in range(200)]
+        fit = [math.exp(- x*0.0005) for x in range(200)]
         self.assertFitness(sel, fit)
         #
         sel = RandomFitnessSelector(selDist=fun, mode=ADDITIVE)
-        fit = [max(0, 1- x*0.001) for x in range(200)]
+        fit = [max(0, 1- x*0.0005) for x in range(200)]
         self.assertFitness(sel, fit)
         #
         sel = RandomFitnessSelector(selDist=fun, mode=MULTIPLICATIVE)
-        fit = [(1-0.001)**x for x in range(200)]
-        self.assertFitness(sel, fit)
-        #
-        sel = RandomFitnessSelector(selDist=fun, mode=HETEROGENEITY)
-        fit = [1-(0.001)**x for x in range(200)]
+        fit = [(1-0.0005)**x for x in range(100)] + [(1-0.001)**(x-100)*(1-0.0005)**(200-x) for x in range(100, 200)]
         self.assertFitness(sel, fit)
         #
         # loci
         sel = RandomFitnessSelector(selDist=fun, mode=ADDITIVE, loci=range(10))
-        fit = [max(0, 1- min(x, 10)*0.001) for x in range(100)] + \
-            [max(0, 1 - 0.01 - min(x, 10)*0.001) for x in range(100)] 
+        fit = [max(0, 1- min(x, 10)*0.0005) for x in range(100)] + \
+            [max(0, 1 - 0.005 - min(x, 10)*0.0005) for x in range(100)] 
         self.assertFitness(sel, fit)
         #
         # genotype ... one of two allele does not matter (h=1)

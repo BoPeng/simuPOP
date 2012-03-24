@@ -475,56 +475,38 @@ private:
 };
 
 
-/** This selector assumes that alleles are mutant locations in the mutational
- *  space and assign fitness values to them according to a random distribution.
- *  The overall individual fitness is determined by either an additive, an
- *  multiplicative or an exponential model.
+/** This selector is a multi-locus Python selector that assigns fitness to
+ *  individuals by combining locus and genotype specific fitness values.
+ *  It differs from a \c PySelector the python function is responsible for
+ *  assigning fitness values for each gentoype type at each locus, which can
+ *  potentially be random, and locus or gentoype-specific.
  */
 class RandomFitnessSelector : public BaseSelector
 {
 public:
 	/** Create a selector that assigns individual fitness values according to
 	 *  random fitness effects. \e selDist can be
-	 *  \li <tt>(CONSTANT, s)</tt> where s will be used for all mutants. The
-	 *      fitness penalty for each non-zero allele will be s, regardless of
-	 *      the number of mutants at each locus. For example, the overall fitness
-	 *      for an individual with three mutatns will be 1-3s.
-	 *  \li <tt>(GAMMA_DISTRIBUTION, theta, k)</tt> where s follows a gamma
-	 *      distribution with scale parameter theta and shape parameter k.
-	 *      Fitness penalty for each non-zero allele will be s, regardless the
-	 *      number of mutants at each locus. For example, the overall fitness for an
-	 *      indiviudal with three mutants will be 1-s_1-s_2-s_3 where s_i follows
-	 *      the distribution.
 	 *  \li <tt>(CONSTANT, s, h)</tt> where the fitness at each locus will be
-	 *      1, 1-hs and 1-s for genotypes 00, 0a, aa (a > 0). The overall
-	 *      fitness are summaized from loci-specific values. Note that (\c
-	 *      CONSTANT s 0.5) differs from (\c CONSTANT s) at both fitness penalty
-	 *      for mutant (s/2 vs. s), and the way overall fitness values are
-	 *      calculated.
+	 *      1, 1-hs and 1-s for genotypes 00, 0a (or a0), aa (a > 0) regardless
+	 *      the value of allele a. \e h is assumed to be 0.5 (an additive model)
+	 *      if left unspecified.
 	 *  \li <tt>(GAMMA_DISTRIBUTION, theta, k, h)</tt> where s follows a gamma
 	 *      distribution with scale parameter theta and shape parameter k.
 	 *      Fitness values at each locus will be 1, 1-hs, and 1-s for genotypes 00,
-	 *      0a and aa (a > 0). The overall fitness are summaized from loci-specifc
-	 *      values. Note that (\c GAMMA_DISTRIBUTION, theta, k, 0.5) differs
-	 *      from (\c ALLELE_GAMMA_DISTRIBUTION, theta, k) at both fitness
-	 *      penalty (s/2 vs s), and the way overall fitness values are calculated.
-	 *  \li a Python function, which will be called when selection coefficient
-	 *      of a new mutant is needed. This function should accept parameter
-	 *      \e loc or \e allele (fitness calculated based on single mutant),
-	 *      or \e allele1 and \e allele2 (fitness calculated based on locus).
-	 *      If no parameter is given, the return value will be assumed to be
-	 *      fitness for each mutant. simuPOP will pass appropriate information
-	 *      to the function with such parameters. The function should return the
-	 *      fitness for each mutant or genotype (e.g. 1-hs for muts=(50, 0, 1)).
+	 *      0a and aa (a > 0). \e eh is assumed to be 0.5 if left unspecified.
+	 *  \li a Python function that returns (random, location or genotype-specific)
+	 *      fitness values for genotypes with at least one mutant (non-zero allele).
+	 *      It accepts parameter \e loc, \e alleles (both optional) for which the
+	 *      index and genotype at loci with at least one mutant will be passed.
 	 *
-	 *  The fitness values for each mutant or genotype will be cached so the same
-	 *  fitness values will be assigned to mutants or genotypes with previously
-	 *  assigned values.
+	 *  The fitness values for each genotype will be cached so the same fitness
+	 *  values will be assigned to genotypes with previously assigned values.
 	 *
-	 *  Individual fitness will be combined in \c ADDITIVE, \c MULTIPLICATIVE
-	 *  or \c EXPONENTIAL mode from mutant or genotype fitness (See \c MlSelector
-	 *  for details). If an output is given, mutants and their fitness values
-	 *  will be written to the output, in the form of 'mutant s h'.
+	 *  Individual fitness will be combined in \c ADDITIVE, \c MULTIPLICATIVE,
+	 *  \c HETEROGENEITY, or \c EXPONENTIAL mode from mutant or genotype fitness
+	 *  (See \c MlSelector for details). If an output is given, location, genotype,
+	 *  fitness and generation at which the new genotype is assgined the value
+	 *  will be written to the output, in the form of 'loc a1 a2 fitness gen'.
 	 */
 	RandomFitnessSelector(const floatListFunc & selDist, int mode = EXPONENTIAL,
 		const lociList & loci = lociList(), const stringFunc & output = "",
