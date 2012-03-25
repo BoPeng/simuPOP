@@ -129,7 +129,7 @@ bool BasePenetrance::applyDuringMating(Population & pop, Population & offPop, Ra
 }
 
 
-// this function is the same as MapSelector.
+// this function is the same as MapPenetrance.
 double MapPenetrance::penet(Population * /* pop */, Individual * ind) const
 {
 	vectoru chromTypes;
@@ -232,7 +232,7 @@ string MaPenetrance::describe(bool /* format */) const
 }
 
 
-// this function is the same as MaSelector.
+// this function is the same as MaPenetrance.
 double MaPenetrance::penet(Population * /* pop */, Individual * ind) const
 {
 	UINT index = 0;
@@ -271,43 +271,72 @@ double MaPenetrance::penet(Population * /* pop */, Individual * ind) const
 
 			index = index * 3 + 2 - numWildtype;
 		} else {
-			DBG_FAILIF(true, ValueError, "The MaSelector only supports haploid and diploid populations.");
+			DBG_FAILIF(true, ValueError, "The MaPenetrance only supports haploid and diploid populations.");
 		}
 	}
 	return m_penetrance[index];
 }
 
 
-double MlPenetrance::penet(Population * pop, Individual * ind) const
+/** CPPONLY
+ *  An accumulator class to generate overall fitness values from existing
+ *  ones.
+ */
+class PenetranceAccumulator
 {
-	if (m_mode == MULTIPLICATIVE) {
-		// x1 x2 x3 ...
-		double pen = 1;
-		for (vectorop::const_iterator s = m_peneOps.begin(), sEnd = m_peneOps.end();
-		     s != sEnd; ++s)
-			pen *= dynamic_cast<const BasePenetrance *>(*s)->penet(pop, ind);
-		return pen;
-	} else if (m_mode == ADDITIVE) {
-		// x1 + x2 + x3
-		double pen = 0;
-		for (vectorop::const_iterator s = m_peneOps.begin(), sEnd = m_peneOps.end();
-		     s != sEnd; ++s)
-			pen += dynamic_cast<const BasePenetrance *>(*s)->penet(pop, ind);
-		return pen > 1 ? 1 : pen;
-	} else if (m_mode == HETEROGENEITY) {
-		// 1-(1-x1)(1-x2)
-		double pen = 1;
-		for (vectorop::const_iterator s = m_peneOps.begin(), sEnd = m_peneOps.end();
-		     s != sEnd; ++s)
-			pen *= 1 - dynamic_cast<const BasePenetrance *>(*s)->penet(pop, ind);
-		return pen > 1 ? 0 : 1 - pen;
+public:
+	PenetranceAccumulator(int mode) : m_mode(mode)
+	{
+		m_value = m_mode == ADDITIVE ? 0 : 1;
 	}
 
-	return 0.0;
+
+	void push(double val)
+	{
+		if (m_mode == MULTIPLICATIVE)
+			m_value *= val;
+		else if (m_mode == ADDITIVE)
+			m_value += val;
+		else if (m_mode == HETEROGENEITY)
+			m_value *= 1 - val;
+	}
+
+
+	double value()
+	{
+		if (m_mode == MULTIPLICATIVE)
+			return m_value;
+		else if (m_mode == ADDITIVE)
+			return m_value > 1 ? 1 : m_value;
+		else if (m_mode == HETEROGENEITY)
+			return m_value > 1 ? 0 : 1 - m_value;
+		else
+			throw ValueError("Unrecognized accumulation mode");
+		return 0;
+	}
+
+
+private:
+	int m_mode;
+
+	double m_value;
+};
+
+
+double MlPenetrance::penet(Population * pop, Individual * ind) const
+{
+	PenetranceAccumulator p(m_mode);
+
+	vectorop::const_iterator s = m_peneOps.begin();
+	vectorop::const_iterator sEnd = m_peneOps.end();
+
+	for (; s != sEnd; ++s)
+		p.push(dynamic_cast<const BasePenetrance *>(*s)->penet(pop, ind));
+	return p.value();
 }
 
 
-// the same as PySelector
+// the same as PyPenetrance
 double PyPenetrance::penet(Population * pop, Individual * ind) const
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
@@ -337,6 +366,132 @@ double PyPenetrance::penet(Population * pop, Individual * ind) const
 	double penetrance = m_func(PyObj_As_Double, args);
 	Py_XDECREF(args);
 	return penetrance;
+}
+
+
+PyMlPenetrance::PyMlPenetrance(PyObject * func, int mode, const lociList & loci,
+	const uintList & ancGens,
+	const stringFunc & output, int begin, int end, int step, const intList & at,
+	const intList & reps, const subPopList & subPops, const stringList & infoFields) :
+	BasePenetrance(ancGens, begin, end, step, at, reps, subPops, infoFields),
+	m_func(func), m_mode(mode), m_loci(loci), m_searchMode(0),
+	m_penetFactory()
+{
+	DBG_ASSERT(m_func.isValid(), ValueError, "Passed variable is not a callable python function.");
+
+	if (m_func.numArgs() == 0)
+		m_searchMode = 10;
+	else if (m_func.numArgs() == 1) {
+		if (m_func.arg(0) == "loc")
+			m_searchMode = 11;
+		else
+			throw ValueError("Invalid parameter for passed function " + m_func.name() +
+				" (allele1 and allele2 have to be specified together)");
+	} else if (m_func.numArgs() == 2) {
+		if (m_func.arg(0) == "allele1" and m_func.arg(1) == "allele2")
+			m_searchMode = 12;
+		else
+			throw ValueError("Invalid parameters for passed function " + m_func.name() +
+				" (allele1 and allele2 have to be specified together, in that order)");
+	} else if (m_func.numArgs() == 3) {
+		if (m_func.arg(0) == "loc" and m_func.arg(1) == "allele1" and m_func.arg(2) == "allele2")
+			m_searchMode = 13;
+		else if (m_func.arg(0) == "allele1" and m_func.arg(1) == "allele2" and m_func.arg(2) == "loc")
+			m_searchMode = 14;
+		else
+			throw ValueError("Invalid parameters for passed function " + m_func.name());
+	} else {
+		DBG_FAILIF(true, ValueError,
+			"Python function for m_func only accepts paramters loc, allele, allele1, or allele2");
+	}
+}
+
+
+double PyMlPenetrance::penet(Population & /* pop */, Individual * ind) const
+{
+	PenetranceAccumulator pnt(m_mode);
+	const vectoru & loci = m_loci.elems(ind);
+
+#ifdef MUTANTALLELE
+	size_t numLoci = ind->totNumLoci();
+	GenoIterator it0 = ind->genoBegin(0);
+	GenoIterator it0_end = ind->genoEnd(0);
+	GenoIterator it1 = ind->genoBegin(1);
+	GenoIterator it1_end = ind->genoEnd(1);
+	compressed_vector<size_t>::index_array_type::iterator index_it0 = it0.getIndexIterator();
+	compressed_vector<size_t>::index_array_type::iterator index_it0_end = it0_end.getIndexIterator();
+	compressed_vector<Allele>::value_array_type::iterator value_it0 = it0.getValueIterator();
+	compressed_vector<size_t>::index_array_type::iterator index_it1 = it1.getIndexIterator();
+	compressed_vector<size_t>::index_array_type::iterator index_it1_end = it1_end.getIndexIterator();
+	compressed_vector<Allele>::value_array_type::iterator value_it1 = it1.getValueIterator();
+	for (; index_it0 != index_it0_end || index_it1 != index_it1_end; ) {
+		if (index_it1 == index_it1_end || *index_it0 + numLoci < *index_it1) {
+			if (*value_it0 != 0 &&
+			    (m_loci.allAvail() || find(loci.begin(), loci.end(), (*index_it0) % numLoci) != loci.end()))
+				pnt.push(getGenotypePenetranceValue(LocGenotype((*index_it0) % numLoci, std::pair<Allele, Allele>(*value_it0, ToAllele(0)))));
+			++index_it0;
+			++value_it0;
+		} else if (index_it0 == index_it0_end || *index_it0 + numLoci > *index_it1) {
+			if (*value_it1 != 0 &&
+			    (m_loci.allAvail() || find(loci.begin(), loci.end(), (*index_it1) % numLoci) != loci.end()))
+				pnt.push(getGenotypePenetranceValue(LocGenotype((*index_it1) % numLoci, std::pair<Allele, Allele>(ToAllele(0), *value_it1))));
+			++index_it1;
+			++value_it1;
+		} else {
+			if ((*value_it0 != 0 || *value_it1 != 0) &&
+			    (m_loci.allAvail() || find(loci.begin(), loci.end(), (*index_it1) % numLoci) != loci.end()))
+				pnt.push(getGenotypePenetranceValue(LocGenotype((*index_it1) % numLoci, std::pair<Allele, Allele>(*value_it0, *value_it1))));
+			++index_it0;
+			++value_it0;
+			++index_it1;
+			++value_it1;
+		}
+	}
+#else
+	if (m_loci.allAvail()) {
+		GenoIterator it0 = ind->genoBegin(0);
+		GenoIterator it0_end = ind->genoEnd(0);
+		GenoIterator it1 = ind->genoBegin(1);
+		for (size_t index = 0; it0 != it0_end; ++it0, ++it1, ++index)
+			if (*it0 != 0 || *it1 != 0)
+				pnt.push(getGenotypePenetranceValue(LocGenotype(index, std::pair<Allele, Allele>(*it0, *it1))));
+	} else {
+		GenoIterator it0 = ind->genoBegin(0);
+		GenoIterator it1 = ind->genoBegin(1);
+		vectoru::const_iterator loc = loci.begin();
+		vectoru::const_iterator locEnd = loci.end();
+		for (; loc != locEnd; ++loc)
+			if (*(it0 + *loc) != 0 || *(it1 + *loc) != 0)
+				pnt.push(getGenotypePenetranceValue(LocGenotype((*loc), std::pair<Allele, Allele>(*(it0 + *loc), *(it1 + *loc)))));
+	}
+#endif
+	return pnt.value();
+}
+
+
+double PyMlPenetrance::getGenotypePenetranceValue(const LocGenotype & geno) const
+{
+	GenoSelMap::iterator sit = m_penetFactory.find(geno);
+
+	if (sit != m_penetFactory.end())
+		return sit->second;
+
+	double penet = 0;
+	PyObject * res = NULL;
+	if (m_searchMode == 10)
+		res = m_func("()");
+	else if (m_searchMode == 11)
+		res = m_func("(i)", geno.first);
+	else if (m_searchMode == 12)
+		res = m_func("(ii)", geno.second.first, geno.second.second);
+	else if (m_searchMode == 13)
+		res = m_func("(iii)", geno.first, geno.second.first, geno.second.second);
+	else if (m_searchMode == 14)
+		res = m_func("(iii)", geno.second.first, geno.second.second, geno.first);
+	penet = PyFloat_AsDouble(res);
+	Py_DECREF(res);
+	m_penetFactory[geno] = penet;
+	return penet;
 }
 
 

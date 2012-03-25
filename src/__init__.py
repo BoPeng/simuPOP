@@ -195,6 +195,7 @@ __all__ = [
     'MapPenetrance',
     'MlPenetrance',
     'PyPenetrance',
+    'PyMlPenetrance',
     #
     'PyQuanTrait',
     #
@@ -1176,10 +1177,16 @@ def mlPenetrance(pop, ops, mode, ancGens = ALL_AVAIL, *args, **kwargs):
     MlPenetrance(ops, mode, ancGens, *args, **kwargs).apply(pop)
 
 def pyPenetrance(pop, func, loci=[], ancGens = ALL_AVAIL, *args, **kwargs):
-    '''Apply opertor ``MapPenetrance`` to population *pop*. Unlike the
+    '''Apply opertor ``PyPenetrance`` to population *pop*. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
     PyPenetrance(func, loci, ancGens, *args, **kwargs).apply(pop)
+
+def pyMlPenetrance(pop, func, mode, loci=[], ancGens = ALL_AVAIL, *args, **kwargs):
+    '''Apply opertor ``PyMlPenetrance`` to population *pop*. Unlike the
+    operator form of this operator that only handles the current generation,
+    this function by default assign affection status to all generations.'''
+    PyMlPenetrance(func, loci, mode, ancGens, *args, **kwargs).apply(pop)
 
 def pyQuanTrait(pop, func, loci=[], ancGens = ALL_AVAIL, *args, **kwargs):
     '''Apply opertor ``PyQuanTrait`` to population *pop*. Unlike the
