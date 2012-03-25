@@ -854,8 +854,8 @@ class TestSelector(unittest.TestCase):
         'Testing random fitness selector'
         # a default additive model is used with CONSTANT
         # 
-        def fun(allele1, allele2):
-            if allele1 == 0 or allele2 == 0:
+        def fun(alleles):
+            if 0 in alleles:
                 return 1-0.0005
             else:
                 return 1-0.001

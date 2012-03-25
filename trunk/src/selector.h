@@ -479,8 +479,7 @@ private:
  *  individuals by combining locus and genotype specific fitness values.
  *  It differs from a \c PySelector in that the python function is responsible
  *  for assigning fitness values for each gentoype type at each locus, which
- *  can potentially be random, and locus or gentoype-specific. This operator
- *  presently only works for diploid populations.
+ *  can potentially be random, and locus or gentoype-specific.
  */
 class PyMlSelector : public BaseSelector
 {
@@ -493,14 +492,17 @@ public:
 	 *  be cached so the same fitness values will be assigned to genotypes with
 	 *  previously assigned values. Note that a function that does not examine the
 	 *  genotype naturally assumes a dominant model where genotypes with one or
-	 *  two mutants have the same fitness effect.
+	 *  two mutants have the same fitness effect. This operator currently ignores
+	 *  chromosome types so unused alleles will be passed for loci on sex or
+	 *  mitochondrial chromosomes.
 	 *
 	 *  Individual fitness will be combined in \c ADDITIVE, \c MULTIPLICATIVE,
 	 *  \c HETEROGENEITY, or \c EXPONENTIAL mode from fitness values of loci with
 	 *  at least one non-zero allele (See \c MlSelector for details). If an output
 	 *  is given, location, genotype, fitness and generation at which the new
 	 *  genotype is assgined the value will be written to the output, in the
-	 *  format of 'loc a1 a2 fitness gen'.
+	 *  format of 'loc a1 a2 fitness gen' for loci on autosomes of diploid
+	 *  populations.
 	 */
 	PyMlSelector(PyObject * func, int mode = EXPONENTIAL,
 		const lociList & loci = lociList(), const stringFunc & output = "",
@@ -536,12 +538,10 @@ public:
 	/// CPPONLY
 	bool apply(Population & pop) const;
 
-	typedef std::pair<size_t, std::pair<Allele, Allele> > LocGenotype;
-
-	typedef std::pair<double, double> GenoSelCoef;
+	typedef std::pair<size_t, vectora> LocGenotype;
 
 private:
-	double getGenotypeFitnessValue(const LocGenotype &) const;
+	double getFitnessValue(const LocGenotype &) const;
 
 	///
 	pyFunc m_func;
