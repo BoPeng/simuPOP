@@ -436,8 +436,7 @@ private:
  *  assigns penetrance values by combining locus and genotype specific penetrance
  *  values. It differs from a \c PyPenetrance in that the python function is
  *  responsible for penetrance values values for each gentoype type at each locus,
- *  which can potentially be random, and locus or gentoype-specific. This operator
- *  presently only works for diploid populations.
+ *  which can potentially be random, and locus or gentoype-specific.
  */
 class PyMlPenetrance : public BasePenetrance
 {
@@ -447,11 +446,13 @@ public:
 	 *  values that are determined by a Python call-back function. The callback
 	 *  function accepts parameter \e loc, \e alleles (both optional) and returns
 	 *  location- or genotype-specific penetrance values that can be constant or
-	 *  random. The penetrance values for each genotype will
-	 *  be cached so the same penetrance values will be assigned to genotypes with
-	 *  previously assigned values. Note that a function that does not examine the
-	 *  genotype naturally assumes a dominant model where genotypes with one or
-	 *  two mutants have the same penetrance value.
+	 *  random. The penetrance values for each genotype will be cached so the
+	 *  same penetrance values will be assigned to genotypes with previously
+	 *  assigned values. Note that a function that does not examine the genotype
+	 *  naturally assumes a dominant model where genotypes with one or two mutants
+	 *  have the same penetrance value. This operator currently ignores chromosome
+	 *  types so unused alleles will be passed for loci on sex or mitochondrial
+	 *  chromosomes.
 	 *
 	 *  Individual penetrance will be combined in \c ADDITIVE, \c MULTIPLICATIVE,
 	 *  or \c HETEROGENEITY mode from penetrance values of loci with
@@ -490,12 +491,10 @@ public:
 	}
 
 
-	typedef std::pair<size_t, std::pair<Allele, Allele> > LocGenotype;
-
-	typedef std::pair<double, double> GenoSelCoef;
+	typedef std::pair<size_t, vectora> LocGenotype;
 
 private:
-	double getGenotypePenetranceValue(const LocGenotype &) const;
+	double getPenetranceValue(const LocGenotype &) const;
 
 	///
 	pyFunc m_func;
@@ -507,9 +506,9 @@ private:
 	int m_searchMode;
 
 	/// tr1 map cannot be used because LocMutant etc are not hashable
-	typedef std::map<LocGenotype, double> GenoSelMap;
+	typedef std::map<LocGenotype, double> GenoPenetranceMap;
 
-	mutable GenoSelMap m_penetFactory;
+	mutable GenoPenetranceMap m_penetFactory;
 };
 
 
