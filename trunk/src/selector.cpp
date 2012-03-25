@@ -298,73 +298,43 @@ double PySelector::indFitness(Population & pop, Individual * ind) const
 }
 
 
-RandomFitnessSelector::RandomFitnessSelector(const floatListFunc & selDist, int mode,
+PyMlSelector::PyMlSelector(PyObject * func, int mode,
 	const lociList & loci, const stringFunc & output, int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops, const stringList & infoFields) :
-	m_selDist(selDist), m_mode(mode), m_loci(loci), m_searchMode(0),
+	m_func(func), m_mode(mode), m_loci(loci), m_searchMode(0),
 	m_newGenotypes(), m_fitnessFactory()
 {
-	size_t sz = selDist.size();
+	DBG_ASSERT(m_func.isValid(), ValueError, "Passed variable is not a callable python function.");
 
-	if (sz == 0) {
-		// a function ?
-		DBG_ASSERT(selDist.func().isValid(), ValueError,
-			"A Python function or a list is expected for parameter selDist.");
-		const pyFunc & func = m_selDist.func();
-		if (func.numArgs() == 0)
-			m_searchMode = 10;
-		else if (func.numArgs() == 1) {
-			if (func.arg(0) == "loc")
-				m_searchMode = 11;
-			else
-				throw ValueError("Invalid parameter for passed function " + func.name() +
-					" (allele1 and allele2 have to be specified together)");
-		} else if (func.numArgs() == 2) {
-			if (func.arg(0) == "allele1" and func.arg(1) == "allele2")
-				m_searchMode = 12;
-			else
-				throw ValueError("Invalid parameters for passed function " + func.name() +
-					" (allele1 and allele2 have to be specified together, in that order)");
-		} else if (func.numArgs() == 3) {
-			if (func.arg(0) == "loc" and func.arg(1) == "allele1" and func.arg(2) == "allele2")
-				m_searchMode = 13;
-			else if (func.arg(0) == "allele1" and func.arg(1) == "allele2" and func.arg(2) == "loc")
-				m_searchMode = 14;
-			else
-				throw ValueError("Invalid parameters for passed function " + func.name());
-		} else {
-			DBG_FAILIF(true, ValueError,
-				"Python function for selDist only accepts paramters loc, allele, allele1, or allele2");
-		}
+	if (m_func.numArgs() == 0)
+		m_searchMode = 10;
+	else if (m_func.numArgs() == 1) {
+		if (m_func.arg(0) == "loc")
+			m_searchMode = 11;
+		else
+			throw ValueError("Invalid parameter for passed function " + m_func.name() +
+				" (allele1 and allele2 have to be specified together)");
+	} else if (m_func.numArgs() == 2) {
+		if (m_func.arg(0) == "allele1" and m_func.arg(1) == "allele2")
+			m_searchMode = 12;
+		else
+			throw ValueError("Invalid parameters for passed function " + m_func.name() +
+				" (allele1 and allele2 have to be specified together, in that order)");
+	} else if (m_func.numArgs() == 3) {
+		if (m_func.arg(0) == "loc" and m_func.arg(1) == "allele1" and m_func.arg(2) == "allele2")
+			m_searchMode = 13;
+		else if (m_func.arg(0) == "allele1" and m_func.arg(1) == "allele2" and m_func.arg(2) == "loc")
+			m_searchMode = 14;
+		else
+			throw ValueError("Invalid parameters for passed function " + m_func.name());
 	} else {
-		int mode = static_cast<int>(m_selDist[0]);
-		if (mode == CONSTANT) {
-			if (m_selDist.size() == 2)
-				m_searchMode = 1;
-			else if (m_selDist.size() == 3)
-				m_searchMode = 2;
-			else {
-				DBG_FAILIF(true, ValueError,
-					"CONSTANT mode can only be followed by one or two parameters");
-			}
-		} else if (mode == GAMMA_DISTRIBUTION) {
-			if (m_selDist.size() == 3)
-				m_searchMode = 3;
-			else if (m_selDist.size() == 4)
-				m_searchMode = 4;
-			else {
-				DBG_FAILIF(true, ValueError,
-					"GAMMA_DISTRIBUTION mode can only be followed by two or three parameters");
-			}
-		} else {
-			DBG_FAILIF(true, ValueError,
-				"selDist only accept CONSTANT or GAMMA_DISTRIBUTION modes");
-		}
+		DBG_FAILIF(true, ValueError,
+			"Python function for m_func only accepts paramters loc, allele, allele1, or allele2");
 	}
 }
 
 
-double RandomFitnessSelector::indFitness(Population & /* pop */, Individual * ind) const
+double PyMlSelector::indFitness(Population & /* pop */, Individual * ind) const
 {
 	FitnessAccumulator fit(m_mode);
 	const vectoru & loci = m_loci.elems(ind);
@@ -426,9 +396,9 @@ double RandomFitnessSelector::indFitness(Population & /* pop */, Individual * in
 }
 
 
-bool RandomFitnessSelector::apply(Population & pop) const
+bool PyMlSelector::apply(Population & pop) const
 {
-	DBG_ASSERT(pop.ploidy() == 2, ValueError, "Operator RandomFitnessSelector only works with diploid populations");
+	DBG_ASSERT(pop.ploidy() == 2, ValueError, "Operator PyMlSelector only works with diploid populations");
 
 	m_newGenotypes.clear();
 	if (!BaseSelector::apply(pop))
@@ -440,7 +410,7 @@ bool RandomFitnessSelector::apply(Population & pop) const
 		vector<LocGenotype>::const_iterator it_end = m_newGenotypes.end();
 		for (; it != it_end; ++it) {
 			double s = m_fitnessFactory[*it];
-			out << it->first << '\t' << it->second.first << '\t' << it->second.second << s << '\n';
+			out << it->first << '\t' << it->second.first << '\t' << it->second.second << '\t' << s << '\n';
 		}
 		closeOstream();
 	}
@@ -448,40 +418,27 @@ bool RandomFitnessSelector::apply(Population & pop) const
 }
 
 
-double RandomFitnessSelector::getGenotypeFitnessValue(const LocGenotype & geno) const
+double PyMlSelector::getGenotypeFitnessValue(const LocGenotype & geno) const
 {
 	GenoSelMap::iterator sit = m_fitnessFactory.find(geno);
+
 	if (sit != m_fitnessFactory.end())
 		return sit->second;
-	
+
 	double fitness = 0;
-	if (m_searchMode == 1 or m_searchMode == 2) {
-		if (geno.second.first != 0 && geno.second.second != 0)
-			fitness = 1 - m_selDist[1];
-		else
-			fitness = 1 - m_selDist[1] * (m_searchMode == 1 ? 0.5 : m_selDist[2]);
-	} else if (m_searchMode == 3 or m_searchMode == 4) {
-		double s = getRNG().randGamma(m_selDist[1], m_selDist[2]);
-		if (geno.second.first != 0 && geno.second.second != 0)
-			fitness = 1 - s;
-		else
-			fitness = 1 - s * (m_searchMode == 3 ? 0.5 : m_selDist[3]);
-	} else {
-		const pyFunc & func = m_selDist.func();
-		PyObject * res = NULL;
-		if (m_searchMode == 10)
-			res = func("()");
-		else if (m_searchMode == 11)
-			res = func("(i)", geno.first);
-		else if (m_searchMode == 12)
-			res = func("(ii)", geno.second.first, geno.second.second);
-		else if (m_searchMode == 13)
-			res = func("(iii)", geno.first, geno.second.first, geno.second.second);
-		else if (m_searchMode == 14)
-			res = func("(iii)", geno.second.first, geno.second.second, geno.first);
-		fitness = 1 - PyFloat_AsDouble(res);
-		Py_DECREF(res);
-	}
+	PyObject * res = NULL;
+	if (m_searchMode == 10)
+		res = m_func("()");
+	else if (m_searchMode == 11)
+		res = m_func("(i)", geno.first);
+	else if (m_searchMode == 12)
+		res = m_func("(ii)", geno.second.first, geno.second.second);
+	else if (m_searchMode == 13)
+		res = m_func("(iii)", geno.first, geno.second.first, geno.second.second);
+	else if (m_searchMode == 14)
+		res = m_func("(iii)", geno.second.first, geno.second.second, geno.first);
+	fitness = PyFloat_AsDouble(res);
+	Py_DECREF(res);
 	m_fitnessFactory[geno] = fitness;
 	if (!noOutput())
 		m_newGenotypes.push_back(geno);
