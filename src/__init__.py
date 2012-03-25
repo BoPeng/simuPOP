@@ -189,7 +189,7 @@ __all__ = [
     'MaSelector',
     'MlSelector',
     'PySelector',
-    'RandomFitnessSelector',
+    'PyMlSelector',
     #
     'MaPenetrance',
     'MapPenetrance',

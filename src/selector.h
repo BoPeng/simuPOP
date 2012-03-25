@@ -477,51 +477,38 @@ private:
 
 /** This selector is a multi-locus Python selector that assigns fitness to
  *  individuals by combining locus and genotype specific fitness values.
- *  It differs from a \c PySelector the python function is responsible for
- *  assigning fitness values for each gentoype type at each locus, which can
- *  potentially be random, and locus or gentoype-specific. This operator
+ *  It differs from a \c PySelector in that the python function is responsible
+ *  for assigning fitness values for each gentoype type at each locus, which
+ *  can potentially be random, and locus or gentoype-specific. This operator
  *  presently only works for diploid populations.
  */
-class RandomFitnessSelector : public BaseSelector
+class PyMlSelector : public BaseSelector
 {
 public:
-	/** Create a selector that assigns individual fitness values according to
-	 *  random fitness effects. \e selDist can be
-	 *  \li <tt>(CONSTANT, s, h)</tt> where the fitness at each locus will be
-	 *      1, 1-hs and 1-s for genotypes 00, 0a (or a0), aa for all non-zero
-	 *      allele a. \e h is assumed to be 0.5 (an additive model) if it is
-	 *      left unspecified.
-	 *  \li <tt>(GAMMA_DISTRIBUTION, theta, k, h)</tt> where s follows a gamma
-	 *      distribution with scale parameter theta and shape parameter k.
-	 *      Fitness values at each locus will be 1, 1-hs, and 1-s for genotypes 00,
-	 *      0a and aa (a > 0). \e eh is assumed to be 0.5 if left unspecified.
-	 *  \li a Python function that returns fitness penalty for genotypes with
-	 *      at least one mutant (non-zero allele). It accepts parameter \e loc,
-	 *      \e alleles (both optional) for which the index and genotype at loci
-	 *      (with at least one mutant) will be passed. This allows the user
-	 *      to specify random, location-specific, or genotype-specific fitness
-	 *      values. The fitness of each genotype will be 1 - returned value,
-	 *      and are combined with fitness of other genotypes to form individual
-	 *      fitness values. Note that a function that does not examine the
-	 *      genotype naturally assumes a dominant model where genotypes with
-	 *      one or two mutants have the same fitness effect.
-	 *
-	 *  The fitness values for each genotype will be cached so the same fitness
-	 *  values will be assigned to genotypes with previously assigned values.
+	/** Create a selector that assigns individual fitness values by combining
+	 *  locus-specific fitness values that are determined by a Python call-back
+	 *  function. The callback function accepts parameter \e loc, \e alleles
+	 *  (both optional) and returns location- or genotype-specific fitness values
+	 *  that can be constant or random. The fitness values for each genotype will
+	 *  be cached so the same fitness values will be assigned to genotypes with
+	 *  previously assigned values. Note that a function that does not examine the
+	 *  genotype naturally assumes a dominant model where genotypes with one or
+	 *  two mutants have the same fitness effect.
 	 *
 	 *  Individual fitness will be combined in \c ADDITIVE, \c MULTIPLICATIVE,
-	 *  \c HETEROGENEITY, or \c EXPONENTIAL mode from mutant or genotype fitness
-	 *  (See \c MlSelector for details). If an output is given, location, genotype,
-	 *  fitness and generation at which the new genotype is assgined the value
-	 *  will be written to the output, in the form of 'loc a1 a2 fitness gen'.
+	 *  \c HETEROGENEITY, or \c EXPONENTIAL mode from fitness values of loci with
+	 *  at least one non-zero allele (See \c MlSelector for details). If an output
+	 *  is given, location, genotype, fitness and generation at which the new
+	 *  genotype is assgined the value will be written to the output, in the
+	 *  format of 'loc a1 a2 fitness gen'.
 	 */
-	RandomFitnessSelector(const floatListFunc & selDist, int mode = EXPONENTIAL,
+	PyMlSelector(PyObject * func, int mode = EXPONENTIAL,
 		const lociList & loci = lociList(), const stringFunc & output = "",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness"));
 
-	virtual ~RandomFitnessSelector()
+	virtual ~PyMlSelector()
 	{
 	}
 
@@ -529,7 +516,7 @@ public:
 	/// HIDDEN Deep copy of a map selector
 	virtual BaseOperator * clone() const
 	{
-		return new RandomFitnessSelector(*this);
+		return new PyMlSelector(*this);
 	}
 
 
@@ -542,25 +529,22 @@ public:
 	string describe(bool format = true) const
 	{
 		(void)format;  // avoid warning about unused parameter
-		return "<simuPOP.RandomFitnessSelector>" ;
+		return "<simuPOP.PyMlSelector>" ;
 	}
 
 
 	/// CPPONLY
 	bool apply(Population & pop) const;
 
-	typedef std::pair<size_t, Allele> LocMutant;
 	typedef std::pair<size_t, std::pair<Allele, Allele> > LocGenotype;
 
 	typedef std::pair<double, double> GenoSelCoef;
 
 private:
-	double getMutantFitnessValue(const LocMutant &) const;
-
 	double getGenotypeFitnessValue(const LocGenotype &) const;
 
 	///
-	floatListFunc m_selDist;
+	pyFunc m_func;
 
 	int m_mode;
 
