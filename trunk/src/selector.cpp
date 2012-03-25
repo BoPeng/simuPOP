@@ -301,8 +301,8 @@ double PySelector::indFitness(Population & pop, Individual * ind) const
 RandomFitnessSelector::RandomFitnessSelector(const floatListFunc & selDist, int mode,
 	const lociList & loci, const stringFunc & output, int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops, const stringList & infoFields) :
-	m_selDist(selDist), m_mode(mode), m_loci(loci), m_searchMode(0), m_newMutants(),
-	m_newGenotypes(), m_mutSelFactory(), m_genoSelFactory()
+	m_selDist(selDist), m_mode(mode), m_loci(loci), m_searchMode(0),
+	m_newGenotypes(), m_fitnessFactory()
 {
 	size_t sz = selDist.size();
 
@@ -428,69 +428,64 @@ double RandomFitnessSelector::indFitness(Population & /* pop */, Individual * in
 
 bool RandomFitnessSelector::apply(Population & pop) const
 {
+	DBG_ASSERT(pop.ploidy() == 2, ValueError, "Operator RandomFitnessSelector only works with diploid populations");
+
+	m_newGenotypes.clear();
 	if (!BaseSelector::apply(pop))
 		return false;
-#if 0
-	m_newMutants.clear();
 	// output NEW mutant...
-	if (!m_newMutants.empty() && !noOutput()) {
+	if (!m_newGenotypes.empty() && !noOutput()) {
 		ostream & out = getOstream(pop.dict());
-		vectoru::const_iterator it = m_newMutants.begin();
-		vectoru::const_iterator it_end = m_newMutants.end();
+		vector<LocGenotype>::const_iterator it = m_newGenotypes.begin();
+		vector<LocGenotype>::const_iterator it_end = m_newGenotypes.end();
 		for (; it != it_end; ++it) {
-			SelCoef s = m_selFactory[*it];
-			out << *it << '\t' << s.first << '\t' << s.second << '\n';
+			double s = m_fitnessFactory[*it];
+			out << it->first << '\t' << it->second.first << '\t' << it->second.second << s << '\n';
 		}
 		closeOstream();
 	}
-#endif
 	return true;
 }
 
 
 double RandomFitnessSelector::getGenotypeFitnessValue(const LocGenotype & geno) const
 {
+	GenoSelMap::iterator sit = m_fitnessFactory.find(geno);
+	if (sit != m_fitnessFactory.end())
+		return sit->second;
+	
+	double fitness = 0;
 	if (m_searchMode == 1 or m_searchMode == 2) {
 		if (geno.second.first != 0 && geno.second.second != 0)
-			return 1 - m_selDist[1];
+			fitness = 1 - m_selDist[1];
 		else
-			return 1 - m_selDist[1] * (m_searchMode == 1 ? 0.5 : m_selDist[2]);
+			fitness = 1 - m_selDist[1] * (m_searchMode == 1 ? 0.5 : m_selDist[2]);
 	} else if (m_searchMode == 3 or m_searchMode == 4) {
-		GenoSelMap::iterator sit = m_genoSelFactory.find(geno);
-		if (sit == m_genoSelFactory.end()) {
-			double s = getRNG().randGamma(m_selDist[1], m_selDist[2]);
-			if (geno.second.first != 0 && geno.second.second != 0)
-				s = 1 - s;
-			else
-				s = 1 - s * (m_searchMode == 3 ? 0.5 : m_selDist[3]);
-			m_genoSelFactory[geno] = s;
-			return s;
-		} else
-			return sit->second;
+		double s = getRNG().randGamma(m_selDist[1], m_selDist[2]);
+		if (geno.second.first != 0 && geno.second.second != 0)
+			fitness = 1 - s;
+		else
+			fitness = 1 - s * (m_searchMode == 3 ? 0.5 : m_selDist[3]);
 	} else {
-		GenoSelMap::iterator sit = m_genoSelFactory.find(geno);
-		if (sit == m_genoSelFactory.end()) {
-			const pyFunc & func = m_selDist.func();
-			PyObject * res = NULL;
-			if (m_searchMode == 10)
-				res = func("()");
-			else if (m_searchMode == 11)
-				res = func("(i)", geno.first);
-			else if (m_searchMode == 12)
-				res = func("(ii)", geno.second.first, geno.second.second);
-			else if (m_searchMode == 13)
-				res = func("(iii)", geno.first, geno.second.first, geno.second.second);
-			else if (m_searchMode == 14)
-				res = func("(iii)", geno.second.first, geno.second.second, geno.first);
-			double s = PyFloat_AsDouble(res);
-			Py_DECREF(res);
-			m_genoSelFactory[geno] = s;
-			return s;
-		} else {
-			return sit->second;
-		}
+		const pyFunc & func = m_selDist.func();
+		PyObject * res = NULL;
+		if (m_searchMode == 10)
+			res = func("()");
+		else if (m_searchMode == 11)
+			res = func("(i)", geno.first);
+		else if (m_searchMode == 12)
+			res = func("(ii)", geno.second.first, geno.second.second);
+		else if (m_searchMode == 13)
+			res = func("(iii)", geno.first, geno.second.first, geno.second.second);
+		else if (m_searchMode == 14)
+			res = func("(iii)", geno.second.first, geno.second.second, geno.first);
+		fitness = 1 - PyFloat_AsDouble(res);
+		Py_DECREF(res);
 	}
-	return 1;
+	m_fitnessFactory[geno] = fitness;
+	if (!noOutput())
+		m_newGenotypes.push_back(geno);
+	return fitness;
 }
 
 
