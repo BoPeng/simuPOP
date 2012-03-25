@@ -479,7 +479,8 @@ private:
  *  individuals by combining locus and genotype specific fitness values.
  *  It differs from a \c PySelector the python function is responsible for
  *  assigning fitness values for each gentoype type at each locus, which can
- *  potentially be random, and locus or gentoype-specific.
+ *  potentially be random, and locus or gentoype-specific. This operator
+ *  presently only works for diploid populations.
  */
 class RandomFitnessSelector : public BaseSelector
 {
@@ -487,17 +488,23 @@ public:
 	/** Create a selector that assigns individual fitness values according to
 	 *  random fitness effects. \e selDist can be
 	 *  \li <tt>(CONSTANT, s, h)</tt> where the fitness at each locus will be
-	 *      1, 1-hs and 1-s for genotypes 00, 0a (or a0), aa (a > 0) regardless
-	 *      the value of allele a. \e h is assumed to be 0.5 (an additive model)
-	 *      if left unspecified.
+	 *      1, 1-hs and 1-s for genotypes 00, 0a (or a0), aa for all non-zero
+	 *      allele a. \e h is assumed to be 0.5 (an additive model) if it is
+	 *      left unspecified.
 	 *  \li <tt>(GAMMA_DISTRIBUTION, theta, k, h)</tt> where s follows a gamma
 	 *      distribution with scale parameter theta and shape parameter k.
 	 *      Fitness values at each locus will be 1, 1-hs, and 1-s for genotypes 00,
 	 *      0a and aa (a > 0). \e eh is assumed to be 0.5 if left unspecified.
-	 *  \li a Python function that returns (random, location or genotype-specific)
-	 *      fitness values for genotypes with at least one mutant (non-zero allele).
-	 *      It accepts parameter \e loc, \e alleles (both optional) for which the
-	 *      index and genotype at loci with at least one mutant will be passed.
+	 *  \li a Python function that returns fitness penalty for genotypes with
+	 *      at least one mutant (non-zero allele). It accepts parameter \e loc,
+	 *      \e alleles (both optional) for which the index and genotype at loci
+	 *      (with at least one mutant) will be passed. This allows the user
+	 *      to specify random, location-specific, or genotype-specific fitness
+	 *      values. The fitness of each genotype will be 1 - returned value,
+	 *      and are combined with fitness of other genotypes to form individual
+	 *      fitness values. Note that a function that does not examine the
+	 *      genotype naturally assumes a dominant model where genotypes with
+	 *      one or two mutants have the same fitness effect.
 	 *
 	 *  The fitness values for each genotype will be cached so the same fitness
 	 *  values will be assigned to genotypes with previously assigned values.
@@ -562,13 +569,10 @@ private:
 	int m_searchMode;
 
 	/// tr1 map cannot be used because LocMutant etc are not hashable
-	typedef std::map<LocMutant, double> MutSelMap;
 	typedef std::map<LocGenotype, double> GenoSelMap;
 
-	mutable std::vector<LocMutant> m_newMutants;
 	mutable std::vector<LocGenotype> m_newGenotypes;
-	mutable MutSelMap m_mutSelFactory;
-	mutable GenoSelMap m_genoSelFactory;
+	mutable GenoSelMap m_fitnessFactory;
 };
 
 
