@@ -301,6 +301,7 @@ double PySelector::indFitness(Population & pop, Individual * ind) const
 PyMlSelector::PyMlSelector(PyObject * func, int mode,
 	const lociList & loci, const stringFunc & output, int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops, const stringList & infoFields) :
+	BaseSelector("", begin, end, step, at, reps, subPops, infoFields),
 	m_func(func), m_mode(mode), m_loci(loci), m_searchMode(0),
 	m_newGenotypes(), m_fitnessFactory()
 {
