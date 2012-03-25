@@ -1186,6 +1186,13 @@ MlPenetranceRef
 PyPenetranceRef
 \end_layout
 
+\begin_layout Plain Layout
+
+
+\backslash
+PyMlPenetranceRef
+\end_layout
+
 \end_inset
 
 
@@ -1279,6 +1286,13 @@ MlSelectorRef
 
 \backslash
 PySelectorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+PyMlSelectorRef
 \end_layout
 
 \end_inset
@@ -1623,6 +1637,13 @@ simuPOPpyMutateRef
 
 \backslash
 simuPOPpyPenetranceRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPpyMlPenetranceRef
 \end_layout
 
 \begin_layout Plain Layout
