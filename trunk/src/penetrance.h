@@ -431,5 +431,87 @@ private:
 	const lociList m_loci;
 };
 
+
+/** This penetrance operator is a multi-locus Python penetrance operator that
+ *  assigns penetrance values by combining locus and genotype specific penetrance
+ *  values. It differs from a \c PyPenetrance in that the python function is
+ *  responsible for penetrance values values for each gentoype type at each locus,
+ *  which can potentially be random, and locus or gentoype-specific. This operator
+ *  presently only works for diploid populations.
+ */
+class PyMlPenetrance : public BasePenetrance
+{
+public:
+	/** Create a penetrance operator that assigns individual affection status
+	 *  according to penetrance values combined from locus-specific penetrance
+	 *  values that are determined by a Python call-back function. The callback
+	 *  function accepts parameter \e loc, \e alleles (both optional) and returns
+	 *  location- or genotype-specific penetrance values that can be constant or
+	 *  random. The penetrance values for each genotype will
+	 *  be cached so the same penetrance values will be assigned to genotypes with
+	 *  previously assigned values. Note that a function that does not examine the
+	 *  genotype naturally assumes a dominant model where genotypes with one or
+	 *  two mutants have the same penetrance value.
+	 *
+	 *  Individual penetrance will be combined in \c ADDITIVE, \c MULTIPLICATIVE,
+	 *  or \c HETEROGENEITY mode from penetrance values of loci with
+	 *  at least one non-zero allele (See \c MlPenetrance for details).
+	 */
+	PyMlPenetrance(PyObject * func, int mode = MULTIPLICATIVE,
+		const lociList & loci = lociList(),
+		const uintList & ancGens = uintList(NULL),
+		const stringFunc & output = "",
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = vectorstr());
+
+	virtual ~PyMlPenetrance()
+	{
+	}
+
+
+	/// HIDDEN Deep copy of a map penetrance operator
+	virtual BaseOperator * clone() const
+	{
+		return new PyMlPenetrance(*this);
+	}
+
+
+	/** CPPONLY
+	 *  calculate/return the penetrance value, currently assuming diploid
+	 */
+	virtual double penet(Population & pop, Individual * ind) const;
+
+	/// HIDDEN
+	string describe(bool format = true) const
+	{
+		(void)format;  // avoid warning about unused parameter
+		return "<simuPOP.PyMlPenetrance>" ;
+	}
+
+
+	typedef std::pair<size_t, std::pair<Allele, Allele> > LocGenotype;
+
+	typedef std::pair<double, double> GenoSelCoef;
+
+private:
+	double getGenotypePenetranceValue(const LocGenotype &) const;
+
+	///
+	pyFunc m_func;
+
+	int m_mode;
+
+	lociList m_loci;
+
+	int m_searchMode;
+
+	/// tr1 map cannot be used because LocMutant etc are not hashable
+	typedef std::map<LocGenotype, double> GenoSelMap;
+
+	mutable GenoSelMap m_penetFactory;
+};
+
+
 }
 #endif
