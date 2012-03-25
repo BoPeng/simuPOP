@@ -933,16 +933,16 @@ Details:
     Create a clone genotype transmitter (a during-mating operator)
     that copies genotypes from parents to offspring. If two parents
     are specified, genotypes are copied maternally. After genotype
-    transmission, offspring sex is copied from parental sex even if
-    sex has been determined by an offspring generator. All or
-    specified information fields (parameter infoFields, default to
-    ALL_AVAIL) will also be copied from parent to offspring.
-    Parameters subPops is ignored. This operator by default copies
-    genotypes on all autosome and sex chromosomes (excluding
-    customized chromosomes), unless a parameter chroms is used to
-    specify which chromosomes to copy. This operator also copies
-    allelic lineage when it is executed in a module with lineage
-    allele type.
+    transmission, offspring sex and affection status is copied from
+    the parent even if sex has been determined by an offspring
+    generator. All or specified information fields (parameter
+    infoFields, default to ALL_AVAIL) will also be copied from parent
+    to offspring. Parameters subPops is ignored. This operator by
+    default copies genotypes on all autosome and sex chromosomes
+    (excluding customized chromosomes), unless a parameter chroms is
+    used to specify which chromosomes to copy. This operator also
+    copies allelic lineage when it is executed in a module with
+    lineage allele type.
 
 "; 
 
@@ -7316,6 +7316,120 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::PyMlPenetrance "
+
+Details:
+
+    This penetrance operator is a multi-locus Python penetrance
+    operator that assigns penetrance values by combining locus and
+    genotype specific penetrance values. It differs from a
+    PyPenetrance in that the python function is responsible for
+    penetrance values values for each gentoype type at each locus,
+    which can potentially be random, and locus or gentoype-specific.
+    This operator presently only works for diploid populations.
+
+"; 
+
+%feature("docstring") simuPOP::PyMlPenetrance::PyMlPenetrance "
+
+Usage:
+
+    PyMlPenetrance(func, mode=MULTIPLICATIVE, loci=ALL_AVAIL,
+      ancGens=UNSPECIFIED, output=\"\", begin=0, end=-1, step=1, at=[],
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+Details:
+
+    Create a penetrance operator that assigns individual affection
+    status according to penetrance values combined from locus-specific
+    penetrance values that are determined by a Python call-back
+    function. The callback function accepts parameter loc, alleles
+    (both optional) and returns location- or genotype-specific
+    penetrance values that can be constant or random. The penetrance
+    values for each genotype will be cached so the same penetrance
+    values will be assigned to genotypes with previously assigned
+    values. Note that a function that does not examine the genotype
+    naturally assumes a dominant model where genotypes with one or two
+    mutants have the same penetrance value.   Individual penetrance
+    will be combined in ADDITIVE, MULTIPLICATIVE, or HETEROGENEITY
+    mode from penetrance values of loci with at least one non-zero
+    allele (See MlPenetrance for details).
+
+"; 
+
+%feature("docstring") simuPOP::PyMlPenetrance::~PyMlPenetrance "
+
+Usage:
+
+    x.~PyMlPenetrance()
+
+"; 
+
+%feature("docstring") simuPOP::PyMlPenetrance::clone "Obsolete or undocumented function."
+
+%ignore simuPOP::PyMlPenetrance::penet(Population &pop, Individual *ind) const;
+
+%feature("docstring") simuPOP::PyMlPenetrance::describe "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::PyMlSelector "
+
+Details:
+
+    This selector is a multi-locus Python selector that assigns
+    fitness to individuals by combining locus and genotype specific
+    fitness values. It differs from a PySelector in that the python
+    function is responsible for assigning fitness values for each
+    gentoype type at each locus, which can potentially be random, and
+    locus or gentoype-specific. This operator presently only works for
+    diploid populations.
+
+"; 
+
+%feature("docstring") simuPOP::PyMlSelector::PyMlSelector "
+
+Usage:
+
+    PyMlSelector(func, mode=EXPONENTIAL, loci=ALL_AVAIL, output=\"\",
+      begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
+
+Details:
+
+    Create a selector that assigns individual fitness values by
+    combining locus-specific fitness values that are determined by a
+    Python call-back function. The callback function accepts parameter
+    loc, alleles (both optional) and returns location- or genotype-
+    specific fitness values that can be constant or random. The
+    fitness values for each genotype will be cached so the same
+    fitness values will be assigned to genotypes with previously
+    assigned values. Note that a function that does not examine the
+    genotype naturally assumes a dominant model where genotypes with
+    one or two mutants have the same fitness effect.   Individual
+    fitness will be combined in ADDITIVE, MULTIPLICATIVE,
+    HETEROGENEITY, or EXPONENTIAL mode from fitness values of loci
+    with at least one non-zero allele (See MlSelector for details). If
+    an output is given, location, genotype, fitness and generation at
+    which the new genotype is assgined the value will be written to
+    the output, in the format of 'loc a1 a2 fitness gen'.
+
+"; 
+
+%feature("docstring") simuPOP::PyMlSelector::~PyMlSelector "
+
+Usage:
+
+    x.~PyMlSelector()
+
+"; 
+
+%feature("docstring") simuPOP::PyMlSelector::clone "Obsolete or undocumented function."
+
+%ignore simuPOP::PyMlSelector::indFitness(Population &pop, Individual *ind) const;
+
+%feature("docstring") simuPOP::PyMlSelector::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::PyMlSelector::apply(Population &pop) const;
+
 %feature("docstring") simuPOP::pyMutantIterator "
 
 Details:
@@ -7831,65 +7945,6 @@ Details:
 %ignore simuPOP::PyTagger::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
 
 %ignore simuPOP::PyTagger::parallelizable() const;
-
-%feature("docstring") simuPOP::RandomFitnessSelector "
-
-Details:
-
-    This selector assumes that alleles are mutant locations in the
-    mutational space and assign fitness values to them according to a
-    random distribution. The overall individual fitness is determined
-    by either an additive, an multiplicative or an exponential model.
-
-"; 
-
-%feature("docstring") simuPOP::RandomFitnessSelector::RandomFitnessSelector "
-
-Usage:
-
-    RandomFitnessSelector(selDist, mode=EXPONENTIAL, output=\"\",
-      begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
-      subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
-
-Details:
-
-    Create a selector that assigns individual fitness values according
-    to random fitness effects. selDist can be
-    *   (CONSTANT, s, h) where s will be used for all mutants. The
-    fitness value for genotypes AA, Aa and aa will be (1, 1-hs, 1-s).
-    If h is unspecified, a default value h=0.5 (additive model) will
-    be used.
-    *   (GAMMA_DISTRIBUTION, theta, k, h where s follows a gamma
-    distribution with scale parameter theta and shape parameter k.
-    Fitness values for genotypes AA, Aa and aa will be 1, 1-hs and
-    1-s. A default value h=0.5 will be used if h is unspecified.
-    *   a Python function, which will be called when selection
-    coefficient of a new mutant is needed. This function should return
-    a single value s (with default value h=0.5) or a sequence of (h,
-    s). Mutant location will be passed to this function if it accepts
-    a parameter loc. This allows the definition of site-specific
-    selection coefficients. Individual fitness will be combined in
-    ADDITIVE, MULTIPLICATIVE or EXPONENTIAL mode. (See MlSelector for
-    details). If an output is given, mutants and their fitness values
-    will be written to the output, in the form of 'mutant s h'.
-
-"; 
-
-%feature("docstring") simuPOP::RandomFitnessSelector::~RandomFitnessSelector "
-
-Usage:
-
-    x.~RandomFitnessSelector()
-
-"; 
-
-%feature("docstring") simuPOP::RandomFitnessSelector::clone "Obsolete or undocumented function."
-
-%ignore simuPOP::RandomFitnessSelector::indFitness(Population &pop, Individual *ind) const;
-
-%feature("docstring") simuPOP::RandomFitnessSelector::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::RandomFitnessSelector::apply(Population &pop) const;
 
 %feature("docstring") simuPOP::RandomParentChooser "
 
