@@ -15820,6 +15820,88 @@ lstparams "caption={A hybrid selector},label={PySelector}"
 \end_layout
 
 \begin_layout Subsection
+Multi-locus random fitness effects (operator 
+\family typewriter
+PyMlSelector
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+If the fitness of individuals is determined by fitness effects over a large
+ number of loci, both 
+\family typewriter
+MlSelector
+\family default
+ and 
+\family typewriter
+PySelector
+\family default
+ are difficult to use because the former requires a large number of single-locus
+ selectors, and the latter requires the processing long genome sequences.
+ If the overall fitness can be determined by fitness effects of mutants,
+ a 
+\family typewriter
+PyMlSelector
+\family default
+ can be used.
+ This operator
+\end_layout
+
+\begin_layout Itemize
+Calls a user-provided call-back function for each locus with at least a
+ mutant (non-zero allele).
+ The function can accept location and genotype so the fitness can be location
+ and genotype dependent.
+ The return value is cached so the function will be called only once for
+ each locus-genotype pair.
+\end_layout
+
+\begin_layout Itemize
+The fitness of each individual is determined by fitness values of loci with
+ at least one mutant, using the same methods as operator 
+\family typewriter
+MlSelector
+\family default
+.
+ This implicitly assumes that loci without any mutant have fitness value
+ 1 and will not contribute to the final fitness value.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "PySelector"
+
+\end_inset
+
+ demonstrates how to use a 
+\family typewriter
+PyMlSelector
+\family default
+ to implement a fitness model where each mutant has a random fitness drawn
+ from a Gamma distribution.
+ An additive model is used so a homozygote will have a fitness penalty that
+ doubles that of a heterozygote.
+ The fitness value of each locus-genotype pair is outputted to a file, and
+ it should be interesting to plot the distribution of allele frequency at
+ each locus against the fitness values, because mutants that suffer from
+ stronger negative natural selection are supposed to be rarer.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/PyMlSelector.log"
+lstparams "caption={Random fitness effect},label={PyMlSelector}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Alternative implementations of natural selection
 \end_layout
 

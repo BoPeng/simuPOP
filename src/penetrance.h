@@ -452,7 +452,8 @@ public:
 	 *  naturally assumes a dominant model where genotypes with one or two mutants
 	 *  have the same penetrance value. This operator currently ignores chromosome
 	 *  types so unused alleles will be passed for loci on sex or mitochondrial
-	 *  chromosomes.
+	 *  chromosomes. This operator also ignores the phase of genotype so genotypes
+	 *  (a,b) and (b,a) are assumed to have the same fitness effect.
 	 *
 	 *  Individual penetrance will be combined in \c ADDITIVE, \c MULTIPLICATIVE,
 	 *  or \c HETEROGENEITY mode from penetrance values of loci with
