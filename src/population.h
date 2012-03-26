@@ -1191,6 +1191,8 @@ public:
 	 *  and names should not overlap with any locus in the current population.
 	 *  population \e pop should have the same number of individuals as the
 	 *  current population in the current and all ancestral generations.
+	 *  Allele lineages are also copied from \e pop in modules with lineage
+	 *  information.
 	 *  <group>7-manipulate</group>
 	 */
 	void addLociFrom(const Population & pop);
@@ -1201,7 +1203,8 @@ public:
 	 *  exist in the current population. Allele names could be specified for
 	 *  all loci (a list of names) or differently for each locus (a nested
 	 *  list of names), using parameter \e alleleNames. Empty loci names will
-	 *  be used if \e lociNames is not specified.
+	 *  be used if \e lociNames is not specified. The newly added alleles
+	 *  will have zero lineage in modules wiht lineage information.
 	 *  <group>7-manipulate</group>
 	 */
 	void addChrom(const floatList & lociPos, const stringList & lociNames = vectorstr(),
@@ -1217,7 +1220,8 @@ public:
 	 *  loci on a new chromosome need to be added, function <tt>addChrom</tt>
 	 *  should be used. Optionally, allele names could be specified either
 	 *  for all loci (a single list) or each loci (a nested list). This
-	 *  function returns indexes of the inserted loci.
+	 *  function returns indexes of the inserted loci. Newly inserted
+	 *  alleles will have zero lineage in modules with lineage information.
 	 *  <group>7-manipulate</group>
 	 */
 	vectoru addLoci(const uintList & chrom, const floatList & pos,

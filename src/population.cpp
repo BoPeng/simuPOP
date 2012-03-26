@@ -1699,9 +1699,9 @@ void Population::addLociFrom(const Population & pop)
 			// new genotype
 			m_inds[i].setGenoPtr(ptr);
 #ifdef LINEAGE
-			m_inds[i].setLineagePtr(lineagePtr);
 			LineageIterator lineagePtr1 = m_inds[i].lineagePtr();
 			LineageIterator lineagePtr2 = pop.m_inds[i].lineagePtr();
+			m_inds[i].setLineagePtr(lineagePtr);
 #endif
 			// copy each allele
 			for (size_t p = 0; p < pEnd; ++p) {
@@ -1785,7 +1785,6 @@ void Population::addChrom(const floatList & lociPosList, const stringList & loci
 				newPtr += gap;
 				LINEAGE_EXPR(newLineagePtr += gap);
 			}
-
 		}
 		m_genotype.swap(newGenotype);
 		LINEAGE_EXPR(m_lineage.swap(newLineage));
@@ -3481,6 +3480,7 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 void Population::load(boost::archive::text_iarchive & ar, const unsigned int version)
 {
 	size_t ma;
+
 	if (version == 0)
 		ar & ma;
 
@@ -3519,7 +3519,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 			max_allele = max(max_allele, singleMutVal);
 		} else {
 			ar & mutVal;
-            max_allele = max(max_allele, *max_element(mutVal.begin(), mutVal.end()));
+			max_allele = max(max_allele, *max_element(mutVal.begin(), mutVal.end()));
 		}
 		//
 		for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
@@ -3624,7 +3624,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 #ifdef LINEAGE
 		m_lineage.clear();
 		m_lineage.resize(m_genotype.size(), 0);
-#endif		
+#endif
 	}
 	DBG_DO(DBG_POPULATION, cerr << "Handling info" << endl);
 	ar & m_info;
@@ -3708,7 +3708,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 				max_allele = max(max_allele, singleMutVal);
 			} else {
 				ar & mutVal;
-                max_allele = max(max_allele, *max_element(mutVal.begin(), mutVal.end()));
+				max_allele = max(max_allele, *max_element(mutVal.begin(), mutVal.end()));
 			}
 			//
 			for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
@@ -3811,7 +3811,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 #ifdef LINEAGE
 			pd.m_lineage.clear();
 			pd.m_lineage.resize(pd.m_genotype.size(), 0);
-#endif			
+#endif
 		}
 		ar & pd.m_info;
 		ar & pd.m_inds;
@@ -3847,7 +3847,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 	setIndOrdered(true);
 	DBG_WARNIF(max_allele > ModuleMaxAllele, "Warning: the maximum allele of the loaded population is "
 		+ toStr(max_allele) + " which is larger than the maximum allowed allele of this module. "
-		"These alleles have been truncated.");
+		                      "These alleles have been truncated.");
 }
 
 
