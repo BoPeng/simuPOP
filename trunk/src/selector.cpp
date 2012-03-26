@@ -301,7 +301,7 @@ double PySelector::indFitness(Population & pop, Individual * ind) const
 PyMlSelector::PyMlSelector(PyObject * func, int mode,
 	const lociList & loci, const stringFunc & output, int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops, const stringList & infoFields) :
-	BaseSelector("", begin, end, step, at, reps, subPops, infoFields),
+	BaseSelector(output, begin, end, step, at, reps, subPops, infoFields),
 	m_func(func), m_mode(mode), m_loci(loci), m_searchMode(0),
 	m_newGenotypes(), m_fitnessFactory()
 {
@@ -471,7 +471,12 @@ bool PyMlSelector::apply(Population & pop) const
 		vector<LocGenotype>::const_iterator it = m_newGenotypes.begin();
 		vector<LocGenotype>::const_iterator it_end = m_newGenotypes.end();
 		for (; it != it_end; ++it) {
-			double s = m_fitnessFactory[*it];
+			LocGenotype tmp(*it);
+			if (tmp.second.size() == 2 && tmp.second[0] > tmp.second[1]) {
+				tmp.second[0] = it->second[1];
+				tmp.second[1] = it->second[0];
+			}
+			double s = m_fitnessFactory[tmp];
 			out << it->first << '\t' << it->second << '\t' << s << '\n';
 		}
 		closeOstream();
@@ -482,8 +487,12 @@ bool PyMlSelector::apply(Population & pop) const
 
 double PyMlSelector::getFitnessValue(const LocGenotype & geno) const
 {
-	GenoSelMap::iterator sit = m_fitnessFactory.find(geno);
-
+	LocGenotype tmp(geno);
+	if (geno.second.size() == 2 && geno.second[0] > geno.second[1]) {
+		tmp.second[0] = geno.second[1];
+		tmp.second[1] = geno.second[0];
+	}
+	GenoSelMap::iterator sit = m_fitnessFactory.find(tmp);
 	if (sit != m_fitnessFactory.end())
 		return sit->second;
 
@@ -512,7 +521,8 @@ double PyMlSelector::getFitnessValue(const LocGenotype & geno) const
 	}
 	fitness = PyFloat_AsDouble(res);
 	Py_DECREF(res);
-	m_fitnessFactory[geno] = fitness;
+
+	m_fitnessFactory[tmp] = fitness;
 	if (!noOutput())
 		m_newGenotypes.push_back(geno);
 	return fitness;

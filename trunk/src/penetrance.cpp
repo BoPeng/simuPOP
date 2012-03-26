@@ -534,8 +534,12 @@ double PyMlPenetrance::penet(Population & /* pop */, Individual * ind) const
 
 double PyMlPenetrance::getPenetranceValue(const LocGenotype & geno) const
 {
-	GenoPenetranceMap::iterator sit = m_penetFactory.find(geno);
-
+	LocGenotype tmp(geno);
+	if (geno.second.size() == 2 && geno.second[0] > geno.second[1]) {
+		tmp.second[0] = geno.second[1];
+		tmp.second[1] = geno.second[0];
+	}
+	GenoPenetranceMap::iterator sit = m_penetFactory.find(tmp);
 	if (sit != m_penetFactory.end())
 		return sit->second;
 
@@ -567,7 +571,7 @@ double PyMlPenetrance::getPenetranceValue(const LocGenotype & geno) const
 
 	penet = PyFloat_AsDouble(res);
 	Py_DECREF(res);
-	m_penetFactory[geno] = penet;
+	m_penetFactory[tmp] = penet;
 	return penet;
 }
 

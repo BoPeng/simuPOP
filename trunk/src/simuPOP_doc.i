@@ -7326,7 +7326,6 @@ Details:
     PyPenetrance in that the python function is responsible for
     penetrance values values for each gentoype type at each locus,
     which can potentially be random, and locus or gentoype-specific.
-    This operator presently only works for diploid populations.
 
 "; 
 
@@ -7350,10 +7349,14 @@ Details:
     values will be assigned to genotypes with previously assigned
     values. Note that a function that does not examine the genotype
     naturally assumes a dominant model where genotypes with one or two
-    mutants have the same penetrance value.   Individual penetrance
-    will be combined in ADDITIVE, MULTIPLICATIVE, or HETEROGENEITY
-    mode from penetrance values of loci with at least one non-zero
-    allele (See MlPenetrance for details).
+    mutants have the same penetrance value. This operator currently
+    ignores chromosome types so unused alleles will be passed for loci
+    on sex or mitochondrial chromosomes. This operator also ignores
+    the phase of genotype so genotypes (a,b) and (b,a) are assumed to
+    have the same fitness effect.   Individual penetrance will be
+    combined in ADDITIVE, MULTIPLICATIVE, or HETEROGENEITY mode from
+    penetrance values of loci with at least one non-zero allele (See
+    MlPenetrance for details).
 
 "; 
 
@@ -7380,8 +7383,7 @@ Details:
     fitness values. It differs from a PySelector in that the python
     function is responsible for assigning fitness values for each
     gentoype type at each locus, which can potentially be random, and
-    locus or gentoype-specific. This operator presently only works for
-    diploid populations.
+    locus or gentoype-specific.
 
 "; 
 
@@ -7404,13 +7406,18 @@ Details:
     fitness values will be assigned to genotypes with previously
     assigned values. Note that a function that does not examine the
     genotype naturally assumes a dominant model where genotypes with
-    one or two mutants have the same fitness effect.   Individual
-    fitness will be combined in ADDITIVE, MULTIPLICATIVE,
-    HETEROGENEITY, or EXPONENTIAL mode from fitness values of loci
-    with at least one non-zero allele (See MlSelector for details). If
-    an output is given, location, genotype, fitness and generation at
-    which the new genotype is assgined the value will be written to
-    the output, in the format of 'loc a1 a2 fitness gen'.
+    one or two mutants have the same fitness effect. This operator
+    currently ignores chromosome types so unused alleles will be
+    passed for loci on sex or mitochondrial chromosomes. It also
+    ignores phase of genotype so it will use the same fitness value
+    for genotype (a,b) and (b,a).   Individual fitness will be
+    combined in ADDITIVE, MULTIPLICATIVE, HETEROGENEITY, or
+    EXPONENTIAL mode from fitness values of loci with at least one
+    non-zero allele (See MlSelector for details). If an output is
+    given, location, genotype, fitness and generation at which the new
+    genotype is assgined the value will be written to the output, in
+    the format of 'loc a1, a2 fitness gen' for loci on autosomes of
+    diploid populations.
 
 "; 
 

@@ -4135,6 +4135,42 @@ pop.evolve(
 #end_file
 
 
+#begin_file log/PyMlSelector.py
+import simuOpt
+simuOpt.setOptions(quiet=True, alleleType='mutant')
+import simuPOP as sim
+import random
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+pop = sim.Population(size=2000, loci=[10000], infoFields=['fitness'])
+
+def sel(alleles):
+    s = random.gammavariate(0.23, 0.185)
+    if 0 in alleles:
+        return 1 - s
+    else:
+        return 1 - 2*s
+
+pop.evolve(
+    initOps=sim.InitSex(),
+    preOps=[
+        sim.AcgtMutator(rate=[0.00001], model='JC69'),
+        sim.PyMlSelector(sel, output='>>sel.txt'),
+    ],
+    matingScheme=sim.RandomMating(),
+    postOps=[
+        sim.Stat(numOfSegSites=sim.ALL_AVAIL, step=50),
+        sim.PyEval(r"'Gen: %2d #seg sites: %d\n' % (gen, numOfSegSites)",
+            step=50)
+    ],
+    gen = 201
+)
+print(''.join(open('sel.txt').readlines()[:5]))
+#end_file
+
+
+
 #begin_file log/peneSelector.py
 #begin_ignore
 import simuOpt

@@ -494,14 +494,15 @@ public:
 	 *  genotype naturally assumes a dominant model where genotypes with one or
 	 *  two mutants have the same fitness effect. This operator currently ignores
 	 *  chromosome types so unused alleles will be passed for loci on sex or
-	 *  mitochondrial chromosomes.
+	 *  mitochondrial chromosomes. It also ignores phase of genotype so it will
+	 *  use the same fitness value for genotype (a,b) and (b,a).
 	 *
 	 *  Individual fitness will be combined in \c ADDITIVE, \c MULTIPLICATIVE,
 	 *  \c HETEROGENEITY, or \c EXPONENTIAL mode from fitness values of loci with
 	 *  at least one non-zero allele (See \c MlSelector for details). If an output
 	 *  is given, location, genotype, fitness and generation at which the new
 	 *  genotype is assgined the value will be written to the output, in the
-	 *  format of 'loc a1 a2 fitness gen' for loci on autosomes of diploid
+	 *  format of 'loc a1, a2 fitness gen' for loci on autosomes of diploid
 	 *  populations.
 	 */
 	PyMlSelector(PyObject * func, int mode = EXPONENTIAL,
