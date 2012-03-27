@@ -293,6 +293,11 @@ class TestPopulation(unittest.TestCase):
         'Testing Population::addChrom'
         pop = self.getPop(chromNames=['c1', 'c2'], lociPos=[1, 3, 5], lociNames = ['l1', 'l2', 'l3'], ancGen=5)
         pop1 = pop.clone()
+        for gen in range(pop.ancestralGens(), -1, -1):
+            pop.useAncestralGen(gen)
+            pop1.useAncestralGen(gen)
+            pop.setLineage(1)
+            pop1.setLineage(2)
         pop.addChrom([7, 8, 9], ['l4', 'l5', 'l6'], 'c3')
         self.assertEqual(pop.numChrom(), 3)
         self.assertEqual(pop.chromNames(), ('c1', 'c2', 'c3'))
@@ -309,6 +314,12 @@ class TestPopulation(unittest.TestCase):
                     # new chromosome has zero values
                     self.assertEqual(ind.genotype(0, 2), [0]*3)  # new alleles are zero
                     self.assertEqual(ind.genotype(1, 2), [0]*3)  # new alleles are zero
+                    #
+                    if moduleInfo()['alleleType'] == 'lineage':
+                        self.assertEqual(ind.lineage(0, ch), [1]*ind.numLoci(ch))
+                        self.assertEqual(ind.lineage(0, ch), [1]*ind.numLoci(ch))
+                        self.assertEqual(ind.lineage(0, 2), [0]*3)
+                        self.assertEqual(ind.lineage(1, 2), [0]*3)
         # lociPos is not ordered
         self.assertRaises(ValueError,  pop.addChrom, [13, 12, 11], ['l4', 'l5', 'l6'], 'c3')
         # given loci names are not unique.
