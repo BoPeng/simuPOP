@@ -594,6 +594,7 @@ public:
 		return m_status == DYNAMIC;
 	}
 
+
 	/// CPPONLY
 	const vectoru & elems(const GenoStruTrait * trait) const;
 
@@ -604,7 +605,7 @@ protected:
 private:
 	listStatus m_status;
 
-    mutable TraitIndexType m_trait;
+	mutable TraitIndexType m_trait;
 };
 
 
