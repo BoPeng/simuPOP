@@ -132,10 +132,12 @@ PyObject * newcarrayobject(GenoIterator, GenoIterator)
 	return NULL;
 }
 
+
 PyObject * newcarrayobject_lineage(LineageIterator, LineageIterator)
 {
 	return NULL;
 }
+
 
 PyObject * PyDefDict_New()
 {
@@ -1067,24 +1069,12 @@ lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_status(REGULAR), m_
 	}
 }
 
-/*
-void lociList::locate(const GenoStruTrait * trait) const
-{
-	if (m_status == DYNAMIC)
-		m_elems = trait->lociByNames(m_names);
-	else if (m_status == ALL_AVAIL) {
-		m_elems.resize(trait->totNumLoci());
-		for (size_t i = 0; i < m_elems.size(); ++i)
-			m_elems[i] = i;
-	}
-}
-*/
 
 const vectoru & lociList::elems(const GenoStruTrait * trait) const
 {
 	if (trait) {
-        if (trait->genoStruIdx() == m_trait)
-            return m_elems;
+		if (trait->genoStruIdx() == m_trait)
+			return m_elems;
 		if (m_status == DYNAMIC)
 			m_elems = trait->lociByNames(m_names);
 		else if (m_status == ALL_AVAIL) {
@@ -1092,7 +1082,7 @@ const vectoru & lociList::elems(const GenoStruTrait * trait) const
 			for (size_t i = 0; i < m_elems.size(); ++i)
 				m_elems[i] = i;
 		}
-        m_trait = trait->genoStruIdx();
+		m_trait = trait->genoStruIdx();
 	}
 	return m_elems;
 }
@@ -1243,6 +1233,7 @@ PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end)
 	return res;
 }
 
+
 PyObject * Lineage_Vec_As_NumArray(LineageIterator begin, LineageIterator end)
 {
 	PyObject * res = newcarrayobject_lineage(begin, end);
@@ -1250,6 +1241,7 @@ PyObject * Lineage_Vec_As_NumArray(LineageIterator begin, LineageIterator end)
 	DBG_FAILIF(res == NULL, ValueError, "Can not convert buf to Lineage num array");
 	return res;
 }
+
 
 string PyObj_AsString(PyObject * str)
 {
@@ -4172,13 +4164,13 @@ PyObject * moduleInfo()
 	// AlleleType
 #ifdef LONGALLELE
 	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("long"));
-#  elif defined BINARYALLELE
+#elif defined BINARYALLELE
 	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("binary"));
-#  elif defined MUTANTALLELE
+#elif defined MUTANTALLELE
 	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("mutant"));
-#  elif defined LINEAGE
+#elif defined LINEAGE
 	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("lineage"));
-#  else
+#else
 	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("short"));
 #endif
 
