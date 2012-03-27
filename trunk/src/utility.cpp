@@ -1028,7 +1028,7 @@ uintList::uintList(PyObject * obj) : m_elems(), m_status(REGULAR)
 }
 
 
-lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_status(REGULAR)
+lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_status(REGULAR), m_trait(MaxTraitIndex)
 {
 	if (obj == NULL)
 		// accept NULL
@@ -1067,7 +1067,7 @@ lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_status(REGULAR)
 	}
 }
 
-
+/*
 void lociList::locate(const GenoStruTrait * trait) const
 {
 	if (m_status == DYNAMIC)
@@ -1078,11 +1078,13 @@ void lociList::locate(const GenoStruTrait * trait) const
 			m_elems[i] = i;
 	}
 }
-
+*/
 
 const vectoru & lociList::elems(const GenoStruTrait * trait) const
 {
 	if (trait) {
+        if (trait->genoStruIdx() == m_trait)
+            return m_elems;
 		if (m_status == DYNAMIC)
 			m_elems = trait->lociByNames(m_names);
 		else if (m_status == ALL_AVAIL) {
@@ -1090,6 +1092,7 @@ const vectoru & lociList::elems(const GenoStruTrait * trait) const
 			for (size_t i = 0; i < m_elems.size(); ++i)
 				m_elems[i] = i;
 		}
+        m_trait = trait->genoStruIdx();
 	}
 	return m_elems;
 }
