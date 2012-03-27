@@ -4145,18 +4145,33 @@ sim.setRNG(seed=12345)
 #end_ignore
 pop = sim.Population(size=2000, loci=[10000], infoFields=['fitness'])
 
-def sel(alleles):
-    s = random.gammavariate(0.23, 0.185)
-    if 0 in alleles:
-        return 1 - s
-    else:
-        return 1 - 2*s
+class GammaDistributedFitness:
+    def __init__(self, alpha, beta):
+        self.coefMap = {}
+        self.alpha = alpha
+        self.beta = beta
+     
+    def __call__(self, loc, alleles):
+        # because s is assigned for each locus, we need to make sure the
+        # same s is used for fitness of genotypes 01 (1-s) and 11 (1-2s)
+        # at each locus
+        if loc in self.coefMap:
+            s = self.coefMap[loc]
+        else:
+            s = random.gammavariate(self.alpha, self.beta)
+            self.coefMap[loc] = s
+        #
+        if 0 in alleles:
+            return 1. - s
+        else:
+            return 1. - 2.*s
 
 pop.evolve(
     initOps=sim.InitSex(),
     preOps=[
         sim.AcgtMutator(rate=[0.00001], model='JC69'),
-        sim.PyMlSelector(sel, output='>>sel.txt'),
+        sim.PyMlSelector(GammaDistributedFitness(0.23, 0.185),
+            output='>>sel.txt'),
     ],
     matingScheme=sim.RandomMating(),
     postOps=[
