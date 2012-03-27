@@ -1137,7 +1137,7 @@ bool GenotypeSplitter::contains(const Population & pop, size_t ind, vspID vsp) c
 
 	const vectori & alleles = m_alleles[virtualSubPop];
 	// this can be very slow if contains is used extensively.
-	m_loci.locate(&pop);
+	m_loci.elems(&pop);
 
 	return match(&pop.individual(ind, vsp.subPop()), alleles);
 }
@@ -1148,7 +1148,7 @@ void GenotypeSplitter::activate(const Population & pop, size_t subPop, size_t vi
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_alleles.size(), IndexError,
 		"Virtual subpopulation index out of genotype");
 
-	m_loci.locate(&pop);
+	m_loci.elems(&pop);
 	const vectori & alleles = m_alleles[virtualSubPop];
 	ConstRawIndIterator it = pop.rawIndBegin(subPop);
 	ConstRawIndIterator it_end = pop.rawIndEnd(subPop);

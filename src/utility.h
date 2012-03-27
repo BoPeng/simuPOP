@@ -549,7 +549,7 @@ public:
 	lociList(PyObject * obj = Py_True);
 
 	/// CPPONLY
-	lociList(const vectoru & values) : m_elems(values), m_names(), m_status(REGULAR)
+	lociList(const vectoru & values) : m_elems(values), m_names(), m_status(REGULAR), m_trait(MaxTraitIndex)
 	{
 	}
 
@@ -594,9 +594,6 @@ public:
 		return m_status == DYNAMIC;
 	}
 
-
-	void locate(const GenoStruTrait * trait) const;
-
 	/// CPPONLY
 	const vectoru & elems(const GenoStruTrait * trait) const;
 
@@ -606,6 +603,8 @@ protected:
 
 private:
 	listStatus m_status;
+
+    mutable TraitIndexType m_trait;
 };
 
 
