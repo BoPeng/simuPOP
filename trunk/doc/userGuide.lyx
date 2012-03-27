@@ -15884,7 +15884,13 @@ PyMlSelector
  from a Gamma distribution.
  An additive model is used so a homozygote will have a fitness penalty that
  doubles that of a heterozygote.
- The fitness value of each locus-genotype pair is outputted to a file, and
+ Because the fitness values of heterozygote and homozygote at each locus
+ are requested separately, a class is used to store locus-specific s values.
+ 
+\end_layout
+
+\begin_layout Standard
+The fitness value of each locus-genotype pair is outputted to a file, and
  it should be interesting to plot the distribution of allele frequency at
  each locus against the fitness values, because mutants that suffer from
  stronger negative natural selection are supposed to be rarer.
