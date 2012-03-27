@@ -492,7 +492,10 @@ public:
 	 *  be cached so the same fitness values will be assigned to genotypes with
 	 *  previously assigned values. Note that a function that does not examine the
 	 *  genotype naturally assumes a dominant model where genotypes with one or
-	 *  two mutants have the same fitness effect. This operator currently ignores
+	 *  two mutants have the same fitness effect. Because genotypes at a locus
+	 *  are passed separately and in no particular order, this function is also
+	 *  responsible for assigning consistent fitness values for genotypes at the
+	 *  same locus (a class is usually used). This operator currently ignores
 	 *  chromosome types so unused alleles will be passed for loci on sex or
 	 *  mitochondrial chromosomes. It also ignores phase of genotype so it will
 	 *  use the same fitness value for genotype (a,b) and (b,a).
