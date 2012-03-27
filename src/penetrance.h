@@ -450,7 +450,10 @@ public:
 	 *  same penetrance values will be assigned to genotypes with previously
 	 *  assigned values. Note that a function that does not examine the genotype
 	 *  naturally assumes a dominant model where genotypes with one or two mutants
-	 *  have the same penetrance value. This operator currently ignores chromosome
+	 *  have the same penetrance value. Because genotypes at a locus are passed
+	 *  separately and in no particular order, this function is also responsible
+	 *  for assigning consistent fitness values for genotypes at the same locus
+	 *  (a class is usually used). This operator currently ignores chromosome
 	 *  types so unused alleles will be passed for loci on sex or mitochondrial
 	 *  chromosomes. This operator also ignores the phase of genotype so genotypes
 	 *  (a,b) and (b,a) are assumed to have the same fitness effect.

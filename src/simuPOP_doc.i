@@ -6507,6 +6507,8 @@ Details:
     names should not overlap with any locus in the current population.
     population pop should have the same number of individuals as the
     current population in the current and all ancestral generations.
+    Allele lineages are also copied from pop in modules with lineage
+    information.
 
 "; 
 
@@ -6525,7 +6527,9 @@ Details:
     exist in the current population. Allele names could be specified
     for all loci (a list of names) or differently for each locus (a
     nested list of names), using parameter alleleNames. Empty loci
-    names will be used if lociNames is not specified.
+    names will be used if lociNames is not specified. The newly added
+    alleles will have zero lineage in modules wiht lineage
+    information.
 
 "; 
 
@@ -6546,7 +6550,9 @@ Details:
     If loci on a new chromosome need to be added, function addChrom
     should be used. Optionally, allele names could be specified either
     for all loci (a single list) or each loci (a nested list). This
-    function returns indexes of the inserted loci.
+    function returns indexes of the inserted loci. Newly inserted
+    alleles will have zero lineage in modules with lineage
+    information.
 
 "; 
 
@@ -7349,14 +7355,17 @@ Details:
     values will be assigned to genotypes with previously assigned
     values. Note that a function that does not examine the genotype
     naturally assumes a dominant model where genotypes with one or two
-    mutants have the same penetrance value. This operator currently
-    ignores chromosome types so unused alleles will be passed for loci
-    on sex or mitochondrial chromosomes. This operator also ignores
-    the phase of genotype so genotypes (a,b) and (b,a) are assumed to
-    have the same fitness effect.   Individual penetrance will be
-    combined in ADDITIVE, MULTIPLICATIVE, or HETEROGENEITY mode from
-    penetrance values of loci with at least one non-zero allele (See
-    MlPenetrance for details).
+    mutants have the same penetrance value. Because genotypes at a
+    locus are passed separately and in no particular order, this
+    function is also responsible for assigning consistent fitness
+    values for genotypes at the same locus (a class is usually used).
+    This operator currently ignores chromosome types so unused alleles
+    will be passed for loci on sex or mitochondrial chromosomes. This
+    operator also ignores the phase of genotype so genotypes (a,b) and
+    (b,a) are assumed to have the same fitness effect.   Individual
+    penetrance will be combined in ADDITIVE, MULTIPLICATIVE, or
+    HETEROGENEITY mode from penetrance values of loci with at least
+    one non-zero allele (See MlPenetrance for details).
 
 "; 
 
@@ -7406,11 +7415,14 @@ Details:
     fitness values will be assigned to genotypes with previously
     assigned values. Note that a function that does not examine the
     genotype naturally assumes a dominant model where genotypes with
-    one or two mutants have the same fitness effect. This operator
-    currently ignores chromosome types so unused alleles will be
-    passed for loci on sex or mitochondrial chromosomes. It also
-    ignores phase of genotype so it will use the same fitness value
-    for genotype (a,b) and (b,a).   Individual fitness will be
+    one or two mutants have the same fitness effect. Because genotypes
+    at a locus are passed separately and in no particular order, this
+    function is also responsible for assigning consistent fitness
+    values for genotypes at the same locus (a class is usually used).
+    This operator currently ignores chromosome types so unused alleles
+    will be passed for loci on sex or mitochondrial chromosomes. It
+    also ignores phase of genotype so it will use the same fitness
+    value for genotype (a,b) and (b,a).   Individual fitness will be
     combined in ADDITIVE, MULTIPLICATIVE, HETEROGENEITY, or
     EXPONENTIAL mode from fitness values of loci with at least one
     non-zero allele (See MlSelector for details). If an output is
