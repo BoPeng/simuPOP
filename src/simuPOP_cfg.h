@@ -184,10 +184,8 @@ typedef vector<Allele>::reference AlleleRef;
 #    define ToAllele(a)   ((a) != 0)
 
 #  else
-#    ifndef MUTANTALLELE
 typedef unsigned char Allele;
 typedef unsigned char & AlleleRef;
-#    endif
 #    define AlleleInc(a)  ++ (a)
 #    define AlleleDec(a)  -- (a)
 #    define AlleleAdd(a, b) (a) += (b)
@@ -201,8 +199,8 @@ typedef unsigned char & AlleleRef;
 #include "mutant_vector.h"
 
 #ifdef MUTANTALLELE
-typedef simuPOP::mutant_vector<Allele>::iterator GenoIterator;
-typedef simuPOP::mutant_vector<Allele>::const_iterator ConstGenoIterator;
+typedef simuPOP::compressed_vector<Allele>::iterator GenoIterator;
+typedef simuPOP::compressed_vector<Allele>::const_iterator ConstGenoIterator;
 #else
 typedef std::vector<Allele>::iterator GenoIterator;
 typedef std::vector<Allele>::const_iterator ConstGenoIterator;
