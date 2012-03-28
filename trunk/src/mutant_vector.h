@@ -26,8 +26,7 @@ template<class T, class IA = unbounded_array<std::size_t>, class TA = unbounded_
 class compressed_vector;
 
 template<class I, class T, class C>
-BOOST_UBLAS_INLINE
-I _lower_bound(const I & begin, const I & end, const T & t, C compare)
+inline I _lower_bound(const I & begin, const I & end, const T & t, C compare)
 {
 	// t <= *begin <=> ! (*begin < t)
 	if (begin == end || !compare(*begin, t))
@@ -67,8 +66,7 @@ public:
 	typedef sparse_tag storage_category;
 
 	// Construction and destruction
-	BOOST_UBLAS_INLINE
-	compressed_vector () :
+	inline compressed_vector () :
 		vector_container<self_type> (),
 		size_(0), capacity_(restrict_capacity(0)), filled_(0),
 		index_data_(capacity_), value_data_(capacity_)
@@ -77,8 +75,7 @@ public:
 	}
 
 
-	explicit BOOST_UBLAS_INLINE
-	compressed_vector (size_type size, size_type non_zeros = 0) :
+	explicit inline compressed_vector (size_type size, size_type non_zeros = 0) :
 		vector_container<self_type> (),
 		size_(size), capacity_(restrict_capacity(non_zeros)), filled_(0),
 		index_data_(capacity_), value_data_(capacity_)
@@ -87,8 +84,7 @@ public:
 	}
 
 
-	BOOST_UBLAS_INLINE
-	compressed_vector (const compressed_vector & v) :
+	inline compressed_vector (const compressed_vector & v) :
 		vector_container<self_type> (),
 		size_(v.size_), capacity_(v.capacity_), filled_(v.filled_),
 		index_data_(v.index_data_), value_data_(v.value_data_)
@@ -98,8 +94,7 @@ public:
 
 
 	template<class AE>
-	BOOST_UBLAS_INLINE
-	compressed_vector (const vector_expression<AE> & ae, size_type non_zeros = 0) :
+	inline compressed_vector (const vector_expression<AE> & ae, size_type non_zeros = 0) :
 		vector_container<self_type> (),
 		size_(ae().size()), capacity_(restrict_capacity(non_zeros)), filled_(0),
 		index_data_(capacity_), value_data_(capacity_)
@@ -110,73 +105,56 @@ public:
 
 
 	// Accessors
-	BOOST_UBLAS_INLINE
-	size_type size() const
+	inline size_type size() const
 	{
 		return size_;
 	}
 
 
-	BOOST_UBLAS_INLINE
-	size_type nnz_capacity() const
+	inline size_type nnz_capacity() const
 	{
 		return capacity_;
 	}
 
 
-	BOOST_UBLAS_INLINE
-	size_type nnz() const
+	inline size_type nnz() const
 	{
 		return filled_;
 	}
 
 
-	// Storage accessors
-	BOOST_UBLAS_INLINE
-	static size_type index_base()
-	{
-		return 0;
-	}
-
-
-	BOOST_UBLAS_INLINE
-	typename index_array_type::size_type filled() const
+	inline typename index_array_type::size_type filled() const
 	{
 		return filled_;
 	}
 
 
-	BOOST_UBLAS_INLINE
-	const index_array_type & index_data() const
+	inline const index_array_type & index_data() const
 	{
 		return index_data_;
 	}
 
 
-	BOOST_UBLAS_INLINE
-	const value_array_type & value_data() const
+	inline const value_array_type & value_data() const
 	{
 		return value_data_;
 	}
 
 
-	BOOST_UBLAS_INLINE
-	void set_filled(const typename index_array_type::size_type & filled)
+	inline void set_filled(const typename index_array_type::size_type & filled)
 	{
 		filled_ = filled;
 		storage_invariants();
 	}
 
 
-	BOOST_UBLAS_INLINE
-	index_array_type & index_data()
+	inline index_array_type & index_data()
 	{
 		return index_data_;
 	}
 
 
-	BOOST_UBLAS_INLINE
-	value_array_type & value_data()
+	inline value_array_type & value_data()
 	{
 		return value_data_;
 	}
@@ -185,8 +163,7 @@ public:
 	// Resizing
 
 private:
-	BOOST_UBLAS_INLINE
-	size_type restrict_capacity(size_type non_zeros) const
+	inline size_type restrict_capacity(size_type non_zeros) const
 	{
 		non_zeros = (std::max)(non_zeros, size_type(1));
 		non_zeros = (std::min)(non_zeros, size_);
@@ -195,8 +172,7 @@ private:
 
 
 public:
-	BOOST_UBLAS_INLINE
-	void resize(size_type size, bool preserve = true)
+	inline void resize(size_type size, bool preserve = true)
 	{
 		size_ = size;
 		capacity_ = restrict_capacity(capacity_);
@@ -207,7 +183,7 @@ public:
 			while ((filled_ > 0) && (index_data_[filled_ - 1] >= size)) {
 				--filled_;
 			}
-		}else  {
+		}else {
 			index_data_.resize(capacity_);
 			value_data_.resize(capacity_);
 			filled_ = 0;
@@ -217,15 +193,14 @@ public:
 
 
 	// Reserving
-	BOOST_UBLAS_INLINE
-	void reserve(size_type non_zeros, bool preserve = true)
+	inline void reserve(size_type non_zeros, bool preserve = true)
 	{
 		capacity_ = restrict_capacity(non_zeros);
 		if (preserve) {
 			index_data_.resize(capacity_, size_type());
 			value_data_.resize(capacity_, value_type());
 			filled_ = (std::min)(capacity_, filled_);
-		}else  {
+		}else {
 			index_data_.resize(capacity_);
 			value_data_.resize(capacity_);
 			filled_ = 0;
@@ -235,15 +210,13 @@ public:
 
 
 	// Element support
-	BOOST_UBLAS_INLINE
-	pointer find_element(size_type i)
+	inline pointer find_element(size_type i)
 	{
 		return const_cast<pointer> (const_cast<const self_type &>(*this).find_element(i));
 	}
 
 
-	BOOST_UBLAS_INLINE
-	const_pointer find_element(size_type i) const
+	inline const_pointer find_element(size_type i) const
 	{
 		const_subiterator_type it(_lower_bound(index_data_.begin(), index_data_.begin() + filled_, i, std::less<size_type> ()));
 
@@ -254,8 +227,7 @@ public:
 
 
 	// Element access
-	BOOST_UBLAS_INLINE
-	const_reference operator ()(size_type i) const
+	inline const_reference operator ()(size_type i) const
 	{
 		BOOST_UBLAS_CHECK(i < size_, bad_index());
 		const_subiterator_type it(_lower_bound(index_data_.begin(), index_data_.begin() + filled_, i, std::less<size_type> ()));
@@ -265,8 +237,7 @@ public:
 	}
 
 
-	BOOST_UBLAS_INLINE
-	true_reference ref(size_type i)
+	inline true_reference ref(size_type i)
 	{
 		BOOST_UBLAS_CHECK(i < size_, bad_index());
 		subiterator_type it(_lower_bound(index_data_.begin(), index_data_.begin() + filled_, i, std::less<size_type> ()));
@@ -277,30 +248,26 @@ public:
 	}
 
 
-	BOOST_UBLAS_INLINE
-	reference operator ()(size_type i)
+	inline reference operator ()(size_type i)
 	{
 		return ref(i) ;
 	}
 
 
-	BOOST_UBLAS_INLINE
-	const_reference operator [](size_type i) const
+	inline const_reference operator [](size_type i) const
 	{
 		return (*this)(i);
 	}
 
 
-	BOOST_UBLAS_INLINE
-	reference operator [](size_type i)
+	inline reference operator [](size_type i)
 	{
 		return (*this)(i);
 	}
 
 
 	// Element assignment
-	BOOST_UBLAS_INLINE
-	true_reference insert_element(size_type i, const_reference t)
+	inline true_reference insert_element(size_type i, const_reference t)
 	{
 		BOOST_UBLAS_CHECK(!find_element(i), bad_index());               // duplicate element
 		if (filled_ >= capacity_)
@@ -321,8 +288,7 @@ public:
 	}
 
 
-	BOOST_UBLAS_INLINE
-	void erase_element(size_type i)
+	inline void erase_element(size_type i)
 	{
 		subiterator_type it(_lower_bound(index_data_.begin(), index_data_.begin() + filled_, i, std::less<size_type> ()));
 
@@ -338,8 +304,7 @@ public:
 
 
 	// Zeroing
-	BOOST_UBLAS_INLINE
-	void clear()
+	inline void clear()
 	{
 		filled_ = 0;
 		storage_invariants();
@@ -347,8 +312,7 @@ public:
 
 
 	// Assignment
-	BOOST_UBLAS_INLINE
-	compressed_vector & operator =(const compressed_vector & v)
+	inline compressed_vector & operator =(const compressed_vector & v)
 	{
 		if (this != &v) {
 			size_ = v.size_;
@@ -363,8 +327,7 @@ public:
 
 
 	template<class C>              // Container assignment without temporary
-	BOOST_UBLAS_INLINE
-	compressed_vector & operator =(const vector_container<C> & v)
+	inline compressed_vector & operator =(const vector_container<C> & v)
 	{
 		resize(v().size(), false);
 		assign(v);
@@ -372,8 +335,7 @@ public:
 	}
 
 
-	BOOST_UBLAS_INLINE
-	compressed_vector & assign_temporary(compressed_vector & v)
+	inline compressed_vector & assign_temporary(compressed_vector & v)
 	{
 		swap(v);
 		return *this;
@@ -381,8 +343,7 @@ public:
 
 
 	template<class AE>
-	BOOST_UBLAS_INLINE
-	compressed_vector & operator =(const vector_expression<AE> & ae)
+	inline compressed_vector & operator =(const vector_expression<AE> & ae)
 	{
 		self_type temporary(ae, capacity_);
 
@@ -391,8 +352,7 @@ public:
 
 
 	template<class AE>
-	BOOST_UBLAS_INLINE
-	compressed_vector & assign(const vector_expression<AE> & ae)
+	inline compressed_vector & assign(const vector_expression<AE> & ae)
 	{
 		vector_assign<scalar_assign> (*this, ae);
 		return *this;
@@ -401,8 +361,7 @@ public:
 
 	// Computed assignment
 	template<class AE>
-	BOOST_UBLAS_INLINE
-	compressed_vector & operator +=(const vector_expression<AE> & ae)
+	inline compressed_vector & operator +=(const vector_expression<AE> & ae)
 	{
 		self_type temporary(*this + ae, capacity_);
 
@@ -411,8 +370,7 @@ public:
 
 
 	template<class C>              // Container assignment without temporary
-	BOOST_UBLAS_INLINE
-	compressed_vector & operator +=(const vector_container<C> & v)
+	inline compressed_vector & operator +=(const vector_container<C> & v)
 	{
 		plus_assign(v);
 		return *this;
@@ -420,8 +378,7 @@ public:
 
 
 	template<class AE>
-	BOOST_UBLAS_INLINE
-	compressed_vector & plus_assign(const vector_expression<AE> & ae)
+	inline compressed_vector & plus_assign(const vector_expression<AE> & ae)
 	{
 		vector_assign<scalar_plus_assign> (*this, ae);
 		return *this;
@@ -429,8 +386,7 @@ public:
 
 
 	template<class AE>
-	BOOST_UBLAS_INLINE
-	compressed_vector & operator -=(const vector_expression<AE> & ae)
+	inline compressed_vector & operator -=(const vector_expression<AE> & ae)
 	{
 		self_type temporary(*this - ae, capacity_);
 
@@ -439,8 +395,7 @@ public:
 
 
 	template<class C>              // Container assignment without temporary
-	BOOST_UBLAS_INLINE
-	compressed_vector & operator -=(const vector_container<C> & v)
+	inline compressed_vector & operator -=(const vector_container<C> & v)
 	{
 		minus_assign(v);
 		return *this;
@@ -448,8 +403,7 @@ public:
 
 
 	template<class AE>
-	BOOST_UBLAS_INLINE
-	compressed_vector & minus_assign(const vector_expression<AE> & ae)
+	inline compressed_vector & minus_assign(const vector_expression<AE> & ae)
 	{
 		vector_assign<scalar_minus_assign> (*this, ae);
 		return *this;
@@ -457,8 +411,7 @@ public:
 
 
 	template<class AT>
-	BOOST_UBLAS_INLINE
-	compressed_vector & operator *=(const AT & at)
+	inline compressed_vector & operator *=(const AT & at)
 	{
 		vector_assign_scalar<scalar_multiplies_assign> (*this, at);
 		return *this;
@@ -466,8 +419,7 @@ public:
 
 
 	template<class AT>
-	BOOST_UBLAS_INLINE
-	compressed_vector & operator /=(const AT & at)
+	inline compressed_vector & operator /=(const AT & at)
 	{
 		vector_assign_scalar<scalar_divides_assign> (*this, at);
 		return *this;
@@ -475,8 +427,7 @@ public:
 
 
 	// Swapping
-	BOOST_UBLAS_INLINE
-	void swap(compressed_vector & v)
+	inline void swap(compressed_vector & v)
 	{
 		if (this != &v) {
 			std::swap(size_, v.size_);
@@ -489,16 +440,14 @@ public:
 	}
 
 
-	BOOST_UBLAS_INLINE
-	friend void swap(compressed_vector & v1, compressed_vector & v2)
+	inline friend void swap(compressed_vector & v1, compressed_vector & v2)
 	{
 		v1.swap(v2);
 	}
 
 
 	// Back element insertion and erasure
-	BOOST_UBLAS_INLINE
-	void push_back(size_type i, const_reference t)
+	inline void push_back(size_type i, const_reference t)
 	{
 		BOOST_UBLAS_CHECK(filled_ == 0 || index_data_ [filled_ - 1] < i, external_logic());
 		if (filled_ >= capacity_)
@@ -511,8 +460,7 @@ public:
 	}
 
 
-	BOOST_UBLAS_INLINE
-	void pop_back()
+	inline void pop_back()
 	{
 		BOOST_UBLAS_CHECK(filled_ > 0, external_logic());
 		--filled_;
@@ -527,8 +475,7 @@ private:
 	typedef typename IA::const_iterator const_subiterator_type;
 	typedef typename IA::iterator subiterator_type;
 
-	BOOST_UBLAS_INLINE
-	true_reference at_element(size_type i)
+	inline true_reference at_element(size_type i)
 	{
 		BOOST_UBLAS_CHECK(i < size_, bad_index());
 		subiterator_type it(_lower_bound(index_data_.begin(), index_data_.begin() + filled_, i, std::less<size_type> ()));
@@ -542,14 +489,14 @@ public:
 	class iterator;
 
 	// Element lookup
-	// BOOST_UBLAS_INLINE This function seems to be big. So we do not let the compiler inline it.
+	// inline  This function seems to be big. So we do not let the compiler inline  it.
 	const_iterator find(size_type i) const
 	{
 		return const_iterator(*this, _lower_bound(index_data_.begin(), index_data_.begin() + filled_, i, std::less<size_type> ()));
 	}
 
 
-	// BOOST_UBLAS_INLINE This function seems to be big. So we do not let the compiler inline it.
+	// inline  This function seems to be big. So we do not let the compiler inline  it.	
 	iterator find(size_type i)
 	{
 		return iterator(*this, _lower_bound(index_data_.begin(), index_data_.begin() + filled_, i, std::less<size_type> ()));
@@ -568,27 +515,22 @@ public:
 		typedef const typename compressed_vector::pointer pointer;
 
 		// Construction and destruction
-		BOOST_UBLAS_INLINE
-		const_iterator () :
+		inline const_iterator () :
 			container_const_reference<self_type> (), it_() {}
-		BOOST_UBLAS_INLINE
-		const_iterator (const self_type & v, const const_subiterator_type & it) :
+		inline const_iterator (const self_type & v, const const_subiterator_type & it) :
 			container_const_reference<self_type> (v), it_(it) {}
-		BOOST_UBLAS_INLINE
-		const_iterator (const typename self_type::iterator & it) :    // ISSUE self_type:: stops VC8 using std::iterator here
+		inline const_iterator (const typename self_type::iterator & it) :          // ISSUE self_type:: stops VC8 using std::iterator here
 			container_const_reference<self_type> (it()), it_(it.it_) {}
 
 		// Arithmetic
-		BOOST_UBLAS_INLINE
-		const_iterator & operator ++()
+		inline const_iterator & operator ++()
 		{
 			++it_;
 			return *this;
 		}
 
 
-		BOOST_UBLAS_INLINE
-		const_iterator & operator --()
+		inline const_iterator & operator --()
 		{
 			--it_;
 			return *this;
@@ -596,8 +538,7 @@ public:
 
 
 		// Dereference
-		BOOST_UBLAS_INLINE
-		const_reference operator *() const
+		inline const_reference operator *() const
 		{
 			BOOST_UBLAS_CHECK(index() < (*this)().size(), bad_index());
 			return (*this)().value_data_ [it_ - (*this)().index_data_.begin()];
@@ -605,8 +546,7 @@ public:
 
 
 		// Index
-		BOOST_UBLAS_INLINE
-		size_type index() const
+		inline size_type index() const
 		{
 			BOOST_UBLAS_CHECK(*this != (*this)().end(), bad_index());
 			BOOST_UBLAS_CHECK(*it_ < (*this)().size(), bad_index());
@@ -615,8 +555,7 @@ public:
 
 
 		// Assignment
-		BOOST_UBLAS_INLINE
-		const_iterator & operator =(const const_iterator & it)
+		inline const_iterator & operator =(const const_iterator & it)
 		{
 			container_const_reference<self_type>::assign(&it());
 			it_ = it.it_;
@@ -625,8 +564,7 @@ public:
 
 
 		// Comparison
-		BOOST_UBLAS_INLINE
-		bool operator ==(const const_iterator & it) const
+		inline bool operator ==(const const_iterator & it) const
 		{
 			BOOST_UBLAS_CHECK(&(*this)() == &it(), external_logic());
 			return it_ == it.it_;
@@ -637,15 +575,13 @@ private:
 		const_subiterator_type it_;
 	};
 
-	BOOST_UBLAS_INLINE
-	const_iterator begin() const
+	inline const_iterator begin() const
 	{
 		return find(0);
 	}
 
 
-	BOOST_UBLAS_INLINE
-	const_iterator end() const
+	inline const_iterator end() const
 	{
 		return find(size_);
 	}
@@ -663,24 +599,20 @@ public:
 		typedef typename compressed_vector::pointer pointer;
 
 		// Construction and destruction
-		BOOST_UBLAS_INLINE
-		iterator () :
+		inline iterator () :
 			container_reference<self_type> (), it_() {}
-		BOOST_UBLAS_INLINE
-		iterator (self_type & v, const subiterator_type & it) :
+		inline iterator (self_type & v, const subiterator_type & it) :
 			container_reference<self_type> (v), it_(it) {}
 
 		// Arithmetic
-		BOOST_UBLAS_INLINE
-		iterator & operator ++()
+		inline iterator & operator ++()
 		{
 			++it_;
 			return *this;
 		}
 
 
-		BOOST_UBLAS_INLINE
-		iterator & operator --()
+		inline iterator & operator --()
 		{
 			--it_;
 			return *this;
@@ -688,8 +620,7 @@ public:
 
 
 		// Dereference
-		BOOST_UBLAS_INLINE
-		reference operator *() const
+		inline reference operator *() const
 		{
 			BOOST_UBLAS_CHECK(index() < (*this)().size(), bad_index());
 			return (*this)().value_data_ [it_ - (*this)().index_data_.begin()];
@@ -697,8 +628,7 @@ public:
 
 
 		// Index
-		BOOST_UBLAS_INLINE
-		size_type index() const
+		inline size_type index() const
 		{
 			BOOST_UBLAS_CHECK(*this != (*this)().end(), bad_index());
 			BOOST_UBLAS_CHECK(*it_ < (*this)().size(), bad_index());
@@ -707,8 +637,7 @@ public:
 
 
 		// Assignment
-		BOOST_UBLAS_INLINE
-		iterator & operator =(const iterator & it)
+		inline iterator & operator =(const iterator & it)
 		{
 			container_reference<self_type>::assign(&it());
 			it_ = it.it_;
@@ -717,8 +646,7 @@ public:
 
 
 		// Comparison
-		BOOST_UBLAS_INLINE
-		bool operator ==(const iterator & it) const
+		inline bool operator ==(const iterator & it) const
 		{
 			BOOST_UBLAS_CHECK(&(*this)() == &it(), external_logic());
 			return it_ == it.it_;
@@ -731,15 +659,13 @@ private:
 		friend class const_iterator;
 	};
 
-	BOOST_UBLAS_INLINE
-	iterator begin()
+	inline iterator begin()
 	{
 		return find(0);
 	}
 
 
-	BOOST_UBLAS_INLINE
-	iterator end()
+	inline iterator end()
 	{
 		return find(size_);
 	}
@@ -749,29 +675,25 @@ private:
 	typedef reverse_iterator_base<const_iterator> const_reverse_iterator;
 	typedef reverse_iterator_base<iterator> reverse_iterator;
 
-	BOOST_UBLAS_INLINE
-	const_reverse_iterator rbegin() const
+	inline const_reverse_iterator rbegin() const
 	{
 		return const_reverse_iterator(end());
 	}
 
 
-	BOOST_UBLAS_INLINE
-	const_reverse_iterator rend() const
+	inline const_reverse_iterator rend() const
 	{
 		return const_reverse_iterator(begin());
 	}
 
 
-	BOOST_UBLAS_INLINE
-	reverse_iterator rbegin()
+	inline reverse_iterator rbegin()
 	{
 		return reverse_iterator(end());
 	}
 
 
-	BOOST_UBLAS_INLINE
-	reverse_iterator rend()
+	inline reverse_iterator rend()
 	{
 		return reverse_iterator(begin());
 	}
