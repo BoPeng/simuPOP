@@ -2478,7 +2478,7 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 		mutant_vectora new_genotype;
 		if (removeLoci)
 			new_genotype.resize(size * step);
-		new_genotype.reserve(m_genotype.getContainer().index_data().end() - m_genotype.getContainer().index_data().begin());
+		new_genotype.reserve(m_genotype.index_data().end() - m_genotype.index_data().begin());
 #else
 		vectora new_genotype;
 		new_genotype.reserve(size * step);
