@@ -132,9 +132,9 @@ public:
 
 private:
 #ifdef MUTANTALLELE
-	compressed_vector<Allele>::index_array_type::iterator m_ptr;
-	compressed_vector<Allele>::index_array_type::iterator m_end;
-	compressed_vector<Allele>::value_array_type::iterator m_value;
+	compressed_vector::index_array_type::iterator m_ptr;
+	compressed_vector::index_array_type::iterator m_end;
+	compressed_vector::value_array_type::iterator m_value;
 #else
 	GenoIterator m_begin;
 	GenoIterator m_ptr;
@@ -222,6 +222,12 @@ public:
 		m_genoPtr = pos;
 	}
 
+	/// CPPONLY set genotype pointer (use if Allele*pos can not be determined during construction)
+	void setGenoPtr(ConstGenoIterator pos)
+	{
+		m_genoPtr = pos;
+	}
+
 #ifdef LINEAGE
 	/// CPPONLY set lineage pointer 
 	void setLineagePtr(LineageIterator pos)
@@ -248,10 +254,16 @@ public:
 	//@{
 
 	/// CPPONLY pointer to alleles
-	GenoIterator genoPtr() const
+	GenoIterator genoPtr() 
 	{
 		return m_genoPtr;
 	}
+
+	ConstGenoIterator genoPtr() const
+	{
+		return m_genoPtr;
+	}
+
 
 #ifdef LINEAGE
 	/// CPPONLY pointer to lineage
@@ -1125,7 +1137,7 @@ typedef InformationIterator<ConstRawIndIterator> ConstIndInfoIterator;
       c): not haplodiploid
 
  */
-template <typename T>
+template <typename T, typename ITER>
 class CombinedAlleleIterator
 {
 public:
@@ -1140,7 +1152,7 @@ public:
 	}
 
 
-	CombinedAlleleIterator(size_t shift, GenoIterator ptr, GenoIterator ptrEnd, size_t size)
+	CombinedAlleleIterator(size_t shift, ITER ptr, ITER ptrEnd, size_t size)
 		: m_useGappedIterator(true), m_valid(true), m_shift(shift),
 		m_ptr(ptr), m_ptrEnd(ptrEnd), m_size(size),
 		// ignored
@@ -1188,6 +1200,17 @@ public:
 		return m_valid;
 	}
 
+	// this is the most important part!
+	AlleleRef operator *() 
+	{
+		if (m_useGappedIterator)
+			return *(m_ptr + m_shift);
+		else {
+			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
+			return *(m_it->genoBegin() + m_index + m_p * m_size);
+		}
+	}
+
 
 	// this is the most important part!
 	AlleleRef operator *() const
@@ -1200,8 +1223,7 @@ public:
 		}
 	}
 
-
-	GenoIterator ptr()
+	ITER ptr()
 	{
 		if (m_useGappedIterator)
 			return m_ptr + m_shift;
@@ -1353,9 +1375,9 @@ private:
 	//
 	size_t m_shift;
 	//
-	GenoIterator m_ptr;
+	ITER m_ptr;
 	//
-	GenoIterator m_ptrEnd;
+	ITER m_ptrEnd;
 	// genosize
 	size_t m_size;
 	//
@@ -1375,8 +1397,8 @@ private:
 };
 
 
-typedef CombinedAlleleIterator<RawIndIterator> IndAlleleIterator;
-typedef CombinedAlleleIterator<ConstRawIndIterator> ConstIndAlleleIterator;
+typedef CombinedAlleleIterator<RawIndIterator, GenoIterator> IndAlleleIterator;
+typedef CombinedAlleleIterator<ConstRawIndIterator, ConstGenoIterator> ConstIndAlleleIterator;
 
 #ifdef LINEAGE
 /* This is the lineageIterator version of the CombinedAlleleIterator. It cannot

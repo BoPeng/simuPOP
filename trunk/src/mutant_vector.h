@@ -55,11 +55,8 @@ namespace simuPOP {
 typedef std::vector<std::size_t> IndexArray;
 typedef std::vector<Allele> ValueArray;
 
-template<class T, class IA = IndexArray, class TA = ValueArray>
-class compressed_vector;
-
-template<class I, class T, class C>
-inline I _lower_bound(const I & begin, const I & end, const T & t, C compare)
+template<class I, class C>
+inline I _lower_bound(const I & begin, const I & end, const Allele & t, C compare)
 {
 	// t <= *begin <=> ! (*begin < t)
 	if (begin == end || !compare(*begin, t))
@@ -70,29 +67,27 @@ inline I _lower_bound(const I & begin, const I & end, const T & t, C compare)
 }
 
 
-template<class T, class IA, class TA>
 class compressed_vector :
-	public vector_container<compressed_vector<T, IA, TA> >
+	public vector_container<compressed_vector>
 {
-
-	typedef T & true_reference;
-	typedef T * pointer;
-	typedef const T * const_pointer;
-	typedef compressed_vector<T, IA, TA> self_type;
+	typedef Allele & true_reference;
+	typedef Allele * pointer;
+	typedef const Allele * const_pointer;
+	typedef compressed_vector self_type;
 
 public:
 #  ifdef BOOST_UBLAS_ENABLE_PROXY_SHORTCUTS
 	using vector_container<self_type>::operator ();
 #  endif
 	// ISSUE require type consistency check
-	// is_convertable (IA::size_type, TA::size_type)
-	typedef typename IA::value_type size_type;
-	typedef typename IA::difference_type difference_type;
-	typedef T value_type;
-	typedef const T & const_reference;
-	typedef T & reference;
-	typedef IA index_array_type;
-	typedef TA value_array_type;
+	// is_convertable (IndexArray::size_type, ValueArray::size_type)
+	typedef IndexArray::value_type size_type;
+	typedef IndexArray::difference_type difference_type;
+	typedef Allele value_type;
+	typedef const Allele & const_reference;
+	typedef Allele & reference;
+	typedef IndexArray index_array_type;
+	typedef ValueArray value_array_type;
 	typedef const vector_reference<const self_type> const_closure_type;
 	typedef vector_reference<self_type> closure_type;
 	typedef self_type vector_temporary_type;
@@ -127,7 +122,7 @@ public:
 
 
 	// index and value are swapped in for best performance
-	inline compressed_vector (size_type size, IA & index, TA & value) :
+	inline compressed_vector (size_type size, IndexArray & index, ValueArray & value) :
 		vector_container<self_type> (),
 		size_(size), capacity_(restrict_capacity(index.size())), filled_(index.size()),
 		index_data_(), value_data_()
@@ -136,6 +131,7 @@ public:
 		value_data_.swap(value);
 		storage_invariants();
 	}
+
 
 	template<class AE>
 	inline compressed_vector (const vector_expression<AE> & ae, size_type non_zeros = 0) :
@@ -167,7 +163,7 @@ public:
 	}
 
 
-	inline typename index_array_type::size_type filled() const
+	inline index_array_type::size_type filled() const
 	{
 		return filled_;
 	}
@@ -185,7 +181,7 @@ public:
 	}
 
 
-	inline void set_filled(const typename index_array_type::size_type & filled)
+	inline void set_filled(const index_array_type::size_type & filled)
 	{
 		filled_ = filled;
 		storage_invariants();
@@ -318,13 +314,13 @@ public:
 			reserve(2 * capacity_, true);
 		subiterator_type it(_lower_bound(index_data_.begin(), index_data_.begin() + filled_, i, std::less<size_type> ()));
 		// ISSUE max_capacity limit due to difference_type
-		typename std::iterator_traits<subiterator_type>::difference_type n = it - index_data_.begin();
-		BOOST_UBLAS_CHECK(filled_ == 0 || filled_ == typename index_array_type::size_type(n) || *it != i, internal_logic());           // duplicate found by _lower_bound
+		std::iterator_traits<subiterator_type>::difference_type n = it - index_data_.begin();
+		BOOST_UBLAS_CHECK(filled_ == 0 || filled_ == index_array_type::size_type(n) || *it != i, internal_logic());           // duplicate found by _lower_bound
 		++filled_;
 		it = index_data_.begin() + n;
 		std::copy_backward(it, index_data_.begin() + filled_ - 1, index_data_.begin() + filled_);
 		*it = i;
-		typename value_array_type::iterator itt(value_data_.begin() + n);
+		value_array_type::iterator itt(value_data_.begin() + n);
 		std::copy_backward(itt, value_data_.begin() + filled_ - 1, value_data_.begin() + filled_);
 		*itt = t;
 		storage_invariants();
@@ -336,10 +332,10 @@ public:
 	{
 		subiterator_type it(_lower_bound(index_data_.begin(), index_data_.begin() + filled_, i, std::less<size_type> ()));
 
-		typename std::iterator_traits<subiterator_type>::difference_type n = it - index_data_.begin();
-		if (filled_ > typename index_array_type::size_type(n) && *it == i) {
+		std::iterator_traits<subiterator_type>::difference_type n = it - index_data_.begin();
+		if (filled_ > index_array_type::size_type(n) && *it == i) {
 			std::copy(it + 1, index_data_.begin() + filled_, it);
-			typename value_array_type::iterator itt(value_data_.begin() + n);
+			value_array_type::iterator itt(value_data_.begin() + n);
 			std::copy(itt + 1, value_data_.begin() + filled_, itt);
 			--filled_;
 		}
@@ -516,8 +512,8 @@ public:
 
 private:
 	// Use index array iterator
-	typedef typename IA::const_iterator const_subiterator_type;
-	typedef typename IA::iterator subiterator_type;
+	typedef IndexArray::const_iterator const_subiterator_type;
+	typedef IndexArray::iterator subiterator_type;
 
 	inline true_reference at_element(size_type i)
 	{
@@ -553,17 +549,17 @@ public:
 		                                   const_val_iterator, value_type>
 	{
 public:
-		typedef typename compressed_vector::value_type value_type;
-		typedef typename compressed_vector::difference_type difference_type;
-		typedef typename compressed_vector::const_reference reference;
-		typedef const typename compressed_vector::pointer pointer;
+		typedef compressed_vector::value_type value_type;
+		typedef compressed_vector::difference_type difference_type;
+		typedef compressed_vector::const_reference reference;
+		typedef const compressed_vector::pointer pointer;
 
 		// Construction and destruction
 		inline const_val_iterator () :
 			container_const_reference<self_type> (), it_() {}
 		inline const_val_iterator (const self_type & v, const const_subiterator_type & it) :
 			container_const_reference<self_type> (v), it_(it) {}
-		inline const_val_iterator (const typename self_type::iterator & it) :          // ISSUE self_type:: stops VC8 using std::iterator here
+		inline const_val_iterator (const self_type::val_iterator & it) :          // ISSUE self_type:: stops VC8 using std::iterator here
 			container_const_reference<self_type> (it()), it_(it.it_) {}
 
 		// Arithmetic
@@ -637,10 +633,10 @@ private:
 		                                   val_iterator, value_type>
 	{
 public:
-		typedef typename compressed_vector::value_type value_type;
-		typedef typename compressed_vector::difference_type difference_type;
-		typedef typename compressed_vector::true_reference reference;
-		typedef typename compressed_vector::pointer pointer;
+		typedef compressed_vector::value_type value_type;
+		typedef compressed_vector::difference_type difference_type;
+		typedef compressed_vector::true_reference reference;
+		typedef compressed_vector::pointer pointer;
 
 		// Construction and destruction
 		inline val_iterator () :
@@ -743,21 +739,23 @@ private:
 	}
 
 
+	class const_iterator;
+
 	class iterator :
-		public container_reference<compressed_vector>
+		public container_reference<self_type>
 	{
 protected:
 		mutable size_t m_index;
 		mutable ssize_t m_com_index;
 
 public:
-		typedef std::input_iterator_tag iterator_category;
-		typedef T & reference;
-		typedef T * pointer;
+		typedef std::input_iterator_tag iteratorcategory;
+		typedef Allele & reference;
+		typedef Allele * pointer;
 		typedef long int difference_type;
-		typedef T value_type;
+		typedef Allele value_type;
 
-		iterator (const iterator & iter) : container_reference<self_type>(iter()),
+		iterator (const iterator & iter) : container_reference<self_type>(const_cast<self_type &>(iter())),
 			m_index(iter.m_index), m_com_index(iter.m_com_index)
 		{
 		}
@@ -768,30 +766,9 @@ public:
 		}
 
 
-		iterator (self_type & v) : container_reference<self_type>(v), m_index(0), m_com_index(-1)
+		iterator (self_type & v) : container_reference<self_type>(const_cast<self_type &>(v)), m_index(0), m_com_index(-1)
 		{
 			// m_com_index is the smallest index of mutants (or -1 is nothing is there)
-		}
-
-
-		iterator (self_type & v, size_t index)
-			: container_reference<self_type>(v), m_index(index)
-		{
-			if (index == 0) {
-				if ((*this)().index_data().size() > 0)
-					if ((*this)().index_data()[0] > 0)
-						m_com_index = -1;
-					else
-						m_com_index = 0;
-				else
-					m_com_index = -1;
-			} else {
-				typename index_array_type::iterator lower =
-				    std::lower_bound((*this)().index_data().begin(),
-						(*this)().index_data().begin() + (*this)().filled(), index);
-				m_com_index = lower - (*this)().index_data().begin();
-			}
-			// find the smallest m_com_index  that is larger than index
 		}
 
 
@@ -807,7 +784,7 @@ public:
 				else
 					m_com_index = -1;
 			} else {
-				typename index_array_type::iterator lower =
+				index_array_type::iterator lower =
 				    std::lower_bound((*this)().index_data().begin(),
 						(*this)().index_data().begin() + (*this)().filled(), index);
 				m_com_index = lower - (*this)().index_data().begin();
@@ -827,55 +804,43 @@ public:
 
 		bool operator ==(const iterator & iter) const
 		{
-			if (m_index == iter.m_index)
-				return true;
-			return false;
+			return m_index == iter.m_index;
 		}
 
 
 		bool operator !=(const iterator & iter) const
 		{
-			if (m_index != iter.m_index)
-				return true;
-			return false;
+			return m_index != iter.m_index;
 		}
 
 
 		bool operator >=(const iterator & iter) const
 		{
-			if (m_index >= iter.m_index)
-				return true;
-			return false;
+			return m_index >= iter.m_index;
 		}
 
 
 		bool operator <=(const iterator & iter) const
 		{
-			if (m_index <= iter.m_index)
-				return true;
-			return false;
+			return m_index <= iter.m_index;
 		}
 
 
 		bool operator >(const iterator & iter) const
 		{
-			if (m_index > iter.m_index)
-				return true;
-			return false;
+			return m_index > iter.m_index;
 		}
 
 
 		bool operator <(const iterator & iter) const
 		{
-			if (m_index < iter.m_index)
-				return true;
-			return false;
+			return m_index < iter.m_index;
 		}
 
 
-		T value() const
+		const_reference value() const
 		{
-			static const T zero = 0;
+			static const Allele zero = 0;
 
 			if (m_com_index < (int)(*this)().index_data().size()) {
 				if (m_com_index == -1)
@@ -889,9 +854,9 @@ public:
 		}
 
 
-		const_reference operator*() const
+		const_reference operator *() const
 		{
-			static const T zero = 0;
+			static const Allele zero = 0;
 
 			if (m_com_index < (int)(*this)().index_data().size()) {
 				if (m_com_index == -1)
@@ -905,7 +870,7 @@ public:
 		}
 
 
-		reference operator*()
+		reference operator *()
 		{
 			return (*this)()[m_index];
 		}
@@ -972,13 +937,13 @@ public:
 		iterator & operator+=(const iterator & iter)
 		{
 			m_index += iter.m_index;
-			if (m_index > size())
-				m_index = size();
+			if (m_index > (*this)().size())
+				m_index = (*this)().size();
 			if ((*this)().index_data().size() == 0)
 				return *this;
 			if (m_com_index == -1)
 				m_com_index = 0;
-			typename index_array_type::const_iterator lower =
+			index_array_type::const_iterator lower =
 			    std::lower_bound((*this)().index_data().begin() + m_com_index,
 					(*this)().index_data().begin() + (*this)().filled(), m_index);
 			m_com_index = lower - (*this)().index_data().begin();
@@ -989,13 +954,13 @@ public:
 		const iterator & operator+=(const iterator & iter)  const
 		{
 			m_index += iter.m_index;
-			if (m_index > size())
-				m_index = size();
+			if (m_index > (*this)().size())
+				m_index = (*this)().size();
 			if ((*this)().index_data().size() == 0)
 				return *this;
 			if (m_com_index == -1)
 				m_com_index = 0;
-			typename index_array_type::const_iterator lower =
+			index_array_type::const_iterator lower =
 			    std::lower_bound((*this)().index_data().begin() + m_com_index, (*this)().index_data().begin() + (*this)().filled(), m_index);
 			m_com_index = lower - (*this)().index_data().begin();
 			return *this;
@@ -1011,7 +976,7 @@ public:
 				return *this;
 			if (m_com_index == -1)
 				m_com_index = 0;
-			typename index_array_type::const_iterator lower =
+			index_array_type::const_iterator lower =
 			    std::lower_bound((*this)().index_data().begin() + m_com_index, (*this)().index_data().begin() + (*this)().filled(), m_index);
 			m_com_index = lower - (*this)().index_data().begin();
 			return *this;
@@ -1027,7 +992,7 @@ public:
 				return *this;
 			if (m_com_index == -1)
 				m_com_index = 0;
-			typename index_array_type::const_iterator lower =
+			index_array_type::const_iterator lower =
 			    std::lower_bound((*this)().index_data().begin() + m_com_index, (*this)().index_data().begin() + (*this)().filled(), m_index);
 			m_com_index = lower - (*this)().index_data().begin();
 			return *this;
@@ -1045,7 +1010,7 @@ public:
 			iterator result = *this;
 
 			result.m_index += iter.m_index;
-			typename index_array_type::const_iterator lower =
+			index_array_type::const_iterator lower =
 			    std::lower_bound((*this)().index_data().begin(), (*this)().index_data().begin() + (*this)().filled(), result.m_index);
 			result.m_com_index = lower - (*this)().index_data().begin();
 
@@ -1058,33 +1023,34 @@ public:
 			iterator result = *this;
 
 			result.m_index += size;
-			typename index_array_type::const_iterator lower =
+			index_array_type::const_iterator lower =
 			    std::lower_bound((*this)().index_data().begin(), (*this)().index_data().begin() + (*this)().filled(), result.m_index);
 			result.m_com_index = lower - (*this)().index_data().begin();
 			return result;
 		}
 
 
-		size_t operator -(iterator & iter)
+		size_t operator -(const iterator & iter) const
 		{
 
-			return (*this).m_index - iter.m_index;
+			return m_index - iter.m_index;
 		}
 
 
-		iterator operator -(const iterator & iter) const
-		{
-			iterator result = *this;
+		/*
+		   iterator operator -(const iterator & iter) const
+		   {
+		    iterator result = *this;
 
-			result.m_index -= iter.m_index;
-			if (m_com_index == -1)
-				return result;
-			typename index_array_type::const_reverse_iterator upper =
-			    std::upper_bound((*this)().index_data().rbegin() + ((*this)().index_data().size() - m_com_index), (*this)().index_data().rend(), result.m_index);
-			result.m_com_index = (*this)().index_data().rend() - upper;
-			return result;
-		}
-
+		    result.m_index -= iter.m_index;
+		    if (m_com_index == -1)
+		        return result;
+		    index_array_type::const_reverse_iterator upper =
+		        std::upper_bound((*this)().index_data().rbegin() + ((*this)().index_data().size() - m_com_index), (*this)().index_data().rend(), result.m_index);
+		    result.m_com_index = (*this)().index_data().rend() - upper;
+		    return result;
+		   }
+		 */
 
 		iterator operator -(const size_t size) const
 		{
@@ -1093,7 +1059,7 @@ public:
 			result.m_index -= size;
 			if (m_com_index == -1)
 				return result;
-			typename index_array_type::const_reverse_iterator upper =
+			index_array_type::const_reverse_iterator upper =
 			    std::upper_bound((*this)().index_data().rbegin() + ((*this)().index_data().size() - m_com_index), (*this)().index_data().rend(), result.m_index);
 			result.m_com_index = (*this)().index_data().rend() - upper;
 			return result;
@@ -1133,7 +1099,7 @@ public:
 		        }
 		 */
 
-		typename index_array_type::iterator getIndexIterator()
+		index_array_type::iterator getIndexIterator() const
 		{
 			//return (*this).index_data().begin() + findPositionIndexData();
 			//return std::lower_bound((*this).index_data().begin(), (*this).index_data().begin() + (*this).filled(), m_index);
@@ -1146,7 +1112,7 @@ public:
 		}
 
 
-		typename value_array_type::iterator getValueIterator()
+		value_array_type::iterator getValueIterator() const
 		{
 			//return (*this)().value_data().begin() + findPositionIndexData();
 			//size_t com_index = getIndexIterator() - (*this)().index_data().begin();
@@ -1160,34 +1126,7 @@ public:
 		}
 
 
-		typename index_array_type::const_iterator getIndexIterator() const
-		{
-			//return (*this)().index_data().begin() + findPositionIndexData();
-			//return std::lower_bound((*this)().index_data().begin(), (*this)().index_data().begin() + (*this)().filled(), m_index);
-			if (m_com_index == -1)
-				return (*this)().index_data().begin();
-			else if (m_com_index > (ssize_t)(*this)().filled())
-				return (*this)().index_data().begin() + (*this)().filled();
-			else
-				return (*this)().index_data().begin() + m_com_index;
-		}
-
-
-		typename value_array_type::const_iterator getValueIterator() const
-		{
-			//return (*this)().value_data().begin() + findPositionIndexData();
-			//size_t com_index = getIndexIterator() - (*this)().index_data().begin();
-			//return (*this)().value_data().begin() + com_index;
-			if (m_com_index == -1)
-				return (*this)().value_data().begin();
-			else if (m_com_index > (ssize_t)(*this)().filled())
-				return (*this)().value_data().begin() + (*this)().filled();
-			else
-				return (*this)().value_data().begin() + m_com_index;
-		}
-
-
-		iterator getCompressedVectorIterator()
+		val_iterator getCompressedVectorIterator()
 		{
 			return (*this)().find(m_index);
 		}
@@ -1205,7 +1144,7 @@ public:
 		}
 
 
-		compressed_vector<T> * getContainer()
+		compressed_vector * getContainer()
 		{
 			return &((*this)());
 		}
@@ -1226,6 +1165,412 @@ public:
 		}
 
 
+		friend class const_iterator;
+
+		operator const_iterator() const
+		{
+			return *reinterpret_cast<const_iterator *>(const_cast<iterator *>(this));
+		}
+	};
+
+
+	class const_iterator :
+		public container_const_reference<self_type>
+	{
+protected:
+		mutable size_t m_index;
+		mutable ssize_t m_com_index;
+
+public:
+		typedef std::input_iterator_tag iteratorcategory;
+		typedef Allele & reference;
+		typedef Allele * pointer;
+		typedef long int difference_type;
+		typedef Allele value_type;
+
+		const_iterator (const const_iterator & iter) : container_const_reference<self_type>(const_cast<self_type &>(iter())),
+			m_index(iter.m_index), m_com_index(iter.m_com_index)
+		{
+		}
+
+
+		const_iterator () : container_const_reference<self_type>(), m_index(0), m_com_index(-1)
+		{
+		}
+
+
+		const_iterator (self_type & v) : container_const_reference<self_type>(const_cast<self_type &>(v)), m_index(0), m_com_index(-1)
+		{
+			// m_com_index is the smallest index of mutants (or -1 is nothing is there)
+		}
+
+
+		const_iterator (const self_type & v, size_t index)
+			: container_const_reference<self_type>(const_cast<self_type &>(v)), m_index(index)
+		{
+			if (index == 0) {
+				if ((*this)().index_data().size() > 0)
+					if ((*this)().index_data()[0] > 0)
+						m_com_index = -1;
+					else
+						m_com_index = 0;
+				else
+					m_com_index = -1;
+			} else {
+				index_array_type::const_iterator lower =
+				    std::lower_bound((*this)().index_data().begin(),
+						(*this)().index_data().begin() + (*this)().filled(), index);
+				m_com_index = lower - (*this)().index_data().begin();
+			}
+			// find the smallest m_com_index  that is larger than index
+		}
+
+
+		const_iterator & operator =(const const_iterator & iter)
+		{
+			container_const_reference<self_type>::assign(&iter());
+			m_index = iter.m_index;
+			m_com_index = iter.m_com_index;
+			return *this;
+		}
+
+
+		bool operator ==(const const_iterator & iter) const
+		{
+			return m_index == iter.m_index;
+		}
+
+
+		bool operator !=(const const_iterator & iter) const
+		{
+			return m_index != iter.m_index;
+		}
+
+
+		bool operator >=(const const_iterator & iter) const
+		{
+			return m_index >= iter.m_index;
+		}
+
+
+		bool operator <=(const const_iterator & iter) const
+		{
+			return m_index <= iter.m_index;
+		}
+
+
+		bool operator >(const const_iterator & iter) const
+		{
+			return m_index > iter.m_index;
+		}
+
+
+		bool operator <(const const_iterator & iter) const
+		{
+			return m_index < iter.m_index;
+		}
+
+
+		const_reference value() const
+		{
+			static const Allele zero = 0;
+
+			if (m_com_index < (int)(*this)().index_data().size()) {
+				if (m_com_index == -1)
+					return zero;
+				else if (m_index < (*this)().index_data()[m_com_index])
+					return zero;
+				else
+					return (*this)().value_data()[m_com_index];
+			} else
+				return zero;
+		}
+
+
+		const_reference operator *() const
+		{
+			static const Allele zero = 0;
+
+			if (m_com_index < (int)(*this)().index_data().size()) {
+				if (m_com_index == -1)
+					return zero;
+				else if (m_index < (*this)().index_data()[m_com_index])
+					return zero;
+				else
+					return (*this)().value_data()[m_com_index];
+			} else
+				return zero;
+		}
+
+
+		const_reference operator [](const size_t i) const
+		{
+			return (*this)()[m_index + i];
+		}
+
+
+		/// CPPONLY pre-incrment return by-reference
+		const_iterator & operator++()
+		{
+			++m_index;
+			if ((*this)().index_data().size() == 0)
+				return *this;
+			if (m_com_index == -1)
+				m_com_index = 0;
+			if (m_com_index < (int)(*this)().index_data().size() && m_index > (*this)().index_data()[m_com_index])
+				++m_com_index;
+			return *this;
+		}
+
+
+		const const_iterator & operator++() const
+		{
+			++m_index;
+			if ((*this)().index_data().size() == 0)
+				return *this;
+			if (m_com_index == -1)
+				m_com_index = 0;
+			if (m_com_index < (int)(*this)().index_data().size() && m_index > (*this)().index_data()[m_com_index])
+				++m_com_index;
+			return *this;
+		}
+
+
+		/// CPPONLY post-incrment return by-value
+		const_iterator operator++(int)
+		{
+			const_iterator orig = *this;
+
+			++(*this);
+			return orig;
+		}
+
+
+		const const_iterator operator++(int)  const
+		{
+			const const_iterator orig = *this;
+
+			++(*this);
+			return orig;
+		}
+
+
+		const_iterator & operator+=(const const_iterator & iter)
+		{
+			m_index += iter.m_index;
+			if (m_index > (*this)().size())
+				m_index = (*this)().size();
+			if ((*this)().index_data().size() == 0)
+				return *this;
+			if (m_com_index == -1)
+				m_com_index = 0;
+			index_array_type::const_iterator lower =
+			    std::lower_bound((*this)().index_data().begin() + m_com_index,
+					(*this)().index_data().begin() + (*this)().filled(), m_index);
+			m_com_index = lower - (*this)().index_data().begin();
+			return *this;
+		}
+
+
+		const const_iterator & operator+=(const const_iterator & iter)  const
+		{
+			m_index += iter.m_index;
+			if (m_index > (*this)().size())
+				m_index = (*this)().size();
+			if ((*this)().index_data().size() == 0)
+				return *this;
+			if (m_com_index == -1)
+				m_com_index = 0;
+			index_array_type::const_iterator lower =
+			    std::lower_bound((*this)().index_data().begin() + m_com_index, (*this)().index_data().begin() + (*this)().filled(), m_index);
+			m_com_index = lower - (*this)().index_data().begin();
+			return *this;
+		}
+
+
+		const_iterator & operator+=(const size_t size)
+		{
+			m_index += size;
+			if (m_index > (*this)().size())
+				m_index = (*this)().size();
+			if ((*this)().index_data().size() == 0)
+				return *this;
+			if (m_com_index == -1)
+				m_com_index = 0;
+			index_array_type::const_iterator lower =
+			    std::lower_bound((*this)().index_data().begin() + m_com_index, (*this)().index_data().begin() + (*this)().filled(), m_index);
+			m_com_index = lower - (*this)().index_data().begin();
+			return *this;
+		}
+
+
+		const const_iterator & operator+=(const size_t size)  const
+		{
+			m_index += size;
+			if (m_index > (*this)().size())
+				m_index = (*this)().size();
+			if ((*this)().index_data().size() == 0)
+				return *this;
+			if (m_com_index == -1)
+				m_com_index = 0;
+			index_array_type::const_iterator lower =
+			    std::lower_bound((*this)().index_data().begin() + m_com_index, (*this)().index_data().begin() + (*this)().filled(), m_index);
+			m_com_index = lower - (*this)().index_data().begin();
+			return *this;
+		}
+
+
+		/*size_t operator + (iterator & iter)
+		   {
+		    return (*this).m_index + iter.m_index;
+		   }
+		 */
+
+		const_iterator operator +(const const_iterator & iter) const
+		{
+			const_iterator result = *this;
+
+			result.m_index += iter.m_index;
+			index_array_type::const_iterator lower =
+			    std::lower_bound((*this)().index_data().begin(), (*this)().index_data().begin() + (*this)().filled(), result.m_index);
+			result.m_com_index = lower - (*this)().index_data().begin();
+
+			return result;
+		}
+
+
+		const_iterator operator +(const size_t size) const
+		{
+			const_iterator result = *this;
+
+			result.m_index += size;
+			index_array_type::const_iterator lower =
+			    std::lower_bound((*this)().index_data().begin(), (*this)().index_data().begin() + (*this)().filled(), result.m_index);
+			result.m_com_index = lower - (*this)().index_data().begin();
+			return result;
+		}
+
+
+		size_t operator -(const const_iterator & iter) const
+		{
+
+			return m_index - iter.m_index;
+		}
+
+
+		/*
+		   iterator operator -(const iterator & iter) const
+		   {
+		    iterator result = *this;
+
+		    result.m_index -= iter.m_index;
+		    if (m_com_index == -1)
+		        return result;
+		    index_array_type::const_reverse_iterator upper =
+		        std::upper_bound((*this)().index_data().rbegin() + ((*this)().index_data().size() - m_com_index), (*this)().index_data().rend(), result.m_index);
+		    result.m_com_index = (*this)().index_data().rend() - upper;
+		    return result;
+		   }
+		 */
+
+		const_iterator operator -(const size_t size) const
+		{
+			const_iterator result = *this;
+
+			result.m_index -= size;
+			if (m_com_index == -1)
+				return result;
+			index_array_type::const_reverse_iterator upper =
+			    std::upper_bound((*this)().index_data().rbegin() + ((*this)().index_data().size() - m_com_index), (*this)().index_data().rend(), result.m_index);
+			result.m_com_index = (*this)().index_data().rend() - upper;
+			return result;
+		}
+
+
+		size_t findPositionIndexData()
+		{
+			for (size_t i = 0; i < (*this)().filled(); i++) {
+				if (i < (*this)().filled() - 1 && m_index > (*this)().index_data()[i]) {
+					continue;
+				} else if (i == (*this)().filled() - 1 && m_index > (*this)().index_data()[i]) {
+					return i + 1;
+				}else {
+					return i;
+				}
+			}
+
+			return 0;
+		}
+
+
+		/*
+		        size_t findPositionIndexData(iterator & it, size_t idxStart = 0) const
+		        {
+		            for (size_t i = idxStart; i < it.(*this).filled(); i++) {
+		                if (i < it.(*this).filled() - 1 && it.m_index > it.(*this).index_data()[i]) {
+		                    continue;
+		                } else if (i == it.(*this).filled() - 1 && it.m_index > it.(*this).index_data()[i]) {
+		                    return i + 1;
+		                }else {
+		                    return i;
+		                }
+		            }
+
+		            return 0;
+		        }
+		 */
+
+		index_array_type::const_iterator getIndexIterator() const
+		{
+			//return (*this).index_data().begin() + findPositionIndexData();
+			//return std::lower_bound((*this).index_data().begin(), (*this).index_data().begin() + (*this).filled(), m_index);
+			if (m_com_index == -1)
+				return (*this)().index_data().begin();
+			else if (m_com_index > (ssize_t)(*this)().filled())
+				return (*this)().index_data().begin() + (*this)().filled();
+			else
+				return (*this)().index_data().begin() + m_com_index;
+		}
+
+
+		value_array_type::const_iterator getValueIterator() const
+		{
+			//return (*this)().value_data().begin() + findPositionIndexData();
+			//size_t com_index = getIndexIterator() - (*this)().index_data().begin();
+			//return (*this)().value_data().begin() + com_index;
+			if (m_com_index == -1)
+				return (*this)().value_data().begin();
+			else if (m_com_index > (ssize_t)(*this)().filled())
+				return (*this)().value_data().begin() + (*this)().filled();
+			else
+				return (*this)().value_data().begin() + m_com_index;
+		}
+
+
+		const_val_iterator getCompressedVectorIterator()
+		{
+			return (*this)().find(m_index);
+		}
+
+
+		size_t getIndex() const
+		{
+			return m_index;
+		}
+
+
+		size_t getComIndex() const
+		{
+			return m_com_index;
+		}
+
+
+		const compressed_vector * getContainer()
+		{
+			return &((*this)());
+		}
+
+
 	};
 
 
@@ -1235,9 +1580,9 @@ public:
 	}
 
 
-	const iterator begin() const
+	const_iterator begin() const
 	{
-		return iterator(*this, 0);
+		return const_iterator(*this, 0);
 	}
 
 
@@ -1247,19 +1592,18 @@ public:
 	}
 
 
-	const iterator end() const
+	const_iterator end() const
 	{
-		return iterator(*this, size());
+		return const_iterator(*this, size());
 	}
 
 
 	void erase(iterator begin, iterator end)
 	{
-
 		if (end != this->end()) {
 			std::copy(end.getValueIterator(), this->end().getValueIterator(), begin.getValueIterator());
-			typename index_array_type::iterator it = end.getIndexIterator();
-			typename index_array_type::iterator index_end = end.getIndexIterator();
+			index_array_type::iterator it = end.getIndexIterator();
+			index_array_type::iterator index_end = end.getIndexIterator();
 			for (; it != this->end().getIndexIterator(); ++it) {
 				*it -= (end - begin);
 			}
@@ -1269,12 +1613,12 @@ public:
 	}
 
 
-	void insert(iterator it, iterator begin, iterator end)
+	void insert(iterator it, const_iterator begin, const_iterator end)
 	{
-		typename index_array_type::iterator src_index_begin = begin.getIndexIterator();
-		typename index_array_type::iterator src_index_end = end.getIndexIterator();
-		typename value_array_type::iterator src_value_begin = begin.getValueIterator();
-		typename value_array_type::iterator src_value_end = end.getValueIterator();
+		index_array_type::const_iterator src_index_begin = begin.getIndexIterator();
+		index_array_type::const_iterator src_index_end = end.getIndexIterator();
+		value_array_type::const_iterator src_value_begin = begin.getValueIterator();
+		value_array_type::const_iterator src_value_end = end.getValueIterator();
 		size_t insert_size = end - begin;
 		size_t index_insert_size = src_index_end - src_index_begin;
 		size_t filled_size = filled();
@@ -1284,9 +1628,9 @@ public:
 			reserve(2 * filled_size + index_insert_size, true);
 		}
 
-		typename index_array_type::iterator dest_index_begin = it.getIndexIterator();
-		typename index_array_type::iterator dest_index_end = this->end().getIndexIterator();
-		typename value_array_type::iterator dest_value_begin = it.getValueIterator();
+		index_array_type::iterator dest_index_begin = it.getIndexIterator();
+		index_array_type::iterator dest_index_end = this->end().getIndexIterator();
+		value_array_type::iterator dest_value_begin = it.getValueIterator();
 
 		std::copy_backward(dest_index_begin, it.getContainer()->index_data().begin() + filled_size, it.getContainer()->index_data().begin() + filled_size + index_insert_size);
 		for (size_t i = 0; i < (size_t)(dest_index_end - dest_index_begin); i++) {
@@ -1302,8 +1646,6 @@ public:
 	}
 
 
-	typedef const iterator const_iterator;
-
 private:
 	void storage_invariants() const
 	{
@@ -1315,8 +1657,8 @@ private:
 
 
 	size_type size_;
-	typename index_array_type::size_type capacity_;
-	typename index_array_type::size_type filled_;
+	index_array_type::size_type capacity_;
+	index_array_type::size_type filled_;
 	index_array_type index_data_;
 	value_array_type value_data_;
 	static const value_type zero_;
@@ -1325,30 +1667,27 @@ private:
 	friend class const_val_iterator;
 };
 
-template<class T, class IA, class TA>
-const typename compressed_vector<T, IA, TA>::value_type compressed_vector<T, IA, TA>::zero_ = value_type/*zero*/ ();
-
+const compressed_vector::value_type compressed_vector::zero_ = value_type/*zero*/ ();
 
 //typedef unsigned char Allele;
-typedef compressed_vector<Allele>::reference AlleleRef;
+typedef compressed_vector::reference AlleleRef;
 
-typedef compressed_vector<Allele> mutant_vectora;
+typedef compressed_vector mutant_vectora;
 
 
-inline void copy(mutant_vectora::iterator begin, mutant_vectora::iterator end, mutant_vectora::iterator it)
+inline void copy(mutant_vectora::const_iterator begin, mutant_vectora::const_iterator end, mutant_vectora::iterator it)
 {
-
 	size_t size = end - begin;
 	mutant_vectora::iterator it_end = it + size;
 
 	if (it_end.getIndex() <= it_end.getContainer()->size()) {
-		compressed_vector<Allele>::index_array_type::const_iterator src_index_begin = begin.getIndexIterator();
-		compressed_vector<Allele>::index_array_type::const_iterator src_index_end = end.getIndexIterator();
-		compressed_vector<Allele>::value_array_type::const_iterator src_value_begin = begin.getValueIterator();
-		compressed_vector<Allele>::value_array_type::const_iterator src_value_end = end.getValueIterator();
-		compressed_vector<Allele>::index_array_type::iterator dest_index_begin = it.getIndexIterator();
-		compressed_vector<Allele>::index_array_type::iterator dest_index_end = it_end.getIndexIterator();
-		compressed_vector<Allele>::value_array_type::iterator dest_value_begin = it.getValueIterator();
+		compressed_vector::index_array_type::const_iterator src_index_begin = begin.getIndexIterator();
+		compressed_vector::index_array_type::const_iterator src_index_end = end.getIndexIterator();
+		compressed_vector::value_array_type::const_iterator src_value_begin = begin.getValueIterator();
+		compressed_vector::value_array_type::const_iterator src_value_end = end.getValueIterator();
+		compressed_vector::index_array_type::iterator dest_index_begin = it.getIndexIterator();
+		compressed_vector::index_array_type::iterator dest_index_end = it_end.getIndexIterator();
+		compressed_vector::value_array_type::iterator dest_value_begin = it.getValueIterator();
 		size_t src_size = src_index_end - src_index_begin;
 		size_t dest_size = dest_index_end - dest_index_begin;
 		size_t src_idx_num_begin = begin.getIndex();
@@ -1396,11 +1735,12 @@ inline void copy(mutant_vectora::iterator begin, mutant_vectora::iterator end, m
 
 inline void fill(mutant_vectora::iterator begin, mutant_vectora::iterator end, Allele value)
 {
-	compressed_vector<Allele>::index_array_type::iterator index_begin = begin.getIndexIterator();
-	compressed_vector<Allele>::index_array_type::iterator index_end = end.getIndexIterator();
-	compressed_vector<Allele>::value_array_type::iterator value_begin = begin.getValueIterator();
+	compressed_vector::index_array_type::iterator index_begin = begin.getIndexIterator();
+	compressed_vector::index_array_type::iterator index_end = end.getIndexIterator();
+	compressed_vector::value_array_type::iterator value_begin = begin.getValueIterator();
 	size_t diff_size = index_end - index_begin;
 	size_t filled_size = begin.getContainer()->filled();
+
 	if (value == 0) {
 		std::copy(index_begin + diff_size, begin.getContainer()->index_data().begin() + filled_size, index_begin);
 		std::copy(value_begin + diff_size, begin.getContainer()->value_data().begin() + filled_size, value_begin);
