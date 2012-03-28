@@ -3522,9 +3522,25 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 			max_allele = max(max_allele, *max_element(mutVal.begin(), mutVal.end()));
 		}
 		//
+#ifdef MUTANTALLELE
+		// avoid multiple insertion
+		IndexArray idx;
+		ValueArray val;
+		for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
+			if (mutLoc[i]) {
+				idx.push_back(i);
+				if (!singleMut)
+					val.push_back(ToAllele(mutVal[j++]));
+			}
+		if (singleMut)
+			val.resize(idx.size(), ToAllele(singleMutVal));
+		mutant_vectora geno(size, idx, val);
+		m_genotype.swap(geno);
+#else
 		for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
 			if (mutLoc[i])
 				m_genotype[i] = singleMut ? ToAllele(singleMutVal) : ToAllele(mutVal[j++]);
+#endif
 	} else if (version == 0) {
 #ifdef BINARYALLELE
 		// binary from binary
@@ -3555,23 +3571,34 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 			DBG_DO(DBG_POPULATION, cerr << "Load mutant from binary. " << endl);
 			size_t size;
 			ar & size;
-			m_genotype.resize(size);
 			GenoIterator ptr = m_genotype.begin();
 			WORDTYPE data = 0;
+			IndexArray idx;
 			for (size_t i = 0; i < size; ++i) {
 				if (i % 32 == 0)
 					ar & data;
-				*ptr++ = (data & (1UL << (i % 32))) != 0;
+				if ((data & (1UL << (i % 32))) != 0)
+					idx.push_back(i);
 			}
+			ValueArray val(idx.size(), 1);
+			mutant_vectora geno(size, idx, val);
+			m_genotype.swap(geno);
 		} else {
 			DBG_DO(DBG_POPULATION, cerr << "Load mutant from long. " << endl);
 			vectora data;
 			ar & data;
-			m_genotype.resize(data.size());
+			IndexArray idx;
+			ValueArray val;
+			idx.reserve(data.size());
+			val.reserve(data.size());
 			for (size_t i = 0; i < data.size(); ++i) {
-				if (data[i] != 0)
-					m_genotype[i] = data[i];
+				if (data[i] != 0) {
+					idx.push_back(i);
+					val.push_back(data[i]);
+				}
 			}
+			mutant_vectora geno(data.size(), idx, val);
+			m_genotype.swap(geno);
 		}
 #else
 		// long from binary
@@ -3711,9 +3738,25 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 				max_allele = max(max_allele, *max_element(mutVal.begin(), mutVal.end()));
 			}
 			//
+#ifdef MUTANTALLELE
+			// avoid multiple insertion
+			IndexArray idx;
+			ValueArray val;
+			for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
+				if (mutLoc[i]) {
+					idx.push_back(i);
+					if (!singleMut)
+						val.push_back(ToAllele(mutVal[j++]));
+				}
+			if (singleMut)
+				val.resize(idx.size(), ToAllele(singleMutVal));
+			mutant_vectora geno(size, idx, val);
+			pd.m_genotype.swap(geno);
+#else
 			for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
 				if (mutLoc[i])
 					pd.m_genotype[i] = singleMut ? ToAllele(singleMutVal) : ToAllele(mutVal[j++]);
+#endif
 		} else if (version == 0) {
 #ifdef BINARYALLELE
 			// binary from binary
@@ -3744,23 +3787,34 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 				DBG_DO(DBG_POPULATION, cerr << "Load mutant from binary. " << endl);
 				size_t size;
 				ar & size;
-				pd.m_genotype.resize(size);
-				GenoIterator ptr = pd.m_genotype.begin();
 				WORDTYPE data = 0;
+				//
+				IndexArray idx;
 				for (size_t i = 0; i < size; ++i) {
 					if (i % 32 == 0)
 						ar & data;
-					*ptr++ = (data & (1UL << (i % 32))) != 0;
+					if ((data & (1UL << (i % 32))) != 0)
+						idx.push_back(i);
 				}
+				ValueArray val(idx.size(), 1);
+				mutant_vectora geno(size, idx, val);
+				pd.m_genotype.swap(geno);
 			} else {
 				DBG_DO(DBG_POPULATION, cerr << "Load mutant from long. " << endl);
 				vectora data;
 				ar & data;
-				pd.m_genotype.resize(data.size());
+				IndexArray idx;
+				ValueArray val;
+				idx.reserve(data.size());
+				val.reserve(data.size());
 				for (size_t i = 0; i < data.size(); ++i) {
-					if (data[i] != 0)
-						pd.m_genotype[i] = data[i];
+					if (data[i] != 0) {
+						idx.push_back(i);
+						val.push_back(data[i]);
+					}
 				}
+				mutant_vectora geno(data.size(), idx, val);
+				pd.m_genotype.swap(geno);
 			}
 #else
 			if (ma == 1) {
