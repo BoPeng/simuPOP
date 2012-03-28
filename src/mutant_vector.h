@@ -485,28 +485,28 @@ private:
 
 
 public:
-	class const_iterator;
-	class iterator;
+	class const_val_iterator;
+	class val_iterator;
 
 	// Element lookup
 	// inline  This function seems to be big. So we do not let the compiler inline  it.
-	const_iterator find(size_type i) const
+	const_val_iterator find(size_type i) const
 	{
-		return const_iterator(*this, _lower_bound(index_data_.begin(), index_data_.begin() + filled_, i, std::less<size_type> ()));
+		return const_val_iterator(*this, _lower_bound(index_data_.begin(), index_data_.begin() + filled_, i, std::less<size_type> ()));
 	}
 
 
 	// inline  This function seems to be big. So we do not let the compiler inline  it.	
-	iterator find(size_type i)
+	val_iterator find(size_type i)
 	{
-		return iterator(*this, _lower_bound(index_data_.begin(), index_data_.begin() + filled_, i, std::less<size_type> ()));
+		return val_iterator(*this, _lower_bound(index_data_.begin(), index_data_.begin() + filled_, i, std::less<size_type> ()));
 	}
 
 
-	class const_iterator :
+	class const_val_iterator :
 		public container_const_reference<compressed_vector>,
 		public bidirectional_iterator_base<sparse_bidirectional_iterator_tag,
-		                                   const_iterator, value_type>
+		                                   const_val_iterator, value_type>
 	{
 public:
 		typedef typename compressed_vector::value_type value_type;
@@ -515,22 +515,22 @@ public:
 		typedef const typename compressed_vector::pointer pointer;
 
 		// Construction and destruction
-		inline const_iterator () :
+		inline const_val_iterator () :
 			container_const_reference<self_type> (), it_() {}
-		inline const_iterator (const self_type & v, const const_subiterator_type & it) :
+		inline const_val_iterator (const self_type & v, const const_subiterator_type & it) :
 			container_const_reference<self_type> (v), it_(it) {}
-		inline const_iterator (const typename self_type::iterator & it) :          // ISSUE self_type:: stops VC8 using std::iterator here
+		inline const_val_iterator (const typename self_type::iterator & it) :          // ISSUE self_type:: stops VC8 using std::iterator here
 			container_const_reference<self_type> (it()), it_(it.it_) {}
 
 		// Arithmetic
-		inline const_iterator & operator ++()
+		inline const_val_iterator & operator ++()
 		{
 			++it_;
 			return *this;
 		}
 
 
-		inline const_iterator & operator --()
+		inline const_val_iterator & operator --()
 		{
 			--it_;
 			return *this;
@@ -555,7 +555,7 @@ public:
 
 
 		// Assignment
-		inline const_iterator & operator =(const const_iterator & it)
+		inline const_val_iterator & operator =(const const_val_iterator & it)
 		{
 			container_const_reference<self_type>::assign(&it());
 			it_ = it.it_;
@@ -564,7 +564,7 @@ public:
 
 
 		// Comparison
-		inline bool operator ==(const const_iterator & it) const
+		inline bool operator ==(const const_val_iterator & it) const
 		{
 			BOOST_UBLAS_CHECK(&(*this)() == &it(), external_logic());
 			return it_ == it.it_;
@@ -575,13 +575,13 @@ private:
 		const_subiterator_type it_;
 	};
 
-	inline const_iterator begin() const
+	inline const_val_iterator val_begin() const
 	{
 		return find(0);
 	}
 
 
-	inline const_iterator end() const
+	inline const_val_iterator val_end() const
 	{
 		return find(size_);
 	}
@@ -656,46 +656,46 @@ public:
 private:
 		subiterator_type it_;
 
-		friend class const_iterator;
+		friend class const_val_iterator;
 	};
 
-	inline iterator begin()
+	inline val_iterator val_begin()
 	{
 		return find(0);
 	}
 
 
-	inline iterator end()
+	inline val_iterator val_end()
 	{
 		return find(size_);
 	}
 
 
 	// Reverse iterator
-	typedef reverse_iterator_base<const_iterator> const_reverse_iterator;
-	typedef reverse_iterator_base<iterator> reverse_iterator;
+	typedef reverse_iterator_base<const_val_iterator> const_reverse_val_iterator;
+	typedef reverse_iterator_base<val_iterator> reverse_val_iterator;
 
-	inline const_reverse_iterator rbegin() const
+	inline const_reverse_val_iterator val_rbegin() const
 	{
-		return const_reverse_iterator(end());
+		return const_reverse_val_iterator(val_end());
 	}
 
 
-	inline const_reverse_iterator rend() const
+	inline const_reverse_val_iterator val_rend() const
 	{
-		return const_reverse_iterator(begin());
+		return const_reverse_val_iterator(val_begin());
 	}
 
 
-	inline reverse_iterator rbegin()
+	inline reverse_val_iterator val_rbegin()
 	{
-		return reverse_iterator(end());
+		return reverse_val_iterator(val_end());
 	}
 
 
-	inline reverse_iterator rend()
+	inline reverse_val_iterator val_rend()
 	{
-		return reverse_iterator(begin());
+		return reverse_val_iterator(val_begin());
 	}
 
 
@@ -716,8 +716,8 @@ private:
 	value_array_type value_data_;
 	static const value_type zero_;
 
-	friend class iterator;
-	friend class const_iterator;
+	friend class val_iterator;
+	friend class const_val_iterator;
 };
 
 template<class T, class IA, class TA>
