@@ -120,9 +120,18 @@ bool BaseMutator::apply(Population & pop) const
 	DBG_FAILIF(m_rates.empty(), ValueError, "Please specify mutation rate or rates.");
 	// all use the same rate
 	vectorf rates = m_rates;
+	bool rare = true;
 	if (rates.size() == 1) {
+		if (rates[0] > 1e02)
+			rare = false;
 		rates.resize(m_loci.allAvail() ? pop.totNumLoci() : m_loci.size());
 		fill(rates.begin() + 1, rates.end(), rates[0]);
+	} else {
+		for (size_t i = 0; i < rates.size(); ++i)
+			if (rates[i] > 1e-2) {
+				rare = false;
+				break;
+			}
 	}
 	// multiple (virtual) subpopulations
 	for (size_t idx = 0; idx < subPops.size(); ++idx) {
@@ -140,15 +149,22 @@ bool BaseMutator::apply(Population & pop) const
 		if (subPops[idx].isVirtual())
 			pop.activateVirtualSubPop(subPops[idx]);
 
-		bt.setParameter(rates, pop.ploidy() * popSize);
-
-		bt.doTrial();
+		size_t max_pos = pop.ploidy() * popSize;
+		if (!rare) {
+			bt.setParameter(rates, max_pos);
+			bt.doTrial();
+		}
 		const vectoru & loci = m_loci.elems(&pop);
 		size_t iEnd = m_loci.allAvail() ? pop.totNumLoci() : loci.size();
 		for (size_t i = 0; i < iEnd; ++i) {
 			size_t locus = loci[i];
 			DBG_DO(DBG_MUTATOR, cerr << "Mutate at locus " << locus << endl);
-			size_t pos = bt.trialFirstSucc(i);
+			size_t pos = 0;
+			if (rare) {
+				size_t step = getRNG().randGeometric(rates[i]);
+				pos = step == 0 ? Bernullitrials::npos : (step - 1); 
+			} else
+				pos = bt.trialFirstSucc(i);
 			size_t lastPos = 0;
 			IndAlleleIterator ptr = pop.alleleIterator(locus, sp);
 			LINEAGE_EXPR(IndLineageIterator lineagePtr = pop.lineageIterator(locus, sp));
@@ -165,7 +181,7 @@ bool BaseMutator::apply(Population & pop) const
 					ptr += static_cast<IndAlleleIterator::difference_type>(pos - lastPos);
 					lastPos = pos;
 					if (!ptr.valid())
-						continue;
+						break;
 					Allele alleleValue = *ptr;
 					(void)alleleValue;  // suppress a warning for unused variable
 					DBG_DO(DBG_MUTATOR, cerr << "Allele " << int(*ptr) << " at locus " << locus);
@@ -200,7 +216,12 @@ bool BaseMutator::apply(Population & pop) const
 						*lineagePtr = lineage;
 					}
 #endif
-				} while ( (pos = bt.trialNextSucc(i, pos)) != Bernullitrials::npos);
+					if (rare) {
+						size_t step = getRNG().randGeometric(rates[i]);
+						pos = (step == 0 || step + pos >= max_pos) ? Bernullitrials::npos : (pos + step); 
+					} else
+						pos = bt.trialNextSucc(i, pos);
+				} while (pos != Bernullitrials::npos);
 			}                                                                                           // succ.any
 		}
 
