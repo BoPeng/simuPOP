@@ -750,6 +750,7 @@ public:
 		{
 		}
 
+
 		iterator (self_type & v) : container_reference<self_type>(v), m_index(0), m_com_index(-1)
 		{
 			// m_com_index is the smallest index of mutants (or -1 is nothing is there)
@@ -777,7 +778,7 @@ public:
 		}
 
 
-		iterator (const self_type & v, size_t index) 
+		iterator (const self_type & v, size_t index)
 			: container_reference<self_type>(const_cast<self_type &>(v)), m_index(index)
 		{
 			if (index == 0) {
@@ -852,6 +853,22 @@ public:
 			if (m_index < iter.m_index)
 				return true;
 			return false;
+		}
+
+
+		T value() const
+		{
+			static const T zero = 0;
+
+			if (m_com_index < (int)(*this)().index_data().size()) {
+				if (m_com_index == -1)
+					return zero;
+				else if (m_index < (*this)().index_data()[m_com_index])
+					return zero;
+				else
+					return (*this)().value_data()[m_com_index];
+			} else
+				return zero;
 		}
 
 
@@ -945,7 +962,7 @@ public:
 			if (m_com_index == -1)
 				m_com_index = 0;
 			typename index_array_type::const_iterator lower =
-			    std::lower_bound((*this)().index_data().begin() + m_com_index, 
+			    std::lower_bound((*this)().index_data().begin() + m_com_index,
 					(*this)().index_data().begin() + (*this)().filled(), m_index);
 			m_com_index = lower - (*this)().index_data().begin();
 			return *this;
@@ -1195,7 +1212,7 @@ public:
 	};
 
 
-	iterator  begin()
+	iterator begin()
 	{
 		return iterator(*this, 0);
 	}
