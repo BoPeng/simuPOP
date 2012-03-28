@@ -30,7 +30,6 @@
 %{
 
 #include "config.h"
-#include "mutant_vector.h"
 #include "simuPOP_cfg.h"
 #include "genoStru.h"
 #include "individual.h"
