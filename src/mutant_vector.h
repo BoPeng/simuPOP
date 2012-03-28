@@ -22,7 +22,7 @@ using boost::numeric::ublas::unbounded_array;
 #  define _MUTANT_VECTOR_H
 
 namespace simuPOP {
-template<class T, std::size_t IB = 0, class IA = unbounded_array<std::size_t>, class TA = unbounded_array<T> >
+template<class T, class IA = unbounded_array<std::size_t>, class TA = unbounded_array<T> >
 class compressed_vector;
 
 template<class I, class T, class C>
@@ -38,15 +38,15 @@ I _lower_bound(const I & begin, const I & end, const T & t, C compare)
 }
 
 
-template<class T, std::size_t IB, class IA, class TA>
+template<class T, class IA, class TA>
 class compressed_vector :
-	public vector_container<compressed_vector<T, IB, IA, TA> >
+	public vector_container<compressed_vector<T, IA, TA> >
 {
 
 	typedef T & true_reference;
 	typedef T * pointer;
 	typedef const T * const_pointer;
-	typedef compressed_vector<T, IB, IA, TA> self_type;
+	typedef compressed_vector<T, IA, TA> self_type;
 
 public:
 #  ifdef BOOST_UBLAS_ENABLE_PROXY_SHORTCUTS
@@ -135,7 +135,7 @@ public:
 	BOOST_UBLAS_INLINE
 	static size_type index_base()
 	{
-		return IB;
+		return 0;
 	}
 
 
@@ -204,7 +204,7 @@ public:
 			index_data_.resize(capacity_, size_type());
 			value_data_.resize(capacity_, value_type());
 			filled_ = (std::min)(capacity_, filled_);
-			while ((filled_ > 0) && (zero_based(index_data_[filled_ - 1]) >= size)) {
+			while ((filled_ > 0) && (index_data_[filled_ - 1] >= size)) {
 				--filled_;
 			}
 		}else  {
@@ -245,9 +245,9 @@ public:
 	BOOST_UBLAS_INLINE
 	const_pointer find_element(size_type i) const
 	{
-		const_subiterator_type it(_lower_bound(index_data_.begin(), index_data_.begin() + filled_, k_based(i), std::less<size_type> ()));
+		const_subiterator_type it(_lower_bound(index_data_.begin(), index_data_.begin() + filled_, i, std::less<size_type> ()));
 
-		if (it == index_data_.begin() + filled_ || *it != k_based(i))
+		if (it == index_data_.begin() + filled_ || *it != i)
 			return 0;
 		return &value_data_ [it - index_data_.begin()];
 	}
@@ -258,8 +258,8 @@ public:
 	const_reference operator ()(size_type i) const
 	{
 		BOOST_UBLAS_CHECK(i < size_, bad_index());
-		const_subiterator_type it(_lower_bound(index_data_.begin(), index_data_.begin() + filled_, k_based(i), std::less<size_type> ()));
-		if (it == index_data_.begin() + filled_ || *it != k_based(i))
+		const_subiterator_type it(_lower_bound(index_data_.begin(), index_data_.begin() + filled_, i, std::less<size_type> ()));
+		if (it == index_data_.begin() + filled_ || *it != i)
 			return zero_;
 		return value_data_ [it - index_data_.begin()];
 	}
@@ -269,8 +269,8 @@ public:
 	true_reference ref(size_type i)
 	{
 		BOOST_UBLAS_CHECK(i < size_, bad_index());
-		subiterator_type it(_lower_bound(index_data_.begin(), index_data_.begin() + filled_, k_based(i), std::less<size_type> ()));
-		if (it == index_data_.begin() + filled_ || *it != k_based(i))
+		subiterator_type it(_lower_bound(index_data_.begin(), index_data_.begin() + filled_, i, std::less<size_type> ()));
+		if (it == index_data_.begin() + filled_ || *it != i)
 			return insert_element(i, value_type/*zero*/ ());
 		else
 			return value_data_ [it - index_data_.begin()];
@@ -305,14 +305,14 @@ public:
 		BOOST_UBLAS_CHECK(!find_element(i), bad_index());               // duplicate element
 		if (filled_ >= capacity_)
 			reserve(2 * capacity_, true);
-		subiterator_type it(_lower_bound(index_data_.begin(), index_data_.begin() + filled_, k_based(i), std::less<size_type> ()));
+		subiterator_type it(_lower_bound(index_data_.begin(), index_data_.begin() + filled_, i, std::less<size_type> ()));
 		// ISSUE max_capacity limit due to difference_type
 		typename std::iterator_traits<subiterator_type>::difference_type n = it - index_data_.begin();
-		BOOST_UBLAS_CHECK(filled_ == 0 || filled_ == typename index_array_type::size_type(n) || *it != k_based(i), internal_logic());           // duplicate found by _lower_bound
+		BOOST_UBLAS_CHECK(filled_ == 0 || filled_ == typename index_array_type::size_type(n) || *it != i, internal_logic());           // duplicate found by _lower_bound
 		++filled_;
 		it = index_data_.begin() + n;
 		std::copy_backward(it, index_data_.begin() + filled_ - 1, index_data_.begin() + filled_);
-		*it = k_based(i);
+		*it = i;
 		typename value_array_type::iterator itt(value_data_.begin() + n);
 		std::copy_backward(itt, value_data_.begin() + filled_ - 1, value_data_.begin() + filled_);
 		*itt = t;
@@ -324,10 +324,10 @@ public:
 	BOOST_UBLAS_INLINE
 	void erase_element(size_type i)
 	{
-		subiterator_type it(_lower_bound(index_data_.begin(), index_data_.begin() + filled_, k_based(i), std::less<size_type> ()));
+		subiterator_type it(_lower_bound(index_data_.begin(), index_data_.begin() + filled_, i, std::less<size_type> ()));
 
 		typename std::iterator_traits<subiterator_type>::difference_type n = it - index_data_.begin();
-		if (filled_ > typename index_array_type::size_type(n) && *it == k_based(i)) {
+		if (filled_ > typename index_array_type::size_type(n) && *it == i) {
 			std::copy(it + 1, index_data_.begin() + filled_, it);
 			typename value_array_type::iterator itt(value_data_.begin() + n);
 			std::copy(itt + 1, value_data_.begin() + filled_, itt);
@@ -500,11 +500,11 @@ public:
 	BOOST_UBLAS_INLINE
 	void push_back(size_type i, const_reference t)
 	{
-		BOOST_UBLAS_CHECK(filled_ == 0 || index_data_ [filled_ - 1] < k_based(i), external_logic());
+		BOOST_UBLAS_CHECK(filled_ == 0 || index_data_ [filled_ - 1] < i, external_logic());
 		if (filled_ >= capacity_)
 			reserve(2 * capacity_, true);
 		BOOST_UBLAS_CHECK(filled_ < capacity_, internal_logic());
-		index_data_ [filled_] = k_based(i);
+		index_data_ [filled_] = i;
 		value_data_ [filled_] = t;
 		++filled_;
 		storage_invariants();
@@ -531,8 +531,8 @@ private:
 	true_reference at_element(size_type i)
 	{
 		BOOST_UBLAS_CHECK(i < size_, bad_index());
-		subiterator_type it(_lower_bound(index_data_.begin(), index_data_.begin() + filled_, k_based(i), std::less<size_type> ()));
-		BOOST_UBLAS_CHECK(it != index_data_.begin() + filled_ && *it == k_based(i), bad_index());
+		subiterator_type it(_lower_bound(index_data_.begin(), index_data_.begin() + filled_, i, std::less<size_type> ()));
+		BOOST_UBLAS_CHECK(it != index_data_.begin() + filled_ && *it == i, bad_index());
 		return value_data_ [it - index_data_.begin()];
 	}
 
@@ -545,14 +545,14 @@ public:
 	// BOOST_UBLAS_INLINE This function seems to be big. So we do not let the compiler inline it.
 	const_iterator find(size_type i) const
 	{
-		return const_iterator(*this, _lower_bound(index_data_.begin(), index_data_.begin() + filled_, k_based(i), std::less<size_type> ()));
+		return const_iterator(*this, _lower_bound(index_data_.begin(), index_data_.begin() + filled_, i, std::less<size_type> ()));
 	}
 
 
 	// BOOST_UBLAS_INLINE This function seems to be big. So we do not let the compiler inline it.
 	iterator find(size_type i)
 	{
-		return iterator(*this, _lower_bound(index_data_.begin(), index_data_.begin() + filled_, k_based(i), std::less<size_type> ()));
+		return iterator(*this, _lower_bound(index_data_.begin(), index_data_.begin() + filled_, i, std::less<size_type> ()));
 	}
 
 
@@ -609,8 +609,8 @@ public:
 		size_type index() const
 		{
 			BOOST_UBLAS_CHECK(*this != (*this)().end(), bad_index());
-			BOOST_UBLAS_CHECK((*this)().zero_based(*it_) < (*this)().size(), bad_index());
-			return (*this)().zero_based(*it_);
+			BOOST_UBLAS_CHECK(*it_ < (*this)().size(), bad_index());
+			return *it_;
 		}
 
 
@@ -701,8 +701,8 @@ public:
 		size_type index() const
 		{
 			BOOST_UBLAS_CHECK(*this != (*this)().end(), bad_index());
-			BOOST_UBLAS_CHECK((*this)().zero_based(*it_) < (*this)().size(), bad_index());
-			return (*this)().zero_based(*it_);
+			BOOST_UBLAS_CHECK(*it_ < (*this)().size(), bad_index());
+			return *it_;
 		}
 
 
@@ -783,7 +783,7 @@ private:
 		BOOST_UBLAS_CHECK(capacity_ == index_data_.size(), internal_logic());
 		BOOST_UBLAS_CHECK(capacity_ == value_data_.size(), internal_logic());
 		BOOST_UBLAS_CHECK(filled_ <= capacity_, internal_logic());
-		BOOST_UBLAS_CHECK((0 == filled_) || (zero_based(index_data_[filled_ - 1]) < size_), internal_logic());
+		BOOST_UBLAS_CHECK((0 == filled_) || (index_data_[filled_ - 1] < size_), internal_logic());
 	}
 
 
@@ -794,26 +794,12 @@ private:
 	value_array_type value_data_;
 	static const value_type zero_;
 
-	BOOST_UBLAS_INLINE
-	static size_type zero_based(size_type k_based_index)
-	{
-		return k_based_index - IB;
-	}
-
-
-	BOOST_UBLAS_INLINE
-	static size_type k_based(size_type zero_based_index)
-	{
-		return zero_based_index + IB;
-	}
-
-
 	friend class iterator;
 	friend class const_iterator;
 };
 
-template<class T, std::size_t IB, class IA, class TA>
-const typename compressed_vector<T, IB, IA, TA>::value_type compressed_vector<T, IB, IA, TA>::zero_ = value_type/*zero*/ ();
+template<class T, class IA, class TA>
+const typename compressed_vector<T, IA, TA>::value_type compressed_vector<T, IA, TA>::zero_ = value_type/*zero*/ ();
 
 
 /// CPPONLY
