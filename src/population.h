@@ -831,9 +831,15 @@ public:
 	 */
 	IndAlleleIterator alleleIterator(size_t locus);
 
-
 	/// CPPONLY allele begin, for given subPop
 	IndAlleleIterator alleleIterator(size_t locus, size_t subPop);
+
+    /// CPPONLY
+	ConstIndAlleleIterator alleleIterator(size_t locus) const;
+
+
+	/// CPPONLY allele begin, for given subPop
+	ConstIndAlleleIterator alleleIterator(size_t locus, size_t subPop) const;
 
 #ifdef LINEAGE
 	/// CPPONLY lineage begin, for given subPop

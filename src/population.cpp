@@ -568,6 +568,47 @@ IndAlleleIterator Population::alleleIterator(size_t locus, size_t subPop)
 }
 
 
+ConstIndAlleleIterator Population::alleleIterator(size_t locus) const
+{
+	CHECKRANGEABSLOCUS(locus);
+
+	// if there is virtual subpop, use Individual based iterator
+	// or
+	// if requires order, but the alleles are not ordered
+	// use Individual based
+	size_t ct = chromType(chromLocusPair(locus).first);
+	if (hasActivatedVirtualSubPop() || !indOrdered()
+	    || (ct != AUTOSOME && ct != CUSTOMIZED) || isHaplodiploid())
+		// this is a complex case
+		return ConstIndAlleleIterator(locus, indIterator());
+	else
+		// a simplere case with straightforward iterator
+		return ConstIndAlleleIterator(locus, m_genotype.begin(), m_genotype.end(),
+			totNumLoci());
+}
+
+
+/// CPPONLY allele begin, for given subPop
+ConstIndAlleleIterator Population::alleleIterator(size_t locus, size_t subPop) const
+{
+	CHECKRANGEABSLOCUS(locus);
+	CHECKRANGESUBPOP(subPop);
+
+	size_t ct = chromType(chromLocusPair(locus).first);
+	// this is a complex case
+	if (hasActivatedVirtualSubPop() || !indOrdered()
+	    || (ct != AUTOSOME && ct != CUSTOMIZED && ct != MITOCHONDRIAL) || isHaplodiploid())
+		// this is a complex case
+		return ConstIndAlleleIterator(locus, indIterator(subPop));
+	else
+		// this is a complex case
+		return ConstIndAlleleIterator(locus,
+			m_genotype.begin() + m_subPopIndex[subPop] * genoSize(),
+			m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize(),
+			totNumLoci());
+}
+
+
 #ifdef LINEAGE
 
 /// CPPONLY allele begin, for given subPop
@@ -3275,9 +3316,9 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 	bool singleMut = true;
 	size_t singleMutVal = 0;
 	//
-	compressed_vector<Allele>::index_array_type::const_iterator ptr = m_genotype.begin().getIndexIterator();
-	compressed_vector<Allele>::index_array_type::const_iterator end = m_genotype.end().getIndexIterator();
-	compressed_vector<Allele>::value_array_type::const_iterator value = m_genotype.begin().getValueIterator();
+	compressed_vector::index_array_type::const_iterator ptr = m_genotype.begin().getIndexIterator();
+	compressed_vector::index_array_type::const_iterator end = m_genotype.end().getIndexIterator();
+	compressed_vector::value_array_type::const_iterator value = m_genotype.begin().getValueIterator();
 	for (; ptr != end; ++ptr, ++value) {
 		if (*value != 0) {
 			mutLoc[*ptr] = 1;
@@ -3381,9 +3422,9 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 		bool singleMut = true;
 		size_t singleMutVal = 0;
 		//
-		compressed_vector<Allele>::index_array_type::const_iterator ptr = m_genotype.begin().getIndexIterator();
-		compressed_vector<Allele>::index_array_type::const_iterator end = m_genotype.end().getIndexIterator();
-		compressed_vector<Allele>::value_array_type::const_iterator value = m_genotype.begin().getValueIterator();
+		compressed_vector::index_array_type::const_iterator ptr = m_genotype.begin().getIndexIterator();
+		compressed_vector::index_array_type::const_iterator end = m_genotype.end().getIndexIterator();
+		compressed_vector::value_array_type::const_iterator value = m_genotype.begin().getValueIterator();
 		for (; ptr != end; ++ptr, ++value) {
 			if (*value != 0) {
 				mutLoc[*ptr] = 1;

@@ -155,6 +155,7 @@ typedef unsigned int UINT;
 // windows, I am using unsigned int here.
 typedef unsigned long Allele;
 typedef unsigned long & AlleleRef;
+typedef const unsigned long & ConstAlleleRef;
 //#  else
 // under a unix platform, uint32_t seems to work fine.
 //typedef uint32_t Allele;
@@ -174,6 +175,7 @@ typedef unsigned long & AlleleRef;
 
 typedef bool Allele;
 typedef vector<Allele>::reference AlleleRef;
+typedef vector<Allele>::const_reference ConstAlleleRef;
 // bool type, inc go to 1, dec go to 0
 #    define AlleleInc(a)  (a) = true
 #    define AlleleDec(a)  (a) = false
@@ -186,6 +188,7 @@ typedef vector<Allele>::reference AlleleRef;
 #  else
 typedef unsigned char Allele;
 typedef unsigned char & AlleleRef;
+typedef const unsigned char & ConstAlleleRef;
 #    define AlleleInc(a)  ++ (a)
 #    define AlleleDec(a)  -- (a)
 #    define AlleleAdd(a, b) (a) += (b)
@@ -199,8 +202,8 @@ typedef unsigned char & AlleleRef;
 #include "mutant_vector.h"
 
 #ifdef MUTANTALLELE
-typedef simuPOP::compressed_vector<Allele>::iterator GenoIterator;
-typedef simuPOP::compressed_vector<Allele>::const_iterator ConstGenoIterator;
+typedef simuPOP::compressed_vector::iterator GenoIterator;
+typedef simuPOP::compressed_vector::const_iterator ConstGenoIterator;
 #else
 typedef std::vector<Allele>::iterator GenoIterator;
 typedef std::vector<Allele>::const_iterator ConstGenoIterator;
@@ -368,7 +371,7 @@ typedef std::vector<long>                                vectori;
 typedef std::vector<double>                              vectorf;
 typedef std::vector<Allele>                              vectora;
 #ifdef MUTANTALLELE
-typedef simuPOP::compressed_vector<unsigned int>         compressed_vectora;
+//typedef simuPOP::compressed_vector         compressed_vectora;
 #endif
 typedef std::vector<size_t>                              vectoru;
 typedef std::vector<std::string>                         vectorstr;
