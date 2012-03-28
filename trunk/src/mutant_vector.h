@@ -49,7 +49,13 @@ using boost::numeric::ublas::vector_reference;
 using boost::numeric::ublas::unbounded_array;
 
 namespace simuPOP {
-template<class T, class IA = unbounded_array<std::size_t>, class TA = unbounded_array<T> >
+
+//typedef unbounded_array<std::size_t> IndexArray;
+//typedef unbounded_array<Allele> ValueArray;
+typedef std::vector<std::size_t> IndexArray;
+typedef std::vector<Allele> ValueArray;
+
+template<class T, class IA = IndexArray, class TA = ValueArray>
 class compressed_vector;
 
 template<class I, class T, class C>
@@ -119,6 +125,17 @@ public:
 		storage_invariants();
 	}
 
+
+	// index and value are swapped in for best performance
+	inline compressed_vector (size_type size, IA & index, TA & value) :
+		vector_container<self_type> (),
+		size_(size), capacity_(restrict_capacity(index.size())), filled_(index.size()),
+		index_data_(), value_data_()
+	{
+		index_data_.swap(index);
+		value_data_.swap(value);
+		storage_invariants();
+	}
 
 	template<class AE>
 	inline compressed_vector (const vector_expression<AE> & ae, size_type non_zeros = 0) :
