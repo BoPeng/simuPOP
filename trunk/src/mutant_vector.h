@@ -735,7 +735,7 @@ protected:
 
 public:
 		typedef std::input_iterator_tag iterator_category;
-		typedef self_type::reference reference;
+		typedef T & reference;
 		typedef T * pointer;
 		typedef long int difference_type;
 		typedef T value_type;
