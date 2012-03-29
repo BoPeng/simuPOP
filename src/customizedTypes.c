@@ -53,7 +53,7 @@ typedef struct arrayobject_template<GenoIterator> arrayobject;                  
 bool is_carrayobject(PyObject * op);
 
 /// CPPONLY
-static PyObject *
+PyObject *
 getarrayitem(arrayobject * op, Py_ssize_t i)
 {
 	return getarrayitem_template<GenoIterator>(op, i);
@@ -61,7 +61,7 @@ getarrayitem(arrayobject * op, Py_ssize_t i)
 
 
 /// CPPONLY
-static int
+int
 setarrayitem(arrayobject * ap, Py_ssize_t i, PyObject * v)
 {
 	return setarrayitem_template<GenoIterator>(ap, i, v);
@@ -69,7 +69,7 @@ setarrayitem(arrayobject * ap, Py_ssize_t i, PyObject * v)
 
 
 /// CPPONLY
-static PyObject *
+PyObject *
 carray_new(PyTypeObject * a, PyObject * b, PyObject * c)
 {
 	return carray_new_template<GenoIterator>(a, b, c);
@@ -77,7 +77,7 @@ carray_new(PyTypeObject * a, PyObject * b, PyObject * c)
 
 
 /// CPPONLY
-static PyObject *
+PyObject *
 carray_init(PyTypeObject * a, PyObject * b, PyObject * c)
 {
 	return carray_init_template<GenoIterator>(a, b, c);
@@ -88,7 +88,7 @@ carray_init(PyTypeObject * a, PyObject * b, PyObject * c)
 PyObject * newcarrayobject(GenoIterator begin, GenoIterator end);
 
 /// CPPONLY
-static void
+void
 array_dealloc(arrayobject * op)
 {
 	array_dealloc_template<GenoIterator>(op);
@@ -96,7 +96,7 @@ array_dealloc(arrayobject * op)
 
 
 /// CPPONLY
-static PyObject *
+PyObject *
 array_richcompare(PyObject * v, PyObject * w, int op)
 {
 	return(array_richcompare_template<GenoIterator>(v, w, op));
@@ -104,87 +104,87 @@ array_richcompare(PyObject * v, PyObject * w, int op)
 
 
 /// CPPONLY
-static Py_ssize_t array_length(arrayobject * a)
+Py_ssize_t array_length(arrayobject * a)
 {
 	return(array_length_template<GenoIterator>(a));
 }
 
 
 /// CPPONLY
-static PyObject * array_concat(arrayobject * a, PyObject * o)
+PyObject * array_concat(arrayobject * a, PyObject * o)
 {
 	return(array_concat_template<GenoIterator>(a, o));
 }
 
 
 /// CPPONLY
-static PyObject * array_repeat(arrayobject * a, Py_ssize_t i)
+PyObject * array_repeat(arrayobject * a, Py_ssize_t i)
 {
 	return(array_repeat_template<GenoIterator>(a, i));
 }
 
 
 /// CPPONLY
-static PyObject * array_item(arrayobject * a, Py_ssize_t i)
+PyObject * array_item(arrayobject * a, Py_ssize_t i)
 {
 	return(array_item_template<GenoIterator>(a, i));
 }
 
 
 /// CPPONLY
-static PyObject * array_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh)
+PyObject * array_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh)
 {
 	return(array_slice_template<GenoIterator>(a, ilow, ihigh));
 }
 
 
 /// CPPONLY
-static int array_ass_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh, PyObject * v)
+int array_ass_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh, PyObject * v)
 {
 	return(array_ass_slice_template<GenoIterator>(a, ilow, ihigh, v));
 }
 
 
 /// CPPONLY
-static Py_ssize_t array_ass_item(arrayobject * a, Py_ssize_t i, PyObject * v)
+Py_ssize_t array_ass_item(arrayobject * a, Py_ssize_t i, PyObject * v)
 {
 	return(array_ass_item_template<GenoIterator>(a, i, v));
 }
 
 
 /// CPPONLY
-static PyObject * array_count(arrayobject * self, PyObject * args)
+PyObject * array_count(arrayobject * self, PyObject * args)
 {
 	return(array_count_template<GenoIterator>(self, args));
 }
 
 
 /// CPPONLY
-static char count_doc [] =
+char count_doc [] =
     "count(x)\n\
 \n\
 Return number of occurences of x in the array."                                          ;
 
 /// CPPONLY
-static PyObject * array_index(arrayobject * self, PyObject * args)
+PyObject * array_index(arrayobject * self, PyObject * args)
 {
 	return(array_index_template<GenoIterator>(self, args));
 }
 
 
-static char index_doc [] =
+char index_doc [] =
     "index(x, [start, [stop]])\n\
 \n\
 Return index of first occurence of x in the array.";
 
 /// CPPONLY
-static PyObject * array_tolist(arrayobject * self, PyObject * args)
+PyObject * array_tolist(arrayobject * self, PyObject * args)
 {
 	return(array_tolist_template<GenoIterator>(self, args));
 }
 
 
-static char tolist_doc [] =
+char tolist_doc [] =
     "tolist() -> list\n\
 \n\
 Convert array to an ordinary list with the same items."                                                          ;
@@ -210,7 +210,7 @@ PyMethodDef array_methods[] =
 };
 
 /// CPPONLY
-static PyObject * array_getattr(arrayobject * a, char * name)
+PyObject * array_getattr(arrayobject * a, char * name)
 {
 	if (strcmp(name, "__members__") == 0) {
 		PyObject * list = PyList_New(0);
@@ -221,21 +221,21 @@ static PyObject * array_getattr(arrayobject * a, char * name)
 
 
 /// CPPONLY
-static int array_print(arrayobject * a, FILE * fp, int flags)
+int array_print(arrayobject * a, FILE * fp, int flags)
 {
 	return(array_print_template<GenoIterator>(a, fp, flags));
 }
 
 
 /// CPPONLY
-static PyObject *
+PyObject *
 array_repr(arrayobject * a)
 {
 	return(array_repr_template<GenoIterator>(a));
 }
 
 
-static PySequenceMethods array_as_sequence =
+PySequenceMethods array_as_sequence =
 {
 #  if PY_VERSION_HEX < 0x02050000
 	(inquiry)array_length,                                                      /*sq_length*/
@@ -256,7 +256,7 @@ static PySequenceMethods array_as_sequence =
 #  endif
 };
 
-static char arraytype_doc [] =
+char arraytype_doc [] =
     "An array represents underlying memory of simuPOP structure \n\
 so that you can edit the values in python. The type will behave \n\
 very much like lists, except that you can change its size.\n\
@@ -335,7 +335,7 @@ typedef struct arrayobject_template<LineageIterator> arrayobject_lineage;       
 bool is_carrayobject_lineage(PyObject * op);
 
 /// CPPONLY
-static PyObject *
+PyObject *
 getarrayitem_lineage(arrayobject_lineage * op, Py_ssize_t i)
 {
 	return getarrayitem_template<LineageIterator>(op, i);
@@ -343,7 +343,7 @@ getarrayitem_lineage(arrayobject_lineage * op, Py_ssize_t i)
 
 
 /// CPPONLY
-static int
+int
 setarrayitem_lineage(arrayobject_lineage * ap, Py_ssize_t i, PyObject * v)
 {
 	return setarrayitem_template<LineageIterator>(ap, i, v);
@@ -351,7 +351,7 @@ setarrayitem_lineage(arrayobject_lineage * ap, Py_ssize_t i, PyObject * v)
 
 
 /// CPPONLY
-static PyObject *
+PyObject *
 carray_new_lineage(PyTypeObject * a, PyObject * b, PyObject * c)
 {
 	return carray_new_template<LineageIterator>(a, b, c);
@@ -359,7 +359,7 @@ carray_new_lineage(PyTypeObject * a, PyObject * b, PyObject * c)
 
 
 /// CPPONLY
-static PyObject *
+PyObject *
 carray_init_lineage(PyTypeObject * a, PyObject * b, PyObject * c)
 {
 	return carray_init_template<LineageIterator>(a, b, c);
@@ -370,7 +370,7 @@ carray_init_lineage(PyTypeObject * a, PyObject * b, PyObject * c)
 PyObject * newcarrayobject_lineage(LineageIterator begin, LineageIterator end);
 
 /// CPPONLY
-static void
+void
 array_dealloc_lineage(arrayobject_lineage * op)
 {
 	array_dealloc_template<LineageIterator>(op);
@@ -378,7 +378,7 @@ array_dealloc_lineage(arrayobject_lineage * op)
 
 
 /// CPPONLY
-static PyObject *
+PyObject *
 array_richcompare_lineage(PyObject * v, PyObject * w, int op)
 {
 	return(array_richcompare_template<LineageIterator>(v, w, op));
@@ -386,87 +386,87 @@ array_richcompare_lineage(PyObject * v, PyObject * w, int op)
 
 
 /// CPPONLY
-static Py_ssize_t array_length_lineage(arrayobject_lineage * a)
+Py_ssize_t array_length_lineage(arrayobject_lineage * a)
 {
 	return(array_length_template<LineageIterator>(a));
 }
 
 
 /// CPPONLY
-static PyObject * array_concat_lineage(arrayobject_lineage * a, PyObject * o)
+PyObject * array_concat_lineage(arrayobject_lineage * a, PyObject * o)
 {
 	return(array_concat_template<LineageIterator>(a, o));
 }
 
 
 /// CPPONLY
-static PyObject * array_repeat_lineage(arrayobject_lineage * a, Py_ssize_t i)
+PyObject * array_repeat_lineage(arrayobject_lineage * a, Py_ssize_t i)
 {
 	return(array_repeat_template<LineageIterator>(a, i));
 }
 
 
 /// CPPONLY
-static PyObject * array_item_lineage(arrayobject_lineage * a, Py_ssize_t i)
+PyObject * array_item_lineage(arrayobject_lineage * a, Py_ssize_t i)
 {
 	return(array_item_template<LineageIterator>(a, i));
 }
 
 
 /// CPPONLY
-static PyObject * array_slice_lineage(arrayobject_lineage * a, Py_ssize_t ilow, Py_ssize_t ihigh)
+PyObject * array_slice_lineage(arrayobject_lineage * a, Py_ssize_t ilow, Py_ssize_t ihigh)
 {
 	return(array_slice_template<LineageIterator>(a, ilow, ihigh));
 }
 
 
 /// CPPONLY
-static int array_ass_slice_lineage(arrayobject_lineage * a, Py_ssize_t ilow, Py_ssize_t ihigh, PyObject * v)
+int array_ass_slice_lineage(arrayobject_lineage * a, Py_ssize_t ilow, Py_ssize_t ihigh, PyObject * v)
 {
 	return(array_ass_slice_template<LineageIterator>(a, ilow, ihigh, v));
 }
 
 
 /// CPPONLY
-static Py_ssize_t array_ass_item_lineage(arrayobject_lineage * a, Py_ssize_t i, PyObject * v)
+Py_ssize_t array_ass_item_lineage(arrayobject_lineage * a, Py_ssize_t i, PyObject * v)
 {
 	return(array_ass_item_template<LineageIterator>(a, i, v));
 }
 
 
 /// CPPONLY
-static PyObject * array_count_lineage(arrayobject_lineage * self, PyObject * args)
+PyObject * array_count_lineage(arrayobject_lineage * self, PyObject * args)
 {
 	return(array_count_template<LineageIterator>(self, args));
 }
 
 
 /// CPPONLY
-static char count_doc_lineage [] =
+char count_doc_lineage [] =
     "count(x)\n\
 \n\
 Return number of occurences of x in the array."                                          ;
 
 /// CPPONLY
-static PyObject * array_index_lineage(arrayobject_lineage * self, PyObject * args)
+PyObject * array_index_lineage(arrayobject_lineage * self, PyObject * args)
 {
 	return(array_index_template<LineageIterator>(self, args));
 }
 
 
-static char index_doc_lineage [] =
+char index_doc_lineage [] =
     "index(x, [start, [stop]])\n\
 \n\
 Return index of first occurence of x in the array.";
 
 /// CPPONLY
-static PyObject * array_tolist_lineage(arrayobject_lineage * self, PyObject * args)
+PyObject * array_tolist_lineage(arrayobject_lineage * self, PyObject * args)
 {
 	return(array_tolist_template<LineageIterator>(self, args));
 }
 
 
-static char tolist_doc_lineage [] =
+char tolist_doc_lineage [] =
     "tolist() -> list\n\
 \n\
 Convert array to an ordinary list with the same items."                                                          ;
@@ -492,7 +492,7 @@ PyMethodDef array_methods_lineage[] =
 };
 
 /// CPPONLY
-static PyObject * array_getattr_lineage(arrayobject_lineage * a, char * name)
+PyObject * array_getattr_lineage(arrayobject_lineage * a, char * name)
 {
 	if (strcmp(name, "__members__") == 0) {
 		PyObject * list = PyList_New(0);
@@ -503,21 +503,21 @@ static PyObject * array_getattr_lineage(arrayobject_lineage * a, char * name)
 
 
 /// CPPONLY
-static int array_print_lineage(arrayobject_lineage * a, FILE * fp, int flags)
+int array_print_lineage(arrayobject_lineage * a, FILE * fp, int flags)
 {
 	return(array_print_template<LineageIterator>(a, fp, flags));
 }
 
 
 /// CPPONLY
-static PyObject *
+PyObject *
 array_repr_lineage(arrayobject_lineage * a)
 {
 	return(array_repr_template<LineageIterator>(a));
 }
 
 
-static PySequenceMethods array_as_sequence_lineage =
+PySequenceMethods array_as_sequence_lineage =
 {
 #  if PY_VERSION_HEX < 0x02050000
 	(inquiry)array_length_lineage,                                                      /*sq_length*/
@@ -538,7 +538,7 @@ static PySequenceMethods array_as_sequence_lineage =
 #  endif
 };
 
-static char arraytype_doc_lineage [] =
+char arraytype_doc_lineage [] =
     "An array represents underlying memory of simuPOP structure \n\
 so that you can edit the values in python. The type will behave \n\
 very much like lists, except that you can change its size.\n\
@@ -615,9 +615,9 @@ typedef struct
 	PyDictObject dict;
 } defdictobject;
 
-//static PyTypeObject defdict_type; /* Forward */
+//PyTypeObject defdict_type; /* Forward */
 
-static PyObject *
+PyObject *
 dict_subscript(PyDictObject * mp, register PyObject * key)
 {
 	PyObject * v;
@@ -647,18 +647,18 @@ dict_subscript(PyDictObject * mp, register PyObject * key)
 
 PyDoc_STRVAR(getitem__doc__, "x.__getitem__(y) <==> x[y]");
 
-static PyMethodDef defdict_methods[] = {
+PyMethodDef defdict_methods[] = {
 	{ "__getitem__", (PyCFunction)dict_subscript, METH_O | METH_COEXIST,
 	  getitem__doc__ },
 	{ NULL }
 };
 
 
-static PyMemberDef defdict_members[] = {
+PyMemberDef defdict_members[] = {
 	{ NULL }
 };
 
-static int
+int
 defdict_print(defdictobject * dd, FILE * fp, int /* flags */)
 {
 	int sts;
@@ -670,7 +670,7 @@ defdict_print(defdictobject * dd, FILE * fp, int /* flags */)
 }
 
 
-static int
+int
 defdict_init(PyObject * self, PyObject * args, PyObject * kwds)
 {
 	return PyDict_Type.tp_init(self, args, kwds);
@@ -686,21 +686,21 @@ A defdict compares equal to a dict with the same items.\n\
 /* See comment in xxsubtype.c */
 #  define DEFERRED_ADDRESS(ADDR) 0
 
-static void
+void
 defdict_dealloc(defdictobject * dd)
 {
 	PyDict_Type.tp_dealloc((PyObject *)dd);
 }
 
 
-static int
+int
 defdict_traverse(PyObject * self, visitproc visit, void * arg)
 {
 	return PyDict_Type.tp_traverse(self, visit, arg);
 }
 
 
-static int
+int
 defdict_tp_clear(defdictobject * dd)
 {
 	return PyDict_Type.tp_clear((PyObject *)dd);
@@ -708,9 +708,9 @@ defdict_tp_clear(defdictobject * dd)
 
 
 // will change one of them to my...
-static PyMappingMethods defdict_as_mapping = *PyDict_Type.tp_as_mapping;
+PyMappingMethods defdict_as_mapping = *PyDict_Type.tp_as_mapping;
 
-static PyTypeObject defdict_type = {
+PyTypeObject defdict_type = {
 	PyObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type))
 	0,                              /* ob_size */
 	"simupop.defdict",              /* tp_name */
@@ -812,7 +812,7 @@ bool is_carrayobject(PyObject * op);
 
 PyObject * newcarrayobject(GenoIterator begin, GenoIterator end);
 
-static PyObject *
+PyObject *
 getarrayitem(PyObject * op, Py_ssize_t i)
 {
 	return getarrayitem_template<GenoIterator>(op, i);
@@ -820,7 +820,7 @@ getarrayitem(PyObject * op, Py_ssize_t i)
 
 
 /// CPPONLY
-static int
+int
 setarrayitem(arrayobject * ap, int i, PyObject * v)
 {
 	return setarrayitem_template<GenoIterator>(ap, i, v);
@@ -828,14 +828,14 @@ setarrayitem(arrayobject * ap, int i, PyObject * v)
 
 /* Methods */
 
-static void
+void
 array_dealloc(arrayobject * op)
 {
 	array_dealloc_template<GenoIterator>(op);
 }
 
 
-static PyObject *
+PyObject *
 array_richcompare(PyObject * v, PyObject * w, int op)
 {
 	return array_richcompare_template<GenoIterator>(v, w, op);
@@ -843,42 +843,42 @@ array_richcompare(PyObject * v, PyObject * w, int op)
 }
 
 
-static Py_ssize_t
+Py_ssize_t
 array_length(arrayobject * a)
 {
 	return array_length_template<GenoIterator>(a);
 }
 
 
-static PyObject *
+PyObject *
 array_item(arrayobject * a, Py_ssize_t i)
 {
 	return array_item_template<GenoIterator>(a, i);
 }
 
 
-static PyObject *
+PyObject *
 array_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh)
 {
 	return array_slice_template<GenoIterator>(a, ilow, ihigh);
 }
 
 
-static int
+int
 array_ass_slice(arrayobject * a, Py_ssize_t ilow, Py_ssize_t ihigh, PyObject * v)
 {
 	return array_ass_slice_template<GenoIterator>(a, ilow, ihigh, v);
 }
 
 
-static int
+int
 array_ass_item(arrayobject * a, Py_ssize_t i, PyObject * v)
 {
 	return array_ass_item_template<GenoIterator>(a, i, v);
 }
 
 
-static PyObject *
+PyObject *
 array_count(arrayobject * self, PyObject * v)
 {
 	return array_count_template<GenoIterator>(self, v);
@@ -890,7 +890,7 @@ PyDoc_STRVAR(count_doc,
 \n\
 Return number of occurrences of x in the array."                     );
 
-static PyObject *
+PyObject *
 array_index(arrayobject * self, PyObject * v)
 {
 	return array_index_template<GenoIterator>(self, v);
@@ -902,7 +902,7 @@ PyDoc_STRVAR(index_doc,
 \n\
 Return index of first occurrence of x in the array."                     );
 
-static PyObject *
+PyObject *
 array_tolist(arrayobject * self, PyObject * unused)
 {
 	return array_tolist_template<GenoIterator>(self, unused);
@@ -915,7 +915,7 @@ PyDoc_STRVAR(tolist_doc,
 Convert array to an ordinary list with the same items."                             );
 
 
-static PyMethodDef array_methods[] = {
+PyMethodDef array_methods[] = {
 	{ "count",	(PyCFunction)array_count,	METH_O,
 	  count_doc },
 	{ "index",	(PyCFunction)array_index,	METH_O,
@@ -925,14 +925,14 @@ static PyMethodDef array_methods[] = {
 	{ NULL,		NULL }      /* sentinel */
 };
 
-static PyObject *
+PyObject *
 array_repr(arrayobject * a)
 {
 	return array_repr_template<GenoIterator>(a);
 }
 
 
-static PySequenceMethods array_as_sequence = {
+PySequenceMethods array_as_sequence = {
 	(lenfunc)array_length,                  /*sq_length*/
 	0,                                      /*sq_concat*/
 	0,                                      /*sq_repeat*/
@@ -946,20 +946,20 @@ static PySequenceMethods array_as_sequence = {
 };
 
 
-static PyObject*
+PyObject*
 array_subscr(arrayobject* self, PyObject* item)
 {
 	return array_subscr_template<GenoIterator>(self, item);
 }
 
 
-static int
+int
 array_ass_subscr(arrayobject* self, PyObject* item, PyObject* value)
 {
 	return array_ass_subscr_template<GenoIterator>(self, item, value);
 }
 
-static PyMappingMethods array_as_mapping = {
+PyMappingMethods array_as_mapping = {
 	(lenfunc)array_length,
 	(binaryfunc)array_subscr,
 	(objobjargproc)array_ass_subscr
@@ -1062,7 +1062,7 @@ bool is_carrayobject_lineage(PyObject * op);
 
 PyObject * newcarrayobject_lineage(LineageIterator begin, LineageIterator end);
 
-static PyObject *
+PyObject *
 getarrayitem_lineage(PyObject * op, Py_ssize_t i)
 {
 	return getarrayitem_template<LineageIterator>(op, i);
@@ -1070,7 +1070,7 @@ getarrayitem_lineage(PyObject * op, Py_ssize_t i)
 
 
 /// CPPONLY
-static int
+int
 setarrayitem_lineage(arrayobject_lineage * ap, int i, PyObject * v)
 {
 	return setarrayitem_template<LineageIterator>(ap, i, v);
@@ -1078,14 +1078,14 @@ setarrayitem_lineage(arrayobject_lineage * ap, int i, PyObject * v)
 
 /* Methods */
 
-static void
+void
 array_dealloc_lineage(arrayobject_lineage * op)
 {
 	array_dealloc_template<LineageIterator>(op);
 }
 
 
-static PyObject *
+PyObject *
 array_richcompare_lineage(PyObject * v, PyObject * w, int op)
 {
 	return array_richcompare_template<LineageIterator>(v, w, op);
@@ -1093,42 +1093,42 @@ array_richcompare_lineage(PyObject * v, PyObject * w, int op)
 }
 
 
-static Py_ssize_t
+Py_ssize_t
 array_length_lineage(arrayobject_lineage * a)
 {
 	return array_length_template<LineageIterator>(a);
 }
 
 
-static PyObject *
+PyObject *
 array_item_lineage(arrayobject_lineage * a, Py_ssize_t i)
 {
 	return array_item_template<LineageIterator>(a, i);
 }
 
 
-static PyObject *
+PyObject *
 array_slice_lineage(arrayobject_lineage * a, Py_ssize_t ilow, Py_ssize_t ihigh)
 {
 	return array_slice_template<LineageIterator>(a, ilow, ihigh);
 }
 
 
-static int
+int
 array_ass_slice_lineage(arrayobject_lineage * a, Py_ssize_t ilow, Py_ssize_t ihigh, PyObject * v)
 {
 	return array_ass_slice_template<LineageIterator>(a, ilow, ihigh, v);
 }
 
 
-static int
+int
 array_ass_item_lineage(arrayobject_lineage * a, Py_ssize_t i, PyObject * v)
 {
 	return array_ass_item_template<LineageIterator>(a, i, v);
 }
 
 
-static PyObject *
+PyObject *
 array_count_lineage(arrayobject_lineage * self, PyObject * v)
 {
 	return array_count_template<LineageIterator>(self, v);
@@ -1140,7 +1140,7 @@ PyDoc_STRVAR(count_doc_lineage,
 \n\
 Return number of occurrences of x in the array."                     );
 
-static PyObject *
+PyObject *
 array_index_lineage(arrayobject_lineage * self, PyObject * v)
 {
 	return array_index_template<LineageIterator>(self, v);
@@ -1152,7 +1152,7 @@ PyDoc_STRVAR(index_doc_lineage,
 \n\
 Return index of first occurrence of x in the array."                     );
 
-static PyObject *
+PyObject *
 array_tolist_lineage(arrayobject_lineage * self, PyObject * unused)
 {
 	return array_tolist_template<LineageIterator>(self, unused);
@@ -1165,7 +1165,7 @@ PyDoc_STRVAR(tolist_doc_lineage,
 Convert array to an ordinary list with the same items."                             );
 
 
-static PyMethodDef array_methods_lineage[] = {
+PyMethodDef array_methods_lineage[] = {
 	{ "count",	(PyCFunction)array_count_lineage,	METH_O,
 	  count_doc_lineage },
 	{ "index",	(PyCFunction)array_index_lineage,	METH_O,
@@ -1175,14 +1175,14 @@ static PyMethodDef array_methods_lineage[] = {
 	{ NULL,		NULL }      /* sentinel */
 };
 
-static PyObject *
+PyObject *
 array_repr_lineage(arrayobject_lineage * a)
 {
 	return array_repr_template<LineageIterator>(a);
 }
 
 
-static PySequenceMethods array_as_sequence_lineage = {
+PySequenceMethods array_as_sequence_lineage = {
 	(lenfunc)array_length_lineage,                  /*sq_length*/
 	0,                                      /*sq_concat*/
 	0,                                      /*sq_repeat*/
@@ -1196,20 +1196,20 @@ static PySequenceMethods array_as_sequence_lineage = {
 };
 
 
-static PyObject*
+PyObject*
 array_subscr_lineage(arrayobject_lineage* self, PyObject* item)
 {
 	return array_subscr_template<LineageIterator>(self, item);
 }
 
 
-static int
+int
 array_ass_subscr_lineage(arrayobject_lineage* self, PyObject* item, PyObject* value)
 {
 	return array_ass_subscr_template<LineageIterator>(self, item, value);
 }
 
-static PyMappingMethods array_as_mapping_lineage = {
+PyMappingMethods array_as_mapping_lineage = {
 	(lenfunc)array_length_lineage,
 	(binaryfunc)array_subscr_lineage,
 	(objobjargproc)array_ass_subscr_lineage
@@ -1310,14 +1310,14 @@ typedef struct
 	PyDictObject dict;
 } defdictobject;
 
-//static PyTypeObject defdict_type; /* Forward */
+//PyTypeObject defdict_type; /* Forward */
 
 PyDoc_STRVAR(defdict_missing_doc,
 	"__missing__(key) # Called by __getitem__ for missing key; pseudo-code:\n\
   Return 0\n\
 "                                                                                             );
 
-static PyObject *
+PyObject *
 defdict_missing(defdictobject * dd, PyObject * key)
 {
 	return PyInt_FromLong(0);
@@ -1326,7 +1326,7 @@ defdict_missing(defdictobject * dd, PyObject * key)
 
 PyDoc_STRVAR(defdict_copy_doc, "D.copy() -> a shallow copy of D.");
 
-static PyObject *
+PyObject *
 defdict_copy(defdictobject * dd)
 {
 	/* This calls the object's class.  That only works for subclasses
@@ -1337,7 +1337,7 @@ defdict_copy(defdictobject * dd)
 }
 
 
-static PyObject *
+PyObject *
 defdict_reduce(defdictobject * dd)
 {
 	/* __reduce__ must return a 5-tuple as follows:
@@ -1368,7 +1368,7 @@ defdict_reduce(defdictobject * dd)
 }
 
 
-static PyMethodDef defdict_methods[] = {
+PyMethodDef defdict_methods[] = {
 	{ "__missing__", (PyCFunction)defdict_missing, METH_O,
 	  defdict_missing_doc },
 	{ "copy",		 (PyCFunction)defdict_copy,	   METH_NOARGS,
@@ -1380,18 +1380,18 @@ static PyMethodDef defdict_methods[] = {
 	{ NULL }
 };
 
-static PyMemberDef defdict_members[] = {
+PyMemberDef defdict_members[] = {
 	{ NULL }
 };
 
-static void
+void
 defdict_dealloc(defdictobject * dd)
 {
 	PyDict_Type.tp_dealloc((PyObject *)dd);
 }
 
 
-static PyObject *
+PyObject *
 defdict_repr(defdictobject * dd)
 {
 	PyObject * baserepr;
@@ -1407,21 +1407,21 @@ defdict_repr(defdictobject * dd)
 }
 
 
-static int
+int
 defdict_traverse(PyObject * self, visitproc visit, void * arg)
 {
 	return PyDict_Type.tp_traverse(self, visit, arg);
 }
 
 
-static int
+int
 defdict_tp_clear(defdictobject * dd)
 {
 	return PyDict_Type.tp_clear((PyObject *)dd);
 }
 
 
-static int
+int
 defdict_init(PyObject * self, PyObject * args, PyObject * kwds)
 {
 	return PyDict_Type.tp_init(self, args, kwds);
@@ -1437,7 +1437,7 @@ The default value is returned when an invalid key is used.\n\
 /* See comment in xxsubtype.c */
 #  define DEFERRED_ADDRESS(ADDR) 0
 
-static PyTypeObject defdict_type = {
+PyTypeObject defdict_type = {
 	PyVarObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type),		   0)
 	"simuPOP.defaultdict",                                          /* tp_name */
 	sizeof(defdictobject),                                          /* tp_basicsize */
