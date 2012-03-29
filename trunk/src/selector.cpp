@@ -347,9 +347,9 @@ double PyMlSelector::indFitness(Population & /* pop */, Individual * ind) const
 		size_t numLoci = ind->totNumLoci();
 		GenoIterator it = ind->genoBegin();
 		GenoIterator it_end = ind->genoEnd();
-		compressed_vector<size_t>::index_array_type::iterator index_it = it.getIndexIterator();
-		compressed_vector<size_t>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
-		compressed_vector<Allele>::value_array_type::iterator value_it = it.getValueIterator();
+		vectorm::index_array_type::iterator index_it = it.getIndexIterator();
+		vectorm::index_array_type::iterator index_it_end = it_end.getIndexIterator();
+		vectorm::value_array_type::iterator value_it = it.getValueIterator();
 		for (; index_it != index_it_end; ) {
 			if (*value_it != 0 &&
 			    (m_loci.allAvail() || find(loci.begin(), loci.end(), (*index_it) % numLoci) != loci.end())) {
@@ -365,12 +365,12 @@ double PyMlSelector::indFitness(Population & /* pop */, Individual * ind) const
 		GenoIterator it0_end = ind->genoEnd(0);
 		GenoIterator it1 = ind->genoBegin(1);
 		GenoIterator it1_end = ind->genoEnd(1);
-		compressed_vector<size_t>::index_array_type::iterator index_it0 = it0.getIndexIterator();
-		compressed_vector<size_t>::index_array_type::iterator index_it0_end = it0_end.getIndexIterator();
-		compressed_vector<Allele>::value_array_type::iterator value_it0 = it0.getValueIterator();
-		compressed_vector<size_t>::index_array_type::iterator index_it1 = it1.getIndexIterator();
-		compressed_vector<size_t>::index_array_type::iterator index_it1_end = it1_end.getIndexIterator();
-		compressed_vector<Allele>::value_array_type::iterator value_it1 = it1.getValueIterator();
+		vectorm::index_array_type::iterator index_it0 = it0.getIndexIterator();
+		vectorm::index_array_type::iterator index_it0_end = it0_end.getIndexIterator();
+		vectorm::value_array_type::iterator value_it0 = it0.getValueIterator();
+		vectorm::index_array_type::iterator index_it1 = it1.getIndexIterator();
+		vectorm::index_array_type::iterator index_it1_end = it1_end.getIndexIterator();
+		vectorm::value_array_type::iterator value_it1 = it1.getValueIterator();
 		vectora geno(2, ToAllele(0));
 		for (; index_it0 != index_it0_end || index_it1 != index_it1_end; ) {
 			if (index_it1 == index_it1_end || *index_it0 + numLoci < *index_it1) {

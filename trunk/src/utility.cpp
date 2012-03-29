@@ -175,10 +175,9 @@ using std::greater;
 
 // global constant variables
 #ifdef MUTANTALLELE
-const unsigned long ModuleMaxAllele = 256;
-#else
-const unsigned long ModuleMaxAllele = std::numeric_limits<Allele>::max();
+const simuPOP::vectorm::value_type simuPOP::vectorm::zero_ = 0;
 #endif
+const unsigned long ModuleMaxAllele = std::numeric_limits<Allele>::max();
 const unsigned long MaxRandomNumber = std::numeric_limits<int32_t>::max();
 const unsigned char MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
 const size_t InvalidValue = ~size_t(0);

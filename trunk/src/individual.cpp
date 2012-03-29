@@ -552,7 +552,7 @@ void Individual::setGenotype(const uintList & genoList, const uintList & ply, co
 			GenoIterator ptr = m_genoPtr + p * totNumLoci() + chromBegin(chrom);
 
 #ifdef MUTANTALLELE
-			mutant_vectora ctmp;
+			vectorm ctmp;
 			ctmp.resize(numLoci(chrom));
 			for (size_t i = 0; i < numLoci(chrom); i++, ++idx) {
 				Allele atmp = ToAllele(geno[idx % sz]);

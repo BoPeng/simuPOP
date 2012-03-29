@@ -202,8 +202,8 @@ typedef const unsigned char & ConstAlleleRef;
 #include "mutant_vector.h"
 
 #ifdef MUTANTALLELE
-typedef simuPOP::compressed_vector::iterator GenoIterator;
-typedef simuPOP::compressed_vector::const_iterator ConstGenoIterator;
+typedef simuPOP::vectorm::iterator GenoIterator;
+typedef simuPOP::vectorm::const_iterator ConstGenoIterator;
 #else
 typedef std::vector<Allele>::iterator GenoIterator;
 typedef std::vector<Allele>::const_iterator ConstGenoIterator;
@@ -371,7 +371,7 @@ typedef std::vector<long>                                vectori;
 typedef std::vector<double>                              vectorf;
 typedef std::vector<Allele>                              vectora;
 #ifdef MUTANTALLELE
-//typedef simuPOP::compressed_vector         compressed_vectora;
+//typedef simuPOP::vectorm         vectorm;
 #endif
 typedef std::vector<size_t>                              vectoru;
 typedef std::vector<std::string>                         vectorstr;

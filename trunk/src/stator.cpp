@@ -727,9 +727,9 @@ bool statNumOfSegSites::apply(Population & pop) const
 		for (; ind.valid(); ++ind) {
 			GenoIterator it = ind->genoBegin();
 			GenoIterator it_end = ind->genoEnd();
-			compressed_vector<Allele>::index_array_type::iterator index_it = it.getIndexIterator();
-			compressed_vector<Allele>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
-			compressed_vector<Allele>::value_array_type::iterator value_it = it.getValueIterator();
+			vectorm::index_array_type::iterator index_it = it.getIndexIterator();
+			vectorm::index_array_type::iterator index_it_end = it_end.getIndexIterator();
+			vectorm::value_array_type::iterator value_it = it.getValueIterator();
 			size_t indIndex = it.getIndex();
 			for (; index_it != index_it_end; ++index_it, ++value_it) {
 				if (m_loci.allAvail()) {
@@ -862,9 +862,9 @@ bool statNumOfMutants::apply(Population & pop) const
 			GenoIterator it = ind->genoBegin();
 			GenoIterator it_end = ind->genoEnd();
 #ifdef MUTANTALLELE
-			compressed_vector<Allele>::index_array_type::iterator index_it = it.getIndexIterator();
-			compressed_vector<Allele>::index_array_type::iterator index_it_end = it_end.getIndexIterator();
-			compressed_vector<Allele>::value_array_type::iterator value_it = it.getValueIterator();
+			vectorm::index_array_type::iterator index_it = it.getIndexIterator();
+			vectorm::index_array_type::iterator index_it_end = it_end.getIndexIterator();
+			vectorm::value_array_type::iterator value_it = it.getValueIterator();
 			size_t indIndex = it.getIndex();
 			for (; index_it != index_it_end; ++index_it, ++value_it) {
 				if (m_loci.allAvail()) {
