@@ -182,7 +182,7 @@ Population::Population(const Population & rhs) :
 			const vector<Individual> & rinds = rp.m_inds;
 			GenoIterator lg = lp.m_genotype.begin();
 #ifdef MUTANTALLELE
-			GenoIterator rg = const_cast<vectorm&>(rp.m_genotype).begin();
+			GenoIterator rg = const_cast<vectorm &>(rp.m_genotype).begin();
 #else
 			ConstGenoIterator rg = rp.m_genotype.begin();
 #endif
@@ -827,15 +827,15 @@ void Population::validate(const string & msg) const
 		msg + "Wrong genotype size for this population");
 	ConstInfoIterator ib = m_info.begin();
 	ConstInfoIterator ie = m_info.end();
-#ifdef MUTANTALLELE
+#  ifdef MUTANTALLELE
 	// there are trouble with comprison between const and non-const
 	// genotype iterator in mutant modules...
-	GenoIterator gb = const_cast<vectorm&>(m_genotype).begin();
-	GenoIterator ge = const_cast<vectorm&>(m_genotype).end();
-#else
+	GenoIterator gb = const_cast<vectorm &>(m_genotype).begin();
+	GenoIterator ge = const_cast<vectorm &>(m_genotype).end();
+#  else
 	ConstGenoIterator gb = m_genotype.begin();
 	ConstGenoIterator ge = m_genotype.end();
-#endif
+#  endif
 
 	if (genoSize() > 0) {
 		for (ConstIndIterator it = indIterator(); it.valid(); ++it) {
@@ -1233,7 +1233,7 @@ void Population::removeSubPops(const subPopList & subPops)
 					if (oldInd != newInd) {
 						*newInd = *oldInd;
 #ifdef MUTANTALLELE
-						simuPOP::copy(oldPtr + 0, oldPtr + step, newPtr);
+						copyGenotype(oldPtr + 0, oldPtr + step, newPtr);
 #else
 						copy(oldPtr, oldPtr + step, newPtr);
 #endif
@@ -1262,7 +1262,7 @@ void Population::removeSubPops(const subPopList & subPops)
 			// do not remove.
 			if (oldPtr != newPtr) {
 #ifdef MUTANTALLELE
-				simuPOP::copy(oldPtr + 0, oldPtr + step * spSize, newPtr);
+				copyGenotype(oldPtr + 0, oldPtr + step * spSize, newPtr);
 #else
 				copy(oldPtr, oldPtr + step * spSize, newPtr);
 #endif
@@ -1315,34 +1315,62 @@ void Population::removeMarkedIndividuals()
 	InfoIterator oldInfoPtr = m_info.begin();
 	InfoIterator newInfoPtr = m_info.begin();
 	GenoIterator oldPtr = m_genotype.begin();
+#ifdef MUTANTALLELE
+	IndexArray new_index;
+	ValueArray new_value;
+	size_t lagging = 0;
+#else
 	GenoIterator newPtr = m_genotype.begin();
+#endif
+
 #ifdef LINEAGE
 	LineageIterator oldLineagePtr = m_lineage.begin();
 	LineageIterator newLineagePtr = m_lineage.begin();
 #endif
 	//
 	for (size_t sp = 0; sp < numSubPop(); ++sp) {
+		cerr << "SP " << sp << endl;
 		size_t newSize = 0;
 		size_t spSize = subPopSize(sp);
 		for (size_t i = 0; i < spSize; ++i) {
 			// will be kept
 			if (!oldInd->marked()) {
 				++newSize;
+#ifdef MUTANTALLELE
 				if (oldInd != newInd) {
 					*newInd = *oldInd;
-#ifdef MUTANTALLELE
-					simuPOP::copy(oldPtr + 0, oldPtr + step, newPtr);
-#else
-					copy(oldPtr, oldPtr + step, newPtr);
-#endif
 					copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
 					LINEAGE_EXPR(copy(oldLineagePtr, oldLineagePtr + step, newLineagePtr));
 				}
+				GenoIterator b(oldPtr + 0);
+				GenoIterator e(oldPtr + step);
+				IndexArray arr(b.getIndexIterator(), e.getIndexIterator());
+				if (lagging > 0)
+					for (size_t k = 0; k < arr.size(); ++k)
+						arr[k] -= lagging;
+				if (arr.size() > 0) {
+					new_index.insert(new_index.end(), arr.begin(), arr.end());
+					new_value.insert(new_value.end(), b.getValueIterator(), e.getValueIterator());
+				}
+#else
+				if (oldInd != newInd) {
+					*newInd = *oldInd;
+					copy(oldPtr, oldPtr + step, newPtr);
+					copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
+					LINEAGE_EXPR(copy(oldLineagePtr, oldLineagePtr + step, newLineagePtr));
+				}
+#endif
 				++newInd;
+#ifndef MUTANTALLELE
 				newPtr += step;
+#endif
 				newInfoPtr += infoStep;
 				LINEAGE_EXPR(newLineagePtr += step);
 			}
+#ifdef MUTANTALLELE
+			else
+				lagging += step;
+#endif
 			++oldInd;
 			oldPtr += step;
 			oldInfoPtr += infoStep;
@@ -1352,7 +1380,12 @@ void Population::removeMarkedIndividuals()
 	}
 	//
 	m_inds.erase(newInd, m_inds.end());
+#ifdef MUTANTALLELE
+	vectorm new_geno(m_genotype.size() - lagging, new_index, new_value);
+	m_genotype.swap(new_geno);
+#else
 	m_genotype.erase(newPtr, m_genotype.end());
+#endif
 	m_info.erase(newInfoPtr, m_info.end());
 	LINEAGE_EXPR(m_lineage.erase(newLineagePtr, m_lineage.end()));
 	m_popSize = std::accumulate(new_size.begin(), new_size.end(), size_t(0));
@@ -2065,7 +2098,7 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 			for (; oldInd.valid(); ++oldInd) {
 				*newInd = *oldInd;
 #ifdef MUTANTALLELE
-				simuPOP::copy(oldInd->genoBegin(), oldInd->genoEnd(), newPtr);
+				copyGenotype(oldInd->genoBegin(), oldInd->genoEnd(), newPtr);
 #else
 				copy(oldInd->genoBegin(), oldInd->genoEnd(), newPtr);
 #endif
@@ -2110,7 +2143,7 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 				//
 				copy(oldInd, oldInd + spSize, newInd);
 #ifdef MUTANTALLELE
-				simuPOP::copy(oldPtr + 0, oldPtr + step * spSize, newPtr);
+				copyGenotype(oldPtr + 0, oldPtr + step * spSize, newPtr);
 #else
 				copy(oldPtr, oldPtr + step * spSize, newPtr);
 #endif
@@ -2143,7 +2176,7 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 						++newSize;
 						*newInd = *oldInd;
 #ifdef MUTANTALLELE
-						simuPOP::copy(oldPtr + 0, oldPtr + step, newPtr);
+						copyGenotype(oldPtr + 0, oldPtr + step, newPtr);
 #else
 						copy(oldPtr, oldPtr + step, newPtr);
 #endif
@@ -2249,7 +2282,7 @@ Population & Population::extractMarkedIndividuals() const
 				++newSize;
 				*newInd = *oldInd;
 #ifdef MUTANTALLELE
-				simuPOP::copy(oldPtr, oldPtr + step, newPtr);
+				copyGenotype(oldPtr, oldPtr + step, newPtr);
 #else
 				copy(oldPtr, oldPtr + step, newPtr);
 #endif
@@ -4104,7 +4137,7 @@ void Population::syncIndPointers(bool infoOnly) const
 			copyGenotype(ind->genoBegin(), it, sz);
 #else
 #  ifdef MUTANTALLELE
-			simuPOP::copy(ind->genoBegin(), ind->genoEnd(), it);
+			copyGenotype(ind->genoBegin(), ind->genoEnd(), it);
 #  else
 			copy(ind->genoBegin(), ind->genoEnd(), it);
 #  endif
