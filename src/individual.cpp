@@ -51,7 +51,7 @@ Individual & Individual::copyFrom(const Individual & rhs)
 {
 	m_flags = rhs.m_flags;
 #ifdef MUTANTALLELE
-	simuPOP::copy(rhs.genoBegin(), rhs.genoEnd(), genoBegin());
+	copyGenotype(rhs.genoBegin(), rhs.genoEnd(), genoBegin());
 #else
 	copy(rhs.genoBegin(), rhs.genoEnd(), genoBegin());
 #endif
@@ -559,7 +559,7 @@ void Individual::setGenotype(const uintList & genoList, const uintList & ply, co
 				if (atmp != 0)
 					ctmp.push_back(i, atmp);
 			}
-			simuPOP::copy(ctmp.begin(), ctmp.end(), ptr);
+			copyGenotype(ctmp.begin(), ctmp.end(), ptr);
 #else
 			for (size_t i = 0; i < numLoci(chrom); i++, ++idx)
 				*(ptr + i) = ToAllele(geno[idx % sz]);

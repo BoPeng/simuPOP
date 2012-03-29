@@ -1457,7 +1457,6 @@ private:
 // ////////////////////////////////////////////////////////////
 // / Stream Manager
 // ////////////////////////////////////////////////////////////
-
 /** CPPONLY stream manager:
    This class keeps track of persistent ostreams, aceesible by
    their names.
@@ -2133,6 +2132,7 @@ PyObject * moduleInfo();
 /// CPPONLY
 void copyGenotype(GenoIterator fr, GenoIterator to, size_t n);
 
+/// CPPONLY
 void clearGenotype(GenoIterator to, size_t n);
 
 #  ifndef OPTIMIZED
@@ -2140,6 +2140,16 @@ void testCopyGenotype();
 
 #  endif
 #endif
+
+#ifdef MUTANTALLELE
+/// COPY MUTANT ALLELES
+/// CPPONLY 
+void copyGenotype(ConstGenoIterator begin, ConstGenoIterator end, GenoIterator it);
+
+/// CPPONLY
+void fillGenotype(GenoIterator begin, GenoIterator end, Allele value);
+#endif
+
 
 /// CPPONLY initialize module simuPOP when using "import simuPOP"
 bool initialize();

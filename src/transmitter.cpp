@@ -64,7 +64,7 @@ void GenoTransmitter::clearChromosome(const Individual & ind, int ploidy, size_t
 #else
 	DBG_FAILIF(m_chromIdx.empty(), ValueError, "GenoTransmitter is not initialized properly");
 #  ifdef MUTANTALLELE
-	simuPOP::fill(ind.genoBegin(ploidy) + m_chromIdx[chrom],
+	fillGenotype(ind.genoBegin(ploidy) + m_chromIdx[chrom],
 		ind.genoBegin(ploidy) + m_chromIdx[chrom + 1], 0);
 #  else
 	fill(ind.genoBegin(ploidy) + m_chromIdx[chrom],
@@ -91,7 +91,7 @@ void GenoTransmitter::copyChromosome(const Individual & parent, int parPloidy,
 	DBG_FAILIF(m_chromIdx.empty(), ValueError,
 		"GenoTransmitter is not properly initialized.");
 #  ifdef MUTANTALLELE
-	simuPOP::copy(parent.genoBegin(parPloidy) + m_chromIdx[chrom],
+	copyGenotype(parent.genoBegin(parPloidy) + m_chromIdx[chrom],
 		parent.genoBegin(parPloidy) + m_chromIdx[chrom + 1],
 		offspring.genoBegin(ploidy) + m_chromIdx[chrom]);
 #  else
@@ -133,7 +133,7 @@ void GenoTransmitter::copyChromosomes(const Individual & parent,
 #else
 			GenoIterator par_end = parent.genoEnd(parPloidy, ch);
 #  ifdef MUTANTALLELE
-			simuPOP::copy(par, par_end, off);
+			copyGenotype(par, par_end, off);
 #  else
 			copy(par, par_end, off);
 #  endif
@@ -146,7 +146,7 @@ void GenoTransmitter::copyChromosomes(const Individual & parent,
 			offspring.totNumLoci());
 #else
 #  ifdef MUTANTALLELE
-		simuPOP::copy(parent.genoBegin(parPloidy), parent.genoEnd(parPloidy), offspring.genoBegin(ploidy));
+		copyGenotype(parent.genoBegin(parPloidy), parent.genoEnd(parPloidy), offspring.genoBegin(ploidy));
 #  else
 		copy(parent.genoBegin(parPloidy), parent.genoEnd(parPloidy), offspring.genoBegin(ploidy));
 #  endif
@@ -196,7 +196,7 @@ bool CloneGenoTransmitter::applyDuringMating(Population & pop, Population & offP
 #else
 				GenoIterator par_end = parent->genoEnd(p, ch);
 #  ifdef MUTANTALLELE
-				simuPOP::copy(par, par_end, off);
+				copyGenotype(par, par_end, off);
 #  else
 				copy(par, par_end, off);
 #  endif
@@ -223,7 +223,7 @@ bool CloneGenoTransmitter::applyDuringMating(Population & pop, Population & offP
 #else
 				GenoIterator par_end = parent->genoEnd(p, ch);
 #  ifdef MUTANTALLELE
-				simuPOP::copy(par, par_end, off);
+				copyGenotype(par, par_end, off);
 #  else
 				copy(par, par_end, off);
 #  endif
@@ -237,7 +237,7 @@ bool CloneGenoTransmitter::applyDuringMating(Population & pop, Population & offP
 			offspring->genoSize());
 #else
 #  ifdef MUTANTALLELE
-		simuPOP::copy(parent->genoBegin(), parent->genoEnd(), offspring->genoBegin());
+		copyGenotype(parent->genoBegin(), parent->genoEnd(), offspring->genoBegin());
 #  else
 		copy(parent->genoBegin(), parent->genoEnd(), offspring->genoBegin());
 #  endif
@@ -505,7 +505,7 @@ bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop, Populatio
 #else
 		GenoIterator par_end = parent->genoEnd(0, m_mitoChroms[src]);
 #  ifdef MUTANTALLELE
-		simuPOP::copy(par, par_end, off);
+		copyGenotype(par, par_end, off);
 #  else
 		copy(par, par_end, off);
 #  endif
@@ -882,7 +882,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 		if (pos != Bernullitrials::npos) {
 			// first piece
 #  ifdef MUTANTALLELE
-			simuPOP::copy(cp[curCp] + gt, cp[curCp] + gt + m_recBeforeLoci[pos], off + gt);
+			copyGenotype(cp[curCp] + gt, cp[curCp] + gt + m_recBeforeLoci[pos], off + gt);
 			gt = m_recBeforeLoci[pos];
 #  else
 			for (; gt < m_recBeforeLoci[pos]; ++gt) {
@@ -908,7 +908,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 					convEnd = gt + convCount;
 					if (convEnd < gtEnd) {
 #  ifdef MUTANTALLELE
-						simuPOP::copy(cp[curCp] + gt, cp[curCp] + gt + convEnd, off + gt);
+						copyGenotype(cp[curCp] + gt, cp[curCp] + gt + convEnd, off + gt);
 						gt = convEnd;
 #  else
 						for (; gt < convEnd; ++gt) {
@@ -925,7 +925,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 				}
 				// copy from the end of conversion to this recombination point
 #  ifdef MUTANTALLELE
-				simuPOP::copy(cp[curCp] + gt, cp[curCp] + gt + gtEnd, off + gt);
+				copyGenotype(cp[curCp] + gt, cp[curCp] + gt + gtEnd, off + gt);
 				gt = gtEnd;
 #  else
 				for (; gt < gtEnd; ++gt) {
@@ -953,7 +953,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			convEnd = gt + convCount;
 			if (convEnd < gtEnd) {
 #  ifdef MUTANTALLELE
-				simuPOP::copy(cp[curCp] + gt, cp[curCp] + gt + convEnd, off + gt);
+				copyGenotype(cp[curCp] + gt, cp[curCp] + gt + convEnd, off + gt);
 				gt = convEnd;
 #  else
 				for (; gt < convEnd; ++gt) {
@@ -967,7 +967,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			}
 		}
 #  ifdef MUTANTALLELE
-		simuPOP::copy(cp[curCp] + gt, cp[curCp] + gt + gtEnd, off + gt);
+		copyGenotype(cp[curCp] + gt, cp[curCp] + gt + gtEnd, off + gt);
 		gt = gtEnd;
 #  else
 		for (; gt < gtEnd; ++gt) {
