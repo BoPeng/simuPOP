@@ -60,7 +60,7 @@ bool is_carrayobject_template(PyObject * op);
 
 /// CPPONLY
 template <typename T>
-static PyObject *
+PyObject *
 getarrayitem_template(struct arrayobject_template<T> * op, Py_ssize_t i)
 {
 	register struct arrayobject_template<T> * ap;
@@ -74,8 +74,8 @@ getarrayitem_template(struct arrayobject_template<T> * op, Py_ssize_t i)
 
 /// CPPONLY
 template <>
-static PyObject *
-getarrayitem_template(struct arrayobject_template<GenoIterator> * op, Py_ssize_t i)
+PyObject *
+getarrayitem_template<GenoIterator>(struct arrayobject_template<GenoIterator> * op, Py_ssize_t i)
 {
 	register struct arrayobject_template<GenoIterator> * ap;
 
@@ -723,7 +723,7 @@ template <typename T>
 PyObject * newcarrayobject_template(T begin, T end);
 
 template <typename T>
-static PyObject *
+PyObject *
 getarrayitem_template(PyObject * op, Py_ssize_t i)
 {
 	register struct arrayobject_template<T> * ap;
@@ -732,6 +732,25 @@ getarrayitem_template(PyObject * op, Py_ssize_t i)
 	ap = (struct arrayobject_template<T> *)op;
 	assert(i >= 0 && i < Py_SIZE(ap));
 	return PyInt_FromLong(*(ap->ob_iter + i) );
+}
+
+
+template <>
+PyObject *
+getarrayitem_template<GenoIterator>(PyObject * op, Py_ssize_t i)
+{
+	register struct arrayobject_template<GenoIterator> * ap;
+
+	assert(is_carrayobject_template<GenoIterator>(op));
+	ap = (struct arrayobject_template<GenoIterator> *)op;
+	assert(i >= 0 && i < Py_SIZE(ap));
+#ifdef MUTANTALLELE
+    // for read only purpose, make sure not to really insert a value using the
+    // non-constant version of operator *.
+	return PyInt_FromLong((ap->ob_iter + i).value());
+#else
+	return PyInt_FromLong(*(ap->ob_iter + i) );
+#endif
 }
 
 
