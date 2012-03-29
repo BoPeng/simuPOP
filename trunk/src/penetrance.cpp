@@ -389,9 +389,9 @@ PyMlPenetrance::PyMlPenetrance(PyObject * func, int mode, const lociList & loci,
 		else
 			throw ValueError("Invalid parameter for passed function " + m_func.name());
 	} else if (m_func.numArgs() == 2) {
-		if (m_func.arg(0) == "alleles" and m_func.arg(1) == "loc")
+		if (m_func.arg(0) == "alleles" && m_func.arg(1) == "loc")
 			m_searchMode = 13;
-		else if (m_func.arg(0) == "loc" and m_func.arg(1) == "alleles")
+		else if (m_func.arg(0) == "loc" && m_func.arg(1) == "alleles")
 			m_searchMode = 14;
 		else
 			throw ValueError("Invalid parameters for passed function " + m_func.name() +
