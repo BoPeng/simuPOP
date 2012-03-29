@@ -162,7 +162,7 @@ bool BaseMutator::apply(Population & pop) const
 			size_t pos = 0;
 			if (rare) {
 				size_t step = getRNG().randGeometric(rates[i]);
-				pos = step == 0 ? Bernullitrials::npos : (step - 1); 
+				pos = step == 0 ? Bernullitrials::npos : (step - 1);
 			} else
 				pos = bt.trialFirstSucc(i);
 			size_t lastPos = 0;
@@ -218,7 +218,7 @@ bool BaseMutator::apply(Population & pop) const
 #endif
 					if (rare) {
 						size_t step = getRNG().randGeometric(rates[i]);
-						pos = (step == 0 || step + pos >= max_pos) ? Bernullitrials::npos : (pos + step); 
+						pos = (step == 0 || step + pos >= max_pos) ? Bernullitrials::npos : (pos + step);
 					} else
 						pos = bt.trialNextSucc(i, pos);
 				} while (pos != Bernullitrials::npos);
@@ -541,6 +541,8 @@ bool RevertFixedSites::apply(Population & pop) const
 		return true;
 
 	const vectoru & loci = m_loci.elems(&pop);
+	if (loci.size() == 0)
+		return true;
 
 	const subPopList subPops = applicableSubPops(pop);
 	subPopList::const_iterator sp = subPops.begin();
@@ -550,12 +552,26 @@ bool RevertFixedSites::apply(Population & pop) const
 		if (sp->isVirtual())
 			pop.activateVirtualSubPop(*sp);
 
-		// alleleIterator is very slow for mutant modules but this iterator will
-		// return 0 for most loci and continue to the next, so performance
-		// should be tolerable. The advantage of using an alleleIterator is that
-		// it will automatically handle different chromosome types.
+#ifdef MUTANTALLELE
+		size_t nLoci = pop.totNumLoci();
+		// find the first guy ...
+		IndIterator ind = pop.indIterator(sp->subPop());
+		// index on the first ploidy, need to get loci index
+		GenoIterator s = ind->genoBegin();
+		GenoIterator e = s + pop.totNumLoci();
+		IndexArray idx(s.getIndexIterator(), e.getIndexIterator());
+		for (size_t i = 0; i < idx.size(); ++i)
+			idx[i] %= nLoci;
+		// now, find the intersection of loci
+		vectoru myloci;
+		std::set_intersection(idx.begin(), idx.end(),
+			loci.begin(), loci.end(), std::back_inserter(myloci));
+		for (size_t idx = 0; idx < myloci.size(); ++idx) {
+			size_t loc = myloci[idx];
+#else
 		for (size_t idx = 0; idx < loci.size(); ++idx) {
 			size_t loc = loci[idx];
+#endif
 			bool fixed = true;
 			ConstIndAlleleIterator a = const_cast<const Population &>(pop).alleleIterator(loc, sp->subPop());
 			for (; a.valid(); ++a) {
