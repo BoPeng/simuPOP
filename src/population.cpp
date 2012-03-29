@@ -181,7 +181,11 @@ Population::Population(const Population & rhs) :
 			vector<Individual> & linds = lp.m_inds;
 			const vector<Individual> & rinds = rp.m_inds;
 			GenoIterator lg = lp.m_genotype.begin();
+#ifdef MUTANTALLELE
+			GenoIterator rg = const_cast<vectorm&>(rp.m_genotype).begin();
+#else
 			ConstGenoIterator rg = rp.m_genotype.begin();
+#endif
 #ifdef LINEAGE
 			LineageIterator llin = lp.m_lineage.begin();
 			ConstLineageIterator rlin = rp.m_lineage.begin();
@@ -193,8 +197,8 @@ Population::Population(const Population & rhs) :
 			size_t ps = rinds.size();
 
 			for (size_t i = 0; i < ps; ++i) {
-				linds[i].setGenoPtr(rinds[i].genoPtr() - rg + lg);
-				linds[i].setInfoPtr(rinds[i].infoPtr() - ri + li);
+				linds[i].setGenoPtr(lg + (rinds[i].genoPtr() - rg));
+				linds[i].setInfoPtr(li + (rinds[i].infoPtr() - ri));
 				LINEAGE_EXPR(linds[i].setLineagePtr(rinds[i].lineagePtr() - rlin + llin));
 			}
 		}
@@ -227,7 +231,7 @@ void Population::popData::swap(Population & pop)
 	pop.m_inds.swap(m_inds);
 	std::swap(pop.m_indOrdered, m_indOrdered);
 #ifdef MUTANTALLELE
-	// compressed_vectora must be setGenoPtr after swap
+	// vectorm must be setGenoPtr after swap
 	GenoIterator ptr = pop.m_genotype.begin();
 	for (size_t i = 0; i < pop.m_inds.size(); ++i, ptr += genoSize)
 		pop.m_inds[i].setGenoPtr(ptr);
@@ -823,8 +827,15 @@ void Population::validate(const string & msg) const
 		msg + "Wrong genotype size for this population");
 	ConstInfoIterator ib = m_info.begin();
 	ConstInfoIterator ie = m_info.end();
+#ifdef MUTANTALLELE
+	// there are trouble with comprison between const and non-const
+	// genotype iterator in mutant modules...
+	GenoIterator gb = const_cast<vectorm&>(m_genotype).begin();
+	GenoIterator ge = const_cast<vectorm&>(m_genotype).end();
+#else
 	ConstGenoIterator gb = m_genotype.begin();
 	ConstGenoIterator ge = m_genotype.end();
+#endif
 
 	if (genoSize() > 0) {
 		for (ConstIndIterator it = indIterator(); it.valid(); ++it) {
@@ -1052,7 +1063,7 @@ void Population::setSubPopByIndInfo(const string & field)
 
 		// allocate new genotype and inds
 #ifdef MUTANTALLELE
-		mutant_vectora newGenotype(genoSize() * newPopSize);
+		vectorm newGenotype(genoSize() * newPopSize);
 #else
 		vectora newGenotype(genoSize() * newPopSize);
 #endif
@@ -1085,7 +1096,7 @@ void Population::setSubPopByIndInfo(const string & field)
 		m_popSize = newPopSize;
 		setIndOrdered(true);
 #ifdef MUTANTALLELE
-		// compressed_vectora must be setGenoPtr after swap
+		// vectorm must be setGenoPtr after swap
 		ptr = m_genotype.begin();
 		for (size_t i = 0; i < m_popSize; ++i, ptr += genoSize())
 			m_inds[i].setGenoPtr(ptr);
@@ -1517,7 +1528,7 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 	vector<Individual> new_inds;
 	vectorf new_info;
 #ifdef MUTANTALLELE
-	mutant_vectora new_genotype;
+	vectorm new_genotype;
 #else
 	vectora new_genotype;
 	new_genotype.reserve(step * popSize());
@@ -1588,7 +1599,7 @@ void Population::addChromFrom(const Population & pop)
 		DBG_FAILIF(m_subPopSize != pop.m_subPopSize, ValueError,
 			"Can not add chromosomes from a population with different subpopulation sizes");
 #ifdef MUTANTALLELE
-		mutant_vectora newGenotype(genoSize() * m_popSize);
+		vectorm newGenotype(genoSize() * m_popSize);
 #else
 		vectora newGenotype(genoSize() * m_popSize);
 #endif
@@ -1604,7 +1615,7 @@ void Population::addChromFrom(const Population & pop)
 			// set new geno structure
 			m_inds[i].setGenoStruIdx(genoStruIdx());
 			GenoIterator ptr1 = m_inds[i].genoPtr();
-			GenoIterator ptr2 = pop.m_inds[i].genoPtr();
+			ConstGenoIterator ptr2 = pop.m_inds[i].genoPtr();
 			m_inds[i].setGenoPtr(ptr);
 #ifdef LINEAGE
 			LineageIterator linPtr1 = m_inds[i].lineagePtr();
@@ -1626,7 +1637,7 @@ void Population::addChromFrom(const Population & pop)
 		m_genotype.swap(newGenotype);
 		LINEAGE_EXPR(m_lineage.swap(newLineage));
 #ifdef MUTANTALLELE
-		// compressed_vectora must be setGenoPtr after swap
+		// vectorm must be setGenoPtr after swap
 		ptr = m_genotype.begin();
 		for (size_t i = 0; i < m_popSize; ++i, ptr += genoSize())
 			m_inds[i].setGenoPtr(ptr);
@@ -1720,7 +1731,7 @@ void Population::addLociFrom(const Population & pop)
 			"Can not add chromosomes from a population with different subpopulation sizes");
 		//
 #ifdef MUTANTALLELE
-		mutant_vectora newGenotype(genoSize() * m_popSize);
+		vectorm newGenotype(genoSize() * m_popSize);
 #else
 		vectora newGenotype(genoSize() * m_popSize);
 #endif
@@ -1736,12 +1747,12 @@ void Population::addLociFrom(const Population & pop)
 			// set new geno structure
 			m_inds[i].setGenoStruIdx(genoStruIdx());
 			GenoIterator ptr1 = m_inds[i].genoPtr();
-			GenoIterator ptr2 = pop.m_inds[i].genoPtr();
+			ConstGenoIterator ptr2 = pop.m_inds[i].genoPtr();
 			// new genotype
 			m_inds[i].setGenoPtr(ptr);
 #ifdef LINEAGE
 			LineageIterator lineagePtr1 = m_inds[i].lineagePtr();
-			LineageIterator lineagePtr2 = pop.m_inds[i].lineagePtr();
+			ConstLineageIterator lineagePtr2 = pop.m_inds[i].lineagePtr();
 			m_inds[i].setLineagePtr(lineagePtr);
 #endif
 			// copy each allele
@@ -1761,7 +1772,7 @@ void Population::addLociFrom(const Population & pop)
 		m_genotype.swap(newGenotype);
 		LINEAGE_EXPR(m_lineage.swap(newLineage));
 #ifdef MUTANTALLELE
-		// compressed_vectora must be setGenoPtr after swap
+		// vectorm must be setGenoPtr after swap
 		ptr = m_genotype.begin();
 		for (size_t i = 0; i < m_popSize; ++i, ptr += genoSize())
 			m_inds[i].setGenoPtr(ptr);
@@ -1794,7 +1805,7 @@ void Population::addChrom(const floatList & lociPosList, const stringList & loci
 		useAncestralGen(depth);
 		size_t newPopGenoSize = genoSize() * m_popSize;
 #ifdef MUTANTALLELE
-		mutant_vectora newGenotype(newPopGenoSize, 0);
+		vectorm newGenotype(newPopGenoSize, 0);
 #else
 		vectora newGenotype(newPopGenoSize, 0);
 #endif
@@ -1830,7 +1841,7 @@ void Population::addChrom(const floatList & lociPosList, const stringList & loci
 		m_genotype.swap(newGenotype);
 		LINEAGE_EXPR(m_lineage.swap(newLineage));
 #ifdef MUTANTALLELE
-		// compressed_vectora must be setGenoPtr after swap
+		// vectorm must be setGenoPtr after swap
 		GenoIterator ptr = m_genotype.begin();
 		for (size_t i = 0; i < m_popSize; ++i, ptr += genoSize())
 			m_inds[i].setGenoPtr(ptr);
@@ -1876,7 +1887,7 @@ vectoru Population::addLoci(const uintList & chromList, const floatList & posLis
 		//
 		size_t newPopGenoSize = genoSize() * m_popSize;
 #ifdef MUTANTALLELE
-		mutant_vectora newGenotype(newPopGenoSize, 0);
+		vectorm newGenotype(newPopGenoSize, 0);
 #else
 		vectora newGenotype(newPopGenoSize, 0);
 #endif
@@ -1909,7 +1920,7 @@ vectoru Population::addLoci(const uintList & chromList, const floatList & posLis
 		m_genotype.swap(newGenotype);
 		LINEAGE_EXPR(m_lineage.swap(newLineage));
 #ifdef MUTANTALLELE
-		// compressed_vectora must be setGenoPtr after swap
+		// vectorm must be setGenoPtr after swap
 		GenoIterator ptr = m_genotype.begin();
 		for (size_t i = 0; i < m_popSize; ++i, ptr += genoSize())
 			m_inds[i].setGenoPtr(ptr);
@@ -1941,7 +1952,7 @@ void Population::resize(const uintList & sizeList, bool propagate)
 	size_t step = genoSize();
 	size_t infoStep = infoSize();
 #ifdef MUTANTALLELE
-	mutant_vectora newGenotype(genoSize() * newPopSize);
+	vectorm newGenotype(genoSize() * newPopSize);
 #else
 	vectora newGenotype(genoSize() * newPopSize);
 #endif
@@ -1982,7 +1993,7 @@ void Population::resize(const uintList & sizeList, bool propagate)
 	m_subPopSize = newSubPopSizes;
 
 #ifdef MUTANTALLELE
-	// compressed_vectora must be setGenoPtr after swap
+	// vectorm must be setGenoPtr after swap
 	ptr = m_genotype.begin();
 	for (size_t i = 0; i < m_popSize; ++i, ptr += genoSize())
 		m_inds[i].setGenoPtr(ptr);
@@ -2019,7 +2030,7 @@ Population & Population::extractSubPops(const subPopList & subPops, bool rearran
 
 	vector<Individual> new_inds;
 #ifdef MUTANTALLELE
-	mutant_vectora new_genotype;
+	vectorm new_genotype;
 #else
 	vectora new_genotype;
 #endif
@@ -2217,7 +2228,7 @@ Population & Population::extractMarkedIndividuals() const
 
 	vector<Individual> new_inds(sz);
 #ifdef MUTANTALLELE
-	mutant_vectora new_genotype(sz * step);
+	vectorm new_genotype(sz * step);
 #else
 	vectora new_genotype(sz * step);
 #endif
@@ -2516,7 +2527,7 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 		vector<Individual> new_inds;
 #ifdef MUTANTALLELE
 		size_t newIdx = 0;
-		mutant_vectora new_genotype;
+		vectorm new_genotype;
 		if (removeLoci)
 			new_genotype.resize(size * step);
 		new_genotype.reserve(m_genotype.index_data().end() - m_genotype.index_data().begin());
@@ -2616,7 +2627,7 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 		// set pointer
 		vectorf::iterator infoPtr = new_info.begin();
 #ifdef MUTANTALLELE
-		mutant_vectora::iterator ptr = new_genotype.begin();
+		vectorm::iterator ptr = new_genotype.begin();
 #else
 		vectora::iterator ptr = new_genotype.begin();
 #endif
@@ -2645,7 +2656,7 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 			pop.m_info.swap(new_info);
 			LINEAGE_EXPR(pop.m_lineage.swap(new_lineage));
 #ifdef MUTANTALLELE
-			// compressed_vectora must be setGenoPtr after swap
+			// vectorm must be setGenoPtr after swap
 			GenoIterator ptr = pop.m_genotype.begin();
 			for (size_t i = 0; i < pop.m_inds.size(); ++i, ptr += step)
 				pop.m_inds[i].setGenoPtr(ptr);
@@ -2660,7 +2671,7 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 			LINEAGE_EXPR(pd.m_lineage.swap(new_lineage));
 			pd.m_inds.swap(new_inds);
 #ifdef MUTANTALLELE
-			// compressed_vectora must be setGenoPtr after swap
+			// vectorm must be setGenoPtr after swap
 			GenoIterator ptr = pd.m_genotype.begin();
 			for (size_t i = 0; i < pd.m_inds.size(); ++i, ptr += step)
 				pd.m_inds[i].setGenoPtr(ptr);
@@ -2715,7 +2726,7 @@ void Population::removeLoci(const lociList & removeList, const lociList & keepLi
 		useAncestralGen(depth);
 		//
 #ifdef MUTANTALLELE
-		mutant_vectora newGenotype(genoSize() * m_popSize);
+		vectorm newGenotype(genoSize() * m_popSize);
 #else
 		vectora newGenotype(genoSize() * m_popSize);
 #endif
@@ -2748,7 +2759,7 @@ void Population::removeLoci(const lociList & removeList, const lociList & keepLi
 		m_genotype.swap(newGenotype);
 		LINEAGE_EXPR(m_lineage.swap(newLineage));
 #ifdef MUTANTALLELE
-		// compressed_vectora must be setGenoPtr after swap
+		// vectorm must be setGenoPtr after swap
 		GenoIterator ptr = m_genotype.begin();
 		for (size_t i = 0; i < m_popSize; ++i, ptr += genoSize())
 			m_inds[i].setGenoPtr(ptr);
@@ -2956,7 +2967,7 @@ void Population::push(Population & rhs)
 	std::swap(m_indOrdered, rhs.m_indOrdered);
 
 #ifdef MUTANTALLELE
-	// compressed_vectora must be setGenoPtr after swap
+	// vectorm must be setGenoPtr after swap
 	GenoIterator ptr = m_genotype.begin();
 	for (size_t i = 0; i < m_inds.size(); ++i, ptr += genoSize())
 		m_inds[i].setGenoPtr(ptr);
@@ -3316,9 +3327,9 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 	bool singleMut = true;
 	size_t singleMutVal = 0;
 	//
-	compressed_vector::index_array_type::const_iterator ptr = m_genotype.begin().getIndexIterator();
-	compressed_vector::index_array_type::const_iterator end = m_genotype.end().getIndexIterator();
-	compressed_vector::value_array_type::const_iterator value = m_genotype.begin().getValueIterator();
+	vectorm::index_array_type::const_iterator ptr = m_genotype.begin().getIndexIterator();
+	vectorm::index_array_type::const_iterator end = m_genotype.end().getIndexIterator();
+	vectorm::value_array_type::const_iterator value = m_genotype.begin().getValueIterator();
 	for (; ptr != end; ++ptr, ++value) {
 		if (*value != 0) {
 			mutLoc[*ptr] = 1;
@@ -3422,9 +3433,9 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 		bool singleMut = true;
 		size_t singleMutVal = 0;
 		//
-		compressed_vector::index_array_type::const_iterator ptr = m_genotype.begin().getIndexIterator();
-		compressed_vector::index_array_type::const_iterator end = m_genotype.end().getIndexIterator();
-		compressed_vector::value_array_type::const_iterator value = m_genotype.begin().getValueIterator();
+		vectorm::index_array_type::const_iterator ptr = m_genotype.begin().getIndexIterator();
+		vectorm::index_array_type::const_iterator end = m_genotype.end().getIndexIterator();
+		vectorm::value_array_type::const_iterator value = m_genotype.begin().getValueIterator();
 		for (; ptr != end; ++ptr, ++value) {
 			if (*value != 0) {
 				mutLoc[*ptr] = 1;
@@ -3575,7 +3586,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 			}
 		if (singleMut)
 			val.resize(idx.size(), ToAllele(singleMutVal));
-		mutant_vectora geno(size, idx, val);
+		vectorm geno(size, idx, val);
 		m_genotype.swap(geno);
 #else
 		for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
@@ -3622,7 +3633,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 					idx.push_back(i);
 			}
 			ValueArray val(idx.size(), 1);
-			mutant_vectora geno(size, idx, val);
+			vectorm geno(size, idx, val);
 			m_genotype.swap(geno);
 		} else {
 			DBG_DO(DBG_POPULATION, cerr << "Load mutant from long. " << endl);
@@ -3638,7 +3649,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 					val.push_back(data[i]);
 				}
 			}
-			mutant_vectora geno(data.size(), idx, val);
+			vectorm geno(data.size(), idx, val);
 			m_genotype.swap(geno);
 		}
 #else
@@ -3791,7 +3802,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 				}
 			if (singleMut)
 				val.resize(idx.size(), ToAllele(singleMutVal));
-			mutant_vectora geno(size, idx, val);
+			vectorm geno(size, idx, val);
 			pd.m_genotype.swap(geno);
 #else
 			for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
@@ -3838,7 +3849,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 						idx.push_back(i);
 				}
 				ValueArray val(idx.size(), 1);
-				mutant_vectora geno(size, idx, val);
+				vectorm geno(size, idx, val);
 				pd.m_genotype.swap(geno);
 			} else {
 				DBG_DO(DBG_POPULATION, cerr << "Load mutant from long. " << endl);
@@ -3854,7 +3865,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 						val.push_back(data[i]);
 					}
 				}
-				mutant_vectora geno(data.size(), idx, val);
+				vectorm geno(data.size(), idx, val);
 				pd.m_genotype.swap(geno);
 			}
 #else
@@ -4073,8 +4084,8 @@ void Population::syncIndPointers(bool infoOnly) const
 		size_t is = infoSize();
 		size_t sz = genoSize();
 #ifdef MUTANTALLELE
-		mutant_vectora tmpGenotype(m_popSize * genoSize());
-		mutant_vectora::iterator it = tmpGenotype.begin();
+		vectorm tmpGenotype(m_popSize * genoSize());
+		vectorm::iterator it = tmpGenotype.begin();
 #else
 		vectora tmpGenotype(m_popSize * genoSize());
 		vectora::iterator it = tmpGenotype.begin();

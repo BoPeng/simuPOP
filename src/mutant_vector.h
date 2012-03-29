@@ -67,13 +67,13 @@ inline I _lower_bound(const I & begin, const I & end, const Allele & t, C compar
 }
 
 
-class compressed_vector :
-	public vector_container<compressed_vector>
+class vectorm :
+	public vector_container<vectorm>
 {
 	typedef Allele & true_reference;
 	typedef Allele * pointer;
 	typedef const Allele * const_pointer;
-	typedef compressed_vector self_type;
+	typedef vectorm self_type;
 
 public:
 #  ifdef BOOST_UBLAS_ENABLE_PROXY_SHORTCUTS
@@ -94,7 +94,7 @@ public:
 	typedef sparse_tag storage_category;
 
 	// Construction and destruction
-	inline compressed_vector () :
+	inline vectorm () :
 		vector_container<self_type> (),
 		size_(0), capacity_(restrict_capacity(0)), filled_(0),
 		index_data_(capacity_), value_data_(capacity_)
@@ -103,7 +103,7 @@ public:
 	}
 
 
-	explicit inline compressed_vector (size_type size, size_type non_zeros = 0) :
+	explicit inline vectorm (size_type size, size_type non_zeros = 0) :
 		vector_container<self_type> (),
 		size_(size), capacity_(restrict_capacity(non_zeros)), filled_(0),
 		index_data_(capacity_), value_data_(capacity_)
@@ -112,7 +112,7 @@ public:
 	}
 
 
-	inline compressed_vector (const compressed_vector & v) :
+	inline vectorm (const vectorm & v) :
 		vector_container<self_type> (),
 		size_(v.size_), capacity_(v.capacity_), filled_(v.filled_),
 		index_data_(v.index_data_), value_data_(v.value_data_)
@@ -122,7 +122,7 @@ public:
 
 
 	// index and value are swapped in for best performance
-	inline compressed_vector (size_type size, IndexArray & index, ValueArray & value) :
+	inline vectorm (size_type size, IndexArray & index, ValueArray & value) :
 		vector_container<self_type> (),
 		size_(size), capacity_(restrict_capacity(index.size())), filled_(index.size()),
 		index_data_(), value_data_()
@@ -134,7 +134,7 @@ public:
 
 
 	template<class AE>
-	inline compressed_vector (const vector_expression<AE> & ae, size_type non_zeros = 0) :
+	inline vectorm (const vector_expression<AE> & ae, size_type non_zeros = 0) :
 		vector_container<self_type> (),
 		size_(ae().size()), capacity_(restrict_capacity(non_zeros)), filled_(0),
 		index_data_(capacity_), value_data_(capacity_)
@@ -352,7 +352,7 @@ public:
 
 
 	// Assignment
-	inline compressed_vector & operator =(const compressed_vector & v)
+	inline vectorm & operator =(const vectorm & v)
 	{
 		if (this != &v) {
 			size_ = v.size_;
@@ -367,7 +367,7 @@ public:
 
 
 	template<class C>              // Container assignment without temporary
-	inline compressed_vector & operator =(const vector_container<C> & v)
+	inline vectorm & operator =(const vector_container<C> & v)
 	{
 		resize(v().size(), false);
 		assign(v);
@@ -375,7 +375,7 @@ public:
 	}
 
 
-	inline compressed_vector & assign_temporary(compressed_vector & v)
+	inline vectorm & assign_temporary(vectorm & v)
 	{
 		swap(v);
 		return *this;
@@ -383,7 +383,7 @@ public:
 
 
 	template<class AE>
-	inline compressed_vector & operator =(const vector_expression<AE> & ae)
+	inline vectorm & operator =(const vector_expression<AE> & ae)
 	{
 		self_type temporary(ae, capacity_);
 
@@ -392,7 +392,7 @@ public:
 
 
 	template<class AE>
-	inline compressed_vector & assign(const vector_expression<AE> & ae)
+	inline vectorm & assign(const vector_expression<AE> & ae)
 	{
 		vector_assign<scalar_assign> (*this, ae);
 		return *this;
@@ -401,7 +401,7 @@ public:
 
 	// Computed assignment
 	template<class AE>
-	inline compressed_vector & operator +=(const vector_expression<AE> & ae)
+	inline vectorm & operator +=(const vector_expression<AE> & ae)
 	{
 		self_type temporary(*this + ae, capacity_);
 
@@ -410,7 +410,7 @@ public:
 
 
 	template<class C>              // Container assignment without temporary
-	inline compressed_vector & operator +=(const vector_container<C> & v)
+	inline vectorm & operator +=(const vector_container<C> & v)
 	{
 		plus_assign(v);
 		return *this;
@@ -418,7 +418,7 @@ public:
 
 
 	template<class AE>
-	inline compressed_vector & plus_assign(const vector_expression<AE> & ae)
+	inline vectorm & plus_assign(const vector_expression<AE> & ae)
 	{
 		vector_assign<scalar_plus_assign> (*this, ae);
 		return *this;
@@ -426,7 +426,7 @@ public:
 
 
 	template<class AE>
-	inline compressed_vector & operator -=(const vector_expression<AE> & ae)
+	inline vectorm & operator -=(const vector_expression<AE> & ae)
 	{
 		self_type temporary(*this - ae, capacity_);
 
@@ -435,7 +435,7 @@ public:
 
 
 	template<class C>              // Container assignment without temporary
-	inline compressed_vector & operator -=(const vector_container<C> & v)
+	inline vectorm & operator -=(const vector_container<C> & v)
 	{
 		minus_assign(v);
 		return *this;
@@ -443,7 +443,7 @@ public:
 
 
 	template<class AE>
-	inline compressed_vector & minus_assign(const vector_expression<AE> & ae)
+	inline vectorm & minus_assign(const vector_expression<AE> & ae)
 	{
 		vector_assign<scalar_minus_assign> (*this, ae);
 		return *this;
@@ -451,7 +451,7 @@ public:
 
 
 	template<class AT>
-	inline compressed_vector & operator *=(const AT & at)
+	inline vectorm & operator *=(const AT & at)
 	{
 		vector_assign_scalar<scalar_multiplies_assign> (*this, at);
 		return *this;
@@ -459,7 +459,7 @@ public:
 
 
 	template<class AT>
-	inline compressed_vector & operator /=(const AT & at)
+	inline vectorm & operator /=(const AT & at)
 	{
 		vector_assign_scalar<scalar_divides_assign> (*this, at);
 		return *this;
@@ -467,7 +467,7 @@ public:
 
 
 	// Swapping
-	inline void swap(compressed_vector & v)
+	inline void swap(vectorm & v)
 	{
 		if (this != &v) {
 			std::swap(size_, v.size_);
@@ -480,7 +480,7 @@ public:
 	}
 
 
-	inline friend void swap(compressed_vector & v1, compressed_vector & v2)
+	inline friend void swap(vectorm & v1, vectorm & v2)
 	{
 		v1.swap(v2);
 	}
@@ -544,15 +544,15 @@ public:
 
 
 	class const_val_iterator :
-		public container_const_reference<compressed_vector>,
+		public container_const_reference<vectorm>,
 		public bidirectional_iterator_base<sparse_bidirectional_iterator_tag,
 		                                   const_val_iterator, value_type>
 	{
 public:
-		typedef compressed_vector::value_type value_type;
-		typedef compressed_vector::difference_type difference_type;
-		typedef compressed_vector::const_reference reference;
-		typedef const compressed_vector::pointer pointer;
+		typedef vectorm::value_type value_type;
+		typedef vectorm::difference_type difference_type;
+		typedef vectorm::const_reference reference;
+		typedef const vectorm::pointer pointer;
 
 		// Construction and destruction
 		inline const_val_iterator () :
@@ -628,15 +628,15 @@ private:
 
 
 	class val_iterator :
-		public container_reference<compressed_vector>,
+		public container_reference<vectorm>,
 		public bidirectional_iterator_base<sparse_bidirectional_iterator_tag,
 		                                   val_iterator, value_type>
 	{
 public:
-		typedef compressed_vector::value_type value_type;
-		typedef compressed_vector::difference_type difference_type;
-		typedef compressed_vector::true_reference reference;
-		typedef compressed_vector::pointer pointer;
+		typedef vectorm::value_type value_type;
+		typedef vectorm::difference_type difference_type;
+		typedef vectorm::true_reference reference;
+		typedef vectorm::pointer pointer;
 
 		// Construction and destruction
 		inline val_iterator () :
@@ -1144,7 +1144,7 @@ public:
 		}
 
 
-		compressed_vector * getContainer()
+		vectorm * getContainer()
 		{
 			return &((*this)());
 		}
@@ -1565,7 +1565,7 @@ public:
 		}
 
 
-		const compressed_vector * getContainer()
+		const vectorm * getContainer()
 		{
 			return &((*this)());
 		}
@@ -1667,27 +1667,24 @@ private:
 	friend class const_val_iterator;
 };
 
-const compressed_vector::value_type compressed_vector::zero_ = value_type/*zero*/ ();
 
 //typedef unsigned char Allele;
-typedef compressed_vector::reference AlleleRef;
-
-typedef compressed_vector mutant_vectora;
+typedef vectorm::reference AlleleRef;
 
 
-inline void copy(mutant_vectora::const_iterator begin, mutant_vectora::const_iterator end, mutant_vectora::iterator it)
+inline void copy(vectorm::const_iterator begin, vectorm::const_iterator end, vectorm::iterator it)
 {
 	size_t size = end - begin;
-	mutant_vectora::iterator it_end = it + size;
+	vectorm::iterator it_end = it + size;
 
 	if (it_end.getIndex() <= it_end.getContainer()->size()) {
-		compressed_vector::index_array_type::const_iterator src_index_begin = begin.getIndexIterator();
-		compressed_vector::index_array_type::const_iterator src_index_end = end.getIndexIterator();
-		compressed_vector::value_array_type::const_iterator src_value_begin = begin.getValueIterator();
-		compressed_vector::value_array_type::const_iterator src_value_end = end.getValueIterator();
-		compressed_vector::index_array_type::iterator dest_index_begin = it.getIndexIterator();
-		compressed_vector::index_array_type::iterator dest_index_end = it_end.getIndexIterator();
-		compressed_vector::value_array_type::iterator dest_value_begin = it.getValueIterator();
+		vectorm::index_array_type::const_iterator src_index_begin = begin.getIndexIterator();
+		vectorm::index_array_type::const_iterator src_index_end = end.getIndexIterator();
+		vectorm::value_array_type::const_iterator src_value_begin = begin.getValueIterator();
+		vectorm::value_array_type::const_iterator src_value_end = end.getValueIterator();
+		vectorm::index_array_type::iterator dest_index_begin = it.getIndexIterator();
+		vectorm::index_array_type::iterator dest_index_end = it_end.getIndexIterator();
+		vectorm::value_array_type::iterator dest_value_begin = it.getValueIterator();
 		size_t src_size = src_index_end - src_index_begin;
 		size_t dest_size = dest_index_end - dest_index_begin;
 		size_t src_idx_num_begin = begin.getIndex();
@@ -1733,11 +1730,11 @@ inline void copy(mutant_vectora::const_iterator begin, mutant_vectora::const_ite
 }
 
 
-inline void fill(mutant_vectora::iterator begin, mutant_vectora::iterator end, Allele value)
+inline void fill(vectorm::iterator begin, vectorm::iterator end, Allele value)
 {
-	compressed_vector::index_array_type::iterator index_begin = begin.getIndexIterator();
-	compressed_vector::index_array_type::iterator index_end = end.getIndexIterator();
-	compressed_vector::value_array_type::iterator value_begin = begin.getValueIterator();
+	vectorm::index_array_type::iterator index_begin = begin.getIndexIterator();
+	vectorm::index_array_type::iterator index_end = end.getIndexIterator();
+	vectorm::value_array_type::iterator value_begin = begin.getValueIterator();
 	size_t diff_size = index_end - index_begin;
 	size_t filled_size = begin.getContainer()->filled();
 
@@ -1768,9 +1765,9 @@ inline void fill(mutant_vectora::iterator begin, mutant_vectora::iterator end, A
 }
 
 
-inline mutant_vectora::iterator find(mutant_vectora::iterator begin, mutant_vectora::iterator end, Allele value)
+inline vectorm::iterator find(vectorm::iterator begin, vectorm::iterator end, Allele value)
 {
-	mutant_vectora::iterator it = begin;
+	vectorm::iterator it = begin;
 
 	for (; it != end; ++it) {
 		if (*it == value)

@@ -132,9 +132,9 @@ public:
 
 private:
 #ifdef MUTANTALLELE
-	compressed_vector::index_array_type::iterator m_ptr;
-	compressed_vector::index_array_type::iterator m_end;
-	compressed_vector::value_array_type::iterator m_value;
+	vectorm::index_array_type::iterator m_ptr;
+	vectorm::index_array_type::iterator m_end;
+	vectorm::value_array_type::iterator m_value;
 #else
 	GenoIterator m_begin;
 	GenoIterator m_ptr;
@@ -222,11 +222,6 @@ public:
 		m_genoPtr = pos;
 	}
 
-	/// CPPONLY set genotype pointer (use if Allele*pos can not be determined during construction)
-	void setGenoPtr(ConstGenoIterator pos)
-	{
-		m_genoPtr = pos;
-	}
 
 #ifdef LINEAGE
 	/// CPPONLY set lineage pointer 
@@ -254,12 +249,7 @@ public:
 	//@{
 
 	/// CPPONLY pointer to alleles
-	GenoIterator genoPtr() 
-	{
-		return m_genoPtr;
-	}
-
-	ConstGenoIterator genoPtr() const
+	GenoIterator genoPtr() const
 	{
 		return m_genoPtr;
 	}
@@ -531,7 +521,7 @@ public:
 	{
 #ifdef MUTANTALLELE
 		// Call + operator in order to find the correct m_com_index;
-		// more information see operator+ function in mutant_vector.h
+		// more information see operator+ function in vectorm.h
 		return m_genoPtr + 0;
 #else
 		return m_genoPtr;
@@ -787,15 +777,15 @@ private:
     allInds is only provided when we know in advance that all individuals are
     visible. This is a way to obtain better performance in simple cases.
  */
-template <typename T>
+template <typename T, typename PTR, typename REF>
 class IndividualIterator
 {
 public:
 	typedef std::random_access_iterator_tag iterator_category;
 	typedef typename T::value_type value_type;
 	typedef long int difference_type;
-	typedef typename T::reference reference;
-	typedef typename T::pointer pointer;
+	typedef REF reference;
+	typedef PTR pointer;
 
 	IndividualIterator() : m_it(), m_end(), m_allInds(true)
 	{
@@ -825,7 +815,7 @@ public:
 	}
 
 
-	reference operator*() const
+	REF operator*() const
 	{
 		DBG_ASSERT(m_it < m_end, ValueError,
 			"Can not refer to an invalid iterator");
@@ -834,14 +824,13 @@ public:
 	}
 
 
-	pointer operator->() const
+	PTR operator->() const
 	{
 		DBG_ASSERT(m_it < m_end, ValueError,
 			"Can not refer to an invalid iterator");
 
 		return &*m_it;
 	}
-
 
 	// return, then advance.
 	IndividualIterator operator++(int)
@@ -1007,9 +996,13 @@ private:
 //
 typedef vector<Individual>::iterator RawIndIterator;
 typedef vector<Individual>::const_iterator ConstRawIndIterator;
+typedef vector<Individual>::pointer RawIndPointer;
+typedef vector<Individual>::const_pointer ConstRawIndPointer;
+typedef vector<Individual>::reference RawIndReference;
+typedef vector<Individual>::const_reference ConstRawIndReference;
 
-typedef IndividualIterator<RawIndIterator> IndIterator;
-typedef IndividualIterator<ConstRawIndIterator> ConstIndIterator;
+typedef IndividualIterator<RawIndIterator, RawIndPointer, RawIndReference> IndIterator;
+typedef IndividualIterator<ConstRawIndIterator, ConstRawIndPointer, ConstRawIndReference> ConstIndIterator;
 
 /**
     this class implements a C++ iterator class that iterate through
@@ -1042,7 +1035,7 @@ public:
 	}
 
 
-	InformationIterator(size_t info, IndividualIterator<T> it)
+	InformationIterator(size_t info, IndividualIterator<T, pointer, reference> it)
 		: m_info(info), m_useGappedIterator(false),
 		m_it(it), m_ptr(), m_step()
 	{
@@ -1116,7 +1109,7 @@ private:
 	///
 	bool m_useGappedIterator;
 	// Individual iterator
-	IndividualIterator<T> m_it;
+	IndividualIterator<T, pointer, reference> m_it;
 	//
 	InfoIterator m_ptr;
 	//
@@ -1137,14 +1130,14 @@ typedef InformationIterator<ConstRawIndIterator> ConstIndInfoIterator;
       c): not haplodiploid
 
  */
-template <typename T, typename ITER>
+template <typename T, typename ITER, typename REF>
 class CombinedAlleleIterator
 {
 public:
 	typedef std::forward_iterator_tag iterator_category;
 	typedef Allele value_type;
 	typedef long int difference_type;
-	typedef AlleleRef reference;
+	typedef REF reference;
 	//typedef GenoIterator pointer;
 
 	CombinedAlleleIterator()
@@ -1163,7 +1156,7 @@ public:
 	}
 
 
-	CombinedAlleleIterator(size_t idx, IndividualIterator<T> it)
+	CombinedAlleleIterator(size_t idx, IndividualIterator<T, typename T::pointer, typename T::reference> it)
 		: m_useGappedIterator(false), m_valid(true), m_shift(),
 		m_ptr(), m_ptrEnd(), m_size(0), // belong to a previous one
 		m_it(it), m_index(idx), m_ploidy(0), m_chromType(0),
@@ -1200,20 +1193,9 @@ public:
 		return m_valid;
 	}
 
-	// this is the most important part!
-	AlleleRef operator *() 
-	{
-		if (m_useGappedIterator)
-			return *(m_ptr + m_shift);
-		else {
-			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
-			return *(m_it->genoBegin() + m_index + m_p * m_size);
-		}
-	}
-
 
 	// this is the most important part!
-	AlleleRef operator *() const
+	REF operator *()
 	{
 		if (m_useGappedIterator)
 			return *(m_ptr + m_shift);
@@ -1232,7 +1214,7 @@ public:
 	}
 
 
-	void advance(IndividualIterator<T> & it, size_t & p, bool & valid)
+	void advance(IndividualIterator<T, typename T::pointer, typename T::reference> & it, size_t & p, bool & valid)
 	{
 		DBG_ASSERT(valid, RuntimeError, "Can not advance invalid allele iterator");
 		if (m_chromType == AUTOSOME) {
@@ -1383,7 +1365,7 @@ private:
 	//
 	// The second iteration method
 	// Individual iterator
-	IndividualIterator<T> m_it;
+	IndividualIterator<T, typename T::pointer, typename T::reference> m_it;
 	// index of the locus
 	size_t m_index;
 	// overall ploidy
@@ -1397,8 +1379,8 @@ private:
 };
 
 
-typedef CombinedAlleleIterator<RawIndIterator, GenoIterator> IndAlleleIterator;
-typedef CombinedAlleleIterator<ConstRawIndIterator, ConstGenoIterator> ConstIndAlleleIterator;
+typedef CombinedAlleleIterator<RawIndIterator, GenoIterator, AlleleRef> IndAlleleIterator;
+typedef CombinedAlleleIterator<ConstRawIndIterator, ConstGenoIterator, ConstAlleleRef> ConstIndAlleleIterator;
 
 #ifdef LINEAGE
 /* This is the lineageIterator version of the CombinedAlleleIterator. It cannot
@@ -1419,7 +1401,7 @@ public:
 	{
 	}
 
-	CombinedLineageIterator(size_t shift, IndividualIterator<T> it,
+	CombinedLineageIterator(size_t shift, IndividualIterator<T, typename T::pointer, typename T::reference> it,
 			LineageIterator ptr, LineageIterator ptrEnd, size_t size)
 		: m_useGappedIterator(true), m_valid(true), m_shift(shift),
 		m_ptr(ptr), m_ptrBegin(ptr), m_ptrEnd(ptrEnd), m_size(size), m_it(it),
@@ -1432,7 +1414,7 @@ public:
 	}
 
 
-	CombinedLineageIterator(size_t idx, IndividualIterator<T> it)
+	CombinedLineageIterator(size_t idx, IndividualIterator<T, typename T::pointer, typename T::reference> it)
 		: m_useGappedIterator(false), m_valid(true), m_shift(),
 		m_ptr(), m_ptrBegin(), m_ptrEnd(), m_size(0), // belong to a previous one
 		m_it(it), m_index(idx), m_ploidy(0), m_chromType(0),
@@ -1485,7 +1467,7 @@ public:
 		}
 	}
 
-	IndividualIterator<T> individual()
+	IndividualIterator<T, typename T::pointer, typename T::reference> individual()
 	{
 		if (m_useGappedIterator) {
 			// NOTE: this iterator is used only when indOrdered() is set to true for
@@ -1522,7 +1504,7 @@ public:
 	}
 
 
-	void advance(IndividualIterator<T> & it, size_t & p, bool & valid)
+	void advance(IndividualIterator<T, typename T::pointer, typename T::reference> & it, size_t & p, bool & valid)
 	{
 		DBG_ASSERT(valid, RuntimeError, "Can not advance invalid allele iterator");
 		if (m_chromType == AUTOSOME) {
@@ -1675,7 +1657,7 @@ private:
 	//
 	// The second iteration method
 	// Individual iterator
-	IndividualIterator<T> m_it;
+	IndividualIterator<T, typename T::pointer, typename T::reference> m_it;
 	// index of the locus
 	size_t m_index;
 	// overall ploidy

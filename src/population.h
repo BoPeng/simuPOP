@@ -299,7 +299,7 @@ public:
 		std::swap(rhs.m_gen, m_gen);
 		std::swap(rhs.m_rep, m_rep);
 #ifdef MUTANTALLELE
-		// compressed_vectora must be setGenoPtr after swap
+		// vectorm must be setGenoPtr after swap
 		GenoIterator ptr = m_genotype.begin();
 		for (size_t i = 0; i < m_inds.size(); ++i, ptr += genoSize())
 			m_inds[i].setGenoPtr(ptr);
@@ -1643,7 +1643,7 @@ private:
 
 	/// pool of genotypic information
 #ifdef MUTANTALLELE
-	mutant_vectora m_genotype;
+	vectorm m_genotype;
 #else
 	vectora m_genotype;
 #endif
@@ -1672,7 +1672,7 @@ private:
 		vectoru m_subPopSize;
 		vectorstr m_subPopNames;
 #ifdef MUTANTALLELE
-		mutant_vectora m_genotype;
+		vectorm m_genotype;
 #else
 		vectora m_genotype;
 #endif
