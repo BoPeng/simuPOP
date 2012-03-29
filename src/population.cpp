@@ -1190,7 +1190,13 @@ void Population::removeSubPops(const subPopList & subPops)
 	RawIndIterator oldInd = m_inds.begin();
 	RawIndIterator newInd = m_inds.begin();
 	GenoIterator oldPtr = m_genotype.begin();
+#ifdef MUTANTALLELE
+	IndexArray new_index;
+	ValueArray new_value;
+	size_t lagging = 0;
+#else
 	GenoIterator newPtr = m_genotype.begin();
+#endif
 #ifdef LINEAGE
 	LineageIterator oldLineagePtr = m_lineage.begin();
 	LineageIterator newLineagePtr = m_lineage.begin();
@@ -1214,6 +1220,9 @@ void Population::removeSubPops(const subPopList & subPops)
 			oldPtr += step * spSize;
 			oldInfoPtr += infoStep * spSize;
 			LINEAGE_EXPR(oldLineagePtr += step * spSize);
+#ifdef MUTANTALLELE
+			lagging += step * spSize;
+#endif
 		} else if (subPops.overlap(sp)) {
 			// partial removal
 			//
@@ -1230,21 +1239,39 @@ void Population::removeSubPops(const subPopList & subPops)
 				// will be kept
 				if (!oldInd->marked()) {
 					++newSize;
+#ifdef MUTANTALLELE
 					if (oldInd != newInd) {
 						*newInd = *oldInd;
-#ifdef MUTANTALLELE
-						copyGenotype(oldPtr + 0, oldPtr + step, newPtr);
-#else
-						copy(oldPtr, oldPtr + step, newPtr);
-#endif
 						copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
 						LINEAGE_EXPR(copy(oldLineagePtr, oldLineagePtr + step, newLineagePtr));
 					}
-					++newInd;
+					GenoIterator b(oldPtr + 0);
+					GenoIterator e(oldPtr + step);
+					IndexArray arr(b.getIndexIterator(), e.getIndexIterator());
+					if (lagging > 0)
+						for (size_t k = 0; k < arr.size(); ++k)
+							arr[k] -= lagging;
+					if (arr.size() > 0) {
+						new_index.insert(new_index.end(), arr.begin(), arr.end());
+						new_value.insert(new_value.end(), b.getValueIterator(), e.getValueIterator());
+					}
+#else
+					if (oldInd != newInd) {
+						*newInd = *oldInd;
+						copy(oldPtr, oldPtr + step, newPtr);
+						copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
+						LINEAGE_EXPR(copy(oldLineagePtr, oldLineagePtr + step, newLineagePtr));
+					}
 					newPtr += step;
+#endif
+					++newInd;
 					newInfoPtr += infoStep;
 					LINEAGE_EXPR(newLineagePtr += step);
 				}
+#ifdef MUTANTALLELE
+				else
+					lagging += step;
+#endif
 				++oldInd;
 				oldPtr += step;
 				oldInfoPtr += infoStep;
@@ -1260,18 +1287,33 @@ void Population::removeSubPops(const subPopList & subPops)
 			if (!m_subPopNames.empty())
 				new_spNames.push_back(m_subPopNames[sp]);
 			// do not remove.
-			if (oldPtr != newPtr) {
 #ifdef MUTANTALLELE
-				copyGenotype(oldPtr + 0, oldPtr + step * spSize, newPtr);
-#else
-				copy(oldPtr, oldPtr + step * spSize, newPtr);
-#endif
+			if (oldInfoPtr != newInfoPtr) {
 				copy(oldInd, oldInd + spSize, newInd);
 				copy(oldInfoPtr, oldInfoPtr + infoStep * spSize, newInfoPtr);
 				LINEAGE_EXPR(copy(oldLineagePtr, oldLineagePtr + step * spSize, newLineagePtr));
 			}
-			newInd += spSize;
+			// genotype has to be called in any case
+			GenoIterator b(oldPtr + 0);
+			GenoIterator e(oldPtr + step * spSize);
+			IndexArray arr(b.getIndexIterator(), e.getIndexIterator());
+			if (lagging > 0)
+				for (size_t k = 0; k < arr.size(); ++k)
+					arr[k] -= lagging;
+			if (arr.size() > 0) {
+				new_index.insert(new_index.end(), arr.begin(), arr.end());
+				new_value.insert(new_value.end(), b.getValueIterator(), e.getValueIterator());
+			}
+#else
+			if (oldPtr != newPtr) {
+				copy(oldPtr, oldPtr + step * spSize, newPtr);
+				copy(oldInd, oldInd + spSize, newInd);
+				copy(oldInfoPtr, oldInfoPtr + infoStep * spSize, newInfoPtr);
+				LINEAGE_EXPR(copy(oldLineagePtr, oldLineagePtr + step * spSize, newLineagePtr));
+			}
 			newPtr += step * spSize;
+#endif
+			newInd += spSize;
 			newInfoPtr += infoStep * spSize;
 			oldInd += spSize;
 			oldPtr += step * spSize;
@@ -1282,7 +1324,12 @@ void Population::removeSubPops(const subPopList & subPops)
 	}
 	//
 	m_inds.erase(newInd, m_inds.end());
+#ifdef MUTANTALLELE
+	vectorm new_geno(m_genotype.size() - lagging, new_index, new_value);
+	m_genotype.swap(new_geno);
+#else
 	m_genotype.erase(newPtr, m_genotype.end());
+#endif
 	m_info.erase(newInfoPtr, m_info.end());
 	LINEAGE_EXPR(m_lineage.erase(newLineagePtr, m_lineage.end()));
 	m_popSize = std::accumulate(new_size.begin(), new_size.end(), size_t(0));
@@ -1329,7 +1376,6 @@ void Population::removeMarkedIndividuals()
 #endif
 	//
 	for (size_t sp = 0; sp < numSubPop(); ++sp) {
-		cerr << "SP " << sp << endl;
 		size_t newSize = 0;
 		size_t spSize = subPopSize(sp);
 		for (size_t i = 0; i < spSize; ++i) {

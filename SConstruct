@@ -122,7 +122,7 @@ else:
     # during development, output symbols (for profiling and debugging)
     # treat warning as error... (although an unused parameter warning from boost has to be allowed)
     extra_flags = ['-g', '-Wno-unused-parameter', '-Wno-char-subscripts', '-Wno-unused-variable', 
-        '-Wno-unused-function', '-Wno-self-assign', '-Wno-parentheses-equality', '-Werror']
+        '-Wno-unused-function']
     #
     # GNU gcc:
     #
