@@ -211,8 +211,8 @@ bool BaseMutator::apply(Population & pop) const
 									static_cast<int>(newAllele)));
 						}
 					}
-					//if (oldAllele != newAllele)
-					//	*ptr = newAllele;
+					if (oldAllele != newAllele)
+						*ptr = newAllele;
 					DBG_DO(DBG_MUTATOR, cerr << " is mutated from ");
 					DBG_DO(DBG_MUTATOR, cerr << int(oldAllele) << " to " << int(newAllele) << endl);
 #ifdef LINEAGE
