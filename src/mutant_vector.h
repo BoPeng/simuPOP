@@ -56,7 +56,7 @@ typedef std::vector<std::size_t> IndexArray;
 typedef std::vector<Allele> ValueArray;
 
 template<class I, class C>
-inline I _lower_bound(const I & begin, const I & end, const Allele & t, C compare)
+inline I _lower_bound(const I & begin, const I & end, const size_t & t, C compare)
 {
 	// t <= *begin <=> ! (*begin < t)
 	if (begin == end || !compare(*begin, t))
@@ -81,7 +81,8 @@ public:
 #  endif
 	// ISSUE require type consistency check
 	// is_convertable (IndexArray::size_type, ValueArray::size_type)
-	typedef IndexArray::value_type size_type;
+	//typedef IndexArray::value_type size_type;
+	typedef size_t size_type;
 	typedef IndexArray::difference_type difference_type;
 	typedef Allele value_type;
 	typedef const Allele & const_reference;
