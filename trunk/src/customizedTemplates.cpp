@@ -142,7 +142,7 @@ setarrayitem_template<LineageIterator>(struct arrayobject_template<LineageIterat
 
 /// CPPONLY
 template <typename T>
-static PyObject *
+PyObject *
 carray_new_template(PyTypeObject * /* type */, PyObject * /* args */, PyObject * /* kwds */)
 {
 	PyErr_SetString(PyExc_TypeError,
@@ -153,7 +153,7 @@ carray_new_template(PyTypeObject * /* type */, PyObject * /* args */, PyObject *
 
 /// CPPONLY
 template <typename T>
-static PyObject *
+PyObject *
 carray_init_template(PyTypeObject * /* type */, PyObject * /* args */, PyObject * /* kwds */)
 {
 	PyErr_SetString(PyExc_TypeError,
@@ -168,7 +168,7 @@ PyObject * newcarrayobject_template(T begin, T end);
 
 /// CPPONLY
 template <typename T>
-static void
+void
 array_dealloc_template(arrayobject_template<T> * op)
 {
 	PyObject_Del(op);
@@ -177,7 +177,7 @@ array_dealloc_template(arrayobject_template<T> * op)
 
 /// CPPONLY
 template <typename T>
-static PyObject *
+PyObject *
 array_richcompare_template(PyObject * v, PyObject * w, int op)
 {
 	// will really has this case?
@@ -366,7 +366,7 @@ array_richcompare_template(PyObject * v, PyObject * w, int op)
 
 /// CPPONLY
 template<typename T>
-static Py_ssize_t array_length_template(struct arrayobject_template<T> * a)
+Py_ssize_t array_length_template(struct arrayobject_template<T> * a)
 {
 	return Py_SIZE(a);
 }
@@ -374,7 +374,7 @@ static Py_ssize_t array_length_template(struct arrayobject_template<T> * a)
 
 /// CPPONLY
 template<typename T>
-static PyObject * array_concat_template(struct arrayobject_template<T> * , PyObject * )
+PyObject * array_concat_template(struct arrayobject_template<T> * , PyObject * )
 {
 	PyErr_SetString(PyExc_TypeError,
 		"Can not concat carray object.");
@@ -384,7 +384,7 @@ static PyObject * array_concat_template(struct arrayobject_template<T> * , PyObj
 
 /// CPPONLY
 template<typename T>
-static PyObject * array_repeat_template(struct arrayobject_template<T> * , Py_ssize_t )
+PyObject * array_repeat_template(struct arrayobject_template<T> * , Py_ssize_t )
 {
 	PyErr_SetString(PyExc_TypeError,
 		"Can not repeat carray object.");
@@ -394,7 +394,7 @@ static PyObject * array_repeat_template(struct arrayobject_template<T> * , Py_ss
 
 /// CPPONLY
 template<typename T>
-static PyObject * array_item_template(struct arrayobject_template<T> * a, Py_ssize_t i)
+PyObject * array_item_template(struct arrayobject_template<T> * a, Py_ssize_t i)
 {
 	if (i < 0 || i >= Py_SIZE(a)) {
 		PyErr_SetString(PyExc_IndexError, "array index out of range");
@@ -406,7 +406,7 @@ static PyObject * array_item_template(struct arrayobject_template<T> * a, Py_ssi
 
 /// CPPONLY
 template<typename T>
-static PyObject * array_slice_template(struct arrayobject_template<T> * a, Py_ssize_t ilow, Py_ssize_t ihigh)
+PyObject * array_slice_template(struct arrayobject_template<T> * a, Py_ssize_t ilow, Py_ssize_t ihigh)
 {
 	struct arrayobject_template<T> * np;
 
@@ -429,7 +429,7 @@ static PyObject * array_slice_template(struct arrayobject_template<T> * a, Py_ss
 
 /// CPPONLY
 template<typename T>
-static int array_ass_slice_template(struct arrayobject_template<T> * a, Py_ssize_t ilow, Py_ssize_t ihigh, PyObject * v)
+int array_ass_slice_template(struct arrayobject_template<T> * a, Py_ssize_t ilow, Py_ssize_t ihigh, PyObject * v)
 {
 	if (v == NULL || a == (struct arrayobject_template<T> *)v) {
 		PyErr_BadArgument();
@@ -487,7 +487,7 @@ static int array_ass_slice_template(struct arrayobject_template<T> * a, Py_ssize
 
 /// CPPONLY
 template <typename T>
-static Py_ssize_t array_ass_item_template(struct arrayobject_template<T> * a, Py_ssize_t i, PyObject * v)
+Py_ssize_t array_ass_item_template(struct arrayobject_template<T> * a, Py_ssize_t i, PyObject * v)
 {
 	if (i < 0 || i >= Py_SIZE(a)) {
 		PyErr_SetString(PyExc_IndexError,
@@ -502,7 +502,7 @@ static Py_ssize_t array_ass_item_template(struct arrayobject_template<T> * a, Py
 
 /// CPPONLY
 template <typename T>
-static PyObject * array_count_template(struct arrayobject_template<T> * self, PyObject * args)
+PyObject * array_count_template(struct arrayobject_template<T> * self, PyObject * args)
 {
 	int count = 0;
 	int i;
@@ -524,7 +524,7 @@ static PyObject * array_count_template(struct arrayobject_template<T> * self, Py
 
 /// CPPONLY
 template <typename T>
-static PyObject * array_index_template(struct arrayobject_template<T> * self, PyObject * args)
+PyObject * array_index_template(struct arrayobject_template<T> * self, PyObject * args)
 {
 	Py_ssize_t i;
 	PyObject * v;
@@ -554,7 +554,7 @@ static PyObject * array_index_template(struct arrayobject_template<T> * self, Py
 
 /// CPPONLY
 template<typename T>
-static PyObject * array_tolist_template(struct arrayobject_template<T> * self, PyObject * args)
+PyObject * array_tolist_template(struct arrayobject_template<T> * self, PyObject * args)
 {
 	PyObject * list = PyList_New(Py_SIZE(self));
 	int i;
@@ -576,7 +576,7 @@ static PyObject * array_tolist_template(struct arrayobject_template<T> * self, P
 
 /// CPPONLY
 template<typename T>
-static int array_print_template(struct arrayobject_template<T> * a, FILE * fp, int /* flags */)
+int array_print_template(struct arrayobject_template<T> * a, FILE * fp, int /* flags */)
 {
 	int ok = 0;
 	Py_ssize_t i, len;
@@ -602,7 +602,7 @@ static int array_print_template(struct arrayobject_template<T> * a, FILE * fp, i
 
 /// CPPONLY
 template<typename T>
-static PyObject *
+PyObject *
 array_repr_template(struct arrayobject_template<T> * a)
 {
 	char buf[256];
@@ -804,14 +804,14 @@ int setarrayitem_template<LineageIterator>(struct arrayobject_template<LineageIt
 /* Methods */
 
 template <typename T>
-static void
+void
 array_dealloc_template(struct arrayobject_template<T> * op)
 {
 	Py_TYPE(op)->tp_free((PyObject *)op);
 }
 
 template <typename T>
-static PyObject *
+PyObject *
 array_richcompare_template(PyObject * v, PyObject * w, int op)
 {
 	// will really has this case?
@@ -998,7 +998,7 @@ array_richcompare_template(PyObject * v, PyObject * w, int op)
 }
 
 template <typename T>
-static Py_ssize_t
+Py_ssize_t
 array_length_template(struct arrayobject_template<T> * a)
 {
 	return Py_SIZE(a);
@@ -1006,7 +1006,7 @@ array_length_template(struct arrayobject_template<T> * a)
 
 
 template <typename T>
-static PyObject *
+PyObject *
 array_item_template(struct arrayobject_template<T> * a, Py_ssize_t i)
 {
 	if (i < 0 || i >= Py_SIZE(a)) {
@@ -1018,7 +1018,7 @@ array_item_template(struct arrayobject_template<T> * a, Py_ssize_t i)
 
 
 template <typename T>
-static PyObject *
+PyObject *
 array_slice_template(struct arrayobject_template<T> * a, Py_ssize_t ilow, Py_ssize_t ihigh)
 {
 	struct arrayobject_template<T> * np;
@@ -1040,7 +1040,7 @@ array_slice_template(struct arrayobject_template<T> * a, Py_ssize_t ilow, Py_ssi
 }
 
 template <typename T>
-static int
+int
 array_ass_slice_template(struct arrayobject_template<T> * a, Py_ssize_t ilow, Py_ssize_t ihigh, PyObject * v)
 {
 	if (v == NULL || a == (struct arrayobject_template<T> *)v) {
@@ -1098,7 +1098,7 @@ array_ass_slice_template(struct arrayobject_template<T> * a, Py_ssize_t ilow, Py
 }
 
 template <typename T>
-static int
+int
 array_ass_item_template(struct arrayobject_template<T> * a, Py_ssize_t i, PyObject * v)
 {
 	if (i < 0 || i >= Py_SIZE(a)) {
@@ -1112,7 +1112,7 @@ array_ass_item_template(struct arrayobject_template<T> * a, Py_ssize_t i, PyObje
 }
 
 template <typename T>
-static PyObject *
+PyObject *
 array_count_template(struct arrayobject_template<T> * self, PyObject * v)
 {
 	Py_ssize_t count = 0;
@@ -1131,7 +1131,7 @@ array_count_template(struct arrayobject_template<T> * self, PyObject * v)
 }
 
 template <typename T>
-static PyObject *
+PyObject *
 array_index_template(struct arrayobject_template<T> * self, PyObject * v)
 {
 	Py_ssize_t i;
@@ -1150,7 +1150,7 @@ array_index_template(struct arrayobject_template<T> * self, PyObject * v)
 }
 
 template <typename T>
-static PyObject *
+PyObject *
 array_tolist_template(struct arrayobject_template<T> * self, PyObject * unused)
 {
 	PyObject * list = PyList_New(Py_SIZE(self));
@@ -1170,7 +1170,7 @@ array_tolist_template(struct arrayobject_template<T> * self, PyObject * unused)
 }
 
 template <typename T>
-static PyObject *
+PyObject *
 array_repr_template(struct arrayobject_template<T> * a)
 {
 	PyObject * s, * v = NULL;
@@ -1181,7 +1181,7 @@ array_repr_template(struct arrayobject_template<T> * a)
 }
 
 template <typename T>
-static PyObject*
+PyObject*
 array_subscr_template(struct arrayobject_template<T>* self, PyObject* item)
 {
 	if (PyIndex_Check(item)) {
@@ -1225,7 +1225,7 @@ array_subscr_template(struct arrayobject_template<T>* self, PyObject* item)
 }
 
 template <typename T>
-static int
+int
 array_ass_subscr_template(struct arrayobject_template<T>* self, PyObject* item, PyObject* value)
 {
 	Py_ssize_t start, stop, step, slicelength, needed;
