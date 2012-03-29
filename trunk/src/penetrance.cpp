@@ -403,7 +403,7 @@ PyMlPenetrance::PyMlPenetrance(PyObject * func, int mode, const lociList & loci,
 }
 
 
-double PyMlPenetrance::penet(Population & /* pop */, Individual * ind) const
+double PyMlPenetrance::penet(Population * /* pop */, Individual * ind) const
 {
 	PenetranceAccumulator pnt(m_mode);
 	const vectoru & loci = m_loci.elems(ind);

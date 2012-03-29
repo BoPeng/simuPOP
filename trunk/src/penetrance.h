@@ -485,7 +485,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return the penetrance value, currently assuming diploid
 	 */
-	virtual double penet(Population & pop, Individual * ind) const;
+	double penet(Population * pop, Individual * ind) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
