@@ -736,13 +736,11 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 		size_t sz = geno.size();
 		for (size_t i = 0; i < popSize() * genoSize(); ++i) {
 #ifdef MUTANTALLELE
-			if (ToAllele(geno[i % sz]) == 0u && *ptr == 0u)
-				ptr++;
-			else if (ToAllele(geno[i % sz]) == 0u && *ptr != 0u) {
-				ptr.deleted();
-				ptr++;
-			} else
-				*(ptr++) = ToAllele(geno[i % sz]);
+			// NOTE: here we assign 0 to places with non-zero values. This 'never-remove'
+			// method guarantees that existing iterator m_com_index will not be outdated
+			// they could become smaller, but will never become larger than it is.
+			ptr.assignIfDiffer(ToAllele(geno[i % sz]));
+			++ptr;
 #else
 			*(ptr++) = ToAllele(geno[i % sz]);
 #endif
@@ -771,6 +769,22 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 		deactivateVirtualSubPop(subPop.subPop());
 	}
 }
+
+
+#ifdef MUTANTALLELE
+void Population::dumpArray()
+{
+	GenoIterator b = genoBegin(false);
+	GenoIterator e = genoEnd(false);
+	IndexArray idx(b.getIndexIterator(), e.getIndexIterator());
+	cerr << "IDX: " << idx << " (size " << idx.size() << ")" << endl;
+	ValueArray val(b.getValueIterator(), e.getValueIterator());
+	vectoru x;
+	for (size_t i = 0; i < val.size(); ++i)
+		x.push_back(int(val[i]));
+	cerr << "VAL: " << x << " (size " << x.size() << ")" << endl;
+}
+#endif
 
 
 void Population::setLineage(const uintList & lineageList, vspID subPopID)

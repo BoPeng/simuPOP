@@ -1150,21 +1150,19 @@ public:
 			return &((*this)());
 		}
 
-
+		/*
 		void deleted()
 		{
 			(*this)().erase_element(m_index);
 		}
+		*/
 
-
-		void assign(const_reference value)
+		void assignIfDiffer(const_reference value)
 		{
-			if (value == 0u && (*this)()[m_index] == 0u)
-				return;
-			else
+			if (value != this->value())
 				(*this)()[m_index] = value;
 		}
-
+		
 
 		friend class const_iterator;
 

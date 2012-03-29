@@ -160,6 +160,7 @@ class TestInitialization(unittest.TestCase):
             [.25, .35, .55])
         #
         self.clearGenotype(pop)
+        #pop.dumpArray()
         initGenotype(pop, freq=[.2, .3, .4, .1], loci=[2,4,6])
         self.assertGenotypeFreq(pop, [.15, .25, .35, .05],
             [.25, .35, .45, .15], loci=[2,4,6])
