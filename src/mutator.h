@@ -155,7 +155,7 @@ public:
 	double mutRate(size_t loc) const;
 
 	/// CPPONLY
-	virtual void mutate(AlleleRef /* allele */, size_t /* locus */) const
+	virtual Allele mutate(Allele /* allele */, size_t /* locus */) const
 	{
 		throw SystemError("You are not supposed to call this base mutator funciton.");
 	};
@@ -242,7 +242,7 @@ public:
 
 
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele, size_t locus) const;
+	virtual Allele mutate(Allele allele, size_t locus) const;
 
 	/// HIDDEN Deep copy of a \c MatrixMutator
 	virtual BaseOperator * clone() const
@@ -304,7 +304,7 @@ public:
 
 
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele, size_t locus) const;
+	virtual Allele mutate(Allele allele, size_t locus) const;
 
 	/// HIDDEN Deep copy of a \c KAlleleMutator
 	virtual BaseOperator * clone() const
@@ -377,7 +377,7 @@ public:
 
 	/// mutate according to the SMM model
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele, size_t locus) const;
+	virtual Allele mutate(Allele allele, size_t locus) const;
 
 	/// HIDDEN Deep copy of a \c StepwiseMutator
 	virtual BaseOperator * clone() const
@@ -448,7 +448,7 @@ public:
 
 
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele, size_t locus) const;
+	virtual Allele mutate(Allele allele, size_t locus) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
@@ -509,7 +509,7 @@ public:
 
 
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele, size_t locus) const;
+	virtual Allele mutate(Allele allele, size_t locus) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
@@ -586,7 +586,7 @@ public:
 
 
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele, size_t locus) const;
+	virtual Allele mutate(Allele allele, size_t locus) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
