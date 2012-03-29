@@ -4503,7 +4503,7 @@ void copyGenotype(ConstGenoIterator begin, ConstGenoIterator end, GenoIterator i
 	size_t size = end - begin;
 	vectorm::iterator it_end = it + size;
 
-	DBG_FAILIF(begin.getContainer() == it.getContainer(), SystemError,
+	DBG_WARNIF(begin.getContainer() == it.getContainer(),
 		"Copying mutants in the same container is unsafe and should be avoided.");
 
 	if (it_end.getIndex() <= it_end.getContainer()->size()) {
