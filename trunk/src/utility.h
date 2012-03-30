@@ -2133,6 +2133,9 @@ PyObject * moduleInfo();
 void copyGenotype(GenoIterator fr, GenoIterator to, size_t n);
 
 /// CPPONLY
+/// This function is not called fillGenotype because when A is not zero
+/// fillGenotype should fill all genotypes with mutant, something we
+/// will not do here.
 void clearGenotype(GenoIterator to, size_t n);
 
 #  ifndef OPTIMIZED

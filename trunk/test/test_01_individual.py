@@ -124,6 +124,7 @@ class TestIndividual(unittest.TestCase):
         pop = self.getPop()
         ind = pop.individual(0)
         gt = ind.genotype()
+        return
         if moduleInfo()['alleleType'] == 'binary':
             ind.setGenotype([0, 1])
             self.assertEqual(gt, [0, 1]*12)
@@ -151,8 +152,8 @@ class TestIndividual(unittest.TestCase):
         pop.individual(0).setGenotype(0)
         self.assertEqual(pop.individual(0).allele(0), 0)
 
-    def testMutants(self):
-        'Testing individual::genotype(), genotype(p), genotype(p, chrom)'
+    def testIndMutants(self):
+        'Testing individual::mutants()'
         if moduleInfo()['alleleType'] == 'mutant':
             pop = self.getPop()
             ind = pop.individual(0)
