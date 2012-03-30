@@ -72,7 +72,7 @@ public:
 		m_end((base + end).getIndexIterator()),
 		m_value((base + begin).getValueIterator()),
 #else
-		m_begin(begin),
+		m_base(base),
 		m_ptr(begin),
 		m_end(end),
 #endif
