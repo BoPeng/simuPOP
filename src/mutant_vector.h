@@ -414,6 +414,7 @@ public:
 		storage_invariants();
 	}
 
+
 	// clear some ... added by Bo
 	inline void clear(size_t beg, size_t end)
 	{
@@ -425,6 +426,7 @@ public:
 		for (size_t i = b; i < e; ++i)
 			value_data_[i] = 0;
 	}
+
 
 	class const_val_iterator;
 
@@ -447,9 +449,10 @@ public:
 		storage_invariants();
 	}
 
+
 	// copy regions, added by Bo
 	void copy_region(const vectorm * con, size_t src_idx_beg,
-		size_t src_idx_end, size_t dest_idx_beg)
+	                 size_t src_idx_end, size_t dest_idx_beg)
 	{
 		BOOST_UBLAS_CHECK(src_idx_beg <= src_idx_end, external_logic());
 		BOOST_UBLAS_CHECK(src_idx_end <= com->size(), external_logic());
@@ -457,6 +460,13 @@ public:
 		if (src_idx_beg == src_idx_end)
 			return;
 		size_t dest_idx_end = dest_idx_beg + (src_idx_end - src_idx_beg);
+		// if there is no room ...
+		if (dest_idx_end > size_) {
+			src_idx_end -= size_ - dest_idx_end;
+			if (src_idx_end <= src_idx_beg)
+				return;
+			dest_idx_end = size_;
+		}
 		BOOST_UBLAS_CHECK(dest_idx_end <= size_, external_logic());
 		// simple case 2: no variant, so we set all variants in the new region to zero
 		// number of elements in source
@@ -468,29 +478,46 @@ public:
 			return;
 		}
 		// number of elements in destination
-		size_t dest_iptr_beg = _lower_bound(index_data_.begin(), index_data_.begin() + filled_, dest_idx_beg,
+		size_t dest_shift_beg = _lower_bound(index_data_.begin(), index_data_.begin() + filled_, dest_idx_beg,
 			std::less<size_type> ()) - index_data_.begin();
-		size_t dest_iptr_end = _lower_bound(index_data_.begin() + dest_iptr_beg, index_data_.begin() + filled_,
+		size_t dest_shift_end = _lower_bound(index_data_.begin() + dest_shift_beg, index_data_.begin() + filled_,
 			dest_idx_end, std::less<size_type> ()) - index_data_.begin();
-		size_t dest_mut_num = dest_iptr_end - dest_iptr_beg;
+		size_t dest_mut_num = dest_shift_end - dest_shift_beg;
+		/*
+		   std::cerr << " S " << src_idx_beg << ", " << src_idx_end << " (";
+		   for (const_val_iterator i = src_iptr_beg; i != src_iptr_end; ++i)
+		    std::cerr << i.index() << "/" << int(*i) << ", ";
+		   std::cerr << ") " << (src_iptr_end - src_iptr_beg) << std::endl;;
+		   //
+		   std::cerr << " D " << dest_idx_beg << ", " << dest_idx_end << "(";
+		   for (size_t i = dest_shift_beg; i != dest_shift_end; ++i)
+		    std::cerr << index_data_[i] << "/" << int(value_data_[i]) << ", ";
+		   std::cerr << ") " << dest_shift_end - dest_shift_beg;
+		   if (dest_shift_end != filled_)
+		    std::cerr << " + " << index_data_[dest_shift_end] << "/" << int(value_data_[dest_shift_end]);
+		   else
+		    std::cerr << " E ";
+		   std::cerr << std::endl;
+		 */
 		//
-		// adjust index [ss -- > se] 
-		// 
+		// adjust index [ss -- > se]
+		//
 		// for example, copy mutant 102, 104 from 100 - 120 to 200
 		// we need to get index 202, 204
 		int lagging = dest_idx_beg - src_idx_beg;
 		// simple case 3: there are exactly the same number of variants (index might be different)
 		int diff = src_mut_num - dest_mut_num;
+		// std::cerr << "diff " << diff << " lagging " << lagging << std::endl;
 		if (diff <= 0) {
-			for (; src_iptr_beg != src_iptr_end; ++dest_iptr_beg, ++src_iptr_beg) {
-				value_data_ [dest_iptr_beg] = *src_iptr_beg;
-				index_data_ [dest_iptr_beg] = src_iptr_beg.index() + lagging;
+			for (; src_iptr_beg != src_iptr_end; ++dest_shift_beg, ++src_iptr_beg) {
+				value_data_ [dest_shift_beg] = *src_iptr_beg;
+				index_data_ [dest_shift_beg] = src_iptr_beg.index() + lagging;
 			}
 			if (diff < 0) {
-				std::copy(index_data_.begin() + dest_iptr_end + (-diff), index_data_.begin() + filled_, 
-					index_data_.begin() + dest_iptr_end);
-				value_array_type::iterator itt(value_data_.begin() + dest_iptr_end);
-				std::copy(itt + (- diff), value_data_.begin() + filled_, itt);
+				std::copy(index_data_.begin() + dest_shift_end, index_data_.begin() + filled_,
+					index_data_.begin() + dest_shift_end + diff);
+				value_array_type::iterator itt(value_data_.begin() + dest_shift_end);
+				std::copy(itt, value_data_.begin() + filled_, itt + diff);
 				filled_ += diff;
 			}
 		} else {
@@ -499,17 +526,34 @@ public:
 				reserve(2 * std::max(capacity_, filled_ + diff), true);
 			// copy last piece first, to leave room for new stuff
 			filled_ += diff;
-			std::copy_backward(index_data_.begin() + dest_iptr_end, index_data_.begin() + filled_ - diff,
+			std::copy_backward(index_data_.begin() + dest_shift_end, index_data_.begin() + filled_ - diff,
 				index_data_.begin() + filled_);
-			value_array_type::iterator itt(value_data_.begin() + dest_iptr_end);
+			value_array_type::iterator itt(value_data_.begin() + dest_shift_end);
 			std::copy_backward(itt, value_data_.begin() + filled_ - diff, value_data_.begin() + filled_);
 			// copy real stuff
-			for (; src_iptr_beg != src_iptr_end; ++dest_iptr_beg, ++src_iptr_beg) {
-				value_data_ [dest_iptr_beg] = *src_iptr_beg;
-				index_data_ [dest_iptr_beg] = src_iptr_beg.index() + lagging;
+			for (; src_iptr_beg != src_iptr_end; ++dest_shift_beg, ++src_iptr_beg) {
+				value_data_ [dest_shift_beg] = *src_iptr_beg;
+				index_data_ [dest_shift_beg] = src_iptr_beg.index() + lagging;
 			}
 		}
+		/*
+		   dest_shift_beg = _lower_bound(index_data_.begin(), index_data_.begin() + filled_, dest_idx_beg,
+		    std::less<size_type> ()) - index_data_.begin();
+		   dest_shift_end = _lower_bound(index_data_.begin() + dest_shift_beg, index_data_.begin() + filled_,
+		    dest_idx_end, std::less<size_type> ()) - index_data_.begin();
+		   std::cerr << " RES " << dest_idx_beg << ", " << dest_idx_end << "(";
+		   for (size_t i = dest_shift_beg; i != dest_shift_end; ++i)
+		    std::cerr << index_data_[i] << "/" << int(value_data_[i]) << ", ";
+		   std::cerr << ") " << dest_shift_end - dest_shift_beg;
+		   if (dest_shift_end != filled_)
+		    std::cerr << " + " << index_data_[dest_shift_end] << "/" << int(value_data_[dest_shift_end]);
+		   else
+		    std::cerr << " E ";
+		   std::cerr << std::endl;
+		 */
+		storage_invariants();
 	}
+
 
 	inline void pop_back()
 	{
@@ -700,6 +744,7 @@ public:
 			return *it_;
 		}
 
+
 		// Assignment
 		inline val_iterator & operator =(const val_iterator & it)
 		{
@@ -873,10 +918,12 @@ public:
 			return m_index;
 		}
 
+
 		val_iterator getValIterator() const
 		{
 			return (*this)().val_begin(m_index);
 		}
+
 
 		const_reference value() const
 		{
@@ -1315,10 +1362,12 @@ public:
 			return m_index;
 		}
 
+
 		const_val_iterator getValIterator() const
 		{
 			return (*this)().val_begin(m_index);
 		}
+
 
 		const_reference value() const
 		{
