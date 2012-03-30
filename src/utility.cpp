@@ -4500,62 +4500,8 @@ void clearGenotype(GenoIterator to, size_t n)
 
 void copyGenotype(ConstGenoIterator begin, ConstGenoIterator end, GenoIterator it)
 {
-	size_t size = end - begin;
-	vectorm::iterator it_end = it + size;
-
-	DBG_WARNIF(begin.getContainer() == it.getContainer(),
-		"Copying mutants in the same container is unsafe and should be avoided.");
-
-	if (it_end.getIndex() <= it_end.getContainer()->size()) {
-		vectorm::index_array_type::const_iterator src_index_begin = begin.getIndexIterator();
-		vectorm::index_array_type::const_iterator src_index_end = end.getIndexIterator();
-		vectorm::value_array_type::const_iterator src_value_begin = begin.getValueIterator();
-		vectorm::value_array_type::const_iterator src_value_end = end.getValueIterator();
-		vectorm::index_array_type::iterator dest_index_begin = it.getIndexIterator();
-		vectorm::index_array_type::iterator dest_index_end = it_end.getIndexIterator();
-		vectorm::value_array_type::iterator dest_value_begin = it.getValueIterator();
-		size_t src_size = src_index_end - src_index_begin;
-		size_t dest_size = dest_index_end - dest_index_begin;
-		size_t src_idx_num_begin = begin.getIndex();
-		size_t dest_idx_num_begin = it.getIndex();
-		if (src_size > dest_size) {
-			size_t diff_size = src_size - dest_size;
-			size_t filled_size = it.getContainer()->filled();
-			if (filled_size + diff_size >= it.getContainer()->nnz_capacity()) {
-				it.getContainer()->reserve(2 * filled_size + diff_size, true);
-				//After using reserve(), dest_value_begin no longer valid, get a new one
-				dest_value_begin = it.getValueIterator();
-				dest_index_begin = it.getIndexIterator();
-				src_index_begin = begin.getIndexIterator();
-			}
-			std::copy_backward(dest_index_begin, it.getContainer()->index_data().begin() + filled_size, it.getContainer()->index_data().begin() + filled_size + diff_size);
-			for (size_t i = 0; i < src_size; i++) {
-				size_t range = *(src_index_begin + i) - src_idx_num_begin;
-				*(dest_index_begin + i) = dest_idx_num_begin + range;
-			}
-			std::copy_backward(dest_value_begin, it.getContainer()->value_data().begin() + filled_size, it.getContainer()->value_data().begin() + filled_size + diff_size);
-			std::copy(begin.getValueIterator(), end.getValueIterator(), dest_value_begin);
-			it.getContainer()->set_filled(filled_size + diff_size);
-		} else if (src_size < dest_size) {
-			size_t diff_size = dest_size - src_size;
-			size_t filled_size = it.getContainer()->filled();
-			std::copy(dest_index_begin + diff_size, it.getContainer()->index_data().begin() + filled_size, dest_index_begin);
-			for (size_t i = 0; i < src_size; i++) {
-				size_t range = *(src_index_begin + i) - src_idx_num_begin;
-				*(dest_index_begin + i) = dest_idx_num_begin + range;
-			}
-			std::copy(dest_value_begin + diff_size, it.getContainer()->value_data().begin() + filled_size, dest_value_begin);
-			std::copy(src_value_begin, src_value_end, dest_value_begin);
-			it.getContainer()->set_filled(filled_size - diff_size);
-
-		} else {
-			for (size_t i = 0; i < src_size; i++) {
-				size_t range = *(src_index_begin + i) - src_idx_num_begin;
-				*(dest_index_begin + i) = dest_idx_num_begin + range;
-			}
-			std::copy(src_value_begin, src_value_end, dest_value_begin);
-		}
-	}
+	it.getContainer()->copy_region(
+		begin.getValIterator(), end.getValIterator(), it.index());
 }
 
 

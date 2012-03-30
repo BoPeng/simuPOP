@@ -421,7 +421,7 @@ public:
 			return;
 		BOOST_UBLAS_CHECK(beg < end && end <= size_, external_logic());
 		size_t b = _lower_bound(index_data_.begin(), index_data_.begin() + filled_, beg, std::less<size_type> ()) - index_data_.begin();
-		size_t e = _lower_bound(index_data_.begin(), index_data_.begin() + filled_, end, std::less<size_type> ()) - index_data_.begin();
+		size_t e = _lower_bound(index_data_.begin() + b, index_data_.begin() + filled_, end, std::less<size_type> ()) - index_data_.begin();
 		for (size_t i = b; i < e; ++i)
 			value_data_[i] = 0;
 	}
@@ -447,6 +447,71 @@ public:
 		storage_invariants();
 	}
 
+	// copy regions, added by Bo
+	void copy_region(const const_val_iterator & beg, const const_val_iterator & end,
+		size_t dest_idx_beg)
+	{
+		// simple case 1: empty region
+		size_t src_idx_beg = beg.index();   // from [ss -- > se]
+		size_t src_idx_end = end.index();
+		BOOST_UBLAS_CHECK(src_idx_beg <= src_idx_end, external_logic());
+		if (src_idx_beg == src_idx_end)
+			return;
+		// simple case 2: no variant, so we set all variants in the new region to zero
+		size_t dest_idx_end = dest_idx_beg + (src_idx_end - src_idx_beg);
+		BOOST_UBLAS_CHECK(dest_idx_end <= size_, external_logic());
+		// number of elements in source
+		size_t src_mut_num = end - beg;
+		if (src_mut_num == 0) {
+			clear(dest_idx_beg, dest_idx_end);
+			return;
+		}
+		// number of elements in destination
+		size_t dest_iptr_beg = _lower_bound(index_data_.begin(), index_data_.begin() + filled_, dest_idx_beg,
+			std::less<size_type> ()) - index_data_.begin();
+		size_t dest_iptr_end = _lower_bound(index_data_.begin() + dest_iptr_beg, index_data_.begin() + filled_,
+			dest_idx_end, std::less<size_type> ()) - index_data_.begin();
+		size_t dest_mut_num = dest_iptr_end - dest_iptr_beg;
+		std::cerr << "S " << src_idx_beg << ", " << src_idx_end << " D " << dest_idx_beg << std::endl;
+		//
+		// adjust index [ss -- > se] 
+		// 
+		// for example, copy mutant 102, 104 from 100 - 120 to 200
+		// we need to get index 202, 204
+		int lagging = dest_idx_beg - src_idx_beg;
+		// simple case 3: there are exactly the same number of variants (index might be different)
+		int diff = src_mut_num - dest_mut_num;
+		if (diff <= 0) {
+			const_val_iterator ptr = beg;
+			for (; ptr != end; ++dest_iptr_beg, ++ptr) {
+				value_data_ [dest_iptr_beg] = *ptr;
+				index_data_ [dest_iptr_beg] = ptr.index() + lagging;
+			}
+			if (diff < 0) {
+				std::copy(index_data_.begin() + dest_iptr_end + (-diff), index_data_.begin() + filled_, 
+					index_data_.begin() + dest_iptr_end);
+				value_array_type::iterator itt(value_data_.begin() + dest_iptr_end);
+				std::copy(itt + (- diff), value_data_.begin() + filled_, itt);
+				filled_ += diff;
+			}
+		} else {
+			// resize
+			if (filled_ + diff >= capacity_)
+				reserve(2 * std::max(capacity_, filled_ + diff), true);
+			// copy last piece first, to leave room for new stuff
+			filled_ += diff;
+			std::copy_backward(index_data_.begin() + dest_iptr_end, index_data_.begin() + filled_ - diff,
+				index_data_.begin() + filled_);
+			value_array_type::iterator itt(value_data_.begin() + dest_iptr_end);
+			std::copy(itt, value_data_.begin() + filled_ - diff, value_data_.begin() + filled_);
+			// copy real stuff
+			const_val_iterator ptr = beg;
+			for (; ptr != end; ++dest_iptr_beg, ++ptr) {
+				value_data_ [dest_iptr_beg] = *ptr;
+				index_data_ [dest_iptr_beg] = ptr.index() + lagging;
+			}
+		}
+	}
 
 	inline void pop_back()
 	{
@@ -532,19 +597,20 @@ public:
 			return (*this)().value_data_ [it_ - (*this)().index_data_.begin()];
 		}
 
-
 		// Index
 		inline size_type index() const
 		{
-			BOOST_UBLAS_CHECK(*this != (*this)().end(), bad_index());
-			BOOST_UBLAS_CHECK(*it_ < (*this)().size(), bad_index());
-			return *it_;
+			//BOOST_UBLAS_CHECK(*this != (*this)().end(), bad_index());
+			//BOOST_UBLAS_CHECK(*it_ < (*this)().size(), bad_index());
+			return it_ == (*this)().index_data_.end() ? (*this)().size_ : *it_;
+			//return *it_;
 		}
 
 
 		// added by Bo to calcualte number of elements between things
 		inline size_type operator -(const const_val_iterator & it) const
 		{
+			BOOST_UBLAS_CHECK(it_ <= it.it_, bad_index());
 			return it_ - it.it_;
 		}
 
@@ -631,11 +697,10 @@ public:
 		// Index
 		inline size_type index() const
 		{
-			BOOST_UBLAS_CHECK(*this != (*this)().end(), bad_index());
-			BOOST_UBLAS_CHECK(*it_ < (*this)().size(), bad_index());
-			return *it_;
+			//BOOST_UBLAS_CHECK(*this != (*this)().end(), bad_index());
+			//BOOST_UBLAS_CHECK(*it_ < (*this)().size(), bad_index());
+			return it_ == (*this)().index_data_.end() ? (*this)().size_ : *it_;
 		}
-
 
 		// Assignment
 		inline val_iterator & operator =(const val_iterator & it)
