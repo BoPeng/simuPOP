@@ -777,6 +777,7 @@ void Population::dumpArray()
 	GenoIterator b = genoBegin(false);
 	GenoIterator e = genoEnd(false);
 	IndexArray idx(b.getIndexIterator(), e.getIndexIterator());
+
 	cerr << "IDX: " << idx << " (size " << idx.size() << ")" << endl;
 	ValueArray val(b.getValueIterator(), e.getValueIterator());
 	vectoru x;
@@ -784,6 +785,8 @@ void Population::dumpArray()
 		x.push_back(int(val[i]));
 	cerr << "VAL: " << x << " (size " << x.size() << ")" << endl;
 }
+
+
 #endif
 
 
@@ -1203,12 +1206,13 @@ void Population::removeSubPops(const subPopList & subPops)
 	size_t infoStep = infoSize();
 	RawIndIterator oldInd = m_inds.begin();
 	RawIndIterator newInd = m_inds.begin();
-	GenoIterator oldPtr = m_genotype.begin();
 #ifdef MUTANTALLELE
-	IndexArray new_index;
-	ValueArray new_value;
+	size_t oldPtr = 0;
+	vectorm new_genotype;
+	new_genotype.resize(m_genotype.size());
 	size_t lagging = 0;
 #else
+	GenoIterator oldPtr = m_genotype.begin();
 	GenoIterator newPtr = m_genotype.begin();
 #endif
 #ifdef LINEAGE
@@ -1259,16 +1263,7 @@ void Population::removeSubPops(const subPopList & subPops)
 						copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
 						LINEAGE_EXPR(copy(oldLineagePtr, oldLineagePtr + step, newLineagePtr));
 					}
-					GenoIterator b(oldPtr + 0);
-					GenoIterator e(oldPtr + step);
-					IndexArray arr(b.getIndexIterator(), e.getIndexIterator());
-					if (lagging > 0)
-						for (size_t k = 0; k < arr.size(); ++k)
-							arr[k] -= lagging;
-					if (arr.size() > 0) {
-						new_index.insert(new_index.end(), arr.begin(), arr.end());
-						new_value.insert(new_value.end(), b.getValueIterator(), e.getValueIterator());
-					}
+					new_genotype.insert_back(m_genotype.val_begin(oldPtr), m_genotype.val_begin(oldPtr + step), -lagging);
 #else
 					if (oldInd != newInd) {
 						*newInd = *oldInd;
@@ -1307,17 +1302,8 @@ void Population::removeSubPops(const subPopList & subPops)
 				copy(oldInfoPtr, oldInfoPtr + infoStep * spSize, newInfoPtr);
 				LINEAGE_EXPR(copy(oldLineagePtr, oldLineagePtr + step * spSize, newLineagePtr));
 			}
-			// genotype has to be called in any case
-			GenoIterator b(oldPtr + 0);
-			GenoIterator e(oldPtr + step * spSize);
-			IndexArray arr(b.getIndexIterator(), e.getIndexIterator());
-			if (lagging > 0)
-				for (size_t k = 0; k < arr.size(); ++k)
-					arr[k] -= lagging;
-			if (arr.size() > 0) {
-				new_index.insert(new_index.end(), arr.begin(), arr.end());
-				new_value.insert(new_value.end(), b.getValueIterator(), e.getValueIterator());
-			}
+			new_genotype.insert_back(m_genotype.val_begin(oldPtr), m_genotype.val_begin(oldPtr + step * spSize),
+				-lagging);
 #else
 			if (oldPtr != newPtr) {
 				copy(oldPtr, oldPtr + step * spSize, newPtr);
@@ -1339,8 +1325,8 @@ void Population::removeSubPops(const subPopList & subPops)
 	//
 	m_inds.erase(newInd, m_inds.end());
 #ifdef MUTANTALLELE
-	vectorm new_geno(m_genotype.size() - lagging, new_index, new_value);
-	m_genotype.swap(new_geno);
+	new_genotype.resize(m_genotype.size() - lagging, true);
+	m_genotype.swap(new_genotype);
 #else
 	m_genotype.erase(newPtr, m_genotype.end());
 #endif
@@ -1375,12 +1361,13 @@ void Population::removeMarkedIndividuals()
 	RawIndIterator newInd = m_inds.begin();
 	InfoIterator oldInfoPtr = m_info.begin();
 	InfoIterator newInfoPtr = m_info.begin();
-	GenoIterator oldPtr = m_genotype.begin();
 #ifdef MUTANTALLELE
-	IndexArray new_index;
-	ValueArray new_value;
+	size_t oldPtr = 0;
+	vectorm new_genotype;
+	new_genotype.resize(m_genotype.size());
 	size_t lagging = 0;
 #else
+	GenoIterator oldPtr = m_genotype.begin();
 	GenoIterator newPtr = m_genotype.begin();
 #endif
 
@@ -1402,16 +1389,7 @@ void Population::removeMarkedIndividuals()
 					copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
 					LINEAGE_EXPR(copy(oldLineagePtr, oldLineagePtr + step, newLineagePtr));
 				}
-				GenoIterator b(oldPtr + 0);
-				GenoIterator e(oldPtr + step);
-				IndexArray arr(b.getIndexIterator(), e.getIndexIterator());
-				if (lagging > 0)
-					for (size_t k = 0; k < arr.size(); ++k)
-						arr[k] -= lagging;
-				if (arr.size() > 0) {
-					new_index.insert(new_index.end(), arr.begin(), arr.end());
-					new_value.insert(new_value.end(), b.getValueIterator(), e.getValueIterator());
-				}
+				new_genotype.insert_back(m_genotype.val_begin(oldPtr), m_genotype.val_begin(oldPtr + step), -lagging);
 #else
 				if (oldInd != newInd) {
 					*newInd = *oldInd;
@@ -1441,8 +1419,8 @@ void Population::removeMarkedIndividuals()
 	//
 	m_inds.erase(newInd, m_inds.end());
 #ifdef MUTANTALLELE
-	vectorm new_geno(m_genotype.size() - lagging, new_index, new_value);
-	m_genotype.swap(new_geno);
+	new_genotype.resize(m_genotype.size() - lagging, true);
+	m_genotype.swap(new_genotype);
 #else
 	m_genotype.erase(newPtr, m_genotype.end());
 #endif
