@@ -502,7 +502,7 @@ public:
 			std::copy_backward(index_data_.begin() + dest_iptr_end, index_data_.begin() + filled_ - diff,
 				index_data_.begin() + filled_);
 			value_array_type::iterator itt(value_data_.begin() + dest_iptr_end);
-			std::copy(itt, value_data_.begin() + filled_ - diff, value_data_.begin() + filled_);
+			std::copy_backward(itt, value_data_.begin() + filled_ - diff, value_data_.begin() + filled_);
 			// copy real stuff
 			for (; src_iptr_beg != src_iptr_end; ++dest_iptr_beg, ++src_iptr_beg) {
 				value_data_ [dest_iptr_beg] = *src_iptr_beg;
