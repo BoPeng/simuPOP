@@ -58,6 +58,12 @@ typedef std::vector<Allele> ValueArray;
 template<class I, class C>
 inline I _lower_bound(const I & begin, const I & end, const size_t & t, C compare)
 {
+	//
+	// if empty              ==> return begin
+	// if t <= first element ==> return begin
+	// if t > last element   ==> return end
+	// return the first element that insertion will not change order
+	//
 	// t <= *begin <=> ! (*begin < t)
 	if (begin == end || !compare(*begin, t))
 		return begin;
@@ -95,6 +101,13 @@ public:
 	typedef sparse_tag storage_category;
 
 	// Construction and destruction
+	//
+	// size:     the supposed real size, which is the boundary of indexes in index_data_
+	// filled:   number of elements filled, that are guaranteed to be in order in index_data_
+	// capacity: the size of the array holding data.
+	//
+	// restrict_capacity: greater than 1, less than (or equal to size_)
+	//
 	inline vectorm () :
 		vector_container<self_type> (),
 		size_(0), capacity_(restrict_capacity(0)), filled_(0),
@@ -123,6 +136,7 @@ public:
 
 
 	// index and value are swapped in for best performance
+	// in this function filled_ == capacity_ so there is no room to grow
 	inline vectorm (size_type size, IndexArray & index, ValueArray & value) :
 		vector_container<self_type> (),
 		size_(size), capacity_(restrict_capacity(index.size())), filled_(index.size()),
@@ -352,6 +366,7 @@ public:
 	}
 
 
+
 	// Assignment
 	inline vectorm & operator =(const vectorm & v)
 	{
@@ -363,106 +378,6 @@ public:
 			value_data_ = v.value_data_;
 		}
 		storage_invariants();
-		return *this;
-	}
-
-
-	template<class C>              // Container assignment without temporary
-	inline vectorm & operator =(const vector_container<C> & v)
-	{
-		resize(v().size(), false);
-		assign(v);
-		return *this;
-	}
-
-
-	inline vectorm & assign_temporary(vectorm & v)
-	{
-		swap(v);
-		return *this;
-	}
-
-
-	template<class AE>
-	inline vectorm & operator =(const vector_expression<AE> & ae)
-	{
-		self_type temporary(ae, capacity_);
-
-		return assign_temporary(temporary);
-	}
-
-
-	template<class AE>
-	inline vectorm & assign(const vector_expression<AE> & ae)
-	{
-		vector_assign<scalar_assign> (*this, ae);
-		return *this;
-	}
-
-
-	// Computed assignment
-	template<class AE>
-	inline vectorm & operator +=(const vector_expression<AE> & ae)
-	{
-		self_type temporary(*this + ae, capacity_);
-
-		return assign_temporary(temporary);
-	}
-
-
-	template<class C>              // Container assignment without temporary
-	inline vectorm & operator +=(const vector_container<C> & v)
-	{
-		plus_assign(v);
-		return *this;
-	}
-
-
-	template<class AE>
-	inline vectorm & plus_assign(const vector_expression<AE> & ae)
-	{
-		vector_assign<scalar_plus_assign> (*this, ae);
-		return *this;
-	}
-
-
-	template<class AE>
-	inline vectorm & operator -=(const vector_expression<AE> & ae)
-	{
-		self_type temporary(*this - ae, capacity_);
-
-		return assign_temporary(temporary);
-	}
-
-
-	template<class C>              // Container assignment without temporary
-	inline vectorm & operator -=(const vector_container<C> & v)
-	{
-		minus_assign(v);
-		return *this;
-	}
-
-
-	template<class AE>
-	inline vectorm & minus_assign(const vector_expression<AE> & ae)
-	{
-		vector_assign<scalar_minus_assign> (*this, ae);
-		return *this;
-	}
-
-
-	template<class AT>
-	inline vectorm & operator *=(const AT & at)
-	{
-		vector_assign_scalar<scalar_multiplies_assign> (*this, at);
-		return *this;
-	}
-
-
-	template<class AT>
-	inline vectorm & operator /=(const AT & at)
-	{
-		vector_assign_scalar<scalar_divides_assign> (*this, at);
 		return *this;
 	}
 

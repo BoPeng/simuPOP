@@ -3667,23 +3667,11 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 			max_allele = max(max_allele, *max_element(mutVal.begin(), mutVal.end()));
 		}
 		//
-#ifdef MUTANTALLELE
-		// avoid multiple insertion
-		IndexArray idx;
-		ValueArray val;
-		for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
-			if (mutLoc[i]) {
-				idx.push_back(i);
-				if (!singleMut)
-					val.push_back(ToAllele(mutVal[j++]));
-			}
-		if (singleMut)
-			val.resize(idx.size(), ToAllele(singleMutVal));
-		vectorm geno(size, idx, val);
-		m_genotype.swap(geno);
-#else
 		for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
 			if (mutLoc[i])
+#ifdef MUTANTALLELE
+				m_genotype.push_back(i, singleMut ? ToAllele(singleMutVal) : ToAllele(mutVal[j++]));
+#else
 				m_genotype[i] = singleMut ? ToAllele(singleMutVal) : ToAllele(mutVal[j++]);
 #endif
 	} else if (version == 0) {
@@ -3716,34 +3704,22 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 			DBG_DO(DBG_POPULATION, cerr << "Load mutant from binary. " << endl);
 			size_t size;
 			ar & size;
-			GenoIterator ptr = m_genotype.begin();
+			m_genotype.resize(size);
 			WORDTYPE data = 0;
-			IndexArray idx;
 			for (size_t i = 0; i < size; ++i) {
 				if (i % 32 == 0)
 					ar & data;
 				if ((data & (1UL << (i % 32))) != 0)
-					idx.push_back(i);
+					m_genotype.push_back(i, 1);
 			}
-			ValueArray val(idx.size(), 1);
-			vectorm geno(size, idx, val);
-			m_genotype.swap(geno);
 		} else {
 			DBG_DO(DBG_POPULATION, cerr << "Load mutant from long. " << endl);
 			vectora data;
 			ar & data;
-			IndexArray idx;
-			ValueArray val;
-			idx.reserve(data.size());
-			val.reserve(data.size());
-			for (size_t i = 0; i < data.size(); ++i) {
-				if (data[i] != 0) {
-					idx.push_back(i);
-					val.push_back(data[i]);
-				}
-			}
-			vectorm geno(data.size(), idx, val);
-			m_genotype.swap(geno);
+			m_genotype.resize(data.size());
+			for (size_t i = 0; i < data.size(); ++i)
+				if (data[i] != 0)
+					m_genotype.push_back(i, data[i]);
 		}
 #else
 		// long from binary
@@ -3883,23 +3859,11 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 				max_allele = max(max_allele, *max_element(mutVal.begin(), mutVal.end()));
 			}
 			//
-#ifdef MUTANTALLELE
-			// avoid multiple insertion
-			IndexArray idx;
-			ValueArray val;
-			for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
-				if (mutLoc[i]) {
-					idx.push_back(i);
-					if (!singleMut)
-						val.push_back(ToAllele(mutVal[j++]));
-				}
-			if (singleMut)
-				val.resize(idx.size(), ToAllele(singleMutVal));
-			vectorm geno(size, idx, val);
-			pd.m_genotype.swap(geno);
-#else
 			for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
 				if (mutLoc[i])
+#ifdef MUTANTALLELE
+					pd.m_genotype.push_back(i, singleMut ? ToAllele(singleMutVal) : ToAllele(mutVal[j++]));
+#else
 					pd.m_genotype[i] = singleMut ? ToAllele(singleMutVal) : ToAllele(mutVal[j++]);
 #endif
 		} else if (version == 0) {
@@ -3934,32 +3898,20 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 				ar & size;
 				WORDTYPE data = 0;
 				//
-				IndexArray idx;
 				for (size_t i = 0; i < size; ++i) {
 					if (i % 32 == 0)
 						ar & data;
 					if ((data & (1UL << (i % 32))) != 0)
-						idx.push_back(i);
+						pd.m_genotype.push_back(i, 1);
 				}
-				ValueArray val(idx.size(), 1);
-				vectorm geno(size, idx, val);
-				pd.m_genotype.swap(geno);
 			} else {
 				DBG_DO(DBG_POPULATION, cerr << "Load mutant from long. " << endl);
 				vectora data;
 				ar & data;
-				IndexArray idx;
-				ValueArray val;
-				idx.reserve(data.size());
-				val.reserve(data.size());
 				for (size_t i = 0; i < data.size(); ++i) {
-					if (data[i] != 0) {
-						idx.push_back(i);
-						val.push_back(data[i]);
-					}
+					if (data[i] != 0)
+						pd.m_genotype.push_back(i, data[i]);
 				}
-				vectorm geno(data.size(), idx, val);
-				pd.m_genotype.swap(geno);
 			}
 #else
 			if (ma == 1) {
