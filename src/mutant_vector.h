@@ -414,6 +414,17 @@ public:
 		storage_invariants();
 	}
 
+	// clear some ... added by Bo
+	inline void clear(size_t beg, size_t end)
+	{
+		if (beg == end)
+			return;
+		BOOST_UBLAS_CHECK(beg < end && end <= size_, external_logic());
+		size_t b = _lower_bound(index_data_.begin(), index_data_.begin() + filled_, beg, std::less<size_type> ()) - index_data_.begin();
+		size_t e = _lower_bound(index_data_.begin(), index_data_.begin() + filled_, end, std::less<size_type> ()) - index_data_.begin();
+		for (size_t i = b; i < e; ++i)
+			value_data_[i] = 0;
+	}
 
 	class const_val_iterator;
 
@@ -793,6 +804,16 @@ public:
 			return m_index < iter.m_index;
 		}
 
+
+		size_t index() const
+		{
+			return m_index;
+		}
+
+		val_iterator getValIterator() const
+		{
+			return (*this)().val_begin(m_index);
+		}
 
 		const_reference value() const
 		{
@@ -1225,6 +1246,16 @@ public:
 			return m_index < iter.m_index;
 		}
 
+
+		size_t index() const
+		{
+			return m_index;
+		}
+
+		const_val_iterator getValIterator() const
+		{
+			return (*this)().val_begin(m_index);
+		}
 
 		const_reference value() const
 		{

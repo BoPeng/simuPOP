@@ -4559,38 +4559,9 @@ void copyGenotype(ConstGenoIterator begin, ConstGenoIterator end, GenoIterator i
 }
 
 
-void fillGenotype(GenoIterator begin, GenoIterator end, Allele value)
+void clearGenotype(GenoIterator begin, GenoIterator end)
 {
-	vectorm::index_array_type::iterator index_begin = begin.getIndexIterator();
-	vectorm::index_array_type::iterator index_end = end.getIndexIterator();
-	vectorm::value_array_type::iterator value_begin = begin.getValueIterator();
-	size_t diff_size = index_end - index_begin;
-	size_t filled_size = begin.getContainer()->filled();
-
-	if (value == 0) {
-		std::copy(index_begin + diff_size, begin.getContainer()->index_data().begin() + filled_size, index_begin);
-		std::copy(value_begin + diff_size, begin.getContainer()->value_data().begin() + filled_size, value_begin);
-		begin.getContainer()->set_filled(filled_size - diff_size);
-		//  If the fill function is extensively use, reserve() can be remove in order to improve performance .
-		begin.getContainer()->reserve(filled_size - diff_size);
-	} else {
-		size_t value_size = end - begin;
-		size_t insert_size = value_size - diff_size;
-		if (filled_size + insert_size >= begin.getContainer()->nnz_capacity()) {
-			begin.getContainer()->reserve(filled_size + insert_size, true);
-			// After using reserve(), index_begin and value_begin no longer valid, get a new one
-			index_begin = begin.getIndexIterator();
-			value_begin = begin.getValueIterator();
-		}
-		std::copy_backward(index_begin, begin.getContainer()->index_data().begin() + filled_size, begin.getContainer()->index_data().begin() + filled_size + insert_size);
-		for (size_t i = 0; i < value_size; i++) {
-			*(index_begin + i) = *index_begin + i;
-		}
-		std::copy_backward(value_begin, begin.getContainer()->value_data().begin() + filled_size, begin.getContainer()->value_data().begin() + filled_size + insert_size);
-		std::fill(value_begin, value_begin + value_size, value);
-		begin.getContainer()->set_filled(filled_size + insert_size);
-
-	}
+	begin.getContainer()->clear(begin.index(), end.index());
 }
 
 

@@ -64,8 +64,8 @@ void GenoTransmitter::clearChromosome(const Individual & ind, int ploidy, size_t
 #else
 	DBG_FAILIF(m_chromIdx.empty(), ValueError, "GenoTransmitter is not initialized properly");
 #  ifdef MUTANTALLELE
-	fillGenotype(ind.genoBegin(ploidy) + m_chromIdx[chrom],
-		ind.genoBegin(ploidy) + m_chromIdx[chrom + 1], 0);
+	clearGenotype(ind.genoBegin(ploidy) + m_chromIdx[chrom],
+		ind.genoBegin(ploidy) + m_chromIdx[chrom + 1]);
 #  else
 	fill(ind.genoBegin(ploidy) + m_chromIdx[chrom],
 		ind.genoBegin(ploidy) + m_chromIdx[chrom + 1], 0);

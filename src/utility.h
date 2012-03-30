@@ -2147,7 +2147,7 @@ void testCopyGenotype();
 void copyGenotype(ConstGenoIterator begin, ConstGenoIterator end, GenoIterator it);
 
 /// CPPONLY
-void fillGenotype(GenoIterator begin, GenoIterator end, Allele value);
+void clearGenotype(GenoIterator begin, GenoIterator end);
 #endif
 
 
