@@ -4500,8 +4500,8 @@ void clearGenotype(GenoIterator to, size_t n)
 
 void copyGenotype(ConstGenoIterator begin, ConstGenoIterator end, GenoIterator it)
 {
-	it.getContainer()->copy_region(
-		begin.getValIterator(), end.getValIterator(), it.index());
+	it.getContainer()->copy_region(begin.getContainer(),
+		begin.index(), end.index(), it.index());
 }
 
 

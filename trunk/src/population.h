@@ -834,7 +834,7 @@ public:
 	/// CPPONLY allele begin, for given subPop
 	IndAlleleIterator alleleIterator(size_t locus, size_t subPop);
 
-    /// CPPONLY
+	/// CPPONLY
 	ConstIndAlleleIterator alleleIterator(size_t locus) const;
 
 
@@ -1060,7 +1060,10 @@ public:
 
 	/** Return an iterator that iterate through mutants of all individuals in
 	 *  a population (if <tt>subPop=[]</tt>, default), or individuals in a
-	 *  subpopulation \e subPop. Virtual subpopulation is unsupported. This
+	 *  subpopulation \e subPop. Virtual subpopulation is unsupported. Each
+	 *  mutant is presented as a tuple of (index, value) where index is the
+	 *  index of mutant (from 0 to totNumLoci()*ploidy()) so you will have
+	 *  to adjust its value to check multiple alleles at a locus. This
 	 *  function ignores type of chromosomes so non-zero alleles in unused
 	 *  alleles of sex and mitochondrial chromosomes are also iterated.
 	 *  <group>5-genotype</group>
@@ -1085,8 +1088,9 @@ public:
 	void setGenotype(const uintList & geno, vspID subPop = vspID());
 
 #ifdef MUTANTALLELE
-    /// For debudding only
-    void dumpArray();
+	/// For debudding only
+	void dumpArray();
+
 #endif
 
 	/** Fill the lineage of all individuals in a population (if

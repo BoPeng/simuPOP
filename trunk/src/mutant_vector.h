@@ -448,20 +448,21 @@ public:
 	}
 
 	// copy regions, added by Bo
-	void copy_region(const const_val_iterator & beg, const const_val_iterator & end,
-		size_t dest_idx_beg)
+	void copy_region(const vectorm * con, size_t src_idx_beg,
+		size_t src_idx_end, size_t dest_idx_beg)
 	{
-		// simple case 1: empty region
-		size_t src_idx_beg = beg.index();   // from [ss -- > se]
-		size_t src_idx_end = end.index();
 		BOOST_UBLAS_CHECK(src_idx_beg <= src_idx_end, external_logic());
+		BOOST_UBLAS_CHECK(src_idx_end <= com->size(), external_logic());
+		// simple case 1: empty region
 		if (src_idx_beg == src_idx_end)
 			return;
-		// simple case 2: no variant, so we set all variants in the new region to zero
 		size_t dest_idx_end = dest_idx_beg + (src_idx_end - src_idx_beg);
 		BOOST_UBLAS_CHECK(dest_idx_end <= size_, external_logic());
+		// simple case 2: no variant, so we set all variants in the new region to zero
 		// number of elements in source
-		size_t src_mut_num = end - beg;
+		const_val_iterator src_iptr_beg = con->val_begin(src_idx_beg);
+		const_val_iterator src_iptr_end = con->val_begin(src_idx_end);
+		size_t src_mut_num = src_iptr_end - src_iptr_beg;
 		if (src_mut_num == 0) {
 			clear(dest_idx_beg, dest_idx_end);
 			return;
@@ -472,7 +473,6 @@ public:
 		size_t dest_iptr_end = _lower_bound(index_data_.begin() + dest_iptr_beg, index_data_.begin() + filled_,
 			dest_idx_end, std::less<size_type> ()) - index_data_.begin();
 		size_t dest_mut_num = dest_iptr_end - dest_iptr_beg;
-		std::cerr << "S " << src_idx_beg << ", " << src_idx_end << " D " << dest_idx_beg << std::endl;
 		//
 		// adjust index [ss -- > se] 
 		// 
@@ -482,10 +482,9 @@ public:
 		// simple case 3: there are exactly the same number of variants (index might be different)
 		int diff = src_mut_num - dest_mut_num;
 		if (diff <= 0) {
-			const_val_iterator ptr = beg;
-			for (; ptr != end; ++dest_iptr_beg, ++ptr) {
-				value_data_ [dest_iptr_beg] = *ptr;
-				index_data_ [dest_iptr_beg] = ptr.index() + lagging;
+			for (; src_iptr_beg != src_iptr_end; ++dest_iptr_beg, ++src_iptr_beg) {
+				value_data_ [dest_iptr_beg] = *src_iptr_beg;
+				index_data_ [dest_iptr_beg] = src_iptr_beg.index() + lagging;
 			}
 			if (diff < 0) {
 				std::copy(index_data_.begin() + dest_iptr_end + (-diff), index_data_.begin() + filled_, 
@@ -505,10 +504,9 @@ public:
 			value_array_type::iterator itt(value_data_.begin() + dest_iptr_end);
 			std::copy(itt, value_data_.begin() + filled_ - diff, value_data_.begin() + filled_);
 			// copy real stuff
-			const_val_iterator ptr = beg;
-			for (; ptr != end; ++dest_iptr_beg, ++ptr) {
-				value_data_ [dest_iptr_beg] = *ptr;
-				index_data_ [dest_iptr_beg] = ptr.index() + lagging;
+			for (; src_iptr_beg != src_iptr_end; ++dest_iptr_beg, ++src_iptr_beg) {
+				value_data_ [dest_iptr_beg] = *src_iptr_beg;
+				index_data_ [dest_iptr_beg] = src_iptr_beg.index() + lagging;
 			}
 		}
 	}
@@ -597,13 +595,13 @@ public:
 			return (*this)().value_data_ [it_ - (*this)().index_data_.begin()];
 		}
 
+
 		// Index
 		inline size_type index() const
 		{
-			//BOOST_UBLAS_CHECK(*this != (*this)().end(), bad_index());
-			//BOOST_UBLAS_CHECK(*it_ < (*this)().size(), bad_index());
-			return it_ == (*this)().index_data_.end() ? (*this)().size_ : *it_;
-			//return *it_;
+			BOOST_UBLAS_CHECK(*this != (*this)().end(), bad_index());
+			BOOST_UBLAS_CHECK(*it_ < (*this)().size(), bad_index());
+			return *it_;
 		}
 
 
@@ -697,9 +695,9 @@ public:
 		// Index
 		inline size_type index() const
 		{
-			//BOOST_UBLAS_CHECK(*this != (*this)().end(), bad_index());
-			//BOOST_UBLAS_CHECK(*it_ < (*this)().size(), bad_index());
-			return it_ == (*this)().index_data_.end() ? (*this)().size_ : *it_;
+			BOOST_UBLAS_CHECK(*this != (*this)().end(), bad_index());
+			BOOST_UBLAS_CHECK(*it_ < (*this)().size(), bad_index());
+			return *it_;
 		}
 
 		// Assignment

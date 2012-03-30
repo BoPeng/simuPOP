@@ -1758,12 +1758,12 @@ class TestPopulation(unittest.TestCase):
         # 0 0 1=2  ......................................<- 6
         mutants = list(pop.mutants())
         self.assertEqual(len(mutants), 3 * 40 + 13)
-        self.assertEqual([x[0] for x in mutants][:13], [2, 5, 8, 11, 14, 17, 0, 3, 6, 9, 12, 15, 18])
+        self.assertEqual([x[0] for x in mutants][:13], [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38])
         self.assertEqual(len(mutants), pop.genotype().count(1))
         #
         mutants = list(pop.mutants(1))
         self.assertEqual(len(mutants), 80)
-        self.assertEqual([x[0] for x in mutants][-13:], [2, 5, 8, 11, 14, 17, 0, 3, 6, 9, 12, 15, 18])
+        self.assertEqual([x[0] for x in mutants][-13:], [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38])
         self.assertEqual(len(mutants), pop.genotype(1).count(1))
         #
         pop = Population(loci=[1, 2], size=[1, 2])

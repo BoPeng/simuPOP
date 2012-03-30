@@ -714,13 +714,13 @@ pyMutantIterator Population::mutants(vspID subPopID)
 
 	syncIndPointers();
 	if (!vsp.valid()) {
-		return pyMutantIterator(m_genotype.begin(), m_genotype.end(), totNumLoci());
+		return pyMutantIterator(genoBegin(true), 0, popSize() * genoSize(), genoSize());
 	} else {
 		size_t subPop = vsp.subPop();
 		CHECKRANGESUBPOP(subPop);
-		return pyMutantIterator(genoBegin(subPop, true), genoEnd(subPop, true), totNumLoci());
+		return pyMutantIterator(genoBegin(subPop, true), 0, subPopSize(subPop) * genoSize(), genoSize());
 	}
-	return pyMutantIterator(m_genotype.begin(), m_genotype.begin(), 1);
+	return pyMutantIterator(m_genotype.begin(), 0, 0, 1);
 }
 
 

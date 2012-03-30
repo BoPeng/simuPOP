@@ -163,7 +163,7 @@ ULONG Individual::allele(size_t idx, ssize_t p, ssize_t chrom) const
 
 long Individual::alleleLineage(size_t idx, ssize_t p, ssize_t chrom) const
 {
-#ifdef LINEAGE	
+#ifdef LINEAGE
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
 		"A valid ploidy index has to be specified if chrom is non-positive");
 	if (p < 0) {
@@ -180,12 +180,13 @@ long Individual::alleleLineage(size_t idx, ssize_t p, ssize_t chrom) const
 		return *(m_lineagePtr + idx + p * totNumLoci() + chromBegin(chrom));
 	}
 #else
-	(void) idx;
-	(void) p;
-	(void) chrom;
+	(void)idx;
+	(void)p;
+	(void)chrom;
 	return 0;
 #endif
 }
+
 
 string Individual::alleleChar(size_t idx, ssize_t p, ssize_t chrom) const
 {
@@ -272,6 +273,7 @@ PyObject * Individual::genotype(const uintList & ply, const uintList & ch)
 			m_genoPtr + beginP * totNumLoci() + chromEnd(endCh - 1));
 }
 
+
 pyMutantIterator Individual::mutants(const uintList & ply, const uintList & ch)
 {
 	size_t beginP = 0;
@@ -284,7 +286,7 @@ pyMutantIterator Individual::mutants(const uintList & ply, const uintList & ch)
 	else {
 		const vectoru & ploidys = ply.elems();
 		if (ploidys.empty())
-			return pyMutantIterator(m_genoPtr, m_genoPtr, 1);
+			return pyMutantIterator(m_genoPtr, 0, 0, 1);
 		beginP = ploidys[0];
 		endP = ploidys[0];
 		CHECKRANGEPLOIDY(static_cast<size_t>(beginP));
@@ -302,7 +304,7 @@ pyMutantIterator Individual::mutants(const uintList & ply, const uintList & ch)
 	else {
 		const vectoru & chroms = ch.elems();
 		if (chroms.empty())
-			return pyMutantIterator(m_genoPtr, m_genoPtr, 1);
+			return pyMutantIterator(m_genoPtr, 0, 0, 1);
 		beginCh = chroms[0];
 		endCh = chroms[0];
 		CHECKRANGECHROM(static_cast<size_t>(beginCh));
@@ -320,12 +322,13 @@ pyMutantIterator Individual::mutants(const uintList & ply, const uintList & ch)
 		// has to be all chromosomes
 		DBG_FAILIF(beginCh != 0 || endCh != numChrom(), ValueError,
 			"If multiple ploidy are chosen, all chromosomes has to be chosen.");
-		return pyMutantIterator(m_genoPtr + beginP * totNumLoci(),
-			m_genoPtr + endP * totNumLoci(), totNumLoci());
+		return pyMutantIterator(m_genoPtr, beginP * totNumLoci(),
+			endP * totNumLoci(), genoSize());
 	} else
-		return pyMutantIterator(m_genoPtr + beginP * totNumLoci() + chromBegin(beginCh),
-			m_genoPtr + beginP * totNumLoci() + chromEnd(endCh - 1), totNumLoci());
+		return pyMutantIterator(m_genoPtr, beginP * totNumLoci() + chromBegin(beginCh),
+			beginP * totNumLoci() + chromEnd(endCh - 1), genoSize());
 }
+
 
 PyObject * Individual::lineage(const uintList & ply, const uintList & ch)
 {
@@ -391,12 +394,13 @@ PyObject * Individual::lineage(const uintList & ply, const uintList & ch)
 		return Lineage_Vec_As_NumArray(m_lineagePtr + beginP * totNumLoci() + chromBegin(beginCh),
 			m_lineagePtr + beginP * totNumLoci() + chromEnd(endCh - 1));
 #else
-        (void) ply;
-        (void) ch;
-        Py_INCREF(Py_None);
-        return Py_None;
+	(void)ply;
+	(void)ch;
+	Py_INCREF(Py_None);
+	return Py_None;
 #endif
 }
+
 
 // Fix me: This one has to optimize
 PyObject * Individual::genoAtLoci(const lociList & lociList)
@@ -489,6 +493,7 @@ void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 	}
 }
 
+
 void Individual::setAlleleLineage(long lineage, size_t idx, int p, int chrom)
 {
 #ifdef LINEAGE
@@ -505,15 +510,16 @@ void Individual::setAlleleLineage(long lineage, size_t idx, int p, int chrom)
 		CHECKRANGELOCUS(static_cast<size_t>(chrom), idx);
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
 		CHECKRANGECHROM(static_cast<size_t>(chrom));
-		*(m_lineagePtr + idx + p * totNumLoci() + chromBegin(chrom)) = lineage; 
+		*(m_lineagePtr + idx + p * totNumLoci() + chromBegin(chrom)) = lineage;
 	}
 #else
-    (void) lineage;
-    (void) idx;
-    (void) p;
-    (void) chrom;
+	(void)lineage;
+	(void)idx;
+	(void)p;
+	(void)chrom;
 #endif
 }
+
 
 void Individual::setGenotype(const uintList & genoList, const uintList & ply, const uintList & ch)
 {
@@ -584,22 +590,22 @@ void Individual::setLineage(const uintList & lineageList, const uintList & ply, 
 		for (size_t i = 0; i < ploidy(); ++i)
 			ploidys.push_back(i);
 	} else {
-#ifndef OPTIMIZED
+#  ifndef OPTIMIZED
 		for (size_t i = 0; i < ploidys.size(); ++i) {
 			CHECKRANGEPLOIDY(static_cast<size_t>(ploidys[i]));
 		}
-#endif
+#  endif
 	}
 	vectoru chroms = ch.elems();
 	if (ch.allAvail()) {
 		for (size_t i = 0; i < numChrom(); ++i)
 			chroms.push_back(i);
 	} else {
-#ifndef OPTIMIZED
+#  ifndef OPTIMIZED
 		for (size_t i = 0; i < chroms.size(); ++i) {
 			CHECKRANGECHROM(static_cast<size_t>(chroms[i]));
 		}
-#endif
+#  endif
 	}
 	for (size_t i = 0; i < ploidys.size(); ++i) {
 		size_t p = ploidys[i];
@@ -612,9 +618,9 @@ void Individual::setLineage(const uintList & lineageList, const uintList & ply, 
 		}
 	}
 #else
-	(void) lineageList;
-	(void) ply;
-	(void) ch;
+	(void)lineageList;
+	(void)ply;
+	(void)ch;
 #endif
 }
 

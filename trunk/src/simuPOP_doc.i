@@ -154,7 +154,7 @@ Usage:
 
 %ignore simuPOP::BaseMutator::mutRate(size_t loc) const;
 
-%ignore simuPOP::BaseMutator::mutate(AlleleRef, size_t) const;
+%ignore simuPOP::BaseMutator::mutate(Allele, size_t) const;
 
 %ignore simuPOP::BaseMutator::fillContext(const Population &pop, IndAlleleIterator ptr, size_t locus) const;
 
@@ -1216,7 +1216,7 @@ Details:
 
 %feature("docstring") simuPOP::ContextMutator::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::ContextMutator::mutate(AlleleRef allele, size_t locus) const;
+%ignore simuPOP::ContextMutator::mutate(Allele allele, size_t locus) const;
 
 %feature("docstring") simuPOP::ContextMutator::describe "Obsolete or undocumented function."
 
@@ -2891,9 +2891,12 @@ Usage:
 Details:
 
     return an itertor that iterate through all mutants (non-zero
-    alleles) of an individual. If ploidy or chroms is given, only
-    alleles on the specified chromosomes and homologous copy of
-    chromosomes will be iterated. If multiple chromosomes are
+    alleles) of an individual. Each mutant is presented as a tuple of
+    (index, value) where index is the index of mutant ranging from
+    zero to totNumLoci() * ploidy() - 1, so you will have to adjust
+    indexes to check multiple alleles at a locus. If ploidy or chroms
+    is given, only alleles on the specified chromosomes and homologous
+    copy of chromosomes will be iterated. If multiple chromosomes are
     specified, there should not be gaps between chromosomes. This
     function ignores type of chromosomes so it will return unused
     alleles for sex and mitochondrial chromosomes.
@@ -3687,7 +3690,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::KAlleleMutator::mutate(AlleleRef allele, size_t locus) const;
+%ignore simuPOP::KAlleleMutator::mutate(Allele allele, size_t locus) const;
 
 %feature("docstring") simuPOP::KAlleleMutator::clone "Obsolete or undocumented function."
 
@@ -4067,7 +4070,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::MatrixMutator::mutate(AlleleRef allele, size_t locus) const;
+%ignore simuPOP::MatrixMutator::mutate(Allele allele, size_t locus) const;
 
 %feature("docstring") simuPOP::MatrixMutator::clone "Obsolete or undocumented function."
 
@@ -4362,7 +4365,7 @@ Details:
 
 %feature("docstring") simuPOP::MixedMutator::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::MixedMutator::mutate(AlleleRef allele, size_t locus) const;
+%ignore simuPOP::MixedMutator::mutate(Allele allele, size_t locus) const;
 
 %feature("docstring") simuPOP::MixedMutator::describe "Obsolete or undocumented function."
 
@@ -6106,9 +6109,13 @@ Details:
 
     Return an iterator that iterate through mutants of all individuals
     in a population (if subPop=[], default), or individuals in a
-    subpopulation subPop. Virtual subpopulation is unsupported. This
-    function ignores type of chromosomes so non-zero alleles in unused
-    alleles of sex and mitochondrial chromosomes are also iterated.
+    subpopulation subPop. Virtual subpopulation is unsupported. Each
+    mutant is presented as a tuple of (index, value) where index is
+    the index of mutant (from 0 to totNumLoci()*ploidy()) so you will
+    have to adjust its value to check multiple alleles at a locus.
+    This function ignores type of chromosomes so non-zero alleles in
+    unused alleles of sex and mitochondrial chromosomes are also
+    iterated.
 
 "; 
 
@@ -7280,7 +7287,7 @@ Details:
 
 Usage:
 
-    pyMutantIterator(begin, end, numLoci)
+    pyMutantIterator(base, begin, end, step)
 
 "; 
 
@@ -7356,7 +7363,7 @@ Details:
 
 %feature("docstring") simuPOP::PyMutator::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::PyMutator::mutate(AlleleRef allele, size_t locus) const;
+%ignore simuPOP::PyMutator::mutate(Allele allele, size_t locus) const;
 
 %feature("docstring") simuPOP::PyMutator::describe "Obsolete or undocumented function."
 
@@ -10065,7 +10072,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::StepwiseMutator::mutate(AlleleRef allele, size_t locus) const;
+%ignore simuPOP::StepwiseMutator::mutate(Allele allele, size_t locus) const;
 
 %feature("docstring") simuPOP::StepwiseMutator::clone "Obsolete or undocumented function."
 
