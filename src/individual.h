@@ -65,20 +65,21 @@ namespace simuPOP {
 class pyMutantIterator
 {
 public:
-	pyMutantIterator(GenoIterator begin,
-		GenoIterator end, size_t numLoci):
+	pyMutantIterator(GenoIterator base, size_t begin,
+		size_t end, size_t step) :
 #ifdef MUTANTALLELE
-		m_ptr(begin.getIndexIterator()),
-		m_end(end.getIndexIterator()),
-		m_value(begin.getValueIterator()),
+		m_ptr((base + begin).getIndexIterator()),
+		m_end((base + end).getIndexIterator()),
+		m_value((base + begin).getValueIterator()),
 #else
 		m_begin(begin),
 		m_ptr(begin),
 		m_end(end),
 #endif
-		m_numLoci(numLoci)
+		m_step(step)
 	{
 	}
+
 
 	~pyMutantIterator()
 	{
@@ -101,9 +102,9 @@ public:
 			// the mutants can be mutated back to zero, in this case the mutant is
 			// not removed (because removal is an expensive operation)
 			else if (*m_value != 0) {
-				size_t loc = (*m_ptr++) % m_numLoci;
+				size_t loc = (*m_ptr++) % m_step;
 				size_t val = *m_value++;
-				return pairu(loc, val);		
+				return pairu(loc, val);
 			} else {
 				++m_ptr;
 				++m_value;
@@ -113,15 +114,16 @@ public:
 		do {
 			if (m_ptr == m_end)
 				throw StopIteration("");
-			else if (*m_ptr != 0) {
-				GenoIterator tmp = m_ptr;
+			else if (*(m_base + m_ptr) != 0) {
+				size_t tmp = m_ptr;
 				++m_ptr;
-				return pairu((tmp - m_begin) % m_numLoci, *tmp);
-			} else 
-				++ m_ptr;
+				return pairu(tmp % m_step, *(m_base + tmp));
+			} else
+				++m_ptr;
 		} while (true);
-#endif		
+#endif
 	}
+
 
 	// python 3.x uses __next__ instead of next.
 	pairu __next__()
@@ -136,11 +138,11 @@ private:
 	vectorm::index_array_type::iterator m_end;
 	vectorm::value_array_type::iterator m_value;
 #else
-	GenoIterator m_begin;
-	GenoIterator m_ptr;
-	GenoIterator m_end;
-#endif	
-	size_t m_numLoci;
+	GenoIterator m_base;
+	size_t m_ptr;
+	size_t m_end;
+#endif
+	size_t m_step;
 };
 
 
@@ -224,11 +226,13 @@ public:
 
 
 #ifdef LINEAGE
-	/// CPPONLY set lineage pointer 
+	/// CPPONLY set lineage pointer
 	void setLineagePtr(LineageIterator pos)
 	{
 		m_lineagePtr = pos;
 	}
+
+
 #endif
 
 	/// CPPONLY set pointer to individual info
@@ -261,6 +265,8 @@ public:
 	{
 		return m_lineagePtr;
 	}
+
+
 #endif
 
 	/// CPPONLY
@@ -301,7 +307,7 @@ public:
 
 	/** return the lineage of the allele at a locus, using its absolute index
 	 *  \e idx. If a ploidy \e ploidy and/or a chromosome indexes is given,
-	 *  \e idx is relative to the beginning of specified homologous copy of 
+	 *  \e idx is relative to the beginning of specified homologous copy of
 	 *  chromosomes (if \e chrom=-1) or the beginning of the specified
 	 *  homologous copy of specified chromosome (if \e chrom >= 0). <bf>
 	 *  This function returns 0 for modules without lineage information.</bf>
@@ -316,7 +322,7 @@ public:
 	 *  relative to the beginning of specified homologous copy of chromosomes
 	 *  (if \e chrom=-1) or the beginning of the specified homologous copy of
 	 *  specified chromosome (if \e chrom >= 0). This function does nothing
-	 *  for modules without lineage information. 
+	 *  for modules without lineage information.
 	 *  <group>1-allele</group>
 	 */
 	void setAlleleLineage(long lineage, size_t idx, int ploidy = -1, int chrom = -1);
@@ -332,8 +338,11 @@ public:
 	 */
 	PyObject * genotype(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
 
-	/** return an itertor that iterate through all mutants (non-zero alleles) of an
-	 *  individual. If \e ploidy or \e chroms is given, only alleles on the specified
+	/** return an itertor that iterate through all mutants (non-zero alleles) of
+	 *  an individual. Each mutant is presented as a tuple of (index, value)
+	 *  where index is the index of mutant ranging from zero to totNumLoci() *
+	 *  ploidy() - 1, so you will have to adjust indexes to check multiple alleles
+	 *  at a locus. If \e ploidy or \e chroms is given, only alleles on the specified
 	 *  chromosomes and homologous copy of chromosomes will be iterated. If multiple
 	 *  chromosomes are specified, there should not be gaps between chromosomes. This
 	 *  function ignores type of chromosomes so it will return unused alleles for sex
@@ -341,12 +350,12 @@ public:
 	 *  <group>2-genotype</group>
 	 */
 	pyMutantIterator mutants(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
-	
+
 
 	/** return an editable array (a \c carray_lineage object) that represents the
-	 *  lineages of all alleles of an individual. If \e ploidy or \e chroms is 
-	 *  given, only lineages on the specified chromosomes and homologous copy of 
-	 *  chromosomes will be returned. If multiple chromosomes are specified, 
+	 *  lineages of all alleles of an individual. If \e ploidy or \e chroms is
+	 *  given, only lineages on the specified chromosomes and homologous copy of
+	 *  chromosomes will be returned. If multiple chromosomes are specified,
 	 *  there should not be gaps between chromosomes. This function ignores
 	 *  type of chromosomes so it will return lineage of unused alleles for sex
 	 *  and mitochondrial chromosomes. A \c None object will be returned for
@@ -379,7 +388,7 @@ public:
 	 *  number of allelic lineage to be filled. This function ignores type of
 	 *  chromosomes so it will set lineage to unused alleles for sex and
 	 *  mitochondrial chromosomes. It does nothing for modules without lineage
-	 *  information. 
+	 *  information.
 	 *  <group>2-genotype</group>
 	 */
 	void setLineage(const uintList & lineage, const uintList & ploidy = uintList(), const uintList & chroms = uintList());
@@ -535,6 +544,7 @@ public:
 		return m_genoPtr + genoSize();
 	}
 
+
 #ifdef LINEAGE
 	/// CPPONLY start of lineage
 	LineageIterator lineageBegin() const
@@ -542,11 +552,14 @@ public:
 		return m_lineagePtr;
 	}
 
+
 	/// CPPONLY end of lineage
 	LineageIterator lineageEnd() const
 	{
 		return m_lineagePtr + genoSize();
 	}
+
+
 #endif
 
 	/// CPPONLY start of allele of the pth set of chromosome
@@ -565,12 +578,14 @@ public:
 		return m_genoPtr + (p + 1) * totNumLoci();
 	}
 
+
 #ifdef LINEAGE
 	/// CPPONLY start of lineage of the pth set of chromosome
 	LineageIterator lineageBegin(size_t p) const
 	{
 		CHECKRANGEPLOIDY(p);
 		return m_lineagePtr + p * totNumLoci();
+
 	}
 
 
@@ -580,6 +595,8 @@ public:
 		CHECKRANGEPLOIDY(p);
 		return m_lineagePtr + (p + 1) * totNumLoci();
 	}
+
+
 #endif
 
 	/// CPPONLY start of allele of the pth set of chromosome, chrom ch
@@ -601,6 +618,7 @@ public:
 
 	}
 
+
 #ifdef LINEAGE
 	/// CPPONLY start of lineage of the pth set of chromosome, chrom ch
 	LineageIterator lineageBegin(size_t p, size_t chrom) const
@@ -620,6 +638,8 @@ public:
 		return m_lineagePtr + p * totNumLoci() + chromEnd(chrom);
 
 	}
+
+
 #endif
 
 	/// CPPONLY start of info
@@ -831,6 +851,7 @@ public:
 
 		return &*m_it;
 	}
+
 
 	// return, then advance.
 	IndividualIterator operator++(int)
@@ -1195,16 +1216,18 @@ public:
 
 
 #ifdef MUTANTALLELE
-    // do not dereference which will create something ...
-    Allele value()
-    {
+	// do not dereference which will create something ...
+	Allele value()
+	{
 		if (m_useGappedIterator)
 			return (m_ptr + m_shift).value();
 		else {
 			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
 			return (m_it->genoBegin() + m_index + m_p * m_size).value();
 		}
-    }
+	}
+
+
 #endif
 
 	// this is the most important part!
@@ -1217,6 +1240,7 @@ public:
 			return *(m_it->genoBegin() + m_index + m_p * m_size);
 		}
 	}
+
 
 	ITER ptr()
 	{
@@ -1414,8 +1438,9 @@ public:
 	{
 	}
 
+
 	CombinedLineageIterator(size_t shift, IndividualIterator<T, typename T::pointer, typename T::reference> it,
-			LineageIterator ptr, LineageIterator ptrEnd, size_t size)
+		LineageIterator ptr, LineageIterator ptrEnd, size_t size)
 		: m_useGappedIterator(true), m_valid(true), m_shift(shift),
 		m_ptr(ptr), m_ptrBegin(ptr), m_ptrEnd(ptrEnd), m_size(size), m_it(it),
 		// ignored
@@ -1464,6 +1489,7 @@ public:
 		return m_valid;
 	}
 
+
 	size_t currentPloidy()
 	{
 		if (m_useGappedIterator) {
@@ -1473,12 +1499,13 @@ public:
 			//
 			// There is a conversion from size_t to long (difference_type), a possible
 			// loss of data
- 			difference_type offset = static_cast<difference_type>((m_ptr - m_ptrBegin) / m_size);
+			difference_type offset = static_cast<difference_type>((m_ptr - m_ptrBegin) / m_size);
 			return static_cast<size_t>(offset % m_ploidy);
 		} else {
 			return m_p;
 		}
 	}
+
 
 	IndividualIterator<T, typename T::pointer, typename T::reference> individual()
 	{
@@ -1495,6 +1522,7 @@ public:
 			return(m_it);
 		}
 	}
+
 
 	// this is the most important part!
 	long & operator *() const
@@ -1557,7 +1585,7 @@ public:
 		} else if (m_chromType == MITOCHONDRIAL) {
 			// only the first homologous copy is valid
 			DBG_ASSERT(p == 0, SystemError, "Only the first homologous copy of mitochondrial DNA can be iterated.");
-			++ it;
+			++it;
 			valid = it.valid();
 		}
 	}

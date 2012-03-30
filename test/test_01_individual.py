@@ -158,13 +158,13 @@ class TestIndividual(unittest.TestCase):
             pop = self.getPop()
             ind = pop.individual(0)
             ind.setGenotype([2, 3, 4])
-            gt = ind.mutants()
+            gt = tuple(ind.mutants())
             self.assertEqual(gt, ((0,2),(1,3),(2,4),(3,2),(4,3),(5,4),(6,2),(7,3),(8,4),(9,2),(10,3),(11,4),(12,2),(13,3),(14,4),(15,2),(16,3),(17,4),(18,2),(19,3),(20,4),(21,2),(22,3),(23,4)))
             # ploidy 1
-            gt = ind.mutants(1)
+            gt = tuple(ind.mutants(1))
             self.assertEqual(gt, ((12,2),(13,3),(14,4),(15,2),(16,3),(17,4),(18,2),(19,3),(20,4),(21,2),(22,3),(23,4)))
             # ploidy 1, ch 1
-            gt = ind.mutants(1, 1)
+            gt = tuple(ind.mutants(1, 1))
             self.assertEqual(gt, ((17,4),(18,2),(19,3),(20,4),(21,2),(22,3),(23,4)))
             #
             self.assertRaises(IndexError, ind.mutants, 2)
@@ -177,11 +177,11 @@ class TestIndividual(unittest.TestCase):
 
             #  case: Genotype has zero value
             ind.setGenotype([2, 0, 4, 0, 6])
-            gt = ind.mutants()
+            gt = tuple(ind.mutants())
             self.assertEqual(gt,((0, 2), (2, 4), (4, 6), (5, 2), (7, 4), (9, 6), (10, 2), (12, 4), (14, 6), (15, 2), (17, 4), (19, 6), (20, 2), (22, 4)))
-            gt = ind.mutants(1)
+            gt = tuple(ind.mutants(1))
             self.assertEqual(gt,((12, 4), (14, 6), (15, 2), (17, 4), (19, 6), (20, 2), (22, 4)))
-            gt = ind.mutants(1, 1)
+            gt = tuple(ind.mutants(1, 1))
             self.assertEqual(gt,((17, 4), (19, 6), (20, 2), (22, 4)))
 
 
@@ -254,14 +254,14 @@ class TestIndividual(unittest.TestCase):
         # 1=0 0 0 1=3 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1=18 0
         mutants = list(ind.mutants())
         self.assertEqual(len(mutants), 13)
-        self.assertEqual([x[0] for x in mutants], [2, 5, 8, 11, 14, 17, 0, 3, 6, 9, 12, 15, 18])
+        self.assertEqual([x[0] for x in mutants], [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38])
         #
         mutants = list(ind.mutants(ploidy=1))
         self.assertEqual(len(mutants), 7)
-        self.assertEqual([x[0] for x in mutants], [0, 3, 6, 9, 12, 15, 18])
+        self.assertEqual([x[0] for x in mutants], [20, 23, 26, 29, 32, 35, 38])
         #
         ind.setAllele(0, 6, 1)
-        self.assertEqual([x[0] for x in ind.mutants(ploidy=1)], [0, 3, 9, 12, 15, 18])
+        self.assertEqual([x[0] for x in ind.mutants(ploidy=1)], [20, 23, 29, 32, 35, 38])
 
 if __name__ == '__main__':
     unittest.main()
