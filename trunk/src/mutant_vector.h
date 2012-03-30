@@ -238,7 +238,7 @@ public:
 			while ((filled_ > 0) && (index_data_[filled_ - 1] >= size)) {
 				--filled_;
 			}
-		}else {
+		} else {
 			index_data_.resize(capacity_);
 			value_data_.resize(capacity_);
 			filled_ = 0;
@@ -366,7 +366,6 @@ public:
 	}
 
 
-
 	// Assignment
 	inline vectorm & operator =(const vectorm & v)
 	{
@@ -412,6 +411,28 @@ public:
 		index_data_ [filled_] = i;
 		value_data_ [filled_] = t;
 		++filled_;
+		storage_invariants();
+	}
+
+
+	class const_val_iterator;
+
+	// insert, added by Bo
+	inline void insert_back(const const_val_iterator & beg, const const_val_iterator end, int shift = 0)
+	{
+		BOOST_UBLAS_CHECK(filled_ == 0 || index_data_ [filled_ - 1] < i, external_logic());
+		if (filled_ + (end - beg) >= capacity_)
+			reserve(2 * std::max(capacity_, filled_ + (end - beg)), true);
+		BOOST_UBLAS_CHECK(filled_ < capacity_, internal_logic());
+		const_val_iterator ptr = beg;
+		BOOST_UBLAS_CHECK(beg == end || beg != (*this)().end(), bad_index());
+		for (; ptr != end; ++ptr) {
+			if (*ptr != 0) {
+				index_data_ [filled_] = ptr.index() + shift;
+				value_data_ [filled_] = *ptr;
+				++filled_;
+			}
+		}
 		storage_invariants();
 	}
 
@@ -510,6 +531,13 @@ public:
 		}
 
 
+		// added by Bo to calcualte number of elements between things
+		inline size_type operator -(const const_val_iterator & it) const
+		{
+			return it_ - it.it_;
+		}
+
+
 		// Assignment
 		inline const_val_iterator & operator =(const const_val_iterator & it)
 		{
@@ -534,6 +562,12 @@ private:
 	inline const_val_iterator val_begin() const
 	{
 		return find(0);
+	}
+
+
+	inline const_val_iterator val_begin(size_type idx) const
+	{
+		return find(idx);
 	}
 
 
@@ -614,6 +648,12 @@ private:
 
 		friend class const_val_iterator;
 	};
+
+	inline val_iterator val_begin(size_type idx)
+	{
+		return find(idx);
+	}
+
 
 	inline val_iterator val_begin()
 	{
@@ -1065,19 +1105,20 @@ public:
 			return &((*this)());
 		}
 
+
 		/*
-		void deleted()
-		{
-			(*this)().erase_element(m_index);
-		}
-		*/
+		   void deleted()
+		   {
+		    (*this)().erase_element(m_index);
+		   }
+		 */
 
 		void assignIfDiffer(const_reference value)
 		{
 			if (value != this->value())
 				(*this)()[m_index] = value;
 		}
-		
+
 
 		friend class const_iterator;
 
