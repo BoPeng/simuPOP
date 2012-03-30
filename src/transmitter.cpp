@@ -641,11 +641,11 @@ void Recombinator::initialize(const Individual & ind) const
 
 		if (ind.chromType(ch) == CUSTOMIZED || ind.chromType(ch) == MITOCHONDRIAL) {
 			// recombine before customized chromosome.
-			if (ind.numChrom() != ch + 1 && (ind.chromType(ch + 1) != CUSTOMIZED || ind.chromType(ch + 1) != MITOCHONDRIAL)) {
+			if (ind.numChrom() != ch + 1 && (ind.chromType(ch + 1) != CUSTOMIZED && ind.chromType(ch + 1) != MITOCHONDRIAL)) {
 				m_recBeforeLoci.push_back(chEnd);
 				vecP.push_back(0.5);
 			}
-			continue;
+			break;
 		}
 
 		if (m_loci.allAvail()) {
@@ -815,7 +815,11 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			if ((ignoreBegin < 0 || gt < static_cast<size_t>(ignoreBegin) || gt >= static_cast<size_t>(ignoreEnd)) &&
 			    (m_customizedBegin < 0 || gt < static_cast<size_t>(m_customizedBegin) || gt >= static_cast<size_t>(m_customizedEnd))) {
 				// copy
+#ifdef MUTANTALLELE                
+				(off + gt).assignIfDiffer((cp[curCp] + gt).value());
+#else
 				off[gt] = cp[curCp][gt];
+#endif
 				LINEAGE_EXPR(lineageOff[gt] = lineagep[curCp][gt]);
 			}
 			// look ahead
@@ -882,7 +886,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 		if (pos != Bernullitrials::npos) {
 			// first piece
 #  ifdef MUTANTALLELE
-			copyGenotype(cp[curCp] + gt, cp[curCp] + gt + m_recBeforeLoci[pos], off + gt);
+			copyGenotype(cp[curCp] + gt, cp[curCp] + m_recBeforeLoci[pos], off + gt);
 			gt = m_recBeforeLoci[pos];
 #  else
 			for (; gt < m_recBeforeLoci[pos]; ++gt) {
@@ -908,7 +912,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 					convEnd = gt + convCount;
 					if (convEnd < gtEnd) {
 #  ifdef MUTANTALLELE
-						copyGenotype(cp[curCp] + gt, cp[curCp] + gt + convEnd, off + gt);
+						copyGenotype(cp[curCp] + gt, cp[curCp] + convEnd, off + gt);
 						gt = convEnd;
 #  else
 						for (; gt < convEnd; ++gt) {
@@ -925,7 +929,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 				}
 				// copy from the end of conversion to this recombination point
 #  ifdef MUTANTALLELE
-				copyGenotype(cp[curCp] + gt, cp[curCp] + gt + gtEnd, off + gt);
+				copyGenotype(cp[curCp] + gt, cp[curCp] + gtEnd, off + gt);
 				gt = gtEnd;
 #  else
 				for (; gt < gtEnd; ++gt) {
@@ -953,7 +957,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			convEnd = gt + convCount;
 			if (convEnd < gtEnd) {
 #  ifdef MUTANTALLELE
-				copyGenotype(cp[curCp] + gt, cp[curCp] + gt + convEnd, off + gt);
+				copyGenotype(cp[curCp] + gt, cp[curCp] + convEnd, off + gt);
 				gt = convEnd;
 #  else
 				for (; gt < convEnd; ++gt) {
@@ -967,7 +971,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			}
 		}
 #  ifdef MUTANTALLELE
-		copyGenotype(cp[curCp] + gt, cp[curCp] + gt + gtEnd, off + gt);
+		copyGenotype(cp[curCp] + gt, cp[curCp] + gtEnd, off + gt);
 		gt = gtEnd;
 #  else
 		for (; gt < gtEnd; ++gt) {
