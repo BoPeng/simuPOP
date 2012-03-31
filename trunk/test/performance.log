@@ -9299,3 +9299,41 @@ TestGenoIterator : args=(10000, 100, 100): 4.15662407875
 TestGenoIterator : args=(1000, 1000, 10000): 5.84405088425
 TestGenoIterator : 0.419852018356, 4.15662407875, 5.84405088425
 TestGenoIterator : End of test TestGenoIterator
+TestBasicRandomMating : Host: mba-bpeng (Darwin, x86_64, i386)
+TestBasicRandomMating : Time: Sat Mar 31 10:50:31 2012
+TestBasicRandomMating : Python: 2.7.2 [GCC 4.2.1 Compatible Apple Clang 3.1 (tags/Apple/clang-318.0.54)]
+TestBasicRandomMating : simuPOP: 1.0.7rc1 (rev 4489, module mutant, optimized, 0 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 228153
+TestBasicRandomMating : loci=10, size=10000: 22734
+TestBasicRandomMating : loci=10, size=100000: 1427
+TestBasicRandomMating : loci=100, size=1000: 232096
+TestBasicRandomMating : loci=100, size=10000: 23457
+TestBasicRandomMating : loci=100, size=100000: 1500
+TestBasicRandomMating : loci=10000, size=1000: 232774
+TestBasicRandomMating : loci=10000, size=10000: 23011
+TestBasicRandomMating : loci=10000, size=100000: 1488
+TestBasicRandomMating : loci=100000, size=1000: 230435
+TestBasicRandomMating : loci=100000, size=10000: 22758
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 228153, 22734, 1427, 232096, 23457, 1500, 232774, 23011, 1488, 230435, 22758, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestBasicRandomMating : Host: mba-bpeng (Darwin, x86_64, i386)
+TestBasicRandomMating : Time: Sat Mar 31 11:12:29 2012
+TestBasicRandomMating : Python: 2.7.2 [GCC 4.2.1 Compatible Apple Clang 3.1 (tags/Apple/clang-318.0.54)]
+TestBasicRandomMating : simuPOP: 1.0.7rc1 (rev 4489, module mutant, optimized, 0 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 236579
+TestBasicRandomMating : loci=10, size=10000: 21926
+TestBasicRandomMating : loci=10, size=100000: 1488
+TestBasicRandomMating : loci=100, size=1000: 229729
+TestBasicRandomMating : loci=100, size=10000: 22534
+TestBasicRandomMating : loci=100, size=100000: 1411
+TestBasicRandomMating : loci=10000, size=1000: 236075
+TestBasicRandomMating : loci=10000, size=10000: 21946
+TestBasicRandomMating : loci=10000, size=100000: 1440
+TestBasicRandomMating : loci=100000, size=1000: 239249
+TestBasicRandomMating : loci=100000, size=10000: 23594
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 236579, 21926, 1488, 229729, 22534, 1411, 236075, 21946, 1440, 239249, 23594, 0
+TestBasicRandomMating : End of test TestBasicRandomMating

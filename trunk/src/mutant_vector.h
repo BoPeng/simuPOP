@@ -486,15 +486,16 @@ public:
 		const_val_iterator src_iptr_beg = begin.getValIterator();
 		const_val_iterator src_iptr_end = end.getValIterator();
 		size_t src_mut_num = src_iptr_end - src_iptr_beg;
-		if (src_mut_num == 0) {
-			clear(dest_idx_beg, dest_idx_end);
-			return;
-		}
 		// number of elements in destination
 		size_t dest_shift_beg = it.com_index();
 		size_t dest_shift_end = _lower_bound(index_data_.begin() + dest_shift_beg, index_data_.begin() + filled_,
 			dest_idx_end, std::less<size_type> ()) - index_data_.begin();
 		size_t dest_mut_num = dest_shift_end - dest_shift_beg;
+		if (src_mut_num == 0) {
+			for (; dest_shift_beg != dest_shift_end; ++dest_shift_beg)
+				value_data_[dest_shift_beg] = 0;
+			return;
+		}
 #  if 0
 		std::cerr << " S " << src_idx_beg << ", " << src_idx_end << " (";
 		for (const_val_iterator i = src_iptr_beg; i != src_iptr_end; ++i)
@@ -526,10 +527,17 @@ public:
 				index_data_ [dest_shift_beg] = src_iptr_beg.index() + lagging;
 			}
 			if (diff < 0) {
-				std::copy(index_data_.begin() + dest_shift_end, index_data_.begin() + filled_,
-					index_data_.begin() + dest_shift_end + diff);
-				value_array_type::iterator itt(value_data_.begin() + dest_shift_end);
-				std::copy(itt, value_data_.begin() + filled_, itt + diff);
+				//  src  ====== *** ====
+				//  dest ====== ----- ??? |
+				//  dest ====== *** ??? |
+				//
+				//  dest_shift_end == filled_ means there is no ??? mutants
+				if (dest_shift_end != filled_) {
+					std::copy(index_data_.begin() + dest_shift_end, index_data_.begin() + filled_,
+						index_data_.begin() + dest_shift_end + diff);
+					std::copy(value_data_.begin() + dest_shift_end, value_data_.begin() + filled_,
+						value_data_.begin() + dest_shift_end + diff);
+				}
 				filled_ += diff;
 			}
 		} else {
@@ -538,10 +546,20 @@ public:
 				reserve(2 * std::max(capacity_, filled_ + diff), true);
 			// copy last piece first, to leave room for new stuff
 			filled_ += diff;
-			std::copy_backward(index_data_.begin() + dest_shift_end, index_data_.begin() + filled_ - diff,
-				index_data_.begin() + filled_);
-			value_array_type::iterator itt(value_data_.begin() + dest_shift_end);
-			std::copy_backward(itt, value_data_.begin() + filled_ - diff, value_data_.begin() + filled_);
+			//  src  ====== ****** ====
+			//  dest ====== --- ??? |
+			//  dest ====== ****** ??? |
+			//
+			// dest_shift_end == filled_ - diff = old filled_
+			//
+			// which is a case of inserting genotype to the end of the old array
+			// in this case no back copy is needed
+			if (dest_shift_end != filled_ - diff) {
+				std::copy_backward(index_data_.begin() + dest_shift_end, index_data_.begin() + filled_ - diff,
+					index_data_.begin() + filled_);
+				std::copy_backward(value_data_.begin() + dest_shift_end, value_data_.begin() + filled_ - diff,
+					value_data_.begin() + filled_);
+			}
 			// copy real stuff
 			for (; src_iptr_beg != src_iptr_end; ++dest_shift_beg, ++src_iptr_beg) {
 				value_data_ [dest_shift_beg] = *src_iptr_beg;
