@@ -730,6 +730,14 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 
 	vspID subPop = subPopID.resolve(*this);
 
+#ifdef MUTANTALLELE
+	// a special case: clear genotype for every one. This is
+	// useful for mutant modules
+	if (!subPop.valid() && geno.size() == 1 && geno[0] == 0)
+		m_genotype.clear();
+	return;
+#endif
+
 	syncIndPointers();
 	if (!subPop.valid()) {
 		GenoIterator ptr = m_genotype.begin();
