@@ -402,6 +402,7 @@ public:
 
 
 	// Back element insertion and erasure
+	// This function does not change size_....
 	inline void push_back(size_type i, const_reference t)
 	{
 		BOOST_UBLAS_CHECK(filled_ == 0 || index_data_ [filled_ - 1] < i, external_logic());
@@ -428,15 +429,20 @@ public:
 	}
 
 
+	class iterator;
 	class const_iterator;
 
 	// insert, added by Bo
-	inline void insert_back(const const_iterator & ibeg, const const_iterator iend)
+	// NOTE: This function always insert at the back. Parameter dest is NOT used, it
+	// is kept to make this function compatible to std::insert. Unlike push_back,
+	// This function changes the size of vectorm.
+	inline void insert(const iterator &, const const_iterator & ibeg, const const_iterator iend)
 	{
-        const_val_iterator beg = ibeg.getValIterator();
-        const_val_iterator end = iend.getValIterator();
-        int shift = size_ - ibeg.index();
-        size_ += iend.index() - ibeg.index();
+		const_val_iterator beg = ibeg.getValIterator();
+		const_val_iterator end = iend.getValIterator();
+		int shift = size_ - ibeg.index();
+
+		size_ += iend.index() - ibeg.index();
 		BOOST_UBLAS_CHECK(filled_ == 0 || index_data_ [filled_ - 1] < i, external_logic());
 		if (filled_ + (end - beg) >= capacity_)
 			reserve(2 * std::max(capacity_, filled_ + (end - beg)), true);
@@ -453,9 +459,6 @@ public:
 		storage_invariants();
 	}
 
-
-	class const_iterator;
-	class iterator;
 
 	// copy regions, added by Bo
 	void copy_region(const const_iterator & begin, const const_iterator & end,
@@ -1446,6 +1449,7 @@ public:
 	{
 		return const_iterator(*this, size());
 	}
+
 
 private:
 	void storage_invariants() const
