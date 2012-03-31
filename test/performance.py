@@ -1075,13 +1075,13 @@ class TestMatrixMutator(PerformanceTest):
 
     def run(self):
         # overall running case
-        return self.productRun(size=[5000000, 50000000], rate=[0.0001, 0.01, 0.1])
+        return self.productRun(size=[50000, 500000], rate=[0.0001, 0.001])
 
     def _run(self, size, rate):
         # single test case
         t = timeit.Timer(
             setup = 'from __main__ import Population, SNPMutator\n' 
-                "pop = Population(size=%s, ploidy=2, loci=[2, 3])\n" % size,
+                "pop = Population(size=%s, loci=[200])\n" % size,
             stmt = "SNPMutator(u=%s, v=%s).apply(pop)" % (rate, rate))
         return t.timeit(number=self.repeats)
 

@@ -9337,3 +9337,25 @@ TestBasicRandomMating : loci=100000, size=10000: 23594
 TestBasicRandomMating : loci=100000, size=100000: 0
 TestBasicRandomMating : 236579, 21926, 1488, 229729, 22534, 1411, 236075, 21946, 1440, 239249, 23594, 0
 TestBasicRandomMating : End of test TestBasicRandomMating
+TestMatrixMutator : Host: mba-bpeng (Darwin, x86_64, i386)
+TestMatrixMutator : Time: Sat Mar 31 13:53:04 2012
+TestMatrixMutator : Python: 2.7.2 [GCC 4.2.1 Compatible Apple Clang 3.1 (tags/Apple/clang-318.0.54)]
+TestMatrixMutator : simuPOP: 1.0.7rc1 (rev 4489, module short, optimized, 0 threads)
+TestMatrixMutator : Test: MatrixMutator, results are time (not processor time) to apply operator for 10 times.
+TestMatrixMutator : rate=1e-05, size=50000: 0.00179409980774
+TestMatrixMutator : rate=1e-05, size=500000: 0.0046329498291
+TestMatrixMutator : rate=0.001, size=50000: 0.0327908992767
+TestMatrixMutator : rate=0.001, size=500000: 0.348140954971
+TestMatrixMutator : 0.00179409980774, 0.0046329498291, 0.0327908992767, 0.348140954971
+TestMatrixMutator : End of test TestMatrixMutator
+TestMatrixMutator : Host: mba-bpeng (Darwin, x86_64, i386)
+TestMatrixMutator : Time: Sat Mar 31 13:53:08 2012
+TestMatrixMutator : Python: 2.7.2 [GCC 4.2.1 Compatible Apple Clang 3.1 (tags/Apple/clang-318.0.54)]
+TestMatrixMutator : simuPOP: 1.0.7rc1 (rev 4489, module mutant, optimized, 0 threads)
+TestMatrixMutator : Test: MatrixMutator, results are time (not processor time) to apply operator for 10 times.
+TestMatrixMutator : rate=1e-05, size=50000: 0.00184988975525
+TestMatrixMutator : rate=1e-05, size=500000: 0.0527069568634
+TestMatrixMutator : rate=0.001, size=50000: 5.44575715065
+TestMatrixMutator : rate=0.001, size=500000: failed
+TestMatrixMutator : 0.00184988975525, 0.0527069568634, 5.44575715065, 0
+TestMatrixMutator : End of test TestMatrixMutator
