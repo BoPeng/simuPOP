@@ -1256,6 +1256,11 @@ bool MatingScheme::prepareScratchPop(Population & pop, Population & scratch)
 	// this is not absolutely necessary but will reduce confusions
 	scratch.setVirtualSplitter(pop.virtualSplitter());
 	scratch.clearInfo();
+#ifdef MUTANTALLELE
+	// for mutant allele, clearing all existing genotype will make subsequent
+	// copyChromosomes much faster ...
+	scratch.setGenotype(vectoru(1, 0));
+#endif
 	DBG_DO(DBG_SIMULATOR, cerr << "New subpop size " << scratch.subPopSizes() << endl);
 
 	DBG_FAILIF(scratch.numSubPop() != pop.numSubPop(),
