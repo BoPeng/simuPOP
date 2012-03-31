@@ -428,11 +428,15 @@ public:
 	}
 
 
-	class const_val_iterator;
+	class const_iterator;
 
 	// insert, added by Bo
-	inline void insert_back(const const_val_iterator & beg, const const_val_iterator end, int shift = 0)
+	inline void insert_back(const const_iterator & ibeg, const const_iterator iend)
 	{
+        const_val_iterator beg = ibeg.getValIterator();
+        const_val_iterator end = iend.getValIterator();
+        int shift = size_ - ibeg.index();
+        size_ += iend.index() - ibeg.index();
 		BOOST_UBLAS_CHECK(filled_ == 0 || index_data_ [filled_ - 1] < i, external_logic());
 		if (filled_ + (end - beg) >= capacity_)
 			reserve(2 * std::max(capacity_, filled_ + (end - beg)), true);
@@ -1442,55 +1446,6 @@ public:
 	{
 		return const_iterator(*this, size());
 	}
-
-
-	void erase(iterator begin, iterator end)
-	{
-		if (end != this->end()) {
-			std::copy(end.getValueIterator(), this->end().getValueIterator(), begin.getValueIterator());
-			index_array_type::iterator it = end.getIndexIterator();
-			index_array_type::iterator index_end = end.getIndexIterator();
-			for (; it != this->end().getIndexIterator(); ++it) {
-				*it -= (end - begin);
-			}
-			std::copy(index_end, this->end().getIndexIterator(), begin.getIndexIterator());
-		}
-		resize(size() - (end.index() - begin.index()));
-	}
-
-
-	void insert(iterator it, const_iterator begin, const_iterator end)
-	{
-		index_array_type::const_iterator src_index_begin = begin.getIndexIterator();
-		index_array_type::const_iterator src_index_end = end.getIndexIterator();
-		value_array_type::const_iterator src_value_begin = begin.getValueIterator();
-		value_array_type::const_iterator src_value_end = end.getValueIterator();
-		size_t insert_size = end - begin;
-		size_t index_insert_size = src_index_end - src_index_begin;
-		size_t filled_size = filled();
-
-		resize(size() + insert_size);
-		if (filled_size + index_insert_size >= it.getContainer()->nnz_capacity()) {
-			reserve(2 * filled_size + index_insert_size, true);
-		}
-
-		index_array_type::iterator dest_index_begin = it.getIndexIterator();
-		index_array_type::iterator dest_index_end = this->end().getIndexIterator();
-		value_array_type::iterator dest_value_begin = it.getValueIterator();
-
-		std::copy_backward(dest_index_begin, it.getContainer()->index_data().begin() + filled_size, it.getContainer()->index_data().begin() + filled_size + index_insert_size);
-		for (size_t i = 0; i < (size_t)(dest_index_end - dest_index_begin); i++) {
-			*(dest_index_begin + index_insert_size + i) += index_insert_size;
-		}
-		for (size_t i = 0; i < index_insert_size; i++) {
-			size_t range = *(src_index_begin + i) - begin.index();
-			*(dest_index_begin + i) = it.index() + range;
-		}
-		std::copy_backward(dest_value_begin, it.getContainer()->value_data().begin() + filled_size, it.getContainer()->value_data().begin() + filled_size + index_insert_size);
-		std::copy(src_value_begin, src_value_end, dest_value_begin);
-		set_filled(filled_size + index_insert_size);
-	}
-
 
 private:
 	void storage_invariants() const
