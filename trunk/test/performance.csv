@@ -711,3 +711,5 @@ TestGenoIterator, 2011-11-22 18:10:50,761, ubuntu64, x86_64-1threads, python2.7.
 TestGenoIterator, 2011-11-22 18:11:01,384, ubuntu64, x86_64-1threads, python2.7.2+, simuPOP-1.0.6, rev4259-gcc, mutant, 0.419852018356, 4.15662407875, 5.84405088425
 TestBasicRandomMating, 2012-03-31 11:01:42,487, mba-bpeng, x86_64-0threads, python2.7.2, simuPOP-1.0.7rc1, rev4489-gcc, mutant, 228153, 22734, 1427, 232096, 23457, 1500, 232774, 23011, 1488, 230435, 22758, 0
 TestBasicRandomMating, 2012-03-31 11:23:40,967, mba-bpeng, x86_64-0threads, python2.7.2, simuPOP-1.0.7rc1, rev4489-gcc, mutant, 236579, 21926, 1488, 229729, 22534, 1411, 236075, 21946, 1440, 239249, 23594, 0
+TestMatrixMutator, 2012-03-31 13:53:05,254, mba-bpeng, x86_64-0threads, python2.7.2, simuPOP-1.0.7rc1, rev4489-gcc, short, 0.00179409980774, 0.0046329498291, 0.0327908992767, 0.348140954971
+TestMatrixMutator, 2012-03-31 14:05:34,867, mba-bpeng, x86_64-0threads, python2.7.2, simuPOP-1.0.7rc1, rev4489-gcc, mutant, 0.00184988975525, 0.0527069568634, 5.44575715065, 0
