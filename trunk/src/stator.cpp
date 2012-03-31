@@ -730,7 +730,7 @@ bool statNumOfSegSites::apply(Population & pop) const
 			vectorm::index_array_type::iterator index_it = it.getIndexIterator();
 			vectorm::index_array_type::iterator index_it_end = it_end.getIndexIterator();
 			vectorm::value_array_type::iterator value_it = it.getValueIterator();
-			size_t indIndex = it.getIndex();
+			size_t indIndex = it.index();
 			for (; index_it != index_it_end; ++index_it, ++value_it) {
 				if (m_loci.allAvail()) {
 					size_t lociValue = *index_it - indIndex;
@@ -865,7 +865,7 @@ bool statNumOfMutants::apply(Population & pop) const
 			vectorm::index_array_type::iterator index_it = it.getIndexIterator();
 			vectorm::index_array_type::iterator index_it_end = it_end.getIndexIterator();
 			vectorm::value_array_type::iterator value_it = it.getValueIterator();
-			size_t indIndex = it.getIndex();
+			size_t indIndex = it.index();
 			for (; index_it != index_it_end; ++index_it, ++value_it) {
 				if (m_loci.allAvail()) {
 					if (*value_it != 0)

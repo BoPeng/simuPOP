@@ -2147,7 +2147,8 @@ void testCopyGenotype();
 #ifdef MUTANTALLELE
 /// COPY MUTANT ALLELES
 /// CPPONLY 
-void copyGenotype(ConstGenoIterator begin, ConstGenoIterator end, GenoIterator it);
+void copyGenotype(const ConstGenoIterator begin, const ConstGenoIterator end,
+    GenoIterator it);
 
 /// CPPONLY
 void clearGenotype(GenoIterator begin, GenoIterator end);

@@ -4498,10 +4498,10 @@ void clearGenotype(GenoIterator to, size_t n)
 
 #ifdef MUTANTALLELE
 
-void copyGenotype(ConstGenoIterator begin, ConstGenoIterator end, GenoIterator it)
+void copyGenotype(const ConstGenoIterator begin, const ConstGenoIterator end,
+    GenoIterator it)
 {
-	it.getContainer()->copy_region(begin.getContainer(),
-		begin.index(), end.index(), it.index());
+	it.getContainer()->copy_region(begin, end, it);
 }
 
 
