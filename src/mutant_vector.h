@@ -449,16 +449,18 @@ public:
 		storage_invariants();
 	}
 
-    class const_iterator;
-    class iterator;
+
+	class const_iterator;
+	class iterator;
 
 	// copy regions, added by Bo
 	void copy_region(const const_iterator & begin, const const_iterator & end,
-        iterator & it)
+	                 iterator & it)
 	{
-        size_t src_idx_beg = begin.index();
-        size_t src_idx_end = end.index();
-        size_t dest_idx_beg = it.index();
+		size_t src_idx_beg = begin.index();
+		size_t src_idx_end = end.index();
+		size_t dest_idx_beg = it.index();
+
 		BOOST_UBLAS_CHECK(src_idx_beg <= src_idx_end, external_logic());
 		// simple case 1: empty region
 		if (src_idx_beg == src_idx_end)
@@ -486,22 +488,22 @@ public:
 		size_t dest_shift_end = _lower_bound(index_data_.begin() + dest_shift_beg, index_data_.begin() + filled_,
 			dest_idx_end, std::less<size_type> ()) - index_data_.begin();
 		size_t dest_mut_num = dest_shift_end - dest_shift_beg;
-		/*
-		   std::cerr << " S " << src_idx_beg << ", " << src_idx_end << " (";
-		   for (const_val_iterator i = src_iptr_beg; i != src_iptr_end; ++i)
-		    std::cerr << i.index() << "/" << int(*i) << ", ";
-		   std::cerr << ") " << (src_iptr_end - src_iptr_beg) << std::endl;;
-		   //
-		   std::cerr << " D " << dest_idx_beg << ", " << dest_idx_end << "(";
-		   for (size_t i = dest_shift_beg; i != dest_shift_end; ++i)
-		    std::cerr << index_data_[i] << "/" << int(value_data_[i]) << ", ";
-		   std::cerr << ") " << dest_shift_end - dest_shift_beg;
-		   if (dest_shift_end != filled_)
-		    std::cerr << " + " << index_data_[dest_shift_end] << "/" << int(value_data_[dest_shift_end]);
-		   else
-		    std::cerr << " E ";
-		   std::cerr << std::endl;
-		 */
+#  if 0
+		std::cerr << " S " << src_idx_beg << ", " << src_idx_end << " (";
+		for (const_val_iterator i = src_iptr_beg; i != src_iptr_end; ++i)
+			std::cerr << i.index() << "/" << int(*i) << ", ";
+		std::cerr << ") " << (src_iptr_end - src_iptr_beg) << std::endl;;
+		//
+		std::cerr << " D " << dest_idx_beg << ", " << dest_idx_end << "(";
+		for (size_t i = dest_shift_beg; i != dest_shift_end; ++i)
+			std::cerr << index_data_[i] << "/" << int(value_data_[i]) << ", ";
+		std::cerr << ") " << dest_shift_end - dest_shift_beg;
+		if (dest_shift_end != filled_)
+			std::cerr << " + " << index_data_[dest_shift_end] << "/" << int(value_data_[dest_shift_end]);
+		else
+			std::cerr << " E ";
+		std::cerr << std::endl;
+#  endif
 		//
 		// adjust index [ss -- > se]
 		//
@@ -539,21 +541,21 @@ public:
 				index_data_ [dest_shift_beg] = src_iptr_beg.index() + lagging;
 			}
 		}
-		/*
-		   dest_shift_beg = _lower_bound(index_data_.begin(), index_data_.begin() + filled_, dest_idx_beg,
-		    std::less<size_type> ()) - index_data_.begin();
-		   dest_shift_end = _lower_bound(index_data_.begin() + dest_shift_beg, index_data_.begin() + filled_,
-		    dest_idx_end, std::less<size_type> ()) - index_data_.begin();
-		   std::cerr << " RES " << dest_idx_beg << ", " << dest_idx_end << "(";
-		   for (size_t i = dest_shift_beg; i != dest_shift_end; ++i)
-		    std::cerr << index_data_[i] << "/" << int(value_data_[i]) << ", ";
-		   std::cerr << ") " << dest_shift_end - dest_shift_beg;
-		   if (dest_shift_end != filled_)
-		    std::cerr << " + " << index_data_[dest_shift_end] << "/" << int(value_data_[dest_shift_end]);
-		   else
-		    std::cerr << " E ";
-		   std::cerr << std::endl;
-		 */
+#  if 0
+		dest_shift_beg = _lower_bound(index_data_.begin(), index_data_.begin() + filled_, dest_idx_beg,
+			std::less<size_type> ()) - index_data_.begin();
+		dest_shift_end = _lower_bound(index_data_.begin() + dest_shift_beg, index_data_.begin() + filled_,
+			dest_idx_end, std::less<size_type> ()) - index_data_.begin();
+		std::cerr << " RES " << dest_idx_beg << ", " << dest_idx_end << "(";
+		for (size_t i = dest_shift_beg; i != dest_shift_end; ++i)
+			std::cerr << index_data_[i] << "/" << int(value_data_[i]) << ", ";
+		std::cerr << ") " << dest_shift_end - dest_shift_beg;
+		if (dest_shift_end != filled_)
+			std::cerr << " + " << index_data_[dest_shift_end] << "/" << int(value_data_[dest_shift_end]);
+		else
+			std::cerr << " E ";
+		std::cerr << std::endl;
+#  endif
 		storage_invariants();
 	}
 
@@ -911,30 +913,37 @@ public:
 			return m_index;
 		}
 
-        size_t com_index() const
-        {
+
+		size_t com_index() const
+		{
 			// the case of empty, or at the end
-			if (!((m_com_index == 0 && (*this)().filled() == 0) ||
+			if (!(
 			      (m_com_index < (*this)().filled() && (
 			                                            // the case of in the beginning or middle
 			                                            ((*this)().index_data()[m_com_index] > m_index &&
 			                                             (m_com_index == 0 || (*this)().index_data_[m_com_index - 1] < m_index)) ||
 			                                            // the case with val
 			                                            ((*this)().index_data()[m_com_index] == m_index)
-                                                        
-                                                        )
-                  ) || 
-			      (m_com_index > 1 && m_com_index == (*this)().filled() &&
-			       (*this)().index_data()[m_com_index - 1] < m_index)
-                  )
-                ) {
+
+			                                            )
+			      )
+			        // We are checking the middle cases. For the boundary one, we assume
+			        // that it does not worth the trouble to check it for everyone (they are
+			        // only a small percentage of cases)
+			        /*||
+			           (m_com_index > 1 && m_com_index == (*this)().filled() &&
+			           (*this)().index_data()[m_com_index - 1] < m_index) ||
+			           (m_com_index == 0 && (*this)().filled() == 0) */
+			      )
+			    ) {
 				// have to find a right m_com_index
 				const_subiterator_type it(_lower_bound((*this)().index_data_.begin(),
 											  (*this)().index_data().begin() + (*this)().filled(), m_index, std::less<size_type> ()));
 				m_com_index = it - (*this)().index_data().begin();
 			}
-            return m_com_index;
-        }
+			return m_com_index;
+		}
+
 
 		val_iterator getValIterator() const
 		{
@@ -1139,28 +1148,13 @@ public:
 
 		index_array_type::iterator getIndexIterator() const
 		{
-			//return (*this).index_data().begin() + findPositionIndexData();
-			//return std::lower_bound((*this).index_data().begin(), (*this).index_data().begin() + (*this).filled(), m_index);
-			if (m_com_index == -1)
-				return (*this)().index_data().begin();
-			else if (m_com_index > (*this)().filled())
-				return (*this)().index_data().begin() + (*this)().filled();
-			else
-				return (*this)().index_data().begin() + m_com_index;
+			return (*this)().index_data().begin() + com_index();
 		}
 
 
 		value_array_type::iterator getValueIterator() const
 		{
-			//return (*this)().value_data().begin() + findPositionIndexData();
-			//size_t com_index = getIndexIterator() - (*this)().index_data().begin();
-			//return (*this)().value_data().begin() + com_index;
-			if (m_com_index == -1)
-				return (*this)().value_data().begin();
-			else if (m_com_index > (*this)().filled())
-				return (*this)().value_data().begin() + (*this)().filled();
-			else
-				return (*this)().value_data().begin() + m_com_index;
+			return (*this)().value_data().begin() + com_index();
 		}
 
 
@@ -1285,6 +1279,37 @@ public:
 		}
 
 
+		size_t com_index() const
+		{
+			// the case of empty, or at the end
+			if (!(
+			      (m_com_index < (*this)().filled() && (
+			                                            // the case of in the beginning or middle
+			                                            ((*this)().index_data()[m_com_index] > m_index &&
+			                                             (m_com_index == 0 || (*this)().index_data_[m_com_index - 1] < m_index)) ||
+			                                            // the case with val
+			                                            ((*this)().index_data()[m_com_index] == m_index)
+
+			                                            )
+			      )
+			        // We are checking the middle cases. For the boundary one, we assume
+			        // that it does not worth the trouble to check it for everyone (they are
+			        // only a small percentage of cases)
+			        /*||
+			           (m_com_index > 1 && m_com_index == (*this)().filled() &&
+			           (*this)().index_data()[m_com_index - 1] < m_index) ||
+			           (m_com_index == 0 && (*this)().filled() == 0) */
+			      )
+			    ) {
+				// have to find a right m_com_index
+				const_subiterator_type it(_lower_bound((*this)().index_data_.begin(),
+											  (*this)().index_data().begin() + (*this)().filled(), m_index, std::less<size_type> ()));
+				m_com_index = it - (*this)().index_data().begin();
+			}
+			return m_com_index;
+		}
+
+
 		const_val_iterator getValIterator() const
 		{
 			return (*this)().val_begin(m_index);
@@ -1376,28 +1401,13 @@ public:
 
 		index_array_type::const_iterator getIndexIterator() const
 		{
-			//return (*this).index_data().begin() + findPositionIndexData();
-			//return std::lower_bound((*this).index_data().begin(), (*this).index_data().begin() + (*this).filled(), m_index);
-			if (m_com_index == -1)
-				return (*this)().index_data().begin();
-			else if (m_com_index > (*this)().filled())
-				return (*this)().index_data().begin() + (*this)().filled();
-			else
-				return (*this)().index_data().begin() + m_com_index;
+			return (*this)().index_data().begin() + com_index();
 		}
 
 
 		value_array_type::const_iterator getValueIterator() const
 		{
-			//return (*this)().value_data().begin() + findPositionIndexData();
-			//size_t com_index = getIndexIterator() - (*this)().index_data().begin();
-			//return (*this)().value_data().begin() + com_index;
-			if (m_com_index == -1)
-				return (*this)().value_data().begin();
-			else if (m_com_index > (*this)().filled())
-				return (*this)().value_data().begin() + (*this)().filled();
-			else
-				return (*this)().value_data().begin() + m_com_index;
+			return (*this)().value_data().begin() + com_index();
 		}
 
 
