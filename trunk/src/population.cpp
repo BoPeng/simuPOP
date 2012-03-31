@@ -1206,13 +1206,10 @@ void Population::removeSubPops(const subPopList & subPops)
 	size_t infoStep = infoSize();
 	RawIndIterator oldInd = m_inds.begin();
 	RawIndIterator newInd = m_inds.begin();
-#ifdef MUTANTALLELE
-	size_t oldPtr = 0;
-	vectorm new_genotype;
-	new_genotype.resize(m_genotype.size());
-	size_t lagging = 0;
-#else
 	GenoIterator oldPtr = m_genotype.begin();
+#ifdef MUTANTALLELE
+	vectorm new_genotype;
+#else
 	GenoIterator newPtr = m_genotype.begin();
 #endif
 #ifdef LINEAGE
@@ -1238,9 +1235,6 @@ void Population::removeSubPops(const subPopList & subPops)
 			oldPtr += step * spSize;
 			oldInfoPtr += infoStep * spSize;
 			LINEAGE_EXPR(oldLineagePtr += step * spSize);
-#ifdef MUTANTALLELE
-			lagging += step * spSize;
-#endif
 		} else if (subPops.overlap(sp)) {
 			// partial removal
 			//
@@ -1263,7 +1257,7 @@ void Population::removeSubPops(const subPopList & subPops)
 						copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
 						LINEAGE_EXPR(copy(oldLineagePtr, oldLineagePtr + step, newLineagePtr));
 					}
-					new_genotype.insert_back(m_genotype.val_begin(oldPtr), m_genotype.val_begin(oldPtr + step), -lagging);
+					new_genotype.insert_back(oldPtr, oldPtr + step);
 #else
 					if (oldInd != newInd) {
 						*newInd = *oldInd;
@@ -1277,10 +1271,6 @@ void Population::removeSubPops(const subPopList & subPops)
 					newInfoPtr += infoStep;
 					LINEAGE_EXPR(newLineagePtr += step);
 				}
-#ifdef MUTANTALLELE
-				else
-					lagging += step;
-#endif
 				++oldInd;
 				oldPtr += step;
 				oldInfoPtr += infoStep;
@@ -1302,8 +1292,7 @@ void Population::removeSubPops(const subPopList & subPops)
 				copy(oldInfoPtr, oldInfoPtr + infoStep * spSize, newInfoPtr);
 				LINEAGE_EXPR(copy(oldLineagePtr, oldLineagePtr + step * spSize, newLineagePtr));
 			}
-			new_genotype.insert_back(m_genotype.val_begin(oldPtr), m_genotype.val_begin(oldPtr + step * spSize),
-				-lagging);
+			new_genotype.insert_back(oldPtr, oldPtr + step * spSize);
 #else
 			if (oldPtr != newPtr) {
 				copy(oldPtr, oldPtr + step * spSize, newPtr);
@@ -1325,7 +1314,6 @@ void Population::removeSubPops(const subPopList & subPops)
 	//
 	m_inds.erase(newInd, m_inds.end());
 #ifdef MUTANTALLELE
-	new_genotype.resize(m_genotype.size() - lagging, true);
 	m_genotype.swap(new_genotype);
 #else
 	m_genotype.erase(newPtr, m_genotype.end());
@@ -1361,13 +1349,10 @@ void Population::removeMarkedIndividuals()
 	RawIndIterator newInd = m_inds.begin();
 	InfoIterator oldInfoPtr = m_info.begin();
 	InfoIterator newInfoPtr = m_info.begin();
-#ifdef MUTANTALLELE
-	size_t oldPtr = 0;
-	vectorm new_genotype;
-	new_genotype.resize(m_genotype.size());
-	size_t lagging = 0;
-#else
 	GenoIterator oldPtr = m_genotype.begin();
+#ifdef MUTANTALLELE
+	vectorm new_genotype;
+#else
 	GenoIterator newPtr = m_genotype.begin();
 #endif
 
@@ -1389,7 +1374,7 @@ void Population::removeMarkedIndividuals()
 					copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
 					LINEAGE_EXPR(copy(oldLineagePtr, oldLineagePtr + step, newLineagePtr));
 				}
-				new_genotype.insert_back(m_genotype.val_begin(oldPtr), m_genotype.val_begin(oldPtr + step), -lagging);
+				new_genotype.insert_back(oldPtr, oldPtr + step);
 #else
 				if (oldInd != newInd) {
 					*newInd = *oldInd;
@@ -1405,10 +1390,6 @@ void Population::removeMarkedIndividuals()
 				newInfoPtr += infoStep;
 				LINEAGE_EXPR(newLineagePtr += step);
 			}
-#ifdef MUTANTALLELE
-			else
-				lagging += step;
-#endif
 			++oldInd;
 			oldPtr += step;
 			oldInfoPtr += infoStep;
@@ -1419,7 +1400,6 @@ void Population::removeMarkedIndividuals()
 	//
 	m_inds.erase(newInd, m_inds.end());
 #ifdef MUTANTALLELE
-	new_genotype.resize(m_genotype.size() - lagging, true);
 	m_genotype.swap(new_genotype);
 #else
 	m_genotype.erase(newPtr, m_genotype.end());
@@ -1617,7 +1597,7 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 			continue;
 		// do not remove.
 		new_inds.insert(new_inds.end(), rawIndBegin(src), rawIndEnd(src));
-		new_genotype.insert(new_genotype.end(), genoBegin(src, true), genoEnd(src, true));
+		new_genotype.insert_back(genoBegin(src, true), genoEnd(src, true));
 		LINEAGE_EXPR(new_lineage.insert(new_lineage.end(), lineageBegin(src, true), lineageEnd(src, true)));
 
 		if (infoStep > 0)
@@ -1739,7 +1719,7 @@ void Population::addIndFrom(const Population & pop)
 		m_popSize += pop.m_popSize;
 		//
 		m_inds.insert(m_inds.end(), pop.m_inds.begin(), pop.m_inds.end());
-		m_genotype.insert(m_genotype.end(), pop.m_genotype.begin(), pop.m_genotype.end());
+		m_genotype.insert_back(pop.m_genotype.begin(), pop.m_genotype.end());
 		m_info.insert(m_info.end(), pop.m_info.begin(), pop.m_info.end());
 		LINEAGE_EXPR(m_lineage.insert(m_lineage.end(), pop.m_lineage.begin(), pop.m_lineage.end()));
 		// iterators ready
@@ -2619,7 +2599,7 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 			new_inds.insert(new_inds.end(), m_inds.begin(), m_inds.end());
 			// handle genotype
 			if (!removeLoci) {
-				new_genotype.insert(new_genotype.end(), m_genotype.begin(), m_genotype.end());
+				new_genotype.insert_back(m_genotype.begin(), m_genotype.end());
 				LINEAGE_EXPR(new_lineage.insert(new_lineage.end(), m_lineage.begin(), m_lineage.end()));
 			} else {
 				ConstRawIndIterator it = rawIndBegin();
@@ -2662,8 +2642,7 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 				for (; it != it_end; ++it) {
 					new_inds.push_back(m_inds[*it]);
 					if (!removeLoci) {
-						new_genotype.insert(new_genotype.end(),
-							indGenoBegin(*it), indGenoEnd(*it));
+						new_genotype.insert_back(indGenoBegin(*it), indGenoEnd(*it));
 						LINEAGE_EXPR(new_lineage.insert(new_lineage.end(),
 								indLineageBegin(*it), indLineageEnd(*it)));
 					} else {
