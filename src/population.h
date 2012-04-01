@@ -1087,11 +1087,6 @@ public:
 	 */
 	void setGenotype(const uintList & geno, vspID subPop = vspID());
 
-#ifdef MUTANTALLELE
-	/// For debudding only
-	void dumpArray();
-
-#endif
 
 	/** Fill the lineage of all individuals in a population (if
 	 *  <tt>subPop=[]</tt>) or in a (virtual) subpopulation \e subPop (if

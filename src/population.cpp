@@ -779,25 +779,6 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 }
 
 
-#ifdef MUTANTALLELE
-void Population::dumpArray()
-{
-	GenoIterator b = genoBegin(false);
-	GenoIterator e = genoEnd(false);
-	IndexArray idx(b.getIndexIterator(), e.getIndexIterator());
-
-	cerr << "IDX: " << idx << " (size " << idx.size() << ")" << endl;
-	ValueArray val(b.getValueIterator(), e.getValueIterator());
-	vectoru x;
-	for (size_t i = 0; i < val.size(); ++i)
-		x.push_back(int(val[i]));
-	cerr << "VAL: " << x << " (size " << x.size() << ")" << endl;
-}
-
-
-#endif
-
-
 void Population::setLineage(const uintList & lineageList, vspID subPopID)
 {
 #ifdef LINEAGE
@@ -1864,7 +1845,7 @@ void Population::addChrom(const floatList & lociPosList, const stringList & loci
 		useAncestralGen(depth);
 		size_t newPopGenoSize = genoSize() * m_popSize;
 #ifdef MUTANTALLELE
-		vectorm newGenotype(newPopGenoSize, 0);
+		vectorm newGenotype(newPopGenoSize);
 #else
 		vectora newGenotype(newPopGenoSize, 0);
 #endif
@@ -1946,7 +1927,7 @@ vectoru Population::addLoci(const uintList & chromList, const floatList & posLis
 		//
 		size_t newPopGenoSize = genoSize() * m_popSize;
 #ifdef MUTANTALLELE
-		vectorm newGenotype(newPopGenoSize, 0);
+		vectorm newGenotype(newPopGenoSize);
 #else
 		vectora newGenotype(newPopGenoSize, 0);
 #endif
@@ -2591,7 +2572,6 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 		// change the size of vectorm... a resize is needed.
 		if (removeLoci)
 			new_genotype.resize(size * step);
-		new_genotype.reserve(m_genotype.index_data().end() - m_genotype.index_data().begin());
 #else
 		vectora new_genotype;
 		new_genotype.reserve(size * step);
@@ -3386,16 +3366,15 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 	bool singleMut = true;
 	size_t singleMutVal = 0;
 	//
-	vectorm::index_array_type::const_iterator ptr = m_genotype.begin().getIndexIterator();
-	vectorm::index_array_type::const_iterator end = m_genotype.end().getIndexIterator();
-	vectorm::value_array_type::const_iterator value = m_genotype.begin().getValueIterator();
-	for (; ptr != end; ++ptr, ++value) {
-		if (*value != 0) {
-			mutLoc[*ptr] = 1;
-			mutVal.push_back(*value);
+	vectorm::const_val_iterator ptr = m_genotype.begin().get_val_iterator();
+	vectorm::const_val_iterator end = m_genotype.end().get_val_iterator();
+	for (; ptr != end; ++ptr) {
+		if (ptr->second != 0) {
+			mutLoc[ptr->first] = 1;
+			mutVal.push_back(ptr->second);
 			if (singleMutVal == 0)
-				singleMutVal = *value;
-			else if (*value != singleMutVal)
+				singleMutVal = ptr->second;
+			else if (ptr->second != singleMutVal)
 				singleMut = false;
 		}
 	}
@@ -3492,16 +3471,15 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 		bool singleMut = true;
 		size_t singleMutVal = 0;
 		//
-		vectorm::index_array_type::const_iterator ptr = m_genotype.begin().getIndexIterator();
-		vectorm::index_array_type::const_iterator end = m_genotype.end().getIndexIterator();
-		vectorm::value_array_type::const_iterator value = m_genotype.begin().getValueIterator();
-		for (; ptr != end; ++ptr, ++value) {
-			if (*value != 0) {
-				mutLoc[*ptr] = 1;
-				mutVal.push_back(*value);
+		vectorm::const_val_iterator ptr = m_genotype.begin().get_val_iterator();
+		vectorm::const_val_iterator end = m_genotype.end().get_val_iterator();
+		for (; ptr != end; ++ptr) {
+			if (ptr->second != 0) {
+				mutLoc[ptr->first] = 1;
+				mutVal.push_back(ptr->second);
 				if (singleMutVal == 0)
-					singleMutVal = *value;
-				else if (*value != singleMutVal)
+					singleMutVal = ptr->second;
+				else if (ptr->second != singleMutVal)
 					singleMut = false;
 			}
 		}

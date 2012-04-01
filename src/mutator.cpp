@@ -182,11 +182,11 @@ bool BaseMutator::apply(Population & pop) const
 					lastPos = pos;
 					if (!ptr.valid())
 						break;
-#ifdef MUTANTALLELE					
+#ifdef MUTANTALLELE
 					Allele oldAllele = ptr.value();
-#else					
+#else
 					Allele oldAllele = *ptr;
-#endif					
+#endif
 					(void)oldAllele;  // suppress a warning for unused variable
 					DBG_DO(DBG_MUTATOR, cerr << "Allele " << int(oldAllele) << " at locus " << locus);
 					if (mapIn) {
@@ -565,9 +565,11 @@ bool RevertFixedSites::apply(Population & pop) const
 		// index on the first ploidy, need to get loci index
 		GenoIterator s = ind->genoBegin();
 		GenoIterator e = s + pop.totNumLoci();
-		IndexArray idx(s.getIndexIterator(), e.getIndexIterator());
-		for (size_t i = 0; i < idx.size(); ++i)
-			idx[i] %= nLoci;
+		vectorm::val_iterator s_it = s.get_val_iterator();
+		vectorm::val_iterator e_it = e.get_val_iterator();
+		vectoru idx;
+		for (; s_it != e_it; ++sp)
+			idx.push_back(s_it->first % nLoci);
 		// now, find the intersection of loci
 		vectoru myloci;
 		std::set_intersection(idx.begin(), idx.end(),

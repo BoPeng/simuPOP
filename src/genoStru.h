@@ -804,6 +804,7 @@ public:
 		return s_genoStruRepository[m_genoStruIdx].m_infoFields[idx];
 	}
 
+
 	/** return the index of information field \e name. Raise an \c IndexError
 	 * if \e name is not one of the information fields.
 	 *  <group>5-info</group>

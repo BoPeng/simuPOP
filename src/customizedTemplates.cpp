@@ -82,13 +82,13 @@ getarrayitem_template<GenoIterator>(struct arrayobject_template<GenoIterator> * 
 	assert(is_carrayobject_template<GenoIterator>(op));
 	ap = (struct arrayobject_template<GenoIterator> *)op;
 	assert(i >= 0 && i < Py_SIZE(ap));
-#ifdef MUTANTALLELE
-    // for read only purpose, make sure not to really insert a value using the
-    // non-constant version of operator *.
+#  ifdef MUTANTALLELE
+	// for read only purpose, make sure not to really insert a value using the
+	// non-constant version of operator *.
 	return PyInt_FromLong((ap->ob_iter + i).value());
-#else
+#  else
 	return PyInt_FromLong(*(ap->ob_iter + i));
-#endif
+#  endif
 }
 
 
@@ -100,11 +100,12 @@ setarrayitem_template(struct arrayobject_template<T> * ap, Py_ssize_t i, PyObjec
 	return -1;
 }
 
+
 /// CPPONLY
 template <>
 int
-setarrayitem_template<GenoIterator>(struct arrayobject_template<GenoIterator> * ap, 
-	Py_ssize_t i, PyObject * v)
+setarrayitem_template<GenoIterator>(struct arrayobject_template<GenoIterator> * ap,
+                                    Py_ssize_t i, PyObject * v)
 {
 	// right now, the longest allele is uint16_t, but we need to be careful.
 	int x;
@@ -123,11 +124,12 @@ setarrayitem_template<GenoIterator>(struct arrayobject_template<GenoIterator> * 
 	return 0;
 }
 
+
 /// CPPONLY
 template <>
 int
-setarrayitem_template<LineageIterator>(struct arrayobject_template<LineageIterator> * ap, 
-	Py_ssize_t i, PyObject * v)
+setarrayitem_template<LineageIterator>(struct arrayobject_template<LineageIterator> * ap,
+                                       Py_ssize_t i, PyObject * v)
 {
 	long x;
 
@@ -139,6 +141,7 @@ setarrayitem_template<LineageIterator>(struct arrayobject_template<LineageIterat
 	*(ap->ob_iter + i) = x;
 	return 0;
 }
+
 
 /// CPPONLY
 template <typename T>
@@ -374,7 +377,7 @@ Py_ssize_t array_length_template(struct arrayobject_template<T> * a)
 
 /// CPPONLY
 template<typename T>
-PyObject * array_concat_template(struct arrayobject_template<T> * , PyObject * )
+PyObject * array_concat_template(struct arrayobject_template<T> *, PyObject *)
 {
 	PyErr_SetString(PyExc_TypeError,
 		"Can not concat carray object.");
@@ -384,7 +387,7 @@ PyObject * array_concat_template(struct arrayobject_template<T> * , PyObject * )
 
 /// CPPONLY
 template<typename T>
-PyObject * array_repeat_template(struct arrayobject_template<T> * , Py_ssize_t )
+PyObject * array_repeat_template(struct arrayobject_template<T> *, Py_ssize_t)
 {
 	PyErr_SetString(PyExc_TypeError,
 		"Can not repeat carray object.");
@@ -522,6 +525,7 @@ PyObject * array_count_template(struct arrayobject_template<T> * self, PyObject 
 	return PyInt_FromLong((long)count);
 }
 
+
 /// CPPONLY
 template <typename T>
 PyObject * array_index_template(struct arrayobject_template<T> * self, PyObject * args)
@@ -552,6 +556,7 @@ PyObject * array_index_template(struct arrayobject_template<T> * self, PyObject 
 	return NULL;
 }
 
+
 /// CPPONLY
 template<typename T>
 PyObject * array_tolist_template(struct arrayobject_template<T> * self, PyObject * args)
@@ -573,6 +578,7 @@ PyObject * array_tolist_template(struct arrayobject_template<T> * self, PyObject
 	}
 	return list;
 }
+
 
 /// CPPONLY
 template<typename T>
@@ -632,8 +638,8 @@ array_repr_template(struct arrayobject_template<T> * a)
 
 
 extern "C" {
-	extern PyTypeObject Arraytype;
-	extern PyTypeObject LineageArraytype;
+extern PyTypeObject Arraytype;
+extern PyTypeObject LineageArraytype;
 }
 
 
@@ -644,19 +650,22 @@ bool is_carrayobject_template(PyObject * op)
 	return false;
 }
 
+
 /// CPPONLY
 template<>
-bool is_carrayobject_template<GenoIterator>(PyObject *op)
+bool is_carrayobject_template<GenoIterator>(PyObject * op)
 {
 	return op->ob_type == &Arraytype;
 }
 
+
 /// CPPONLY
 template<>
-bool is_carrayobject_template<LineageIterator>(PyObject *op)
+bool is_carrayobject_template<LineageIterator>(PyObject * op)
 {
 	return op->ob_type == &LineageArraytype;
 }
+
 
 /// CPPONLY
 template<typename T>
@@ -664,6 +673,7 @@ PyObject * newcarrayobject_template(T begin, T end)
 {
 	return(NULL);
 }
+
 
 /// CPPONLY
 template<>
@@ -679,13 +689,14 @@ PyObject * newcarrayobject_template<GenoIterator>(GenoIterator begin, GenoIterat
 	}
 	//
 	op->ob_iter = begin;
-#ifdef MUTANTALLELE
+#  ifdef MUTANTALLELE
 	Py_SIZE(op) = end.index() - begin.index();
-#else
+#  else
 	Py_SIZE(op) = end - begin;
-#endif
+#  endif
 	return (PyObject *)op;
 }
+
 
 /// CPPONLY
 template<>
@@ -704,6 +715,7 @@ PyObject * newcarrayobject_template<LineageIterator>(LineageIterator begin, Line
 	Py_SIZE(op) = end - begin;
 	return (PyObject *)op;
 }
+
 
 #else  // for Python 3
 /* Array object implementation */
@@ -744,13 +756,13 @@ getarrayitem_template<GenoIterator>(PyObject * op, Py_ssize_t i)
 	assert(is_carrayobject_template<GenoIterator>(op));
 	ap = (struct arrayobject_template<GenoIterator> *)op;
 	assert(i >= 0 && i < Py_SIZE(ap));
-#ifdef MUTANTALLELE
-    // for read only purpose, make sure not to really insert a value using the
-    // non-constant version of operator *.
+#  ifdef MUTANTALLELE
+	// for read only purpose, make sure not to really insert a value using the
+	// non-constant version of operator *.
 	return PyInt_FromLong((ap->ob_iter + i).value());
-#else
+#  else
 	return PyInt_FromLong(*(ap->ob_iter + i) );
-#endif
+#  endif
 }
 
 
@@ -761,6 +773,7 @@ setarrayitem_template(struct arrayobject_template<T> * ap, int i, PyObject * v)
 {
 	return -1;
 }
+
 
 /// CPPONLY
 template <>
@@ -783,6 +796,7 @@ setarrayitem_template<GenoIterator>(struct arrayobject_template<GenoIterator> * 
 #  endif
 	return 0;
 }
+
 
 /// CPPONLY
 template <>
@@ -809,6 +823,7 @@ array_dealloc_template(struct arrayobject_template<T> * op)
 {
 	Py_TYPE(op)->tp_free((PyObject *)op);
 }
+
 
 template <typename T>
 PyObject *
@@ -997,6 +1012,7 @@ array_richcompare_template(PyObject * v, PyObject * w, int op)
 	}
 }
 
+
 template <typename T>
 Py_ssize_t
 array_length_template(struct arrayobject_template<T> * a)
@@ -1038,6 +1054,7 @@ array_slice_template(struct arrayobject_template<T> * a, Py_ssize_t ilow, Py_ssi
 		return NULL;
 	return (PyObject *)np;
 }
+
 
 template <typename T>
 int
@@ -1097,6 +1114,7 @@ array_ass_slice_template(struct arrayobject_template<T> * a, Py_ssize_t ilow, Py
 
 }
 
+
 template <typename T>
 int
 array_ass_item_template(struct arrayobject_template<T> * a, Py_ssize_t i, PyObject * v)
@@ -1110,6 +1128,7 @@ array_ass_item_template(struct arrayobject_template<T> * a, Py_ssize_t i, PyObje
 		return array_ass_slice_template<T>(a, i, i + 1, v);
 	return setarrayitem_template<T>(a, i, v);
 }
+
 
 template <typename T>
 PyObject *
@@ -1130,6 +1149,7 @@ array_count_template(struct arrayobject_template<T> * self, PyObject * v)
 	return PyLong_FromSsize_t(count);
 }
 
+
 template <typename T>
 PyObject *
 array_index_template(struct arrayobject_template<T> * self, PyObject * v)
@@ -1148,6 +1168,7 @@ array_index_template(struct arrayobject_template<T> * self, PyObject * v)
 	PyErr_SetString(PyExc_ValueError, "array.index(x): x not in list");
 	return NULL;
 }
+
 
 template <typename T>
 PyObject *
@@ -1169,71 +1190,74 @@ array_tolist_template(struct arrayobject_template<T> * self, PyObject * unused)
 	return list;
 }
 
+
 template <typename T>
 PyObject *
 array_repr_template(struct arrayobject_template<T> * a)
 {
 	PyObject * s, * v = NULL;
+
 	v = array_tolist_template<T>(a, NULL);
 	s = PyUnicode_FromFormat("%R", v);
 	Py_DECREF(v);
 	return s;
 }
 
+
 template <typename T>
-PyObject*
-array_subscr_template(struct arrayobject_template<T>* self, PyObject* item)
+PyObject *
+array_subscr_template(struct arrayobject_template<T> * self, PyObject * item)
 {
 	if (PyIndex_Check(item)) {
 		Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
-		if (i==-1 && PyErr_Occurred()) {
+		if (i == -1 && PyErr_Occurred()) {
 			return NULL;
 		}
 		if (i < 0)
 			i += Py_SIZE(self);
 		return array_item_template<T>(self, i);
-	}
-	else if (PySlice_Check(item)) {
+	}else if (PySlice_Check(item)) {
 		Py_ssize_t start, stop, step, slicelength;
-#if PY_VERSION_HEX >= 0x03020000
-		if (PySlice_GetIndicesEx((PyObject*)item, Py_SIZE(self),
-				 &start, &stop, &step, &slicelength) < 0) {
+#  if PY_VERSION_HEX >= 0x03020000
+		if (PySlice_GetIndicesEx((PyObject *)item, Py_SIZE(self),
+				&start, &stop, &step, &slicelength) < 0) {
 			return NULL;
 		}
-#else
-		if (PySlice_GetIndicesEx((PySliceObject*)item, Py_SIZE(self),
-				 &start, &stop, &step, &slicelength) < 0) {
+#  else
+		if (PySlice_GetIndicesEx((PySliceObject *)item, Py_SIZE(self),
+				&start, &stop, &step, &slicelength) < 0) {
 			return NULL;
 		}
-#endif
+#  endif
 		if (step > 1) {
 			PyErr_SetString(PyExc_TypeError,
-					"Slice with step > 1 is not supported for type simuPOP.array");
+				"Slice with step > 1 is not supported for type simuPOP.array");
 			return NULL;
 		}
 
 		if (slicelength <= 0)
 			return newcarrayobject_template<T>(self->ob_iter, self->ob_iter);
 		return newcarrayobject_template<T>(self->ob_iter + start,
-						self->ob_iter + stop);
-	}
-	else {
-		PyErr_SetString(PyExc_TypeError, 
-				"array indices must be integers");
+		                                   self->ob_iter + stop);
+	}else  {
+		PyErr_SetString(PyExc_TypeError,
+			"array indices must be integers");
 		return NULL;
 	}
 }
 
+
 template <typename T>
 int
-array_ass_subscr_template(struct arrayobject_template<T>* self, PyObject* item, PyObject* value)
+array_ass_subscr_template(struct arrayobject_template<T> * self, PyObject * item, PyObject * value)
 {
 	Py_ssize_t start, stop, step, slicelength, needed;
-	struct arrayobject_template<T>* other = NULL;
+
+	struct arrayobject_template<T> * other = NULL;
 
 	if (PyIndex_Check(item)) {
 		Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
-		
+
 		if (i == -1 && PyErr_Occurred())
 			return -1;
 		if (i < 0)
@@ -1249,35 +1273,31 @@ array_ass_subscr_template(struct arrayobject_template<T>* self, PyObject* item, 
 			stop = i + 1;
 			step = 1;
 			slicelength = 1;
-		}
-		else
+		}else
 			return setarrayitem_template<T>(self, i, value);
-	}
-	else if (PySlice_Check(item)) {
-#if PY_VERSION_HEX >= 0x03020000
+	}else if (PySlice_Check(item)) {
+#  if PY_VERSION_HEX >= 0x03020000
 		if (PySlice_GetIndicesEx((PyObject *)item,
-					 Py_SIZE(self), &start, &stop,
-					 &step, &slicelength) < 0) {
+				Py_SIZE(self), &start, &stop,
+				&step, &slicelength) < 0) {
 			return -1;
 		}
-#else
+#  else
 		if (PySlice_GetIndicesEx((PySliceObject *)item,
-					 Py_SIZE(self), &start, &stop,
-					 &step, &slicelength) < 0) {
+				Py_SIZE(self), &start, &stop,
+				&step, &slicelength) < 0) {
 			return -1;
 		}
-#endif
-	}
-	else {
+#  endif
+	}else  {
 		PyErr_SetString(PyExc_TypeError,
-				"array indices must be integer");
+			"array indices must be integer");
 		return -1;
 	}
 	if (value == NULL) {
 		other = NULL;
 		needed = 0;
-	}
-	else if (is_carrayobject_template<T>(value)) {
+	}else if (is_carrayobject_template<T>(value)) {
 		other = (struct arrayobject_template<T> *)value;
 		needed = Py_SIZE(other);
 		if (self == other) {
@@ -1290,18 +1310,16 @@ array_ass_subscr_template(struct arrayobject_template<T>* self, PyObject* item, 
 			Py_DECREF(value);
 			return ret;
 		}
-	}
-	else if (PyLong_Check(value)) {
+	}else if (PyLong_Check(value)) {
 		for (Py_ssize_t i = 0; start + i < stop; ++i)
 			setarrayitem_template(self, start + i, value);
 		return 0;
 	} else if (PySequence_Check(value)) {
 		needed = PySequence_Size(value);
-	}
-       	else {
+	}   else{
 		PyErr_Format(PyExc_TypeError,
-	     "can only assign array (not \"%.200s\") to array slice",
-			     Py_TYPE(value)->tp_name);
+			"can only assign array (not \"%.200s\") to array slice",
+			Py_TYPE(value)->tp_name);
 		return -1;
 	}
 	/* for 'a[2:1] = ...', the insertion point is 'start', not 'stop' */
@@ -1310,13 +1328,13 @@ array_ass_subscr_template(struct arrayobject_template<T>* self, PyObject* item, 
 		stop = start;
 
 	if (step != 1) {
-		PyErr_SetString(PyExc_BufferError, 
+		PyErr_SetString(PyExc_BufferError,
 			"Slice with step > 1 is not supported for type simuPOP.array.");
 		return -1;
 	}
 
 	if (slicelength != needed) {
-		PyErr_SetString(PyExc_BufferError, 
+		PyErr_SetString(PyExc_BufferError,
 			"Slice size must match.");
 		return -1;
 	}
@@ -1332,6 +1350,7 @@ array_ass_subscr_template(struct arrayobject_template<T>* self, PyObject* item, 
 	return 0;
 }
 
+
 template <typename T>
 PyObject * array_new_template(PyTypeObject * type, PyObject * args, PyObject * kwds)
 {
@@ -1340,8 +1359,8 @@ PyObject * array_new_template(PyTypeObject * type, PyObject * args, PyObject * k
 
 
 extern "C" {
-	extern PyTypeObject Arraytype;
-	extern PyTypeObject LineageArraytype;
+extern PyTypeObject Arraytype;
+extern PyTypeObject LineageArraytype;
 }
 
 template<typename T>
@@ -1350,11 +1369,13 @@ bool is_carrayobject_template(PyObject * op)
 	return false;
 }
 
+
 template<>
 bool is_carrayobject_template<GenoIterator>(PyObject * op)
 {
 	return PyObject_TypeCheck(op, &Arraytype);
 }
+
 
 template<>
 bool is_carrayobject_template<LineageIterator>(PyObject * op)
@@ -1362,12 +1383,14 @@ bool is_carrayobject_template<LineageIterator>(PyObject * op)
 	return PyObject_TypeCheck(op, &LineageArraytype);
 }
 
+
 /// CPPONLY
 template <typename T>
 PyObject * newcarrayobject_template(T begin, T end)
 {
 	return NULL;
 }
+
 
 /// CPPONLY
 template <>
@@ -1386,6 +1409,7 @@ PyObject * newcarrayobject_template<GenoIterator>(GenoIterator begin, GenoIterat
 	Py_SIZE(op) = end - begin;
 	return (PyObject *)op;
 }
+
 
 /// CPPONLY
 template <>

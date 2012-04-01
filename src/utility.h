@@ -2146,12 +2146,13 @@ void testCopyGenotype();
 
 #ifdef MUTANTALLELE
 /// COPY MUTANT ALLELES
-/// CPPONLY 
+/// CPPONLY
 void copyGenotype(const ConstGenoIterator begin, const ConstGenoIterator end,
-    GenoIterator it);
+	GenoIterator it);
 
 /// CPPONLY
 void clearGenotype(GenoIterator begin, GenoIterator end);
+
 #endif
 
 

@@ -74,7 +74,7 @@ public:
 	 *  chromosomes from \e parent to the \e ploidy set of homologous
 	 *  chromosomes of \e offspring. It is equivalent to
 	 *  <tt>offspring.setGenotype(parent.genotype(parPloidy, chrom), polidy, chrom)</tt>,
-	 *  except that it also copies allelic lineage when it is executed in a 
+	 *  except that it also copies allelic lineage when it is executed in a
 	 *  module with lineage allele type.
 	 */
 	void copyChromosome(const Individual & parent, int parPloidy,
@@ -84,7 +84,7 @@ public:
 	 *  to the \e ploidy set of homologous chromosomes of \e offspring.
 	 *  Customized chromosomes are not copied. It is equivalent to
 	 *  <tt>offspring.setGenotype(parent.genotype(parPloidy), ploidy)</tt>,
-	 *  except that it also copies allelic lineage when it is executed in a 
+	 *  except that it also copies allelic lineage when it is executed in a
 	 *  module with lineage allele type.
 	 */
 	void copyChromosomes(const Individual & parent, int parPloidy,

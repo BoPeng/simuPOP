@@ -316,7 +316,7 @@ bool InfoExec::applyDuringMating(Population & pop, Population & offPop, RawIndIt
 }
 
 
-string subPopVar_String(vspID sp, const string & var, const string & suffix="")
+string subPopVar_String(vspID sp, const string & var, const string & suffix = "")
 {
 	if (sp.isVirtual())
 		return "subPop{(" + toStr(sp.subPop()) + "," + toStr(sp.virtualSubPop()) + ")}{\'" + var + suffix + "\'}";
@@ -681,10 +681,10 @@ statNumOfSegSites::statNumOfSegSites(const lociList & loci, const subPopList & s
 	: m_loci(loci), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
-		numOfSegSites_String,   numOfSegSites_sp_String, 
+		numOfSegSites_String,	numOfSegSites_sp_String,
 		numOfFixedSites_String, numOfFixedSites_sp_String,""
 	};
-	const char * defaultVars[] = { numOfSegSites_String, numOfFixedSites_String,"" };
+	const char * defaultVars[] = { numOfSegSites_String, numOfFixedSites_String, "" };
 
 	m_vars.obtainFrom(vars, allowedVars, defaultVars);
 }
@@ -727,19 +727,18 @@ bool statNumOfSegSites::apply(Population & pop) const
 		for (; ind.valid(); ++ind) {
 			GenoIterator it = ind->genoBegin();
 			GenoIterator it_end = ind->genoEnd();
-			vectorm::index_array_type::iterator index_it = it.getIndexIterator();
-			vectorm::index_array_type::iterator index_it_end = it_end.getIndexIterator();
-			vectorm::value_array_type::iterator value_it = it.getValueIterator();
+			vectorm::val_iterator index_it = it.get_val_iterator();
+			vectorm::val_iterator index_it_end = it_end.get_val_iterator();
 			size_t indIndex = it.index();
-			for (; index_it != index_it_end; ++index_it, ++value_it) {
+			for (; index_it != index_it_end; ++index_it) {
 				if (m_loci.allAvail()) {
-					size_t lociValue = *index_it - indIndex;
-					if (*value_it != 0 && lociValue < loci.size()) {
+					size_t lociValue = index_it->first - indIndex;
+					if (index_it->second != 0 && lociValue < loci.size()) {
 						IndexMap::iterator map_it = indexMap.find(lociValue);
-						if (map_it  == indexMap.end()) {
-							indexMap.insert(IndexMap::value_type(lociValue, std::make_pair(*value_it, 1)));
+						if (map_it == indexMap.end()) {
+							indexMap.insert(IndexMap::value_type(lociValue, std::make_pair(index_it->second, 1)));
 						} else {
-							if (map_it->second.first == *value_it) {
+							if (map_it->second.first == index_it->second) {
 								map_it->second.second++;
 								if (map_it->second.second == pop.subPopSize(sp->subPop()))
 									fixedSites.insert(lociValue);
@@ -748,12 +747,12 @@ bool statNumOfSegSites::apply(Population & pop) const
 					}
 				} else {
 					for (size_t idx = 0; idx < loci.size(); ++idx) {
-						if (*index_it == indIndex + loci[idx] && *value_it != 0) {
+						if (index_it->first == indIndex + loci[idx] && index_it->second != 0) {
 							IndexMap::iterator map_it = indexMap.find(loci[idx]);
-							if (map_it  == indexMap.end()) {
-								indexMap.insert(IndexMap::value_type(loci[idx], std::make_pair(*value_it, 1)));
+							if (map_it == indexMap.end()) {
+								indexMap.insert(IndexMap::value_type(loci[idx], std::make_pair(index_it->second, 1)));
 							} else {
-								if (map_it->second.first == *value_it) {
+								if (map_it->second.first == index_it->second) {
 									map_it->second.second++;
 									if (map_it->second.second == pop.subPopSize(sp->subPop()))
 										fixedSites.insert(loci[idx]);
@@ -786,7 +785,7 @@ bool statNumOfSegSites::apply(Population & pop) const
 						isSeg = 1;
 						isFixed = 0;
 					}
-					if (isSeg != 2 && isFixed != 2)	
+					if (isSeg != 2 && isFixed != 2)
 						break;
 				}
 			} else {
@@ -824,7 +823,7 @@ statNumOfMutants::statNumOfMutants(const lociList & loci, const subPopList & sub
 	: m_loci(loci), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
-		numOfMutants_String, numOfMutants_sp_String,	   ""
+		numOfMutants_String, numOfMutants_sp_String, ""
 	};
 	const char * defaultVars[] = { numOfMutants_String, "" };
 
@@ -862,18 +861,17 @@ bool statNumOfMutants::apply(Population & pop) const
 			GenoIterator it = ind->genoBegin();
 			GenoIterator it_end = ind->genoEnd();
 #ifdef MUTANTALLELE
-			vectorm::index_array_type::iterator index_it = it.getIndexIterator();
-			vectorm::index_array_type::iterator index_it_end = it_end.getIndexIterator();
-			vectorm::value_array_type::iterator value_it = it.getValueIterator();
+			vectorm::val_iterator index_it = it.get_val_iterator();
+			vectorm::val_iterator index_it_end = it_end.get_val_iterator();
 			size_t indIndex = it.index();
-			for (; index_it != index_it_end; ++index_it, ++value_it) {
+			for (; index_it != index_it_end; ++index_it) {
 				if (m_loci.allAvail()) {
-					if (*value_it != 0)
+					if (index_it->second != 0)
 						mutantCount++;
 				} else {
 					for (size_t idx = 0; idx < loci.size(); ++idx) {
 						size_t loc = indIndex + loci[idx];
-						if (*index_it == loc && *value_it != 0) {
+						if (index_it->first == loc && index_it->second != 0) {
 							mutantCount++;
 							break;
 						}
