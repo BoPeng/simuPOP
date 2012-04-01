@@ -100,9 +100,10 @@ public:
 				throw StopIteration("");
 			// the mutants can be mutated back to zero, in this case the mutant is
 			// not removed (because removal is an expensive operation)
-			else if (m_ptr->second != 0)
-				return pairu(m_ptr->first % m_step, m_ptr->second);
-			else
+			else if (m_ptr->second != 0) {
+                vectorm::const_val_iterator tmp = m_ptr ++;
+				return pairu(tmp->first % m_step, tmp->second);
+			} else
 				++m_ptr;
 		} while (true);
 #else
@@ -110,8 +111,7 @@ public:
 			if (m_ptr == m_end)
 				throw StopIteration("");
 			else if (*(m_base + m_ptr) != 0) {
-				size_t tmp = m_ptr;
-				++m_ptr;
+				size_t tmp = m_ptr ++;
 				return pairu(tmp % m_step, *(m_base + tmp));
 			} else
 				++m_ptr;
