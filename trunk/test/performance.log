@@ -9392,3 +9392,18 @@ TestMatrixMutator : rate=0.001, size=50000: 0.156820058823
 TestMatrixMutator : rate=0.001, size=500000: 2.26581597328
 TestMatrixMutator : 0.0108919143677, 0.160210847855, 0.156820058823, 2.26581597328
 TestMatrixMutator : End of test TestMatrixMutator
+TestStatAlleleFreq : Host: mba-bpeng.local (Darwin, x86_64, i386)
+TestStatAlleleFreq : Time: Sun Apr  1 12:56:53 2012
+TestStatAlleleFreq : Python: 2.7.2 [GCC 4.2.1 Compatible Apple Clang 3.1 (tags/Apple/clang-318.0.54)]
+TestStatAlleleFreq : simuPOP: 1.0.7rc1 (rev 4489, module mutant, optimized, 0 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are time (not processor time) to apply operator for 30 times.
+TestStatAlleleFreq : loci=100, size=10000: 37.2015788555
+TestStatAlleleFreq : loci=100, size=100000: 402.926571131
+TestStatAlleleFreq : loci=100, size=[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]: failed
+TestStatAlleleFreq : Host: mba-bpeng.local (Darwin, x86_64, i386)
+TestStatAlleleFreq : Time: Sun Apr  1 13:10:51 2012
+TestStatAlleleFreq : Python: 2.7.2 [GCC 4.2.1 Compatible Apple Clang 3.1 (tags/Apple/clang-318.0.54)]
+TestStatAlleleFreq : simuPOP: 1.0.7rc1 (rev 4489, module mutant, optimized, 0 threads)
+TestStatAlleleFreq : Test: Stat AlleleFreq, results are time (not processor time) to apply operator for 30 times.
+TestStatAlleleFreq : loci=100, size=10000: 25.9196689129
+TestStatAlleleFreq : loci=100, size=100000: 279.555090904
