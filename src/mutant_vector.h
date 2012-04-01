@@ -405,10 +405,13 @@ public:
 
 		void assignIfDiffer(const_reference value)
 		{
-			const_val_iterator it((*this)().data().find(m_index));
+			val_iterator it((*this)().data().find(m_index));
 
-			if (it == (*this)().data().end() || it->second != value)
-				(*this)()[m_index] = value;
+			if (it == (*this)().data().end()) {
+				if (value != 0)
+					(*this)().data().insert(storage::value_type(m_index, value));
+			} else
+				it->second = value;
 		}
 
 
