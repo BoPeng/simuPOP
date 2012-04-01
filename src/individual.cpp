@@ -147,16 +147,16 @@ ULONG Individual::allele(size_t idx, ssize_t p, ssize_t chrom) const
 		"A valid ploidy index has to be specified if chrom is non-positive");
 	if (p < 0) {
 		CHECKRANGEGENOSIZE(idx);
-		return static_cast<ULONG>(*(m_genoPtr + idx));
+		return static_cast<ULONG>((m_genoPtr + idx).value());
 	} else if (chrom < 0) {
 		CHECKRANGEABSLOCUS(idx);
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
-		return static_cast<ULONG>(*(m_genoPtr + idx + p * totNumLoci()));
+		return static_cast<ULONG>((m_genoPtr + idx + p * totNumLoci()).value());
 	} else {
 		CHECKRANGELOCUS(chrom, idx);
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
 		CHECKRANGECHROM(static_cast<size_t>(chrom));
-		return static_cast<ULONG>(*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)));
+		return static_cast<ULONG>((m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)).value());
 	}
 }
 
