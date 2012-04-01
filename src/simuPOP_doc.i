@@ -738,7 +738,7 @@ Details:
     distrubution to find the next true event.  Also, for the cases of
     p=0.5, random bits are generated.  This class maintain a two
     dimensional table: a vector of probabilities cross expected number
-    of trials p1 p2 p3 p4 p5  trial 1 trial 2 ... trial N  We expect
+    of trials  p1 p2 p3 p4 p5 trial 1 trial 2 ... trial N  We expect
     that N is big (usually populaiton size) and p_i are small  using
     fast bernulliTrial method for fix p, we can fill up this table
     very quickly column by column  This class will provide easy access
@@ -959,12 +959,10 @@ Details:
 Details:
 
     This class implements a C++ iterator class that iterate through
-    all alleles in a (virtual) (sub)population using
-    *   an IndIterator that will skip invisible individuals and
-    invalid alleles, or
-    *   a gapped iterator that will run faster, in the case that a):
-    no virtual subpopulation b): not sex chromosomes c): not
-    haplodiploid
+    all alleles in a (virtual) (sub)population using 1. an IndIterator
+    that will skip invisible individuals and invalid alleles, or 2. a
+    gapped iterator that will run faster, in the case that a): no
+    virtual subpopulation b): not sex chromosomes c): not haplodiploid
 
 "; 
 
@@ -981,6 +979,14 @@ Usage:
 Usage:
 
     x.valid()
+
+"; 
+
+%feature("docstring") simuPOP::CombinedAlleleIterator::value "
+
+Usage:
+
+    x.value()
 
 "; 
 
@@ -3086,9 +3092,9 @@ Details:
     this class implements a C++ iterator class that iterate through
     individuals in a (sub)population. If allInds are true, the
     visiblility of individuals will not be checked. Note that
-    IndividualIteratorwill iterate through only visible individuals,
-    and allInds is only provided when we know in advance that all
-    individuals are visible. This is a way to obtain better
+    IndividualIterator *will* iterate through only visible
+    individuals, and allInds is only provided when we know in advance
+    that all individuals are visible. This is a way to obtain better
     performance in simple cases.
 
 "; 
@@ -3238,11 +3244,10 @@ Usage:
 Details:
 
     this class implements a C++ iterator class that iterate through
-    infomation fields in a (sub)population using
-    *   an IndIterator that will skip invisible individuals, or
-    *   a gapped iterator that will run faster. Note that 1, 2 should
-    yield identical result, and 2 should be used when there is no
-    virtual subpopulation.q
+    infomation fields in a (sub)population using 1. an IndIterator
+    that will skip invisible individuals, or 2. a gapped iterator that
+    will run faster. Note that 1, 2 should yield identical result, and
+    2 should be used when there is no virtual subpopulation.q
 
 "; 
 
@@ -4030,7 +4035,7 @@ Details:
     through all mutable allele and mutate it to another state
     according to probabilities in the corresponding row of the rate
     matrix. Only one mutation rate matrix can be specified which will
-    be used for all specified loci.
+    be used for all specified loci. #
 
 "; 
 
@@ -4964,11 +4969,11 @@ Details:
     it is applied to this population. If stopOnKeyStroke is False
     (default), it will always pause a population when it is applied,
     if this parameter is set to True, the operator will pause a
-    population if any key has been pressed. If a specific character is
-    set, the operator will stop when this key has been pressed. This
-    allows, for example, the use of several pause operators to pause
-    different populations.  After a population has been paused, a
-    message will be displayed (unless prompt is set to False) and
+    population if *any* key has been pressed. If a specific character
+    is set, the operator will stop when this key has been pressed.
+    This allows, for example, the use of several pause operators to
+    pause different populations.  After a population has been paused,
+    a message will be displayed (unless prompt is set to False) and
     tells you how to proceed. You can press 's' to stop the evolution
     of this population, 'S' to stop the evolution of all populations,
     or 'p' to enter a Python shell. The current population will be
@@ -5470,8 +5475,9 @@ Details:
     parameter ploidy. This operator is by default applied to
     individuals in the first subpopulation but you can apply it to a
     different or more than one (virtual) subpopulations using
-    parameter subPops (AllAvail is also accepted). Please refer to
-    class BaseOperator for detailed descriptions of other parameters.
+    parameter *subPops* (``AllAvail`` is also accepted). Please refer
+    to class BaseOperator for detailed descriptions of other
+    parameters.
 
 "; 
 
@@ -10707,10 +10713,10 @@ Details:
     Individuals without parents are assumed to be in the top-most
     ancestral generation. This is the case for individuals in the top-
     most ancestral generation if the file is saved by function
-    Pedigree.save(), and for individuals who only appear as another
-    individual's parent, if the file is saved by operator
-    PedigreeTagger. The order at which offsprng is specified is not
-    important because this function essentially creates a top-most
+    ``Pedigree.save()``, and for individuals who only appear as
+    another individual's parent, if the file is saved by operator
+    ``PedigreeTagger``. The order at which offsprng is specified is
+    not important because this function essentially creates a top-most
     ancestral generation using IDs without parents, and creates the
     next generation using offspring of these parents, and so on until
     all generations are recreated. That is to say, if you have a
