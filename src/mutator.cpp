@@ -568,7 +568,7 @@ bool RevertFixedSites::apply(Population & pop) const
 		vectorm::val_iterator s_it = s.get_val_iterator();
 		vectorm::val_iterator e_it = e.get_val_iterator();
 		vectoru idx;
-		for (; s_it != e_it; ++sp)
+		for (; s_it != e_it; ++s_it)
 			idx.push_back(s_it->first % nLoci);
 		// now, find the intersection of loci
 		vectoru myloci;
