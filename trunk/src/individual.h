@@ -68,9 +68,8 @@ public:
 	pyMutantIterator(GenoIterator base, size_t begin,
 		size_t end, size_t step) :
 #ifdef MUTANTALLELE
-		m_ptr((base + begin).getIndexIterator()),
-		m_end((base + end).getIndexIterator()),
-		m_value((base + begin).getValueIterator()),
+		m_ptr((base + begin).get_val_iterator()),
+		m_end((base + end).get_val_iterator()),
 #else
 		m_base(base),
 		m_ptr(begin),
@@ -101,14 +100,10 @@ public:
 				throw StopIteration("");
 			// the mutants can be mutated back to zero, in this case the mutant is
 			// not removed (because removal is an expensive operation)
-			else if (*m_value != 0) {
-				size_t loc = (*m_ptr++) % m_step;
-				size_t val = *m_value++;
-				return pairu(loc, val);
-			} else {
+			else if (m_ptr->second != 0)
+				return pairu(m_ptr->first % m_step, m_ptr->second);
+			else
 				++m_ptr;
-				++m_value;
-			}
 		} while (true);
 #else
 		do {
@@ -134,9 +129,8 @@ public:
 
 private:
 #ifdef MUTANTALLELE
-	vectorm::index_array_type::iterator m_ptr;
-	vectorm::index_array_type::iterator m_end;
-	vectorm::value_array_type::iterator m_value;
+	vectorm::const_val_iterator m_ptr;
+	vectorm::const_val_iterator m_end;
 #else
 	GenoIterator m_base;
 	size_t m_ptr;

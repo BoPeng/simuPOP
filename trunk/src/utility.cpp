@@ -175,7 +175,7 @@ using std::greater;
 
 // global constant variables
 #ifdef MUTANTALLELE
-const simuPOP::vectorm::value_type simuPOP::vectorm::zero_ = 0;
+const Allele simuPOP::vectorm::zero_ = 0;
 #endif
 const unsigned long ModuleMaxAllele = std::numeric_limits<Allele>::max();
 const unsigned long MaxRandomNumber = std::numeric_limits<int32_t>::max();
@@ -4499,15 +4499,15 @@ void clearGenotype(GenoIterator to, size_t n)
 #ifdef MUTANTALLELE
 
 void copyGenotype(const ConstGenoIterator begin, const ConstGenoIterator end,
-    GenoIterator it)
+                  GenoIterator it)
 {
-	it.getContainer()->copy_region(begin, end, it);
+	it().copy_region(begin, end, it);
 }
 
 
 void clearGenotype(GenoIterator begin, GenoIterator end)
 {
-	begin.getContainer()->clear(begin.index(), end.index());
+	begin().clear(begin.index(), end.index());
 }
 
 

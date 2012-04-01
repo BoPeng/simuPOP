@@ -419,16 +419,14 @@ double PyMlPenetrance::penet(Population * /* pop */, Individual * ind) const
 		size_t numLoci = ind->totNumLoci();
 		GenoIterator it = ind->genoBegin();
 		GenoIterator it_end = ind->genoEnd();
-		vectorm::index_array_type::iterator index_it = it.getIndexIterator();
-		vectorm::index_array_type::iterator index_it_end = it_end.getIndexIterator();
-		vectorm::value_array_type::iterator value_it = it.getValueIterator();
-		for (; index_it != index_it_end; ) {
-			if (*value_it != 0 &&
-			    (m_loci.allAvail() || find(loci.begin(), loci.end(), (*index_it) % numLoci) != loci.end())) {
-				geno[0] = *value_it;
-				pnt.push(getPenetranceValue(LocGenotype((*index_it) % numLoci, geno)));
-				++index_it;
-				++value_it;
+		vectorm::val_iterator iit = it.get_val_iterator();
+		vectorm::val_iterator iit_end = it_end.get_val_iterator();
+		for (; iit != iit_end; ) {
+			if (iit->second != 0 &&
+			    (m_loci.allAvail() || find(loci.begin(), loci.end(), (iit->first) % numLoci) != loci.end())) {
+				geno[0] = iit->second;
+				pnt.push(getPenetranceValue(LocGenotype((iit->first) % numLoci, geno)));
+				++iit;
 			}
 		}
 	} else if (ply == 2) {
@@ -437,43 +435,37 @@ double PyMlPenetrance::penet(Population * /* pop */, Individual * ind) const
 		GenoIterator it0_end = ind->genoEnd(0);
 		GenoIterator it1 = ind->genoBegin(1);
 		GenoIterator it1_end = ind->genoEnd(1);
-		vectorm::index_array_type::iterator index_it0 = it0.getIndexIterator();
-		vectorm::index_array_type::iterator index_it0_end = it0_end.getIndexIterator();
-		vectorm::value_array_type::iterator value_it0 = it0.getValueIterator();
-		vectorm::index_array_type::iterator index_it1 = it1.getIndexIterator();
-		vectorm::index_array_type::iterator index_it1_end = it1_end.getIndexIterator();
-		vectorm::value_array_type::iterator value_it1 = it1.getValueIterator();
+		vectorm::val_iterator iit0 = it0.get_val_iterator();
+		vectorm::val_iterator iit0_end = it0_end.get_val_iterator();
+		vectorm::val_iterator iit1 = it1.get_val_iterator();
+		vectorm::val_iterator iit1_end = it1_end.get_val_iterator();
 		vectora geno(2, ToAllele(0));
-		for (; index_it0 != index_it0_end || index_it1 != index_it1_end; ) {
-			if (index_it1 == index_it1_end || *index_it0 + numLoci < *index_it1) {
-				if (*value_it0 != 0 &&
-				    (m_loci.allAvail() || find(loci.begin(), loci.end(), (*index_it0) % numLoci) != loci.end())) {
-					geno[0] = *value_it0;
+		for (; iit0 != iit0_end || iit1 != iit1_end; ) {
+			if (iit1 == iit1_end || iit0->first + numLoci < iit1->first) {
+				if (iit0->second != 0 &&
+				    (m_loci.allAvail() || find(loci.begin(), loci.end(), (iit0->first) % numLoci) != loci.end())) {
+					geno[0] = iit0->second;
 					geno[1] = 0;
-					pnt.push(getPenetranceValue(LocGenotype((*index_it0) % numLoci, geno)));
+					pnt.push(getPenetranceValue(LocGenotype((iit0->first) % numLoci, geno)));
 				}
-				++index_it0;
-				++value_it0;
-			} else if (index_it0 == index_it0_end || *index_it0 + numLoci > *index_it1) {
-				if (*value_it1 != 0 &&
-				    (m_loci.allAvail() || find(loci.begin(), loci.end(), (*index_it1) % numLoci) != loci.end())) {
+				++iit0;
+			} else if (iit0 == iit0_end || iit0->first + numLoci > iit1->first) {
+				if (iit1->second != 0 &&
+				    (m_loci.allAvail() || find(loci.begin(), loci.end(), (iit1->first) % numLoci) != loci.end())) {
 					geno[0] = 0;
-					geno[1] = *value_it1;
-					pnt.push(getPenetranceValue(LocGenotype((*index_it1) % numLoci, geno)));
+					geno[1] = iit1->second;
+					pnt.push(getPenetranceValue(LocGenotype((iit1->first) % numLoci, geno)));
 				}
-				++index_it1;
-				++value_it1;
+				++iit1;
 			} else {
-				if ((*value_it0 != 0 || *value_it1 != 0) &&
-				    (m_loci.allAvail() || find(loci.begin(), loci.end(), (*index_it1) % numLoci) != loci.end())) {
-					geno[0] = *value_it0;
-					geno[1] = *value_it1;
-					pnt.push(getPenetranceValue(LocGenotype((*index_it1) % numLoci, geno)));
+				if ((iit0->second != 0 || iit1->second != 0) &&
+				    (m_loci.allAvail() || find(loci.begin(), loci.end(), (iit1->first) % numLoci) != loci.end())) {
+					geno[0] = iit0->second;
+					geno[1] = iit1->second;
+					pnt.push(getPenetranceValue(LocGenotype((iit1->first) % numLoci, geno)));
 				}
-				++index_it0;
-				++value_it0;
-				++index_it1;
-				++value_it1;
+				++iit0;
+				++iit1;
 			}
 		}
 	} else {
@@ -535,6 +527,7 @@ double PyMlPenetrance::penet(Population * /* pop */, Individual * ind) const
 double PyMlPenetrance::getPenetranceValue(const LocGenotype & geno) const
 {
 	LocGenotype tmp(geno);
+
 	if (geno.second.size() == 2 && geno.second[0] > geno.second[1]) {
 		tmp.second[0] = geno.second[1];
 		tmp.second[1] = geno.second[0];

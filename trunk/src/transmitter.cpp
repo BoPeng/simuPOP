@@ -74,7 +74,7 @@ void GenoTransmitter::clearChromosome(const Individual & ind, int ploidy, size_t
 #ifdef LINEAGE
 	fill(ind.lineageBegin(ploidy) + m_chromIdx[chrom],
 		ind.lineageBegin(ploidy) + m_chromIdx[chrom + 1], 0);
-#endif	
+#endif
 }
 
 
@@ -123,8 +123,8 @@ void GenoTransmitter::copyChromosomes(const Individual & parent,
 			GenoIterator off = offspring.genoBegin(ploidy, ch);
 
 #ifdef LINEAGE
-			LineageIterator parLineage  = parent.lineageBegin(parPloidy, ch);
-			LineageIterator offLineage  = offspring.lineageBegin(ploidy, ch);
+			LineageIterator parLineage = parent.lineageBegin(parPloidy, ch);
+			LineageIterator offLineage = offspring.lineageBegin(ploidy, ch);
 			LineageIterator lineage_end = parent.lineageEnd(parPloidy, ch);
 #endif
 
@@ -283,21 +283,21 @@ void MendelianGenoTransmitter::transmitGenotype(const Individual & parent,
 	if (m_chromX < 0 && m_chromY < 0 && !m_hasCustomizedChroms) {
 		// pointer to parental, and offspring chromosome copies
 		GenoIterator par[2];
-		GenoIterator off; 
-#ifdef LINEAGE
+		GenoIterator off;
+#  ifdef LINEAGE
 		LineageIterator parLineage[2];
-		LineageIterator offLineage; 
-#endif
+		LineageIterator offLineage;
+#  endif
 
 		//
 		par[0] = parent.genoBegin(0);
 		par[1] = parent.genoBegin(1);
 		off = offspring.genoBegin(ploidy);
-#ifdef LINEAGE
+#  ifdef LINEAGE
 		parLineage[0] = parent.lineageBegin(0);
 		parLineage[1] = parent.lineageBegin(1);
 		offLineage = offspring.lineageBegin(ploidy);
-#endif
+#  endif
 
 		//
 		//
@@ -331,9 +331,9 @@ void MendelianGenoTransmitter::transmitGenotype(const Individual & parent,
 					LINEAGE_EXPR(offLineage[parBegin] = parLineage[parPloidy][parBegin]);
 				} else {
 					copyGenotype(par[parPloidy] + parBegin, off + parBegin, length);
-					LINEAGE_EXPR(copy(parLineage[parPloidy] + parBegin, 
-						parLineage[parPloidy] + parBegin + length, 
-						offLineage + parBegin));
+					LINEAGE_EXPR(copy(parLineage[parPloidy] + parBegin,
+							parLineage[parPloidy] + parBegin + length,
+							offLineage + parBegin));
 				}
 				//
 				if (ch != m_numChrom - 1)
@@ -353,7 +353,7 @@ void MendelianGenoTransmitter::transmitGenotype(const Individual & parent,
 		    (ploidy == 1 &&
 		     ((ch == m_chromX && offspring.sex() == MALE) ||
 		      (ch == m_chromY && offspring.sex() == FEMALE) ||
-			  (ch == m_mitochondrial)))) {
+		      (ch == m_mitochondrial)))) {
 			clearChromosome(offspring, ploidy, ch);
 			continue;
 		}
@@ -495,8 +495,8 @@ bool MitochondrialGenoTransmitter::applyDuringMating(Population & pop, Populatio
 		GenoIterator par = parent->genoBegin(0, m_mitoChroms[src]);
 		GenoIterator off = offspring->genoBegin(0, *it);
 #ifdef LINEAGE
-		LineageIterator parLineage  = parent->lineageBegin(0, m_mitoChroms[src]);
-		LineageIterator offLineage  = offspring->lineageBegin(0, *it);
+		LineageIterator parLineage = parent->lineageBegin(0, m_mitoChroms[src]);
+		LineageIterator offLineage = offspring->lineageBegin(0, *it);
 		LineageIterator lineage_end = parent->lineageEnd(0, m_mitoChroms[src]);
 #endif
 
@@ -698,8 +698,8 @@ void Recombinator::initialize(const Individual & ind) const
 	DBG_ASSERT(vecP.size() == m_recBeforeLoci.size(), SystemError,
 		"Rate and before loci should have the same length.");
 
-	DBG_FAILIF((ind.chromType(ind.numChrom() - 1) != CUSTOMIZED && ind.chromType(ind.numChrom() - 1) != MITOCHONDRIAL) && 
-        !m_recBeforeLoci.empty() && m_recBeforeLoci.back() != ind.totNumLoci(), SystemError,
+	DBG_FAILIF((ind.chromType(ind.numChrom() - 1) != CUSTOMIZED && ind.chromType(ind.numChrom() - 1) != MITOCHONDRIAL) &&
+		!m_recBeforeLoci.empty() && m_recBeforeLoci.back() != ind.totNumLoci(), SystemError,
 		"The last beforeLoci elem should be total number of loci. (If the last chromsome is not customized");
 
 	DBG_ASSERT(vecP.back() == .5, SystemError,
@@ -815,7 +815,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			if ((ignoreBegin < 0 || gt < static_cast<size_t>(ignoreBegin) || gt >= static_cast<size_t>(ignoreEnd)) &&
 			    (m_customizedBegin < 0 || gt < static_cast<size_t>(m_customizedBegin) || gt >= static_cast<size_t>(m_customizedEnd))) {
 				// copy
-#ifdef MUTANTALLELE                
+#ifdef MUTANTALLELE
 				(off + gt).assignIfDiffer((cp[curCp] + gt).value());
 #else
 				off[gt] = cp[curCp][gt];
