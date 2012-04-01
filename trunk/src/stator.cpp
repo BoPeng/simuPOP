@@ -971,13 +971,14 @@ bool statAlleleFreq::apply(Population & pop) const
 			// use allAllelel here because some marker does not have full number
 			// of alleles (e.g. markers on chromosome X and Y).
 			for (; a.valid(); ++a) {
+				Allele v = a.value();
 #ifndef BINARYALLELE
 #  ifndef LONGALLELE
-				if (*a >= alleles.size())
-					alleles.resize(*a + 1, 0);
+				if (v >= alleles.size())
+					alleles.resize(v + 1, 0);
 #  endif
 #endif
-				alleles[*a]++;
+				alleles[v]++;
 				allAlleles++;
 			}
 			// total allele count
@@ -1138,7 +1139,7 @@ bool statHeteroFreq::apply(Population & pop) const
 			// go through all alleles
 			IndAlleleIterator a = pop.alleleIterator(loc, it->subPop());
 			for (; a.valid(); a += 2) {
-				if (*a != *(a + 1))
+				if (a.value() != (a + 1).value())
 					hetero += 1;
 				else
 					homo += 1;

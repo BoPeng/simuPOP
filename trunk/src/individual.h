@@ -1220,6 +1220,16 @@ public:
 			return (m_it->genoBegin() + m_index + m_p * m_size).value();
 		}
 	}
+#else
+	Allele value()
+	{
+		if (m_useGappedIterator)
+			return *(m_ptr + m_shift);
+		else {
+			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
+			return *(m_it->genoBegin() + m_index + m_p * m_size);
+		}
+	}
 
 
 #endif
