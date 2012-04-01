@@ -9407,3 +9407,9 @@ TestStatAlleleFreq : simuPOP: 1.0.7rc1 (rev 4489, module mutant, optimized, 0 th
 TestStatAlleleFreq : Test: Stat AlleleFreq, results are time (not processor time) to apply operator for 30 times.
 TestStatAlleleFreq : loci=100, size=10000: 25.9196689129
 TestStatAlleleFreq : loci=100, size=100000: 279.555090904
+TestStatHaploFreq : Host: mba-bpeng.local (Darwin, x86_64, i386)
+TestStatHaploFreq : Time: Sun Apr  1 13:27:13 2012
+TestStatHaploFreq : Python: 2.7.2 [GCC 4.2.1 Compatible Apple Clang 3.1 (tags/Apple/clang-318.0.54)]
+TestStatHaploFreq : simuPOP: 1.0.7rc1 (rev 4489, module mutant, optimized, 0 threads)
+TestStatHaploFreq : Test: Stat HaploFreq, results are time (not processor time) to apply operator for 200 times.
+TestStatHaploFreq : loci=100, size=10000: 12.7817940712

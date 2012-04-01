@@ -92,13 +92,9 @@ public:
 	// Element access
 	inline const_reference operator ()(size_t i) const
 	{
-		const_val_iterator it(m_data.lower_bound(i));
-
-		if (it == m_data.end() || it->second != i)
-			return zero_;
-		return it->second;
+		const_val_iterator it(m_data.find(i));
+		return it == m_data.end() ? zero_ : it->second;
 	}
-
 
 	inline reference ref(size_t i)
 	{
@@ -323,7 +319,6 @@ public:
 		const_reference value() const
 		{
 			const_val_iterator it((*this)().data().find(m_index));
-
 			return (it == (*this)().data().end()) ? zero_ : it->second;
 		}
 
@@ -331,7 +326,6 @@ public:
 		const_reference operator *() const
 		{
 			const_val_iterator it((*this)().data().find(m_index));
-
 			return (it == (*this)().data().end()) ? zero_ : it->second;
 		}
 
@@ -511,7 +505,6 @@ public:
 		const_reference value() const
 		{
 			const_val_iterator it((*this)().data().find(m_index));
-
 			return (it == (*this)().data().end()) ? zero_ : it->second;
 		}
 
@@ -519,7 +512,6 @@ public:
 		const_reference operator *() const
 		{
 			const_val_iterator it((*this)().data().find(m_index));
-
 			return (it == (*this)().data().end()) ? zero_ : it->second;
 		}
 
@@ -558,7 +550,6 @@ public:
 		const_iterator operator +(const size_t size) const
 		{
 			const_iterator result = *this;
-
 			result.m_index += size;
 			return result;
 		}
