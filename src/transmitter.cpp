@@ -707,6 +707,16 @@ void Recombinator::initialize(const Individual & ind) const
 
 	// if the operator is called directly, there is no way to know population size so we
 	// a variable to tell it.
+    bool uniform_rare = true;
+    double uniform_rate = vecP[0];
+    for (size_t i = 0; i < static_cast<size_t>(vecP.size() - 1); ++i)
+    {
+        if (vecP[i] > 1e-2 || vecP[i] != uniform_rate) {
+            uniform_rare = false;
+            break;
+        }
+    }
+    if (! uniform_rare) {
 #ifdef _OPENMP
 	for (size_t i = 0; i < numThreads(); i++)
 		m_bt[i].setParameter(vecP, 0 /* obsolete m_intendedSize */);
@@ -714,6 +724,7 @@ void Recombinator::initialize(const Individual & ind) const
 
 	m_bt.setParameter(vecP, 0 /* obsolete m_intendedSize */);
 #endif
+    }
 	// choose an algorithm
 	// if recombinations are dense. use the first algorithm
 	// For example 10 chromoes, regular 0.5*10=5
@@ -724,8 +735,11 @@ void Recombinator::initialize(const Individual & ind) const
 	if (std::accumulate(vecP.begin(), vecP.end(), 0.) > ind.numChrom()
 	    || m_chromX > 0 || m_customizedBegin > 0)
 		m_algorithm = 0;
-	else
+	else if (!uniform_rare)
 		m_algorithm = 1;
+    else
+        // do not use a bernulli generator because recombination rate is uniform
+        m_algorithm = 2;
 
 	DBG_DO(DBG_TRANSMITTER, cerr << "Algorithm " << m_algorithm << " is being used " << endl);
 }
@@ -866,7 +880,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 					if (withConversion &&
 					    parent.lociLeft(gt) != 1 &&             // can not be at the end of a chromosome
 					    (m_convMode[1] == 1. || getRNG().randUniform() < m_convMode[1])) {
-						// convCount will be decreased, until reconversion completes
+				// convCount will be decreased, until reconversion completes
 						// or another recombination happens
 						convCount = markersConverted(gt + 1, parent);
 					} else
@@ -876,7 +890,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 				++bl;
 			}
 		}
-	} else {
+	} else if (m_algorithm == 1) {
 #ifndef BINARYALLELE
 		size_t gt = 0, gtEnd = 0;
 		size_t pos = bt.probFirstSucc();
@@ -1054,7 +1068,193 @@ void Recombinator::transmitGenotype(const Individual & parent,
 		// not used for binary module
 		LINEAGE_EXPR(copy(lineagep[curCp] + gt, lineagep[curCp] + gtEnd, lineageOff + gt));
 #endif
-	}
+	} else {
+#ifndef BINARYALLELE
+		size_t gt = 0, gtEnd = 0;
+        size_t step = getRNG().randGeometric(m_rates[0]);
+		size_t pos = step == 0 ? Bernullitrials::npos : (step - 1);
+		// if there is some recombination
+		ssize_t convCount = -1;
+		size_t convEnd;
+		if (pos != Bernullitrials::npos) {
+			// first piece
+#  ifdef MUTANTALLELE
+			copyGenotype(cp[curCp] + gt, cp[curCp] + m_recBeforeLoci[pos], off + gt);
+			gt = m_recBeforeLoci[pos];
+#  else
+			for (; gt < m_recBeforeLoci[pos]; ++gt) {
+				off[gt] = cp[curCp][gt];
+				LINEAGE_EXPR(lineageOff[gt] = lineagep[curCp][gt]);
+			}
+#  endif
+			curCp = (curCp + 1) % 2;
+			if (m_debugOutput)
+				*m_debugOutput << ' ' << gt - 1;
+			//
+			if (withConversion &&
+			    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
+			    (m_convMode[1] == 1. || getRNG().randUniform() < m_convMode[1])) {
+				convCount = markersConverted(gt, parent);
+			}
+			// next recombination point...
+			while ((pos = bt.probNextSucc(pos)) != Bernullitrials::npos) {
+                size_t step = getRNG().randGeometric(m_rates[0]);
+                if (step == 0 || step + pos >= m_recBeforeLoci.back())
+                    break;
+                else
+                    pos += step;
+				// copy from last to this recombination point, but
+				// there might be a conversion event in between
+				gtEnd = m_recBeforeLoci[pos];
+				if (convCount > 0) {
+					convEnd = gt + convCount;
+					if (convEnd < gtEnd) {
+#  ifdef MUTANTALLELE
+						copyGenotype(cp[curCp] + gt, cp[curCp] + convEnd, off + gt);
+						gt = convEnd;
+#  else
+						for (; gt < convEnd; ++gt) {
+							off[gt] = cp[curCp][gt];
+							LINEAGE_EXPR(lineageOff[gt] = lineagep[curCp][gt]);
+						}
+#  endif
+						curCp = (curCp + 1) % 2;
+						if (m_debugOutput)
+							*m_debugOutput << ' ' << gt - 1;
+					}
+					// no pending conversion
+					convCount = -1;
+				}
+				// copy from the end of conversion to this recombination point
+#  ifdef MUTANTALLELE
+				copyGenotype(cp[curCp] + gt, cp[curCp] + gtEnd, off + gt);
+				gt = gtEnd;
+#  else
+				for (; gt < gtEnd; ++gt) {
+					off[gt] = cp[curCp][gt];
+					LINEAGE_EXPR(lineageOff[gt] = lineagep[curCp][gt]);
+				}
+#  endif
+				curCp = (curCp + 1) % 2;
+				if (m_debugOutput)
+					*m_debugOutput << ' ' << gt - 1;
+				//
+				// conversion event for this recombination event
+				if (withConversion &&
+				    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
+				    (m_convMode[1] == 1. || getRNG().randUniform() < m_convMode[1])) {
+					// convCount will be decreased, until reconversion completes
+					// or another recombination happens
+					convCount = markersConverted(gt, parent);
+				}
+			}
+		}
+		gtEnd = m_recBeforeLoci.back();
+		// copy the last piece
+		if (convCount > 0) {
+			convEnd = gt + convCount;
+			if (convEnd < gtEnd) {
+#  ifdef MUTANTALLELE
+				copyGenotype(cp[curCp] + gt, cp[curCp] + convEnd, off + gt);
+				gt = convEnd;
+#  else
+				for (; gt < convEnd; ++gt) {
+					off[gt] = cp[curCp][gt];
+					LINEAGE_EXPR(lineageOff[gt] = lineagep[curCp][gt]);
+				}
+#  endif
+				curCp = (curCp + 1) % 2;
+				if (m_debugOutput)
+					*m_debugOutput << ' ' << gt - 1;
+			}
+		}
+#  ifdef MUTANTALLELE
+		copyGenotype(cp[curCp] + gt, cp[curCp] + gtEnd, off + gt);
+		gt = gtEnd;
+#  else
+		for (; gt < gtEnd; ++gt) {
+			off[gt] = cp[curCp][gt];
+			LINEAGE_EXPR(lineageOff[gt] = lineagep[curCp][gt]);
+		}
+#  endif
+#else
+		size_t gt = 0, gtEnd = 0;
+		size_t pos = bt.probFirstSucc();
+		// if there is some recombination
+		ssize_t convCount = -1;
+		size_t convEnd;
+		if (pos != Bernullitrials::npos) {
+			// first piece
+			gtEnd = m_recBeforeLoci[pos];
+			copyGenotype(cp[curCp] + gt, off + gt, m_recBeforeLoci[pos] - gt);
+			// for binary module, this is not needed, but it is kept here anyway, in case some
+			// people would like to implement lineage feature for binary modules
+			LINEAGE_EXPR(copy(lineagep[curCp] + gt, lineagep[curCp] + m_recBeforeLoci[pos], lineageOff + gt));
+			gt = gtEnd;
+			curCp = (curCp + 1) % 2;
+			if (m_debugOutput)
+				*m_debugOutput << ' ' << gt - 1;
+			if (withConversion &&
+			    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
+			    (m_convMode[1] == 1. || getRNG().randUniform() < m_convMode[1])) {
+				convCount = markersConverted(gt, parent);
+			}
+			// next recombination point...
+			while ((pos = bt.probNextSucc(pos)) != Bernullitrials::npos) {
+				gtEnd = m_recBeforeLoci[pos];
+				if (convCount > 0) {
+					convEnd = gt + convCount;
+					if (convEnd < gtEnd) {
+						copyGenotype(cp[curCp] + gt, off + gt, convCount);
+						// not used for binary module
+						LINEAGE_EXPR(copy(lineagep[curCp] + gt, lineagep[curCp] + gt + convCount, lineageOff + gt));
+						gt = convEnd;
+						curCp = (curCp + 1) % 2;
+						if (m_debugOutput)
+							*m_debugOutput << ' ' << gt - 1;
+					}
+					// no pending conversion
+					convCount = -1;
+				}
+				// copy from the end of conversion to the next recombination point
+				copyGenotype(cp[curCp] + gt, off + gt, m_recBeforeLoci[pos] - gt);
+				// not used for binary module
+				LINEAGE_EXPR(copy(lineagep[curCp] + gt, lineagep[curCp] + m_recBeforeLoci[pos], lineageOff + gt));
+				gt = gtEnd;
+				curCp = (curCp + 1) % 2;
+				if (m_debugOutput)
+					*m_debugOutput << ' ' << gt - 1;
+				// conversion event for this recombination event
+				if (withConversion &&
+				    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
+				    (m_convMode[1] == 1. || getRNG().randUniform() < m_convMode[1])) {
+					// convCount will be decreased, until reconversion completes
+					// or another recombination happens
+					convCount = markersConverted(gt, parent);
+				}
+			}
+		}
+		gtEnd = m_recBeforeLoci.back();
+		// copy the last piece
+		if (convCount > 0) {
+			convEnd = gt + convCount;
+			if (convEnd < gtEnd) {
+				copyGenotype(cp[curCp] + gt, off + gt, convCount);
+				// not used for binary module
+				LINEAGE_EXPR(copy(lineagep[curCp] + gt, lineagep[curCp] + gt + convCount, lineageOff + gt));
+				gt = convEnd;
+				curCp = (curCp + 1) % 2;
+				if (m_debugOutput)
+					*m_debugOutput << ' ' << gt - 1;
+			}
+		}
+		copyGenotype(cp[curCp] + gt, off + gt, gtEnd - gt);
+		// not used for binary module
+		LINEAGE_EXPR(copy(lineagep[curCp] + gt, lineagep[curCp] + gtEnd, lineageOff + gt));
+#endif
+    }
+
+
 	if (m_debugOutput)
 		*m_debugOutput << '\n';
 	// handle special chromosomes
