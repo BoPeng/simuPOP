@@ -233,10 +233,10 @@ UINT OffspringGenerator::numOffspring(ssize_t gen)
 bool OffspringGenerator::parallelizable() const
 {
 #ifdef MUTANTALLELE
-    // mutant allele model cannot generate offspring in parallele
-    // due to the use of std::map
-    return false;
-#else    
+	// mutant allele model cannot generate offspring in parallele
+	// due to the use of std::map
+	return false;
+#else
 	if (!m_sexModel->parallelizable())
 		return false;
 	if (!m_numOffModel->parallelizable())
@@ -248,7 +248,7 @@ bool OffspringGenerator::parallelizable() const
 			return false;
 	}
 	return true;
-#endif    
+#endif
 }
 
 

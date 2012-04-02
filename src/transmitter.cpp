@@ -707,24 +707,23 @@ void Recombinator::initialize(const Individual & ind) const
 
 	// if the operator is called directly, there is no way to know population size so we
 	// a variable to tell it.
-    bool uniform_rare = true;
-    double uniform_rate = vecP[0];
-    for (size_t i = 0; i < static_cast<size_t>(vecP.size() - 1); ++i)
-    {
-        if (vecP[i] > 1e-2 || vecP[i] != uniform_rate) {
-            uniform_rare = false;
-            break;
-        }
-    }
-    if (! uniform_rare) {
+	bool uniform_rare = true;
+	double uniform_rate = vecP[0];
+	for (size_t i = 0; i < static_cast<size_t>(vecP.size() - 1); ++i) {
+		if (vecP[i] > 1e-2 || vecP[i] != uniform_rate) {
+			uniform_rare = false;
+			break;
+		}
+	}
+	if (!uniform_rare) {
 #ifdef _OPENMP
-	for (size_t i = 0; i < numThreads(); i++)
-		m_bt[i].setParameter(vecP, 0 /* obsolete m_intendedSize */);
+		for (size_t i = 0; i < numThreads(); i++)
+			m_bt[i].setParameter(vecP, 0 /* obsolete m_intendedSize */);
 #else
 
-	m_bt.setParameter(vecP, 0 /* obsolete m_intendedSize */);
+		m_bt.setParameter(vecP, 0 /* obsolete m_intendedSize */);
 #endif
-    }
+	}
 	// choose an algorithm
 	// if recombinations are dense. use the first algorithm
 	// For example 10 chromoes, regular 0.5*10=5
@@ -737,9 +736,9 @@ void Recombinator::initialize(const Individual & ind) const
 		m_algorithm = 0;
 	else if (!uniform_rare)
 		m_algorithm = 1;
-    else
-        // do not use a bernulli generator because recombination rate is uniform
-        m_algorithm = 2;
+	else
+		// do not use a bernulli generator because recombination rate is uniform
+		m_algorithm = 2;
 
 	DBG_DO(DBG_TRANSMITTER, cerr << "Algorithm " << m_algorithm << " is being used " << endl);
 }
@@ -880,7 +879,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 					if (withConversion &&
 					    parent.lociLeft(gt) != 1 &&             // can not be at the end of a chromosome
 					    (m_convMode[1] == 1. || getRNG().randUniform() < m_convMode[1])) {
-				// convCount will be decreased, until reconversion completes
+						// convCount will be decreased, until reconversion completes
 						// or another recombination happens
 						convCount = markersConverted(gt + 1, parent);
 					} else
@@ -1071,7 +1070,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 	} else {
 #ifndef BINARYALLELE
 		size_t gt = 0, gtEnd = 0;
-        size_t step = getRNG().randGeometric(m_rates[0]);
+		size_t step = getRNG().randGeometric(m_rates[0]);
 		size_t pos = step == 0 ? Bernullitrials::npos : (step - 1);
 		// if there is some recombination
 		ssize_t convCount = -1;
@@ -1098,11 +1097,11 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			}
 			// next recombination point...
 			while ((pos = bt.probNextSucc(pos)) != Bernullitrials::npos) {
-                size_t step = getRNG().randGeometric(m_rates[0]);
-                if (step == 0 || step + pos >= m_recBeforeLoci.back())
-                    break;
-                else
-                    pos += step;
+				size_t step = getRNG().randGeometric(m_rates[0]);
+				if (step == 0 || step + pos >= m_recBeforeLoci.back())
+					break;
+				else
+					pos += step;
 				// copy from last to this recombination point, but
 				// there might be a conversion event in between
 				gtEnd = m_recBeforeLoci[pos];
@@ -1252,7 +1251,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 		// not used for binary module
 		LINEAGE_EXPR(copy(lineagep[curCp] + gt, lineagep[curCp] + gtEnd, lineageOff + gt));
 #endif
-    }
+	}
 
 
 	if (m_debugOutput)
