@@ -233,10 +233,10 @@ bool InitGenotype::apply(Population & pop) const
 		// will go through virtual subpopulation if sp is virtual
 		pop.activateVirtualSubPop(*sp);
 		if (!m_genotype.empty()) {
-            // multi-thread write to compressed mutant is not allowed.
+			// multi-thread write to compressed mutant is not allowed.
 #ifndef MUTANTALLELE
-#pragma omp parallel firstprivate(idx) if(numThreads() > 1)
-#endif            
+#  pragma omp parallel firstprivate(idx) if(numThreads() > 1)
+#endif
 			{
 #if defined(_OPENMP) && !(defined(MUTANTALLELE))
 				size_t id = omp_get_thread_num();
@@ -268,9 +268,9 @@ bool InitGenotype::apply(Population & pop) const
 				}
 			} else {
 				ws.set(m_prop.begin(), m_prop.end(), sz * ploidy.size());
-#ifndef MUTANTALLELE                
-#pragma omp parallel if(numThreads() > 1)
-#endif                
+#ifndef MUTANTALLELE
+#  pragma omp parallel if(numThreads() > 1)
+#endif
 				{
 #if defined(_OPENMP) && !(defined(MUTANTALLELE))
 					IndIterator it = pop.indIterator(sp->subPop(), omp_get_thread_num());
@@ -291,7 +291,7 @@ bool InitGenotype::apply(Population & pop) const
 			// m_freq can be empty if ....
 			WeightedSampler ws(m_freq.empty() ? vectorf(m_haplotypes.size(), 1. / m_haplotypes.size()) : m_freq);
 #ifndef MUTANTALLELE
-#pragma omp parallel if(numThreads() > 1)
+#  pragma omp parallel if(numThreads() > 1)
 #endif
 			{
 #if defined(_OPENMP) && !(defined(MUTANTALLELE))

@@ -1062,9 +1062,9 @@ void applyDuringMatingOperator(const BaseOperator & op,
 	// compiling error gor gcc/llvm under mac.
 	Individual * d = dad < 0 ? NULL : &pop->individual(static_cast<size_t>(dad));
 	Individual * m = mom < 0 ? NULL : &pop->individual(static_cast<size_t>(mom));
-#ifndef MUTANTALLELE    
-#pragma omp parallel for
-#endif    
+#ifndef MUTANTALLELE
+#  pragma omp parallel for
+#endif
 	// i needs to be int since some openMP implementation does not handle unsigned index
 	for (int i = static_cast<int>(off.first); i < static_cast<int>(off.second); ++i)
 		opPtr->applyDuringMating(*pop, *offPop, pop->rawIndBegin() + i, d, m);
