@@ -714,6 +714,11 @@ void Recombinator::initialize(const Individual & ind) const
 			uniform_rare = false;
 			break;
 		}
+		// m_recBefore loci needs to be consecutive ....
+		if (i > 0 && m_recBeforeLoci[i] != m_recBeforeLoci[i-1] + 1) {
+			uniform_rare = false;
+			break;
+		}
 	}
 	if (!uniform_rare) {
 #ifdef _OPENMP
@@ -799,8 +804,9 @@ void Recombinator::transmitGenotype(const Individual & parent,
 	}
 	// get a new set of values.
 	// const BoolResults& bs = bt.trial();
-	bt.trial();
-	int curCp = bt.trialSucc(m_recBeforeLoci.size() - 1) ? 0 : 1;
+	if (m_algorithm != 2)
+		bt.trial();
+	int curCp = m_algorithm == 2 ? getRNG().randBit() : (bt.trialSucc(m_recBeforeLoci.size() - 1) ? 0 : 1);
 	curCp = forceFirstBegin == 0 ? 0 : (forceSecondBegin == 0 ? 1 : curCp);
 
 	if (m_debugOutput)
@@ -808,7 +814,8 @@ void Recombinator::transmitGenotype(const Individual & parent,
 
 	// the last one does not count, because it determines
 	// the initial copy of paternal chromosome
-	bt.setTrialSucc(m_recBeforeLoci.size() - 1, false);
+	if (m_algorithm != 2)
+		bt.setTrialSucc(m_recBeforeLoci.size() - 1, false);
 
 	// algorithm one:
 	//
@@ -1071,7 +1078,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 #ifndef BINARYALLELE
 		size_t gt = 0, gtEnd = 0;
 		size_t step = getRNG().randGeometric(m_rates[0]);
-		size_t pos = step == 0 ? Bernullitrials::npos : (step - 1);
+		size_t pos = (step == 0 || step > m_recBeforeLoci.size()) ? Bernullitrials::npos : (step - 1);
 		// if there is some recombination
 		ssize_t convCount = -1;
 		size_t convEnd;
@@ -1096,9 +1103,9 @@ void Recombinator::transmitGenotype(const Individual & parent,
 				convCount = markersConverted(gt, parent);
 			}
 			// next recombination point...
-			while ((pos = bt.probNextSucc(pos)) != Bernullitrials::npos) {
+			while (pos != Bernullitrials::npos) {
 				size_t step = getRNG().randGeometric(m_rates[0]);
-				if (step == 0 || step + pos >= m_recBeforeLoci.back())
+				if (step == 0 || step + pos >= m_recBeforeLoci.size())
 					break;
 				else
 					pos += step;
@@ -1150,6 +1157,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 		}
 		gtEnd = m_recBeforeLoci.back();
 		// copy the last piece
+
 		if (convCount > 0) {
 			convEnd = gt + convCount;
 			if (convEnd < gtEnd) {
@@ -1176,9 +1184,10 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			LINEAGE_EXPR(lineageOff[gt] = lineagep[curCp][gt]);
 		}
 #  endif
-#else
+#else    // binary alleles
 		size_t gt = 0, gtEnd = 0;
-		size_t pos = bt.probFirstSucc();
+		size_t step = getRNG().randGeometric(m_rates[0]);
+		size_t pos = (step == 0 || step > m_recBeforeLoci.size()) ? Bernullitrials::npos : (step - 1);
 		// if there is some recombination
 		ssize_t convCount = -1;
 		size_t convEnd;
@@ -1199,7 +1208,13 @@ void Recombinator::transmitGenotype(const Individual & parent,
 				convCount = markersConverted(gt, parent);
 			}
 			// next recombination point...
-			while ((pos = bt.probNextSucc(pos)) != Bernullitrials::npos) {
+			while (pos != Bernullitrials::npos) {
+				size_t step = getRNG().randGeometric(m_rates[0]);
+				if (step == 0 || step + pos >= m_recBeforeLoci.size())
+					break;
+				else
+					pos += step;
+				//
 				gtEnd = m_recBeforeLoci[pos];
 				if (convCount > 0) {
 					convEnd = gt + convCount;
