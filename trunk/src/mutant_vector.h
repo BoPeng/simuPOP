@@ -206,6 +206,7 @@ public:
 			m_data.insert(m_data.end(), val_iterator::value_type(vbeg->first + lagging, vbeg->second));
 	}
 
+    //
 	class iterator
 	{
 protected:
@@ -283,6 +284,12 @@ public:
 			return m_index;
 		}
 
+
+        size_t to_next() const
+        {
+            const_val_iterator it = (*this)().data().lower_bound(m_index + 1);
+            return it == (*this)().data().end() ? (*this)().size() - m_index : it->first - m_index;
+        }
 
 		val_iterator get_val_iterator()
 		{
