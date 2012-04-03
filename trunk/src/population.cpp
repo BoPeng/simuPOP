@@ -3361,17 +3361,18 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 	size_t size = m_genotype.size();
 	ar & size;
 
-#ifdef MUTANTALLELE
-	vector<bool> mutLoc(m_genotype.size());
+	vectoru mutLoc;
 	vectoru mutVal;
 	bool singleMut = true;
 	size_t singleMutVal = 0;
-	//
+	size_t lastPos = 0;
+#ifdef MUTANTALLELE
 	vectorm::const_val_iterator ptr = m_genotype.begin().get_val_iterator();
 	vectorm::const_val_iterator end = m_genotype.end().get_val_iterator();
 	for (; ptr != end; ++ptr) {
 		if (ptr->second != 0) {
-			mutLoc[ptr->first] = 1;
+			mutLoc.push_back(ptr->first - lastPos);
+			lastPos = ptr->first;
 			mutVal.push_back(ptr->second);
 			if (singleMutVal == 0)
 				singleMutVal = ptr->second;
@@ -3379,24 +3380,14 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 				singleMut = false;
 		}
 	}
-	vector<bool>::const_iterator locPtr = mutLoc.begin();
-#elif defined(BINARYALLELE)
-	vectoru mutVal;
-	bool singleMut = true;
-	size_t singleMutVal = 1;
-	vector<bool>::const_iterator locPtr = m_genotype.begin();
 #else
-	vector<bool> mutLoc(m_genotype.size());
-	vectoru mutVal;
-	bool singleMut = true;
-	size_t singleMutVal = 0;
-	//
 	ConstGenoIterator ptr = m_genotype.begin();
 	ConstGenoIterator end = m_genotype.end();
 	size_t idx = 0;
 	for (; ptr != end; ++ptr, ++idx) {
 		if (*ptr != 0) {
-			mutLoc[idx] = 1;
+			mutLoc.push_back(idx - lastPos);
+			lastPos = idx;
 			mutVal.push_back(*ptr);
 			if (singleMutVal == 0)
 				singleMutVal = *ptr;
@@ -3404,21 +3395,8 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 				singleMut = false;
 		}
 	}
-	vector<bool>::const_iterator locPtr = mutLoc.begin();
 #endif
-	WORDTYPE data = 0;
-	for (size_t i = 0; i < size; ++i) {
-		data |= (*locPtr++) << (i % 32);
-		// end of block of end of data
-		if (i % 32 == 31 || i == size - 1) {
-			// on 64 systems, the upper 32bit of the data might not be 0
-			// so we need to clear the upper 32bit so that the genotype saved
-			// on a 64bit system can be loaded on 32bit systems.
-			data &= 0xFFFFFFFF;
-			ar & data;
-			data = 0;
-		}
-	}
+	ar & mutLoc;
 	ar & singleMut;
 	if (singleMut)
 		ar & singleMutVal;
@@ -3466,17 +3444,18 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 		size_t size = m_genotype.size();
 		ar & size;
 
-#ifdef MUTANTALLELE
-		vector<bool> mutLoc(m_genotype.size());
+		vectoru mutLoc;
 		vectoru mutVal;
 		bool singleMut = true;
 		size_t singleMutVal = 0;
-		//
+		size_t lastPos = 0;
+#ifdef MUTANTALLELE
 		vectorm::const_val_iterator ptr = m_genotype.begin().get_val_iterator();
 		vectorm::const_val_iterator end = m_genotype.end().get_val_iterator();
 		for (; ptr != end; ++ptr) {
 			if (ptr->second != 0) {
-				mutLoc[ptr->first] = 1;
+				mutLoc.push_back(ptr->first - lastPos);
+				lastPos = ptr->first;
 				mutVal.push_back(ptr->second);
 				if (singleMutVal == 0)
 					singleMutVal = ptr->second;
@@ -3484,24 +3463,14 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 					singleMut = false;
 			}
 		}
-		vector<bool>::const_iterator locPtr = mutLoc.begin();
-#elif defined(BINARYALLELE)
-		vectoru mutVal;
-		bool singleMut = true;
-		size_t singleMutVal = 1;
-		vector<bool>::const_iterator locPtr = m_genotype.begin();
 #else
-		vector<bool> mutLoc(m_genotype.size());
-		vectoru mutVal;
-		bool singleMut = true;
-		size_t singleMutVal = 0;
-		//
 		ConstGenoIterator ptr = m_genotype.begin();
 		ConstGenoIterator end = m_genotype.end();
 		size_t idx = 0;
 		for (; ptr != end; ++ptr, ++idx) {
 			if (*ptr != 0) {
-				mutLoc[idx] = 1;
+				mutLoc.push_back(idx - lastPos);
+				lastPos = idx;
 				mutVal.push_back(*ptr);
 				if (singleMutVal == 0)
 					singleMutVal = *ptr;
@@ -3509,21 +3478,8 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 					singleMut = false;
 			}
 		}
-		vector<bool>::const_iterator locPtr = mutLoc.begin();
 #endif
-		WORDTYPE data = 0;
-		for (size_t i = 0; i < size; ++i) {
-			data |= (*locPtr++) << (i % 32);
-			// end of block of end of data
-			if (i % 32 == 31 || i == size - 1) {
-				// on 64 systems, the upper 32bit of the data might not be 0
-				// so we need to clear the upper 32bit so that the genotype saved
-				// on a 64bit system can be loaded on 32bit systems.
-				data &= 0xFFFFFFFF;
-				ar & data;
-				data = 0;
-			}
-		}
+		ar & mutLoc;
 		ar & singleMut;
 		if (singleMut)
 			ar & singleMutVal;
@@ -3590,19 +3546,12 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 		ar & size;
 		m_genotype.resize(size);
 
-		vector<bool> mutLoc(size);
-		vector<bool>::iterator locPtr = mutLoc.begin();
-		WORDTYPE data = 0;
-		for (size_t i = 0; i < size; ++i) {
-			if (i % 32 == 0)
-				ar & data;
-			*locPtr++ = (data & (1UL << (i % 32))) != 0;
-		}
-		//
+		vectoru mutLoc;
 		bool singleMut;
 		size_t singleMutVal = 0;
 		vectoru mutVal;
 		//
+        ar & mutLoc;
 		ar & singleMut;
 		if (singleMut) {
 			ar & singleMutVal;
@@ -3612,13 +3561,15 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 			max_allele = max(max_allele, *max_element(mutVal.begin(), mutVal.end()));
 		}
 		//
-		for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
-			if (mutLoc[i])
+		size_t pos = 0;
+		for (size_t i = 0; i < mutLoc.size(); ++i) {
+			pos += mutLoc[i];
 #ifdef MUTANTALLELE
-				m_genotype.push_back(i, singleMut ? ToAllele(singleMutVal) : ToAllele(mutVal[j++]));
+			m_genotype.push_back(pos, singleMut ? ToAllele(singleMutVal) : ToAllele(mutVal[i]));
 #else
-				m_genotype[i] = singleMut ? ToAllele(singleMutVal) : ToAllele(mutVal[j++]);
+			m_genotype[pos] = singleMut ? ToAllele(singleMutVal) : ToAllele(mutVal[i]);
 #endif
+		}
 	} else if (version == 0) {
 #ifdef BINARYALLELE
 		// binary from binary
@@ -3782,19 +3733,12 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 			ar & size;
 			pd.m_genotype.resize(size);
 
-			vector<bool> mutLoc(size);
-			vector<bool>::iterator locPtr = mutLoc.begin();
-			WORDTYPE data = 0;
-			for (size_t i = 0; i < size; ++i) {
-				if (i % 32 == 0)
-					ar & data;
-				*locPtr++ = (data & (1UL << (i % 32))) != 0;
-			}
-			//
+			vectoru mutLoc;
 			bool singleMut;
 			size_t singleMutVal = 0;
 			vectoru mutVal;
 			//
+			ar & mutLoc;
 			ar & singleMut;
 			if (singleMut) {
 				ar & singleMutVal;
@@ -3804,13 +3748,15 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 				max_allele = max(max_allele, *max_element(mutVal.begin(), mutVal.end()));
 			}
 			//
-			for (size_t i = 0, j = 0; i < mutLoc.size(); ++i)
-				if (mutLoc[i])
+			size_t pos = 0;
+			for (size_t i = 0; i < mutLoc.size(); ++i) {
+				pos += mutLoc[i];
 #ifdef MUTANTALLELE
-					pd.m_genotype.push_back(i, singleMut ? ToAllele(singleMutVal) : ToAllele(mutVal[j++]));
+				pd.m_genotype.push_back(pos, singleMut ? ToAllele(singleMutVal) : ToAllele(mutVal[i]));
 #else
-					pd.m_genotype[i] = singleMut ? ToAllele(singleMutVal) : ToAllele(mutVal[j++]);
+				pd.m_genotype[pos] = singleMut ? ToAllele(singleMutVal) : ToAllele(mutVal[i]);
 #endif
+			}
 		} else if (version == 0) {
 #ifdef BINARYALLELE
 			// binary from binary

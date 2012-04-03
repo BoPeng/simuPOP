@@ -216,6 +216,10 @@ namespace std
     {
         SWIG_exception(SWIG_RuntimeError, e.message());
     }
+    catch(std::bad_alloc)
+    {
+        SWIG_exception(SWIG_MemoryError, "Memory allocation error");
+    }
     catch(...)
     {
         SWIG_exception(SWIG_UnknownError, "Unknown runtime error happened.");
