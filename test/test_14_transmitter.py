@@ -579,7 +579,15 @@ class TestTransmitters(unittest.TestCase):
             "Expression abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.5)))
         self.assertTrue(abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.5) < 0.01, 
             "Expression abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.5)))
-
+        # algorithm 2 (uniform rare), just see if it crashes
+        pop = Population(10000, loci=[100])
+        initSex(pop)
+        initGenotype(pop, genotype=[a1]*13+[a2]*13)
+        simu = Simulator(pop)
+        simu.evolve( postOps =Stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
+            matingScheme = RandomMating(ops=Recombinator(rates = 1e-6)),
+            gen=1 )
+ 
     def testConversionRate(self):
         'Testing to see if we actually convert at this rate '
         a1, a2 = 0, 1
