@@ -690,8 +690,8 @@ void Recombinator::initialize(const Individual & ind) const
 		m_recBeforeLoci.push_back(chEnd);
 		vecP.push_back(0.5);
 	}
-	DBG_DO(DBG_TRANSMITTER, cerr	<< "Specify after Loci. With m_ratess "
-		                            << vecP << " before " << m_recBeforeLoci << endl);
+	//DBG_DO(DBG_TRANSMITTER, cerr	<< "Specify after Loci. With m_ratess "
+	//	                            << vecP << " before " << m_recBeforeLoci << endl);
 
 	DBG_FAILIF(vecP.empty(), ValueError, "No non-empty chromosome.");
 
@@ -736,7 +736,9 @@ void Recombinator::initialize(const Individual & ind) const
 	//
 	// In addition, the second algorithm is really difficult in the
 	// handling of sex chromosomes etc.
-	if (std::accumulate(vecP.begin(), vecP.end(), 0.) > ind.numChrom()
+	// 
+	// average recombination rate > 0.01
+	if ( (std::accumulate(vecP.begin(), vecP.end(), 0.) - 0.5 * ind.numChrom()) > 0.01 * vecP.size()
 	    || m_chromX > 0 || m_customizedBegin > 0)
 		m_algorithm = 0;
 	else if (!uniform_rare)
