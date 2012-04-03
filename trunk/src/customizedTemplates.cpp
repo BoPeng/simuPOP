@@ -1239,7 +1239,7 @@ array_subscr_template(struct arrayobject_template<T> * self, PyObject * item)
 			return newcarrayobject_template<T>(self->ob_iter, self->ob_iter);
 		return newcarrayobject_template<T>(self->ob_iter + start,
 		                                   self->ob_iter + stop);
-	}else  {
+	}else {
 		PyErr_SetString(PyExc_TypeError,
 			"array indices must be integers");
 		return NULL;
@@ -1289,7 +1289,7 @@ array_ass_subscr_template(struct arrayobject_template<T> * self, PyObject * item
 			return -1;
 		}
 #  endif
-	}else  {
+	}else {
 		PyErr_SetString(PyExc_TypeError,
 			"array indices must be integer");
 		return -1;

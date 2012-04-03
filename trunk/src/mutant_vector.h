@@ -93,8 +93,10 @@ public:
 	inline const_reference operator ()(size_t i) const
 	{
 		const_val_iterator it(m_data.find(i));
+
 		return it == m_data.end() ? zero_ : it->second;
 	}
+
 
 	inline reference ref(size_t i)
 	{
@@ -191,10 +193,11 @@ public:
 
 	// copy regions, added by Bo
 	inline void copy_region(const const_iterator & begin, const const_iterator & end,
-	                 iterator & it)
+	                        iterator & it)
 	{
 		size_t iend = it.index() + (end - begin);
 		ssize_t lagging = it.index() - begin.index();
+
 		// remove old data
 		if (!m_data.empty() && it.index() <= m_data.rbegin()->first)
 			m_data.erase(m_data.lower_bound(it.index()),
@@ -206,7 +209,8 @@ public:
 			m_data.insert(m_data.end(), val_iterator::value_type(vbeg->first + lagging, vbeg->second));
 	}
 
-    //
+
+	//
 	class iterator
 	{
 protected:
@@ -285,11 +289,13 @@ public:
 		}
 
 
-        size_t to_next() const
-        {
-            const_val_iterator it = (*this)().data().lower_bound(m_index + 1);
-            return it == (*this)().data().end() ? (*this)().size() - m_index : it->first - m_index;
-        }
+		size_t to_next() const
+		{
+			const_val_iterator it = (*this)().data().lower_bound(m_index + 1);
+
+			return it == (*this)().data().end() ? (*this)().size() - m_index : it->first - m_index;
+		}
+
 
 		val_iterator get_val_iterator()
 		{
@@ -300,6 +306,7 @@ public:
 		const_reference value() const
 		{
 			const_val_iterator it((*this)().data().find(m_index));
+
 			return (it == (*this)().data().end()) ? zero_ : it->second;
 		}
 
@@ -307,6 +314,7 @@ public:
 		const_reference operator *() const
 		{
 			const_val_iterator it((*this)().data().find(m_index));
+
 			return (it == (*this)().data().end()) ? zero_ : it->second;
 		}
 
@@ -486,6 +494,7 @@ public:
 		const_reference value() const
 		{
 			const_val_iterator it((*this)().data().find(m_index));
+
 			return (it == (*this)().data().end()) ? zero_ : it->second;
 		}
 
@@ -493,6 +502,7 @@ public:
 		const_reference operator *() const
 		{
 			const_val_iterator it((*this)().data().find(m_index));
+
 			return (it == (*this)().data().end()) ? zero_ : it->second;
 		}
 
@@ -531,6 +541,7 @@ public:
 		const_iterator operator +(const size_t size) const
 		{
 			const_iterator result = *this;
+
 			result.m_index += size;
 			return result;
 		}

@@ -3551,7 +3551,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 		size_t singleMutVal = 0;
 		vectoru mutVal;
 		//
-        ar & mutLoc;
+		ar & mutLoc;
 		ar & singleMut;
 		if (singleMut) {
 			ar & singleMutVal;

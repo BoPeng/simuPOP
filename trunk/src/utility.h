@@ -2042,10 +2042,12 @@ public:
 		return getBit(m_pointer[idx], m_cur);
 	}
 
+
 	inline bool trialSucc(size_t idx, size_t cur) const
 	{
 		return getBit(m_pointer[idx], cur);
 	}
+
 
 	// first and next succ across prob
 	size_t probFirstSucc() const;
