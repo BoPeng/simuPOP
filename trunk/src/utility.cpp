@@ -3864,19 +3864,6 @@ void Bernullitrials::trial()
 }
 
 
-bool Bernullitrials::trialSucc(size_t idx) const
-{
-	DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
-	return getBit(m_pointer[idx], m_cur);
-}
-
-
-bool Bernullitrials::trialSucc(size_t idx, size_t cur) const
-{
-	return getBit(m_pointer[idx], cur);
-}
-
-
 size_t Bernullitrials::probFirstSucc() const
 {
 	DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
