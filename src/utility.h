@@ -2035,9 +2035,17 @@ public:
 	/// if necessary, do trail again.
 	void trial();
 
-	bool trialSucc(size_t idx) const;
+#define getBit(ptr, i)    ((*((ptr) + (i) / WORDBIT) & (1UL << ((i) - ((i) / WORDBIT) * WORDBIT))) != 0)
+	inline bool trialSucc(size_t idx) const
+	{
+		DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
+		return getBit(m_pointer[idx], m_cur);
+	}
 
-	bool trialSucc(size_t idx, size_t cur) const;
+	inline bool trialSucc(size_t idx, size_t cur) const
+	{
+		return getBit(m_pointer[idx], cur);
+	}
 
 	// first and next succ across prob
 	size_t probFirstSucc() const;
