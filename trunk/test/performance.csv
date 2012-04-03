@@ -716,3 +716,6 @@ TestMatrixMutator, 2012-03-31 14:05:34,867, mba-bpeng, x86_64-0threads, python2.
 TestMatrixMutator, 2012-03-31 14:36:23,582, mba-bpeng, x86_64-0threads, python2.7.2, simuPOP-1.0.7rc1, rev4489-gcc, mutant, 0.0489819049835, 4.69364190102, 4.61880016327, 937.917254925
 TestMatrixMutator, 2012-03-31 23:59:30,477, mba-bpeng, x86_64-0threads, python2.7.2, simuPOP-1.0.7rc1, rev4489-gcc, mutant, 0.0103480815887, 0.157597780228, 0.156413078308, 2.22908091545
 TestMatrixMutator, 2012-04-01 10:14:39,209, mba-bpeng, x86_64-0threads, python2.7.2, simuPOP-1.0.7rc1, rev4489-gcc, mutant, 0.0108919143677, 0.160210847855, 0.156820058823, 2.26581597328
+TestBasicRandomMating, 2012-04-03 11:06:38,006, rhel6, x86_64-1threads, python2.7.2, simuPOP-1.0.7rc2, rev4489-intel, mutant, 207658, 20022, 1801, 212660, 20221, 1808, 210861, 20271, 1806, 209677, 20528, 0
+TestBasicRandomMating, 2012-04-03 11:21:04,269, rhel6, x86_64-1threads, python2.7.2, simuPOP-1.0.7rc2, rev4489-intel, short, 208821, 18635, 1487, 175855, 15748, 845, 10309, 908, 3, 1013, 5, 0
+TestBasicRandomMating, 2012-04-03 11:38:06,001, rhel6, x86_64-1threads, python2.7.2, simuPOP-1.0.7rc2, rev4489-intel, mutant, 212284, 19823, 1765, 214355, 20247, 1806, 214098, 20270, 1825, 214280, 20244, 0
