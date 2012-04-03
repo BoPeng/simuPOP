@@ -828,6 +828,11 @@ void Recombinator::transmitGenotype(const Individual & parent,
 	//  recombine.
 	bool withConversion = static_cast<int>(m_convMode[0]) != NO_CONVERSION
 	                      && m_convMode[1] > 0.;
+#ifdef MUTANTALLELE
+	size_t last_gt = 0;
+	size_t last_cp = curCp;
+	size_t to_next = 0;
+#endif
 	if (m_algorithm == 0) {
 		// negative means no conversion is pending.
 		ssize_t convCount = -1;
@@ -838,7 +843,12 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			    (m_customizedBegin < 0 || gt < static_cast<size_t>(m_customizedBegin) || gt >= static_cast<size_t>(m_customizedEnd))) {
 				// copy
 #ifdef MUTANTALLELE
-				(off + gt).assignIfDiffer((cp[curCp] + gt).value());
+				if (curCp != last_cp || gt - last_gt >= to_next) {
+					(off + gt).assignIfDiffer((cp[curCp] + gt).value());
+					last_cp = curCp;
+					last_gt = gt;
+					to_next = min((cp[curCp] + gt).to_next(), (off + gt).to_next());
+				}
 #else
 				off[gt] = cp[curCp][gt];
 #endif
