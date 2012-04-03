@@ -715,7 +715,7 @@ void Recombinator::initialize(const Individual & ind) const
 			break;
 		}
 		// m_recBefore loci needs to be consecutive ....
-		if (i > 0 && m_recBeforeLoci[i] != m_recBeforeLoci[i-1] + 1) {
+		if (i > 0 && m_recBeforeLoci[i] != m_recBeforeLoci[i - 1] + 1) {
 			uniform_rare = false;
 			break;
 		}
@@ -736,7 +736,7 @@ void Recombinator::initialize(const Individual & ind) const
 	//
 	// In addition, the second algorithm is really difficult in the
 	// handling of sex chromosomes etc.
-	// 
+	//
 	// average recombination rate > 0.01
 	if ( (std::accumulate(vecP.begin(), vecP.end(), 0.) - 0.5 * ind.numChrom()) > 0.01 * vecP.size()
 	    || m_chromX > 0 || m_customizedBegin > 0)
@@ -1196,7 +1196,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			LINEAGE_EXPR(lineageOff[gt] = lineagep[curCp][gt]);
 		}
 #  endif
-#else    // binary alleles
+#else       // binary alleles
 		size_t gt = 0, gtEnd = 0;
 		size_t step = getRNG().randGeometric(m_rates[0]);
 		size_t pos = (step == 0 || step > m_recBeforeLoci.size()) ? Bernullitrials::npos : (step - 1);
