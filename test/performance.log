@@ -9413,3 +9413,60 @@ TestStatHaploFreq : Python: 2.7.2 [GCC 4.2.1 Compatible Apple Clang 3.1 (tags/Ap
 TestStatHaploFreq : simuPOP: 1.0.7rc1 (rev 4489, module mutant, optimized, 0 threads)
 TestStatHaploFreq : Test: Stat HaploFreq, results are time (not processor time) to apply operator for 200 times.
 TestStatHaploFreq : loci=100, size=10000: 12.7817940712
+TestBasicRandomMating : Host: rhel6 (Linux, x86_64, x86_64)
+TestBasicRandomMating : Time: Tue Apr  3 10:55:25 2012
+TestBasicRandomMating : Python: 2.7.2 [GCC Intel(R) C++ g++ 4.4 mode]
+TestBasicRandomMating : simuPOP: 1.0.7rc2 (rev 4489, module mutant, optimized, 1 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 207658
+TestBasicRandomMating : loci=10, size=10000: 20022
+TestBasicRandomMating : loci=10, size=100000: 1801
+TestBasicRandomMating : loci=100, size=1000: 212660
+TestBasicRandomMating : loci=100, size=10000: 20221
+TestBasicRandomMating : loci=100, size=100000: 1808
+TestBasicRandomMating : loci=10000, size=1000: 210861
+TestBasicRandomMating : loci=10000, size=10000: 20271
+TestBasicRandomMating : loci=10000, size=100000: 1806
+TestBasicRandomMating : loci=100000, size=1000: 209677
+TestBasicRandomMating : loci=100000, size=10000: 20528
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 207658, 20022, 1801, 212660, 20221, 1808, 210861, 20271, 1806, 209677, 20528, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestBasicRandomMating : Host: rhel6 (Linux, x86_64, x86_64)
+TestBasicRandomMating : Time: Tue Apr  3 11:09:41 2012
+TestBasicRandomMating : Python: 2.7.2 [GCC Intel(R) C++ g++ 4.4 mode]
+TestBasicRandomMating : simuPOP: 1.0.7rc2 (rev 4489, module short, optimized, 1 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 208821
+TestBasicRandomMating : loci=10, size=10000: 18635
+TestBasicRandomMating : loci=10, size=100000: 1487
+TestBasicRandomMating : loci=100, size=1000: 175855
+TestBasicRandomMating : loci=100, size=10000: 15748
+TestBasicRandomMating : loci=100, size=100000: 845
+TestBasicRandomMating : loci=10000, size=1000: 10309
+TestBasicRandomMating : loci=10000, size=10000: 908
+TestBasicRandomMating : loci=10000, size=100000: 3
+TestBasicRandomMating : loci=100000, size=1000: 1013
+TestBasicRandomMating : loci=100000, size=10000: 5
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 208821, 18635, 1487, 175855, 15748, 845, 10309, 908, 3, 1013, 5, 0
+TestBasicRandomMating : End of test TestBasicRandomMating
+TestBasicRandomMating : Host: rhel6 (Linux, x86_64, x86_64)
+TestBasicRandomMating : Time: Tue Apr  3 11:26:55 2012
+TestBasicRandomMating : Python: 2.7.2 [GCC Intel(R) C++ g++ 4.4 mode]
+TestBasicRandomMating : simuPOP: 1.0.7rc2 (rev 4489, module mutant, optimized, 1 threads)
+TestBasicRandomMating : Test: Standard random mating scheme, results are number of generations in 60 seconds.
+TestBasicRandomMating : loci=10, size=1000: 212284
+TestBasicRandomMating : loci=10, size=10000: 19823
+TestBasicRandomMating : loci=10, size=100000: 1765
+TestBasicRandomMating : loci=100, size=1000: 214355
+TestBasicRandomMating : loci=100, size=10000: 20247
+TestBasicRandomMating : loci=100, size=100000: 1806
+TestBasicRandomMating : loci=10000, size=1000: 214098
+TestBasicRandomMating : loci=10000, size=10000: 20270
+TestBasicRandomMating : loci=10000, size=100000: 1825
+TestBasicRandomMating : loci=100000, size=1000: 214280
+TestBasicRandomMating : loci=100000, size=10000: 20244
+TestBasicRandomMating : loci=100000, size=100000: 0
+TestBasicRandomMating : 212284, 19823, 1765, 214355, 20247, 1806, 214098, 20270, 1825, 214280, 20244, 0
+TestBasicRandomMating : End of test TestBasicRandomMating

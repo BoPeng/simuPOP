@@ -190,47 +190,21 @@ public:
 
 
 	// copy regions, added by Bo
-	void copy_region(const const_iterator & begin, const const_iterator & end,
+	inline void copy_region(const const_iterator & begin, const const_iterator & end,
 	                 iterator & it)
 	{
-		size_t src_idx_beg = begin.index();
-		size_t src_idx_end = end.index();
-		size_t dest_idx_beg = it.index();
-
-		// simple case 1: empty region
-		if (src_idx_beg == src_idx_end)
-			return;
-		size_t dest_idx_end = dest_idx_beg + (src_idx_end - src_idx_beg);
-		// if there is no room ...
-		if (dest_idx_end > m_size) {
-			src_idx_end -= m_size - dest_idx_end;
-			if (src_idx_end <= src_idx_beg)
-				return;
-			dest_idx_end = m_size;
-		}
-		//std::cerr << "C " << src_idx_beg << ", " << src_idx_end << " T " <<
-		//    dest_idx_beg << ", " << dest_idx_end << std::endl;
-		// number of elements in destination
-		val_iterator dest_iptr_beg = m_data.lower_bound(dest_idx_beg);
-		val_iterator dest_iptr_end = m_data.lower_bound(dest_idx_end);
-		if (dest_iptr_beg != dest_iptr_end)
-			m_data.erase(dest_iptr_beg, dest_iptr_end);
-		//
-		// adjust index [ss -- > se]
-		//
-		// for example, copy mutant 102, 104 from 100 - 120 to 200
-		// we need to get index 202, 204
-		const_val_iterator src_iptr_beg = begin.get_val_iterator();
-		const_val_iterator src_iptr_end = end.get_val_iterator();
-		ssize_t lagging = dest_idx_beg - src_idx_beg;
-		// simple case 3: there are exactly the same number of variants (index might be different)
-		for (; src_iptr_beg != src_iptr_end; ++src_iptr_beg)
-			m_data.insert(m_data.end(), val_iterator::value_type(src_iptr_beg->first + lagging,
-					src_iptr_beg->second));
+		size_t iend = it.index() + (end - begin);
+		ssize_t lagging = it.index() - begin.index();
+		// remove old data
+		if (!m_data.empty() && it.index() <= m_data.rbegin()->first)
+			m_data.erase(m_data.lower_bound(it.index()),
+				iend > m_size ? m_data.end() : m_data.lower_bound(iend));
+		// insert new data
+		const_val_iterator vbeg = begin.get_val_iterator();
+		const_val_iterator vend = (end - (iend > m_size ? iend - m_size : 0)).get_val_iterator();
+		for (; vbeg != vend; ++vbeg)
+			m_data.insert(m_data.end(), val_iterator::value_type(vbeg->first + lagging, vbeg->second));
 	}
-
-
-	class const_iterator;
 
 	class iterator
 	{
