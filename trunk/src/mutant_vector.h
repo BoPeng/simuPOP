@@ -179,7 +179,7 @@ public:
 	{
 		const_val_iterator beg = ibeg.get_val_iterator();
 		const_val_iterator end = iend.get_val_iterator();
-		int shift = m_size - ibeg.index();
+		ssize_t shift = m_size - ibeg.index();
 
 		m_size += iend.index() - ibeg.index();
 		const_val_iterator ptr = beg;
@@ -222,7 +222,7 @@ public:
 		// we need to get index 202, 204
 		const_val_iterator src_iptr_beg = begin.get_val_iterator();
 		const_val_iterator src_iptr_end = end.get_val_iterator();
-		int lagging = dest_idx_beg - src_idx_beg;
+		ssize_t lagging = dest_idx_beg - src_idx_beg;
 		// simple case 3: there are exactly the same number of variants (index might be different)
 		for (; src_iptr_beg != src_iptr_end; ++src_iptr_beg)
 			m_data.insert(m_data.end(), val_iterator::value_type(src_iptr_beg->first + lagging,

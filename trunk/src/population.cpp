@@ -3391,7 +3391,7 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 			mutVal.push_back(*ptr);
 			if (singleMutVal == 0)
 				singleMutVal = *ptr;
-			else if (*ptr != singleMutVal)
+			else if (static_cast<size_t>(*ptr) != singleMutVal)
 				singleMut = false;
 		}
 	}
@@ -3474,7 +3474,7 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 				mutVal.push_back(*ptr);
 				if (singleMutVal == 0)
 					singleMutVal = *ptr;
-				else if (*ptr != singleMutVal)
+				else if (static_cast<size_t>(*ptr) != singleMutVal)
 					singleMut = false;
 			}
 		}
