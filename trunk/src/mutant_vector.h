@@ -166,7 +166,7 @@ public:
 	// This function does not change size_....
 	inline void push_back(size_t i, const_reference t)
 	{
-		m_data[i] = t;
+		m_data.insert(m_data.end(), storage::value_type(i, t));
 	}
 
 
