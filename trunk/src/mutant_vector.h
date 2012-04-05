@@ -77,6 +77,17 @@ public:
 		return m_data;
 	}
 
+	void validate() const
+	{
+#ifndef OPTIMIZED	
+		const_val_iterator it = m_data.begin();
+		const_val_iterator it_end = m_data.end();
+		for (; it != it_end; ++it) {
+			DBG_ASSERT(it->second != 0, RuntimeError,
+				"Mutant with zero value is detected at location " + toStr(it->first));
+		}
+#endif
+	}
 
 public:
 	inline void resize(size_t size, bool preserve = true)
@@ -122,7 +133,7 @@ public:
 	}
 
 
-	// Zeroing
+	// Zeroing, but do not set size to zero
 	inline void clear()
 	{
 		m_data.clear();
@@ -166,6 +177,7 @@ public:
 	// This function does not change size_....
 	inline void push_back(size_t i, const_reference t)
 	{
+		DBG_ASSERT(t != 0, RuntimeError, "Cannot store zero as mutant");
 		m_data.insert(m_data.end(), storage::value_type(i, t));
 	}
 
@@ -185,9 +197,10 @@ public:
 
 		m_size += iend.index() - ibeg.index();
 		const_val_iterator ptr = beg;
-		for (; ptr != end; ++ptr)
-			if (ptr->second != 0)
-				m_data.insert(m_data.end(), storage::value_type(ptr->first + shift, ptr->second));
+		for (; ptr != end; ++ptr) {
+			DBG_ASSERT(ptr->second != 0, RuntimeError, "Cannot store zero as mutant");
+			m_data.insert(m_data.end(), storage::value_type(ptr->first + shift, ptr->second));
+		}
 	}
 
 
@@ -205,8 +218,10 @@ public:
 		// insert new data
 		const_val_iterator vbeg = begin.get_val_iterator();
 		const_val_iterator vend = (end - (iend > m_size ? iend - m_size : 0)).get_val_iterator();
-		for (; vbeg != vend; ++vbeg)
+		for (; vbeg != vend; ++vbeg) {
+			DBG_ASSERT(vbeg->second != 0, RuntimeError, "Cannot store zero as mutant");
 			m_data.insert(m_data.end(), val_iterator::value_type(vbeg->first + lagging, vbeg->second));
+		}
 	}
 
 
@@ -302,10 +317,16 @@ public:
 			return (*this)().data().lower_bound(m_index);
 		}
 
+		const_val_iterator get_val_iterator() const
+		{
+			return (*this)().data().lower_bound(m_index);
+		}
 
 		const_reference value() const
 		{
 			const_val_iterator it((*this)().data().find(m_index));
+			DBG_ASSERT(it == (*this)().data().end() || it->second != 0, RuntimeError,
+				"Mutant with value zero is detected at location " + toStr(m_index));
 
 			return (it == (*this)().data().end()) ? zero_ : it->second;
 		}
@@ -315,6 +336,8 @@ public:
 		{
 			const_val_iterator it((*this)().data().find(m_index));
 
+			DBG_ASSERT(it == (*this)().data().end() || it->second != 0, RuntimeError,
+				"Mutant with value zero is detected at location " + toStr(m_index));
 			return (it == (*this)().data().end()) ? zero_ : it->second;
 		}
 
@@ -393,8 +416,12 @@ public:
 			if (it == (*this)().data().end()) {
 				if (value != 0)
 					(*this)().data().insert(storage::value_type(m_index, value));
-			} else
+			} else if (value == 0)
+				(*this)().data().erase(it);
+			else {
+				DBG_ASSERT(it->second != 0, RuntimeError, "Mutant with value zero is detected");
 				it->second = value;
+			}
 		}
 
 
@@ -494,6 +521,8 @@ public:
 		const_reference value() const
 		{
 			const_val_iterator it((*this)().data().find(m_index));
+			DBG_ASSERT(it == (*this)().data().end() || it->second != 0, RuntimeError,
+				"Mutant with value zero is detected at location " + toStr(m_index));
 
 			return (it == (*this)().data().end()) ? zero_ : it->second;
 		}
@@ -502,6 +531,8 @@ public:
 		const_reference operator *() const
 		{
 			const_val_iterator it((*this)().data().find(m_index));
+			DBG_ASSERT(it == (*this)().data().end() || it->second != 0, RuntimeError,
+				"Mutant with value zero is detected at location " + toStr(m_index));
 
 			return (it == (*this)().data().end()) ? zero_ : it->second;
 		}
