@@ -248,7 +248,7 @@ bool InitGenotype::apply(Population & pop) const
 				for (size_t ii = 0; it.valid(); ++it, ++ii)
 					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
 						for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++idx)
-							it->setAllele(ToAllele(m_genotype[idx % sz]), *loc, static_cast<int>(*p));
+							it->setAllele(TO_ALLELE(m_genotype[idx % sz]), *loc, static_cast<int>(*p));
 
 			}
 #if defined(_OPENMP) && !(defined(MUTANTALLELE))
@@ -264,7 +264,7 @@ bool InitGenotype::apply(Population & pop) const
 					IndIterator it = pop.indIterator(sp->subPop());
 					for (; it.valid(); ++it)
 						for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
-							it->setAllele(ToAllele(ws.draw()), *loc, static_cast<int>(*p));
+							it->setAllele(TO_ALLELE(ws.draw()), *loc, static_cast<int>(*p));
 				}
 			} else {
 				ws.set(m_prop.begin(), m_prop.end(), sz * ploidy.size());
@@ -283,7 +283,7 @@ bool InitGenotype::apply(Population & pop) const
 							size_t hapSz = haplotype.size();
 							size_t j = 0;
 							for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++j)
-								it->setAllele(ToAllele(haplotype[j % hapSz]), *loc, static_cast<int>(*p));
+								it->setAllele(TO_ALLELE(haplotype[j % hapSz]), *loc, static_cast<int>(*p));
 						}
 				}
 			}
@@ -303,13 +303,13 @@ bool InitGenotype::apply(Population & pop) const
 					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) {
 						if (m_haplotypes.empty()) {
 							for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc)
-								it->setAllele(ToAllele(ws.draw()), *loc, static_cast<int>(*p));
+								it->setAllele(TO_ALLELE(ws.draw()), *loc, static_cast<int>(*p));
 						} else {
 							const vectori & haplotype = m_haplotypes[ws.draw()];
 							size_t hapSz = haplotype.size();
 							size_t j = 0;
 							for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++j)
-								it->setAllele(ToAllele(haplotype[j % hapSz]), *loc, static_cast<int>(*p));
+								it->setAllele(TO_ALLELE(haplotype[j % hapSz]), *loc, static_cast<int>(*p));
 						}
 					}
 			}

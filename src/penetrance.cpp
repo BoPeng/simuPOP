@@ -245,27 +245,27 @@ double MaPenetrance::penet(Population * /* pop */, Individual * ind) const
 
 	for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc) {
 		if (ind->ploidy() == 1) {
-			Allele a = ToAllele(ind->allele(*loc));
+			Allele a = TO_ALLELE(ind->allele(*loc));
 			if (singleST)
-				index = index * 2 + (AlleleUnsigned(a) != m_wildtype[0]);
+				index = index * 2 + (ALLELE_AS_UNSINGED(a) != m_wildtype[0]);
 			else
-				index = index * 2 + (find(m_wildtype.begin(), m_wildtype.end(), AlleleUnsigned(a)) == m_wildtype.end());
+				index = index * 2 + (find(m_wildtype.begin(), m_wildtype.end(), ALLELE_AS_UNSINGED(a)) == m_wildtype.end());
 		} else if (ind->ploidy() == 2) {
 			// get genotype of ind
-			Allele a = ToAllele(ind->allele(*loc, 0));
-			Allele b = ToAllele(ind->allele(*loc, 1));
+			Allele a = TO_ALLELE(ind->allele(*loc, 0));
+			Allele b = TO_ALLELE(ind->allele(*loc, 1));
 
 			int numWildtype = 0;
 
 			// count number of wildtype
 			// this improve the performance a little bit
 			if (singleST) {
-				numWildtype = (AlleleUnsigned(a) == m_wildtype[0]) + (AlleleUnsigned(b) == m_wildtype[0]);
+				numWildtype = (ALLELE_AS_UNSINGED(a) == m_wildtype[0]) + (ALLELE_AS_UNSINGED(b) == m_wildtype[0]);
 			} else {
-				if (find(m_wildtype.begin(), m_wildtype.end(), AlleleUnsigned(a)) != m_wildtype.end())
+				if (find(m_wildtype.begin(), m_wildtype.end(), ALLELE_AS_UNSINGED(a)) != m_wildtype.end())
 					numWildtype++;
 
-				if (find(m_wildtype.begin(), m_wildtype.end(), AlleleUnsigned(b)) != m_wildtype.end())
+				if (find(m_wildtype.begin(), m_wildtype.end(), ALLELE_AS_UNSINGED(b)) != m_wildtype.end())
 					numWildtype++;
 			}
 
@@ -415,7 +415,7 @@ double PyMlPenetrance::penet(Population * /* pop */, Individual * ind) const
 
 #ifdef MUTANTALLELE
 	if (ply == 1) {
-		vectora geno(1, ToAllele(0));
+		vectora geno(1, TO_ALLELE(0));
 		size_t numLoci = ind->totNumLoci();
 		GenoIterator it = ind->genoBegin();
 		GenoIterator it_end = ind->genoEnd();
@@ -439,7 +439,7 @@ double PyMlPenetrance::penet(Population * /* pop */, Individual * ind) const
 		vectorm::val_iterator iit0_end = it0_end.get_val_iterator();
 		vectorm::val_iterator iit1 = it1.get_val_iterator();
 		vectorm::val_iterator iit1_end = it1_end.get_val_iterator();
-		vectora geno(2, ToAllele(0));
+		vectora geno(2, TO_ALLELE(0));
 		for (; iit0 != iit0_end || iit1 != iit1_end; ) {
 			if (iit1 == iit1_end || iit0->first + numLoci < iit1->first) {
 				if (iit0->second != 0 &&
@@ -473,7 +473,7 @@ double PyMlPenetrance::penet(Population * /* pop */, Individual * ind) const
 	}
 #else
 	if (ply == 1) {
-		vectora geno(1, ToAllele(0));
+		vectora geno(1, TO_ALLELE(0));
 		if (m_loci.allAvail()) {
 			GenoIterator it = ind->genoBegin();
 			GenoIterator it_end = ind->genoEnd();
@@ -493,7 +493,7 @@ double PyMlPenetrance::penet(Population * /* pop */, Individual * ind) const
 				}
 		}
 	} else if (ply == 2) {
-		vectora geno(2, ToAllele(0));
+		vectora geno(2, TO_ALLELE(0));
 		if (m_loci.allAvail()) {
 			GenoIterator it0 = ind->genoBegin(0);
 			GenoIterator it0_end = ind->genoEnd(0);

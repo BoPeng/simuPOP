@@ -744,7 +744,7 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 		GenoIterator ptr = m_genotype.begin();
 		size_t sz = geno.size();
 		for (size_t i = 0; i < popSize() * genoSize(); ++i, ++ptr) {
-			RefAssign(ptr, ToAllele(geno[i % sz]));
+			REF_ASSIGN_ALLELE(ptr, TO_ALLELE(geno[i % sz]));
 		}
 		return;
 	}
@@ -759,14 +759,14 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 	if (!subPop.isVirtual()) {
 		GenoIterator ptr = genoBegin(sp, true);
 		for (size_t i = 0; i < subPopSize(sp) * genoSize(); ++i, ++ptr)
-			RefAssign(ptr, ToAllele(geno[i % sz]));
+			REF_ASSIGN_ALLELE(ptr, TO_ALLELE(geno[i % sz]));
 	} else {
 		activateVirtualSubPop(subPop);
 		IndIterator it = indIterator(sp);
 		size_t i = 0;
 		for (; it.valid(); ++it)
 			for (GenoIterator git = it->genoBegin(); git != it->genoEnd(); ++git, ++i)
-				RefAssign(git, ToAllele(geno[i % sz]));
+				REF_ASSIGN_ALLELE(git, TO_ALLELE(geno[i % sz]));
 		deactivateVirtualSubPop(subPop.subPop());
 	}
 }
@@ -1804,11 +1804,11 @@ void Population::addLociFrom(const Population & pop)
 			// copy each allele
 			for (size_t p = 0; p < pEnd; ++p) {
 				for (size_t i = 0; i < size1; ++i, ++ptr1) {
-					RefAssign(ptr + indexes1[i], DerefAllele(ptr1));
+					REF_ASSIGN_ALLELE(ptr + indexes1[i], DEREF_ALLELE(ptr1));
 					LINEAGE_EXPR(lineagePtr[indexes1[i]] = *(lineagePtr1++));
 				}
 				for (size_t i = 0; i < size2; ++i, ++ptr2) {
-					RefAssign(ptr + indexes2[i], DerefAllele(ptr2));
+					REF_ASSIGN_ALLELE(ptr + indexes2[i], DEREF_ALLELE(ptr2));
 					LINEAGE_EXPR(lineagePtr[indexes2[i]] = *(lineagePtr2++));
 				}
 				ptr += newSize;
@@ -1877,7 +1877,7 @@ void Population::addChrom(const floatList & lociPosList, const stringList & loci
 			// copy each chromosome
 			for (size_t p = 0; p < pEnd; ++p) {
 				for (size_t i = 0; i < oldNumLoci; ++i, ++newPtr, ++oldPtr) {
-					RefAssign(newPtr, DerefAllele(oldPtr));
+					REF_ASSIGN_ALLELE(newPtr, DEREF_ALLELE(oldPtr));
 					LINEAGE_EXPR(*(newLineagePtr++) = *(oldLineagePtr++));
 				}
 				newPtr += gap;
@@ -1956,7 +1956,7 @@ vectoru Population::addLoci(const uintList & chromList, const floatList & posLis
 			for (size_t p = 0; p < pEnd; ++p) {
 				vectoru::iterator loc = loci.begin();
 				for (; loc != loci.end(); ++loc, ++oldPtr) {
-					RefAssign(newPtr + *loc, DerefAllele(oldPtr));
+					REF_ASSIGN_ALLELE(newPtr + *loc, DEREF_ALLELE(oldPtr));
 					LINEAGE_EXPR(newLineagePtr[*loc] = *(oldLineagePtr++));
 				}
 				newPtr += totNumLoci();
@@ -2794,7 +2794,7 @@ void Population::removeLoci(const lociList & removeList, const lociList & keepLi
 				vectoru::iterator loc = kept.begin();
 				for (; loc != kept.end(); ++loc, ++newPtr) {
 					// this line needs ordered kept array
-					RefAssign(newPtr, DerefAllele(oldPtr + *loc));      //assignGenotype
+					REF_ASSIGN_ALLELE(newPtr, DEREF_ALLELE(oldPtr + *loc));      //assignGenotype
 					LINEAGE_EXPR(*(newLineagePtr++) = oldLineagePtr[*loc]); //assignLineage
 				}
 				oldPtr += oldTotNumLoci;
@@ -2869,12 +2869,12 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 			const vectoru & map = newAlleles.elems();
 			if (loci_.allAvail()) {
 				for (; ptr != ptrEnd; ++ptr) {
-					size_t a = static_cast<size_t>(DerefAllele(ptr));
+					size_t a = static_cast<size_t>(DEREF_ALLELE(ptr));
 					if (a >= map.size()) {
 						DBG_WARNIF(true, "Allele " + toStr(a) + " can not be recoded");
 						continue;
 					}
-					RefAssign(ptr, map[DerefAllele(ptr)]);
+					REF_ASSIGN_ALLELE(ptr, map[DEREF_ALLELE(ptr)]);
 				}
 			} else {
 				size_t numLoci = totNumLoci();
@@ -2883,10 +2883,10 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 					for (size_t i = 0; i < iEnd; ++i) {
 						DBG_FAILIF(loci[i] >= numLoci, IndexError, "Loci index out of range");
 						GenoIterator allele = ptr + loci[i];
-						size_t a = static_cast<size_t>(DerefAllele(allele));
+						size_t a = static_cast<size_t>(DEREF_ALLELE(allele));
 						DBG_FAILIF(a >= map.size(),
 							ValueError, "Allele " + toStr(a) + " can not be recoded");
-						RefAssign(allele, map[DerefAllele(allele)]);
+						REF_ASSIGN_ALLELE(allele, map[DEREF_ALLELE(allele)]);
 					}
 				}
 			}
@@ -2912,27 +2912,27 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 				if (loci_.allAvail()) {
 					for (size_t i = 0; i < numLoci; ++i) {
 						if (alleleIndex != InvalidValue)
-							PyTuple_SET_ITEM(args, alleleIndex, PyInt_FromLong(static_cast<int>(DerefAllele(ptr + i))));
+							PyTuple_SET_ITEM(args, alleleIndex, PyInt_FromLong(static_cast<int>(DEREF_ALLELE(ptr + i))));
 						if (locusIndex != InvalidValue)
 							PyTuple_SET_ITEM(args, locusIndex, PyInt_FromLong(static_cast<int>(i)));
 						if (locusIndex != InvalidValue) {
-							std::pair<Allele, size_t> key(DerefAllele(ptr + i), i);
+							std::pair<Allele, size_t> key(DEREF_ALLELE(ptr + i), i);
 							AlleleLocusMap::iterator it = alleleLocusMap.find(key);
 							if (it != alleleLocusMap.end())
-								RefAssign(ptr + i, it->second);
+								REF_ASSIGN_ALLELE(ptr + i, it->second);
 							else {
-								Allele a = ToAllele(func(PyObj_As_Int, args));
-								RefAssign(ptr + i, a);
+								Allele a = TO_ALLELE(func(PyObj_As_Int, args));
+								REF_ASSIGN_ALLELE(ptr + i, a);
 								alleleLocusMap[key] = a;
 							}
 						} else {
-							AlleleMap::iterator it = alleleMap.find(DerefAllele(ptr + i));
+							AlleleMap::iterator it = alleleMap.find(DEREF_ALLELE(ptr + i));
 							if (it != alleleMap.end())
-								RefAssign(ptr + i, it->second);
+								REF_ASSIGN_ALLELE(ptr + i, it->second);
 							else {
-								Allele na = ToAllele(func(PyObj_As_Int, args));
-								Allele oldAllele = DerefAllele(ptr + i);
-								RefAssign(ptr + i, na);
+								Allele na = TO_ALLELE(func(PyObj_As_Int, args));
+								Allele oldAllele = DEREF_ALLELE(ptr + i);
+								REF_ASSIGN_ALLELE(ptr + i, na);
 								alleleMap[oldAllele] = na;
 							}
 						}
@@ -2941,26 +2941,26 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 					for (size_t i = 0; i < iEnd; ++i) {
 						DBG_FAILIF(loci[i] >= numLoci, IndexError, "Loci index out of range");
 						if (alleleIndex != InvalidValue)
-							PyTuple_SET_ITEM(args, alleleIndex, PyInt_FromLong(static_cast<int>(DerefAllele(ptr + loci[i]))));
+							PyTuple_SET_ITEM(args, alleleIndex, PyInt_FromLong(static_cast<int>(DEREF_ALLELE(ptr + loci[i]))));
 						if (locusIndex != InvalidValue)
 							PyTuple_SET_ITEM(args, locusIndex, PyInt_FromLong(static_cast<int>(loci[i])));
 						if (locusIndex != InvalidValue) {
-							std::pair<Allele, size_t> key(DerefAllele(ptr + loci[i]), loci[i]);
+							std::pair<Allele, size_t> key(DEREF_ALLELE(ptr + loci[i]), loci[i]);
 							AlleleLocusMap::iterator it = alleleLocusMap.find(key);
 							if (it != alleleLocusMap.end())
-								RefAssign(ptr + loci[i], it->second);
+								REF_ASSIGN_ALLELE(ptr + loci[i], it->second);
 							else {
-								RefAssign(ptr + loci[i], ToAllele(func(PyObj_As_Int, args)));
-								alleleLocusMap[key] = DerefAllele(ptr + loci[i]);
+								REF_ASSIGN_ALLELE(ptr + loci[i], TO_ALLELE(func(PyObj_As_Int, args)));
+								alleleLocusMap[key] = DEREF_ALLELE(ptr + loci[i]);
 							}
 						} else {
-							AlleleMap::iterator it = alleleMap.find(DerefAllele(ptr + loci[i]));
+							AlleleMap::iterator it = alleleMap.find(DEREF_ALLELE(ptr + loci[i]));
 							if (it != alleleMap.end())
-								RefAssign(ptr + loci[i], it->second);
+								REF_ASSIGN_ALLELE(ptr + loci[i], it->second);
 							else {
-								Allele oldAllele = DerefAllele(ptr + loci[i]);
-								RefAssign(ptr + loci[i], ToAllele(func(PyObj_As_Int, args)));
-								alleleMap[oldAllele] = DerefAllele(ptr + loci[i]);
+								Allele oldAllele = DEREF_ALLELE(ptr + loci[i]);
+								REF_ASSIGN_ALLELE(ptr + loci[i], TO_ALLELE(func(PyObj_As_Int, args)));
+								alleleMap[oldAllele] = DEREF_ALLELE(ptr + loci[i]);
 							}
 						}
 					}
@@ -3571,9 +3571,9 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 		for (size_t i = 0; i < mutLoc.size(); ++i) {
 			pos += mutLoc[i];
 #ifdef MUTANTALLELE
-			m_genotype.push_back(pos, singleMut ? ToAllele(singleMutVal) : ToAllele(mutVal[i]));
+			m_genotype.push_back(pos, singleMut ? TO_ALLELE(singleMutVal) : TO_ALLELE(mutVal[i]));
 #else
-			m_genotype[pos] = singleMut ? ToAllele(singleMutVal) : ToAllele(mutVal[i]);
+			m_genotype[pos] = singleMut ? TO_ALLELE(singleMutVal) : TO_ALLELE(mutVal[i]);
 #endif
 		}
 	} else if (version == 0) {
@@ -3598,7 +3598,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 			ar & tmpgeno;
 			m_genotype.resize(tmpgeno.size());
 			for (size_t i = 0; i < tmpgeno.size(); ++i)
-				m_genotype[i] = ToAllele(tmpgeno[i]);
+				m_genotype[i] = TO_ALLELE(tmpgeno[i]);
 		}
 #elif defined(MUTANTALLELE)
 		// mutant from mutant
@@ -3758,9 +3758,9 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 			for (size_t i = 0; i < mutLoc.size(); ++i) {
 				pos += mutLoc[i];
 #ifdef MUTANTALLELE
-				pd.m_genotype.push_back(pos, singleMut ? ToAllele(singleMutVal) : ToAllele(mutVal[i]));
+				pd.m_genotype.push_back(pos, singleMut ? TO_ALLELE(singleMutVal) : TO_ALLELE(mutVal[i]));
 #else
-				pd.m_genotype[pos] = singleMut ? ToAllele(singleMutVal) : ToAllele(mutVal[i]);
+				pd.m_genotype[pos] = singleMut ? TO_ALLELE(singleMutVal) : TO_ALLELE(mutVal[i]);
 #endif
 			}
 		} else if (version == 0) {
@@ -3785,7 +3785,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 				ar & tmpgeno;
 				pd.m_genotype.resize(tmpgeno.size());
 				for (size_t i = 0; i < tmpgeno.size(); ++i)
-					pd.m_genotype[i] = ToAllele(tmpgeno[i]);
+					pd.m_genotype[i] = TO_ALLELE(tmpgeno[i]);
 			}
 #elif defined(MUTANTALLELE)
 			// mutant from mutant

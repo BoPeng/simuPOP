@@ -1212,10 +1212,10 @@ public:
 	void assignIfDiffer(Allele a)
 	{
 		if (m_useGappedIterator)
-			return RefAssign(m_ptr + m_shift, a);
+			return REF_ASSIGN_ALLELE(m_ptr + m_shift, a);
 		else {
 			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
-			return RefAssign(m_it->genoBegin() + m_index + m_p * m_size, a);
+			return REF_ASSIGN_ALLELE(m_it->genoBegin() + m_index + m_p * m_size, a);
 		}
 	}
 

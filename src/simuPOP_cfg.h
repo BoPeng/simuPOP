@@ -162,14 +162,14 @@ typedef const unsigned long & ConstAlleleRef;
 //typedef uint32_t & AlleleRef;
 //#  endif
 
-#  define AlleleInc(a)  ++ (a)
-#  define AlleleDec(a)  -- (a)
-#  define AlleleAdd(a, b) (a) += (b)
-#  define AlleleMinus(a, b) (a) -= (b)
-#  define AlleleUnsigned(a) (a)
-#  define ToAllele(a)    static_cast<Allele>(a)
-#  define DerefAllele(a)   (*(a))
-#  define RefAssign(a, b)  *(a) = (b)
+#  define INC_ALLELE(a)  ++ (a)
+#  define DEC_ALLELE(a)  -- (a)
+#  define ADD_TO_ALLELE(a, b) (a) += (b)
+#  define SUBSTRACT_FROM_ALLELE(a, b) (a) -= (b)
+#  define ALLELE_AS_UNSINGED(a) (a)
+#  define TO_ALLELE(a)    static_cast<Allele>(a)
+#  define DEREF_ALLELE(a)   (*(a))
+#  define REF_ASSIGN_ALLELE(a, b)  *(a) = (b)
 
 #else
 
@@ -179,32 +179,32 @@ typedef bool Allele;
 typedef vector<Allele>::reference AlleleRef;
 typedef vector<Allele>::const_reference ConstAlleleRef;
 // bool type, inc go to 1, dec go to 0
-#    define AlleleInc(a)  (a) = true
-#    define AlleleDec(a)  (a) = false
-#    define AlleleAdd(a, b) (a) = ((b) == 0 ? (a) : ((b) > 0 ? true : false))
-#    define AlleleMinus(a, b) (a) = ((b) == 0 ? (a) : ((b) > 0 ? false : true))
-#    define AlleleUnsigned(a) (static_cast<unsigned char>(a))
+#    define INC_ALLELE(a)  (a) = true
+#    define DEC_ALLELE(a)  (a) = false
+#    define ADD_TO_ALLELE(a, b) (a) = ((b) == 0 ? (a) : ((b) > 0 ? true : false))
+#    define SUBSTRACT_FROM_ALLELE(a, b) (a) = ((b) == 0 ? (a) : ((b) > 0 ? false : true))
+#    define ALLELE_AS_UNSINGED(a) (static_cast<unsigned char>(a))
 // this is used to avoid a VC++ C4800 warning when converting int to bool
-#    define ToAllele(a)   ((a) != 0)
-#    define RefAssign(a, b)  *(a) = (b)
-#    define DerefAllele(a)   (*(a))
+#    define TO_ALLELE(a)   ((a) != 0)
+#    define REF_ASSIGN_ALLELE(a, b)  *(a) = (b)
+#    define DEREF_ALLELE(a)   (*(a))
 
 #  else
 typedef unsigned char Allele;
 typedef unsigned char & AlleleRef;
 typedef const unsigned char & ConstAlleleRef;
-#    define AlleleInc(a)  ++ (a)
-#    define AlleleDec(a)  -- (a)
-#    define AlleleAdd(a, b) (a) += (b)
-#    define AlleleMinus(a, b) (a) -= (b)
-#    define AlleleUnsigned(a) (a)
-#    define ToAllele(a)   static_cast<Allele>(a)
+#    define INC_ALLELE(a)  ++ (a)
+#    define DEC_ALLELE(a)  -- (a)
+#    define ADD_TO_ALLELE(a, b) (a) += (b)
+#    define SUBSTRACT_FROM_ALLELE(a, b) (a) -= (b)
+#    define ALLELE_AS_UNSINGED(a) (a)
+#    define TO_ALLELE(a)   static_cast<Allele>(a)
 #    ifdef MUTANTALLELE
-#      define DerefAllele(a)   ((a).value())
-#      define RefAssign(a, b)  ((a).assignIfDiffer(b))
+#      define DEREF_ALLELE(a)   ((a).value())
+#      define REF_ASSIGN_ALLELE(a, b)  ((a).assignIfDiffer(b))
 #    else
-#      define DerefAllele(a)   (*(a))
-#      define RefAssign(a, b)  (*(a) = (b))
+#      define DEREF_ALLELE(a)   (*(a))
+#      define REF_ASSIGN_ALLELE(a, b)  (*(a) = (b))
 #    endif
 #  endif
 #endif
