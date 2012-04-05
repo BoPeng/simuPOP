@@ -1422,15 +1422,22 @@ There are ten flavors of the core simuPOP module: short, long, binary, mutant,
 \end_layout
 
 \begin_layout Itemize
-The short allele modules use 8 bits to store each allele which limits the
- possible allele states to 256.
+The short allele modules use 
+\emph on
+8 bits
+\emph default
+ to store each allele which limits the possible allele states to 256.
  This is enough most of the times so this is the default module of simuPOP.
 \end_layout
 
 \begin_layout Itemize
-If you need to a large number of allele states, e.g.
+If you need to a large number of allele states to simulate, for example
  the infinite allele model, you should use the long allele version of the
- modules, which use 32 or 64 bits for each allele and can have 
+ modules, which use 
+\emph on
+32 or 64 bits
+\emph default
+ for each allele and can have 
 \begin_inset Formula $2^{32}$
 \end_inset
 
@@ -1443,7 +1450,11 @@ If you need to a large number of allele states, e.g.
 
 \begin_layout Itemize
 If you would like to simulate a large number of binary (SNP) markers, binary
- libraries can save you a lot of RAM because they use 1 bit for each allele.
+ libraries can save you a lot of RAM because they use 
+\emph on
+1 bit
+\emph default
+ for each allele.
 \end_layout
 
 \begin_layout Itemize
@@ -1452,6 +1463,11 @@ If you are simulating long sequence regions with rare variants, you can
  This module uses compression technology that ignores wildtype alleles and
  is not efficient if you need to traverse all alleles frequently.
  The maximum allele state is 255 for this module.
+ Because this module stores location and value of each allele, it uses at
+ least 64 + 8 bits for each allele on a 64 bit system.
+ The complexity of the storage also prevents simultaneous write access to
+ genotypes so this module does not benefit much from running in multi-thread
+ mode.
 \end_layout
 
 \begin_layout Itemize
@@ -1459,13 +1475,15 @@ If you are interested in tracing the lineage of each allele (e.g.
  the ID of individuals to whom the allele was introduced), you can use the
  lineage module for which each allele is attached with information about
  its origin.
- The maximum allele state is 255 for this module.
+ The maximum allele state is 255 for this module, and the cost of storing
+ each allele is 8 (value) + 32 (lineage) bits.
 \end_layout
 
 \begin_layout Standard
 Despite of differences in internal memory layout, all these modules have
  the same interface, although some functions behave differently in terms
  of functionality and performance.
+ 
 \end_layout
 
 \begin_layout Standard
