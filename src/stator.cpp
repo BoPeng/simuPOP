@@ -2267,7 +2267,7 @@ bool statLD::apply(Population & pop) const
 						continue;
 					if (chromTypes[idx] == MITOCHONDRIAL && p > 0)
 						continue;
-					alleleCnt[idx][*(geno + loci[idx])]++;
+					alleleCnt[idx][DerefAllele(geno + loci[idx])]++;
 				}
 				// haplotype frequency
 				for (size_t idx = 0; idx < nLD; ++idx) {
@@ -2279,7 +2279,7 @@ bool statLD::apply(Population & pop) const
 						continue;
 					if (chromType == MITOCHONDRIAL && p > 0)
 						continue;
-					haploCnt[idx][HAPLOCNT::key_type(*(geno + m_LD[idx][0]), *(geno + m_LD[idx][1]))]++;
+					haploCnt[idx][HAPLOCNT::key_type(DerefAllele(geno + m_LD[idx][0]), DerefAllele(geno + m_LD[idx][1]))]++;
 				}
 			}
 		}
@@ -2585,9 +2585,9 @@ bool statAssociation::apply(Population & pop) const
 						if (chromTypes[idx] == MITOCHONDRIAL && p > 0)
 							continue;
 						if (ind->affected())
-							caseAlleleCnt[idx][*(geno + loci[idx])]++;
+							caseAlleleCnt[idx][DerefAllele(geno + loci[idx])]++;
 						else
-							ctrlAlleleCnt[idx][*(geno + loci[idx])]++;
+							ctrlAlleleCnt[idx][DerefAllele(geno + loci[idx])]++;
 					}
 				}
 			}
@@ -2598,8 +2598,8 @@ bool statAssociation::apply(Population & pop) const
 				for (size_t idx = 0; idx < nLoci; ++idx) {
 					if (chromTypes[idx] == CHROMOSOME_X || chromTypes[idx] == CHROMOSOME_Y || chromTypes[idx] == MITOCHONDRIAL)
 						continue;
-					Allele a1 = *(geno1 + loci[idx]);
-					Allele a2 = *(geno2 + loci[idx]);
+					Allele a1 = DerefAllele(geno1 + loci[idx]);
+					Allele a2 = DerefAllele(geno2 + loci[idx]);
 					if (a1 > a2)
 						std::swap(a1, a2);
 					if (ind->affected())
@@ -3029,8 +3029,10 @@ bool statStructure::apply(Population & pop) const
 				// go through all alleles
 				IndAlleleIterator a = pop.alleleIterator(loc, it->subPop());
 				for (; a.valid(); ++cnt) {
-					Allele a1 = *a++;
-					Allele a2 = *a++;
+					Allele a1 = DerefAllele(a);
+					++a;
+					Allele a2 = DerefAllele(a);
+					++a;
 					++af[a1];
 					++af[a2];
 					hf[a1] += a1 != a2;
@@ -3054,7 +3056,8 @@ bool statStructure::apply(Population & pop) const
 				// go through all alleles
 				IndAlleleIterator a = pop.alleleIterator(loc, it->subPop());
 				for (; a.valid(); ++cnt) {
-					Allele c = *a++;
+					Allele c = DerefAllele(a);
+					++a;
 					++af[c];
 					++hf[c];
 					alleles[c] = true;
@@ -3191,8 +3194,8 @@ bool statHWE::apply(Population & pop) const
 			GenoIterator geno1 = ind->genoBegin(0);
 			GenoIterator geno2 = ind->genoBegin(1);
 			for (size_t idx = 0; idx < nLoci; ++idx) {
-				Allele a1 = *(geno1 + loci[idx]);
-				Allele a2 = *(geno2 + loci[idx]);
+				Allele a1 = DerefAllele(geno1 + loci[idx]);
+				Allele a2 = DerefAllele(geno2 + loci[idx]);
 				if (a1 > a2)
 					std::swap(a1, a2);
 				genoCnt[idx][GENOCNT::key_type(a1, a2)]++;

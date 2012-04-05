@@ -79,22 +79,22 @@ bool Individual::operator==(const Individual & rhs) const
 		return false;
 	}
 
-#ifndef MUTANTALLELE  
+#ifndef MUTANTALLELE
 	for (size_t i = 0, iEnd = genoSize(); i < iEnd; ++i)
 		if (*(m_genoPtr + i) != *(rhs.m_genoPtr + i))
 			return false;
 #else
-    vectorm::const_val_iterator it = m_genoPtr.get_val_iterator();
-    vectorm::const_val_iterator it_end = (m_genoPtr + genoSize()).get_val_iterator();
-    size_t s_idx = m_genoPtr.index();
-    vectorm::const_val_iterator rit = rhs.m_genoPtr.get_val_iterator();
-    vectorm::const_val_iterator rit_end = (rhs.m_genoPtr + genoSize()).get_val_iterator();
-    size_t rs_idx = rhs.m_genoPtr.index();
-    for (; it != it_end; ++it, ++rit)
-        if (rit == rit_end || ((it->first - s_idx) != (rit->first - rs_idx)) || it->second != rit->second)
-            return false;
-    if (rit != rit_end)
-        return false;
+	vectorm::const_val_iterator it = m_genoPtr.get_val_iterator();
+	vectorm::const_val_iterator it_end = (m_genoPtr + genoSize()).get_val_iterator();
+	size_t s_idx = m_genoPtr.index();
+	vectorm::const_val_iterator rit = rhs.m_genoPtr.get_val_iterator();
+	vectorm::const_val_iterator rit_end = (rhs.m_genoPtr + genoSize()).get_val_iterator();
+	size_t rs_idx = rhs.m_genoPtr.index();
+	for (; it != it_end; ++it, ++rit)
+		if (rit == rit_end || ((it->first - s_idx) != (rit->first - rs_idx)) || it->second != rit->second)
+			return false;
+	if (rit != rit_end)
+		return false;
 #endif
 
 #ifdef LINEAGE
@@ -161,28 +161,16 @@ ULONG Individual::allele(size_t idx, ssize_t p, ssize_t chrom) const
 		"A valid ploidy index has to be specified if chrom is non-positive");
 	if (p < 0) {
 		CHECKRANGEGENOSIZE(idx);
-#ifdef MUTANTALLELE
-		return static_cast<ULONG>((m_genoPtr + idx).value());
-#else
-		return static_cast<ULONG>(*(m_genoPtr + idx));
-#endif
+		return static_cast<ULONG>(DerefAllele(m_genoPtr + idx));
 	} else if (chrom < 0) {
 		CHECKRANGEABSLOCUS(idx);
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
-#ifdef MUTANTALLELE
-		return static_cast<ULONG>((m_genoPtr + idx + p * totNumLoci()).value());
-#else
-		return static_cast<ULONG>(*(m_genoPtr + idx + p * totNumLoci()));
-#endif
+		return static_cast<ULONG>(DerefAllele(m_genoPtr + idx + p * totNumLoci()));
 	} else {
 		CHECKRANGELOCUS(chrom, idx);
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
 		CHECKRANGECHROM(static_cast<size_t>(chrom));
-#ifdef MUTANTALLELE
-		return static_cast<ULONG>((m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)).value());
-#else
-		return static_cast<ULONG>(*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)));
-#endif
+		return static_cast<ULONG>(DerefAllele(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)));
 	}
 }
 

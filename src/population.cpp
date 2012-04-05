@@ -1666,23 +1666,23 @@ void Population::addChromFrom(const Population & pop)
 #endif
 			for (size_t p = 0; p < pEnd; ++p) {
 				for (size_t j = 0; j < numLoci1; ++j) {
-#ifdef MUTANTALLELE				
+#ifdef MUTANTALLELE
 					ptr.assignIfDiffer(ptr1.value());
 					++ptr;
 					++ptr1;
-#else					
+#else
 					*(ptr++) = *(ptr1++);
-#endif					
+#endif
 					LINEAGE_EXPR(*(lineagePtr++) = *(linPtr1++));
 				}
 				for (size_t j = 0; j < numLoci2; ++j) {
-#ifdef MUTANTALLELE				
+#ifdef MUTANTALLELE
 					ptr.assignIfDiffer(ptr2.value());
 					++ptr;
 					++ptr2;
-#else					
+#else
 					*(ptr++) = *(ptr2++);
-#endif					
+#endif
 					LINEAGE_EXPR(*(lineagePtr++) = *(linPtr2++));
 				}
 			}
