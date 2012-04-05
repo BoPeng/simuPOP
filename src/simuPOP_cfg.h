@@ -168,7 +168,8 @@ typedef const unsigned long & ConstAlleleRef;
 #  define AlleleMinus(a, b) (a) -= (b)
 #  define AlleleUnsigned(a) (a)
 #  define ToAllele(a)    static_cast<Allele>(a)
-#  define AssignAllele(a, b)  (a = static_cast<Allele>(b))
+#  define DerefAllele(a)   (*(a))
+#  define RefAssign(a, b)  *(a) = (b)
 
 #else
 
@@ -185,7 +186,8 @@ typedef vector<Allele>::const_reference ConstAlleleRef;
 #    define AlleleUnsigned(a) (static_cast<unsigned char>(a))
 // this is used to avoid a VC++ C4800 warning when converting int to bool
 #    define ToAllele(a)   ((a) != 0)
-#    define AssignAllele(a, b)  (a = ((b) != 0)))
+#    define RefAssign(a, b)  *(a) = (b)
+#    define DerefAllele(a)   (*(a))
 
 #  else
 typedef unsigned char Allele;
@@ -198,9 +200,11 @@ typedef const unsigned char & ConstAlleleRef;
 #    define AlleleUnsigned(a) (a)
 #    define ToAllele(a)   static_cast<Allele>(a)
 #    ifdef MUTANTALLELE
-#      define AssignAllele(a, b)  if ((b) != 0) { a = static_cast<Allele>(b); }
+#      define DerefAllele(a)   ((a).value())
+#      define RefAssign(a, b)  ((a).assignIfDiffer(b))
 #    else
-#      define AssignAllele(a, b)  (a = static_cast<Allele>(b))
+#      define DerefAllele(a)   (*(a))
+#      define RefAssign(a, b)  (*(a) = (b))
 #    endif
 #  endif
 #endif
