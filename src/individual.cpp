@@ -79,9 +79,21 @@ bool Individual::operator==(const Individual & rhs) const
 		return false;
 	}
 
+#ifndef MUTANTALLELE  
 	for (size_t i = 0, iEnd = genoSize(); i < iEnd; ++i)
 		if (*(m_genoPtr + i) != *(rhs.m_genoPtr + i))
 			return false;
+#else
+    vectorm::const_val_iterator it = m_genoPtr.get_val_iterator();
+    vectorm::const_val_iterator it_end = (m_genoPtr + genoSize()).get_val_iterator();
+    vectorm::const_val_iterator rit = rhs.m_genoPtr.get_val_iterator();
+    vectorm::const_val_iterator rit_end = (rhs.m_genoPtr + genoSize()).get_val_iterator();
+    for (; it != it_end; ++it, ++rit)
+        if (rit == rit_end || it->first != rit->first || it->second != rit->second)
+            return false;
+    if (rit != rit_end)
+        return false;
+#endif
 
 #ifdef LINEAGE
 	for (size_t i = 0, iEnd = genoSize(); i < iEnd; ++i)
