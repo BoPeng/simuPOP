@@ -86,10 +86,12 @@ bool Individual::operator==(const Individual & rhs) const
 #else
     vectorm::const_val_iterator it = m_genoPtr.get_val_iterator();
     vectorm::const_val_iterator it_end = (m_genoPtr + genoSize()).get_val_iterator();
+    size_t s_idx = m_genoPtr.index();
     vectorm::const_val_iterator rit = rhs.m_genoPtr.get_val_iterator();
     vectorm::const_val_iterator rit_end = (rhs.m_genoPtr + genoSize()).get_val_iterator();
+    size_t rs_idx = rhs.m_genoPtr.index();
     for (; it != it_end; ++it, ++rit)
-        if (rit == rit_end || it->first != rit->first || it->second != rit->second)
+        if (rit == rit_end || ((it->first - s_idx) != (rit->first - rs_idx)) || it->second != rit->second)
             return false;
     if (rit != rit_end)
         return false;
