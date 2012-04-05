@@ -296,9 +296,6 @@ public:
 		{
 			const_val_iterator it((*this)().data().find(m_index));
 
-			DBG_ASSERT(it == (*this)().data().end() || it->second != 0, RuntimeError,
-				"Mutant with value zero is detected at location " + toStr(m_index));
-
 			return (it == (*this)().data().end()) ? zero_ : it->second;
 		}
 
@@ -361,10 +358,8 @@ public:
 					(*this)().data().insert(storage::value_type(m_index, value));
 			} else if (value == 0)
 				(*this)().data().erase(it);
-			else {
-				DBG_ASSERT(it->second != 0, RuntimeError, "Mutant with value zero is detected");
+			else
 				it->second = value;
-			}
 		}
 
 
@@ -464,9 +459,6 @@ public:
 		const_reference value() const
 		{
 			const_val_iterator it((*this)().data().find(m_index));
-
-			DBG_ASSERT(it == (*this)().data().end() || it->second != 0, RuntimeError,
-				"Mutant with value zero is detected at location " + toStr(m_index));
 
 			return (it == (*this)().data().end()) ? zero_ : it->second;
 		}
