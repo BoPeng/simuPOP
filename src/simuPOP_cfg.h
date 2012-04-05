@@ -168,6 +168,7 @@ typedef const unsigned long & ConstAlleleRef;
 #  define AlleleMinus(a, b) (a) -= (b)
 #  define AlleleUnsigned(a) (a)
 #  define ToAllele(a)    static_cast<Allele>(a)
+#  define AssignAllele(a, b)  (a = static_cast<Allele>(b))
 
 #else
 
@@ -184,6 +185,7 @@ typedef vector<Allele>::const_reference ConstAlleleRef;
 #    define AlleleUnsigned(a) (static_cast<unsigned char>(a))
 // this is used to avoid a VC++ C4800 warning when converting int to bool
 #    define ToAllele(a)   ((a) != 0)
+#    define AssignAllele(a, b)  (a = ((b) != 0)))
 
 #  else
 typedef unsigned char Allele;
@@ -195,19 +197,14 @@ typedef const unsigned char & ConstAlleleRef;
 #    define AlleleMinus(a, b) (a) -= (b)
 #    define AlleleUnsigned(a) (a)
 #    define ToAllele(a)   static_cast<Allele>(a)
+#    ifdef MUTANTALLELE
+#      define AssignAllele(a, b)  if ((b) != 0) { a = static_cast<Allele>(b); }
+#    else
+#      define AssignAllele(a, b)  (a = static_cast<Allele>(b))
+#    endif
 #  endif
 #endif
 
-// for mutant vector -- the class wrapper for compressed vector
-#include "mutant_vector.h"
-
-#ifdef MUTANTALLELE
-typedef simuPOP::vectorm::iterator GenoIterator;
-typedef simuPOP::vectorm::const_iterator ConstGenoIterator;
-#else
-typedef std::vector<Allele>::iterator GenoIterator;
-typedef std::vector<Allele>::const_iterator ConstGenoIterator;
-#endif
 
 // max allowed allele state
 extern const unsigned long ModuleMaxAllele;
@@ -582,4 +579,16 @@ namespace simuPOP {
 #define CHECKRANGEINFO(ind) DBG_FAILIF(ind >= infoSize(), IndexError, "info index (" + toStr(ind) + ") " \
 	+ (infoSize() > 0 ? (" out of range of 0 ~ " + toStr(infoSize() - 1)) : "invoked on a population without any information field."))
 }
+
+// for mutant vector -- the class wrapper for compressed vector
+#include "mutant_vector.h"
+
+#ifdef MUTANTALLELE
+typedef simuPOP::vectorm::iterator GenoIterator;
+typedef simuPOP::vectorm::const_iterator ConstGenoIterator;
+#else
+typedef std::vector<Allele>::iterator GenoIterator;
+typedef std::vector<Allele>::const_iterator ConstGenoIterator;
+#endif
+
 #endif
