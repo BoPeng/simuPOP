@@ -1209,15 +1209,16 @@ public:
 	}
 
 
-    void assignIfDiffer(Allele a)
-    {
+	void assignIfDiffer(Allele a)
+	{
 		if (m_useGappedIterator)
 			return RefAssign(m_ptr + m_shift, a);
 		else {
 			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
 			return RefAssign(m_it->genoBegin() + m_index + m_p * m_size, a);
 		}
-    }
+	}
+
 
 #ifdef MUTANTALLELE
 	// do not dereference which will create something ...
@@ -1230,6 +1231,7 @@ public:
 			return (m_it->genoBegin() + m_index + m_p * m_size).value();
 		}
 	}
+
 
 #else
 	Allele value()

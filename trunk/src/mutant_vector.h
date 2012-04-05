@@ -77,17 +77,19 @@ public:
 		return m_data;
 	}
 
+
 	void validate() const
 	{
-#ifndef OPTIMIZED	
+#  ifndef OPTIMIZED
 		const_val_iterator it = m_data.begin();
 		const_val_iterator it_end = m_data.end();
 		for (; it != it_end; ++it) {
 			DBG_ASSERT(it->second != 0, RuntimeError,
 				"Mutant with zero value is detected at location " + toStr(it->first));
 		}
-#endif
+#  endif
 	}
+
 
 public:
 	inline void resize(size_t size, bool preserve = true)
@@ -317,14 +319,17 @@ public:
 			return (*this)().data().lower_bound(m_index);
 		}
 
+
 		const_val_iterator get_val_iterator() const
 		{
 			return (*this)().data().lower_bound(m_index);
 		}
 
+
 		const_reference value() const
 		{
 			const_val_iterator it((*this)().data().find(m_index));
+
 			DBG_ASSERT(it == (*this)().data().end() || it->second != 0, RuntimeError,
 				"Mutant with value zero is detected at location " + toStr(m_index));
 
@@ -521,6 +526,7 @@ public:
 		const_reference value() const
 		{
 			const_val_iterator it((*this)().data().find(m_index));
+
 			DBG_ASSERT(it == (*this)().data().end() || it->second != 0, RuntimeError,
 				"Mutant with value zero is detected at location " + toStr(m_index));
 
@@ -531,6 +537,7 @@ public:
 		const_reference operator *() const
 		{
 			const_val_iterator it((*this)().data().find(m_index));
+
 			DBG_ASSERT(it == (*this)().data().end() || it->second != 0, RuntimeError,
 				"Mutant with value zero is detected at location " + toStr(m_index));
 
