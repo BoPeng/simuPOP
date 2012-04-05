@@ -212,7 +212,8 @@ bool BaseMutator::apply(Population & pop) const
 						}
 					}
 					if (oldAllele != newAllele)
-						*ptr = newAllele;
+						RefAssign(ptr, newAllele);
+
 					DBG_DO(DBG_MUTATOR, cerr << " is mutated from ");
 					DBG_DO(DBG_MUTATOR, cerr << int(oldAllele) << " to " << int(newAllele) << endl);
 #ifdef LINEAGE
@@ -583,7 +584,7 @@ bool RevertFixedSites::apply(Population & pop) const
 			bool fixed = true;
 			ConstIndAlleleIterator a = const_cast<const Population &>(pop).alleleIterator(loc, sp->subPop());
 			for (; a.valid(); ++a) {
-				if (!(*a)) {
+				if (!DerefAllele(a)) {
 					fixed = false;
 					break;
 				}
@@ -592,7 +593,7 @@ bool RevertFixedSites::apply(Population & pop) const
 			if (fixed) {
 				IndAlleleIterator a = pop.alleleIterator(loc, sp->subPop());
 				for (; a.valid(); ++a)
-					*a = 0;
+					RefAssign(a, 0);
 			}
 		}
 
