@@ -101,40 +101,6 @@ public:
 			m_data.clear();
 	}
 
-
-	// Element access
-	inline const_reference operator ()(size_t i) const
-	{
-		const_val_iterator it(m_data.find(i));
-
-		return it == m_data.end() ? zero_ : it->second;
-	}
-
-
-	inline reference ref(size_t i)
-	{
-		return m_data[i];
-	}
-
-
-	inline reference operator ()(size_t i)
-	{
-		return ref(i) ;
-	}
-
-
-	inline const_reference operator [](size_t i) const
-	{
-		return (*this)(i);
-	}
-
-
-	inline reference operator [](size_t i)
-	{
-		return (*this)(i);
-	}
-
-
 	// Zeroing, but do not set size to zero
 	inline void clear()
 	{
@@ -337,34 +303,6 @@ public:
 		}
 
 
-		const_reference operator *() const
-		{
-			const_val_iterator it((*this)().data().find(m_index));
-
-			DBG_ASSERT(it == (*this)().data().end() || it->second != 0, RuntimeError,
-				"Mutant with value zero is detected at location " + toStr(m_index));
-			return (it == (*this)().data().end()) ? zero_ : it->second;
-		}
-
-
-		reference operator *()
-		{
-			return (*this)()[m_index];
-		}
-
-
-		reference operator [](const size_t i)
-		{
-			return (*this)()[m_index + i];
-		}
-
-
-		const_reference operator [](const size_t i) const
-		{
-			return (*this + i).value();
-		}
-
-
 		/// CPPONLY pre-incrment return by-reference
 		iterator & operator++()
 		{
@@ -531,23 +469,6 @@ public:
 				"Mutant with value zero is detected at location " + toStr(m_index));
 
 			return (it == (*this)().data().end()) ? zero_ : it->second;
-		}
-
-
-		const_reference operator *() const
-		{
-			const_val_iterator it((*this)().data().find(m_index));
-
-			DBG_ASSERT(it == (*this)().data().end() || it->second != 0, RuntimeError,
-				"Mutant with value zero is detected at location " + toStr(m_index));
-
-			return (it == (*this)().data().end()) ? zero_ : it->second;
-		}
-
-
-		const_reference operator [](const size_t i) const
-		{
-			return (*this + i).value();
 		}
 
 
