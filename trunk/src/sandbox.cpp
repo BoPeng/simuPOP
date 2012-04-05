@@ -406,7 +406,7 @@ bool MutSpaceMutator::apply(Population & pop) const
 					// if the first time
 					if (mutants.empty()) {
 						// first try our luck...
-						ok = find(pop.genoBegin(false), pop.genoEnd(false), ToAllele(mutLoc)) == pop.genoEnd(false);
+						ok = find(pop.genoBegin(false), pop.genoEnd(false), TO_ALLELE(mutLoc)) == pop.genoEnd(false);
 						if (!ok) {
 							std::set<size_t> existing(pop.genoBegin(false), pop.genoEnd(false));
 							mutants.swap(existing);
@@ -455,7 +455,7 @@ bool MutSpaceMutator::apply(Population & pop) const
 						// record mutation here
 						DBG_FAILIF(mutLoc >= ModuleMaxAllele, RuntimeError,
 							"Location can not be saved because it exceed max allowed allele.");
-						*(geno + j) = ToAllele(mutLoc);
+						*(geno + j) = TO_ALLELE(mutLoc);
 						if (out)
 							(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t0\n";
 						break;
@@ -562,7 +562,7 @@ void MutSpaceRecombinator::transmitGenotype0(Population & pop, Population & offP
 		GenoIterator it = offPop.individual(offIndex).genoBegin(ploidy, ch);
 		GenoIterator it_end = offPop.individual(offIndex).genoEnd(ploidy, ch);
 		for (size_t i = 0; i < alleles.size(); ++i, ++it)
-			*it = ToAllele(alleles[i]);
+			*it = TO_ALLELE(alleles[i]);
 		// fill the rest with 0.
 		std::fill(it, it_end, 0);
 	}
@@ -669,7 +669,7 @@ void MutSpaceRecombinator::transmitGenotype1(Population & pop, Population & offP
 		it = offPop.individual(offIndex).genoBegin(ploidy, ch);
 		it_end = offPop.individual(offIndex).genoEnd(ploidy, ch);
 		for (size_t i = 0; i < alleles.size(); ++i, ++it)
-			*it = ToAllele(alleles[i]);
+			*it = TO_ALLELE(alleles[i]);
 		// fill the rest with 0.
 		std::fill(it, it_end, 0);
 	}

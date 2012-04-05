@@ -161,16 +161,16 @@ ULONG Individual::allele(size_t idx, ssize_t p, ssize_t chrom) const
 		"A valid ploidy index has to be specified if chrom is non-positive");
 	if (p < 0) {
 		CHECKRANGEGENOSIZE(idx);
-		return static_cast<ULONG>(DerefAllele(m_genoPtr + idx));
+		return static_cast<ULONG>(DEREF_ALLELE(m_genoPtr + idx));
 	} else if (chrom < 0) {
 		CHECKRANGEABSLOCUS(idx);
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
-		return static_cast<ULONG>(DerefAllele(m_genoPtr + idx + p * totNumLoci()));
+		return static_cast<ULONG>(DEREF_ALLELE(m_genoPtr + idx + p * totNumLoci()));
 	} else {
 		CHECKRANGELOCUS(chrom, idx);
 		CHECKRANGEPLOIDY(static_cast<size_t>(p));
 		CHECKRANGECHROM(static_cast<size_t>(chrom));
-		return static_cast<ULONG>(DerefAllele(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)));
+		return static_cast<ULONG>(DEREF_ALLELE(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)));
 	}
 }
 
@@ -575,14 +575,14 @@ void Individual::setGenotype(const uintList & genoList, const uintList & ply, co
 			vectorm ctmp;
 			ctmp.resize(numLoci(chrom));
 			for (size_t i = 0; i < numLoci(chrom); i++, ++idx) {
-				Allele atmp = ToAllele(geno[idx % sz]);
+				Allele atmp = TO_ALLELE(geno[idx % sz]);
 				if (atmp != 0)
 					ctmp.push_back(i, atmp);
 			}
 			copyGenotype(ctmp.begin(), ctmp.end(), ptr);
 #else
 			for (size_t i = 0; i < numLoci(chrom); i++, ++idx)
-				*(ptr + i) = ToAllele(geno[idx % sz]);
+				*(ptr + i) = TO_ALLELE(geno[idx % sz]);
 #endif
 
 		}
@@ -650,9 +650,9 @@ void Individual::swap(Individual & ind, bool swapContent)
 		Allele tmp;
 		LINEAGE_EXPR(long tmpLineage);
 		for (size_t i = 0, iEnd = genoSize(); i < iEnd; i++) {
-			tmp = DerefAllele(m_genoPtr + i);
-			RefAssign(m_genoPtr + i, DerefAllele(ind.m_genoPtr + i));
-			RefAssign(ind.m_genoPtr + i, tmp);
+			tmp = DEREF_ALLELE(m_genoPtr + i);
+			REF_ASSIGN_ALLELE(m_genoPtr + i, DEREF_ALLELE(ind.m_genoPtr + i));
+			REF_ASSIGN_ALLELE(ind.m_genoPtr + i, tmp);
 		}
 #ifdef LINEAGE
 		for (size_t i = 0, iEnd = genoSize(); i < iEnd; i++) {

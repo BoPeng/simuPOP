@@ -386,7 +386,7 @@ void ControlledOffspringGenerator::getExpectedAlleles(const Population & pop,
 		// and use them as proportions for the next generation.
 		for (size_t i = 0; i < nLoci; ++i) {
 			size_t locus = loci[i];
-			Allele allele = ToAllele(m_alleles[i]);
+			Allele allele = TO_ALLELE(m_alleles[i]);
 
 			// determine the number alleles at each subpopulation.
 			vectorf curFreq(numSP, 0);
@@ -394,7 +394,7 @@ void ControlledOffspringGenerator::getExpectedAlleles(const Population & pop,
 			for (size_t sp = 0, n = 0; sp < numSP; ++sp) {
 				IndAlleleIterator a = const_cast<Population &>(pop).alleleIterator(locus, sp);
 				for (; a.valid(); ++a)
-					if (AlleleUnsigned(DerefAllele(a)) == allele)
+					if (ALLELE_AS_UNSINGED(DEREF_ALLELE(a)) == allele)
 						n++;
 				hasAllele = hasAllele || n > 0;
 				curFreq[sp] = double(n) / (pop.subPopSize(sp) * pop.ploidy());
@@ -428,12 +428,12 @@ void ControlledOffspringGenerator::getExpectedAlleles(const Population & pop,
 			for (size_t sp = 0; sp < numSP; ++sp) {
 #ifndef OPTIMIZED
 				size_t locus = loci[i];
-				Allele allele = ToAllele(m_alleles[i]);
+				Allele allele = TO_ALLELE(m_alleles[i]);
 				ULONG n = 0;
 				// go through all alleles
 				IndAlleleIterator a = const_cast<Population &>(pop).alleleIterator(locus, sp);
 				for (; a.valid(); ++a) {
-					if (AlleleUnsigned(DerefAllele(a)) == allele)
+					if (ALLELE_AS_UNSINGED(DEREF_ALLELE(a)) == allele)
 						n++;
 				}
 
@@ -539,8 +539,8 @@ UINT ControlledOffspringGenerator::generateOffspring(Population & pop, Populatio
 	for (size_t i = 0; i < nLoci; ++i) {
 		GenoIterator ptr = itBegin->genoBegin();
 		for (size_t j = 0; j < numOff * pop.ploidy(); ++j, ptr += totNumLoci) {
-			if (m_flip[i] ? (DerefAllele(ptr + loci[i]) != ToAllele(m_alleles[i]))
-				: (DerefAllele(ptr + loci[i]) == ToAllele(m_alleles[i]))) {
+			if (m_flip[i] ? (DEREF_ALLELE(ptr + loci[i]) != TO_ALLELE(m_alleles[i]))
+				: (DEREF_ALLELE(ptr + loci[i]) == TO_ALLELE(m_alleles[i]))) {
 				na[i]++;
 				hasAff = true;
 			}

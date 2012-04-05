@@ -62,13 +62,13 @@ void BaseMutator::fillContext(const Population & pop, IndAlleleIterator ptr, siz
 
 	for (size_t i = 0; i < cnt; ++i) {
 		if (locus >= beg + i)
-			m_context[i] = DerefAllele(ptr.ptr() - (cnt - i));
+			m_context[i] = DEREF_ALLELE(ptr.ptr() - (cnt - i));
 		else
 			m_context[i] = InvalidValue;
 	}
 	for (size_t i = 0; i < cnt; ++i) {
 		if (locus + i < end)
-			m_context[cnt + i] = DerefAllele(ptr.ptr() + i + 1);
+			m_context[cnt + i] = DEREF_ALLELE(ptr.ptr() + i + 1);
 		else
 			m_context[cnt + i] = InvalidValue;
 	}
@@ -192,9 +192,9 @@ bool BaseMutator::apply(Population & pop) const
 					if (mapIn) {
 						if (numMapInAllele > 0) {
 							if (static_cast<size_t>(oldAllele) < numMapInAllele)
-								oldAllele = ToAllele(mapInList[oldAllele]);
+								oldAllele = TO_ALLELE(mapInList[oldAllele]);
 						} else {
-							oldAllele = ToAllele(mapInFunc(PyObj_As_Int, "(i)",
+							oldAllele = TO_ALLELE(mapInFunc(PyObj_As_Int, "(i)",
 									static_cast<int>(oldAllele)));
 						}
 					}
@@ -205,14 +205,14 @@ bool BaseMutator::apply(Population & pop) const
 					if (mapOut) {
 						if (numMapOutAllele > 0) {
 							if (static_cast<size_t>(newAllele) < numMapOutAllele)
-								newAllele = ToAllele(mapOutList[newAllele]);
+								newAllele = TO_ALLELE(mapOutList[newAllele]);
 						} else {
-							newAllele = ToAllele(mapOutFunc(PyObj_As_Int, "(i)",
+							newAllele = TO_ALLELE(mapOutFunc(PyObj_As_Int, "(i)",
 									static_cast<int>(newAllele)));
 						}
 					}
 					if (oldAllele != newAllele)
-						RefAssign(ptr, newAllele);
+						REF_ASSIGN_ALLELE(ptr, newAllele);
 
 					DBG_DO(DBG_MUTATOR, cerr << " is mutated from ");
 					DBG_DO(DBG_MUTATOR, cerr << int(oldAllele) << " to " << int(newAllele) << endl);
@@ -298,7 +298,7 @@ Allele MatrixMutator::mutate(Allele allele, size_t) const
 			+ toStr(m_sampler.size() - 1));
 		return allele;
 	}
-	return ToAllele(m_sampler[allele].draw());
+	return TO_ALLELE(m_sampler[allele].draw());
 }
 
 
@@ -375,14 +375,14 @@ Allele StepwiseMutator::mutate(Allele allele, size_t) const
 	// increase
 	if (getRNG().randUniform() < m_incProb) {
 		if (static_cast<UINT>(allele + step) < m_maxAllele)
-			return ToAllele(allele + step);
+			return TO_ALLELE(allele + step);
 		else
-			return ToAllele(m_maxAllele);
+			return TO_ALLELE(m_maxAllele);
 	}
 	// decrease
 	else {
 		if (allele > step)
-			return ToAllele(allele - step);
+			return TO_ALLELE(allele - step);
 		else
 			return 0;
 	}
@@ -446,7 +446,7 @@ Allele ContextMutator::mutate(Allele allele, size_t locus) const
 	for (size_t i = 0; i < m_contexts.size(); ++i) {
 		bool match = true;
 		for (size_t j = 0; j < alleles.size(); ++j) {
-			if (ToAllele(m_contexts[i][j]) != alleles[j]) {
+			if (TO_ALLELE(m_contexts[i][j]) != alleles[j]) {
 				match = false;
 				break;
 			}
@@ -584,7 +584,7 @@ bool RevertFixedSites::apply(Population & pop) const
 			bool fixed = true;
 			ConstIndAlleleIterator a = const_cast<const Population &>(pop).alleleIterator(loc, sp->subPop());
 			for (; a.valid(); ++a) {
-				if (!DerefAllele(a)) {
+				if (!DEREF_ALLELE(a)) {
 					fixed = false;
 					break;
 				}
@@ -593,7 +593,7 @@ bool RevertFixedSites::apply(Population & pop) const
 			if (fixed) {
 				IndAlleleIterator a = pop.alleleIterator(loc, sp->subPop());
 				for (; a.valid(); ++a)
-					RefAssign(a, 0);
+					REF_ASSIGN_ALLELE(a, 0);
 			}
 		}
 
@@ -721,7 +721,7 @@ bool FiniteSitesMutator::apply(Population & pop) const
 				                    // Here we are checing all genotypes (mutant), if mutLoc exists.
 				                    // for the new module, yo uneed to check pop.mutBegin()??? (iterate through all
 				                    // loci with non-zero allele)
-				                    ok = find(pop.genoBegin(false), pop.genoEnd(false), ToAllele(mutLoc)) == pop.genoEnd(false);
+				                    ok = find(pop.genoBegin(false), pop.genoEnd(false), TO_ALLELE(mutLoc)) == pop.genoEnd(false);
 				                    if (!ok) {
 				                        std::set<size_t> existing(pop.genoBegin(false), pop.genoEnd(false));
 				                        mutants.swap(existing);

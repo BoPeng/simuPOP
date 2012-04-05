@@ -84,7 +84,7 @@ getarrayitem_template<GenoIterator>(struct arrayobject_template<GenoIterator> * 
 	assert(i >= 0 && i < Py_SIZE(ap));
 	// for read only purpose, make sure not to really insert a value using the
 	// non-constant version of operator *.
-	return PyInt_FromLong(DerefAllele(ap->ob_iter + i));
+	return PyInt_FromLong(DEREF_ALLELE(ap->ob_iter + i));
 }
 
 
@@ -115,7 +115,7 @@ setarrayitem_template<GenoIterator>(struct arrayobject_template<GenoIterator> * 
 #  ifdef BINARYALLELE
 	*(ap->ob_iter + i) = (x != 0);
 #  else
-	RefAssign(ap->ob_iter + i, ToAllele(x));
+	REF_ASSIGN_ALLELE(ap->ob_iter + i, TO_ALLELE(x));
 #  endif
 	return 0;
 }

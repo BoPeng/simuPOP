@@ -1430,7 +1430,7 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 
 			// genotype
 			if (part == 4)
-				info->genotype.push_back(ToAllele(atoi(q)));
+				info->genotype.push_back(TO_ALLELE(atoi(q)));
 		}
 		// if there is no valid input...
 		if (part == 0)
