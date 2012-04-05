@@ -394,7 +394,7 @@ void ControlledOffspringGenerator::getExpectedAlleles(const Population & pop,
 			for (size_t sp = 0, n = 0; sp < numSP; ++sp) {
 				IndAlleleIterator a = const_cast<Population &>(pop).alleleIterator(locus, sp);
 				for (; a.valid(); ++a)
-					if (AlleleUnsigned(*a) == allele)
+					if (AlleleUnsigned(DerefAllele(a)) == allele)
 						n++;
 				hasAllele = hasAllele || n > 0;
 				curFreq[sp] = double(n) / (pop.subPopSize(sp) * pop.ploidy());
@@ -433,7 +433,7 @@ void ControlledOffspringGenerator::getExpectedAlleles(const Population & pop,
 				// go through all alleles
 				IndAlleleIterator a = const_cast<Population &>(pop).alleleIterator(locus, sp);
 				for (; a.valid(); ++a) {
-					if (AlleleUnsigned(*a) == allele)
+					if (AlleleUnsigned(DerefAllele(a)) == allele)
 						n++;
 				}
 
@@ -539,8 +539,8 @@ UINT ControlledOffspringGenerator::generateOffspring(Population & pop, Populatio
 	for (size_t i = 0; i < nLoci; ++i) {
 		GenoIterator ptr = itBegin->genoBegin();
 		for (size_t j = 0; j < numOff * pop.ploidy(); ++j, ptr += totNumLoci) {
-			if (m_flip[i] ? (*(ptr + loci[i]) != ToAllele(m_alleles[i]))
-				: (*(ptr + loci[i]) == ToAllele(m_alleles[i]))) {
+			if (m_flip[i] ? (DerefAllele(ptr + loci[i]) != ToAllele(m_alleles[i]))
+				: (DerefAllele(ptr + loci[i]) == ToAllele(m_alleles[i]))) {
 				na[i]++;
 				hasAff = true;
 			}

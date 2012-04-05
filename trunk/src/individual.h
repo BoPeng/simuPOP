@@ -1244,9 +1244,6 @@ public:
 		}
 	}
 
-
-#endif
-
 	// this is the most important part!
 	REF operator *()
 	{
@@ -1257,6 +1254,7 @@ public:
 			return *(m_it->genoBegin() + m_index + m_p * m_size);
 		}
 	}
+#endif
 
 
 	ITER ptr()

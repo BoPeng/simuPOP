@@ -650,9 +650,9 @@ void Individual::swap(Individual & ind, bool swapContent)
 		Allele tmp;
 		LINEAGE_EXPR(long tmpLineage);
 		for (size_t i = 0, iEnd = genoSize(); i < iEnd; i++) {
-			tmp = m_genoPtr[i];
-			m_genoPtr[i] = ind.m_genoPtr[i];
-			ind.m_genoPtr[i] = tmp;
+			tmp = DerefAllele(m_genoPtr + i);
+			RefAssign(m_genoPtr + i, DerefAllele(ind.m_genoPtr + i));
+			RefAssign(ind.m_genoPtr + i, tmp);
 		}
 #ifdef LINEAGE
 		for (size_t i = 0, iEnd = genoSize(); i < iEnd; i++) {

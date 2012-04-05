@@ -743,16 +743,8 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 	if (!subPop.valid()) {
 		GenoIterator ptr = m_genotype.begin();
 		size_t sz = geno.size();
-		for (size_t i = 0; i < popSize() * genoSize(); ++i) {
-#ifdef MUTANTALLELE
-			// NOTE: here we assign 0 to places with non-zero values. This 'never-remove'
-			// method guarantees that existing iterator m_com_index will not be outdated
-			// they could become smaller, but will never become larger than it is.
-			ptr.assignIfDiffer(ToAllele(geno[i % sz]));
-			++ptr;
-#else
-			*(ptr++) = ToAllele(geno[i % sz]);
-#endif
+		for (size_t i = 0; i < popSize() * genoSize(); ++i, ++ptr) {
+			RefAssign(ptr, ToAllele(geno[i % sz]));
 		}
 		return;
 	}
@@ -766,15 +758,15 @@ void Population::setGenotype(const uintList & genoList, vspID subPopID)
 	size_t sz = geno.size();
 	if (!subPop.isVirtual()) {
 		GenoIterator ptr = genoBegin(sp, true);
-		for (size_t i = 0; i < subPopSize(sp) * genoSize(); ++i)
-			*(ptr++) = ToAllele(geno[i % sz]);
+		for (size_t i = 0; i < subPopSize(sp) * genoSize(); ++i, ++ptr)
+			RefAssign(ptr, ToAllele(geno[i % sz]));
 	} else {
 		activateVirtualSubPop(subPop);
 		IndIterator it = indIterator(sp);
 		size_t i = 0;
 		for (; it.valid(); ++it)
 			for (GenoIterator git = it->genoBegin(); git != it->genoEnd(); ++git, ++i)
-				*git = ToAllele(geno[i % sz]);
+				RefAssign(git, ToAllele(geno[i % sz]));
 		deactivateVirtualSubPop(subPop.subPop());
 	}
 }
@@ -1811,12 +1803,12 @@ void Population::addLociFrom(const Population & pop)
 #endif
 			// copy each allele
 			for (size_t p = 0; p < pEnd; ++p) {
-				for (size_t i = 0; i < size1; ++i) {
-					ptr[indexes1[i]] = *(ptr1++);
+				for (size_t i = 0; i < size1; ++i, ++ptr1) {
+					RefAssign(ptr + indexes1[i], DerefAllele(ptr1));
 					LINEAGE_EXPR(lineagePtr[indexes1[i]] = *(lineagePtr1++));
 				}
-				for (size_t i = 0; i < size2; ++i) {
-					ptr[indexes2[i]] = *(ptr2++);
+				for (size_t i = 0; i < size2; ++i, ++ptr2) {
+					RefAssign(ptr + indexes2[i], DerefAllele(ptr2));
 					LINEAGE_EXPR(lineagePtr[indexes2[i]] = *(lineagePtr2++));
 				}
 				ptr += newSize;
@@ -1884,8 +1876,8 @@ void Population::addChrom(const floatList & lociPosList, const stringList & loci
 			LINEAGE_EXPR(m_inds[i].setLineagePtr(newLineagePtr));
 			// copy each chromosome
 			for (size_t p = 0; p < pEnd; ++p) {
-				for (size_t i = 0; i < oldNumLoci; ++i) {
-					*(newPtr++) = *(oldPtr++);
+				for (size_t i = 0; i < oldNumLoci; ++i, ++newPtr, ++oldPtr) {
+					RefAssign(newPtr, DerefAllele(oldPtr));
 					LINEAGE_EXPR(*(newLineagePtr++) = *(oldLineagePtr++));
 				}
 				newPtr += gap;
@@ -1963,8 +1955,8 @@ vectoru Population::addLoci(const uintList & chromList, const floatList & posLis
 			// copy each chromosome
 			for (size_t p = 0; p < pEnd; ++p) {
 				vectoru::iterator loc = loci.begin();
-				for (; loc != loci.end(); ++loc) {
-					newPtr[*loc] = *(oldPtr++);
+				for (; loc != loci.end(); ++loc, ++oldPtr) {
+					RefAssign(newPtr + *loc, DerefAllele(oldPtr));
 					LINEAGE_EXPR(newLineagePtr[*loc] = *(oldLineagePtr++));
 				}
 				newPtr += totNumLoci();
@@ -2614,7 +2606,7 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 					for (size_t p = 0; p < pEnd; p += pStep) {
 						for (lociPtr = new_loci.begin(); lociPtr != lociEnd; ++lociPtr) {
 #ifdef MUTANTALLELE
-							new_genotype.push_back(newIdx++, *(ptr + *lociPtr + p));
+							new_genotype.push_back(newIdx++, (ptr + *lociPtr + p).value());
 #else
 							new_genotype.push_back(*(ptr + *lociPtr + p));
 #endif
@@ -2655,7 +2647,7 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 						for (size_t p = 0; p < pEnd; p += pStep) {
 							for (lociPtr = new_loci.begin(); lociPtr != lociEnd; ++lociPtr)
 #ifdef MUTANTALLELE
-								new_genotype.push_back(newIdx++, *(ptr + *lociPtr + p));
+								new_genotype.push_back(newIdx++, (ptr + *lociPtr + p).value());
 #else
 								new_genotype.push_back(*(ptr + *lociPtr + p));
 #endif
@@ -2800,9 +2792,9 @@ void Population::removeLoci(const lociList & removeList, const lociList & keepLi
 			LINEAGE_EXPR(m_inds[i].setLineagePtr(newLineagePtr));
 			for (size_t p = 0; p < pEnd; ++p) {
 				vectoru::iterator loc = kept.begin();
-				for (; loc != kept.end(); ++loc) {
+				for (; loc != kept.end(); ++loc, ++newPtr) {
 					// this line needs ordered kept array
-					*(newPtr++) = oldPtr[*loc];                             //assignGenotype
+					RefAssign(newPtr, DerefAllele(oldPtr + *loc));      //assignGenotype
 					LINEAGE_EXPR(*(newLineagePtr++) = oldLineagePtr[*loc]); //assignLineage
 				}
 				oldPtr += oldTotNumLoci;

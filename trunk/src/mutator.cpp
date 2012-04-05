@@ -62,13 +62,13 @@ void BaseMutator::fillContext(const Population & pop, IndAlleleIterator ptr, siz
 
 	for (size_t i = 0; i < cnt; ++i) {
 		if (locus >= beg + i)
-			m_context[i] = *(ptr.ptr() - (cnt - i));
+			m_context[i] = DerefAllele(ptr.ptr() - (cnt - i));
 		else
 			m_context[i] = InvalidValue;
 	}
 	for (size_t i = 0; i < cnt; ++i) {
 		if (locus + i < end)
-			m_context[cnt + i] = *(ptr.ptr() + i + 1);
+			m_context[cnt + i] = DerefAllele(ptr.ptr() + i + 1);
 		else
 			m_context[cnt + i] = InvalidValue;
 	}
