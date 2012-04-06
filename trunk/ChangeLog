@@ -10,9 +10,9 @@ To be implemented:
 
 version 1.0.8 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 
-version 1.0.7 - Rev 4596 (Apr. 6, 2012)
+version 1.0.7 - Rev 4599 (Apr. 6, 2012)
 
-Maor New features:
+Major New features:
   - Add MITOCHONDRIAL as a natural chromosome type so that operators such as
 	Stat can handle them correctly.
   - A new allele type mutant that saves only non-zero alleles for efficient simulation
@@ -21,6 +21,11 @@ Maor New features:
     evolution.
   - A new file format is introduced to accommendate the new features. This file format
 	cannot be recognized by older versions of simuPOP.
+  - New functions Individual.mutants() and Population.mutants() to return an iterator
+         to iterate through all mutants of an individual or population.
+  - New functions Individuals.alleleLineage(), Individuals.lineage(),
+         Individual.setAlleleLineage(), Individual.setLineage(), Population.lineage(),
+         and Population.setLineage() to handle allelic lineage in lineage modules.
 
 New features:
   - New option numOfSegSites to operator Stat to calculate the number of segragating
