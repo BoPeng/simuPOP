@@ -982,6 +982,14 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::CombinedAlleleIterator::assignIfDiffer "
+
+Usage:
+
+    x.assignIfDiffer(a)
+
+"; 
+
 %feature("docstring") simuPOP::CombinedAlleleIterator::value "
 
 Usage:
@@ -7255,7 +7263,7 @@ Details:
     non-zero allele (See MlSelector for details). If an output is
     given, location, genotype, fitness and generation at which the new
     genotype is assgined the value will be written to the output, in
-    the format of 'loc a1, a2 fitness gen' for loci on autosomes of
+    the format of 'loc a1 a2 fitness gen' for loci on autosomes of
     diploid populations.
 
 "; 
