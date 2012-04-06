@@ -101,6 +101,7 @@ public:
 			m_data.clear();
 	}
 
+
 	// Zeroing, but do not set size to zero
 	inline void clear()
 	{
@@ -167,6 +168,7 @@ public:
 		const_val_iterator ptr = beg;
 		for (; ptr != end; ++ptr) {
 			DBG_ASSERT(ptr->second != 0, RuntimeError, "Cannot store zero as mutant");
+			// we are inserting to the end, which should be constant instead of log(n) time
 			m_data.insert(m_data.end(), storage::value_type(ptr->first + shift, ptr->second));
 		}
 	}
@@ -186,10 +188,54 @@ public:
 		// insert new data
 		const_val_iterator vbeg = begin.get_val_iterator();
 		const_val_iterator vend = (end - (iend > m_size ? iend - m_size : 0)).get_val_iterator();
+		if (vbeg == vend)
+			return;
+		// the first element is insert to get the right location for future insertion
+		DBG_ASSERT(vbeg->second != 0, RuntimeError, "Cannot store zero as mutant");
+		val_iterator dest = m_data.insert(m_data.end(), val_iterator::value_type(vbeg->first + lagging, vbeg->second));
+		++vbeg;
+		// according to the documentation, if ip in insert(ip, val) is set to the position
+		// precedes the value to be inserted, this will make a very fast insertion.
+		// because we are insertion from small to large numbers, we are setting ip to the
+		// location of the last item
 		for (; vbeg != vend; ++vbeg) {
 			DBG_ASSERT(vbeg->second != 0, RuntimeError, "Cannot store zero as mutant");
-			m_data.insert(m_data.end(), val_iterator::value_type(vbeg->first + lagging, vbeg->second));
+			dest = m_data.insert(dest, val_iterator::value_type(vbeg->first + lagging, vbeg->second));
 		}
+#  if 0
+		/*
+		   The following code copies elements one by one, which can be more efficient if the
+		   elements overlap a lot so that we do not have to remove and insert values at the
+		   same location. In practice this rarely happens because we clear genotypes of the
+		   offspring before mating.
+		 */
+		size_t iend = it.index() + (end - begin);
+		ssize_t lagging = it.index() - begin.index();
+
+		const_val_iterator sbeg = begin.get_val_iterator();
+		const_val_iterator send = (end - (iend > m_size ? iend - m_size : 0)).get_val_iterator();
+		if (sbeg == send)
+			return;
+
+		val_iterator dbeg = m_data.lower_bound(it.index());
+		val_iterator dend = iend > m_size ? m_data.end() : m_data.lower_bound(iend);
+
+		for (; sbeg != send; ++sbeg) {
+			if (dbeg == dend) {
+				// destination empty, no comparison is needed
+				for ( ; sbeg != send; ++sbeg)
+					dbeg = m_data.insert(dbeg, val_iterator::value_type(sbeg->first + lagging, sbeg->second));
+				return;
+			}
+			if (sbeg->first < dbeg->first)          // insert
+				m_data.insert(dbeg, val_iterator::value_type(sbeg->first + lagging, sbeg->second));
+			else if (sbeg->first == dbeg->first) {  // assign
+				dbeg->second = sbeg->second;
+				++dbeg;
+			} else  // remove
+				m_data.erase(dbeg++);
+		}
+#  endif
 	}
 
 
@@ -351,13 +397,19 @@ public:
 
 		void assignIfDiffer(const_reference value)
 		{
-			val_iterator it((*this)().data().find(m_index));
+			// find the lower bound
+			val_iterator it((*this)().data().lower_bound(m_index));
 
-			if (it == (*this)().data().end()) {
+			// if the element does not exist
+			if (it == (*this)().data().end() || it->first != m_index) {
 				if (value != 0)
-					(*this)().data().insert(storage::value_type(m_index, value));
+					// use lower_bound instead of find so that we can use the insert(it, val)
+					// version of insert, which should be faster (constant vs log(n))
+					(*this)().data().insert(it, storage::value_type(m_index, value));
+				// if the element exists, but value is zero, remove it
 			} else if (value == 0)
 				(*this)().data().erase(it);
+			// finally, update it directly
 			else
 				it->second = value;
 		}
