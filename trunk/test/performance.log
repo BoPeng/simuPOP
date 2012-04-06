@@ -9522,3 +9522,47 @@ TestBasicRandomMatingWithGenotype : freq=0.5, loci=100, size=1000: 1237
 TestBasicRandomMatingWithGenotype : freq=0.5, loci=10000, size=1000: 13
 TestBasicRandomMatingWithGenotype : 6706, 64, 1237, 13
 TestBasicRandomMatingWithGenotype : End of test TestBasicRandomMatingWithGenotype
+TestBasicRandomMatingWithGenotype : Host: rhel6 (Linux, x86_64, x86_64)
+TestBasicRandomMatingWithGenotype : Time: Wed Apr  4 14:24:09 2012
+TestBasicRandomMatingWithGenotype : Python: 2.7.2 [GCC 4.4.6 20110731 (Red Hat 4.4.6-3)]
+TestBasicRandomMatingWithGenotype : simuPOP: 1.0.7rc2 (rev 4489, module short, optimized, 1 threads)
+TestBasicRandomMatingWithGenotype : Test: Standard random mating scheme with genotype, results are number of generations in 30 seconds.
+TestBasicRandomMatingWithGenotype : freq=0.1, loci=100, size=1000: 105890
+TestBasicRandomMatingWithGenotype : freq=0.1, loci=10000, size=1000: 5483
+TestBasicRandomMatingWithGenotype : freq=0.5, loci=100, size=1000: 107717
+TestBasicRandomMatingWithGenotype : freq=0.5, loci=10000, size=1000: 5526
+TestBasicRandomMatingWithGenotype : 105890, 5483, 107717, 5526
+TestBasicRandomMatingWithGenotype : End of test TestBasicRandomMatingWithGenotype
+TestBasicRandomMatingWithGenotype : Host: rhel6 (Linux, x86_64, x86_64)
+TestBasicRandomMatingWithGenotype : Time: Wed Apr  4 14:27:27 2012
+TestBasicRandomMatingWithGenotype : Python: 2.7.2 [GCC 4.4.6 20110731 (Red Hat 4.4.6-3)]
+TestBasicRandomMatingWithGenotype : simuPOP: 1.0.7rc2 (rev 4489, module mutant, optimized, 1 threads)
+TestBasicRandomMatingWithGenotype : Test: Standard random mating scheme with genotype, results are number of generations in 30 seconds.
+TestBasicRandomMatingWithGenotype : freq=0.1, loci=100, size=1000: 11675
+TestBasicRandomMatingWithGenotype : freq=0.1, loci=10000, size=1000: 100
+TestBasicRandomMatingWithGenotype : freq=0.5, loci=100, size=1000: 1986
+TestBasicRandomMatingWithGenotype : freq=0.5, loci=10000, size=1000: 21
+TestBasicRandomMatingWithGenotype : 11675, 100, 1986, 21
+TestBasicRandomMatingWithGenotype : End of test TestBasicRandomMatingWithGenotype
+TestBasicRandomMatingWithGenotype : Host: rhel6 (Linux, x86_64, x86_64)
+TestBasicRandomMatingWithGenotype : Time: Wed Apr  4 14:45:32 2012
+TestBasicRandomMatingWithGenotype : Python: 2.7.2 [GCC 4.4.6 20110731 (Red Hat 4.4.6-3)]
+TestBasicRandomMatingWithGenotype : simuPOP: 1.0.7rc2 (rev 4489, module mutant, optimized, 1 threads)
+TestBasicRandomMatingWithGenotype : Test: Standard random mating scheme with genotype, results are number of generations in 30 seconds.
+TestBasicRandomMatingWithGenotype : freq=0.1, loci=100, size=1000: 7759
+TestBasicRandomMatingWithGenotype : freq=0.1, loci=10000, size=1000: 105
+TestBasicRandomMatingWithGenotype : freq=0.5, loci=100, size=1000: 2088
+TestBasicRandomMatingWithGenotype : freq=0.5, loci=10000, size=1000: 21
+TestBasicRandomMatingWithGenotype : 7759, 105, 2088, 21
+TestBasicRandomMatingWithGenotype : End of test TestBasicRandomMatingWithGenotype
+TestBasicRandomMatingWithGenotype : Host: rhel6 (Linux, x86_64, x86_64)
+TestBasicRandomMatingWithGenotype : Time: Wed Apr  4 14:49:03 2012
+TestBasicRandomMatingWithGenotype : Python: 2.7.2 [GCC 4.4.6 20110731 (Red Hat 4.4.6-3)]
+TestBasicRandomMatingWithGenotype : simuPOP: 1.0.7rc2 (rev 4489, module mutant, optimized, 1 threads)
+TestBasicRandomMatingWithGenotype : Test: Standard random mating scheme with genotype, results are number of generations in 30 seconds.
+TestBasicRandomMatingWithGenotype : freq=0.1, loci=100, size=1000: 8220
+TestBasicRandomMatingWithGenotype : freq=0.1, loci=10000, size=1000: 101
+TestBasicRandomMatingWithGenotype : freq=0.5, loci=100, size=1000: 2130
+TestBasicRandomMatingWithGenotype : freq=0.5, loci=10000, size=1000: 20
+TestBasicRandomMatingWithGenotype : 8220, 101, 2130, 20
+TestBasicRandomMatingWithGenotype : End of test TestBasicRandomMatingWithGenotype
