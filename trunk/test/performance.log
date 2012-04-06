@@ -9470,3 +9470,33 @@ TestBasicRandomMating : loci=100000, size=10000: 20244
 TestBasicRandomMating : loci=100000, size=100000: 0
 TestBasicRandomMating : 212284, 19823, 1765, 214355, 20247, 1806, 214098, 20270, 1825, 214280, 20244, 0
 TestBasicRandomMating : End of test TestBasicRandomMating
+TestBasicRandomMatingWithGenotype : Host: mba-bpeng (Darwin, x86_64, i386)
+TestBasicRandomMatingWithGenotype : Time: Fri Apr  6 08:20:31 2012
+TestBasicRandomMatingWithGenotype : Python: 2.7.2 [GCC 4.2.1 Compatible Apple Clang 3.1 (tags/Apple/clang-318.0.54)]
+TestBasicRandomMatingWithGenotype : simuPOP: 1.0.7rc2 (rev 4489, module mutant, optimized, 0 threads)
+TestBasicRandomMatingWithGenotype : Test: Standard random mating scheme with genotype, results are number of generations in 30 seconds.
+TestBasicRandomMatingWithGenotype : freq=0.1, loci=100, size=1000: 6074
+TestBasicRandomMatingWithGenotype : freq=0.1, loci=10000, size=1000: 65
+TestBasicRandomMatingWithGenotype : freq=0.5, loci=100, size=1000: 1219
+TestBasicRandomMatingWithGenotype : freq=0.5, loci=10000, size=1000: 13
+TestBasicRandomMatingWithGenotype : 6074, 65, 1219, 13
+TestBasicRandomMatingWithGenotype : End of test TestBasicRandomMatingWithGenotype
+TestBasicRandomMatingWithGenotype : Host: mba-bpeng (Darwin, x86_64, i386)
+TestBasicRandomMatingWithGenotype : Time: Fri Apr  6 08:24:02 2012
+TestBasicRandomMatingWithGenotype : Python: 2.7.2 [GCC 4.2.1 Compatible Apple Clang 3.1 (tags/Apple/clang-318.0.54)]
+TestBasicRandomMatingWithGenotype : simuPOP: 1.0.7rc2 (rev 4489, module short, optimized, 0 threads)
+TestBasicRandomMatingWithGenotype : Test: Standard random mating scheme with genotype, results are number of generations in 30 seconds.
+TestBasicRandomMatingWithGenotype : freq=0.1, loci=100, size=1000: 108829
+TestBasicRandomMatingWithGenotype : freq=0.1, loci=10000, size=1000: 7059
+TestBasicRandomMatingWithGenotype : freq=0.5, loci=100, size=1000: 106708
+TestBasicRandomMatingWithGenotype : freq=0.5, loci=10000, size=1000: 7139
+TestBasicRandomMatingWithGenotype : 108829, 7059, 106708, 7139
+TestBasicRandomMatingWithGenotype : End of test TestBasicRandomMatingWithGenotype
+TestBasicRandomMatingWithGenotype : Host: mba-bpeng (Darwin, x86_64, i386)
+TestBasicRandomMatingWithGenotype : Time: Fri Apr  6 08:29:44 2012
+TestBasicRandomMatingWithGenotype : Python: 2.7.2 [GCC 4.2.1 Compatible Apple Clang 3.1 (tags/Apple/clang-318.0.54)]
+TestBasicRandomMatingWithGenotype : simuPOP: 1.0.7rc2 (rev 4489, module mutant, optimized, 0 threads)
+TestBasicRandomMatingWithGenotype : Test: Standard random mating scheme with genotype, results are number of generations in 30 seconds.
+TestBasicRandomMatingWithGenotype : freq=0.1, loci=100, size=1000: 6179
+TestBasicRandomMatingWithGenotype : freq=0.1, loci=10000, size=1000: 64
+TestBasicRandomMatingWithGenotype : freq=0.5, loci=100, size=1000: 1175

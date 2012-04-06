@@ -159,6 +159,32 @@ class TestBasicRandomMating(PerformanceTest):
         )
         return gens
 
+class TestBasicRandomMatingWithGenotype(PerformanceTest):
+    def __init__(self, logger, time=30):
+        PerformanceTest.__init__(self, 'Standard random mating scheme with genotype, results are number of generations in %d seconds.' % int(time),
+            logger)
+        self.time = time
+
+    def run(self):
+        # overall running case
+        return self.productRun(size=[1000], loci=[100, 10000], freq=[0.1, 0.5])
+
+    def _run(self, size, loci, freq):
+        # single test case
+        if size * loci * moduleInfo()['alleleBits'] / 8 > 1e9:
+            return 0
+        pop = Population(size=size, loci=loci)
+        gens = pop.evolve(
+            initOps= [ InitSex(), InitGenotype(freq=[1-freq, freq])],
+            preOps=TicToc(output='', stopAfter=self.time),
+            matingScheme=RandomMating(ops=[
+                MendelianGenoTransmitter(),
+                # in some cases, mating takes so much time so we have to stop in the middle
+                TicToc(output='', stopAfter=self.time)
+            ]),
+        )
+        return gens
+
 class TestRandomSelection(PerformanceTest):
     def __init__(self, logger, time=30):
         PerformanceTest.__init__(self, 'Random selection scheme, results are number of generations in %d seconds.' % int(time),
