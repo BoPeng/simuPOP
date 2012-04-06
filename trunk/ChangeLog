@@ -8,22 +8,26 @@ To be implemented:
   - Dumper() dumps a range instead of single positions when the positions
 	are consecutive.
 
-version 1.0.7 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 1.0.8 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 
-New features:
-  - New option numOfSegSites to operator Stat to calculate the number of segragating
-    sites.
-  - New option numOfMutants to operator Stat to count the number of mutants (non-zero
-    alleles).
+version 1.0.7 - Rev 4596 (Apr. 6, 2012)
+
+Maor New features:
   - Add MITOCHONDRIAL as a natural chromosome type so that operators such as
 	Stat can handle them correctly.
-  - Extend Stat(structure) to handle haploid population and non-autosomal chromosomes.
   - A new allele type mutant that saves only non-zero alleles for efficient simulation
     of a large number of rare variants.
   - A new allele type lineage to track the lineage (origin of alleles) of alleles during
     evolution.
   - A new file format is introduced to accommendate the new features. This file format
 	cannot be recognized by older versions of simuPOP.
+
+New features:
+  - New option numOfSegSites to operator Stat to calculate the number of segragating
+    sites.
+  - New option numOfMutants to operator Stat to count the number of mutants (non-zero
+    alleles).
+  - Extend Stat(structure) to handle haploid population and non-autosomal chromosomes.
 
 BUG:
  - Fix a bug that prevents the correct handling of population structure when evolving
