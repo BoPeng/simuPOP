@@ -724,3 +724,7 @@ TestBasicRandomMatingWithGenotype, 2012-04-06 08:26:08,963, mba-bpeng, x86_64-0t
 TestBasicRandomMatingWithGenotype, 2012-04-06 08:32:03,481, mba-bpeng, x86_64-0threads, python2.7.2, simuPOP-1.0.7rc2, rev4489-gcc, mutant, 6179, 64, 1175, 13
 TestBasicRandomMatingWithGenotype, 2012-04-06 10:36:03,770, mba-bpeng.local, x86_64-0threads, python2.7.2, simuPOP-1.0.7rc2, rev4489-gcc, mutant, 6653, 63, 1196, 13
 TestBasicRandomMatingWithGenotype, 2012-04-06 11:12:56,930, mba-bpeng.local, x86_64-0threads, python2.7.2, simuPOP-1.0.7rc2, rev4489-gcc, mutant, 6706, 64, 1237, 13
+TestBasicRandomMatingWithGenotype, 2012-04-04 14:26:15,935, rhel6, x86_64-1threads, python2.7.2, simuPOP-1.0.7rc2, rev4489-gcc, short, 105890, 5483, 107717, 5526
+TestBasicRandomMatingWithGenotype, 2012-04-04 14:29:55,260, rhel6, x86_64-1threads, python2.7.2, simuPOP-1.0.7rc2, rev4489-gcc, mutant, 11675, 100, 1986, 21
+TestBasicRandomMatingWithGenotype, 2012-04-04 14:47:54,067, rhel6, x86_64-1threads, python2.7.2, simuPOP-1.0.7rc2, rev4489-gcc, mutant, 7759, 105, 2088, 21
+TestBasicRandomMatingWithGenotype, 2012-04-04 14:51:26,209, rhel6, x86_64-1threads, python2.7.2, simuPOP-1.0.7rc2, rev4489-gcc, mutant, 8220, 101, 2130, 20
