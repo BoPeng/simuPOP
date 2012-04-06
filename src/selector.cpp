@@ -469,7 +469,11 @@ bool PyMlSelector::apply(Population & pop) const
 				tmp.second[1] = it->second[0];
 			}
 			double s = m_fitnessFactory[tmp];
-			out << it->first << '\t' << it->second << '\t' << s << '\n';
+			if (tmp.second.size() == 1)
+				out << it->first << '\t' << static_cast<size_t>(it->second[0]) << '\t' << s << '\n';
+			else
+				out << it->first << '\t' << static_cast<size_t>(it->second[0]) << '\t'
+				    << static_cast<size_t>(it->second[1]) << '\t' << s << '\n';
 		}
 		closeOstream();
 	}
