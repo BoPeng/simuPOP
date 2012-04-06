@@ -743,29 +743,12 @@ getarrayitem_template(PyObject * op, Py_ssize_t i)
 }
 
 
-template <>
-PyObject *
-getarrayitem_template<GenoIterator>(PyObject * op, Py_ssize_t i)
-{
-	register struct arrayobject_template<GenoIterator> * ap;
-
-	assert(is_carrayobject_template<GenoIterator>(op));
-	ap = (struct arrayobject_template<GenoIterator> *)op;
-	assert(i >= 0 && i < Py_SIZE(ap));
-#  ifdef MUTANTALLELE
-	// for read only purpose, make sure not to really insert a value using the
-	// non-constant version of operator *.
-	return PyInt_FromLong((ap->ob_iter + i).value());
-#  else
-	return PyInt_FromLong(*(ap->ob_iter + i) );
-#  endif
-}
 
 
 /// CPPONLY
 template <typename T>
 int
-setarrayitem_template(struct arrayobject_template<T> * ap, int i, PyObject * v)
+setarrayitem_template(struct arrayobject_template<T> * ap, ssize_t i, PyObject * v)
 {
 	return -1;
 }
@@ -774,7 +757,7 @@ setarrayitem_template(struct arrayobject_template<T> * ap, int i, PyObject * v)
 /// CPPONLY
 template <>
 int
-setarrayitem_template<GenoIterator>(struct arrayobject_template<GenoIterator> * ap, int i, PyObject * v)
+setarrayitem_template<GenoIterator>(struct arrayobject_template<GenoIterator> * ap, ssize_t i, PyObject * v)
 {
 	// right now, the longest allele is uint16_t, but we need to be careful.
 	int x;
@@ -788,7 +771,7 @@ setarrayitem_template<GenoIterator>(struct arrayobject_template<GenoIterator> * 
 #  ifdef BINARYALLELE
 	*(ap->ob_iter + i) = (x != 0);
 #  else
-	*(ap->ob_iter + i) = Allele(x);
+	REF_ASSIGN_ALLELE(ap->ob_iter + i, TO_ALLELE(x));
 #  endif
 	return 0;
 }
@@ -796,7 +779,7 @@ setarrayitem_template<GenoIterator>(struct arrayobject_template<GenoIterator> * 
 
 /// CPPONLY
 template <>
-int setarrayitem_template<LineageIterator>(struct arrayobject_template<LineageIterator> * ap, int i, PyObject * v)
+int setarrayitem_template<LineageIterator>(struct arrayobject_template<LineageIterator> * ap, ssize_t i, PyObject * v)
 {
 	// right now, the longest allele is uint16_t, but we need to be careful.
 	long x;
@@ -873,8 +856,8 @@ array_richcompare_template(PyObject * v, PyObject * w, int op)
 
 		if (k) {
 			/* No more items to compare -- compare sizes */
-			int vs = Py_SIZE(va);
-			int ws = Py_SIZE(wa);
+			ssize_t vs = Py_SIZE(va);
+			ssize_t ws = Py_SIZE(wa);
 			int cmp;
 			switch (op) {
 			case Py_LT: cmp = vs < ws; break;
@@ -910,7 +893,7 @@ array_richcompare_template(PyObject * v, PyObject * w, int op)
 		struct arrayobject_template<T> * va;
 		PyObject * wa, * res;
 		bool dir;
-		int vs, ws;                                                                     // direction
+		ssize_t vs, ws;                                                                     // direction
 
 		// one of them is not array
 		if (is_carrayobject_template<T>(v) ) {
@@ -947,7 +930,7 @@ array_richcompare_template(PyObject * v, PyObject * w, int op)
 		PyObject * wi = NULL;
 		int k = 1;
 		for (int i = 0; i < vs && i < ws; i++) {
-			vi = PyInt_FromLong(*(va->ob_iter + i));
+			vi = getarrayitem_template<T>((PyObject*)(va), i);
 			wi = PySequence_GetItem(wa, i);
 			if (vi == NULL || wi == NULL) {
 				Py_XDECREF(vi);
@@ -1074,13 +1057,13 @@ array_ass_slice_template(struct arrayobject_template<T> * a, Py_ssize_t ilow, Py
 
 	// use a single number to propagate v
 	if (PyNumber_Check(v) ) {
-		for (int i = ilow; i < ihigh; ++i)
+		for (ssize_t i = ilow; i < ihigh; ++i)
 			setarrayitem_template<T>(a, i, v);
 		return 0;
 	}
 #  define b ((struct arrayobject_template<T> *)v)
 	if (is_carrayobject_template<T>(v)) {                                                  /* v is of array type */
-		int n = Py_SIZE(b);
+		ssize_t n = Py_SIZE(b);
 		if (n != ihigh - ilow) {
 			PyErr_SetString(PyExc_ValueError, "Can not extend or thrink slice");
 			return -1;
@@ -1092,7 +1075,7 @@ array_ass_slice_template(struct arrayobject_template<T> * a, Py_ssize_t ilow, Py
 #  undef b
 	/* a general sequence */
 	if (PySequence_Check(v) ) {
-		int n = PySequence_Size(v);
+		ssize_t n = PySequence_Size(v);
 		if (n != ihigh - ilow) {
 			PyErr_SetString(PyExc_ValueError, "Can not extend or thrink slice");
 			return -1;
@@ -1347,6 +1330,7 @@ array_ass_subscr_template(struct arrayobject_template<T> * self, PyObject * item
 }
 
 
+
 template <typename T>
 PyObject * array_new_template(PyTypeObject * type, PyObject * args, PyObject * kwds)
 {
@@ -1379,6 +1363,130 @@ bool is_carrayobject_template<LineageIterator>(PyObject * op)
 	return PyObject_TypeCheck(op, &LineageArraytype);
 }
 
+template <>
+int
+array_ass_subscr_template(struct arrayobject_template<GenoIterator> * self, PyObject * item, PyObject * value)
+{
+	Py_ssize_t start, stop, step, slicelength, needed;
+
+	struct arrayobject_template<GenoIterator> * other = NULL;
+
+	if (PyIndex_Check(item)) {
+		Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
+
+		if (i == -1 && PyErr_Occurred())
+			return -1;
+		if (i < 0)
+			i += Py_SIZE(self);
+		if (i < 0 || i >= Py_SIZE(self)) {
+			PyErr_SetString(PyExc_IndexError,
+				"array assignment index out of range");
+			return -1;
+		}
+		if (value == NULL) {
+			/* Fall through to slice assignment */
+			start = i;
+			stop = i + 1;
+			step = 1;
+			slicelength = 1;
+		}else
+			return setarrayitem_template<GenoIterator>(self, i, value);
+	}else if (PySlice_Check(item)) {
+#  if PY_VERSION_HEX >= 0x03020000
+		if (PySlice_GetIndicesEx((PyObject *)item,
+				Py_SIZE(self), &start, &stop,
+				&step, &slicelength) < 0) {
+			return -1;
+		}
+#  else
+		if (PySlice_GetIndicesEx((PySliceObject *)item,
+				Py_SIZE(self), &start, &stop,
+				&step, &slicelength) < 0) {
+			return -1;
+		}
+#  endif
+	}else {
+		PyErr_SetString(PyExc_TypeError,
+			"array indices must be integer");
+		return -1;
+	}
+	if (value == NULL) {
+		other = NULL;
+		needed = 0;
+	}else if (is_carrayobject_template<GenoIterator>(value)) {
+		other = (struct arrayobject_template<GenoIterator> *)value;
+		needed = Py_SIZE(other);
+		if (self == other) {
+			/* Special case "self[i:j] = self" -- copy self first */
+			int ret;
+			value = array_slice_template<GenoIterator>(other, 0, needed);
+			if (value == NULL)
+				return -1;
+			ret = array_ass_subscr_template<GenoIterator>(self, item, value);
+			Py_DECREF(value);
+			return ret;
+		}
+	}else if (PyLong_Check(value)) {
+		for (Py_ssize_t i = 0; start + i < stop; ++i)
+			setarrayitem_template(self, start + i, value);
+		return 0;
+	} else if (PySequence_Check(value)) {
+		needed = PySequence_Size(value);
+	}   else{
+		PyErr_Format(PyExc_TypeError,
+			"can only assign array (not \"%.200s\") to array slice",
+			Py_TYPE(value)->tp_name);
+		return -1;
+	}
+	/* for 'a[2:1] = ...', the insertion point is 'start', not 'stop' */
+	if ((step > 0 && stop < start) ||
+	    (step < 0 && stop > start))
+		stop = start;
+
+	if (step != 1) {
+		PyErr_SetString(PyExc_BufferError,
+			"Slice with step > 1 is not supported for type simuPOP.array.");
+		return -1;
+	}
+
+	if (slicelength != needed) {
+		PyErr_SetString(PyExc_BufferError,
+			"Slice size must match.");
+		return -1;
+	}
+	if (needed > 0) {
+		// copy sequence
+		if (is_carrayobject_template<GenoIterator>(value))
+#ifdef MUTANTALLELE			
+			simuPOP::copyGenotype(other->ob_iter, other->ob_iter + stop - start, self->ob_iter + start);
+#else
+			std::copy(other->ob_iter, other->ob_iter + stop - start, self->ob_iter + start);
+#endif		
+		else {
+			for (Py_ssize_t i = 0; start + i < stop; ++i)
+				setarrayitem_template<GenoIterator>(self, start + i, PySequence_GetItem(value, i));
+		}
+	}
+	return 0;
+}
+
+template <>
+PyObject *
+getarrayitem_template<GenoIterator>(PyObject * op, Py_ssize_t i)
+{
+	register struct arrayobject_template<GenoIterator> * ap;
+
+	assert(is_carrayobject_template<GenoIterator>(op));
+	ap = (struct arrayobject_template<GenoIterator> *)op;
+	assert(i >= 0 && i < Py_SIZE(ap));
+#  ifdef MUTANTALLELE
+	// for read only purpose, make sure not to really insert a value using the
+	// non-constant version of operator *.
+	return PyInt_FromLong((ap->ob_iter + i).value());
+#  else
+	return PyInt_FromLong(*(ap->ob_iter + i) );
+#  endif
+}
 
 /// CPPONLY
 template <typename T>
