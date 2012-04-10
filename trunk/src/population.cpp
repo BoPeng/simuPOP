@@ -2874,7 +2874,7 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 						DBG_WARNIF(true, "Allele " + toStr(a) + " can not be recoded");
 						continue;
 					}
-					REF_ASSIGN_ALLELE(ptr, map[DEREF_ALLELE(ptr)]);
+					REF_ASSIGN_ALLELE(ptr, TO_ALLELE(map[DEREF_ALLELE(ptr)]));
 				}
 			} else {
 				size_t numLoci = totNumLoci();
@@ -2886,7 +2886,7 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 						size_t a = static_cast<size_t>(DEREF_ALLELE(allele));
 						DBG_FAILIF(a >= map.size(),
 							ValueError, "Allele " + toStr(a) + " can not be recoded");
-						REF_ASSIGN_ALLELE(allele, map[DEREF_ALLELE(allele)]);
+						REF_ASSIGN_ALLELE(allele, TO_ALLELE(map[DEREF_ALLELE(allele)]));
 					}
 				}
 			}
