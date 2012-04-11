@@ -10,6 +10,9 @@ To be implemented:
 
 version 1.0.8 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 
+BUG:
+  - Quit with proper error message when Population.save fails to write 
+
 version 1.0.7 - Rev 4599 (Apr. 6, 2012)
 
 Major New features:
