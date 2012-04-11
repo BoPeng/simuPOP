@@ -3902,12 +3902,16 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 void Population::save(const string & filename) const
 {
 	boost::iostreams::filtering_ostream ofs;
-
+	// compress output
 	ofs.push(boost::iostreams::gzip_compressor());
-	ofs.push(boost::iostreams::file_sink(filename, std::ios::binary));
-
+	// open file to write
+	boost::iostreams::file_sink dest(filename, std::ios::binary);
+	if (!dest.is_open())
+		throw ValueError("Cannot write to file " + filename);
+	ofs.push(dest);
+	// if ofs itself get into trouble
 	if (!ofs)
-		throw ValueError("Can not open file " + filename);
+		throw ValueError("Cannot save population to file " + filename);
 
 	boost::archive::text_oarchive oa(ofs);
 	oa << *this;
