@@ -675,6 +675,7 @@ if __name__ == '__main__':
         py_modules = [
             'simuOpt', 
             'simuPOP.__init__',
+            'simuPOP.gsl',
             'simuPOP.utils', 
             'simuPOP.plotter', 
             'simuPOP.sampling', 
