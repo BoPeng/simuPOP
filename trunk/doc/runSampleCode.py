@@ -166,7 +166,7 @@ def runSampleCode(srcFile, names):
             tmpSrc = None
             tmp, tmpLogName = tempfile.mkstemp()
             os.close(tmp)
-            os.system('%s %s %s' % (sys.argv[0], tmpSrcName, tmpLogName))
+            os.system('%s %s %s %s' % (sys.executable, sys.argv[0], tmpSrcName, tmpLogName))
             #
             writeFile(open(tmpSrcName).readlines(), filename)
             logFile = filename.replace('.py', '.log')
