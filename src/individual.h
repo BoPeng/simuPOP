@@ -1352,10 +1352,12 @@ public:
 		if (!valid())
 			return *this;
 		if (m_useGappedIterator) {
-			m_ptr += diff * m_size;
-			if (m_ptr > m_ptrEnd)
+			if (m_ptrEnd - m_ptr > diff * m_size)
+				m_ptr += diff * m_size;
+			else {
 				m_ptr = m_ptrEnd;
-			m_valid = m_ptr != m_ptrEnd;
+				m_valid = false;
+			}
 		} else {
 			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
 			for (int i = 0; i < diff && m_valid; ++i)
