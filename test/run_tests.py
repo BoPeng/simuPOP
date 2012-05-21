@@ -64,7 +64,8 @@ if __name__ == '__main__':
     if True not in [arg in ['short', 'long', 'binary', 'mutant', 'lineage'] for arg in sys.argv]:
         for allele in ['binary', 'short', 'long', 'mutant', 'lineage']:
             for numThreads in [1, 4]:
-                os.system('%s %s -j%d' % (sys.argv[0], allele, numThreads))
+                print('%s %s %s -j%d' % (sys.executable, sys.argv[0], allele, numThreads))
+                os.system('%s %s %s -j%d' % (sys.executable, sys.argv[0], allele, numThreads))
     else:
         from simuPOP import moduleInfo
         print('\n\n===== Testing %s module (%d threads) =====\n\n' % (moduleInfo()['alleleType'],
