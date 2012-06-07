@@ -12,6 +12,8 @@ version 1.0.8 - Not released, available at https://simupop.svn.sourceforge.net/s
 
 BUG:
   - Quit with proper error message when Population.save fails to write 
+  - Fix a bug where applicability parameters in operators in parameter ops
+	for operators MlSelector and MlPenetrance are ignored.
 
 version 1.0.7 - Rev 4599 (Apr. 6, 2012)
 

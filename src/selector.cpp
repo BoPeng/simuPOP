@@ -30,6 +30,7 @@
 #endif
 
 namespace simuPOP {
+
 bool BaseSelector::apply(Population & pop) const
 {
 	size_t fit_id = pop.infoIdx(this->infoField(0));
@@ -48,14 +49,14 @@ bool BaseSelector::apply(Population & pop) const
 #ifdef _OPENMP
 				IndIterator ind = pop.indIterator(sp->subPop(), omp_get_thread_num());
 				for (; ind.valid(); ++ind)
-					ind->setInfo(indFitness(pop, &*ind), fit_id);
+					ind->setInfo(indFitness(pop, ind.rawIter()), fit_id);
 #endif
 			}
 
 		} else {
 			IndIterator ind = pop.indIterator(sp->subPop());
 			for (; ind.valid(); ++ind)
-				ind->setInfo(indFitness(pop, &*ind), fit_id);
+				ind->setInfo(indFitness(pop, ind.rawIter()), fit_id);
 		}
 		if (sp->isVirtual())
 			pop.deactivateVirtualSubPop(sp->subPop());
@@ -65,16 +66,16 @@ bool BaseSelector::apply(Population & pop) const
 }
 
 
-double MapSelector::indFitness(Population & /* pop */, Individual * ind) const
+double MapSelector::indFitness(Population & /* pop */, RawIndIterator ind) const
 {
 	vectoru chromTypes;
-	const vectoru & loci = m_loci.elems(ind);
+	const vectoru & loci = m_loci.elems(&*ind);
 
 	for (size_t i = 0; i < loci.size(); ++i)
 		chromTypes.push_back(ind->chromType(ind->chromLocusPair(loci[i]).first));
 
 	size_t ply = ind->ploidy();
-	if (ind->isHaplodiploid() && ind->sex() == MALE)
+	if (ind->isHaplodiploid() && (*ind).sex() == MALE)
 		ply = 1;
 
 	vectori alleles;
@@ -161,11 +162,11 @@ double MapSelector::indFitness(Population & /* pop */, Individual * ind) const
 
 
 // currently assuming diploid
-double MaSelector::indFitness(Population & /* pop */, Individual * ind) const
+double MaSelector::indFitness(Population & /* pop */, RawIndIterator ind) const
 {
 	UINT index = 0;
 	bool singleST = m_wildtype.size() == 1;
-	const vectoru & loci = m_loci.elems(ind);
+	const vectoru & loci = m_loci.elems(&*ind);
 
 	DBG_FAILIF((ind->ploidy() == 2 && m_fitness.size() != static_cast<UINT>(pow(3., static_cast<double>(loci.size())))) ||
 		(ind->ploidy() == 1 && m_fitness.size() != static_cast<UINT>(pow(2., static_cast<double>(loci.size())))),
@@ -255,20 +256,24 @@ private:
 };
 
 
-double MlSelector::indFitness(Population & pop, Individual * ind) const
+double MlSelector::indFitness(Population & pop, RawIndIterator ind) const
 {
 	FitnessAccumulator fit(m_mode);
 
 	opList::const_iterator s = m_selectors.begin();
 	opList::const_iterator sEnd = m_selectors.end();
 
-	for (; s != sEnd; ++s)
+	for (; s != sEnd; ++s) {
+		if ((!(*s)->isActive(pop.rep(), pop.gen())) ||
+		    (!(*s)->applicableToAllOffspring() && !(*s)->applicableToOffspring(pop, ind)))
+			continue;
 		fit.push(dynamic_cast<const BaseSelector * >(*s)->indFitness(pop, ind));
+	}
 	return fit.value();
 }
 
 
-double PySelector::indFitness(Population & pop, Individual * ind) const
+double PySelector::indFitness(Population & pop, RawIndIterator ind) const
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
 
@@ -277,7 +282,7 @@ double PySelector::indFitness(Population & pop, Individual * ind) const
 	for (size_t i = 0; i < m_func.numArgs(); ++i) {
 		const string & arg = m_func.arg(i);
 		if (arg == "ind")
-			PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(ind)));
+			PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(&*ind)));
 		else if (arg == "geno")
 			PyTuple_SET_ITEM(args, i, ind->genoAtLoci(m_loci));
 		else if (arg == "gen")
@@ -331,10 +336,10 @@ PyMlSelector::PyMlSelector(PyObject * func, int mode,
 }
 
 
-double PyMlSelector::indFitness(Population & /* pop */, Individual * ind) const
+double PyMlSelector::indFitness(Population & /* pop */, RawIndIterator ind) const
 {
 	FitnessAccumulator fit(m_mode);
-	const vectoru & loci = m_loci.elems(ind);
+	const vectoru & loci = m_loci.elems(&*ind);
 
 	size_t ply = ind->ploidy();
 
