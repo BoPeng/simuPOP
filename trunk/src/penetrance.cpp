@@ -81,7 +81,7 @@ bool BasePenetrance::apply(Population & pop) const
 			} else {
 				IndIterator ind = pop.indIterator(sp->subPop());
 				for (; ind.valid(); ++ind) {
-					double p = penet(&pop, &*ind);
+					double p = penet(&pop, ind.rawIter());
 
 					if (savePene)
 						ind->setInfo(p, infoIdx);
@@ -104,7 +104,7 @@ bool BasePenetrance::apply(Population & pop) const
 
 bool BasePenetrance::applyToIndividual(Individual * ind, Population * pop)
 {
-	double p = penet(pop, ind);
+	double p = penet(pop, pop->rawIndBegin() + (ind - &*pop->rawIndBegin()));
 
 	if (infoSize() > 0)
 		ind->setInfo(p, infoField(0));
@@ -120,7 +120,7 @@ bool BasePenetrance::applyDuringMating(Population & pop, Population & offPop, Ra
 	// if offspring does not belong to subPops, do nothing, but does not fail.
 	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
-	double p = penet(&pop, &*offspring);
+	double p = penet(&offPop, offspring);
 
 	if (infoSize() > 0)
 		offspring->setInfo(p, infoField(0));
@@ -130,11 +130,11 @@ bool BasePenetrance::applyDuringMating(Population & pop, Population & offPop, Ra
 
 
 // this function is the same as MapPenetrance.
-double MapPenetrance::penet(Population * /* pop */, Individual * ind) const
+double MapPenetrance::penet(Population * /* pop */, RawIndIterator ind) const
 {
 	vectoru chromTypes;
 
-	const vectoru & loci = m_loci.elems(ind);
+	const vectoru & loci = m_loci.elems(&*ind);
 
 	for (size_t i = 0; i < loci.size(); ++i)
 		chromTypes.push_back(ind->chromType(ind->chromLocusPair(loci[i]).first));
@@ -233,11 +233,11 @@ string MaPenetrance::describe(bool /* format */) const
 
 
 // this function is the same as MaPenetrance.
-double MaPenetrance::penet(Population * /* pop */, Individual * ind) const
+double MaPenetrance::penet(Population * /* pop */, RawIndIterator ind) const
 {
 	UINT index = 0;
 	bool singleST = m_wildtype.size() == 1;
-	const vectoru & loci = m_loci.elems(ind);
+	const vectoru & loci = m_loci.elems(&*ind);
 
 	DBG_FAILIF((ind->ploidy() == 2 && m_penetrance.size() != static_cast<UINT>(pow(3., static_cast<double>(loci.size())))) ||
 		(ind->ploidy() == 1 && m_penetrance.size() != static_cast<UINT>(pow(2., static_cast<double>(loci.size())))),
@@ -323,21 +323,26 @@ private:
 };
 
 
-double MlPenetrance::penet(Population * pop, Individual * ind) const
+double MlPenetrance::penet(Population * pop, RawIndIterator ind) const
 {
 	PenetranceAccumulator p(m_mode);
 
 	vectorop::const_iterator s = m_peneOps.begin();
 	vectorop::const_iterator sEnd = m_peneOps.end();
 
-	for (; s != sEnd; ++s)
+	for (; s != sEnd; ++s) {
+		if (pop && (
+		            (!(*s)->isActive(pop->rep(), pop->gen())) ||
+		            (!(*s)->applicableToAllOffspring() && !(*s)->applicableToOffspring(*pop, ind))))
+			continue;
 		p.push(dynamic_cast<const BasePenetrance *>(*s)->penet(pop, ind));
+	}
 	return p.value();
 }
 
 
 // the same as PyPenetrance
-double PyPenetrance::penet(Population * pop, Individual * ind) const
+double PyPenetrance::penet(Population * pop, RawIndIterator ind) const
 {
 	PyObject * args = PyTuple_New(m_func.numArgs());
 
@@ -346,7 +351,7 @@ double PyPenetrance::penet(Population * pop, Individual * ind) const
 	for (size_t i = 0; i < m_func.numArgs(); ++i) {
 		const string & arg = m_func.arg(i);
 		if (arg == "ind")
-			PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(ind)));
+			PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(&*ind)));
 		else if (arg == "geno")
 			PyTuple_SET_ITEM(args, i, ind->genoAtLoci(m_loci));
 		else if (arg == "gen") {
@@ -403,10 +408,10 @@ PyMlPenetrance::PyMlPenetrance(PyObject * func, int mode, const lociList & loci,
 }
 
 
-double PyMlPenetrance::penet(Population * /* pop */, Individual * ind) const
+double PyMlPenetrance::penet(Population * /* pop */, RawIndIterator ind) const
 {
 	PenetranceAccumulator pnt(m_mode);
-	const vectoru & loci = m_loci.elems(ind);
+	const vectoru & loci = m_loci.elems(&*ind);
 
 	size_t ply = ind->ploidy();
 

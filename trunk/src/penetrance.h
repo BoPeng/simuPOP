@@ -104,7 +104,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return penetrance etc.
 	 */
-	virtual double penet(Population *, Individual *) const
+	virtual double penet(Population *, RawIndIterator) const
 	{
 		throw ValueError("This penetrance calculator is not supposed to be called directly");
 		return 1.;
@@ -181,7 +181,7 @@ public:
 
 	/// currently assuming diploid
 	/// CPPONLY
-	virtual double penet(Population * pop, Individual * ind) const;
+	virtual double penet(Population * pop, RawIndIterator ind) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
@@ -263,7 +263,7 @@ public:
 	/** CPPONLY
 	 * currently assuming diploid
 	 */
-	virtual double penet(Population * pop, Individual * ind) const;
+	virtual double penet(Population * pop, RawIndIterator ind) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const;
@@ -311,6 +311,10 @@ public:
 	 *
 	 *  0 or 1 will be returned if the combined penetrance value is less than
 	 *  zero or greater than 1.
+	 *
+	 *  Applicability parameters (begin, end, step, at, reps, subPops) could be
+	 *  used in both \c MlSelector and selectors in parameter \e ops, but
+	 *  parameters in \c MlSelector will be interpreted first.
 	 */
 	MlPenetrance(const opList & ops, int mode = MULTIPLICATIVE,
 		const uintList & ancGens = uintList(NULL), int begin = 0, int end = -1, int step = 1,
@@ -337,7 +341,7 @@ public:
 	/** CPPONLY
 	 *  currently assuming diploid
 	 */
-	virtual double penet(Population * pop, Individual * ind) const;
+	virtual double penet(Population * pop, RawIndIterator ind) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
@@ -406,7 +410,7 @@ public:
 	/** CPPONLY
 	 *  currently assuming diploid
 	 */
-	virtual double penet(Population * pop, Individual * ind) const;
+	virtual double penet(Population * pop, RawIndIterator ind) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
@@ -485,7 +489,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return the penetrance value, currently assuming diploid
 	 */
-	double penet(Population * pop, Individual * ind) const;
+	double penet(Population * pop, RawIndIterator ind) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const

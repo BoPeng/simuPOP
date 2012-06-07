@@ -1261,6 +1261,10 @@ bool MatingScheme::prepareScratchPop(Population & pop, Population & scratch)
 	}
 	// this is not absolutely necessary but will reduce confusions
 	scratch.setVirtualSplitter(pop.virtualSplitter());
+	// the scratch population has the same generation and rep number as the parent population.
+	// The numbers might be used by during mating operator
+	scratch.setGen(pop.gen());
+	scratch.setRep(pop.rep());
 	scratch.clearInfo();
 #ifdef MUTANTALLELE
 	// for mutant allele, clearing all existing genotype will make subsequent

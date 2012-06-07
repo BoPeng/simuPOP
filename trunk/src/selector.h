@@ -138,7 +138,7 @@ public:
 
 
 	/// CPPONLY
-	virtual double indFitness(Population & /* pop */, Individual *) const
+	virtual double indFitness(Population & /* pop */, RawIndIterator) const
 	{
 		///
 		throw ValueError("This selector is not supposed to be called directly");
@@ -159,7 +159,7 @@ public:
 		if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 			return true;
 
-		double fitness = indFitness(pop, &*offspring);
+		double fitness = indFitness(offPop, offspring);
 
 		DBG_FAILIF(fcmp_lt(fitness, 0) || fcmp_gt(fitness, 1), ValueError,
 			"Fitness (probability for an offspring to survive) must be between 0 and 1 if a selector is used as a during-mating operator.");
@@ -226,7 +226,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return the fitness value, currently assuming diploid
 	 */
-	virtual double indFitness(Population & pop, Individual * ind) const;
+	virtual double indFitness(Population & pop, RawIndIterator ind) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
@@ -305,7 +305,7 @@ public:
 
 	/// CPPONLY
 	/// calculate/return the fitness value, currently assuming diploid
-	virtual double indFitness(Population & pop, Individual * ind) const;
+	virtual double indFitness(Population & pop, RawIndIterator ind) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
@@ -355,6 +355,10 @@ public:
 	 *  \li <em>exp(- sum(1 - f_i))</em> if \e mode = \c EXPONENTIAL,
 	 *
 	 *  zero will be returned if the combined fitness value is less than zero.
+	 *
+	 *  Applicability parameters (begin, end, step, at, reps, subPops) could be
+	 *  used in both \c MlSelector and selectors in parameter \e ops, but
+	 *  parameters in \c MlSelector will be interpreted first.
 	 */
 	MlSelector(const opList & ops, int mode = MULTIPLICATIVE,
 		int begin = 0, int end = -1, int step = 1,
@@ -381,7 +385,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return the fitness value, currently assuming diploid
 	 */
-	virtual double indFitness(Population & pop, Individual * ind) const;
+	virtual double indFitness(Population & pop, RawIndIterator ind) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
@@ -448,7 +452,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return the fitness value, currently assuming diploid
 	 */
-	virtual double indFitness(Population & pop, Individual * ind) const;
+	virtual double indFitness(Population & pop, RawIndIterator ind) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
@@ -529,7 +533,7 @@ public:
 	/** CPPONLY
 	 *  calculate/return the fitness value, currently assuming diploid
 	 */
-	virtual double indFitness(Population & pop, Individual * ind) const;
+	virtual double indFitness(Population & pop, RawIndIterator ind) const;
 
 	/// HIDDEN
 	string describe(bool format = true) const
