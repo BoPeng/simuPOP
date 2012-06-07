@@ -128,14 +128,6 @@ class TestSelector(unittest.TestCase):
                 elif ind.allele(2,0) == 1:
                     self.assertEqual(ind.fitness, 0.8)
             # 
-            MapSelector(loci=[2], fitness={(0,):0.9, (1,):0.8, ():1}).apply(pop)
-            for ind in pop.individuals():
-                if ind.sex() == FEMALE:
-                    self.assertEqual(ind.fitness, 1.0)
-                elif ind.allele(2,1) == 0 and ind.sex() == MALE:
-                    self.assertEqual(ind.fitness, 0.9)
-                elif ind.allele(2,1) == 2 and ind.sex() == MALE:
-                    self.assertEqual(ind.fitness, 0.8)
             # multiple loci
             pop = Population(size=1000, loci=[1, 2], infoFields=['a', 'fitness', 'b'],
                 chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
