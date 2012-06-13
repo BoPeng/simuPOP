@@ -15,6 +15,10 @@ BUG:
   - Fix a bug where applicability parameters in operators in parameter ops
 	for operators MlSelector and MlPenetrance are ignored.
 
+Minor improvement:
+  - Check the existence of directory for parameter saveAs of plotters defined in simuPOP.plotter.
+	raise a ValueError if directory does not exist.
+
 version 1.0.7 - Rev 4599 (Apr. 6, 2012)
 
 Major New features:
