@@ -258,6 +258,18 @@ class TestPlotter(unittest.TestCase):
             self.assertEqual(os.path.isfile('demo_%d.eps' % f), True)
             os.remove('demo_%d.eps' % f)
         sleep(1)
+        self.assertRaises(ValueError, simu.evolve,
+            initOps = [InitSex()],
+            preOps = [stator, migr],
+            matingScheme=RandomMating(),
+            postOps = [
+             VarPlotter('[x**2 for x in subPopSize]', byRep=True,
+                 win=20, update=10, ylim=[0, 10000],
+                 main='Save as, 3 rep, 3 colors', ylab='sp',
+                 saveAs='NonExistDir/demo.eps')
+             ],
+             gen = 31
+        )
         r.dev_off()
 
     def testVarPlotterPar(self):
