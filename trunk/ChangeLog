@@ -16,8 +16,7 @@ BUG:
 	for operators MlSelector and MlPenetrance are ignored.
 
 Minor improvement:
-  - Check the existence of directory for parameter saveAs of plotters defined in simuPOP.plotter.
-	raise a ValueError if directory does not exist.
+  - Automatically create a directory if needed when a full path name is specified to parameter saveAs of plotters defined in simuPOP.plotter.
 
 version 1.0.7 - Rev 4599 (Apr. 6, 2012)
 
