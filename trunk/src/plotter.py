@@ -121,6 +121,9 @@ def saveFigure(file=None, **kwargs):
     if file is None:
         return
     filename, ext = os.path.splitext(file)
+    dirname = os.path.dirname(file)
+    if dirname != '' and not os.path.isdir(dirname):
+        raise ValueError('Cannot save figure to file {} because directory {} does not exist.'.format(file, dirname))
     # default extension and format
     if ext == '':
         ext = '.eps'
