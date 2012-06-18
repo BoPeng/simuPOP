@@ -89,15 +89,12 @@ __all__ = [
     #
 ]
 
-import random
-
-
 from simuPOP import ALL_AVAIL, Pedigree, OUTBRED_SPOUSE, COMMON_OFFSPRING, FEMALE_ONLY, \
     MALE, AFFECTED, tagID, getRNG
 
-# set random seed so that python random module could also be replayed with saved
-# simuPOP seed.
-random.seed(getRNG().seed())
+import random
+def random_shuffle(x):
+    random.shuffle(x, getRNG().randUniform)
 
 def isSequence(obj):
     return hasattr(obj, '__iter__')
@@ -281,7 +278,7 @@ class RandomSampler(BaseSampler):
                 size = pop.popSize()
             # randomly choose size individuals
             values = range(self.pop.popSize())
-            random.shuffle(values)
+            random_shuffle(values)
             indexes = values[:size]
         else:
             indexes = []
@@ -291,7 +288,7 @@ class RandomSampler(BaseSampler):
                     print 'Warning: sample size (%d) at subpopulation %d is greater than subpopulation size %d ' \
                         % (size, sp, self.pop.subPopSize(sp))
                 values = range(self.pop.subPopBegin(sp), self.pop.subPopEnd(sp))
-                random.shuffle(values)
+                random_shuffle(values)
                 indexes.extend(values[:size])
         return self.pop.extractIndividuals(indexes = indexes)
 
@@ -389,14 +386,14 @@ class CaseControlSampler(BaseSampler):
             self.prepareSample(input_pop)
         #
         if not isSequence(self.cases):
-            random.shuffle(self.affected)
-            random.shuffle(self.unaffected)
+            random_shuffle(self.affected)
+            random_shuffle(self.unaffected)
             indexes = self.affected[:self.cases] + self.unaffected[:self.controls]
         else:
             indexes = []
             for sp in range(self.pop.numSubPop()):
-                random.shuffle(self.affected[sp])
-                random.shuffle(self.unaffected[sp])
+                random_shuffle(self.affected[sp])
+                random_shuffle(self.unaffected[sp])
                 indexes.extend(self.affected[sp][:self.cases[sp]])
                 indexes.extend(self.unaffected[sp][:self.controls[sp]])
         return self.pop.extractIndividuals(indexes = indexes)
@@ -480,7 +477,7 @@ class PedigreeSampler(BaseSampler):
                     % (self.families, len(self.selectedIDs))
             # a tuple might be returned
             self.selectedIDs = list(self.selectedIDs)
-            random.shuffle(self.selectedIDs)
+            random_shuffle(self.selectedIDs)
             # we select families one by one to exclude overlapping families.
             IDs = set()
             cnt = 0
@@ -503,7 +500,7 @@ class PedigreeSampler(BaseSampler):
                 #
                 # a tuple might be returned
                 self.selectedIDs[sp] = list(self.selectedIDs[sp])
-                random.shuffle(self.selectedIDs[sp])
+                random_shuffle(self.selectedIDs[sp])
                 # we select families one by one to exclude overlapping families.
                 cnt = 0
                 for id in self.selectedIDs[sp]:
