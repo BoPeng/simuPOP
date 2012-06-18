@@ -17,6 +17,7 @@ BUG:
 
 Minor improvement:
   - Automatically create a directory if needed when a full path name is specified to parameter saveAs of plotters defined in simuPOP.plotter.
+  - Use simuPOP RNG in simuPOP.sampling so that users could get reproducable samples by setting RNG seed, regardless the way this module is imported.
 
 version 1.0.7 - Rev 4599 (Apr. 6, 2012)
 
