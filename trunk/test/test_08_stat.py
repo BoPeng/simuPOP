@@ -311,6 +311,16 @@ class TestStat(unittest.TestCase):
             self.assertEqual(pop.dvars(1).heteroFreq[0], 0.3)
             self.assertEqual(pop.dvars(2).heteroNum[0], 600)
             self.assertEqual(pop.dvars(2).heteroFreq[0], 0.6)
+        # test coninuity of results
+        pop = Population(size=1000, loci=2)
+        initGenotype(pop, freq=[0.5, 0.5])
+        stat(pop, heteroFreq=0)
+        self.assertNotEqual(pop.dvars().heteroFreq[0], 0)
+        self.assertRaises(IndexError, pop.dvars().heteroFreq.__getitem__, 1)
+        stat(pop, heteroFreq=1)
+        # calculating again at locus 1 should not override result at locus 0
+        self.assertNotEqual(pop.dvars().heteroFreq[0], 0)
+        self.assertNotEqual(pop.dvars().heteroFreq[1], 0)
 
     def testGenoFreq(self):
         'Testing the counting of genotype frequency'

@@ -1155,10 +1155,23 @@ bool statHeteroFreq::apply(Population & pop) const
 		}
 		pop.deactivateVirtualSubPop(it->subPop());
 		// output subpopulation variable?
-		if (m_vars.contains(HeteroNum_sp_String))
-			pop.getVars().setVar(subPopVar_String(*it, HeteroNum_String, m_suffix), heteroCnt);
-		if (m_vars.contains(HomoNum_sp_String))
-			pop.getVars().setVar(subPopVar_String(*it, HomoNum_String, m_suffix), homoCnt);
+		if (m_vars.contains(HeteroNum_sp_String)) {
+			uintDict::const_iterator ct = heteroCnt.begin();
+			uintDict::const_iterator ct_end = heteroCnt.end();
+			for (; ct != ct_end; ++ct)
+				// we set elements one by one because we do not want to overwrite 
+				// previous results (perhaps at other loci). Also, we do not want to 
+				// make this variable a default dict.
+				pop.getVars().setVar(subPopVar_String(*it, HeteroNum_String, m_suffix)
+					+ "[" + toStr(ct->first) + "]", ct->second);
+		}
+		if (m_vars.contains(HomoNum_sp_String)) {
+			uintDict::const_iterator ct = homoCnt.begin();
+			uintDict::const_iterator ct_end = homoCnt.end();
+			for (; ct != ct_end; ++ct)
+				pop.getVars().setVar(subPopVar_String(*it, HomoNum_String, m_suffix)
+					+ "[" + toStr(ct->first) + "]", ct->second);
+		}
 		if (m_vars.contains(HeteroFreq_sp_String)) {
 			uintDict freq;
 			for (size_t idx = 0; idx < loci.size(); ++idx) {
@@ -1166,7 +1179,11 @@ bool statHeteroFreq::apply(Population & pop) const
 				double all = heteroCnt[loc] + homoCnt[loc];
 				freq[loc] = all == 0. ? 0 : heteroCnt[loc] / all;
 			}
-			pop.getVars().setVar(subPopVar_String(*it, HeteroFreq_String, m_suffix), freq);
+			uintDict::const_iterator ct = freq.begin();
+			uintDict::const_iterator ct_end = freq.end();
+			for (; ct != ct_end; ++ct)
+				pop.getVars().setVar(subPopVar_String(*it, HeteroFreq_String, m_suffix)
+					+ "[" + toStr(ct->first) + "]", ct->second);
 		}
 		if (m_vars.contains(HomoFreq_sp_String)) {
 			uintDict freq;
@@ -1175,14 +1192,28 @@ bool statHeteroFreq::apply(Population & pop) const
 				double all = heteroCnt[loc] + homoCnt[loc];
 				freq[loc] = all == 0. ? 0 : homoCnt[loc] / all;
 			}
-			pop.getVars().setVar(subPopVar_String(*it, HomoFreq_String, m_suffix), freq);
+			uintDict::const_iterator ct = freq.begin();
+			uintDict::const_iterator ct_end = freq.end();
+			for (; ct != ct_end; ++ct)
+				pop.getVars().setVar(subPopVar_String(*it, HomoFreq_String, m_suffix)
+					+ "[" + toStr(ct->first) + "]", ct->second);
 		}
 	}
 	// for whole population.
-	if (m_vars.contains(HeteroNum_String))
-		pop.getVars().setVar(HeteroNum_String + m_suffix, allHeteroCnt);
-	if (m_vars.contains(HomoNum_String))
-		pop.getVars().setVar(HomoNum_String + m_suffix, allHomoCnt);
+	if (m_vars.contains(HeteroNum_String)) {
+		uintDict::const_iterator ct = allHeteroCnt.begin();
+		uintDict::const_iterator ct_end = allHeteroCnt.end();
+		for (; ct != ct_end; ++ct)
+			pop.getVars().setVar(HeteroNum_String + m_suffix + "[" + toStr(ct->first) + "]",
+				ct->second);
+	}
+	if (m_vars.contains(HomoNum_String)) {
+		uintDict::const_iterator ct = allHomoCnt.begin();
+		uintDict::const_iterator ct_end = allHomoCnt.end();
+		for (; ct != ct_end; ++ct)
+			pop.getVars().setVar(HomoNum_String + m_suffix + "[" + toStr(ct->first) + "]",
+				ct->second);
+	}
 	if (m_vars.contains(HeteroFreq_String)) {
 		uintDict freq;
 		for (size_t idx = 0; idx < loci.size(); ++idx) {
@@ -1190,7 +1221,11 @@ bool statHeteroFreq::apply(Population & pop) const
 			double all = allHeteroCnt[loc] + allHomoCnt[loc];
 			freq[loc] = all == 0. ? 0 : allHeteroCnt[loc] / all;
 		}
-		pop.getVars().setVar(HeteroFreq_String + m_suffix, freq);
+		uintDict::const_iterator ct = freq.begin();
+		uintDict::const_iterator ct_end = freq.end();
+		for (; ct != ct_end; ++ct)
+			pop.getVars().setVar(HeteroFreq_String + m_suffix + "[" + toStr(ct->first) + "]",
+				ct->second);
 	}
 	if (m_vars.contains(HomoFreq_String)) {
 		uintDict freq;
@@ -1199,7 +1234,11 @@ bool statHeteroFreq::apply(Population & pop) const
 			double all = allHeteroCnt[loc] + allHomoCnt[loc];
 			freq[loc] = all == 0. ? 0 : allHomoCnt[loc] / all;
 		}
-		pop.getVars().setVar(HomoFreq_String + m_suffix, freq);
+		uintDict::const_iterator ct = freq.begin();
+		uintDict::const_iterator ct_end = freq.end();
+		for (; ct != ct_end; ++ct)
+			pop.getVars().setVar(HomoFreq_String + m_suffix + "[" + toStr(ct->first) + "]",
+				ct->second);
 	}
 
 	return true;
