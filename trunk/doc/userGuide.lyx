@@ -14914,7 +14914,7 @@ Before mating happens, an operator (called a
 \series bold
 selector
 \series default
-) goes through a populations and assign each individual a fitness value.
+) goes through a population and assign each individual a fitness value.
  The fitness values are stored in an information field called 
 \family typewriter
 fitness
@@ -15125,8 +15125,9 @@ reference "selectParents"
 \end_inset
 
  but the underlying selection mechanism is quite different.
- Note that selection through offspring does not need an information field
- to hold fitness values.
+ Note that selection through offspring does not save fitness values to
+ an information field so you do not need to add information field
+ fitness to the population.
 \end_layout
 
 \begin_layout Standard
