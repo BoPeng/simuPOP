@@ -100,6 +100,8 @@ namespace simuPOP {
  *  when any of the during mating operators returns \e False. It is important
  *  to remember that:
  *  \li individual fitness needs to be between 0 and 1 in this case.
+ *  \li Fitness values are not stored so the population does not need an
+ *       information field \e fitness.
  *  \li This method applies natural selection to offspring instead of parents.
  *       These two implementation can be identical or different depending on
  *       the mating scheme used.
