@@ -66,7 +66,7 @@ bool BasePenetrance::apply(Population & pop) const
 #ifdef _OPENMP
 					IndIterator ind = pop.indIterator(sp->subPop(), omp_get_thread_num());
 					for (; ind.valid(); ++ind) {
-						double p = penet(&pop, &*ind);
+						double p = penet(&pop, ind.rawIter());
 
 						if (savePene)
 							ind->setInfo(p, infoIdx);
