@@ -729,6 +729,11 @@ class TestUtility(unittest.TestCase):
             phenotype='a')
         export(pop, format='structure', output='stru.txt', locData='loc', phenotype='pheno')
         self.assertEqual(self.lineOfFile('stru.txt', 3), '1\t1\t20\t30\t1\t2\t1\t2\t1\t2\n')
+        # test for parameter subPops
+        self.assertEqual(len(open('stru.txt').read().split('\n')), 21)
+        export(pop, format='structure', output='stru.txt', locData='loc',
+            subPops=0)
+        self.assertEqual(len(open('stru.txt').read().split('\n')), 11)
 
 if __name__ == '__main__':
     unittest.main()
