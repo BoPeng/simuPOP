@@ -1743,9 +1743,10 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 			try {
 				if (!m[idx]->mateSubPop(pop, scratch, sp, ind, ind + *itSize))
 					return false;
-			} catch (Exception e) {
-				cerr << "Mating in subpopulation " + toStr(sp) + " failed" << endl;
-				throw e;
+			} catch (Exception &) {
+				cerr << "Mating scheme " + toStr(idx) + " in subpopulation " + toStr(sp) +
+                    " failed to produce " + toStr(*itSize) << " offspring." << endl;
+				throw;
 			}
 			ind += *itSize;
 		}
