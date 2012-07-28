@@ -42,6 +42,7 @@ __all__ = [
     'saveCSV',
     'Exporter',
     'export',
+    'importPopulation',
     'ProgressBar',
     'Trajectory',
     'TrajectorySimulator',
@@ -1595,17 +1596,11 @@ def simulateBackwardTrajectory(N, endGen, endFreq, nLoci=1, fitness=None,
     return TrajectorySimulator(N, nLoci, fitness, logger).simuBackward(
         endGen, endFreq, minMutAge, maxMutAge, maxAttempts)
 
-class BaseExporter:
-    '''A base exporter to handle common tasks for different exporters.'''
-    def __init__(self):
-        pass
-
-class StructureExporter(BaseExporter):
+class StructureExporter:
     '''An exporter to export given population in structure format'''
     def __init__(self, markerNames=True, recessiveAlleles=None, interMarkerDistances=True,
         phaseInformation=None, label=True, popData=True, popFlag=None, locData=None,
         phenotype=None):
-        BaseExporter.__init__(self)
         self.markerNames = markerNames
         self.recessiveAlleles = recessiveAlleles
         self.interMarkerDistances = interMarkerDistances
@@ -1718,11 +1713,11 @@ class StructureExporter(BaseExporter):
             prog.done()
 
             
-class GenePopExporter(BaseExporter):
+class GenePopExporter:
     '''An exporter to export given population in structure format'''
-    def __init__(self, title=None):
-        BaseExporter.__init__(self)
+    def __init__(self, title=None, adjust=1):
         self.title = title.rstrip() if title is not None else None
+        self.adjust = adjust
     
     def export(self, pop, filename, subPops):
         '''
@@ -1738,7 +1733,7 @@ class GenePopExporter(BaseExporter):
             if self.title is not None:
                 out.write(self.title + '\n')
             else:
-                out.write('%s in GenePop format. Outputted by simuPOP on %s\n' % (
+                out.write('%s in GenePop format. Outputted by simuPOP at %s\n' % (
                     filename, time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())))
             #
             # second line: allele names
@@ -1780,7 +1775,7 @@ class GenePopExporter(BaseExporter):
                     # genotype
                     #
                     geno = ind.genotype()
-                    out.write(' '.join([format_string % (geno[x] + 1, geno[numLoci + x] + 1) for x in range(numLoci)]) + '\n')
+                    out.write(' '.join([format_string % (geno[x] + self.adjust, geno[numLoci + x] + self.adjust) for x in range(numLoci)]) + '\n')
                     #
                     # update progress bar
                     #
@@ -1829,7 +1824,8 @@ class Exporter(PyOperator):
     phenotype
         Name of an information field with phenotype information of each individual. Default
         to None (no phenotype)
-
+    
+        
     Genotype information are always outputted. Alleles are coded the same way (0, 1, 2, etc)
     as they are stored in simuPOP.
 
@@ -1839,6 +1835,12 @@ class Exporter(PyOperator):
     title
         The tile line. If unspecified, a line similar to 'produced by simuPOP on XXX'
         will be outputted.
+
+    adjust
+        Adjust values of alleles by specified value (1 as default). This adjustment is
+        necessary in many cases because GENEPOP treats allele 0 as missing values, and 
+        simuPOP treats allele 0 as a valid allele. Exporting alleles 0 and 1 as 1 and 2
+        will allow GENEPOP to analyze simuPOP-exported files correctly.
 
     Because 0 is reserved as missing data in this format, allele A is outputted as A+1.
     simuPOP will use subpopulation names (if available) and 1-based individual index
@@ -1933,6 +1935,87 @@ def export(pop, format, *args, **kwargs):
     '''Apply operator ``Exporter`` to population *pop* in format *format*.'''
     Exporter(format, *args, **kwargs).apply(pop)
 
+
+class GenePopImporter:
+    def __init__(self, adjust=0):
+        self.adjust = adjust
+
+    def importFrom(self, filename):
+        with open(filename, 'r') as input:
+            #
+            # ignore the first line
+            #
+            input.readline()
+            #
+            # read all loci names
+            #
+            loci_names = []
+            while True:
+                line = input.readline()
+                if not line.rstrip():
+                    raise ValueError('No POP line is found. This file must not be in GenePop format')
+                if line.lower().rstrip() == 'pop':
+                    break
+                loci_names.extend([x.strip() for x in line.split(',')])
+            # 
+            # read genotypes
+            #
+            popSize = [0]
+            genotypes = []
+            while True:
+                line = input.readline()
+                if not line.rstrip():
+                    break
+                # new subpopulation
+                if line.lower().rstrip() == 'pop':
+                    popSize.append(0)
+                    continue
+                # increase pop size count
+                popSize[-1] = popSize[-1] + 1
+                # 
+                try:
+                    # ignore ind name
+                    name, geno = line.split(',', 1)
+                    # split genotype into pieces
+                    geno = [x.strip() for x in geno.split() if x.strip()]
+                    # get alleles (adjusted with self.adjust)
+                    alleles = [(int(x[:3]) + self.adjust, int(x[3:]) + self.adjust) if len(x) == 6 else \
+                        (int(x[:2]) + self.adjust, int(x[2:]) + self.adjust) for x in geno]
+                    # append alleles in simuPOP order
+                    genotypes.extend([x[0] for x in alleles])
+                    genotypes.extend([x[1] for x in alleles])
+                    if len(geno) != len(loci_names):
+                        raise ValueError('Incorrect number of genotype (%d expected)' % len(loci_names))
+                except Exception as e:
+                    raise ValueError('Invalid input genotype line (%s). The file must not be in GenePop format. %s' % (line, e))
+            #
+            # create a population
+            pop = Population(size=popSize, loci = len(loci_names), lociNames=loci_names)
+            pop.setGenotype(genotypes)
+        return pop
+
+def importPopulation(format, filename, *args, **kwargs):
+    '''This function import and return a population from a file *filename* in
+    specified *format*. Format-specific parameters can be used to define how the
+    input should be interpreted and imported. This function supports the following
+    file format.
+
+    GENEPOP (http://genepop.curtin.edu.au/). For input file of this format, this
+    function ignores the first title line, load the second line as loci names,
+    and import genotypes of different POP sections as different subpopulations.
+    This format accepts the following parameters:
+
+    adjust
+        Adjust alleles by specified value (default to 0 for no adjustment). This
+        parameter is mostly used to convert alleles 1 and 2 in a GenePop file to
+        alleles 0 and 1 (with adjust=-1) in simuPOP.
+
+    '''
+    if format.lower() == 'genepop':
+        importer = GenePopImporter(*args, **kwargs)
+    else:
+        raise ValueError('Importing genotypes in format %s is currently not supported' % format)
+    return importer.importFrom(filename)
 
 if __name__ == "__main__":
     pass

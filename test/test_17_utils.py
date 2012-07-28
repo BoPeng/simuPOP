@@ -688,8 +688,6 @@ class TestUtility(unittest.TestCase):
         pop = Population(size=[4, 5], loci=[2, 4], ploidy=2, 
             lociNames=['a', 'b', 'c', 'd', 'e', 'f'], infoFields=['loc', 'pheno']) 
         initGenotype(pop, haplotypes=[1,2])
-        initInfo(pop, [20], infoFields='loc')
-        initInfo(pop, [30], infoFields='pheno')
         initSex(pop, sex=[MALE, FEMALE])
         pop.setVirtualSplitter(SexSplitter())
         #
@@ -712,7 +710,36 @@ class TestUtility(unittest.TestCase):
         pop.genotype()[0] = 100
         export(pop, format='genepop', output='genepop.txt')
         self.assertEqual(self.lineOfFile('genepop.txt', 4), 'SubPop0-1, 101002 003003 002002 003003 002002 003003\n')
+        # cleanup
+        os.remove('genepop.txt')
         
+    def testImportGenePop(self):
+        pop = Population(size=[4, 5], loci=[2, 4], ploidy=2, 
+            lociNames=['a', 'b', 'c', 'd', 'e', 'f'], infoFields=['loc', 'pheno']) 
+        initGenotype(pop, freq=[0.2, 0.3, 0.4, 0.1])
+        genotypes = list(pop.genotype())
+        initSex(pop, sex=[MALE, FEMALE])
+        export(pop, format='genepop', output='genepop.txt')
+        #
+        pop = importPopulation(format='genepop', filename='genepop.txt')
+        self.assertEqual(pop.numSubPop(), 2)
+        self.assertEqual(pop.numChrom(), 1)
+        self.assertEqual(pop.totNumLoci(), 6)
+        self.assertEqual(pop.ploidy(), 2)
+        self.assertEqual(pop.lociNames(), ('a', 'b', 'c', 'd', 'e', 'f'))
+        self.assertEqual(list(pop.genotype()), [x+1 for x in genotypes])
+        del pop
+        # test for parameter adjust
+        pop = importPopulation(format='genepop', filename='genepop.txt', adjust=-1)
+        self.assertEqual(pop.numSubPop(), 2)
+        self.assertEqual(pop.numChrom(), 1)
+        self.assertEqual(pop.totNumLoci(), 6)
+        self.assertEqual(pop.ploidy(), 2)
+        self.assertEqual(pop.lociNames(), ('a', 'b', 'c', 'd', 'e', 'f'))
+        self.assertEqual(list(pop.genotype()), [x for x in genotypes])
+        # cleanup
+        os.remove('genepop.txt')
+
 
     def testExportStructure(self):
         '''Testing export population in structure format'''
