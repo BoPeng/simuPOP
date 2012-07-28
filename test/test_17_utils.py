@@ -677,5 +677,58 @@ class TestUtility(unittest.TestCase):
         gsl_cdf_poisson_Q(2, 3.4)
         gsl_ran_poisson_pdf(2, 3.4)
 
+    def lineOfFile(self, filename, line):
+        with open(filename) as input:
+            for i in range(line):
+                res = input.readline()
+        return res
+
+    def testExportStructure(self):
+        '''Testing export population in structure format'''
+        pop = Population(size=[4, 5], loci=[2, 4], ploidy=2, 
+            lociNames=['a', 'b', 'c', 'd', 'e', 'f'], infoFields=['loc', 'pheno']) 
+        initGenotype(pop, haplotypes=[1,2])
+        initInfo(pop, [20], infoFields='loc')
+        initInfo(pop, [30], infoFields='pheno')
+        export(pop, format='structure', output='stru.txt')
+        self.assertEqual(self.lineOfFile('stru.txt', 1), 'a\tb\tc\td\te\tf\n')
+        # test for parameter markerNames
+        self.assertRaises(ValueError, export, pop, format='structure', output='stru.txt', markerNames='cc')
+        self.assertRaises(ValueError, export, pop, format='structure', output='stru.txt', markerNames=['cc'])
+        export(pop, format='structure', output='stru.txt', markerNames=['f', 'e', 'd', 'c', 'b', 'a'])
+        self.assertEqual(self.lineOfFile('stru.txt', 1), 'f\te\td\tc\tb\ta\n')
+        # test for parameter recessive alleles
+        self.assertRaises(ValueError, export, pop, format='structure', output='stru.txt',
+            recessiveAlleles=2)
+        export(pop, format='structure', output='stru.txt', recessiveAlleles=0)
+        self.assertEqual(self.lineOfFile('stru.txt', 2), '0\n')
+        # test for parameter inter marker distance
+        export(pop, format='structure', output='stru.txt')
+        self.assertEqual(self.lineOfFile('stru.txt', 2), '-1\t1.0\t-1\t1.0\t1.0\t1.0\n')
+        # test for parameter phaseInformation
+        self.assertRaises(ValueError, export, pop, format='structure', output='stru.txt',
+            phaseInformation=2)
+        export(pop, format='structure', output='stru.txt', phaseInformation=0)
+        self.assertEqual(self.lineOfFile('stru.txt', 3), '0\n')
+        # test for parameter label
+        export(pop, format='structure', output='stru.txt', label=False)
+        self.assertEqual(self.lineOfFile('stru.txt', 3), '1\t1\t2\t1\t2\t1\t2\n')
+        # test for parameter popData
+        export(pop, format='structure', output='stru.txt', label=False, popData=False)
+        self.assertEqual(self.lineOfFile('stru.txt', 3), '1\t2\t1\t2\t1\t2\n')
+        # test for parameter popFlag
+        export(pop, format='structure', output='stru.txt', popFlag=1)
+        self.assertEqual(self.lineOfFile('stru.txt', 3), '1\t1\t1\t1\t2\t1\t2\t1\t2\n')
+        # test for parameter locData
+        self.assertRaises(ValueError, export, pop, format='structure', output='stru.txt',
+            locData='a')
+        export(pop, format='structure', output='stru.txt', locData='loc')
+        self.assertEqual(self.lineOfFile('stru.txt', 3), '1\t1\t20\t1\t2\t1\t2\t1\t2\n')
+        # test for parameter phenotype
+        self.assertRaises(ValueError, export, pop, format='structure', output='stru.txt',
+            phenotype='a')
+        export(pop, format='structure', output='stru.txt', locData='loc', phenotype='pheno')
+        self.assertEqual(self.lineOfFile('stru.txt', 3), '1\t1\t20\t30\t1\t2\t1\t2\t1\t2\n')
+
 if __name__ == '__main__':
     unittest.main()
