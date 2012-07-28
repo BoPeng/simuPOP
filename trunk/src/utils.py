@@ -1661,6 +1661,9 @@ class StructureExporter(BaseExporter):
             # 
             # sixth line and later: genotype lines
             #
+            # progress bar might be wrong with subPops parameter...
+            prog = ProgressBar(filename, pop.popSize())
+            count = 0
             for vsp in subPops:
                 sp = vsp if type(vsp) == type(0) else vsp[0]
                 for idx, ind in enumerate(pop.individuals(vsp)):
@@ -1706,6 +1709,12 @@ class StructureExporter(BaseExporter):
                             out.write('%s\t%s\n' % ('\t'.join(items), '\t'.join([str(x) for x in ind.genotype(p)])))
                         else:
                             out.write('%s\n' % '\t'.join([str(x) for x in ind.genotype(p)]))
+                    #
+                    # update progress bar
+                    #
+                    count += 1
+                    prog.update(count)
+            prog.done()
 
             
 class Exporter(PyOperator):
