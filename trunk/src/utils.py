@@ -50,6 +50,7 @@ __all__ = [
 ]
 
 import sys
+import time
 
 from simuOpt import simuOptions
 
@@ -1717,11 +1718,82 @@ class StructureExporter(BaseExporter):
             prog.done()
 
             
+class GenePopExporter(BaseExporter):
+    '''An exporter to export given population in structure format'''
+    def __init__(self, title=None):
+        BaseExporter.__init__(self)
+        self.title = title.rstrip() if title is not None else None
+    
+    def export(self, pop, filename, subPops):
+        '''
+        http://genepop.curtin.edu.au/help_input.html
+        '''
+        if pop.ploidy() != 2:
+            raise ValueError('simuPOP currently can only export diploid populations in GenePop format.')
+        #
+        with open(filename, 'w') as out:
+            #
+            # first line: title
+            #
+            if self.title is not None:
+                out.write(self.title + '\n')
+            else:
+                out.write('%s in GenePop format. Outputted by simuPOP on %s\n' % (
+                    filename, time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())))
+            #
+            # second line: allele names
+            #
+            names = pop.lociNames()
+            if names:
+                # if names are specified
+                out.write(', '.join(names) + '\n')
+            else:
+                names = []
+                for ch in range(pop.numChrom()):
+                    for loc in range(pop.numLoci(ch)):
+                        names.append('ch%d-loc%d' % (ch + 1, loc + 1))
+                out.write(', '.join(names) + '\n')
+            # 
+            # output genotype
+            #
+            # progress bar might be wrong with subPops parameter...
+            alleleWidth = 3 if max(pop.genotype()) >= 99 else 2
+            format_string = '%%0%dd%%0%dd' % (alleleWidth, alleleWidth)
+            prog = ProgressBar(filename, pop.popSize())
+            count = 0
+            numLoci = pop.totNumLoci()
+            for vsp in subPops:
+                # 
+                # for each subpopulation, output pop
+                #
+                out.write('POP\n')
+                name = pop.subPopName(vsp)
+                if not name:
+                    name = 'SubPop%d' % (vsp if type(vsp) == type(0) else vsp[0])
+                #
+                for idx, ind in enumerate(pop.individuals(vsp)):
+                    #
+                    # label
+                    #
+                    out.write('%s-%d, ' % (name, idx + 1))
+                    #
+                    # genotype
+                    #
+                    geno = ind.genotype()
+                    out.write(' '.join([format_string % (geno[x] + 1, geno[numLoci + x] + 1) for x in range(numLoci)]) + '\n')
+                    #
+                    # update progress bar
+                    #
+                    count += 1
+                    prog.update(count)
+            prog.done()
+
+
 class Exporter(PyOperator):
     '''An operator to export the current population in specified format.
     Currently supported file formats include:
 
-    STRUCTURE (http://pritch.bsd.uchicago.edu/structure.html): This format
+    STRUCTURE (http://pritch.bsd.uchicago.edu/structure.html). This format
     accepts the following parameters:
 
     markerNames
@@ -1758,10 +1830,24 @@ class Exporter(PyOperator):
         Name of an information field with phenotype information of each individual. Default
         to None (no phenotype)
 
-    Genotype information are always outputted.
+    Genotype information are always outputted. Alleles are coded the same way (0, 1, 2, etc)
+    as they are stored in simuPOP.
 
-    GENEPOP: http://genepop.curtin.edu.au/
+    GENEPOP (http://genepop.curtin.edu.au/). The genepop format accepts the following
+    parameters:
 
+    title
+        The tile line. If unspecified, a line similar to 'produced by simuPOP on XXX'
+        will be outputted.
+
+    Because 0 is reserved as missing data in this format, allele A is outputted as A+1.
+    simuPOP will use subpopulation names (if available) and 1-based individual index
+    to output individual label (e.g. SubPop2-3). If parameter subPops is used to output
+    selected individuals, each subpop will be outputted as a separate subpopulation even 
+    if there are multiple virtual subpopulations from the same subpopulation. simuPOP 
+    currently only export diploid populations to this format.
+
+        
     This operator supports the usual applicability parameters such as begin,
     end, step, at, reps, and subPops. If subPops are specified, only
     individuals from specified (virtual) subPops are exported. Because this

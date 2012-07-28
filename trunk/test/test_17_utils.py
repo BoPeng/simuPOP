@@ -683,6 +683,37 @@ class TestUtility(unittest.TestCase):
                 res = input.readline()
         return res
 
+    def testExportGenePop(self):
+        '''Testing export population in genepop format'''
+        pop = Population(size=[4, 5], loci=[2, 4], ploidy=2, 
+            lociNames=['a', 'b', 'c', 'd', 'e', 'f'], infoFields=['loc', 'pheno']) 
+        initGenotype(pop, haplotypes=[1,2])
+        initInfo(pop, [20], infoFields='loc')
+        initInfo(pop, [30], infoFields='pheno')
+        initSex(pop, sex=[MALE, FEMALE])
+        pop.setVirtualSplitter(SexSplitter())
+        #
+        # test parameter title
+        export(pop, format='genepop', output='genepop.txt', title='something')
+        self.assertEqual(self.lineOfFile('genepop.txt', 1), 'something\n')
+        # pending \n does not matter
+        export(pop, format='genepop', output='genepop.txt', title='something\n')
+        self.assertEqual(self.lineOfFile('genepop.txt', 1), 'something\n')
+        # first line?
+        export(pop, format='genepop', output='genepop.txt')
+        self.assertEqual(self.lineOfFile('genepop.txt', 1)[:10], 'genepop.tx')
+        # loci names
+        self.assertEqual(self.lineOfFile('genepop.txt', 2), 'a, b, c, d, e, f\n')
+        # pop?
+        self.assertEqual(self.lineOfFile('genepop.txt', 3), 'POP\n')
+        # genotype?
+        self.assertEqual(self.lineOfFile('genepop.txt', 4), 'SubPop0-1, 0202 0303 0202 0303 0202 0303\n')
+        # large allele?
+        pop.genotype()[0] = 100
+        export(pop, format='genepop', output='genepop.txt')
+        self.assertEqual(self.lineOfFile('genepop.txt', 4), 'SubPop0-1, 101002 003003 002002 003003 002002 003003\n')
+        
+
     def testExportStructure(self):
         '''Testing export population in structure format'''
         pop = Population(size=[4, 5], loci=[2, 4], ploidy=2, 
