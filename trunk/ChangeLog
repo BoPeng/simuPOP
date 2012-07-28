@@ -10,6 +10,9 @@ To be implemented:
 
 version 1.0.8 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 
+Major New Features:
+  - Add an operator Exporter and function export to export a simuPOP population in STRUCTURE and GenePop formats.
+
 BUG:
   - Quit with proper error message when Population.save fails to write 
   - Fix a bug where applicability parameters in operators in parameter ops
