@@ -12,7 +12,7 @@
 import random
 import unittest, os, sys
 from simuOpt import setOptions
-setOptions(quiet=True)
+setOptions(quiet=True, gui=False)
 new_argv = []
 for arg in sys.argv:
     if arg in ['short', 'long', 'binary', 'mutant', 'lineage']:
@@ -690,6 +690,8 @@ class TestUtility(unittest.TestCase):
         initGenotype(pop, haplotypes=[1,2])
         initInfo(pop, [20], infoFields='loc')
         initInfo(pop, [30], infoFields='pheno')
+        initSex(pop, sex=[MALE, FEMALE])
+        pop.setVirtualSplitter(SexSplitter())
         export(pop, format='structure', output='stru.txt')
         self.assertEqual(self.lineOfFile('stru.txt', 1), 'a\tb\tc\td\te\tf\n')
         # test for parameter markerNames
@@ -734,6 +736,12 @@ class TestUtility(unittest.TestCase):
         export(pop, format='structure', output='stru.txt', locData='loc',
             subPops=0)
         self.assertEqual(len(open('stru.txt').read().split('\n')), 11)
+        # test for virtual subPops
+        export(pop, format='structure', output='stru.txt', locData='loc',
+            subPops=[(0, 0)])
+        self.assertEqual(len(open('stru.txt').read().split('\n')), 7)
+        # cleanup
+        os.remove('stru.txt')
 
 if __name__ == '__main__':
     unittest.main()
