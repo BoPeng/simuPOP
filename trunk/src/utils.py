@@ -40,6 +40,8 @@ __all__ = [
     'migrHierarchicalIslandRates',
     'migrSteppingStoneRates',
     'saveCSV',
+    'Exporter',
+    'export',
     'ProgressBar',
     'Trajectory',
     'TrajectorySimulator',
@@ -51,7 +53,7 @@ import sys
 
 from simuOpt import simuOptions
 
-from simuPOP import moduleInfo, MALE, FEMALE, Population, PointMutator, getRNG, ALL_AVAIL
+from simuPOP import moduleInfo, MALE, FEMALE, Population, PointMutator, getRNG, ALL_AVAIL, PyOperator
 
 def viewVars(var, gui=None):
     '''
@@ -1591,6 +1593,243 @@ def simulateBackwardTrajectory(N, endGen, endFreq, nLoci=1, fitness=None,
     '''
     return TrajectorySimulator(N, nLoci, fitness, logger).simuBackward(
         endGen, endFreq, minMutAge, maxMutAge, maxAttempts)
+
+class BaseExporter:
+    '''A base exporter to handle common tasks for different exporters.'''
+    def __init__(self):
+        pass
+
+class StructureExporter(BaseExporter):
+    '''An exporter to export given population in structure format'''
+    def __init__(self, markerNames=True, recessiveAlleles=None, interMarkerDistances=True,
+        phaseInformation=None, label=True, popData=True, popFlag=None, locData=None,
+        phenotype=None):
+        BaseExporter.__init__(self)
+        self.markerNames = markerNames
+        self.recessiveAlleles = recessiveAlleles
+        self.interMarkerDistances = interMarkerDistances
+        self.phaseInformation = phaseInformation
+        self.label = label
+        self.popData = popData
+        self.popFlag = popFlag
+        self.locData = locData
+        self.phenotype = phenotype
+    
+    def export(self, pop, filename, subPops):
+        '''
+        http://pritch.bsd.uchicago.edu/structure_software/release_versions/v2.3.4/structure_doc.pdf
+        '''
+        with open(filename, 'w') as out:
+            #
+            # first line: marker names
+            #
+            if self.markerNames is True:
+                names = pop.lociNames()
+                if names:
+                    out.write('\t'.join(names) + '\n')
+            elif hasattr(self.markerNames, '__iter__'):
+                if len(self.markerNames) != pop.totNumLoci():
+                    raise ValueError('%d names are provided for %d markers' % (len(self.markerNames), pop.totNumLoci()))
+                out.write('\t'.join(self.markerNames) + '\n')
+            else:
+                raise ValueError('Please provide a list of marker names for parameter markerNames')
+            #
+            # second line: recessive alleles
+            #
+            if self.recessiveAlleles is not None:
+                if self.recessiveAlleles not in [0, 1]:
+                    raise ValueError('Only 0 or 1 is acceptable for parameter revessiveAlleles')
+                out.write('%d\n' % self.recessiveAlleles)
+            # 
+            # third line: inter marker distance
+            #
+            if self.interMarkerDistances is True:
+                loci_pos = pop.lociPos()
+                # get difference
+                loci_dist = [-1] + [loci_pos[i] - loci_pos[i-1] for i in range(1, len(loci_pos))]
+                # set beginning of each chromosome to -1
+                for ch in range(pop.numChrom()):
+                    loci_dist[pop.chromBegin(ch)] = -1
+                out.write('\t'.join(['%s' % x for x in loci_dist]) + '\n')
+            #
+            # fourth line: phase information
+            #
+            if self.phaseInformation is not None:
+                if self.phaseInformation not in [0, 1]:
+                    raise ValueError('Only 0 or 1 is acceptable for parameter revessiveAlleles')
+                out.write('%d\n' % self.phaseInformation)
+            # 
+            # sixth line and later: genotype lines
+            #
+            for vsp in subPops:
+                sp = vsp if type(vsp) == type(0) else vsp[0]
+                for idx, ind in enumerate(pop.individuals(vsp)):
+                    items = []
+                    #
+                    # label
+                    #
+                    if self.label:
+                        items.append(str(idx + 1))
+                    #
+                    # popData
+                    #
+                    if self.popData:
+                        items.append(str(sp + 1))
+                    #
+                    # popFlag
+                    #
+                    if self.popFlag is not None:
+                        if self.popFlag not in [0, 1]:
+                            raise ValueError('Only 0 or 1 is acceptable for parameter popFlag')
+                        items.append(str(self.popFlag))
+                    #
+                    # locData
+                    #
+                    if self.locData is not None:
+                        try:
+                            items.append(str(int(ind.info(self.locData))))
+                        except:
+                            raise ValueError('Population does not have information field %s as locData' % self.locData)
+                    #
+                    # phenotype
+                    #
+                    if self.phenotype is not None:
+                        try:
+                            items.append(str(int(ind.info(self.phenotype))))
+                        except:
+                            raise ValueError('Population does not have information field %s as phenotype' % self.locData)
+                    #
+                    # genotype
+                    #
+                    for p in range(pop.ploidy()):
+                        if items:
+                            out.write('%s\t%s\n' % ('\t'.join(items), '\t'.join([str(x) for x in ind.genotype(p)])))
+                        else:
+                            out.write('%s\n' % '\t'.join([str(x) for x in ind.genotype(p)]))
+
+            
+class Exporter(PyOperator):
+    '''An operator to export the current population in specified format.
+    Currently supported file formats include:
+
+    STRUCTURE (http://pritch.bsd.uchicago.edu/structure.html): This format
+    accepts the following parameters:
+
+    markerNames
+        If set to True (default), output names of loci that are specified by parameter
+        *lociNames* of the ``Population`` class. No names will be outputted if loci are
+        anonymous. A list of loci names are acceptable which will be outputted directly.
+    
+    recessiveAlleles
+        If specified, value of this parameter will be outputted after the marker names
+        line.
+
+    interMarkerDistances
+        If set to True (default), output distances between markers. The first marker
+        of each chromosome has distance -1, as required by this format.
+
+    phaseInformation
+        If specified, output the value (0 or 1) of this parameter after the inter marker
+        distances line. Note that simuPOP populations always have phase information.
+
+    label
+        Output 1-based indexes of individuals if this parameter is true (default)
+
+    popData
+        Output 1-based index of subpopulation if this parameter is set to true (default).
+    
+    popFlag
+        Output value of this parameter (0 or 1) after popData if this parameter specified.
+
+    locData
+        Name of an information field with location information of each individual. Default
+        to None (no location data)
+
+    phenotype
+        Name of an information field with phenotype information of each individual. Default
+        to None (no phenotype)
+
+    Genotype information are always outputted.
+
+    GENEPOP: http://genepop.curtin.edu.au/
+
+    This operator supports the usual applicability parameters such as begin,
+    end, step, at, reps, and subPops. If subPops are specified, only
+    individuals from specified (virtual) subPops are exported. Because this
+    exporter will always overwite any existing file, leading '>' of parameter
+    output is ignored, although the '!expr' format can still be used to
+    generate context dependent output filename. Unless explicitly stated for
+    a particular format, this operator exports individuals from the current
+    generation if there are multiple ancestral generations in the population.
+    '''
+    def __init__(self, format, output, begin=0, end=-1, step=1, at=[],
+        reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[], *args, **kwargs):
+        self.output = output
+        self.subPops = subPops
+        if format.lower() == 'structure':
+            self.exporter = StructureExporter(*args, **kwargs)
+        elif format.lower() == 'genepop':
+            self.exporter = GenePopExporter(*args, **kwargs)
+        else:
+            raise ValueError('Unrecognized fileformat: {}.'.format(format))
+        PyOperator.__init__(self, func=self._export, begin=begin, end=end,
+            step=step, at=at, reps=reps, subPops=subPops, infoFields=[])
+
+    def _determineOutput(self, pop):
+        # determine the output filename
+        # the expression form
+        if self.output.startswith('!'):
+            # evaluate output with the population variable
+            output = eval(self.output[1:], pop.vars(), pop.vars())
+            return output.lstrip('>')
+        else:
+            return self.output.lstrip('>')
+            
+    def _determineSubPops(self, pop):
+        # this is basically subPopList::expandFrom(pop)
+        if self.subPops == ALL_AVAIL:
+            return range(pop.numSubPop())
+        # handle vsps such as (ALL_AVAIL, vsp)
+        subPops = []
+        for vsp in self.subPops:
+            # is it a number?
+            if type(vsp) == type(0):
+                subPops.append(vsp)
+            elif type(vsp) == type(''):
+                subPops.append(pop.subPopNames().index(vsp))
+            else:
+                if type(vsp[0]) == type(''):
+                    try:
+                        vsp[0] = pop.subPopNames().index(vsp[0])
+                    except:
+                        raise ValueError('%s is not a valid subpop name' % vsp[0])
+                if type(vsp[1]) == type(''):
+                    try:
+                        vsp[1] = pop.virtualSplitter().vspByName(vsp[1])
+                    except:
+                        raise ValueError('Population does not have any virtual subpopulation %s' % vsp[1])
+                if vsp[0] == ALL_AVAIL:
+                    for u in range(pop.numSubPop()):
+                        if vsp[1] == ALL_AVAIL:
+                            for v in range(pop.numVirtualSubPops()):
+                                subPops.append([u, v])
+                        else:
+                            subPops.append([u, vsp[1]])
+                else:
+                    if vsp[1] == ALL_AVAIL:
+                        for v in range(pop.numVirtualSubPops()):
+                            subPops.append([vsp[0], v])
+                    else:
+                        subPops.append(vsp)
+        return subPops
+        
+    def _export(self, pop):
+        self.exporter.export(pop, self._determineOutput(pop), self._determineSubPops(pop))
+        return True
+
+def export(pop, format, *args, **kwargs):
+    '''Apply operator ``Exporter`` to population *pop* in format *format*.'''
+    Exporter(format, *args, **kwargs).apply(pop)
 
 
 if __name__ == "__main__":
