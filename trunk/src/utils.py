@@ -1773,7 +1773,7 @@ class Exporter(PyOperator):
         else:
             raise ValueError('Unrecognized fileformat: {}.'.format(format))
         PyOperator.__init__(self, func=self._export, begin=begin, end=end,
-            step=step, at=at, reps=reps, subPops=subPops, infoFields=[])
+            step=step, at=at, reps=reps, subPops=ALL_AVAIL, infoFields=[])
 
     def _determineOutput(self, pop):
         # determine the output filename
@@ -1789,6 +1789,13 @@ class Exporter(PyOperator):
         # this is basically subPopList::expandFrom(pop)
         if self.subPops == ALL_AVAIL:
             return range(pop.numSubPop())
+        elif type(self.subPops) == type(0):
+            return [self.subPops]
+        elif type(self.subPops) == type(''):
+            try:
+                return [pop.subPopNames().index(self.subPops)]
+            except:
+                raise ValueError('%s is not a valid subpop name' % self.subPops)
         # handle vsps such as (ALL_AVAIL, vsp)
         subPops = []
         for vsp in self.subPops:
