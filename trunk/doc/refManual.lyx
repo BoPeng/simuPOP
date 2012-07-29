@@ -1967,6 +1967,27 @@ simuPOPutilsviewVarsRef
 simuPOPutilssaveCSVRef
 \end_layout
 
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPutilsExporterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPutilsimportPopulationRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPutilsexportRef
+\end_layout
+
 \end_inset
 
 
@@ -2232,66 +2253,6 @@ simuPOPgslRef
 \end_inset
 
 
-\end_layout
-
-\begin_layout Section
-Module 
-\family typewriter
-simuPOP.sandbox
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPsandboxRef
-\end_layout
-
-\begin_layout Plain Layout
-
-%
-\backslash
-simuPOPsandboxrevertFixedSitesRef
-\end_layout
-
-\begin_layout Plain Layout
-
-%
-\backslash
-RevertFixedSitesRef
-\end_layout
-
-\begin_layout Plain Layout
-
-%
-\backslash
-MutSpaceMutatorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-%
-\backslash
-MutSpaceSelectorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-%
-\backslash
-MutSpaceRecombinatorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 \begin_inset CommandInset index_print
 LatexCommand printindex
 type "idx"

@@ -757,6 +757,38 @@ os.remove('sample.pop')
 #end_ignore
 #end_file
 
+
+
+#begin_file log/importExport.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True, gui=False)
+#end_ignore
+import simuPOP as sim
+from simuPOP.utils import importPopulation, export
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+pop = sim.Population([2,4], loci=5, lociNames=['a1', 'a2', 'a3', 'a4', 'a5'],
+    infoFields='BMI')
+sim.initGenotype(pop, freq=[0.3, 0.5, 0.2])
+sim.initSex(pop)
+sim.initInfo(pop, [20, 30, 40, 50, 30, 25], infoFields='BMI')
+export(pop, format='fstat', output='fstat.txt')
+print(open('fstat.txt').read())
+export(pop, format='structure', phenotype='BMI', output='stru.txt')
+print(open('stru.txt').read())
+pop1 = importPopulation(format='fstat', filename='fstat.txt')
+sim.dump(pop1)
+#begin_ignore
+import os
+os.remove('fstat.txt')
+os.remove('stru.txt')
+#end_ignore
+#end_file
+
+
+
 #begin_file log/applicableGen.py
 #begin_ignore
 import simuOpt

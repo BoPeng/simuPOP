@@ -1020,12 +1020,14 @@ typedef IndividualIterator<RawIndIterator, RawIndPointer, RawIndReference> IndIt
 typedef IndividualIterator<ConstRawIndIterator, ConstRawIndPointer, ConstRawIndReference> ConstIndIterator;
 
 /**
-    this class implements a C++ iterator class that iterate through
-    infomation fields in a (sub)population using
-    1. an IndIterator that	will skip invisible individuals, or
-    2. a gapped iterator that will run faster.
-    Note that 1, 2 should yield identical result, and 2 should be used
-    when there is no virtual subpopulation.q
+ *  this class implements a C++ iterator class that iterate through
+ *  infomation fields in a (sub)population using
+ *  1. an IndIterator that	will skip invisible individuals, or
+ *  2. a gapped iterator that will run faster.
+ *  Note that 1, 2 should yield identical result, and 2 should be used
+ *  when there is no virtual subpopulation.q
+ *
+ *  CPPONLY
  */
 template <typename T>
 class InformationIterator
@@ -1136,14 +1138,15 @@ typedef InformationIterator<RawIndIterator> IndInfoIterator;
 typedef InformationIterator<ConstRawIndIterator> ConstIndInfoIterator;
 
 /** This class implements a C++ iterator class that iterate through
-    all alleles in a (virtual) (sub)population using
-    1. an IndIterator that will skip invisible individuals and invalid
-        alleles, or
-    2. a gapped iterator that will run faster, in the case that
-      a): no virtual subpopulation
-      b): not sex chromosomes
-      c): not haplodiploid
-
+ *  all alleles in a (virtual) (sub)population using
+ *  1. an IndIterator that will skip invisible individuals and invalid
+ *      alleles, or
+ *  2. a gapped iterator that will run faster, in the case that
+ *    a): no virtual subpopulation
+ *    b): not sex chromosomes
+ *    c): not haplodiploid
+ *
+ *   CPPONLY
  */
 template <typename T, typename ITER, typename REF>
 class CombinedAlleleIterator

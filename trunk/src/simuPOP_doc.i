@@ -410,7 +410,7 @@ Usage:
 
 %feature("docstring") simuPOP::BasePenetrance::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::BasePenetrance::penet(Population *, Individual *) const;
+%ignore simuPOP::BasePenetrance::penet(Population *, RawIndIterator) const;
 
 %feature("docstring") simuPOP::BasePenetrance::apply "
 
@@ -574,6 +574,8 @@ Details:
     during mating operators returns False. It is important to remember
     that:
     *   individual fitness needs to be between 0 and 1 in this case.
+    *   Fitness values are not stored so the population does not need
+    an information field fitness.
     *   This method applies natural selection to offspring instead of
     parents. These two implementation can be identical or different
     depending on the mating scheme used.
@@ -614,7 +616,7 @@ Usage:
 
 %feature("docstring") simuPOP::BaseSelector::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::BaseSelector::indFitness(Population &, Individual *) const;
+%ignore simuPOP::BaseSelector::indFitness(Population &, RawIndIterator) const;
 
 %feature("docstring") simuPOP::BaseSelector::apply "Obsolete or undocumented function."
 
@@ -738,7 +740,7 @@ Details:
     distrubution to find the next true event.  Also, for the cases of
     p=0.5, random bits are generated.  This class maintain a two
     dimensional table: a vector of probabilities cross expected number
-    of trials  p1 p2 p3 p4 p5 trial 1 trial 2 ... trial N  We expect
+    of trials p1 p2 p3 p4 p5  trial 1 trial 2 ... trial N  We expect
     that N is big (usually populaiton size) and p_i are small  using
     fast bernulliTrial method for fix p, we can fill up this table
     very quickly column by column  This class will provide easy access
@@ -954,17 +956,7 @@ Details:
 
 %ignore simuPOP::CloneGenoTransmitter::parallelizable() const;
 
-%feature("docstring") simuPOP::CombinedAlleleIterator "
-
-Details:
-
-    This class implements a C++ iterator class that iterate through
-    all alleles in a (virtual) (sub)population using 1. an IndIterator
-    that will skip invisible individuals and invalid alleles, or 2. a
-    gapped iterator that will run faster, in the case that a): no
-    virtual subpopulation b): not sex chromosomes c): not haplodiploid
-
-"; 
+%ignore simuPOP::CombinedAlleleIterator;
 
 %feature("docstring") simuPOP::CombinedAlleleIterator::CombinedAlleleIterator "
 
@@ -3100,9 +3092,9 @@ Details:
     this class implements a C++ iterator class that iterate through
     individuals in a (sub)population. If allInds are true, the
     visiblility of individuals will not be checked. Note that
-    IndividualIterator *will* iterate through only visible
-    individuals, and allInds is only provided when we know in advance
-    that all individuals are visible. This is a way to obtain better
+    IndividualIteratorwill iterate through only visible individuals,
+    and allInds is only provided when we know in advance that all
+    individuals are visible. This is a way to obtain better
     performance in simple cases.
 
 "; 
@@ -3247,17 +3239,7 @@ Usage:
 
 %feature("docstring") simuPOP::InfoExec::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::InformationIterator "
-
-Details:
-
-    this class implements a C++ iterator class that iterate through
-    infomation fields in a (sub)population using 1. an IndIterator
-    that will skip invisible individuals, or 2. a gapped iterator that
-    will run faster. Note that 1, 2 should yield identical result, and
-    2 should be used when there is no virtual subpopulation.q
-
-"; 
+%ignore simuPOP::InformationIterator;
 
 %feature("docstring") simuPOP::InformationIterator::InformationIterator "
 
@@ -3802,7 +3784,7 @@ Usage:
 
 %feature("docstring") simuPOP::MaPenetrance::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::MaPenetrance::penet(Population *pop, Individual *ind) const;
+%ignore simuPOP::MaPenetrance::penet(Population *pop, RawIndIterator ind) const;
 
 %feature("docstring") simuPOP::MaPenetrance::describe "Obsolete or undocumented function."
 
@@ -3852,7 +3834,7 @@ Usage:
 
 %feature("docstring") simuPOP::MapPenetrance::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::MapPenetrance::penet(Population *pop, Individual *ind) const;
+%ignore simuPOP::MapPenetrance::penet(Population *pop, RawIndIterator ind) const;
 
 %feature("docstring") simuPOP::MapPenetrance::describe "Obsolete or undocumented function."
 
@@ -3904,7 +3886,7 @@ Usage:
 
 %feature("docstring") simuPOP::MapSelector::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::MapSelector::indFitness(Population &pop, Individual *ind) const;
+%ignore simuPOP::MapSelector::indFitness(Population &pop, RawIndIterator ind) const;
 
 %feature("docstring") simuPOP::MapSelector::describe "Obsolete or undocumented function."
 
@@ -3962,7 +3944,7 @@ Usage:
 
 %feature("docstring") simuPOP::MaSelector::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::MaSelector::indFitness(Population &pop, Individual *ind) const;
+%ignore simuPOP::MaSelector::indFitness(Population &pop, RawIndIterator ind) const;
 
 %feature("docstring") simuPOP::MaSelector::describe "Obsolete or undocumented function."
 
@@ -4043,7 +4025,7 @@ Details:
     through all mutable allele and mutate it to another state
     according to probabilities in the corresponding row of the rate
     matrix. Only one mutation rate matrix can be specified which will
-    be used for all specified loci. #
+    be used for all specified loci.
 
 "; 
 
@@ -4419,7 +4401,10 @@ Details:
     *   sum(f_i) if mode = ADDITIVE, and
     *   1-Prod(1 - f_i) if mode = HETEROGENEITY 0 or 1 will be
     returned if the combined penetrance value is less than zero or
-    greater than 1.
+    greater than 1.  Applicability parameters (begin, end, step, at,
+    reps, subPops) could be used in both MlSelector and selectors in
+    parameter ops, but parameters in MlSelector will be interpreted
+    first.
 
 "; 
 
@@ -4433,7 +4418,7 @@ Usage:
 
 %feature("docstring") simuPOP::MlPenetrance::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::MlPenetrance::penet(Population *pop, Individual *ind) const;
+%ignore simuPOP::MlPenetrance::penet(Population *pop, RawIndIterator ind) const;
 
 %feature("docstring") simuPOP::MlPenetrance::describe "Obsolete or undocumented function."
 
@@ -4472,6 +4457,9 @@ Details:
     *   1-Prod(1 - f_i) if mode = HETEROGENEITY, and
     *   exp(- sum(1 - f_i)) if mode = EXPONENTIAL, zero will be
     returned if the combined fitness value is less than zero.
+    Applicability parameters (begin, end, step, at, reps, subPops)
+    could be used in both MlSelector and selectors in parameter ops,
+    but parameters in MlSelector will be interpreted first.
 
 "; 
 
@@ -4485,7 +4473,7 @@ Usage:
 
 %feature("docstring") simuPOP::MlSelector::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::MlSelector::indFitness(Population &pop, Individual *ind) const;
+%ignore simuPOP::MlSelector::indFitness(Population &pop, RawIndIterator ind) const;
 
 %feature("docstring") simuPOP::MlSelector::describe "Obsolete or undocumented function."
 
@@ -4977,11 +4965,11 @@ Details:
     it is applied to this population. If stopOnKeyStroke is False
     (default), it will always pause a population when it is applied,
     if this parameter is set to True, the operator will pause a
-    population if *any* key has been pressed. If a specific character
-    is set, the operator will stop when this key has been pressed.
-    This allows, for example, the use of several pause operators to
-    pause different populations.  After a population has been paused,
-    a message will be displayed (unless prompt is set to False) and
+    population if any key has been pressed. If a specific character is
+    set, the operator will stop when this key has been pressed. This
+    allows, for example, the use of several pause operators to pause
+    different populations.  After a population has been paused, a
+    message will be displayed (unless prompt is set to False) and
     tells you how to proceed. You can press 's' to stop the evolution
     of this population, 'S' to stop the evolution of all populations,
     or 'p' to enter a Python shell. The current population will be
@@ -5483,9 +5471,8 @@ Details:
     parameter ploidy. This operator is by default applied to
     individuals in the first subpopulation but you can apply it to a
     different or more than one (virtual) subpopulations using
-    parameter *subPops* (``AllAvail`` is also accepted). Please refer
-    to class BaseOperator for detailed descriptions of other
-    parameters.
+    parameter subPops (AllAvail is also accepted). Please refer to
+    class BaseOperator for detailed descriptions of other parameters.
 
 "; 
 
@@ -7214,7 +7201,7 @@ Usage:
 
 %feature("docstring") simuPOP::PyMlPenetrance::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::PyMlPenetrance::penet(Population *pop, Individual *ind) const;
+%ignore simuPOP::PyMlPenetrance::penet(Population *pop, RawIndIterator ind) const;
 
 %feature("docstring") simuPOP::PyMlPenetrance::describe "Obsolete or undocumented function."
 
@@ -7278,7 +7265,7 @@ Usage:
 
 %feature("docstring") simuPOP::PyMlSelector::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::PyMlSelector::indFitness(Population &pop, Individual *ind) const;
+%ignore simuPOP::PyMlSelector::indFitness(Population &pop, RawIndIterator ind) const;
 
 %feature("docstring") simuPOP::PyMlSelector::describe "Obsolete or undocumented function."
 
@@ -7617,7 +7604,7 @@ Details:
 
 %feature("docstring") simuPOP::PyPenetrance::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::PyPenetrance::penet(Population *pop, Individual *ind) const;
+%ignore simuPOP::PyPenetrance::penet(Population *pop, RawIndIterator ind) const;
 
 %feature("docstring") simuPOP::PyPenetrance::describe "Obsolete or undocumented function."
 
@@ -7751,7 +7738,7 @@ Details:
 
 %feature("docstring") simuPOP::PySelector::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::PySelector::indFitness(Population &pop, Individual *ind) const;
+%ignore simuPOP::PySelector::indFitness(Population &pop, RawIndIterator ind) const;
 
 %feature("docstring") simuPOP::PySelector::describe "Obsolete or undocumented function."
 
@@ -10721,10 +10708,10 @@ Details:
     Individuals without parents are assumed to be in the top-most
     ancestral generation. This is the case for individuals in the top-
     most ancestral generation if the file is saved by function
-    ``Pedigree.save()``, and for individuals who only appear as
-    another individual's parent, if the file is saved by operator
-    ``PedigreeTagger``. The order at which offsprng is specified is
-    not important because this function essentially creates a top-most
+    Pedigree.save(), and for individuals who only appear as another
+    individual's parent, if the file is saved by operator
+    PedigreeTagger. The order at which offsprng is specified is not
+    important because this function essentially creates a top-most
     ancestral generation using IDs without parents, and creates the
     next generation using offspring of these parents, and so on until
     all generations are recreated. That is to say, if you have a
