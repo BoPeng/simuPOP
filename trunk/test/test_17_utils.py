@@ -683,6 +683,60 @@ class TestUtility(unittest.TestCase):
                 res = input.readline()
         return res
 
+    def testExportFStat(self):
+        '''Testing export population in genepop format'''
+        pop = Population(size=[4, 5], loci=[2, 4], ploidy=2, 
+            lociNames=['a', 'b', 'c', 'd', 'e', 'f'], infoFields=['loc', 'pheno']) 
+        initGenotype(pop, haplotypes=[1,2])
+        initSex(pop, sex=[MALE, FEMALE])
+        #
+        # basic export
+        export(pop, format='fstat', output='fstat.txt')
+        self.assertEqual(self.lineOfFile('fstat.txt', 1), '2 6 3 1\n')
+        self.assertEqual(self.lineOfFile('fstat.txt', 2), 'a\n')
+        self.assertEqual(self.lineOfFile('fstat.txt', 8), '1 22 33 22 33 22 33\n')
+        # 
+        # test parameter lociNames
+        self.assertRaises(ValueError, export, pop, format='fstat', output='fstat.txt',
+            lociNames=['aa', 'bb'])
+        export(pop, format='fstat', output='fstat.txt', lociNames=['aa', 'bb', 'c', 'd', 'e', 'f'])
+        self.assertEqual(self.lineOfFile('fstat.txt', 2), 'aa\n')
+        #
+        # test parameter adjust
+        export(pop, format='fstat', output='fstat.txt', adjust=0)
+        self.assertEqual(self.lineOfFile('fstat.txt', 8), '1 11 22 11 22 11 22\n')
+        #
+        # cleanup
+        os.remove('fstat.txt')
+
+    def testImportFStat(self):
+        '''Testing import population from a file in FStat format'''
+        pop = Population(size=[4, 5], loci=[2, 4], ploidy=2, 
+            lociNames=['a', 'b', 'c', 'd', 'e', 'f'], infoFields=['loc', 'pheno']) 
+        initGenotype(pop, freq=[0.2, 0.3, 0.4, 0.1])
+        genotypes = list(pop.genotype())
+        initSex(pop, sex=[MALE, FEMALE])
+        export(pop, format='fstat', output='fstat.txt')
+        #
+        pop = importPopulation(format='fstat', filename='fstat.txt')
+        self.assertEqual(pop.numSubPop(), 2)
+        self.assertEqual(pop.numChrom(), 1)
+        self.assertEqual(pop.totNumLoci(), 6)
+        self.assertEqual(pop.ploidy(), 2)
+        self.assertEqual(pop.lociNames(), ('a', 'b', 'c', 'd', 'e', 'f'))
+        self.assertEqual(list(pop.genotype()), [x+1 for x in genotypes])
+        del pop
+        # test for parameter adjust
+        pop = importPopulation(format='fstat', filename='fstat.txt', adjust=-1)
+        self.assertEqual(pop.numSubPop(), 2)
+        self.assertEqual(pop.numChrom(), 1)
+        self.assertEqual(pop.totNumLoci(), 6)
+        self.assertEqual(pop.ploidy(), 2)
+        self.assertEqual(pop.lociNames(), ('a', 'b', 'c', 'd', 'e', 'f'))
+        self.assertEqual(list(pop.genotype()), [x for x in genotypes])
+        # cleanup
+        os.remove('fstat.txt')
+
     def testExportGenePop(self):
         '''Testing export population in genepop format'''
         pop = Population(size=[4, 5], loci=[2, 4], ploidy=2, 

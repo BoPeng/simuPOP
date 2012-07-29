@@ -1856,53 +1856,39 @@ class GenePopImporter:
 # and a 1 if the code for alleles is a one digit number (1-9), a 2 if 
 # code for alleles is a 2 digit number (01-99) or a 3 if code for 
 # alleles is a 3 digit number (001-999). These 4 numbers need to be
-# separated by any number of spaces. Actually, the function 
-# read.fstat.dat skips the first line. The info is just here to
-# make sure that if you were to run the data set in fstat, it will work. 
+# separated by any number of spaces. 
 #
 # The first line is immediately followed by nl lines, each containing the 
 # name of a locus, in the order they will appear in the rest of the file. 
 #
-On line nl+2, a series of numbers as follow: 
-1     0102   0103   0101  0203          0      0303
-
-The first number identifies the sample to which the individual belongs, the second is the genotype of the individual at the first locus, coded with a 2 digits number for each allele, the third is the genotype at the second locus, until locus nl is entered (in the example above, nl=6). Missing genotypes are encoded with 0. Note that 0001 or 0100 are not a valid format, that is, both alleles at a locus have to be known, otherwise, the genotype is considered as missing. No empty lines are needed between samples.
+# On line nl+2, a series of numbers as follow: 
+# 1     0102   0103   0101  0203          0      0303
+#
+# The first number identifies the sample to which the individual belongs,
+# the second is the genotype of the individual at the first locus, coded
+# with a 2 digits number for each allele, the third is the genotype at the
+# second locus, until locus nl is entered (in the example above, nl=6).
+# Missing genotypes are encoded with 0. Note that 0001 or 0100 are not 
+# a valid format, that is, both alleles at a locus have to be known, 
+# otherwise, the genotype is considered as missing. No empty lines 
+# are needed between samples.
 #
 class FStatExporter:
     '''An exporter to export given population in structure format'''
-    def __init__(self, title=None, adjust=1):
-        self.title = title.rstrip() if title is not None else None
+    def __init__(self, lociNames=None, adjust=1):
+        self.lociNames = lociNames
         self.adjust = adjust
     
     def export(self, pop, filename, subPops):
         '''Export in FSTAT format
         '''
-            if output != '':
-                file = output
-            else:
-                raise exceptions.ValueError, "Please specify output"
-            # open file
-            try:
-                f = open(file, "w")
-            except exceptions.IOError:
-                raise exceptions.IOError, "Can not open file " + file + " to write."
+        with open(filename, 'w') as out:
             #
-            # file is opened.
+            # first line: np, nl, nu and nd
+            #
             np = pop.numSubPop()
-            if np > 200:
-                print "Warning: Current version (2.93) of FSTAT can not handle more than 200 samples"
-            if loci == []:
-                loci = range(pop.totNumLoci())
-            nl = len(loci)
-            if nl > 100:
-                print "Warning: Current version (2.93) of FSTAT can not handle more than 100 loci"
-            if maxAllele != 0:
-                nu = maxAllele
-            else:
-                nu = max(pop.genotype()) + shift
-            if nu > 999:
-                print "Warning: Current version (2.93) of FSTAT can not handle more than 999 alleles at each locus"
-                print "If you used simuPOP_la library, you can specify maxAllele in population constructure"
+            nl = pop.totNumLoci()
+            nu = max(pop.genotype()) + self.adjust
             if nu < 10:
                 nd = 1
             elif nu < 100:
@@ -1911,103 +1897,95 @@ class FStatExporter:
                 nd = 3
             else: # FSTAT can not handle this now. how many digits?
                 nd = len(str(nu))
-            # write the first line
-            f.write( '%d %d %d %d\n' % (np, nl, nu, nd) )
-            # following lines with loci name.
-            for loc in loci:
-                #
-                f.write( pop.locusName(loc) +"\n");
-            gs = pop.totNumLoci()
-            for sp in range(0, pop.numSubPop()):
-                # genotype of subpopulation sp, individuals are
-                # rearranged in perfect order
-                gt = pop.genotype(sp)
-                for ind in range(0, pop.subPopSize(sp)):
-                    f.write("%d " % (sp+1))
-                    p1 = 2*gs*ind          # begining of first hemo copy
-                    p2 = 2*gs*ind + gs     # second
-                    for al in loci: # allele
-                        # change from 0 based allele to 1 based allele
-                        if combine is None:
-                            ale1 = gt[p1+al] + shift
-                            ale2 = gt[p2+al] + shift
-                            f.write('%%0%dd%%0%dd ' % (nd, nd) % (ale1, ale2))
-                        else:
-                            f.write('%%0%dd' % nd % combine([gt[p1+al], gt[p2+al]]))
-                    f.write( "\n")
-            f.close()
+            #
+            out.write( '%d %d %d %d\n' % (np, nl, nu, nd))
+            #
+            # loci names
+            #
+            if self.lociNames:
+                if len(self.lociNames) != pop.totNumLoci():
+                    raise ValueError('Parameter lociNames, if specified, should give all %d loci a name' % pop.totNumLoci())
+                [out.write(x + '\n') for x in self.lociNames]
+            else:
+                names = pop.lociNames()
+                if names:
+                    [out.write(x + '\n') for x in names]
+                else:
+                    # cook up some name
+                    for ch in range(pop.numChron()):
+                        for loc in range(pop.numLoci(ch)):
+                            out.write('chr%d_%d\n' % (ch, loc))
+            #
+            #  genotype
+            #
+            format_string = '%%0%dd%%0%dd' % (nd, nd)
+            numLoci = pop.totNumLoci()
+            prog = ProgressBar(filename, pop.popSize())
+            count = 0
+            for vsp in subPops:
+                sp = vsp if type(vsp) == type(0) else vsp[0]
+                for ind in pop.individuals(vsp):
+                    geno = ind.genotype()
+                    out.write("%d " % (sp + 1) + ' '.join([format_string % (geno[x] + self.adjust, geno[numLoci + x] + self.adjust) for x in range(numLoci)]) + '\n')
+                    count += 1
+                    prog.update(count)
+            prog.done()
 
-class FstatImporter:
+
+class FStatImporter:
     def __init__(self, adjust=0):
         self.adjust = adjust
 
     def importFrom(self, filename):
         with open(filename, 'r') as input:
-            try:
-                f = open(file, "r")
-            except exceptions.IOError:
-                raise exceptions.IOError("Can not open file " + file + " to read.")
-            #
             # file is opened. get basic parameters
             try:
                 # get numSubPop(), totNumLoci(), maxAllele(), digit
-                [np, nl, nu, nd] = map(int, f.readline().split())
-            except exceptions.ValueError:
-                raise exceptions.ValueError("The first line does not have 4 numbers. Are you sure this is a FSTAT file?")
-
+                [np, nl, nu, nd] = map(int, input.readline().split())
+            except ValueError:
+                raise ValueError("The first line does not have 4 numbers. Are you sure this is a FSTAT file?")
             # now, ignore nl lines, if loci is empty try to see if we have info here
             # following lines with loci name.
-            numLoci = loci
             lociNames = []
-            if loci != []: # ignore allele name lines
-                if nl != sum(loci):
-                    raise exceptions.ValueError("Given number of loci does not add up to number of loci in the file")
-                for al in range(0, nl):
-                    lociNames.append(f.readline().strip() )
-            else:
-                scan = re.compile(r'\D*(\d+)\D*(\d+)')
-                for al in range(0, nl):
-                    lociNames.append( f.readline().strip())
-                    # try to parse the name ...
-                    try:
-                        #print "mating ", lociNames[-1]
-                        ch,loc = map(int, scan.match(lociNames[-1]).groups())
-                        # get numbers?
-                        #print ch, loc
-                        if len(numLoci)+1 == ch:
-                            numLoci.append( loc )
-                        else:
-                            numLoci[ ch-1 ] = loc
-                    except exceptions.Exception:
-                        pass
-                # if we can not get numbers correct, put all loci in one chromosome
-                if sum(numLoci) != nl:
-                    numLoci = [nl]
+            for al in range(nl):
+                lociNames.append(input.readline().strip())
             #
-            # now, numLoci should be valid, we need number of population
-            # and subpopulations
-            maxAllele = 0
-            gt = []
-            for line in f.readlines():
-                gt.append( line.split() )
-            f.close()
-            # subpop size?
-            subPopIndex = map(lambda x:int(x[0]), gt)
-            # count subpop.
-            subPopSize = [0]*subPopIndex[-1]
-            for i in range(0, subPopIndex[-1]):
-                subPopSize[i] = subPopIndex.count(i+1)
-            if len(subPopSize) != np:
-                raise exceptions.ValueError("Number of subpop does not match")
-            if sum(subPopSize) != len(gt):
-                raise exceptions.ValueError("population size does not match")
-            # we have all the information, create a population
-            pop = Population(size=subPopSize, loci=numLoci, lociNames=lociNames)
-            for idx, ind in enumerate(pop.individuals()):
-                for locus in range(pop.totNumLoci()):
-                    for ploidy in [0,1]:
-                        ind.setAllele(int(gt[idx][locus+1][ploidy])-1, idx=locus, ploidy=ploidy)
-            return pop
+            # get all the genotypes
+            subPopIndex = []
+            genotypes = []
+            for line in input.readlines():
+                try:
+                    items = line.split()
+                    if len(items) != nl + 1:
+                        raise ValueError('Genotype line (%s) has incorrect number of items' % line)
+                    subPopIndex.append(int(items[0]))
+                    # 
+                    # split genotype into pieces
+                    geno = [x.strip() for x in items[1:]]
+                    # get alleles (adjusted with self.adjust)
+                    alleles = [(int(x[:nd]) + self.adjust, int(x[nd:]) + self.adjust) if x != '0' else (self.adjust, self.adjust) for x in geno]
+                    # append alleles in simuPOP order
+                    genotypes.extend([x[0] for x in alleles])
+                    genotypes.extend([x[1] for x in alleles])
+                    if len(geno) != nl:
+                        raise ValueError('Incorrect number of genotype (%d expected)' % len(loci_names))
+                except Exception as e:
+                    raise ValueError('Invalid input genotype line (%s). The file must not be in FSTAT format. %s' % (line, e))
+                    
+        # subpop size?
+        # count number of subpopulations
+        subPopSize = [0] * (max(subPopIndex) + 1)
+        for idx in subPopIndex:
+            subPopSize[idx] += 1
+        if len([x for x in subPopSize if x != 0]) != np:
+            raise ValueError("Number of subpop does not match")
+        # we have all the information, create a population
+        pop = Population(size=[x for x in subPopSize if x != 0],
+            subPopNames=[str(idx) for idx,x in enumerate(subPopSize) if x != 0],
+            loci=len(lociNames), lociNames=lociNames)
+        # set genotype
+        pop.setGenotype(genotypes)
+        return pop
 
 
 #
@@ -2077,13 +2055,27 @@ class Exporter(PyOperator):
         simuPOP treats allele 0 as a valid allele. Exporting alleles 0 and 1 as 1 and 2
         will allow GENEPOP to analyze simuPOP-exported files correctly.
 
-    Because 0 is reserved as missing data in this format, allele A is outputted as A+1.
+    Because 0 is reserved as missing data in this format, allele A is outputted as A+adjust.
     simuPOP will use subpopulation names (if available) and 1-based individual index
     to output individual label (e.g. SubPop2-3). If parameter subPops is used to output
     selected individuals, each subpop will be outputted as a separate subpopulation even 
     if there are multiple virtual subpopulations from the same subpopulation. simuPOP 
     currently only export diploid populations to this format.
 
+    FSTAT (http://www2.unil.ch/popgen/softwares/fstat.htm). The fstat format accepts
+    the following parameters:
+
+    lociNames
+        Names of loci that will be outputted. If unspecified, simuPOP will try to use
+        names of loci that are specified by parameter *lociNames* of the ``Population``
+        class, or names in the form of chrX-Y.
+
+    adjust
+        Adjust values of alleles by specified value (1 as default). This adjustment is
+        necessary in many cases because FSTAT treats allele 0 as missing values, and 
+        simuPOP treats allele 0 as a valid allele. Exporting alleles 0 and 1 as 1 and 2
+        will allow FSTAT to analyze simuPOP-exported files correctly.
+        
         
     This operator supports the usual applicability parameters such as begin,
     end, step, at, reps, and subPops. If subPops are specified, only
@@ -2103,7 +2095,7 @@ class Exporter(PyOperator):
         elif format.lower() == 'genepop':
             self.exporter = GenePopExporter(*args, **kwargs)
         elif format.lower() == 'fstat':
-            self.exporter = GStatExporter(*args, **kwargs)
+            self.exporter = FStatExporter(*args, **kwargs)
         else:
             raise ValueError('Unrecognized fileformat: {}.'.format(format))
         PyOperator.__init__(self, func=self._export, begin=begin, end=end,
@@ -2189,8 +2181,13 @@ def importPopulation(format, filename, *args, **kwargs):
         parameter is mostly used to convert alleles 1 and 2 in a GenePop file to
         alleles 0 and 1 (with adjust=-1) in simuPOP.
 
-    FSTAT (http://www2.unil.ch/popgen/softwares/fstat.htm). 
+    FSTAT (http://www2.unil.ch/popgen/softwares/fstat.htm). This format accepts
+    the following parameters:
 
+    adjust
+        Adjust alleles by specified value (default to 0 for no adjustment). This
+        parameter is mostly used to convert alleles 1 and 2 in a GenePop file to
+        alleles 0 and 1 (with adjust=-1) in simuPOP.
     '''
     if format.lower() == 'genepop':
         importer = GenePopImporter(*args, **kwargs)
