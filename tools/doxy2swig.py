@@ -1294,6 +1294,7 @@ class Doxy2SWIG:
 \usepackage[T1]{fontenc}
 \usepackage[latin9]{inputenc}
 \usepackage{listings}
+\usepackage{url}
 \lstset{basicstyle={\ttfamily},
 language=Python,
 showspaces=false,

@@ -1614,10 +1614,9 @@ class StructureExporter:
         self.locData = locData
         self.phenotype = phenotype
     
-    def export(self, pop, filename, subPops):
-        '''
-        http://pritch.bsd.uchicago.edu/structure_software/release_versions/v2.3.4/structure_doc.pdf
-        '''
+    def export(self, pop, filename, subPops, gui):
+        '''export in structure format '''
+        # http://pritch.bsd.uchicago.edu/structure_software/release_versions/v2.3.4/structure_doc.pdf
         with open(filename, 'w') as out:
             #
             # first line: marker names
@@ -1661,7 +1660,7 @@ class StructureExporter:
             # sixth line and later: genotype lines
             #
             # progress bar might be wrong with subPops parameter...
-            prog = ProgressBar(filename, pop.popSize())
+            prog = ProgressBar(filename, pop.popSize(), gui=gui)
             count = 0
             for vsp in subPops:
                 sp = vsp if type(vsp) == type(0) else vsp[0]
@@ -1725,10 +1724,9 @@ class GenePopExporter:
         self.title = title.rstrip() if title is not None else None
         self.adjust = adjust
     
-    def export(self, pop, filename, subPops):
-        '''
-        http://genepop.curtin.edu.au/help_input.html
-        '''
+    def export(self, pop, filename, subPops, gui):
+        ''' Export in genepop format '''
+        # http://genepop.curtin.edu.au/help_input.html
         if pop.ploidy() != 2:
             raise ValueError('simuPOP currently can only export diploid populations in GenePop format.')
         #
@@ -1760,7 +1758,7 @@ class GenePopExporter:
             # progress bar might be wrong with subPops parameter...
             alleleWidth = 3 if max(pop.genotype()) >= 99 else 2
             format_string = '%%0%dd%%0%dd' % (alleleWidth, alleleWidth)
-            prog = ProgressBar(filename, pop.popSize())
+            prog = ProgressBar(filename, pop.popSize(), gui=gui)
             count = 0
             numLoci = pop.totNumLoci()
             for vsp in subPops:
@@ -1879,7 +1877,7 @@ class FStatExporter:
         self.lociNames = lociNames
         self.adjust = adjust
     
-    def export(self, pop, filename, subPops):
+    def export(self, pop, filename, subPops, gui):
         '''Export in FSTAT format
         '''
         with open(filename, 'w') as out:
@@ -1920,7 +1918,7 @@ class FStatExporter:
             #
             format_string = '%%0%dd%%0%dd' % (nd, nd)
             numLoci = pop.totNumLoci()
-            prog = ProgressBar(filename, pop.popSize())
+            prog = ProgressBar(filename, pop.popSize(), gui=gui)
             count = 0
             for vsp in subPops:
                 sp = vsp if type(vsp) == type(0) else vsp[0]
@@ -2085,11 +2083,17 @@ class Exporter(PyOperator):
     generate context dependent output filename. Unless explicitly stated for
     a particular format, this operator exports individuals from the current
     generation if there are multiple ancestral generations in the population.
+    
+    The Exporter class will make use of a progress bar to show the progress. The
+    interface of the progress bar is by default determined by the global GUI status
+    but you can also set it to, for example, ```gui=False`` to forcefully use a 
+    text-based progress bar.
     '''
     def __init__(self, format, output, begin=0, end=-1, step=1, at=[],
-        reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[], *args, **kwargs):
+        reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[], gui=None, *args, **kwargs):
         self.output = output
         self.subPops = subPops
+        self.gui = gui
         if format.lower() == 'structure':
             self.exporter = StructureExporter(*args, **kwargs)
         elif format.lower() == 'genepop':
@@ -2157,7 +2161,8 @@ class Exporter(PyOperator):
         return subPops
         
     def _export(self, pop):
-        self.exporter.export(pop, self._determineOutput(pop), self._determineSubPops(pop))
+        self.exporter.export(pop, self._determineOutput(pop),
+            self._determineSubPops(pop), gui=self.gui)
         return True
 
 def export(pop, format, *args, **kwargs):
