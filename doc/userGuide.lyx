@@ -7595,7 +7595,7 @@ numOffspring=(POISSON_DISTRIBUTION, p)
  The distribution is
 \begin_inset Formula 
 \[
-\mbox{Pr}\left(k\right)=\frac{p^{k}e^{-p}}{k!}\;\textrm{ for}k\geq0
+\mbox{Pr}\left(k\right)=\frac{p^{k}e^{-p}}{k!}\;\textrm{ for }k\geq0
 \]
 
 \end_inset
@@ -7605,7 +7605,7 @@ Note that, however, because families with zero offspring are ignored, the
  a zero-truncated Poission distribution with probability
 \begin_inset Formula 
 \[
-\mbox{Pr}\left(k\right)=\frac{p^{k}e^{-p}}{k!\left(1-e^{-p}\right)}\;\textrm{ for}k\geq1
+\mbox{Pr}\left(k\right)=\frac{p^{k}e^{-p}}{k!\left(1-e^{-p}\right)}\;\textrm{ for }k\geq1
 \]
 
 \end_inset
@@ -7791,11 +7791,31 @@ Other sex determination methods are also available:
 \begin_layout Itemize
 
 \family typewriter
+sexMode=RANDOM_
+\family default
+SEX: Sex is determined randomly, with equal probability for 
+\family typewriter
+MALE
+\family default
+ and 
+\family typewriter
+FEMALE
+\family default
+.
+ This is the default mode for sexual mating schemes such as random mating.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
 sexMode=NO_SEX
 \family default
-: Sex is not simulated so everyone is MALE.
- This is the default mode where offspring can be MALE or FEMALE with equal
- probability.
+: Sex is not simulated so everyone is 
+\family typewriter
+MALE
+\family default
+.
+ This is the default mode for asexual mating schemes.
 \end_layout
 
 \begin_layout Itemize
