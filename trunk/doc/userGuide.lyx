@@ -7791,9 +7791,9 @@ Other sex determination methods are also available:
 \begin_layout Itemize
 
 \family typewriter
-sexMode=RANDOM_
+sexMode=RANDOM_SEX
 \family default
-SEX: Sex is determined randomly, with equal probability for 
+: Sex is determined randomly, with equal probability for 
 \family typewriter
 MALE
 \family default
