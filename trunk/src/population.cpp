@@ -2763,9 +2763,9 @@ void Population::removeLoci(const lociList & removeList, const lociList & keepLi
 			}
 		}
 	}
-	setGenoStructure(gsRemoveLoci(kept));
-
 	size_t oldTotNumLoci = totNumLoci();
+
+	setGenoStructure(gsRemoveLoci(kept));
 
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);

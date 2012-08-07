@@ -19,6 +19,7 @@ BUG:
   - Fix a bug where applicability parameters in operators in parameter ops
 	for operators MlSelector and MlPenetrance are ignored.
   - Results from Stat(heteroFreq) are now set one by one, and not as a default dictionary
+  - Fix a bug in Population.removeLoci() that will lead to incorrect population genotype.
 
 Minor improvement:
   - Automatically create a directory if needed when a full path name is specified to parameter saveAs of plotters defined in simuPOP.plotter.

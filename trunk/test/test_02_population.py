@@ -876,6 +876,20 @@ class TestPopulation(unittest.TestCase):
                     self.assertEqual(ind.allele(loc), ind1.allele(loc))
                 self.assertEqual(ind.allele(2), ind1.allele(3))
                 self.assertEqual(ind.allele(3), ind1.allele(6))
+        #
+        #  testing remove the last locus
+        pop = Population(100, loci=10)
+        initGenotype(pop, haplotypes=range(10))
+        pop.removeLoci(9)
+        self.assertEqual(pop.individual(0).genotype(), list(range(9)) + list(range(9)))
+        #
+        pop.removeLoci(2)
+        self.assertEqual(pop.individual(0).genotype(), [0, 1, 3, 4, 5, 6, 7, 8, 0, 1, 3, 4, 5, 6, 7, 8])
+        #
+        pop.addLoci(0, 2.8, 'test')
+        self.assertEqual(pop.individual(0).genotype(), [0, 1, 0, 3, 4, 5, 6, 7, 8, 0, 1, 0, 3, 4, 5, 6, 7, 8])
+        pop.removeLoci('test')
+        self.assertEqual(pop.individual(0).genotype(), [0, 1, 3, 4, 5, 6, 7, 8, 0, 1, 3, 4, 5, 6, 7, 8])
 
     def testRecodeAlleles(self):
         'Testing Population::recodeAlleles(alleles, loci)'
