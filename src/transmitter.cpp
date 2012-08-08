@@ -830,7 +830,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 	                      && m_convMode[1] > 0.;
 #ifdef MUTANTALLELE
 	size_t last_gt = 0;
-	size_t last_cp = curCp;
+	int last_cp = curCp;
 	size_t to_next = 0;
 #endif
 	if (m_algorithm == 0) {
@@ -843,7 +843,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			    (m_customizedBegin < 0 || gt < static_cast<size_t>(m_customizedBegin) || gt >= static_cast<size_t>(m_customizedEnd))) {
 				// copy
 #ifdef MUTANTALLELE
-				if (curCp != last_cp || gt - last_gt >= to_next) {
+				if (curCp != last_cp || gt >= last_gt + to_next) {
 					(off + gt).assignIfDiffer((cp[curCp] + gt).value());
 					last_cp = curCp;
 					last_gt = gt;

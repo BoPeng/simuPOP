@@ -1355,7 +1355,7 @@ public:
 		if (!valid())
 			return *this;
 		if (m_useGappedIterator) {
-			if (m_ptrEnd - m_ptr > diff * m_size)
+			if (m_ptrEnd > m_ptr + diff * m_size)
 				m_ptr += diff * m_size;
 			else {
 				m_ptr = m_ptrEnd;

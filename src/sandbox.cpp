@@ -85,7 +85,7 @@ bool RevertFixedSites::apply(Population & pop) const
 }
 
 
-double MutSpaceSelector::indFitness(Population & /* pop */, Individual * ind) const
+double MutSpaceSelector::indFitness(Population & /* pop */, RawIndIterator ind) const
 {
 	if (m_mode == MULTIPLICATIVE) {
 		return randomSelMulFitnessExt(ind->genoBegin(), ind->genoEnd());
