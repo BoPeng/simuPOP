@@ -7007,6 +7007,105 @@ end
  can still be passed, but they are ignored by these functions.
 \end_layout
 
+\begin_layout Standard
+Finally, it is worth noting that, if you have a function that manipulates
+ population, you can make it an operator by wrapping it in a 
+\family typewriter
+PyOperator
+\family default
+ so that it can be called repeatedly during evolution.
+ For example, for a function 
+\family typewriter
+myFunc
+\family default
+ that works on a population, you can define a wrapper function
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+def Func(pop):
+\end_layout
+
+\begin_layout Plain Layout
+
+    # call myFunc
+\end_layout
+
+\begin_layout Plain Layout
+
+    myFunc(pop)
+\end_layout
+
+\begin_layout Plain Layout
+
+    return True
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+which can then use it in a 
+\family typewriter
+PyOperator
+\family default
+ as follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+PyOperator(func=Func)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The wrapper function is not needed if myFunc returns 
+\family typewriter
+True
+\family default
+ by itself.
+ It can also be simplifed to a lambda function
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+PyOperator(func=lambda pop: myFunc(pop) is None)
+\end_layout
+
+\end_inset
+
+if you are certain that 
+\family typewriter
+myFunc
+\family default
+ does not return any value (return 
+\family typewriter
+None
+\family default
+).
+\end_layout
+
 \begin_layout Note
 Whereas output files specified by 
 \family typewriter
