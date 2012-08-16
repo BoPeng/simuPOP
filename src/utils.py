@@ -2230,7 +2230,7 @@ class Exporter(PyOperator):
     
     The Exporter class will make use of a progress bar to show the progress. The
     interface of the progress bar is by default determined by the global GUI status
-    but you can also set it to, for example, ```gui=False`` to forcefully use a 
+    but you can also set it to, for example, ``gui=False`` to forcefully use a 
     text-based progress bar.
     '''
     def __init__(self, format, output, begin=0, end=-1, step=1, at=[],
