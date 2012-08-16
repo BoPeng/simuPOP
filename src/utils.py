@@ -235,7 +235,8 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
         subPops=ALL_AVAIL, genoFormatter=None, infoFormatter=None,
         sexFormatter={MALE: 'M', FEMALE: 'F'},
         affectionFormatter={True: 'A', False: 'U'}, sep=', ', **kwargs):
-    '''Save a simuPOP population ``pop`` in csv format. Columns of this
+    '''This function is deprecated. Please use ``export(format='csv')`` instead.
+    Save a simuPOP population ``pop`` in csv format. Columns of this
     file is arranged in the order of information fields (``infoFields``),
     sex (if ``sexFormatter`` is not ``None``), affection status (if
     ``affectionFormatter`` is not ``None``), and genotype (if ``genoFormatter`` is
@@ -296,6 +297,8 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
     1.0.0 have been renamed to ``genoFormatter``, ``sexFormatter`` and 
     ``affectionFormatter`` but can still be used.
     '''
+    if moduleInfo()['debug']['DBG_COMPATIBILITY']:
+        print >> sys.stderr, 'WARNING: Function saveCSV is deprecated. Use export(format="csv") instead.'
     # handle obsolete parameters affectionCode, sexCode and genoCode
     if kwargs.has_key('genoCode'):
         if moduleInfo()['debug']['DBG_COMPATIBILITY']:
@@ -1872,7 +1875,7 @@ class GenePopImporter:
 # are needed between samples.
 #
 class FStatExporter:
-    '''An exporter to export given population in structure format'''
+    '''An exporter to export given population in fstat format'''
     def __init__(self, lociNames=None, adjust=1):
         self.lociNames = lociNames
         self.adjust = adjust
@@ -1985,6 +1988,106 @@ class FStatImporter:
         pop.setGenotype(genotypes)
         return pop
 
+#
+# Format CSV
+#
+class CSVExporter:
+    '''An exporter to export given population in csv format'''
+    def __init__(self, header=True, genoFormatter=None, infoFormatter=None,
+        sexFormatter={MALE: 'M', FEMALE: 'F'},
+        affectionFormatter={True: 'A', False: 'U'},
+        delimiter=', '):
+        self.header = header
+        self.genoFormatter = genoFormatter
+        self.infoFormatter = infoFormatter
+        self.sexFormatter = sexFormatter
+        self.affectionFormatter = affectionFormatter
+        self.delimiter = delimiter
+    
+    def export(self, pop, filename, subPops, gui):
+        '''Export in FSTAT format
+        '''
+        ploidy = pop.ploidy()
+        colPerGenotype = 0
+        if pop.totNumLoci() > 0 and pop.popSize() > 0:
+            if self.genoFormatter is None:
+                value = [0]*ploidy
+            elif isinstance(self.genoFormatter, dict):
+                if len(self.genoFormatter) == 0:
+                    raise ValueError("genoFormatter cannot be empty")
+                value = self.genoFormatter.values()[0]
+            else:
+                if not callable(self.genoFormatter):
+                    raise ValueError("genoFormatter should be a None, a dictionary or a callable function")
+                value = self.genoFormatter(tuple([pop.individual(0).allele(0, p) for p in range(ploidy)]))
+            try:
+                if type(value) == type(''):
+                    colPerGenotype = 1
+                else:  # a sequece?
+                    colPerGenotype = len(value)
+            except:
+                colPerGenotype = 1
+        #
+        with open(filename, 'w') as out:
+            # header
+            if header is True:
+                names = [x for x in infoFields]
+                if self.sexFormatter is not None:
+                    names.append('sex')
+                if affectionFormatter is not None:
+                    names.append('aff')
+                if colPerGenotype == 1:
+                    names.extend([pop.locusName(loc) for loc in loci])
+                elif colPerGenotype > 1:
+                    for loc in loci:
+                        names.extend(['%s_%d' % (pop.locusName(loc), x+1) for x in range(colPerGenotype)])
+                # output header
+                out.write(sep.join(names) + '\n')
+            elif type(header) == type(''):
+                out.write(header + '\n')
+            elif type(header) in [type(()), type([])]:
+                out.write(sep.join(header) + '\n')
+            # progress bar
+            prog = ProgressBar(filename, pop.popSize(), gui=gui)
+            count = 0
+            for vsp in subPops:
+                for ind in pop.individuals(vsp):
+                    # information fields
+                    if infoFormatter is None:
+                        values = [str(ind.info(x)) for x in infoFields]
+                    elif type(infoFormatter) == type(''):
+                        values = [self.infoFormatter % tuple([ind.info(x) for x in infoFields])]
+                    else:
+                        raise ValueError('Parameter infoFormatter can only be None or a format string.')
+                    # sex
+                    if sexFormatter is not None:
+                        values.append(str(self.sexFormatter[ind.sex()]))
+                    # affection status
+                    if affectionFormatter is not None:
+                        values.append(str(self.affectionFormatter[ind.affected()]))
+                    # genotype
+                    for loc in loci:
+                        if genoFormatter is None:
+                            values.extend([ind.alleleChar(loc, p) for p in range(ploidy)])
+                        else:
+                            genotype = [ind.allele(loc, p) for p in range(ploidy)]
+                            if isinstance(self.genoFormatter, dict):
+                                code = self.genoFormatter[tuple(genotype)]
+                            else:
+                                code = self.genoFormatter(genotype)
+                            if type(code) in [type([]), type(())]:
+                                values.extend(['%s' % x for x in code])
+                            else:
+                                values.append(str(code))
+                    # output
+                    out.write(sep.join(values) + '\n')
+                    count += 1
+                    prog.update(count)
+            # clode output
+            if filename:
+                out.close()
+            prog.done()
+
 
 #
 # Wrapper of the importer and expoters.
@@ -2075,6 +2178,46 @@ class Exporter(PyOperator):
         will allow FSTAT to analyze simuPOP-exported files correctly.
         
         
+    CSV (comma separated values). This is a general format that output genotypes in
+    comma (or tab etc) separated formats. The function form of this operator 
+    ``export(format='csv')`` is similar to the now-deprecated ``saveCSV`` function,
+    but its interface has been adjusted to match other formats supported by this
+    operator. This format supports the following parameters:
+    
+    infoFileds
+        Information fields to be outputted. Default to none.
+
+    delimiter
+        Delimiter used to separate values, default to ','.
+
+    header
+        Whether or not a header should be written. These headers will include
+        information fields, sex (if ``sexFormatter`` is not ``None``), affection
+        status (if ``affectionFormatter`` is not ``None``) and loci names. If
+        genotype at a locus needs more than one column, ``_1``, ``_2`` etc will
+        be appended to loci names. Alternatively, a complete header (a string)
+        or a list of column names could be specified directly.
+
+    infoFormatter
+        A format string that is used to format all information fields. If
+        unspecified, ``str(value)`` will be used for each information field.
+
+    genoFormatter
+        How to output genotype at specified loci. Acceptable values include
+        ``None`` (output allele names), a dictionary with genotype as keys,
+        (e.g. ``genoFormatter={(0,0):1, (0,1):2, (1,0):2, (1,1):3}``, or a function
+        with genotype (as a tuple of integers) as inputs. The dictionary value
+        or the return value of this function can be a single or a list of
+        number or strings.
+
+    sexFormatter
+        How to output individual sex. Acceptable values include ``None`` (no
+        output) or a dictionary with keys ``MALE`` and ``FEMALE``.
+
+    affectionFormatter
+        How to output individual affection status. Acceptable values include
+        ``None`` (no output) or a dictionary with keys ``True`` and ``False``.
+
     This operator supports the usual applicability parameters such as begin,
     end, step, at, reps, and subPops. If subPops are specified, only
     individuals from specified (virtual) subPops are exported. Because this
@@ -2100,6 +2243,8 @@ class Exporter(PyOperator):
             self.exporter = GenePopExporter(*args, **kwargs)
         elif format.lower() == 'fstat':
             self.exporter = FStatExporter(*args, **kwargs)
+        elif format.lower() == 'csv':
+            self.exporter = CSVExporter(*args, **kwargs)
         else:
             raise ValueError('Unrecognized fileformat: {}.'.format(format))
         PyOperator.__init__(self, func=self._export, begin=begin, end=end,
