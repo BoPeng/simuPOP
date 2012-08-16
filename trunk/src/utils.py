@@ -1910,7 +1910,7 @@ class FStatExporter:
                     [out.write(x + '\n') for x in names]
                 else:
                     # cook up some name
-                    for ch in range(pop.numChron()):
+                    for ch in range(pop.numChrom()):
                         for loc in range(pop.numLoci(ch)):
                             out.write('chr%d_%d\n' % (ch, loc))
             #

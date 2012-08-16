@@ -706,6 +706,14 @@ class TestUtility(unittest.TestCase):
         export(pop, format='fstat', output='fstat.txt', adjust=0)
         self.assertEqual(self.lineOfFile('fstat.txt', 8), '1 11 22 11 22 11 22\n')
         #
+        # test the case with no loci name and no specified name
+        pop = Population(size=[4, 5], loci=[2, 4], ploidy=2, 
+            infoFields=['loc', 'pheno']) 
+        initGenotype(pop, haplotypes=[1,2])
+        initSex(pop, sex=[MALE, FEMALE])
+        export(pop, format='fstat', output='fstat.txt')
+        self.assertEqual(self.lineOfFile('fstat.txt', 8), '1 22 33 22 33 22 33\n')
+
         # cleanup
         os.remove('fstat.txt')
 
