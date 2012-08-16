@@ -1617,7 +1617,7 @@ class StructureExporter:
         self.locData = locData
         self.phenotype = phenotype
     
-    def export(self, pop, filename, subPops, gui):
+    def export(self, pop, filename, subPops, infoFields, gui):
         '''export in structure format '''
         # http://pritch.bsd.uchicago.edu/structure_software/release_versions/v2.3.4/structure_doc.pdf
         with open(filename, 'w') as out:
@@ -1727,7 +1727,7 @@ class GenePopExporter:
         self.title = title.rstrip() if title is not None else None
         self.adjust = adjust
     
-    def export(self, pop, filename, subPops, gui):
+    def export(self, pop, filename, subPops, infoFields, gui):
         ''' Export in genepop format '''
         # http://genepop.curtin.edu.au/help_input.html
         if pop.ploidy() != 2:
@@ -1880,7 +1880,7 @@ class FStatExporter:
         self.lociNames = lociNames
         self.adjust = adjust
     
-    def export(self, pop, filename, subPops, gui):
+    def export(self, pop, filename, subPops, infoFields, gui):
         '''Export in FSTAT format
         '''
         with open(filename, 'w') as out:
@@ -1995,8 +1995,7 @@ class CSVExporter:
     '''An exporter to export given population in csv format'''
     def __init__(self, header=True, genoFormatter=None, infoFormatter=None,
         sexFormatter={MALE: 'M', FEMALE: 'F'},
-        affectionFormatter={True: 'A', False: 'U'},
-        delimiter=', '):
+        affectionFormatter={True: 'A', False: 'U'}, delimiter=','):
         self.header = header
         self.genoFormatter = genoFormatter
         self.infoFormatter = infoFormatter
@@ -2004,83 +2003,82 @@ class CSVExporter:
         self.affectionFormatter = affectionFormatter
         self.delimiter = delimiter
     
-    def export(self, pop, filename, subPops, gui):
+    def _genoFromDict(self, geno):
+        return self.genoFormatter[geno]
+
+    def _genoDirect(self, geno):
+        return geno
+
+    def _genoCallable(self, geno):
+        return self.genoFormatter(geno)
+
+    def export(self, pop, filename, subPops, infoFields, gui):
         '''Export in FSTAT format
         '''
         ploidy = pop.ploidy()
         colPerGenotype = 0
         if pop.totNumLoci() > 0 and pop.popSize() > 0:
             if self.genoFormatter is None:
-                value = [0]*ploidy
+                _genoFunc = self._genoDirect
+                colPerGenotype = ploidy
             elif isinstance(self.genoFormatter, dict):
-                if len(self.genoFormatter) == 0:
-                    raise ValueError("genoFormatter cannot be empty")
                 value = self.genoFormatter.values()[0]
+                colPerGenotype = 1 if type(value) in [type(''), type(1)] else len(value)
+                _genoFunc = self._genoFromDict
             else:
                 if not callable(self.genoFormatter):
                     raise ValueError("genoFormatter should be a None, a dictionary or a callable function")
                 value = self.genoFormatter(tuple([pop.individual(0).allele(0, p) for p in range(ploidy)]))
-            try:
-                if type(value) == type(''):
-                    colPerGenotype = 1
-                else:  # a sequece?
-                    colPerGenotype = len(value)
-            except:
-                colPerGenotype = 1
+                colPerGenotype = 1 if type(value) in [type(''), type(1)] else len(value)
+                _genoFunc = self._genoCallable
+            print colPerGenotype, ploidy
         #
         with open(filename, 'w') as out:
             # header
-            if header is True:
-                names = [x for x in infoFields]
+            if self.header is True:
+                names = list(infoFields)
                 if self.sexFormatter is not None:
                     names.append('sex')
-                if affectionFormatter is not None:
+                if self.affectionFormatter is not None:
                     names.append('aff')
                 if colPerGenotype == 1:
-                    names.extend([pop.locusName(loc) for loc in loci])
+                    names.extend([pop.locusName(loc) for loc in range(pop.totNumLoci())])
                 elif colPerGenotype > 1:
-                    for loc in loci:
+                    for loc in range(pop.totNumLoci()):
                         names.extend(['%s_%d' % (pop.locusName(loc), x+1) for x in range(colPerGenotype)])
                 # output header
-                out.write(sep.join(names) + '\n')
-            elif type(header) == type(''):
-                out.write(header + '\n')
-            elif type(header) in [type(()), type([])]:
-                out.write(sep.join(header) + '\n')
+                out.write(self.delimiter.join(names) + '\n')
+            elif type(self.header) == type(''):
+                out.write(self.header + '\n')
+            elif type(self.header) in [type(()), type([])]:
+                out.write(self.delimiter.join([str(x) for x in self.header]) + '\n')
             # progress bar
             prog = ProgressBar(filename, pop.popSize(), gui=gui)
             count = 0
             for vsp in subPops:
                 for ind in pop.individuals(vsp):
                     # information fields
-                    if infoFormatter is None:
+                    if self.infoFormatter is None:
                         values = [str(ind.info(x)) for x in infoFields]
-                    elif type(infoFormatter) == type(''):
+                    elif type(self.infoFormatter) == type(''):
                         values = [self.infoFormatter % tuple([ind.info(x) for x in infoFields])]
                     else:
                         raise ValueError('Parameter infoFormatter can only be None or a format string.')
                     # sex
-                    if sexFormatter is not None:
+                    if self.sexFormatter is not None:
                         values.append(str(self.sexFormatter[ind.sex()]))
                     # affection status
-                    if affectionFormatter is not None:
+                    if self.affectionFormatter is not None:
                         values.append(str(self.affectionFormatter[ind.affected()]))
                     # genotype
-                    for loc in loci:
-                        if genoFormatter is None:
-                            values.extend([ind.alleleChar(loc, p) for p in range(ploidy)])
+                    for geno in zip(*[ind.genotype(p) for p in range(ploidy)]):
+                        val = _genoFunc(geno)
+                        if type(val) in [type([]), type(())]:
+                            values.extend(['%s' % x for x in val])
                         else:
-                            genotype = [ind.allele(loc, p) for p in range(ploidy)]
-                            if isinstance(self.genoFormatter, dict):
-                                code = self.genoFormatter[tuple(genotype)]
-                            else:
-                                code = self.genoFormatter(genotype)
-                            if type(code) in [type([]), type(())]:
-                                values.extend(['%s' % x for x in code])
-                            else:
-                                values.append(str(code))
+                            values.append(str(val))
                     # output
-                    out.write(sep.join(values) + '\n')
+                    out.write(self.delimiter.join(values) + '\n')
                     count += 1
                     prog.update(count)
             # clode output
@@ -2182,13 +2180,13 @@ class Exporter(PyOperator):
     comma (or tab etc) separated formats. The function form of this operator 
     ``export(format='csv')`` is similar to the now-deprecated ``saveCSV`` function,
     but its interface has been adjusted to match other formats supported by this
-    operator. This format supports the following parameters:
+    operator. This format outputs a header (optiona), and one line for each individual
+    with values of specified information fields, sex, affection status, and genotypes.
+    All fields except for genotypes are optional. The output format is controlled by the
+    following parameters:
     
     infoFileds
         Information fields to be outputted. Default to none.
-
-    delimiter
-        Delimiter used to separate values, default to ','.
 
     header
         Whether or not a header should be written. These headers will include
@@ -2204,7 +2202,7 @@ class Exporter(PyOperator):
 
     genoFormatter
         How to output genotype at specified loci. Acceptable values include
-        ``None`` (output allele names), a dictionary with genotype as keys,
+        ``None`` (output allele values), a dictionary with genotype as keys,
         (e.g. ``genoFormatter={(0,0):1, (0,1):2, (1,0):2, (1,1):3}``, or a function
         with genotype (as a tuple of integers) as inputs. The dictionary value
         or the return value of this function can be a single or a list of
@@ -2217,6 +2215,9 @@ class Exporter(PyOperator):
     affectionFormatter
         How to output individual affection status. Acceptable values include
         ``None`` (no output) or a dictionary with keys ``True`` and ``False``.
+
+    delimiter
+        Delimiter used to separate values, default to ','.
 
     This operator supports the usual applicability parameters such as begin,
     end, step, at, reps, and subPops. If subPops are specified, only
@@ -2236,6 +2237,7 @@ class Exporter(PyOperator):
         reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[], gui=None, *args, **kwargs):
         self.output = output
         self.subPops = subPops
+        self.infoFields = [infoFields] if type(infoFields) == type('') else infoFields
         self.gui = gui
         if format.lower() == 'structure':
             self.exporter = StructureExporter(*args, **kwargs)
@@ -2307,7 +2309,7 @@ class Exporter(PyOperator):
         
     def _export(self, pop):
         self.exporter.export(pop, self._determineOutput(pop),
-            self._determineSubPops(pop), gui=self.gui)
+            self._determineSubPops(pop), self.infoFields, gui=self.gui)
         return True
 
 def export(pop, format, *args, **kwargs):

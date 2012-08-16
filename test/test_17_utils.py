@@ -71,7 +71,7 @@ def stacksize(since=0.0):
     return _VmB('VmStk:') - since
 
 
-class TestUtility(unittest.TestCase):
+class TestUtils(unittest.TestCase):
 
     def interactiveTestPauseAtGen(self):
         'Testing resume to simulation'
@@ -862,6 +862,67 @@ class TestUtility(unittest.TestCase):
         self.assertEqual(len(open('stru.txt').read().split('\n')), 7)
         # cleanup
         os.remove('stru.txt')
+
+    def testExportCSV(self):
+        '''Testing export population in CSV format'''
+        pop = Population(size=[4, 5], loci=[2, 4], ploidy=2, 
+            lociNames=['a', 'b', 'c', 'd', 'e', 'f'], infoFields=['loc', 'pheno']) 
+        initGenotype(pop, haplotypes=[1,2])
+        initInfo(pop, [20], infoFields='loc')
+        initInfo(pop, [30], infoFields='pheno')
+        initSex(pop, sex=[MALE, FEMALE])
+        pop.setVirtualSplitter(SexSplitter())
+        # test basic
+        export(pop, format='csv', output='pop.csv')
+        self.assertEqual(self.lineOfFile('pop.csv', 1), 'sex,aff,a_1,a_2,b_1,b_2,c_1,c_2,d_1,d_2,e_1,e_2,f_1,f_2\n')
+        self.assertEqual(self.lineOfFile('pop.csv', 2), 'M,U,1,1,2,2,1,1,2,2,1,1,2,2\n')
+        # test parameter header
+        export(pop, format='csv', output='pop.csv', header='header')
+        self.assertEqual(self.lineOfFile('pop.csv', 1), 'header\n')
+        export(pop, format='csv', output='pop.csv', header=['sex', 'aff', 'header'])
+        self.assertEqual(self.lineOfFile('pop.csv', 1), 'sex,aff,header\n')
+        export(pop, format='csv', output='pop.csv', header=False)
+        self.assertEqual(self.lineOfFile('pop.csv', 1),'M,U,1,1,2,2,1,1,2,2,1,1,2,2\n')
+        # test parameter delimiter
+        export(pop, format='csv', output='pop.csv', delimiter='\t')
+        self.assertEqual(self.lineOfFile('pop.csv', 1), 'sex\taff\ta_1\ta_2\tb_1\tb_2\tc_1\tc_2\td_1\td_2\te_1\te_2\tf_1\tf_2\n')
+        self.assertEqual(self.lineOfFile('pop.csv', 2), 'M\tU\t1\t1\t2\t2\t1\t1\t2\t2\t1\t1\t2\t2\n')
+        # test parameter sexFormatter
+        export(pop, format='csv', output='pop.csv', sexFormatter=None)
+        self.assertEqual(self.lineOfFile('pop.csv', 1), 'aff,a_1,a_2,b_1,b_2,c_1,c_2,d_1,d_2,e_1,e_2,f_1,f_2\n')
+        self.assertEqual(self.lineOfFile('pop.csv', 2), 'U,1,1,2,2,1,1,2,2,1,1,2,2\n')
+        export(pop, format='csv', output='pop.csv', sexFormatter={MALE: '1', FEMALE: '0'})
+        self.assertEqual(self.lineOfFile('pop.csv', 1), 'sex,aff,a_1,a_2,b_1,b_2,c_1,c_2,d_1,d_2,e_1,e_2,f_1,f_2\n')
+        self.assertEqual(self.lineOfFile('pop.csv', 2), '1,U,1,1,2,2,1,1,2,2,1,1,2,2\n')
+        # test parameter affectionFormatter
+        export(pop, format='csv', output='pop.csv', affectionFormatter=None)
+        self.assertEqual(self.lineOfFile('pop.csv', 1), 'sex,a_1,a_2,b_1,b_2,c_1,c_2,d_1,d_2,e_1,e_2,f_1,f_2\n')
+        self.assertEqual(self.lineOfFile('pop.csv', 2), 'M,1,1,2,2,1,1,2,2,1,1,2,2\n')
+        export(pop, format='csv', output='pop.csv', affectionFormatter={True: '1', False: '0'})
+        self.assertEqual(self.lineOfFile('pop.csv', 1), 'sex,aff,a_1,a_2,b_1,b_2,c_1,c_2,d_1,d_2,e_1,e_2,f_1,f_2\n')
+        self.assertEqual(self.lineOfFile('pop.csv', 2), 'M,0,1,1,2,2,1,1,2,2,1,1,2,2\n')
+        # test parameter infoFormatter and infoFields
+        export(pop, format='csv', output='pop.csv', infoFields='loc')
+        self.assertEqual(self.lineOfFile('pop.csv', 1), 'loc,sex,aff,a_1,a_2,b_1,b_2,c_1,c_2,d_1,d_2,e_1,e_2,f_1,f_2\n')
+        self.assertEqual(self.lineOfFile('pop.csv', 2), '20.0,M,U,1,1,2,2,1,1,2,2,1,1,2,2\n')
+        export(pop, format='csv', output='pop.csv', infoFields='loc', infoFormatter='%.0f')
+        self.assertEqual(self.lineOfFile('pop.csv', 1), 'loc,sex,aff,a_1,a_2,b_1,b_2,c_1,c_2,d_1,d_2,e_1,e_2,f_1,f_2\n')
+        self.assertEqual(self.lineOfFile('pop.csv', 2), '20,M,U,1,1,2,2,1,1,2,2,1,1,2,2\n')
+        export(pop, format='csv', output='pop.csv', infoFields=('loc', 'pheno'), infoFormatter='%.0f,%.0f')
+        self.assertEqual(self.lineOfFile('pop.csv', 1), 'loc,pheno,sex,aff,a_1,a_2,b_1,b_2,c_1,c_2,d_1,d_2,e_1,e_2,f_1,f_2\n')
+        self.assertEqual(self.lineOfFile('pop.csv', 2), '20,30,M,U,1,1,2,2,1,1,2,2,1,1,2,2\n')
+        # test parameter genoFormatter
+        export(pop, format='csv', output='pop.csv', genoFormatter={(1,1):0, (1,2):1, (2,1):1, (2,2):2})
+        self.assertEqual(self.lineOfFile('pop.csv', 1), 'sex,aff,a,b,c,d,e,f\n')
+        self.assertEqual(self.lineOfFile('pop.csv', 2), 'M,U,0,2,0,2,0,2\n')
+        def gen(geno):
+            return sum(geno)
+        export(pop, format='csv', output='pop.csv', genoFormatter=gen)
+        self.assertEqual(self.lineOfFile('pop.csv', 1), 'sex,aff,a,b,c,d,e,f\n')
+        self.assertEqual(self.lineOfFile('pop.csv', 2), 'M,U,2,4,2,4,2,4\n')
+        # cleanup
+        os.remove('pop.csv')
+
 
 if __name__ == '__main__':
     unittest.main()
