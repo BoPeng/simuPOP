@@ -12,7 +12,7 @@ version 1.0.8 - Not released, available at https://simupop.svn.sourceforge.net/s
 
 Major New Features:
   - Add an operator Exporter and function export to export a simuPOP population in STRUCTURE,
-        GenePop and FStat formats.
+        GenePop, FStat and CSV formats.
 
 BUG:
   - Quit with proper error message when Population.save fails to write 
