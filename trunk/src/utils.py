@@ -2023,13 +2023,13 @@ class CSVExporter:
                 colPerGenotype = ploidy
             elif isinstance(self.genoFormatter, dict):
                 value = self.genoFormatter.values()[0]
-                colPerGenotype = 1 if type(value) in [type(''), type(1)] else len(value)
+                colPerGenotype = 1 if type(value) in [type(''), type(1), type(1L)] else len(value)
                 _genoFunc = self._genoFromDict
             else:
                 if not callable(self.genoFormatter):
                     raise ValueError("genoFormatter should be a None, a dictionary or a callable function")
                 value = self.genoFormatter(tuple([pop.individual(0).allele(0, p) for p in range(ploidy)]))
-                colPerGenotype = 1 if type(value) in [type(''), type(1)] else len(value)
+                colPerGenotype = 1 if type(value) in [type(''), type(1), type(1L)] else len(value)
                 _genoFunc = self._genoCallable
             print colPerGenotype, ploidy
         #
