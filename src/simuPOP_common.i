@@ -274,9 +274,33 @@ namespace std
 %include "utility.h"
 %include "genoStru.h"
 %include "individual.h"
-%include "virtualSubPop.h"
-%include "population.h"
 
+
+// The following is a workaround for an apparent bug in how SWIG instantiates "%template() vector<>"
+// when using pointers as vector values.
+//
+// Without this workaround, gcc will complain with the following:
+// 
+//      error: ‘type_name’ is not a member of ‘swig::traits<simuPOP::vspID>’
+//
+// In appears that SWIG is looking for a swig::traits<simuPOP::vspID> definition, whereas it 
+// should be looking for swig::traits<simuPOP::vspID *>,
+// which SWIG does actually define.
+// 
+// The easiest workaround is to just provide the definition that the compiler is looking for.
+// I dont think this will cause any side effects,
+// as from what i can tell, swig::traits<>::type_name is only used as diagnostic message when
+// generating a SWIG_Error.
+//
+// For a discussion this see: http://blog.gmane.org/gmane.comp.programming.swig/month=20061201/page=6
+%{
+namespace swig {
+    template <>  struct traits<simuPOP::vspID > {
+      typedef pointer_category category;
+      static const char* type_name() { return"simuPOP::vspID"; }
+    };
+  }
+%}
 
 namespace std
 {
@@ -284,11 +308,10 @@ namespace std
     %template()    vector<simuPOP::BaseVspSplitter * >;
 }
 
-
+%include "virtualSubPop.h"
+%include "population.h"
 
 namespace std {
-    // this place should be vector<const simuPOP::BaseOperator *> but
-    // swig right now does not handle this well......q
     %template()    vector<simuPOP::BaseOperator * >;
 }
 
