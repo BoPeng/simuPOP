@@ -268,12 +268,15 @@ namespace std
 %implicitconv stringFunc;
 %implicitconv lociList;
 %implicitconv opList;
+%implicitconv subPopList;
+%implicitconv vspID;
 
 %include "utility.h"
 %include "genoStru.h"
 %include "individual.h"
+%include "virtualSubPop.h"
+%include "population.h"
 
-%implicitconv vspID;
 
 namespace std
 {
@@ -281,10 +284,7 @@ namespace std
     %template()    vector<simuPOP::BaseVspSplitter * >;
 }
 
-%implicitconv subPopList;
 
-%include "virtualSubPop.h"
-%include "population.h"
 
 namespace std {
     // this place should be vector<const simuPOP::BaseOperator *> but
