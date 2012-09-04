@@ -79,8 +79,6 @@ bool IdTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIt
 		"Paternal ID is larger than or equal to offspring ID (wrong startID?).");
 	DBG_FAILIF(mom != NULL && mom->info(idx) >= g_indID, RuntimeError,
 		"Matental ID is larger than or equal to offspring ID (wrong startID?).");
-	DBG_FAILIF(mom != NULL && dad != NULL && mom->info(idx) == dad->info(idx), RuntimeError,
-		"Parental IDs are not unique (forgot InitInfo?)");
 #ifdef _OPENMP
 	ATOMICLONG id = fetchAndIncrement(&g_indID);
 	offspring->setInfo(static_cast<long>(id), idx);

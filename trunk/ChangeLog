@@ -21,6 +21,7 @@ BUG:
   - Results from Stat(heteroFreq) are now set one by one, and not as a default dictionary
   - Fix a bug in Population.removeLoci() that will lead to incorrect population genotype.
   - Fix compatibility bug with SWIG 2.0.8
+  - Allow IdTagger to work properly in Self mating when two parents have the same IDs
 
 Minor improvement:
   - Automatically create a directory if needed when a full path name is specified to parameter saveAs of plotters defined in simuPOP.plotter.
