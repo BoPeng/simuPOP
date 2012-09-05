@@ -687,14 +687,14 @@ class TestUtils(unittest.TestCase):
         '''Testing export population in genepop format'''
         pop = Population(size=[4, 5], loci=[2, 4], ploidy=2, 
             lociNames=['a', 'b', 'c', 'd', 'e', 'f'], infoFields=['loc', 'pheno']) 
-        initGenotype(pop, haplotypes=[1,2])
+        initGenotype(pop, haplotypes=[0,1])
         initSex(pop, sex=[MALE, FEMALE])
         #
         # basic export
         export(pop, format='fstat', output='fstat.txt')
-        self.assertEqual(self.lineOfFile('fstat.txt', 1), '2 6 3 1\n')
+        self.assertEqual(self.lineOfFile('fstat.txt', 1), '2 6 2 1\n')
         self.assertEqual(self.lineOfFile('fstat.txt', 2), 'a\n')
-        self.assertEqual(self.lineOfFile('fstat.txt', 8), '1 22 33 22 33 22 33\n')
+        self.assertEqual(self.lineOfFile('fstat.txt', 8), '1 11 22 11 22 11 22\n')
         # 
         # test parameter lociNames
         self.assertRaises(ValueError, export, pop, format='fstat', output='fstat.txt',
@@ -704,15 +704,15 @@ class TestUtils(unittest.TestCase):
         #
         # test parameter adjust
         export(pop, format='fstat', output='fstat.txt', adjust=0)
-        self.assertEqual(self.lineOfFile('fstat.txt', 8), '1 11 22 11 22 11 22\n')
+        self.assertEqual(self.lineOfFile('fstat.txt', 8), '1 00 11 00 11 00 11\n')
         #
         # test the case with no loci name and no specified name
         pop = Population(size=[4, 5], loci=[2, 4], ploidy=2, 
             infoFields=['loc', 'pheno']) 
-        initGenotype(pop, haplotypes=[1,2])
+        initGenotype(pop, haplotypes=[0,1])
         initSex(pop, sex=[MALE, FEMALE])
         export(pop, format='fstat', output='fstat.txt')
-        self.assertEqual(self.lineOfFile('fstat.txt', 8), '1 22 33 22 33 22 33\n')
+        self.assertEqual(self.lineOfFile('fstat.txt', 8), '1 11 22 11 22 11 22\n')
 
         # cleanup
         os.remove('fstat.txt')
@@ -732,7 +732,10 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(pop.totNumLoci(), 6)
         self.assertEqual(pop.ploidy(), 2)
         self.assertEqual(pop.lociNames(), ('a', 'b', 'c', 'd', 'e', 'f'))
-        self.assertEqual(list(pop.genotype()), [x+1 for x in genotypes])
+        if moduleInfo()['alleleType'] == 'binary':
+            self.assertEqual(list(pop.genotype()), [x+1 >= 1 for x in genotypes])
+        else:
+            self.assertEqual(list(pop.genotype()), [x+1 for x in genotypes])
         del pop
         # test for parameter adjust
         pop = importPopulation(format='fstat', filename='fstat.txt', adjust=-1)
@@ -749,7 +752,7 @@ class TestUtils(unittest.TestCase):
         '''Testing export population in genepop format'''
         pop = Population(size=[4, 5], loci=[2, 4], ploidy=2, 
             lociNames=['a', 'b', 'c', 'd', 'e', 'f'], infoFields=['loc', 'pheno']) 
-        initGenotype(pop, haplotypes=[1,2])
+        initGenotype(pop, haplotypes=[0,1])
         initSex(pop, sex=[MALE, FEMALE])
         pop.setVirtualSplitter(SexSplitter())
         #
@@ -767,11 +770,12 @@ class TestUtils(unittest.TestCase):
         # pop?
         self.assertEqual(self.lineOfFile('genepop.txt', 3), 'POP\n')
         # genotype?
-        self.assertEqual(self.lineOfFile('genepop.txt', 4), 'SubPop0-1, 0202 0303 0202 0303 0202 0303\n')
+        self.assertEqual(self.lineOfFile('genepop.txt', 4), 'SubPop0-1, 0101 0202 0101 0202 0101 0202\n')
         # large allele?
-        pop.genotype()[0] = 100
-        export(pop, format='genepop', output='genepop.txt')
-        self.assertEqual(self.lineOfFile('genepop.txt', 4), 'SubPop0-1, 101002 003003 002002 003003 002002 003003\n')
+        if moduleInfo()['alleleType'] != 'binary':
+            pop.genotype()[0] = 100
+            export(pop, format='genepop', output='genepop.txt')
+            self.assertEqual(self.lineOfFile('genepop.txt', 4), 'SubPop0-1, 101001 002002 001001 002002 001001 002002\n')
         # cleanup
         os.remove('genepop.txt')
         
@@ -789,7 +793,10 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(pop.totNumLoci(), 6)
         self.assertEqual(pop.ploidy(), 2)
         self.assertEqual(pop.lociNames(), ('a', 'b', 'c', 'd', 'e', 'f'))
-        self.assertEqual(list(pop.genotype()), [x+1 for x in genotypes])
+        if moduleInfo()['alleleType'] == 'binary':
+            self.assertEqual(list(pop.genotype()), [x+1 >= 1 for x in genotypes])
+        else:
+            self.assertEqual(list(pop.genotype()), [x+1 for x in genotypes])
         del pop
         # test for parameter adjust
         pop = importPopulation(format='genepop', filename='genepop.txt', adjust=-1)
@@ -807,7 +814,7 @@ class TestUtils(unittest.TestCase):
         '''Testing export population in structure format'''
         pop = Population(size=[4, 5], loci=[2, 4], ploidy=2, 
             lociNames=['a', 'b', 'c', 'd', 'e', 'f'], infoFields=['loc', 'pheno']) 
-        initGenotype(pop, haplotypes=[1,2])
+        initGenotype(pop, haplotypes=[0,1])
         initInfo(pop, [20], infoFields='loc')
         initInfo(pop, [30], infoFields='pheno')
         initSex(pop, sex=[MALE, FEMALE])
@@ -834,23 +841,23 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(self.lineOfFile('stru.txt', 3), '0\n')
         # test for parameter label
         export(pop, format='structure', output='stru.txt', label=False)
-        self.assertEqual(self.lineOfFile('stru.txt', 3), '1\t1\t2\t1\t2\t1\t2\n')
+        self.assertEqual(self.lineOfFile('stru.txt', 3), '1\t0\t1\t0\t1\t0\t1\n')
         # test for parameter popData
         export(pop, format='structure', output='stru.txt', label=False, popData=False)
-        self.assertEqual(self.lineOfFile('stru.txt', 3), '1\t2\t1\t2\t1\t2\n')
+        self.assertEqual(self.lineOfFile('stru.txt', 3), '0\t1\t0\t1\t0\t1\n')
         # test for parameter popFlag
         export(pop, format='structure', output='stru.txt', popFlag=1)
-        self.assertEqual(self.lineOfFile('stru.txt', 3), '1\t1\t1\t1\t2\t1\t2\t1\t2\n')
+        self.assertEqual(self.lineOfFile('stru.txt', 3), '1\t1\t1\t0\t1\t0\t1\t0\t1\n')
         # test for parameter locData
         self.assertRaises(ValueError, export, pop, format='structure', output='stru.txt',
             locData='a')
         export(pop, format='structure', output='stru.txt', locData='loc')
-        self.assertEqual(self.lineOfFile('stru.txt', 3), '1\t1\t20\t1\t2\t1\t2\t1\t2\n')
+        self.assertEqual(self.lineOfFile('stru.txt', 3), '1\t1\t20\t0\t1\t0\t1\t0\t1\n')
         # test for parameter phenotype
         self.assertRaises(ValueError, export, pop, format='structure', output='stru.txt',
             phenotype='a')
         export(pop, format='structure', output='stru.txt', locData='loc', phenotype='pheno')
-        self.assertEqual(self.lineOfFile('stru.txt', 3), '1\t1\t20\t30\t1\t2\t1\t2\t1\t2\n')
+        self.assertEqual(self.lineOfFile('stru.txt', 3), '1\t1\t20\t30\t0\t1\t0\t1\t0\t1\n')
         # test for parameter subPops
         self.assertEqual(len(open('stru.txt').read().split('\n')), 21)
         export(pop, format='structure', output='stru.txt', locData='loc',
