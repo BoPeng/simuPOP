@@ -10656,7 +10656,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::WeightedSampler::set(vectorf::const_iterator first, vectorf::const_iterator last, size_t N=0);
+%ignore simuPOP::WeightedSampler::set(IT first, IT last, size_t N=0);
 
 %feature("docstring") simuPOP::WeightedSampler::draw "
 
@@ -10906,7 +10906,7 @@ Usage:
 
 %ignore simuPOP::hweTest(const vectoru &cnt);
 
-%ignore simuPOP::propToCount(vectorf::const_iterator first, vectorf::const_iterator last, size_t N, vectoru &count);
+%ignore simuPOP::propToCount(IT first, IT last, size_t N, vectoru &count);
 
 %ignore simuPOP::formatDescription(const string &text);
 
