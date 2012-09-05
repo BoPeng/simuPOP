@@ -14,6 +14,10 @@ Major New Features:
   - Add an operator Exporter and function export to export a simuPOP population in STRUCTURE,
         GenePop, FStat and CSV formats.
 
+MAJOR BUG:
+  - Fix a bug that prevents females from selected correctly during random mating. The bug
+	was introduced in simuPOP 1.0.6.
+	
 BUG:
   - Quit with proper error message when Population.save fails to write 
   - Fix a bug where applicability parameters in operators in parameter ops

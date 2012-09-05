@@ -774,7 +774,7 @@ void RandomParentsChooser::initialize(Population & pop, size_t subPop)
 
 	if (m_selection) {
 		m_malesampler.set(m_fitness.begin(), m_fitness.begin() + m_numMale);
-		m_femalesampler.set(m_fitness.begin() + (m_fitness.size() - m_numFemale), m_fitness.end());
+		m_femalesampler.set(m_fitness.rbegin(), m_fitness.rbegin() + m_numFemale);
 		DBG_DO(DBG_DEVEL, cerr << "Male and Female fitness " << m_fitness << endl);
 	}
 
