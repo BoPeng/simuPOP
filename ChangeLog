@@ -4,11 +4,9 @@ Known Bugs:
   - BUG: simuPOP does not respond well to Ctrl-C under windows.
   - BUG: Textbox in Tkinter help dialog does not resize.
 
-To be implemented:
-  - Dumper() dumps a range instead of single positions when the positions
-	are consecutive.
+version 1.0.9 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 
-version 1.0.8 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 1.0.8 - Rev 4645 (Sep 5, 2012)
 
 Major New Features:
   - Add an operator Exporter and function export to export a simuPOP population in STRUCTURE,
