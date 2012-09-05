@@ -888,5 +888,23 @@ class TestSelector(unittest.TestCase):
         fit = [max(0, 1- x*0.001) for x in range(100)] + [max(0, 1-100*0.001) for x in range(100)]
         self.assertFitness(sel, fit)
 
+    def testSelectionIntensity(self):
+        'Testing intensity of directional selection'
+        pop=Population(size=10000,loci=1,infoFields=['fitness'])
+        pop.evolve(
+            initOps = [
+                InitSex(),
+                InitGenotype(freq=[1-0.05, 0.05])
+            ],
+            preOps=MapSelector(loci=0,fitness={(0,0):1, (0,1):1.05, (1,1):1.1}),
+            matingScheme=RandomMating(),
+            gen=100
+        )
+        stat(pop, alleleFreq=0)
+        self.assertLess(pop.dvars().alleleFreq[0][1], 0.9)
+        self.assertGreater(pop.dvars().alleleFreq[0][1], 0.8)
+
+
+
 if __name__ == '__main__':
     unittest.main()
