@@ -3290,9 +3290,9 @@ double hweTest(const vectoru & cnt)
 	// number of heterozygotes observed.
 	//
 	// (c) 2003 Jan Wigginton, Goncalo Abecasis
-	size_t obsAA = cnt[2];                                             // in this algorithm, AA is rare.
+	size_t obsAA = cnt[2] > cnt[0] ? cnt[0] : cnt[2];                                             // in this algorithm, AA is rare.
 	size_t obsAB = cnt[1];
-	size_t obsBB = cnt[0];
+	size_t obsBB = cnt[2] > cnt[0] ? cnt[2] : cnt[0];
 
 	size_t diplotypes = obsAA + obsAB + obsBB;
 	size_t rare = (obsAA * 2) + obsAB;
@@ -3336,7 +3336,7 @@ double hweTest(const vectoru & cnt)
 	het = mid;
 	hom_r = (rare - mid) / 2;
 	hom_c = diplotypes - het - hom_r;
-	for (het = mid; het <= rare - 2; het += 2) {
+	for (het = mid; het + 2 <= rare; het += 2) {
 		tailProbs[het + 2] = (tailProbs[het] * 4.0 * hom_r * hom_c) / ((het + 2.0) * (het + 1.0));
 		sum += tailProbs[het + 2];
 		//2 more hets for next iteration -> subtract one rare and one common homozygote
