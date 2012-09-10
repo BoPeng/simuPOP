@@ -6,6 +6,9 @@ Known Bugs:
 
 version 1.0.9 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 
+BUG:
+  - Fix a HWE test crash when one of the homozygote count is zero.
+
 version 1.0.8 - Rev 4645 (Sep 5, 2012)
 
 Major New Features:
