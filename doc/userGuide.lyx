@@ -16143,13 +16143,15 @@ Alternative implementations of natural selection
 
 \begin_layout Standard
 If you know how natural selection works in simuPOP, you do not have to use
- a selector to perform natural selection in simuPOP.
- All you need to do is
+ a selector to perform natural selection.
+ For example, 
 \end_layout
 
 \begin_layout Itemize
-Set individual fitness values to individuals who will be involved in mating.
- You do not have to use information field 
+If you choose to use fitness values of parents to perform probabilistic
+ natural selection during mating, you just need to set individual fitness
+ in some way before mating.
+ (You do not even have to use information field 
 \family typewriter
 fitness
 \family default
@@ -16158,31 +16160,28 @@ fitness
 \family typewriter
 selectionField
 \family default
-.
- Or,
+).
+ This can be done through a penetrance model (as shown in the following
+ example) where affected individuals are selected against during mating,
+ a quantitative trait model (where a trait is defined to control individual
+ fitness), or by setting information field fitness manually through a Python
+ operator.
 \end_layout
 
 \begin_layout Itemize
-Using a during-mating opearator as a filter to remove some offspring.
- Because during-mating operators other than selectors usually do not return
- 
+If you would like to perform deterministic selection on certain phenotype,
+ you can explicitly remove individuals before or during mating.
+ More explicitly, you can use an operator 
 \family typewriter
-False
+DiscardIf
 \family default
-, a 
-\family typewriter
-PyOperator(func=func)
-\family default
- with a function in the form of 
-\family typewriter
-func(offspring)
-\family default
- is usually used in this case.
+ to remove parents before mating or remove offspring during mating according
+ to certain status (disease status or quantitative trait), provided that
+ the trait status is defined before this operator is applied.
 \end_layout
 
 \begin_layout Standard
-A number of operators could then be used to implement natural selection.
- Example 
+Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "peneSelector"
@@ -16220,6 +16219,13 @@ InfoExec('fitness = 1 - 0.01*ind.affected()', exposeInd='ind')
 InfoExec('fitness = 1 - 0.01*(LDL > 250)')
 \family default
  to select against individuals according to a quantitative trait.
+ For this particular example, a 
+\family typewriter
+DiscardIf
+\family default
+ operator could be used, although it can be slower because of the explicit
+ removal of parents.
+ 
 \end_layout
 
 \begin_layout Standard
