@@ -3296,6 +3296,55 @@ string statEffectiveSize::describe(bool /* format */) const
 }
 
 
+double statEffectiveSize::Waples89(size_t S0, size_t St, size_t t,
+                                   const ALLELECNTLIST & P0,
+                                   const ALLELECNTLIST & Pt)
+{
+	size_t K_all = 0;
+	double F_all = 0.;
+
+	// for each locus
+	for (size_t loc = 0; loc < P0.size(); ++loc) {
+		// alleles = set(list(P0[loc].keys()) + list(Pt[loc].keys()))
+		std::set<size_t> alleles;
+		uintDict::const_iterator i1 = P0[loc].begin();
+		uintDict::const_iterator i1_end = P0[loc].begin();
+		for (; i1 != i1_end; ++i1)
+			alleles.insert(i1->first);
+		uintDict::const_iterator i2 = Pt[loc].begin();
+		uintDict::const_iterator i2_end = Pt[loc].begin();
+		for (; i2 != i2_end; ++i2)
+			alleles.insert(i2->first);
+		// number of alleles K = len(alleles)
+		size_t K = alleles.size();
+		//
+		if (K == 1)
+			continue;
+		// formula 9
+		double Fk = 0;
+		std::set<size_t>::iterator allele = alleles.begin();
+		std::set<size_t>::iterator allele_end = alleles.end();
+		for (; allele != allele_end; ++allele) {
+			double xi = 0;
+			uintDict::const_iterator xx = P0[loc].find(*allele);
+			if (xx != i1_end)
+				xi = xx->second;
+			double yi = 0;
+			uintDict::const_iterator yy = Pt[loc].find(*allele);
+			if (yy != i2_end)
+				yi = yy->second;
+			//
+			Fk += (xi - yi) * (xi - yi) * 2. / (xi + yi);
+		}
+		//  for multiple loci
+		F_all += Fk * K;
+		K_all += K;
+	}
+	F_all /= K_all;
+	return t / (2 * (F_all - 0.5 / S0 - 0.5 / St));
+}
+
+
 bool statEffectiveSize::apply(Population & pop) const
 {
 	if (m_loci.empty())
