@@ -374,6 +374,8 @@ Stat::Stat(
 	//
 	const lociList & HWE,
 	//
+	const lociList & effectiveSize,
+	//
 	const stringList & vars,
 	const string & suffix,
 	// regular parameters
@@ -397,7 +399,8 @@ Stat::Stat(
 	m_association(association, subPops, vars, suffix),
 	m_neutrality(neutrality, subPops, vars, suffix),
 	m_structure(structure, subPops, vars, suffix),
-	m_HWE(HWE, subPops, vars, suffix)
+	m_HWE(HWE, subPops, vars, suffix),
+	m_effectiveSize(effectiveSize, subPops, vars, suffix)
 {
 	(void)output;  // avoid warning about unused parameter
 }
@@ -423,6 +426,7 @@ string Stat::describe(bool /* format */) const
 	descs.push_back(m_neutrality.describe(false));
 	descs.push_back(m_structure.describe(false));
 	descs.push_back(m_HWE.describe(false));
+	descs.push_back(m_effectiveSize.describe(false));
 	for (size_t i = 0; i < descs.size(); ++i) {
 		if (!descs[i].empty())
 			desc += "<li>" + descs[i] + "\n";
@@ -449,7 +453,8 @@ bool Stat::apply(Population & pop) const
 	       m_association.apply(pop) &&
 	       m_neutrality.apply(pop) &&
 	       m_structure.apply(pop) &&
-	       m_HWE.apply(pop);
+	       m_HWE.apply(pop) &&
+	       m_effectiveSize.apply(pop);
 }
 
 
@@ -3266,6 +3271,41 @@ bool statHWE::apply(Population & pop) const
 	}
 	return true;
 }
+
+
+
+statEffectiveSize::statEffectiveSize(const lociList & loci,  const subPopList & subPops,
+	const stringList & vars, const string & suffix)
+	: m_loci(loci), m_subPops(subPops), m_vars(), m_suffix(suffix)
+{
+	const char * allowedVars[] = {
+		Ne_waples89_String, Ne_waples89_sp_String, ""
+	};
+	const char * defaultVars[] = { Ne_waples89_String, "" };
+
+	m_vars.obtainFrom(vars, allowedVars, defaultVars);
+}
+
+
+string statEffectiveSize::describe(bool /* format */) const
+{
+	string desc;
+
+	if (!m_loci.empty())
+		desc += "Effective population size using temporal method as described in Waples 89";
+	return desc;
+}
+
+
+bool statEffectiveSize::apply(Population & pop) const
+{
+	if (m_loci.empty())
+		return true;
+
+	const vectoru & loci = m_loci.elems(&pop);
+	return true;
+}
+
 
 
 }
