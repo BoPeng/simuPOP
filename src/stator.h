@@ -898,7 +898,7 @@ private:
 
 	double Waples89(size_t S0, size_t St, size_t t,
 		const ALLELECNTLIST & P0,
-		const ALLELECNTLIST & Pt);
+		const ALLELECNTLIST & Pt) const;
 
 public:
 	statEffectiveSize(const lociList & loci, const subPopList & subPops,
