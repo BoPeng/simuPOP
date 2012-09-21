@@ -3296,14 +3296,16 @@ string statEffectiveSize::describe(bool /* format */) const
 }
 
 
-double statEffectiveSize::Waples89(size_t S0, size_t St, size_t t,
-                                   const ALLELECNTLIST & P0,
-                                   const ALLELECNTLIST & Pt) const
+void statEffectiveSize::Waples89(size_t S0, size_t St, size_t t,
+                                 const ALLELECNTLIST & P0,
+                                 const ALLELECNTLIST & Pt,
+                                 vectorf & res) const
 {
 	DBG_DO(DBG_STATOR, cerr << "t=" << t << " S0=" << S0 << " St=" << St << endl);
 	DBG_DO(DBG_STATOR, cerr << "P0=" << P0 << endl);
 	DBG_DO(DBG_STATOR, cerr << "Pt=" << Pt << endl);
 
+	res.resize(3);
 	size_t K_all = 0;
 	double F_all = 0.;
 
@@ -3348,7 +3350,14 @@ double statEffectiveSize::Waples89(size_t S0, size_t St, size_t t,
 	}
 	// plan 2, formula 11 (or plan 1 assuming large N)
 	F_all /= K_all;
-	return t / (2 * (F_all - 0.5 / S0 - 0.5 / St));
+	// estimate of Ne
+	res[0] = t / (2 * (F_all - 0.5 / S0 - 0.5 / St));
+	// lower
+	size_t n = K_all - P0.size();  // total number of independent alleles
+	double F_lower = n * F_all / gsl_cdf_chisq_Pinv(0.025, n);
+	double F_higher = n * F_all / gsl_cdf_chisq_Pinv(0.975, n);
+	res[1] = t / (2 * (F_lower - 0.5 / S0 - 0.5 / St));
+	res[2] = t / (2 * (F_higher - 0.5 / S0 - 0.5 / St));
 }
 
 
@@ -3490,8 +3499,10 @@ bool statEffectiveSize::apply(Population & pop) const
 		}
 		if (m_vars.contains(Ne_waples89_sp_String)) {
 			// calculate ne
-			double ne = gen_since_last_call == 0 ? St : Waples89(S0, St, gen_since_last_call, P0, Pt);
-			pop.getVars().setVar(subPopVar_String(*it, Ne_waples89_String, m_suffix), ne);
+			vectorf res(3, St);
+			if (gen_since_last_call > 0)
+				Waples89(S0, St, gen_since_last_call, P0, Pt, res);
+			pop.getVars().setVar(subPopVar_String(*it, Ne_waples89_String, m_suffix), res);
 		}
 		pop.deactivateVirtualSubPop(it->subPop());
 	}
@@ -3557,8 +3568,10 @@ bool statEffectiveSize::apply(Population & pop) const
 				alleleCnt[idx]);
 		}
 		// calculate ne
-		double ne = gen_since_last_call == 0 ? total_size : Waples89(S0_all, total_size, gen_since_last_call, P0_all, alleleCnt);
-		pop.getVars().setVar(Ne_waples89_String + m_suffix, ne);
+		vectorf res(3, total_size);
+		if (gen_since_last_call > 0)
+			Waples89(S0_all, total_size, gen_since_last_call, P0_all, alleleCnt, res);
+		pop.getVars().setVar(Ne_waples89_String + m_suffix, res);
 	}
 
 	return true;
