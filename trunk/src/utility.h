@@ -1153,6 +1153,9 @@ public:
 	}
 
 
+	/// CPPONLY
+	void getVarAsIntDict(const string & name, uintDict & res, bool nameError = true) const;
+
 	PyObject * & dict()
 	{
 		return m_dict;

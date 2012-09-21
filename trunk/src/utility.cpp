@@ -1757,6 +1757,21 @@ PyObject * SharedVariables::setVar(const string & name, const intDict & val)
 	return setVar(name, obj);
 }
 
+void SharedVariables::getVarAsIntDict(const string & name, uintDict & res, bool nameError) const
+{
+	res.clear();
+	PyObject * obj = getVar(name, nameError);
+		
+	PyObject *key, *value;
+	Py_ssize_t pos = 0;
+
+	while (PyDict_Next(obj, &pos, &key, &value)) {
+		int k = PyInt_AS_LONG(key);
+		double v = PyFloat_AsDouble(value);
+		res[k] = v;
+    }
+}
+
 
 PyObject * SharedVariables::setVar(const string & name, const uintDict & val)
 {

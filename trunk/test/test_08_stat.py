@@ -725,10 +725,11 @@ class TestStat(unittest.TestCase):
         #
         # for overall population
         #
-        print self.Waples89(S0, S1, 10, P0, Pt)
-        print self.Waples89(S00, S10, 10, P00, Pt0)
-        print self.Waples89(S01, S11, 10, P01, Pt1)
-        print self.Waples89(S02, S12, 10, P02, Pt2)
+        stat(pop, effectiveSize=[0,1], vars=['Ne_waples89', 'Ne_waples89_sp'])
+        print self.Waples89(S0, S1, 10, P0, Pt), pop.dvars().Ne_waples89
+        print self.Waples89(S00, S10, 10, P00, Pt0), pop.dvars(0).Ne_waples89
+        print self.Waples89(S01, S11, 10, P01, Pt1), pop.dvars(1).Ne_waples89
+        print self.Waples89(S02, S12, 10, P02, Pt2), pop.dvars(2).Ne_waples89
 
 
 if __name__ == '__main__':
