@@ -643,9 +643,34 @@ class TestStat(unittest.TestCase):
         pop1.removeSubPops(1)
         self.assertEqual(pop1.dvars(0).Pi_mt, self.pairwiseDiff(pop1, loci=[1, 3, 4]))
 
+    def Waples89(self, S0, St, t, P0, Pt):
+        # number of loci
+        K_all = 0
+        F_all = 0
+        for loc in P0.keys():
+            # number of alleles?
+            alleles = set(list(P0[loc].keys()) + list(Pt[loc].keys()))
+            K = len(alleles)
+            if K == 1:
+                continue
+            # formula 9
+            Fk = 0
+            for allele in alleles:
+                xi = P0[loc][allele]
+                yi = Pt[loc][allele]
+                Fk += (xi - yi) * (xi - yi) * 2. / (xi + yi)
+            Fk /= K - 1
+            # for multiple loci
+            F_all += Fk * K
+            K_all += K
+        #
+        F_all /= K_all
+        return t / (2 * (F_all - 0.5/S0 - 0.5/St))
+
 
     def testEffectiveSize(self):
         '''Testing the effective population size estimated from genotype data'''
+        getRNG().set(seed=1235)
         pop = Population(size=[500,100,1000], loci = 4)
         pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
@@ -671,7 +696,39 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars(1).Ne_temporal_last_gen, 0)
         self.assertEqual(pop.dvars(2).Ne_temporal_last_gen, 0)
         #
-        # now, if we calculate again ...
+        S0 = 1600
+        S00 = 500
+        S01 = 100
+        S02 = 1000
+        P0 = pop.dvars().Ne_temporal_last_freq
+        P00 = pop.dvars(0).Ne_temporal_last_freq
+        P01 = pop.dvars(1).Ne_temporal_last_freq
+        P02 = pop.dvars(2).Ne_temporal_last_freq
+        # now, evolve population
+        pop.evolve(
+            initOps = InitSex(),
+            matingScheme = RandomMating(subPopSize=(500, 100, 1000)),
+            gen = 20
+        )
+        # get new allele frequency
+        stat(pop, popSize=True, alleleFreq=[0,1], subPops=[0, 1, 2], vars=['popSize', 'popSize_sp', 'alleleFreq', 'alleleFreq_sp'])
+        S1 = pop.dvars().popSize
+        S10 = pop.dvars(0).popSize
+        S11 = pop.dvars(1).popSize
+        S12 = pop.dvars(2).popSize
+        Pt = pop.dvars().alleleFreq
+        Pt0 = pop.dvars(0).alleleFreq
+        Pt1 = pop.dvars(1).alleleFreq
+        Pt2 = pop.dvars(2).alleleFreq
+        #
+        # calculate Ne_temporal at the Python level
+        #
+        # for overall population
+        #
+        print self.Waples89(S0, S1, 10, P0, Pt)
+        print self.Waples89(S00, S10, 10, P00, Pt0)
+        print self.Waples89(S01, S11, 10, P01, Pt1)
+        print self.Waples89(S02, S12, 10, P02, Pt2)
 
 
 if __name__ == '__main__':
