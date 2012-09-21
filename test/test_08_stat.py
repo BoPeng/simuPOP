@@ -13,6 +13,7 @@ import unittest, os, sys
 from simuOpt import setOptions
 from random import randint
 from simuPOP.utils import export
+from simuPOP.gsl import gsl_cdf_chisq_Pinv
 
 #setOptions(quiet=True) 
 new_argv = []
@@ -666,8 +667,11 @@ class TestStat(unittest.TestCase):
             K_all += K
         #
         F_all /= K_all
-        return t / (2 * (F_all - 0.5/S0 - 0.5/St))
-
+        # CI, n = Sum(K-1) is the total number of independent alleles surveyed
+        n = K_all - len(P0)
+        F_lower = n * F_all / gsl_cdf_chisq_Pinv(0.025, n)
+        F_higher = n * F_all / gsl_cdf_chisq_Pinv(0.975, n)
+        return [t / (2 * (x - 0.5/S0 - 0.5/St)) for x in [F_all, F_lower, F_higher]]
 
     def testEffectiveSize(self):
         '''Testing the effective population size estimated from genotype data'''

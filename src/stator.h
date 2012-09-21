@@ -896,9 +896,11 @@ private:
 	typedef uintDict ALLELECNT;
 	typedef vector<ALLELECNT> ALLELECNTLIST;
 
-	double Waples89(size_t S0, size_t St, size_t t,
+	// calculate moment based estimate of Ne based on Waples 89
+	// return estimate and 95 CI
+	void Waples89(size_t S0, size_t St, size_t t,
 		const ALLELECNTLIST & P0,
-		const ALLELECNTLIST & Pt) const;
+		const ALLELECNTLIST & Pt, vectorf & res) const;
 
 public:
 	statEffectiveSize(const lociList & loci, const subPopList & subPops,
@@ -1325,7 +1327,8 @@ public:
 	 *  (virtual) subpopulations is calculated. \e effectiveSize can be a list
 	 *  of loci indexes, names or \c ALL_AVAIL. This statistic outputs the
 	 *  following variables:
-	 *  \li \c Ne_waples89 (default) Effective population size estimated using
+	 *  \li \c Ne_waples89 (default) Effective population size, 2.5% and 97.5%
+	 *       confidence interval as a list of size three, estimated using
 	 *       a temporal method as described in Waples 1989, Genetics. Because
 	 *       this is a temporal method, Ne_waples89 is set to census population
 	 *       size when it is first calculated, and is set to the temporal
