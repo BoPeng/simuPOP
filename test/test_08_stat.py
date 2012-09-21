@@ -646,6 +646,33 @@ class TestStat(unittest.TestCase):
 
     def testEffectiveSize(self):
         '''Testing the effective population size estimated from genotype data'''
+        pop = Population(size=[500,100,1000], loci = 4)
+        pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
+            [0, 50], [50, 80], [80, 100],
+            [0, 100],[100, 600], [600, 1000]]))
+        for genotype, subPop in zip(
+            [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
+            [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)]):
+            initGenotype(pop, loci=0, genotype=genotype, subPops=[subPop])
+            initGenotype(pop, loci=1, genotype=[genotype[1], genotype[0]], subPops=[subPop])
+        stat(pop, effectiveSize=[0,1])
+        self.assertEqual(pop.dvars().Ne_temporal_last_freq[0], {0:1230./3200, 1:1970./3200})
+        self.assertEqual(pop.dvars().Ne_temporal_last_freq[0], {0:1230./3200, 1:1970./3200})
+        self.assertEqual(pop.dvars().Ne_temporal_last_size, 1600)
+        self.assertEqual(pop.dvars().Ne_temporal_last_gen, 0)
+        #
+        stat(pop, effectiveSize=[0,1], subPops=(0, 1, 2), vars=['Ne_waples89_sp'])
+        self.assertEqual(pop.dvars(0).Ne_temporal_last_freq[0][0], 0.5)
+        self.assertEqual(pop.dvars(0).Ne_temporal_last_freq[0][1], 0.5)
+        self.assertEqual(pop.dvars(0).Ne_temporal_last_size, 500)
+        self.assertEqual(pop.dvars(1).Ne_temporal_last_size, 100)
+        self.assertEqual(pop.dvars(2).Ne_temporal_last_size, 1000)
+        self.assertEqual(pop.dvars(0).Ne_temporal_last_gen, 0)
+        self.assertEqual(pop.dvars(1).Ne_temporal_last_gen, 0)
+        self.assertEqual(pop.dvars(2).Ne_temporal_last_gen, 0)
+        #
+        # now, if we calculate again ...
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -885,8 +885,16 @@ private:
 class statEffectiveSize
 {
 private:
-#define  Ne_waples89_String     "Ne_waples89"
-#define  Ne_waples89_sp_String  "Ne_waples89_sp"
+#define  Prev_AlleleFreq_String   "Ne_temporal_last_freq"
+#define  Prev_Size_String         "Ne_temporal_last_size"
+#define  Prev_Gen_String          "Ne_temporal_last_gen"
+
+#define  Ne_waples89_String       "Ne_waples89"
+#define  Ne_waples89_sp_String    "Ne_waples89_sp"
+
+private:
+	typedef uintDict ALLELECNT;
+	typedef vector<ALLELECNT> ALLELECNTLIST;
 
 public:
 	statEffectiveSize(const lociList & loci, const subPopList & subPops,
