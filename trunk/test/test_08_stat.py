@@ -12,6 +12,7 @@ import math
 import unittest, os, sys
 from simuOpt import setOptions
 from random import randint
+from simuPOP.utils import export
 
 #setOptions(quiet=True) 
 new_argv = []
@@ -696,6 +697,9 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars(1).Ne_temporal_last_gen, 0)
         self.assertEqual(pop.dvars(2).Ne_temporal_last_gen, 0)
         #
+        # export for testing using NeEstimator
+        #export(pop, format='genepop', subPops=0, output='pre.txt')
+        #
         t = 20
         S0 = 1600
         S00 = 500
@@ -711,6 +715,8 @@ class TestStat(unittest.TestCase):
             matingScheme = RandomMating(subPopSize=(500, 100, 1000)),
             gen = t
         )
+        # export for testing using NeEstimator
+        #export(pop, format='genepop', subPops=0, output='post.txt')
         # get new allele frequency
         stat(pop, popSize=True, alleleFreq=[0,1], subPops=[0, 1, 2], vars=['popSize', 'popSize_sp', 'alleleFreq', 'alleleFreq_sp'])
         S1 = pop.dvars().popSize
