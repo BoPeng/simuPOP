@@ -1164,8 +1164,8 @@ bool statHeteroFreq::apply(Population & pop) const
 			uintDict::const_iterator ct = heteroCnt.begin();
 			uintDict::const_iterator ct_end = heteroCnt.end();
 			for (; ct != ct_end; ++ct)
-				// we set elements one by one because we do not want to overwrite 
-				// previous results (perhaps at other loci). Also, we do not want to 
+				// we set elements one by one because we do not want to overwrite
+				// previous results (perhaps at other loci). Also, we do not want to
 				// make this variable a default dict.
 				pop.getVars().setVar(subPopVar_String(*it, HeteroNum_String, m_suffix)
 					+ "[" + toStr(ct->first) + "]", ct->second);
@@ -3273,7 +3273,6 @@ bool statHWE::apply(Population & pop) const
 }
 
 
-
 statEffectiveSize::statEffectiveSize(const lociList & loci,  const subPopList & subPops,
 	const stringList & vars, const string & suffix)
 	: m_loci(loci), m_subPops(subPops), m_vars(), m_suffix(suffix)
@@ -3303,9 +3302,107 @@ bool statEffectiveSize::apply(Population & pop) const
 		return true;
 
 	const vectoru & loci = m_loci.elems(&pop);
+	//
+	// get previous allele frequency and population size, if available
+	//
+	// find out current allele frequency, this is copied from statAlleleFreq
+	ALLELECNTLIST alleleCnt(loci.size());
+	vectoru allAllelesCnt(loci.size(), 0);
+	size_t total_size = 0;
+	// selected (virtual) subpopulatons.
+	subPopList subPops = m_subPops.expandFrom(pop);
+	subPopList::const_iterator it = subPops.begin();
+	subPopList::const_iterator itEnd = subPops.end();
+	for (; it != itEnd; ++it) {
+		if (m_vars.contains(Ne_waples89_sp_String)) {
+			pop.getVars().removeVar(subPopVar_String(*it, Prev_AlleleFreq_String, m_suffix));
+			// save gen
+			pop.getVars().setVar(subPopVar_String(*it, Prev_Gen_String, m_suffix), pop.gen());
+			// save size
+			pop.getVars().setVar(subPopVar_String(*it, Prev_Size_String, m_suffix), pop.subPopSize(*it));
+		}
+		total_size += pop.subPopSize(*it);
+		pop.activateVirtualSubPop(*it);
+
+#pragma omp parallel for if(numThreads() > 1)
+		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
+			size_t loc = loci[idx];
+
+#ifdef LONGALLELE
+			intDict alleles;
+#else
+			vectoru alleles(2, 0);
+#endif
+			size_t allAlleles = 0;
+
+			// go through all alleles
+			IndAlleleIterator a = pop.alleleIterator(loc, it->subPop());
+			// use allAllelel here because some marker does not have full number
+			// of alleles (e.g. markers on chromosome X and Y).
+			for (; a.valid(); ++a) {
+				Allele v = a.value();
+#ifndef BINARYALLELE
+#  ifndef LONGALLELE
+				if (v >= alleles.size())
+					alleles.resize(v + 1, 0);
+#  endif
+#endif
+				alleles[v]++;
+				allAlleles++;
+			}
+			// total allele count
+#ifdef LONGALLELE
+			intDict::iterator cnt = alleles.begin();
+			intDict::iterator cntEnd = alleles.end();
+			for ( ; cnt != cntEnd; ++cnt)
+				alleleCnt[idx][cnt->first] += cnt->second;
+#else
+			for (size_t i = 0; i < alleles.size(); ++i)
+				if (alleles[i] != 0)
+					alleleCnt[idx][i] += alleles[i];
+#endif
+			allAllelesCnt[idx] += allAlleles;
+			// output variable.
+			if (m_vars.contains(Ne_waples89_sp_String)) {
+				// save frequency
+#ifdef LONGALLELE
+				intDict::iterator cnt = alleles.begin();
+				intDict::iterator cntEnd = alleles.end();
+				for ( ; cnt != cntEnd; ++cnt)
+					cnt->second /= static_cast<double>(allAlleles);
+#  pragma omp critical
+				pop.getVars().setVar(subPopVar_String(*it, Prev_AlleleFreq_String, m_suffix) + "{" + toStr(loc) + "}", alleles);
+#else
+				uintDict d;
+				for (size_t i = 0; i < alleles.size(); ++i)
+					if (alleles[i] != 0)
+						d[i] = alleles[i] / static_cast<double>(allAlleles);
+#  pragma omp critical
+				pop.getVars().setVar(subPopVar_String(*it, Prev_AlleleFreq_String, m_suffix) + "{" + toStr(loc) + "}", d);
+#endif
+			}
+		}
+		pop.deactivateVirtualSubPop(it->subPop());
+	}
+	// save gen
+	pop.getVars().setVar(Prev_Gen_String + m_suffix, pop.gen());
+	// save size
+	pop.getVars().setVar(Prev_Size_String + m_suffix, total_size);
+	// save allele frequency
+	pop.getVars().removeVar(Prev_AlleleFreq_String + m_suffix);
+	for (size_t idx = 0; idx < loci.size(); ++idx) {
+		if (allAllelesCnt[idx] != 0) {
+			uintDict::iterator cnt = alleleCnt[idx].begin();
+			uintDict::iterator cntEnd = alleleCnt[idx].end();
+			for ( ; cnt != cntEnd; ++cnt)
+				cnt->second /= static_cast<double>(allAllelesCnt[idx]);
+		}
+		pop.getVars().setVar(Prev_AlleleFreq_String + m_suffix + "{" + toStr(loci[idx]) + "}",
+			alleleCnt[idx]);
+	}
+
 	return true;
 }
-
 
 
 }
