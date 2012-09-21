@@ -896,6 +896,10 @@ private:
 	typedef uintDict ALLELECNT;
 	typedef vector<ALLELECNT> ALLELECNTLIST;
 
+	double Waples89(size_t S0, size_t St, size_t t,
+		const ALLELECNTLIST & P0,
+		const ALLELECNTLIST & Pt);
+
 public:
 	statEffectiveSize(const lociList & loci, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
@@ -911,7 +915,6 @@ private:
 	stringList m_vars;
 	string m_suffix;
 };
-
 
 
 /** Operator \c Stat calculates various statistics of the population being
@@ -1326,7 +1329,7 @@ public:
 	 *       a temporal method as described in Waples 1989, Genetics. Because
 	 *       this is a temporal method, Ne_waples89 is set to census population
 	 *       size when it is first calculated, and is set to the temporal
-	 *       effecitive size between the present and last call afterward. The 
+	 *       effecitive size between the present and last call afterward. The
 	 *       number of generations between samples for each estimate is therefore
 	 *       controlled by applicability parameters such as \e step and \e at.
 	 *       Because this implementation uses census population size as \e s_0
