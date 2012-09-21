@@ -881,6 +881,31 @@ private:
 };
 
 
+/// CPPONLY
+class statEffectiveSize
+{
+private:
+#define  Ne_waples89_String     "Ne_waples89"
+#define  Ne_waples89_sp_String  "Ne_waples89_sp"
+
+public:
+	statEffectiveSize(const lociList & loci, const subPopList & subPops,
+		const stringList & vars, const string & suffix);
+
+
+	string describe(bool format = true) const;
+
+	bool apply(Population & pop) const;
+
+private:
+	lociList m_loci;
+	subPopList m_subPops;
+	stringList m_vars;
+	string m_suffix;
+};
+
+
+
 /** Operator \c Stat calculates various statistics of the population being
  *  applied and sets variables in its local namespace. Other operators or
  *  functions can retrieve results from or evalulate expressions in this local
@@ -1283,6 +1308,24 @@ public:
 	 *       genotypes in all or specified (virtual) subpopulations.
 	 *  \li \c HWE_sp A dictionary of p-values of HWS tests using genotypes
 	 *       in each (virtual) subpopulation.
+	 *
+	 *  <b>effectiveSize</b>: Parameter \c effectiveSize accepts a list of loci
+	 *  at which the effective population size for the whole or specified
+	 *  (virtual) subpopulations is calculated. \e effectiveSize can be a list
+	 *  of loci indexes, names or \c ALL_AVAIL. This statistic outputs the
+	 *  following variables:
+	 *  \li \c Ne_waples89 (default) Effective population size estimated using
+	 *       a temporal method as described in Waples 1989, Genetics. Because
+	 *       this is a temporal method, Ne_waples89 is set to census population
+	 *       size when it is first calculated, and is set to the temporal
+	 *       effecitive size between the present and last call afterward. The 
+	 *       number of generations between samples for each estimate is therefore
+	 *       controlled by applicability parameters such as \e step and \e at.
+	 *       Because this implementation uses census population size as \e s_0
+	 *       and \e s_t, it is recommended that you apply this statistics to a
+	 *       random sample that retains population variables from the population
+	 *       from which the sample is drawn, or to a virtual subpopulation (e.g.
+	 *       using a \c rangeSplitter), to estimate \e Ne from samples.
 	 **/
 	Stat(bool popSize = false,
 		//
@@ -1320,6 +1363,8 @@ public:
 		const lociList & structure = vectoru(),
 		//
 		const lociList & HWE = vectoru(),
+		//
+		const lociList & effectiveSize = vectoru(),
 		//
 		const stringList & vars = stringList(),
 		const string & suffix = string(),
@@ -1368,6 +1413,7 @@ private:
 	const statNeutrality m_neutrality;
 	const statStructure m_structure;
 	const statHWE m_HWE;
+	const statEffectiveSize m_effectiveSize;
 };
 
 }

@@ -643,5 +643,9 @@ class TestStat(unittest.TestCase):
         pop1.removeSubPops(1)
         self.assertEqual(pop1.dvars(0).Pi_mt, self.pairwiseDiff(pop1, loci=[1, 3, 4]))
 
+
+    def testEffectiveSize(self):
+        '''Testing the effective population size estimated from genotype data'''
+
 if __name__ == '__main__':
     unittest.main()
