@@ -3300,6 +3300,10 @@ double statEffectiveSize::Waples89(size_t S0, size_t St, size_t t,
                                    const ALLELECNTLIST & P0,
                                    const ALLELECNTLIST & Pt) const
 {
+	DBG_DO(DBG_STATOR, cerr << "t=" << t << " S0=" << S0 << " St=" << St << endl);
+	DBG_DO(DBG_STATOR, cerr << "P0=" << P0 << endl);
+	DBG_DO(DBG_STATOR, cerr << "Pt=" << Pt << endl);
+
 	size_t K_all = 0;
 	double F_all = 0.;
 
@@ -3308,17 +3312,17 @@ double statEffectiveSize::Waples89(size_t S0, size_t St, size_t t,
 		// alleles = set(list(P0[loc].keys()) + list(Pt[loc].keys()))
 		std::set<size_t> alleles;
 		uintDict::const_iterator i0 = P0[loc].begin();
-		uintDict::const_iterator i0_end = P0[loc].begin();
+		uintDict::const_iterator i0_end = P0[loc].end();
 		for (; i0 != i0_end; ++i0)
 			alleles.insert(i0->first);
 		uintDict::const_iterator it = Pt[loc].begin();
-		uintDict::const_iterator it_end = Pt[loc].begin();
+		uintDict::const_iterator it_end = Pt[loc].end();
 		for (; it != it_end; ++it)
 			alleles.insert(it->first);
 		// number of alleles K = len(alleles)
 		size_t K = alleles.size();
-		// fixed
-		if (K == 1)
+		// fixed, k should not be zero...
+		if (K <= 1)
 			continue;
 		// for each allele
 		double Fk = 0;
@@ -3337,6 +3341,7 @@ double statEffectiveSize::Waples89(size_t S0, size_t St, size_t t,
 			// formula 9
 			Fk += (xi - yi) * (xi - yi) * 2. / (xi + yi);
 		}
+		Fk /= K - 1;
 		//  for multiple loci
 		F_all += Fk * K;
 		K_all += K;
@@ -3367,13 +3372,24 @@ bool statEffectiveSize::apply(Population & pop) const
 	size_t gen_since_last_call = 0;
 	for (; it != itEnd; ++it) {
 		size_t S0 = 0;
+		size_t St = pop.subPopSize(*it);
+		total_size += St;
 		ALLELECNTLIST P0;
 		ALLELECNTLIST Pt;
 		if (m_vars.contains(Ne_waples89_sp_String)) {
 			// get previous allele frequency and population size, if available
-			if (pop.getVars().hasVar(subPopVar_String(*it, Prev_Gen_String))) {
+			long gen = 0;
+			bool first_call = false;
+			try {
 				// last gen ...
-				long gen = pop.getVars().getVarAsInt(subPopVar_String(*it, Prev_Gen_String, m_suffix));
+				gen = pop.getVars().getVarAsInt(subPopVar_String(*it, Prev_Gen_String, m_suffix));
+				first_call = false;
+			} catch (ValueError) {
+				// no such variable ...
+				// just for clarity, no need to assign
+				first_call = true;
+			}
+			if (!first_call) {
 				if (static_cast<size_t>(gen) > pop.gen())
 					throw ValueError("Recorded previous generation exceeding current generation number.");
 				gen_since_last_call = pop.gen() - gen;
@@ -3407,10 +3423,8 @@ bool statEffectiveSize::apply(Population & pop) const
 			// save gen
 			pop.getVars().setVar(subPopVar_String(*it, Prev_Gen_String, m_suffix), pop.gen());
 			// save size
-			pop.getVars().setVar(subPopVar_String(*it, Prev_Size_String, m_suffix), pop.subPopSize(*it));
+			pop.getVars().setVar(subPopVar_String(*it, Prev_Size_String, m_suffix), St);
 		}
-		size_t St = pop.subPopSize(*it);
-		total_size += St;
 		pop.activateVirtualSubPop(*it);
 
 #pragma omp parallel for if(numThreads() > 1)
@@ -3418,7 +3432,7 @@ bool statEffectiveSize::apply(Population & pop) const
 			size_t loc = loci[idx];
 
 #ifdef LONGALLELE
-			intDict alleles;
+			uintDict alleles;
 #else
 			// alleles can grow to at most 256
 			vectoru alleles(2, 0);
@@ -3442,8 +3456,8 @@ bool statEffectiveSize::apply(Population & pop) const
 			}
 			// total allele count
 #ifdef LONGALLELE
-			intDict::iterator cnt = alleles.begin();
-			intDict::iterator cntEnd = alleles.end();
+			uintDict::iterator cnt = alleles.begin();
+			uintDict::iterator cntEnd = alleles.end();
 			for ( ; cnt != cntEnd; ++cnt)
 				alleleCnt[idx][cnt->first] += cnt->second;
 #else
@@ -3456,8 +3470,8 @@ bool statEffectiveSize::apply(Population & pop) const
 			if (m_vars.contains(Ne_waples89_sp_String)) {
 				// save frequency
 #ifdef LONGALLELE
-				intDict::iterator cnt = alleles.begin();
-				intDict::iterator cntEnd = alleles.end();
+				uintDict::iterator cnt = alleles.begin();
+				uintDict::iterator cntEnd = alleles.end();
 				for ( ; cnt != cntEnd; ++cnt)
 					cnt->second /= static_cast<double>(allAlleles);
 				Pt.push_back(alleles);
@@ -3486,9 +3500,16 @@ bool statEffectiveSize::apply(Population & pop) const
 	if (m_vars.contains(Ne_waples89_String)) {
 		size_t S0_all;
 		ALLELECNTLIST P0_all;
-		if (pop.getVars().hasVar(Prev_Gen_String)) {
+		long gen = 0;
+		bool first_call = false;
+		try {
 			// last gen ...
 			long gen = pop.getVars().getVarAsInt(Prev_Gen_String + m_suffix);
+			first_call = false;
+		} catch (ValueError) {
+			first_call = true;
+		}
+		if (!first_call) {
 			if (static_cast<size_t>(gen) > pop.gen())
 				throw ValueError("Recorded previous generation exceeding current generation number.");
 			gen_since_last_call = pop.gen() - gen;
@@ -3517,8 +3538,6 @@ bool statEffectiveSize::apply(Population & pop) const
 					}
 				}   // loci
 			}       // t > 0
-			DBG_DO(DBG_STATOR, cerr << "Previous Recorded gen=" << gen << " (t=" << gen_since_last_call <<
-				") S0=" << S0_all << endl);
 		}
 
 		// save gen

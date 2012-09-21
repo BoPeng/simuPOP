@@ -216,6 +216,21 @@ ostream & operator<<(ostream & out, const vector<T> & vec)
 }
 
 
+/// CPPONLY how to output any vector.
+template<typename T1, typename T2>
+ostream & operator<<(ostream & out, const map<T1, T2> & dict)
+{
+	if (!dict.empty()) {
+		typename map<T1, T2>::const_iterator it = dict.begin();
+		typename map<T1, T2>::const_iterator it_end = dict.end();
+		out << it->first << ": " << it->second;
+		for (++it; it != it_end; ++it)
+			out << ", " << it->first << ": " << it->second;
+	}
+	return out;
+}
+
+
 /// CPPONLY how to output a dictionary
 ostream & operator<<(ostream & out, const strDict & dict);
 

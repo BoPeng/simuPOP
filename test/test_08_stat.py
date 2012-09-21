@@ -696,6 +696,7 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars(1).Ne_temporal_last_gen, 0)
         self.assertEqual(pop.dvars(2).Ne_temporal_last_gen, 0)
         #
+        t = 20
         S0 = 1600
         S00 = 500
         S01 = 100
@@ -708,7 +709,7 @@ class TestStat(unittest.TestCase):
         pop.evolve(
             initOps = InitSex(),
             matingScheme = RandomMating(subPopSize=(500, 100, 1000)),
-            gen = 20
+            gen = t
         )
         # get new allele frequency
         stat(pop, popSize=True, alleleFreq=[0,1], subPops=[0, 1, 2], vars=['popSize', 'popSize_sp', 'alleleFreq', 'alleleFreq_sp'])
@@ -723,13 +724,13 @@ class TestStat(unittest.TestCase):
         #
         # calculate Ne_temporal at the Python level
         #
-        # for overall population
+        # for overall population and each subpopulation
         #
         stat(pop, effectiveSize=[0,1], vars=['Ne_waples89', 'Ne_waples89_sp'])
-        print self.Waples89(S0, S1, 10, P0, Pt), pop.dvars().Ne_waples89
-        print self.Waples89(S00, S10, 10, P00, Pt0), pop.dvars(0).Ne_waples89
-        print self.Waples89(S01, S11, 10, P01, Pt1), pop.dvars(1).Ne_waples89
-        print self.Waples89(S02, S12, 10, P02, Pt2), pop.dvars(2).Ne_waples89
+        self.assertAlmostEqual(self.Waples89(S0, S1, t, P0, Pt), pop.dvars().Ne_waples89)
+        self.assertAlmostEqual(self.Waples89(S00, S10, t, P00, Pt0), pop.dvars(0).Ne_waples89)
+        self.assertAlmostEqual(self.Waples89(S01, S11, t, P01, Pt1), pop.dvars(1).Ne_waples89)
+        self.assertAlmostEqual(self.Waples89(S02, S12, t, P02, Pt2), pop.dvars(2).Ne_waples89)
 
 
 if __name__ == '__main__':
