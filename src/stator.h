@@ -891,14 +891,20 @@ private:
 
 #define  Ne_waples89_String       "Ne_waples89"
 #define  Ne_waples89_sp_String    "Ne_waples89_sp"
+#define  Ne_tempoFS_String        "Ne_tempoFS"
+#define  Ne_tempoFS_sp_String     "Ne_tempoFS_sp"
 
 private:
 	typedef uintDict ALLELECNT;
 	typedef vector<ALLELECNT> ALLELECNTLIST;
 
 	// calculate moment based estimate of Ne based on Waples 89
-	// return estimate and 95 CI
 	void Waples89(size_t S0, size_t St, size_t t,
+		const ALLELECNTLIST & P0,
+		const ALLELECNTLIST & Pt, vectorf & res) const;
+
+	// calculate moment based estimate of Ne based on Jorde & Ryman's (2007)
+	void TempoFS(size_t S0, size_t St, size_t t,
 		const ALLELECNTLIST & P0,
 		const ALLELECNTLIST & Pt, vectorf & res) const;
 
@@ -1301,8 +1307,7 @@ public:
 	 *  heterozygosity is needed. These statistics output the following
 	 *  variables:
 	 *
-	 *  \li \c F_st (default) The WC84 \e Fst statistic estimated for all
-	 *       specified loci.
+	 *  \li \c F_st (default) The WC84 \e Fst statistic estimated for all *       specified loci.
 	 *  \li \c F_is The WC84 \e Fis statistic estimated for all specified loci.
 	 *  \li \c F_it The WC84 \e Fit statistic estimated for all specified loci.
 	 *  \li \c f_st A dictionary of locus level WC84 \e Fst values.
@@ -1339,7 +1344,19 @@ public:
 	 *       and \e s_t, it is recommended that you apply this statistics to a
 	 *       random sample that retains population variables from the population
 	 *       from which the sample is drawn, or to a virtual subpopulation (e.g.
-	 *       using a \c rangeSplitter), to estimate \e Ne from samples.
+	 *       using a \c rangeSplitter), to estimate \e Ne from samples. simuPOP
+	 *       assumes the samples are from a population with unknown size and only
+	 *       returns Ne under plan under study sampling plan 2.
+	 *  \li \c Ne_tempoFS (default) Effective population size, 2.5% and 97.5%
+	 *       confidence interval as a list of size three, estimated using a
+	 *       temporal method as described in Jorde & Ryman (2007), and as
+	 *       implemented by software tempoFS (http://www.zoologi.su.se/~ryman/).
+	 *       This variable is set to census population size when the operator
+	 *       is first applied, and to the temporal effective size between the
+	 *       present and the last generation when it is applied afterward. It
+	 *       does not make use of more than two samples, and assumes unknown
+	 *       census population size (sampling plan 2). A value of -1 implies
+	 *       an infinite estimate of effective size.
 	 **/
 	Stat(bool popSize = false,
 		//

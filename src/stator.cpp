@@ -3278,9 +3278,10 @@ statEffectiveSize::statEffectiveSize(const lociList & loci,  const subPopList & 
 	: m_loci(loci), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
-		Ne_waples89_String, Ne_waples89_sp_String, ""
+		Ne_waples89_String, Ne_waples89_sp_String,
+		Ne_tempoFS_String, Ne_tempoFS_sp_String, ""
 	};
-	const char * defaultVars[] = { Ne_waples89_String, "" };
+	const char * defaultVars[] = { Ne_waples89_String, Ne_tempoFS_String, "" };
 
 	m_vars.obtainFrom(vars, allowedVars, defaultVars);
 }
@@ -3361,6 +3362,100 @@ void statEffectiveSize::Waples89(size_t S0, size_t St, size_t t,
 }
 
 
+void statEffectiveSize::TempoFS(size_t S0, size_t St, size_t t,
+                                const ALLELECNTLIST & P0,
+                                const ALLELECNTLIST & Pt,
+                                vectorf & res) const
+{
+	DBG_DO(DBG_STATOR, cerr << "t=" << t << " S0=" << S0 << " St=" << St << endl);
+	DBG_DO(DBG_STATOR, cerr << "P0=" << P0 << endl);
+	DBG_DO(DBG_STATOR, cerr << "Pt=" << Pt << endl);
+
+	// get the numerator and denominator for all loci
+	vectorf numerator(P0.size(), 0.);
+	vectorf denominator(P0.size(), 0.);
+
+	size_t sum_kl = 0;
+	for (size_t loc = 0; loc < P0.size(); ++loc) {
+		// alleles = set(list(P0[loc].keys()) + list(Pt[loc].keys()))
+		std::set<size_t> alleles;
+		uintDict::const_iterator i0 = P0[loc].begin();
+		uintDict::const_iterator i0_end = P0[loc].end();
+		for (; i0 != i0_end; ++i0)
+			alleles.insert(i0->first);
+		uintDict::const_iterator it = Pt[loc].begin();
+		uintDict::const_iterator it_end = Pt[loc].end();
+		for (; it != it_end; ++it)
+			alleles.insert(it->first);
+		// number of alleles K = len(alleles)
+		size_t Kl = alleles.size();
+		// fixed, k should not be zero...
+		if (Kl <= 1)
+			continue;
+		std::set<size_t>::iterator allele = alleles.begin();
+		std::set<size_t>::iterator allele_end = alleles.end();
+		for (; allele != allele_end; ++allele) {
+			double xi = 0;
+			// it is possible that an allele does not exist in at of the generations
+			uintDict::const_iterator xx = P0[loc].find(*allele);
+			if (xx != i0_end)
+				xi = xx->second;
+			double yi = 0;
+			uintDict::const_iterator yy = Pt[loc].find(*allele);
+			if (yy != it_end)
+				yi = yy->second;
+			//
+			DBG_DO(DBG_STATOR, cerr << "loc=" << loc << " allele=" << *allele << " xi=" << xi << " yi=" << yi << endl);
+			numerator[loc] += (xi - yi) * (xi - yi);
+			denominator[loc] += (xi + yi) / 2.0 * (1.0 - (xi + yi) / 2.0);
+		}
+		sum_kl += Kl;
+	}
+
+	double n_harmonic = 2.0 / (1.0 / S0 + 1.0 / St);
+	//
+	double sum_numerator = accumulate(numerator.begin(), numerator.end(), 0.);
+	double sum_denominator = accumulate(denominator.begin(), denominator.end(), 0.);
+	double Fs = sum_numerator / sum_denominator;
+	double Fsprim = (Fs * (1.0 - 1.0 / (4.0 * n_harmonic)) - 1.0 / n_harmonic) /
+	                ((1.0 + Fs / 4.0) * (1 - 1.0 / (2.0 * St)));
+	double Ne = Fsprim < 0.000000001 ? -1 : 0.5 * t / Fsprim;
+
+	DBG_DO(DBG_STATOR, cerr << "Fs=" << Fs << " Fs'=" << Fsprim << " Ne=" << Ne << endl);
+
+	/* Jackknive over loci; that is, calculate a new estimate of Fs based on all
+	   alleles, except for one locus, and repeat by omitting a different locus
+	   each time.
+	 */
+	double JackFs = 0;
+	double JackFsprim = 0;
+	double JackFsSE = 0;
+	double JackFsprimSE = 0.0;
+	size_t nLoci = P0.size();
+	for (size_t j = 0; j < nLoci; ++j) {
+		/* Calculate average Fs over all loci, eliminating the j'th locus each time  */
+		double temp = (sum_numerator - numerator[j]) / (sum_denominator - denominator[j]);
+		JackFs += temp;
+		JackFsSE += temp * temp;
+		temp = (temp * (1.0 - 1.0 / (4.0 * n_harmonic)) - 1.0 / n_harmonic) /
+		       ((1.0 + temp / 4.0) * (1 - 1.0 / (2.0 * St)));
+		JackFsprim += temp;
+		JackFsprimSE += temp * temp;
+	}
+
+	JackFsSE -= (JackFs * JackFs) / nLoci;
+	JackFsSE = sqrt(JackFsSE * ((nLoci - 1.0) / nLoci));
+	JackFs /= nLoci;
+	JackFsprimSE -= (JackFsprim * JackFsprim) / nLoci;
+	JackFsprimSE = sqrt(JackFsprimSE * ((nLoci - 1.0) / nLoci));
+	JackFsprim /= nLoci;
+	// return results
+	res[0] = Ne;
+	res[1] = JackFsprim + 1.96 * JackFsprimSE < 1e-8 ? -1 : 0.5 * t / (JackFsprim + 1.96 * JackFsprimSE);
+	res[2] = JackFsprim - 1.96 * JackFsprimSE < 1e-8 ? -1 : 0.5 * t / (JackFsprim - 1.96 * JackFsprimSE);
+}
+
+
 bool statEffectiveSize::apply(Population & pop) const
 {
 	if (m_loci.empty())
@@ -3385,7 +3480,7 @@ bool statEffectiveSize::apply(Population & pop) const
 		total_size += St;
 		ALLELECNTLIST P0;
 		ALLELECNTLIST Pt;
-		if (m_vars.contains(Ne_waples89_sp_String)) {
+		if (m_vars.contains(Ne_waples89_sp_String) || m_vars.contains(Ne_tempoFS_sp_String)) {
 			// get previous allele frequency and population size, if available
 			long gen = 0;
 			bool first_call = false;
@@ -3504,11 +3599,18 @@ bool statEffectiveSize::apply(Population & pop) const
 				Waples89(S0, St, gen_since_last_call, P0, Pt, res);
 			pop.getVars().setVar(subPopVar_String(*it, Ne_waples89_String, m_suffix), res);
 		}
+		if (m_vars.contains(Ne_tempoFS_sp_String)) {
+			// calculate ne
+			vectorf res(3, St);
+			if (gen_since_last_call > 0)
+				TempoFS(S0, St, gen_since_last_call, P0, Pt, res);
+			pop.getVars().setVar(subPopVar_String(*it, Ne_tempoFS_String, m_suffix), res);
+		}
 		pop.deactivateVirtualSubPop(it->subPop());
 	}
 	//
 	// get previous ...
-	if (m_vars.contains(Ne_waples89_String)) {
+	if (m_vars.contains(Ne_waples89_String) || m_vars.contains(Ne_tempoFS_String)) {
 		size_t S0_all;
 		ALLELECNTLIST P0_all;
 		long gen = 0;
@@ -3568,12 +3670,19 @@ bool statEffectiveSize::apply(Population & pop) const
 				alleleCnt[idx]);
 		}
 		// calculate ne
-		vectorf res(3, total_size);
-		if (gen_since_last_call > 0)
-			Waples89(S0_all, total_size, gen_since_last_call, P0_all, alleleCnt, res);
-		pop.getVars().setVar(Ne_waples89_String + m_suffix, res);
+		if (m_vars.contains(Ne_waples89_String)) {
+			vectorf res(3, total_size);
+			if (gen_since_last_call > 0)
+				Waples89(S0_all, total_size, gen_since_last_call, P0_all, alleleCnt, res);
+			pop.getVars().setVar(Ne_waples89_String + m_suffix, res);
+		}
+		if (m_vars.contains(Ne_tempoFS_String)) {
+			vectorf res(3, total_size);
+			if (gen_since_last_call > 0)
+				TempoFS(S0_all, total_size, gen_since_last_call, P0_all, alleleCnt, res);
+			pop.getVars().setVar(Ne_tempoFS_String + m_suffix, res);
+		}
 	}
-
 	return true;
 }
 

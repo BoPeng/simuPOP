@@ -673,6 +673,15 @@ class TestStat(unittest.TestCase):
         F_higher = n * F_all / gsl_cdf_chisq_Pinv(0.975, n)
         return [t / (2 * (x - 0.5/S0 - 0.5/St)) for x in [F_all, F_lower, F_higher]]
 
+    def saveToTempoFS(self, filename, S0, St, t, P0, Pt):
+        with open(filename, 'w') as output:
+            output.write('2 2 Test dataset\n')
+            output.write('2 2\n')
+            output.write('%.8f %.8f %d loc0 0\n' % (P0[0][0], P0[0][1], S0*2))
+            output.write('%.8f %.8f %d loc0 %d\n' % (Pt[0][0], Pt[0][1], St*2, t))
+            output.write('%.8f %.8f %d loc1 0\n' % (P0[1][0], P0[1][1], S0*2))
+            output.write('%.8f %.8f %d loc1 %d\n' % (Pt[1][0], Pt[1][1], St*2, t))
+
     def testEffectiveSize(self):
         '''Testing the effective population size estimated from genotype data'''
         getRNG().set(seed=1235)
@@ -732,15 +741,31 @@ class TestStat(unittest.TestCase):
         Pt1 = pop.dvars(1).alleleFreq
         Pt2 = pop.dvars(2).alleleFreq
         #
+        # write to TempoFS input file for debugging
+        #self.saveToTempoFS('all.txt', S0, S1, t, P0, Pt)
+        #self.saveToTempoFS('sp0.txt', S00, S10, t, P00, Pt0)
+        #self.saveToTempoFS('sp1.txt', S01, S11, t, P01, Pt1)
+        #self.saveToTempoFS('sp2.txt', S02, S12, t, P02, Pt2)
+        #
         # calculate Ne_temporal at the Python level
         #
         # for overall population and each subpopulation
         #
-        stat(pop, effectiveSize=[0,1], vars=['Ne_waples89', 'Ne_waples89_sp'])
+        #turnOnDebug('DBG_STATOR')
+        stat(pop, effectiveSize=[0,1], vars=['Ne_waples89', 'Ne_waples89_sp', 'Ne_tempoFS', 'Ne_tempoFS_sp'])
         self.assertAlmostEqual(self.Waples89(S0, S1, t, P0, Pt), pop.dvars().Ne_waples89)
         self.assertAlmostEqual(self.Waples89(S00, S10, t, P00, Pt0), pop.dvars(0).Ne_waples89)
         self.assertAlmostEqual(self.Waples89(S01, S11, t, P01, Pt1), pop.dvars(1).Ne_waples89)
         self.assertAlmostEqual(self.Waples89(S02, S12, t, P02, Pt2), pop.dvars(2).Ne_waples89)
+        #
+        self.assertAlmostEqual(pop.dvars().Ne_tempoFS[0], 3026, 0)
+        self.assertAlmostEqual(pop.dvars().Ne_tempoFS[1], 1494, 0)
+        self.assertAlmostEqual(pop.dvars(0).Ne_tempoFS[0], 1620, 0)
+        self.assertAlmostEqual(pop.dvars(0).Ne_tempoFS[1], 543, 0)
+        self.assertAlmostEqual(pop.dvars(1).Ne_tempoFS[0], 94, 0)
+        self.assertAlmostEqual(pop.dvars(1).Ne_tempoFS[1], 28, 0)
+        self.assertAlmostEqual(pop.dvars(2).Ne_tempoFS[0], 2276, 0)
+        self.assertAlmostEqual(pop.dvars(2).Ne_tempoFS[1], 689, 0)
 
 
 if __name__ == '__main__':
