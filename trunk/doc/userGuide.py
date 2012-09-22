@@ -3541,6 +3541,34 @@ pop.evolve(
 )
 #end_file
 
+#begin_file log/statNeWaples89.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+pop = sim.Population([2000], loci=[1]*50)
+pop.setVirtualSplitter(sim.RangeSplitter([0, 500]))
+pop.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.InitGenotype(freq=[0.3, 0.7]),
+    ],
+    matingScheme=sim.RandomMating(),
+    postOps=[
+        sim.Stat(effectiveSize=range(50), subPops=[(0,0)], step=20),
+        sim.PyEval(r'"Temporary effective size: %.3f (CI: %.3f - %.3f, at generation %d)\n" % '
+            '(Ne_waples89[0], Ne_waples89[1], Ne_waples89[2], gen)', step=20)
+    ],
+    gen = 101
+)
+#end_file
+
+
+
 #begin_file log/statChromTypes.py
 #begin_ignore
 import simuOpt

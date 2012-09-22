@@ -8817,6 +8817,8 @@ Usage:
 
 %ignore simuPOP::SharedVariables::getVarAsString(const string &name, bool nameError=true) const;
 
+%ignore simuPOP::SharedVariables::getVarAsIntDict(const string &name, uintDict &res, bool nameError=true) const;
+
 %feature("docstring") simuPOP::SharedVariables::dict "
 
 Usage:
@@ -9178,9 +9180,9 @@ Usage:
       homoFreq=[], genoFreq=[], haploFreq=[], haploHeteroFreq=[],
       haploHomoFreq=[], sumOfInfo=[], meanOfInfo=[], varOfInfo=[],
       maxOfInfo=[], minOfInfo=[], LD=[], association=[],
-      neutrality=[], structure=[], HWE=[], vars=ALL_AVAIL, suffix=\"\",
-      output=\"\", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
-      subPops=ALL_AVAIL, infoFields=[])
+      neutrality=[], structure=[], HWE=[], effectiveSize=[],
+      vars=ALL_AVAIL, suffix=\"\", output=\"\", begin=0, end=-1, step=1,
+      at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -9546,7 +9548,26 @@ Details:
     *   HWE (default) A dictionary of p-values of HWE tests using
     genotypes in all or specified (virtual) subpopulations.
     *   HWE_sp A dictionary of p-values of HWS tests using genotypes
-    in each (virtual) subpopulation.
+    in each (virtual) subpopulation.effectiveSize: Parameter
+    effectiveSize accepts a list of loci at which the effective
+    population size for the whole or specified (virtual)
+    subpopulations is calculated. effectiveSize can be a list of loci
+    indexes, names or ALL_AVAIL. This statistic outputs the following
+    variables:
+    *   Ne_waples89 (default) Effective population size, 2.5% and
+    97.5% confidence interval as a list of size three, estimated using
+    a temporal method as described in Waples 1989, Genetics. Because
+    this is a temporal method, Ne_waples89 is set to census population
+    size when it is first calculated, and is set to the temporal
+    effecitive size between the present and last call afterward. The
+    number of generations between samples for each estimate is
+    therefore controlled by applicability parameters such as step and
+    at. Because this implementation uses census population size as s_0
+    and s_t, it is recommended that you apply this statistics to a
+    random sample that retains population variables from the
+    population from which the sample is drawn, or to a virtual
+    subpopulation (e.g. using a rangeSplitter), to estimate Ne from
+    samples.
 
 "; 
 
@@ -9621,6 +9642,32 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statAssociation::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%ignore simuPOP::statEffectiveSize;
+
+%feature("docstring") simuPOP::statEffectiveSize::statEffectiveSize "
+
+Usage:
+
+    statEffectiveSize(loci, subPops, vars, suffix)
+
+"; 
+
+%feature("docstring") simuPOP::statEffectiveSize::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statEffectiveSize::apply "
 
 Usage:
 

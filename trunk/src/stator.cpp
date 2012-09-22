@@ -3515,7 +3515,7 @@ bool statEffectiveSize::apply(Population & pop) const
 		bool first_call = false;
 		try {
 			// last gen ...
-			long gen = pop.getVars().getVarAsInt(Prev_Gen_String + m_suffix);
+			gen = pop.getVars().getVarAsInt(Prev_Gen_String + m_suffix);
 			first_call = false;
 		} catch (ValueError) {
 			first_call = true;
