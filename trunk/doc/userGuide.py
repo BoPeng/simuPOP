@@ -3541,7 +3541,7 @@ pop.evolve(
 )
 #end_file
 
-#begin_file log/statNeWaples89.py
+#begin_file log/statNeTemporal.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -3560,8 +3560,9 @@ pop.evolve(
     matingScheme=sim.RandomMating(),
     postOps=[
         sim.Stat(effectiveSize=range(50), subPops=[(0,0)], step=20),
-        sim.PyEval(r'"Temporary effective size: %.3f (CI: %.3f - %.3f, at generation %d)\n" % '
-            '(Ne_waples89[0], Ne_waples89[1], Ne_waples89[2], gen)', step=20)
+        sim.PyEval(r'"Waples Ne: %.1f (%.1f - %.1f), TempoFS: '
+            r'%.1f (%.1f - %.1f), at generation %d\n" % '
+            'tuple(Ne_waples89 + Ne_tempoFS + [gen])', step=20)
     ],
     gen = 101
 )

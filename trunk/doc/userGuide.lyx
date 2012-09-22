@@ -19032,11 +19032,11 @@ Effective population size
 \begin_layout Standard
 Many statistical methods have been developed to estimate the effective size
  of a population from genotype data.
- simuPOP currently provides an implementation of the temporal method proposed
- by Waples in his 1989 genetics paper.
- Because this method estimates effective population size using changes of
- allele frequencies of samples at two generations, the statistics are calculated
- for two consecutive generations when the 
+ simuPOP currently provides two temporal methods proposed by Waples, 1989,
+ and Jorde & Ryman's (2007).
+ Because these methods estimate effective population size using changes
+ of allele frequencies of samples at two generations, the statistics are
+ calculated for two consecutive generations when the 
 \family typewriter
 Stat
 \family default
@@ -19046,23 +19046,31 @@ Stat
 \family typewriter
 Ne_waples89
 \family default
- as the census population size at generation 0, estimated effective population
+ (for Waples 1989) and 
+\family typewriter
+Ne_tempoFS
+\family default
+ (for Jorde & Ryman 2007, because it is implemented in a package 
+\family typewriter
+TempoFS
+\family default
+) as the census population size at generation 0, estimated effective population
  sizes between generation 0 and 20 at generation 20, and estimates between
  20 and 40 at generation 40.
- The variable is a list of three elements: the estimated Ne, and lower and
- upper boundaries of the 95% confidence interval.
+ The variables are lists of three elements: the estimated Ne, and lower
+ and upper boundaries of the 95% confidence interval.
 \end_layout
 
 \begin_layout Standard
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "statNeWaples"
+reference "statNeTemporal"
 
 \end_inset
 
- demonstrates how to calculate temporal effective population size at a 20
- generation interval during evolution.
+ demonstrates how to calculate temporal effective population sizes at a
+ 20 generation interval during evolution.
  The statistics are estimated from genotypes at 50 unlinked loci from 500
  random samples from a population of size 2000.
  Instead of drawing random samples explicitly, this example defines a virtual
@@ -19080,8 +19088,8 @@ reference "statNeWaples"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/statNeWaples89.log"
-lstparams "caption={Temporal effective population size},label={statNeWaples}"
+filename "log/statNeTemporal.log"
+lstparams "caption={Temporal effective population size},label={statNeTemporal}"
 
 \end_inset
 
