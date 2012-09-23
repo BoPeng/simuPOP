@@ -694,21 +694,21 @@ class TestStat(unittest.TestCase):
             [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)]):
             initGenotype(pop, loci=0, genotype=genotype, subPops=[subPop])
             initGenotype(pop, loci=1, genotype=[genotype[1], genotype[0]], subPops=[subPop])
-        stat(pop, effectiveSize=[0,1])
-        self.assertEqual(pop.dvars().Ne_temporal_last_freq[0], {0:1230./3200, 1:1970./3200})
-        self.assertEqual(pop.dvars().Ne_temporal_last_freq[0], {0:1230./3200, 1:1970./3200})
-        self.assertEqual(pop.dvars().Ne_temporal_last_size, 1600)
-        self.assertEqual(pop.dvars().Ne_temporal_last_gen, 0)
+        stat(pop, effectiveSize=[0,1], vars='Ne_temporal_base')
+        self.assertEqual(pop.dvars().Ne_temporal_base['freq'][0], {0:1230./3200, 1:1970./3200})
+        self.assertEqual(pop.dvars().Ne_temporal_base['freq'][0], {0:1230./3200, 1:1970./3200})
+        self.assertEqual(pop.dvars().Ne_temporal_base['size'], 1600)
+        self.assertEqual(pop.dvars().Ne_temporal_base['gen'], 0)
         #
-        stat(pop, effectiveSize=[0,1], subPops=(0, 1, 2), vars=['Ne_waples89_sp'])
-        self.assertEqual(pop.dvars(0).Ne_temporal_last_freq[0][0], 0.5)
-        self.assertEqual(pop.dvars(0).Ne_temporal_last_freq[0][1], 0.5)
-        self.assertEqual(pop.dvars(0).Ne_temporal_last_size, 500)
-        self.assertEqual(pop.dvars(1).Ne_temporal_last_size, 100)
-        self.assertEqual(pop.dvars(2).Ne_temporal_last_size, 1000)
-        self.assertEqual(pop.dvars(0).Ne_temporal_last_gen, 0)
-        self.assertEqual(pop.dvars(1).Ne_temporal_last_gen, 0)
-        self.assertEqual(pop.dvars(2).Ne_temporal_last_gen, 0)
+        stat(pop, effectiveSize=[0,1], subPops=(0, 1, 2), vars=['Ne_temporal_base_sp', 'Ne_waples89_sp'])
+        self.assertEqual(pop.dvars(0).Ne_temporal_base['freq'][0][0], 0.5)
+        self.assertEqual(pop.dvars(0).Ne_temporal_base['freq'][0][1], 0.5)
+        self.assertEqual(pop.dvars(0).Ne_temporal_base['size'], 500)
+        self.assertEqual(pop.dvars(1).Ne_temporal_base['size'], 100)
+        self.assertEqual(pop.dvars(2).Ne_temporal_base['size'], 1000)
+        self.assertEqual(pop.dvars(0).Ne_temporal_base['gen'], 0)
+        self.assertEqual(pop.dvars(1).Ne_temporal_base['gen'], 0)
+        self.assertEqual(pop.dvars(2).Ne_temporal_base['gen'], 0)
         #
         # export for testing using NeEstimator
         #export(pop, format='genepop', subPops=0, output='pre.txt')
@@ -718,10 +718,10 @@ class TestStat(unittest.TestCase):
         S00 = 500
         S01 = 100
         S02 = 1000
-        P0 = pop.dvars().Ne_temporal_last_freq
-        P00 = pop.dvars(0).Ne_temporal_last_freq
-        P01 = pop.dvars(1).Ne_temporal_last_freq
-        P02 = pop.dvars(2).Ne_temporal_last_freq
+        P0 = pop.dvars().Ne_temporal_base['freq']
+        P00 = pop.dvars(0).Ne_temporal_base['freq']
+        P01 = pop.dvars(1).Ne_temporal_base['freq']
+        P02 = pop.dvars(2).Ne_temporal_base['freq']
         # now, evolve population
         pop.evolve(
             initOps = InitSex(),

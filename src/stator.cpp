@@ -3278,8 +3278,9 @@ statEffectiveSize::statEffectiveSize(const lociList & loci,  const subPopList & 
 	: m_loci(loci), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
-		Ne_waples89_String, Ne_waples89_sp_String,
-		Ne_tempoFS_String, Ne_tempoFS_sp_String, ""
+		Ne_temporal_base_String, Ne_temporal_base_sp_String,
+		Ne_waples89_String,		 Ne_waples89_sp_String,
+		Ne_tempoFS_String,		 Ne_tempoFS_sp_String,		""
 	};
 	const char * defaultVars[] = { Ne_waples89_String, Ne_tempoFS_String, "" };
 
@@ -3291,8 +3292,14 @@ string statEffectiveSize::describe(bool /* format */) const
 {
 	string desc;
 
-	if (!m_loci.empty())
-		desc += "Effective population size using temporal method as described in Waples 89";
+	if (!m_loci.empty()) {
+		if (m_vars.contains(Ne_waples89_String) || m_vars.contains(Ne_waples89_sp_String))
+			desc += "Estimate effective population size using temporal method as described in Waples 1989. ";
+		if (m_vars.contains(Ne_tempoFS_String) || m_vars.contains(Ne_tempoFS_sp_String))
+			desc += "Estimate effective population size using temporal method as described in  Jorde & Ryman, 2007.";
+		if (m_vars.contains(Ne_temporal_base_String) || m_vars.contains(Ne_temporal_base_sp_String))
+			desc += "Setting temporal base";
+	}
 	return desc;
 }
 
@@ -3463,7 +3470,6 @@ bool statEffectiveSize::apply(Population & pop) const
 
 	const vectoru & loci = m_loci.elems(&pop);
 	//
-	//
 	// find out current allele frequency, this is copied from statAlleleFreq
 	ALLELECNTLIST alleleCnt(loci.size());
 	vectoru allAllelesCnt(loci.size(), 0);
@@ -3483,17 +3489,18 @@ bool statEffectiveSize::apply(Population & pop) const
 		if (m_vars.contains(Ne_waples89_sp_String) || m_vars.contains(Ne_tempoFS_sp_String)) {
 			// get previous allele frequency and population size, if available
 			long gen = 0;
-			bool first_call = false;
+			bool has_base = true;
 			try {
 				// last gen ...
-				gen = pop.getVars().getVarAsInt(subPopVar_String(*it, Prev_Gen_String, m_suffix));
-				first_call = false;
+				pop.getVars().getVarAsInt(subPopVar_String(*it, Ne_temporal_base_String, m_suffix) + "{'gen'}");
+				has_base = true;
 			} catch (ValueError) {
 				// no such variable ...
 				// just for clarity, no need to assign
-				first_call = true;
+				has_base = false;
 			}
-			if (!first_call) {
+			// get base
+			if (has_base) {
 				if (static_cast<size_t>(gen) > pop.gen())
 					throw ValueError("Recorded previous generation exceeding current generation number.");
 				gen_since_last_call = pop.gen() - gen;
@@ -3501,7 +3508,7 @@ bool statEffectiveSize::apply(Population & pop) const
 				if (gen_since_last_call > 0) {
 					// last size (S0)
 					try {
-						S0 = pop.getVars().getVarAsInt(subPopVar_String(*it, Prev_Size_String, m_suffix));
+						S0 = pop.getVars().getVarAsInt(subPopVar_String(*it, Ne_temporal_base_String, m_suffix) + "{'size'}");
 					} catch (ValueError) {
 						throw ValueError("Failed to retrieve previous population size. Did you manually modify population variables?");
 					}
@@ -3515,7 +3522,7 @@ bool statEffectiveSize::apply(Population & pop) const
 						try {
 							// return by reference
 							uintDict res;
-							pop.getVars().getVarAsIntDict(subPopVar_String(*it, Prev_AlleleFreq_String, m_suffix) + "{" + toStr(loc) + "}", res);
+							pop.getVars().getVarAsIntDict(subPopVar_String(*it, Ne_temporal_base_String, m_suffix) + "{'freq'}{" + toStr(loc) + "}", res);
 							P0.push_back(res);
 						} catch (ValueError) {
 							throw ValueError("Failed to retrieve previous allele frequency at locus " + toStr(loc) + ". Did you manually modify population variables?");
@@ -3523,11 +3530,13 @@ bool statEffectiveSize::apply(Population & pop) const
 					}   // loci
 				}       // t > 0
 			}
-			pop.getVars().removeVar(subPopVar_String(*it, Prev_AlleleFreq_String, m_suffix));
+		}
+		if (m_vars.contains(Ne_temporal_base_sp_String)) {
+			pop.getVars().removeVar(subPopVar_String(*it, Ne_temporal_base_String, m_suffix) + "{'freq'}");
 			// save gen
-			pop.getVars().setVar(subPopVar_String(*it, Prev_Gen_String, m_suffix), pop.gen());
+			pop.getVars().setVar(subPopVar_String(*it, Ne_temporal_base_String, m_suffix) + "{'gen'}", pop.gen());
 			// save size
-			pop.getVars().setVar(subPopVar_String(*it, Prev_Size_String, m_suffix), St);
+			pop.getVars().setVar(subPopVar_String(*it, Ne_temporal_base_String, m_suffix) + "{'size'}", St);
 		}
 		pop.activateVirtualSubPop(*it);
 
@@ -3571,26 +3580,26 @@ bool statEffectiveSize::apply(Population & pop) const
 #endif
 			allAllelesCnt[idx] += allAlleles;
 			// calculate per-subpop statisticsoutput variable.
-			if (m_vars.contains(Ne_waples89_sp_String)) {
-				// save frequency
+			// save frequency
 #ifdef LONGALLELE
-				uintDict::iterator cnt = alleles.begin();
-				uintDict::iterator cntEnd = alleles.end();
-				for ( ; cnt != cntEnd; ++cnt)
-					cnt->second /= static_cast<double>(allAlleles);
-				Pt.push_back(alleles);
+			uintDict::iterator cnt = alleles.begin();
+			uintDict::iterator cntEnd = alleles.end();
+			for ( ; cnt != cntEnd; ++cnt)
+				cnt->second /= static_cast<double>(allAlleles);
+			Pt.push_back(alleles);
 #  pragma omp critical
-				pop.getVars().setVar(subPopVar_String(*it, Prev_AlleleFreq_String, m_suffix) + "{" + toStr(loc) + "}", alleles);
+			if (m_vars.contains(Ne_temporal_base_sp_String))
+				pop.getVars().setVar(subPopVar_String(*it, Ne_temporal_base_String, m_suffix) + "{'freq'}{" + toStr(loc) + "}", alleles);
 #else
-				uintDict d;
-				for (size_t i = 0; i < alleles.size(); ++i)
-					if (alleles[i] != 0)
-						d[i] = alleles[i] / static_cast<double>(allAlleles);
-				Pt.push_back(d);
+			uintDict d;
+			for (size_t i = 0; i < alleles.size(); ++i)
+				if (alleles[i] != 0)
+					d[i] = alleles[i] / static_cast<double>(allAlleles);
+			Pt.push_back(d);
 #  pragma omp critical
-				pop.getVars().setVar(subPopVar_String(*it, Prev_AlleleFreq_String, m_suffix) + "{" + toStr(loc) + "}", d);
+			if (m_vars.contains(Ne_temporal_base_sp_String))
+				pop.getVars().setVar(subPopVar_String(*it, Ne_temporal_base_String, m_suffix) + "{'freq'}{" + toStr(loc) + "}", d);
 #endif
-			}
 		}
 		if (m_vars.contains(Ne_waples89_sp_String)) {
 			// calculate ne
@@ -3608,21 +3617,30 @@ bool statEffectiveSize::apply(Population & pop) const
 		}
 		pop.deactivateVirtualSubPop(it->subPop());
 	}
+	// get allele frequency
+	for (size_t idx = 0; idx < loci.size(); ++idx) {
+		if (allAllelesCnt[idx] != 0) {
+			uintDict::iterator cnt = alleleCnt[idx].begin();
+			uintDict::iterator cntEnd = alleleCnt[idx].end();
+			for ( ; cnt != cntEnd; ++cnt)
+				cnt->second /= static_cast<double>(allAllelesCnt[idx]);
+		}
+	}
 	//
 	// get previous ...
 	if (m_vars.contains(Ne_waples89_String) || m_vars.contains(Ne_tempoFS_String)) {
 		size_t S0_all;
 		ALLELECNTLIST P0_all;
 		long gen = 0;
-		bool first_call = false;
+		bool has_base = true;
 		try {
 			// last gen ...
-			gen = pop.getVars().getVarAsInt(Prev_Gen_String + m_suffix);
-			first_call = false;
+			gen = pop.getVars().getVarAsInt(Ne_temporal_base_String + m_suffix + "{'gen'}");
+			has_base = true;
 		} catch (ValueError) {
-			first_call = true;
+			has_base = false;
 		}
-		if (!first_call) {
+		if (has_base) {
 			if (static_cast<size_t>(gen) > pop.gen())
 				throw ValueError("Recorded previous generation exceeding current generation number.");
 			gen_since_last_call = pop.gen() - gen;
@@ -3630,7 +3648,7 @@ bool statEffectiveSize::apply(Population & pop) const
 			if (gen_since_last_call > 0) {
 				// last size (S0)
 				try {
-					S0_all = pop.getVars().getVarAsInt(Prev_Size_String + m_suffix);
+					S0_all = pop.getVars().getVarAsInt(Ne_temporal_base_String + m_suffix + "{'size'}");
 				} catch (ValueError) {
 					throw ValueError("Failed to retrieve previous population size. Did you manually modify population variables?");
 				}
@@ -3644,30 +3662,13 @@ bool statEffectiveSize::apply(Population & pop) const
 					try {
 						// return by reference
 						uintDict res;
-						pop.getVars().getVarAsIntDict(Prev_AlleleFreq_String + m_suffix + "{" + toStr(loc) + "}", res);
+						pop.getVars().getVarAsIntDict(Ne_temporal_base_String + m_suffix + "{'freq'}{" + toStr(loc) + "}", res);
 						P0_all.push_back(res);
 					} catch (ValueError) {
 						throw ValueError("Failed to retrieve previous allele frequency at locus " + toStr(loc) + ". Did you manually modify population variables?");
 					}
 				}   // loci
 			}       // t > 0
-		}
-
-		// save gen
-		pop.getVars().setVar(Prev_Gen_String + m_suffix, pop.gen());
-		// save size
-		pop.getVars().setVar(Prev_Size_String + m_suffix, total_size);
-		// save allele frequency
-		pop.getVars().removeVar(Prev_AlleleFreq_String + m_suffix);
-		for (size_t idx = 0; idx < loci.size(); ++idx) {
-			if (allAllelesCnt[idx] != 0) {
-				uintDict::iterator cnt = alleleCnt[idx].begin();
-				uintDict::iterator cntEnd = alleleCnt[idx].end();
-				for ( ; cnt != cntEnd; ++cnt)
-					cnt->second /= static_cast<double>(allAllelesCnt[idx]);
-			}
-			pop.getVars().setVar(Prev_AlleleFreq_String + m_suffix + "{" + toStr(loci[idx]) + "}",
-				alleleCnt[idx]);
 		}
 		// calculate ne
 		if (m_vars.contains(Ne_waples89_String)) {
@@ -3682,6 +3683,17 @@ bool statEffectiveSize::apply(Population & pop) const
 				TempoFS(S0_all, total_size, gen_since_last_call, P0_all, alleleCnt, res);
 			pop.getVars().setVar(Ne_tempoFS_String + m_suffix, res);
 		}
+	}
+	if (m_vars.contains(Ne_temporal_base_String)) {
+		// save gen
+		pop.getVars().setVar(Ne_temporal_base_String + m_suffix + "{'gen'}", pop.gen());
+		// save size
+		pop.getVars().setVar(Ne_temporal_base_String + m_suffix + "{'size'}", total_size);
+		// save allele frequency
+		pop.getVars().removeVar(Ne_temporal_base_String + m_suffix + "{'freq'}");
+		for (size_t idx = 0; idx < loci.size(); ++idx)
+			pop.getVars().setVar(Ne_temporal_base_String + m_suffix + "{'freq'}{" + toStr(loci[idx]) + "}",
+				alleleCnt[idx]);
 	}
 	return true;
 }

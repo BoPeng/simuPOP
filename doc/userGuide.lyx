@@ -19035,14 +19035,30 @@ Many statistical methods have been developed to estimate the effective size
  simuPOP currently provides two temporal methods proposed by Waples, 1989,
  and Jorde & Ryman's (2007).
  Because these methods estimate effective population size using changes
- of allele frequencies of samples at two generations, the statistics are
- calculated for two consecutive generations when the 
+ of allele frequencies of samples at two generations, it is necessary to
+ set a baseline generation before any temporal method could be applied.
+\end_layout
+
+\begin_layout Standard
+The baseline information is saved to variable 
+\family typewriter
+Ne_temporal_base
+\family default
+ when this variable is specified in the 
+\family typewriter
+vars
+\family default
+ parameter of the 
 \family typewriter
 Stat
 \family default
- operator is applied.
- That is to say, if the operator is applied at generations 0, 20, and 40,
- it will set variable 
+ operator.
+ After the baseline is set, for example, at generation 0, if the operator
+ 
+\family typewriter
+Stat
+\family default
+ is applied at generations 0, 20, and 40, it will set variable 
 \family typewriter
 Ne_waples89
 \family default
@@ -19050,13 +19066,13 @@ Ne_waples89
 \family typewriter
 Ne_tempoFS
 \family default
- (for Jorde & Ryman 2007, because it is implemented in a package 
+ (for Jorde & Ryman 2007, as implemented in a package 
 \family typewriter
 TempoFS
 \family default
 ) as the census population size at generation 0, estimated effective population
  sizes between generation 0 and 20 at generation 20, and estimates between
- 20 and 40 at generation 40.
+ 0 and 40 at generation 40.
  The variables are lists of three elements: the estimated Ne, and lower
  and upper boundaries of the 95% confidence interval.
 \end_layout
@@ -19070,15 +19086,16 @@ reference "statNeTemporal"
 \end_inset
 
  demonstrates how to calculate temporal effective population sizes at a
- 20 generation interval during evolution.
+ 20 generation interval during evolution, using a fixed baseline generation
+ at generation 0.
  The statistics are estimated from genotypes at 50 unlinked loci from 500
  random samples from a population of size 2000.
  Instead of drawing random samples explicitly, this example defines a virtual
  subpopulation that consists of the first 500 individuals in the population.
  The Stat operator is applied at generations 0, 20, 40, ..., 100 to this virtual
  subpopulation, with the first output being the census size (of the sample).
- Because a standard Wright-Fisher random mating scheme is used, the estimates
- are pretty close to the real effective population size of 2000.
+ Because a standard Wright-Fisher random mating scheme is used, the true
+ effective population size should be around 2000.
  It would be interesting to adjust this evolutionary process (with population
  expansion, with varying number of offspring etc) and the method of estimation
  (sample size, generations between estimates) to see how well this statistic
@@ -19089,11 +19106,115 @@ reference "statNeTemporal"
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/statNeTemporal.log"
-lstparams "caption={Temporal effective population size},label={statNeTemporal}"
+lstparams "caption={Temporal effective population size using a fixed baseline sample},label={statNeTemporal}"
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Instead of using a fixed baseline generation, it is also possible to reset
+ baseline generation during evolution.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "statNeInterval"
+
+\end_inset
+
+ demonstrates how to calculate temporal effective population sizes at a
+ 20 generation interval during evolution.
+ This example sets variable 
+\family typewriter
+Ne_temporal_base
+\family default
+ with 
+\family typewriter
+Ne_waples89
+\family default
+ whenever the Stat operator is applied.
+ This effectively resets the baseline generation to the present generation
+ at generations 0, 20, 40, etc, so baseline generations 0, 20, 40, ...
+ are used at generations 20, 40, ....
+ This example also demonstrates how to use the suffix parameter to apply
+ the same statistics with different parameters.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/statNeInterval.log"
+lstparams "caption={Temporal effective population size between consecutive samples},label={statNeInterval}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+simuPOP allows you to estimate effective population size using genotypes
+ at selected loci from selected individuals.
+ It is up to you, however, to decide when to apply the operator (pre- or
+ post-mating), how to draw samples, and select the right method for your
+ data.
+ For example,
+\end_layout
+
+\begin_layout Itemize
+Assumptions underlying temporal methods include discrete generations and
+ no (or slight) selection, migration, and mutation.
+ In particular, the above example uses samples (the first 500 individuals)
+ with replacement so some of the individuals sampled in the first time period
+ could have contributed genes to subsequent generations.
+ Sampling in this example is therefore Plan I as described in Nei and Tajima
+ (1981 Genetics) and other papers.
+ The implementation of the statistics, however, assumes Plan 2 which is
+ suitable for the cases when N is large compared to Ne so the covariance
+ introduced by sampling plan 1 can be ignored.
+ 
+\end_layout
+
+\begin_layout Itemize
+LDNe: Markers are selectively neutral and independent; population has discrete
+ generations and is closed to immigration; sampling is random.
+ 
+\end_layout
+
+\begin_layout Standard
+In addition, to keep the interface simple, simuPOP does not provide many
+ options as dedicated programs do (e.g.
+ TempoFS, LDNe).
+ Please export your samples in other formats (e.g.
+ use operator 
+\family typewriter
+Export(format=
+\begin_inset Quotes erd
+\end_inset
+
+GENEPOP
+\begin_inset Quotes erd
+\end_inset
+
+)
+\family default
+ or function 
+\family typewriter
+export(pop, format=
+\begin_inset Quotes erd
+\end_inset
+
+GENEPOP
+\begin_inset Quotes erd
+\end_inset
+
+)
+\family default
+ from module 
+\family typewriter
+simuPOP.utiles
+\family default
+) and use these programs if you need such flexibilities.
 \end_layout
 
 \begin_layout Subsection
