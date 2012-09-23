@@ -3582,8 +3582,7 @@ bool statEffectiveSize::apply(Population & pop) const
 			// calculate per-subpop statisticsoutput variable.
 			// save frequency
 #ifdef LONGALLELE
-			uintDict::iterator cnt = alleles.begin();
-			uintDict::iterator cntEnd = alleles.end();
+			cnt = alleles.begin();
 			for ( ; cnt != cntEnd; ++cnt)
 				cnt->second /= static_cast<double>(allAlleles);
 			Pt.push_back(alleles);
