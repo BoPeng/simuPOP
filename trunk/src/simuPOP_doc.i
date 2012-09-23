@@ -9553,33 +9553,42 @@ Details:
     subpopulations is calculated. effectiveSize can be a list of loci
     indexes, names or ALL_AVAIL. This statistic outputs the following
     variables:
+    *   Ne_temporal_base When this variable is set in parameter vars,
+    the Stat operator saves baseline allele frequencies and other
+    information in this variable, which are used by temporary methods
+    to estimate effective population size according to changes in
+    allele frequency between the baseline and present generations.
+    This variable could be set repeatedly to change baselines.
+    *   Ne_temporal_base_sp Set baseline information for each
+    (virtual) subpopulation specified.
     *   Ne_waples89 (default) Effective population size, 2.5% and
     97.5% confidence interval as a list of size three, estimated using
     a temporal method as described in Waples 1989, Genetics. Because
-    this is a temporal method, Ne_waples89 is set to census population
-    size when it is first calculated, and is set to the temporal
-    effecitive size between the present and last call afterward. The
-    number of generations between samples for each estimate is
-    therefore controlled by applicability parameters such as step and
-    at. Because this implementation uses census population size as s_0
-    and s_t, it is recommended that you apply this statistics to a
-    random sample that retains population variables from the
-    population from which the sample is drawn, or to a virtual
-    subpopulation (e.g. using a rangeSplitter), to estimate Ne from
-    samples. simuPOP assumes the samples are from a population with
-    unknown size and only returns Ne under plan under study sampling
+    this is a temporal method, Ne_waples89 estimates effective size
+    between the present and the baseline generation set by variable
+    Ne_temporal_base. Census population size will be returned if no
+    baseline has been set. Because this implementation uses census
+    population size as s_0 and s_t, it is recommended that you apply
+    this statistics to a random sample that retains population
+    variables from the population from which the sample is drawn, or
+    to a virtual subpopulation (e.g. using a rangeSplitter), to
+    estimate Ne from samples. simuPOP assumes the samples are from a
+    population with unknown size and only returns Ne under sampling
     plan 2.
+    *   Ne_waples89_sp Estimate effective size for each (virtual)
+    subpopulation using method Waples 89.
     *   Ne_tempoFS (default) Effective population size, 2.5% and 97.5%
     confidence interval as a list of size three, estimated using a
     temporal method as described in Jorde & Ryman (2007), and as
     implemented by software tempoFS
     (http://www.zoologi.su.se/~ryman/). This variable is set to census
-    population size when the operator is first applied, and to the
-    temporal effective size between the present and the last
-    generation when it is applied afterward. It does not make use of
-    more than two samples, and assumes unknown census population size
-    (sampling plan 2). A value of -1 implies an infinite estimate of
-    effective size.
+    population size no baseline has been set, and to the temporal
+    effective size between the present and the baseline generation
+    otherwise. This method does not make use of more than two samples,
+    and assumes unknown census population size (sampling plan 2). A
+    value of -1 implies an infinite estimate of effective size.
+    *   Ne_tempoFS_sp Estimate effective size of each (virtual)
+    subpopulation using method Jorde & Ryman 2007.
 
 "; 
 

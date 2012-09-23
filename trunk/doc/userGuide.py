@@ -3556,14 +3556,48 @@ pop.evolve(
     initOps=[
         sim.InitSex(),
         sim.InitGenotype(freq=[0.3, 0.7]),
+        sim.Stat(effectiveSize=range(50), subPops=[(0,0)],
+            vars='Ne_temporal_base'),
     ],
-    matingScheme=sim.RandomMating(),
-    postOps=[
+    preOps=[
         sim.Stat(effectiveSize=range(50), subPops=[(0,0)], step=20),
         sim.PyEval(r'"Waples Ne: %.1f (%.1f - %.1f), TempoFS: '
             r'%.1f (%.1f - %.1f), at generation %d\n" % '
             'tuple(Ne_waples89 + Ne_tempoFS + [gen])', step=20)
     ],
+    matingScheme=sim.RandomMating(),
+    gen = 101
+)
+#end_file
+
+#begin_file log/statNeInterval.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+pop = sim.Population([2000], loci=[1]*50)
+pop.setVirtualSplitter(sim.RangeSplitter([0, 500]))
+pop.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.InitGenotype(freq=[0.3, 0.7]),
+        sim.Stat(effectiveSize=range(50), subPops=[(0,0)],
+            vars='Ne_temporal_base'),
+    ],
+    preOps=[
+        sim.Stat(effectiveSize=range(50), subPops=[(0,0)], step=20),
+        sim.Stat(effectiveSize=range(50), subPops=[(0,0)], step=20,
+            suffix='_i', vars=['Ne_temporal_base', 'Ne_waples89']),
+        sim.PyEval(r'"Waples Ne (till %d): %.1f (%.1f - %.1f), '
+            r'(interval) %.1f (%.1f - %.1f)\n" % '
+            'tuple([gen] + Ne_waples89 + Ne_waples89_i)',
+            step=20)
+    ],
+    matingScheme=sim.RandomMating(),
     gen = 101
 )
 #end_file
