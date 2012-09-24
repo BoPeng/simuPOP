@@ -316,7 +316,8 @@ enum InheritanceType {
 
 // used by operator InitLineage
 enum InitMode {
-	PER_LOCI =  111,
+	PER_ALLELE = 111, 
+	PER_LOCI =  111,  // this name is deprecated
 	PER_CHROMOSOME = 112,
 	PER_PLOIDY = 113,
 	PER_INDIVIDUAL = 114,
