@@ -882,6 +882,32 @@ private:
 
 
 /// CPPONLY
+class statIBD
+{
+private:
+#define  IBD_String     "IBD"
+#define  IBD_sp_String  "IBD_sp"
+#define  IBS_String     "IBS"
+#define  IBS_sp_String  "IBS_sp"
+
+public:
+	statIBD(const lociList & loci, const subPopList & subPops,
+		const stringList & vars, const string & suffix);
+
+
+	string describe(bool format = true) const;
+
+	bool apply(Population & pop) const;
+
+private:
+	lociList m_loci;
+	subPopList m_subPops;
+	stringList m_vars;
+	string m_suffix;
+};
+
+
+/// CPPONLY
 class statEffectiveSize
 {
 private:
@@ -1326,6 +1352,22 @@ public:
 	 *  \li \c HWE_sp A dictionary of p-values of HWS tests using genotypes
 	 *       in each (virtual) subpopulation.
 	 *
+	 *  <b>IBD</b>: Identitcal by Decent (and by State). This statistics go through
+	 *  all loci of individuals in a diploid population and calculate the number
+	 *  and proportions of alleles that are identitcal by decent and by state.
+	 *  Because ancestral information is only available in lineage module, variables
+	 *  IBD are always set to zero in other modules. Loci on sex and mitochondrial
+	 *  chromosomes are currently not supported. This statistic outputs the
+	 *  following variables:
+	 *  \li \c IBD (default) The proportion of IBD pairs among all allele pairs.
+	 *       In a haploid population, indivduals are paired to calculate this
+	 *       quantity. Extra individual is ignored if there are an odd number of
+	 *       individuals. To use this statistic, the population must be initialized
+	 *       by operator InitLineage() to assign each ancestral allele an unique
+	 *       identify.
+	 *  \li \c IBS (default) The proportion of IBS pairs among all allele pairs.
+	 *  \li
+	 *
 	 *  <b>effectiveSize</b>: Parameter \c effectiveSize accepts a list of loci
 	 *  at which the effective population size for the whole or specified
 	 *  (virtual) subpopulations is calculated. \e effectiveSize can be a list
@@ -1405,6 +1447,8 @@ public:
 		//
 		const lociList & HWE = vectoru(),
 		//
+		const lociList & IBD = vectoru(),
+		//
 		const lociList & effectiveSize = vectoru(),
 		//
 		const stringList & vars = stringList(),
@@ -1454,6 +1498,7 @@ private:
 	const statNeutrality m_neutrality;
 	const statStructure m_structure;
 	const statHWE m_HWE;
+	const statIBD m_IBD;
 	const statEffectiveSize m_effectiveSize;
 };
 
