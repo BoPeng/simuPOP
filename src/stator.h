@@ -882,18 +882,17 @@ private:
 
 
 /// CPPONLY
-class statIBD
+class statInbreeding
 {
 private:
-#define  IBD_String     "IBD"
-#define  IBD_sp_String  "IBD_sp"
-#define  IBS_String     "IBS"
-#define  IBS_sp_String  "IBS_sp"
+#define  IBD_freq_String     "IBD_freq"
+#define  IBD_freq_sp_String  "IBD_freq_sp"
+#define  IBS_freq_String     "IBS_freq"
+#define  IBS_freq_sp_String  "IBS_freq_sp"
 
 public:
-	statIBD(const lociList & loci, const subPopList & subPops,
+	statInbreeding(const lociList & loci, const subPopList & subPops,
 		const stringList & vars, const string & suffix);
-
 
 	string describe(bool format = true) const;
 
@@ -1352,21 +1351,19 @@ public:
 	 *  \li \c HWE_sp A dictionary of p-values of HWS tests using genotypes
 	 *       in each (virtual) subpopulation.
 	 *
-	 *  <b>IBD</b>: Identitcal by Decent (and by State). This statistics go through
-	 *  all loci of individuals in a diploid population and calculate the number
-	 *  and proportions of alleles that are identitcal by decent and by state.
-	 *  Because ancestral information is only available in lineage module, variables
-	 *  IBD are always set to zero in other modules. Loci on sex and mitochondrial
-	 *  chromosomes are currently not supported. This statistic outputs the
+	 *  <b>inbreeding</b>: Inbreeding measured by Identitcal by Decent (and by
+	 *  State). This statistics go through all loci of individuals in a diploid
+	 *  population and calculate the number and proportions of alleles that are
+	 *  identitcal by decent and by state. Because ancestral information is only
+	 *  available in lineage module, variables Inbreeding are always set to zero in other
+	 *  modules. Loci on sex and mitochondrial chromosomes, and non-diploid
+	 *  populations are currently not supported. This statistic outputs the
 	 *  following variables:
-	 *  \li \c IBD (default) The proportion of IBD pairs among all allele pairs.
-	 *       In a haploid population, indivduals are paired to calculate this
-	 *       quantity. Extra individual is ignored if there are an odd number of
-	 *       individuals. To use this statistic, the population must be initialized
-	 *       by operator InitLineage() to assign each ancestral allele an unique
+	 *  \li \c Inbreeding (default) The proportion of Inbreeding pairs among all allele pairs.
+	 *       To use this statistic, the population must be initialized by
+	 *       operator InitLineage() to assign each ancestral allele an unique
 	 *       identify.
 	 *  \li \c IBS (default) The proportion of IBS pairs among all allele pairs.
-	 *  \li
 	 *
 	 *  <b>effectiveSize</b>: Parameter \c effectiveSize accepts a list of loci
 	 *  at which the effective population size for the whole or specified
@@ -1447,7 +1444,7 @@ public:
 		//
 		const lociList & HWE = vectoru(),
 		//
-		const lociList & IBD = vectoru(),
+		const lociList & inbreeding = vectoru(),
 		//
 		const lociList & effectiveSize = vectoru(),
 		//
@@ -1498,7 +1495,7 @@ private:
 	const statNeutrality m_neutrality;
 	const statStructure m_structure;
 	const statHWE m_HWE;
-	const statIBD m_IBD;
+	const statInbreeding m_Inbreeding;
 	const statEffectiveSize m_effectiveSize;
 };
 

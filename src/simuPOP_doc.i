@@ -740,7 +740,7 @@ Details:
     distrubution to find the next true event.  Also, for the cases of
     p=0.5, random bits are generated.  This class maintain a two
     dimensional table: a vector of probabilities cross expected number
-    of trials p1 p2 p3 p4 p5  trial 1 trial 2 ... trial N  We expect
+    of trials  p1 p2 p3 p4 p5 trial 1 trial 2 ... trial N  We expect
     that N is big (usually populaiton size) and p_i are small  using
     fast bernulliTrial method for fix p, we can fill up this table
     very quickly column by column  This class will provide easy access
@@ -3092,9 +3092,9 @@ Details:
     this class implements a C++ iterator class that iterate through
     individuals in a (sub)population. If allInds are true, the
     visiblility of individuals will not be checked. Note that
-    IndividualIteratorwill iterate through only visible individuals,
-    and allInds is only provided when we know in advance that all
-    individuals are visible. This is a way to obtain better
+    IndividualIterator *will* iterate through only visible
+    individuals, and allInds is only provided when we know in advance
+    that all individuals are visible. This is a way to obtain better
     performance in simple cases.
 
 "; 
@@ -3509,7 +3509,7 @@ Details:
 
 Usage:
 
-    InitLineage(lineage=[], mode=PER_LOCI, loci=ALL_AVAIL,
+    InitLineage(lineage=[], mode=PER_ALLELE, loci=ALL_AVAIL,
       ploidy=ALL_AVAIL, begin=0, end=1, step=1, at=[], reps=ALL_AVAIL,
       subPops=ALL_AVAIL, infoFields=\"ind_id\")
 
@@ -3520,18 +3520,20 @@ Details:
     (default to ind_id), whose value will be saved as the lineage of
     modified alleles. If a list of values is specified in parameter
     lineage, each value in this list is applied to one or more alleles
-    so that each locus (PER_LOCI), alleles on each chromosome
-    (PER_CHROMOSOME), on chromosomes of each ploidy (PER_PLOIDY), or
-    for each individual (PER_INDIVIDUAL) have the same lineage. A
-    single value is allowed and values in lineage will be re-used if
-    not enough values are provided. If a valid field is specified
-    (default to ind_id), the value of this field will be used for all
-    alleles of each individual if mode is set to FROM_INFO, or be
-    adjusted to produce positive values for alleles on the frist
-    ploidy, and negative values for the second ploidy (and so on) if
-    mode equals to FROM_INFO_SIGNED. If loci, ploidy and/or subPops
-    are specified, only specified loci, ploidy, and individuals in
-    these (virtual) subpopulations will be initialized.
+    so that each allele (PER_ALLELE, default mode), alleles on each
+    chromosome (PER_CHROMOSOME), on chromosomes of each ploidy
+    (PER_PLOIDY), or for each individual (PER_INDIVIDUAL) have the
+    same lineage. A single value is allowed and values in lineage will
+    be re-used if not enough values are provided. If an empty list is
+    provided, values 0, 1, 2, .. will be used to provide an unique
+    identify for each allele, genotype, chromosome, etc. If a valid
+    field is specified (default to ind_id), the value of this field
+    will be used for all alleles of each individual if mode is set to
+    FROM_INFO, or be adjusted to produce positive values for alleles
+    on the frist ploidy, and negative values for the second ploidy
+    (and so on) if mode equals to FROM_INFO_SIGNED. If loci, ploidy
+    and/or subPops are specified, only specified loci, ploidy, and
+    individuals in these (virtual) subpopulations will be initialized.
 
 "; 
 
@@ -4025,7 +4027,7 @@ Details:
     through all mutable allele and mutate it to another state
     according to probabilities in the corresponding row of the rate
     matrix. Only one mutation rate matrix can be specified which will
-    be used for all specified loci.
+    be used for all specified loci. #
 
 "; 
 
@@ -4965,11 +4967,11 @@ Details:
     it is applied to this population. If stopOnKeyStroke is False
     (default), it will always pause a population when it is applied,
     if this parameter is set to True, the operator will pause a
-    population if any key has been pressed. If a specific character is
-    set, the operator will stop when this key has been pressed. This
-    allows, for example, the use of several pause operators to pause
-    different populations.  After a population has been paused, a
-    message will be displayed (unless prompt is set to False) and
+    population if *any* key has been pressed. If a specific character
+    is set, the operator will stop when this key has been pressed.
+    This allows, for example, the use of several pause operators to
+    pause different populations.  After a population has been paused,
+    a message will be displayed (unless prompt is set to False) and
     tells you how to proceed. You can press 's' to stop the evolution
     of this population, 'S' to stop the evolution of all populations,
     or 'p' to enter a Python shell. The current population will be
@@ -5471,8 +5473,9 @@ Details:
     parameter ploidy. This operator is by default applied to
     individuals in the first subpopulation but you can apply it to a
     different or more than one (virtual) subpopulations using
-    parameter subPops (AllAvail is also accepted). Please refer to
-    class BaseOperator for detailed descriptions of other parameters.
+    parameter *subPops* (``AllAvail`` is also accepted). Please refer
+    to class BaseOperator for detailed descriptions of other
+    parameters.
 
 "; 
 
@@ -9179,9 +9182,10 @@ Usage:
       homoFreq=[], genoFreq=[], haploFreq=[], haploHeteroFreq=[],
       haploHomoFreq=[], sumOfInfo=[], meanOfInfo=[], varOfInfo=[],
       maxOfInfo=[], minOfInfo=[], LD=[], association=[],
-      neutrality=[], structure=[], HWE=[], effectiveSize=[],
-      vars=ALL_AVAIL, suffix=\"\", output=\"\", begin=0, end=-1, step=1,
-      at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+      neutrality=[], structure=[], HWE=[], inbreeding=[],
+      effectiveSize=[], vars=ALL_AVAIL, suffix=\"\", output=\"\", begin=0,
+      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
+      infoFields=[])
 
 Details:
 
@@ -9547,12 +9551,25 @@ Details:
     *   HWE (default) A dictionary of p-values of HWE tests using
     genotypes in all or specified (virtual) subpopulations.
     *   HWE_sp A dictionary of p-values of HWS tests using genotypes
-    in each (virtual) subpopulation.effectiveSize: Parameter
-    effectiveSize accepts a list of loci at which the effective
-    population size for the whole or specified (virtual)
-    subpopulations is calculated. effectiveSize can be a list of loci
-    indexes, names or ALL_AVAIL. This statistic outputs the following
-    variables:
+    in each (virtual) subpopulation.inbreeding: Inbreeding measured by
+    Identitcal by Decent (and by State). This statistics go through
+    all loci of individuals in a diploid population and calculate the
+    number and proportions of alleles that are identitcal by decent
+    and by state. Because ancestral information is only available in
+    lineage module, variables Inbreeding are always set to zero in
+    other modules. Loci on sex and mitochondrial chromosomes, and non-
+    diploid populations are currently not supported. This statistic
+    outputs the following variables:
+    *   Inbreeding (default) The proportion of Inbreeding pairs among
+    all allele pairs. To use this statistic, the population must be
+    initialized by operator InitLineage() to assign each ancestral
+    allele an unique identify.
+    *   IBS (default) The proportion of IBS pairs among all allele
+    pairs.effectiveSize: Parameter effectiveSize accepts a list of
+    loci at which the effective population size for the whole or
+    specified (virtual) subpopulations is calculated. effectiveSize
+    can be a list of loci indexes, names or ALL_AVAIL. This statistic
+    outputs the following variables:
     *   Ne_temporal_base When this variable is set in parameter vars,
     the Stat operator saves baseline allele frequencies and other
     information in this variable, which are used by temporary methods
@@ -9836,6 +9853,32 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statHWE::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%ignore simuPOP::statInbreeding;
+
+%feature("docstring") simuPOP::statInbreeding::statInbreeding "
+
+Usage:
+
+    statInbreeding(loci, subPops, vars, suffix)
+
+"; 
+
+%feature("docstring") simuPOP::statInbreeding::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statInbreeding::apply "
 
 Usage:
 
@@ -10777,10 +10820,10 @@ Details:
     Individuals without parents are assumed to be in the top-most
     ancestral generation. This is the case for individuals in the top-
     most ancestral generation if the file is saved by function
-    Pedigree.save(), and for individuals who only appear as another
-    individual's parent, if the file is saved by operator
-    PedigreeTagger. The order at which offsprng is specified is not
-    important because this function essentially creates a top-most
+    ``Pedigree.save()``, and for individuals who only appear as
+    another individual's parent, if the file is saved by operator
+    ``PedigreeTagger``. The order at which offsprng is specified is
+    not important because this function essentially creates a top-most
     ancestral generation using IDs without parents, and creates the
     next generation using offspring of these parents, and so on until
     all generations are recreated. That is to say, if you have a

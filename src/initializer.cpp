@@ -370,9 +370,6 @@ bool InitLineage::apply(Population & pop) const
 
 	vectoru ploidy = m_ploidy.elems();
 
-	PARAM_FAILIF(m_lineage.empty() && !pop.hasInfoField(infoField(0)), ValueError,
-		"lineage argument is empty and lineageField argument is not present.");
-
 	if (m_ploidy.allAvail())
 		for (size_t i = 0 ; i < pop.ploidy(); ++i)
 			ploidy.push_back(i);

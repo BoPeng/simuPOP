@@ -374,7 +374,7 @@ Stat::Stat(
 	//
 	const lociList & HWE,
 	//
-	const lociList & IBD,
+	const lociList & Inbreeding,
 	//
 	const lociList & effectiveSize,
 	//
@@ -402,7 +402,7 @@ Stat::Stat(
 	m_neutrality(neutrality, subPops, vars, suffix),
 	m_structure(structure, subPops, vars, suffix),
 	m_HWE(HWE, subPops, vars, suffix),
-	m_IBD(IBD, subPops, vars, suffix),
+	m_Inbreeding(Inbreeding, subPops, vars, suffix),
 	m_effectiveSize(effectiveSize, subPops, vars, suffix)
 {
 	(void)output;  // avoid warning about unused parameter
@@ -429,7 +429,7 @@ string Stat::describe(bool /* format */) const
 	descs.push_back(m_neutrality.describe(false));
 	descs.push_back(m_structure.describe(false));
 	descs.push_back(m_HWE.describe(false));
-	descs.push_back(m_IBD.describe(false));
+	descs.push_back(m_Inbreeding.describe(false));
 	descs.push_back(m_effectiveSize.describe(false));
 	for (size_t i = 0; i < descs.size(); ++i) {
 		if (!descs[i].empty())
@@ -458,7 +458,7 @@ bool Stat::apply(Population & pop) const
 	       m_neutrality.apply(pop) &&
 	       m_structure.apply(pop) &&
 	       m_HWE.apply(pop) &&
-	       m_IBD.apply(pop) &&
+	       m_Inbreeding.apply(pop) &&
 	       m_effectiveSize.apply(pop);
 }
 
@@ -1173,14 +1173,14 @@ bool statHeteroFreq::apply(Population & pop) const
 				// previous results (perhaps at other loci). Also, we do not want to
 				// make this variable a default dict.
 				pop.getVars().setVar(subPopVar_String(*it, HeteroNum_String, m_suffix)
-					+ "[" + toStr(ct->first) + "]", ct->second);
+					+ "{" + toStr(ct->first) + "}", ct->second);
 		}
 		if (m_vars.contains(HomoNum_sp_String)) {
 			uintDict::const_iterator ct = homoCnt.begin();
 			uintDict::const_iterator ct_end = homoCnt.end();
 			for (; ct != ct_end; ++ct)
 				pop.getVars().setVar(subPopVar_String(*it, HomoNum_String, m_suffix)
-					+ "[" + toStr(ct->first) + "]", ct->second);
+					+ "{" + toStr(ct->first) + "}", ct->second);
 		}
 		if (m_vars.contains(HeteroFreq_sp_String)) {
 			uintDict freq;
@@ -1193,7 +1193,7 @@ bool statHeteroFreq::apply(Population & pop) const
 			uintDict::const_iterator ct_end = freq.end();
 			for (; ct != ct_end; ++ct)
 				pop.getVars().setVar(subPopVar_String(*it, HeteroFreq_String, m_suffix)
-					+ "[" + toStr(ct->first) + "]", ct->second);
+					+ "{" + toStr(ct->first) + "}", ct->second);
 		}
 		if (m_vars.contains(HomoFreq_sp_String)) {
 			uintDict freq;
@@ -1206,7 +1206,7 @@ bool statHeteroFreq::apply(Population & pop) const
 			uintDict::const_iterator ct_end = freq.end();
 			for (; ct != ct_end; ++ct)
 				pop.getVars().setVar(subPopVar_String(*it, HomoFreq_String, m_suffix)
-					+ "[" + toStr(ct->first) + "]", ct->second);
+					+ "{" + toStr(ct->first) + "}", ct->second);
 		}
 	}
 	// for whole population.
@@ -1214,14 +1214,14 @@ bool statHeteroFreq::apply(Population & pop) const
 		uintDict::const_iterator ct = allHeteroCnt.begin();
 		uintDict::const_iterator ct_end = allHeteroCnt.end();
 		for (; ct != ct_end; ++ct)
-			pop.getVars().setVar(HeteroNum_String + m_suffix + "[" + toStr(ct->first) + "]",
+			pop.getVars().setVar(HeteroNum_String + m_suffix + "{" + toStr(ct->first) + "}",
 				ct->second);
 	}
 	if (m_vars.contains(HomoNum_String)) {
 		uintDict::const_iterator ct = allHomoCnt.begin();
 		uintDict::const_iterator ct_end = allHomoCnt.end();
 		for (; ct != ct_end; ++ct)
-			pop.getVars().setVar(HomoNum_String + m_suffix + "[" + toStr(ct->first) + "]",
+			pop.getVars().setVar(HomoNum_String + m_suffix + "{" + toStr(ct->first) + "}",
 				ct->second);
 	}
 	if (m_vars.contains(HeteroFreq_String)) {
@@ -1234,7 +1234,7 @@ bool statHeteroFreq::apply(Population & pop) const
 		uintDict::const_iterator ct = freq.begin();
 		uintDict::const_iterator ct_end = freq.end();
 		for (; ct != ct_end; ++ct)
-			pop.getVars().setVar(HeteroFreq_String + m_suffix + "[" + toStr(ct->first) + "]",
+			pop.getVars().setVar(HeteroFreq_String + m_suffix + "{" + toStr(ct->first) + "}",
 				ct->second);
 	}
 	if (m_vars.contains(HomoFreq_String)) {
@@ -1247,7 +1247,7 @@ bool statHeteroFreq::apply(Population & pop) const
 		uintDict::const_iterator ct = freq.begin();
 		uintDict::const_iterator ct_end = freq.end();
 		for (; ct != ct_end; ++ct)
-			pop.getVars().setVar(HomoFreq_String + m_suffix + "[" + toStr(ct->first) + "]",
+			pop.getVars().setVar(HomoFreq_String + m_suffix + "{" + toStr(ct->first) + "}",
 				ct->second);
 	}
 
@@ -3278,31 +3278,149 @@ bool statHWE::apply(Population & pop) const
 }
 
 
-statIBD::statIBD(const lociList & loci,  const subPopList & subPops,
+statInbreeding::statInbreeding(const lociList & loci,  const subPopList & subPops,
 	const stringList & vars, const string & suffix)
 	: m_loci(loci), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
-		IBD_String,		 IBD_sp_String,
-		IBS_String,		 IBS_sp_String,
+		IBD_freq_String, IBD_freq_sp_String,
+		IBS_freq_String, IBS_freq_sp_String,
 		""
 	};
-	const char * defaultVars[] = { IBD_String, IBS_String, "" };
+	const char * defaultVars[] = { IBD_freq_String, IBS_freq_String, "" };
 
 	m_vars.obtainFrom(vars, allowedVars, defaultVars);
+
+#ifndef LINEAGE
+	DBG_WARNIF(m_vars.contains(IBD_freq_String) || m_vars.contains(IBD_freq_sp_String),
+		"Warning: IBD statistics will be set to zero in non-lineage modules");
+#endif
 }
 
 
-string statIBD::describe(bool /* format */) const
+string statInbreeding::describe(bool /* format */) const
 {
 	string desc;
 
+	if (!m_loci.empty())
+		desc += "Calculate inbreeding coefficient at selected loci";
 	return desc;
 }
 
 
-bool statIBD::apply(Population & pop) const
+bool statInbreeding::apply(Population & pop) const
 {
+	DBG_FAILIF(pop.ploidy() != 2, ValueError,
+		"Statistics for inbreeding is currently only available for diploid populations.");
+
+	if (m_loci.empty())
+		return true;
+
+	const vectoru & loci = m_loci.elems(&pop);
+
+	// count for all specified subpopulations
+	uintDict allIBDCnt;
+	uintDict allIBSCnt;
+	size_t allCnt = 0;
+	size_t nLoci = loci.size();
+
+	// selected (virtual) subpopulatons.
+	subPopList subPops = m_subPops.expandFrom(pop);
+	subPopList::const_iterator it = subPops.begin();
+	subPopList::const_iterator itEnd = subPops.end();
+	for (; it != itEnd; ++it) {
+		pop.activateVirtualSubPop(*it);
+
+		uintDict IBDCnt;
+		uintDict IBSCnt;
+
+#pragma omp parallel for if(numThreads() > 1)
+		size_t cnt = 0;
+		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
+			size_t loc = loci[idx];
+
+#ifndef OPTIMIZED
+			size_t chromType = pop.chromType(pop.chromLocusPair(loc).first);
+			DBG_FAILIF(chromType == CHROMOSOME_X || chromType == CHROMOSOME_Y || chromType == MITOCHONDRIAL,
+				ValueError, "IBD/IBS count for sex and mitochondrial chromosomes is not supported.");
+#endif
+			size_t IBD = 0;
+			size_t IBS = 0;
+
+			// go through all alleles
+			IndIterator ind = pop.indIterator(it->subPop());
+			for (; ind.valid(); ++ind, ++cnt) {
+				if (ind->allele(loc, 0) == ind->allele(loc, 1))
+					IBS += 1;
+#ifdef LINEAGE
+				if (ind->alleleLineage(loc, 0) == ind->alleleLineage(loc, 1))
+					IBD += 1;
+#endif
+			}
+#pragma omp critical
+			{
+				IBDCnt[loc] = static_cast<double>(IBD);
+				IBSCnt[loc] = static_cast<double>(IBS);
+				//
+				allIBDCnt[loc] += IBDCnt[loc];
+				allIBSCnt[loc] += IBSCnt[loc];
+			}
+		}
+		//
+		allCnt += cnt;
+		pop.deactivateVirtualSubPop(it->subPop());
+		// output subpopulation variable?
+		if (m_vars.contains(IBD_freq_sp_String)) {
+			uintDict freq;
+			for (size_t idx = 0; idx < loci.size(); ++idx) {
+				size_t loc = loci[idx];
+				freq[loc] = cnt == 0. ? 0 : IBDCnt[loc] * nLoci / static_cast<double>(cnt);
+			}
+			uintDict::const_iterator ct = freq.begin();
+			uintDict::const_iterator ct_end = freq.end();
+			for (; ct != ct_end; ++ct)
+				pop.getVars().setVar(subPopVar_String(*it, IBD_freq_String, m_suffix)
+					+ "{" + toStr(ct->first) + "}", ct->second);
+		}
+		if (m_vars.contains(IBS_freq_sp_String)) {
+			uintDict freq;
+			for (size_t idx = 0; idx < loci.size(); ++idx) {
+				size_t loc = loci[idx];
+				freq[loc] = cnt == 0. ? 0 : IBSCnt[loc] * nLoci / static_cast<double>(cnt);
+			}
+			uintDict::const_iterator ct = freq.begin();
+			uintDict::const_iterator ct_end = freq.end();
+			for (; ct != ct_end; ++ct)
+				pop.getVars().setVar(subPopVar_String(*it, IBS_freq_String, m_suffix)
+					+ "{" + toStr(ct->first) + "}", ct->second);
+		}
+	}
+	// for whole population.
+	if (m_vars.contains(IBD_freq_String)) {
+		uintDict freq;
+		for (size_t idx = 0; idx < loci.size(); ++idx) {
+			size_t loc = loci[idx];
+			freq[loc] = allCnt == 0. ? 0 : allIBDCnt[loc] * nLoci / static_cast<double>(allCnt);
+		}
+		uintDict::const_iterator ct = freq.begin();
+		uintDict::const_iterator ct_end = freq.end();
+		for (; ct != ct_end; ++ct)
+			pop.getVars().setVar(IBD_freq_String + m_suffix + "{" + toStr(ct->first) + "}",
+				ct->second);
+	}
+	if (m_vars.contains(IBS_freq_String)) {
+		uintDict freq;
+		for (size_t idx = 0; idx < loci.size(); ++idx) {
+			size_t loc = loci[idx];
+			freq[loc] = allCnt == 0. ? 0 : allIBSCnt[loc] * nLoci / static_cast<double>(allCnt);
+		}
+		uintDict::const_iterator ct = freq.begin();
+		uintDict::const_iterator ct_end = freq.end();
+		for (; ct != ct_end; ++ct)
+			pop.getVars().setVar(IBS_freq_String + m_suffix + "{" + toStr(ct->first) + "}",
+				ct->second);
+	}
+
 	return true;
 }
 
