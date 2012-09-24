@@ -374,6 +374,8 @@ Stat::Stat(
 	//
 	const lociList & HWE,
 	//
+	const lociList & IBD,
+	//
 	const lociList & effectiveSize,
 	//
 	const stringList & vars,
@@ -400,6 +402,7 @@ Stat::Stat(
 	m_neutrality(neutrality, subPops, vars, suffix),
 	m_structure(structure, subPops, vars, suffix),
 	m_HWE(HWE, subPops, vars, suffix),
+	m_IBD(IBD, subPops, vars, suffix),
 	m_effectiveSize(effectiveSize, subPops, vars, suffix)
 {
 	(void)output;  // avoid warning about unused parameter
@@ -426,6 +429,7 @@ string Stat::describe(bool /* format */) const
 	descs.push_back(m_neutrality.describe(false));
 	descs.push_back(m_structure.describe(false));
 	descs.push_back(m_HWE.describe(false));
+	descs.push_back(m_IBD.describe(false));
 	descs.push_back(m_effectiveSize.describe(false));
 	for (size_t i = 0; i < descs.size(); ++i) {
 		if (!descs[i].empty())
@@ -454,6 +458,7 @@ bool Stat::apply(Population & pop) const
 	       m_neutrality.apply(pop) &&
 	       m_structure.apply(pop) &&
 	       m_HWE.apply(pop) &&
+	       m_IBD.apply(pop) &&
 	       m_effectiveSize.apply(pop);
 }
 
@@ -3269,6 +3274,35 @@ bool statHWE::apply(Population & pop) const
 			hwe[loci[i]] = hweTest(mapToCount(allGenoCnt[i]));
 		pop.getVars().setVar(HWE_String + m_suffix, hwe);
 	}
+	return true;
+}
+
+
+statIBD::statIBD(const lociList & loci,  const subPopList & subPops,
+	const stringList & vars, const string & suffix)
+	: m_loci(loci), m_subPops(subPops), m_vars(), m_suffix(suffix)
+{
+	const char * allowedVars[] = {
+		IBD_String,		 IBD_sp_String,
+		IBS_String,		 IBS_sp_String,
+		""
+	};
+	const char * defaultVars[] = { IBD_String, IBS_String, "" };
+
+	m_vars.obtainFrom(vars, allowedVars, defaultVars);
+}
+
+
+string statIBD::describe(bool /* format */) const
+{
+	string desc;
+
+	return desc;
+}
+
+
+bool statIBD::apply(Population & pop) const
+{
 	return true;
 }
 
