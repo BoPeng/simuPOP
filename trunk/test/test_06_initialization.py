@@ -271,22 +271,37 @@ class TestInitialization(unittest.TestCase):
         self.assertEqual(pop.lineage(), [0] * 2000)
         for ind in pop.allIndividuals():
             self.assertEqual(ind.lineage(), [0] * 20)
-        # set lineage per loci
+        # set lineage per allele
+        # no value provided
+        initLineage(pop)
+        self.assertEqual(pop.lineage(), range(20*100))
+        for idx,ind in enumerate(pop.allIndividuals()):
+            self.assertEqual(ind.lineage(), range(20*idx, 20*idx + 20))
         initLineage(pop, range(20))
         self.assertEqual(pop.lineage(), range(20) * 100)
         for ind in pop.allIndividuals():
             self.assertEqual(ind.lineage(), range(20))
         # set lineage per chromosome
+        initLineage(pop, mode=PER_CHROMOSOME)  # no value provided
+        for idx,ind in enumerate(pop.allIndividuals()):
+            self.assertEqual(ind.lineage(), [idx*4+0]*4 + [idx*4+1]*6 + [idx*4+2]*4 + [idx*4+3]*6)
         initLineage(pop, range(4), mode=PER_CHROMOSOME)
         self.assertEqual(pop.lineage(), ([0]*4 + [1]*6 + [2]*4 + [3]*6) * 100)
         for ind in pop.allIndividuals():
             self.assertEqual(ind.lineage(), [0]*4 + [1]*6 + [2]*4 + [3]*6)
         # set lineage per ploidy
+        initLineage(pop, mode=PER_PLOIDY)  # no value provided
+        for idx,ind in enumerate(pop.allIndividuals()):
+            self.assertEqual(ind.lineage(), [idx*2+0]*10 + [idx*2+1]*10)
+        initLineage(pop, range(4), mode=PER_CHROMOSOME)
         initLineage(pop, range(2), mode=PER_PLOIDY)
         self.assertEqual(pop.lineage(), (([0] * 10) + ([1] * 10)) * 100)
         initLineage(pop, range(200), mode=PER_PLOIDY)
         self.assertEqual(pop.lineage(), reduce(lambda x,y:x+y, [10 * [i] for i in range(200)]))
         # set lineage per individual
+        initLineage(pop, mode=PER_INDIVIDUAL)  # no value provided
+        for idx,ind in enumerate(pop.allIndividuals()):
+            self.assertEqual(ind.lineage(), [idx]*20)
         initLineage(pop, range(100), mode=PER_INDIVIDUAL)
         self.assertEqual(pop.lineage(), reduce(lambda x,y:x+y, [20 * [i] for i in range(100)]))
         # set lingeage with ind_id field
