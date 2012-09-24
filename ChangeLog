@@ -11,6 +11,10 @@ Major New Features:
 	Currently based on the moment method of Waples 1989, and TempoFS method of Jorde
 	 & Ryman 2007.
  
+New Feature:
+  - Rename PER_LOCI to PER_ALLELE in InitLineage. PER_LOCI can still be used for backward compatibility.
+  - Allow empty value list in InitLineage. In this case, unique values will be provided for each case.
+
 BUG:
   - Fix a HWE test crash when one of the homozygote count is zero.
 

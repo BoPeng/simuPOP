@@ -329,16 +329,14 @@ InitLineage::InitLineage(const intList & lineage, int mode,
 	m_lineage(lineage.elems()), m_loci(loci),
 	m_ploidy(ploidy), m_mode(mode)
 {
-	PARAM_ASSERT(m_mode == PER_LOCI || m_mode == PER_CHROMOSOME || m_mode == PER_PLOIDY ||
+	PARAM_ASSERT(m_mode == PER_ALLELE || m_mode == PER_CHROMOSOME || m_mode == PER_PLOIDY ||
 		m_mode == PER_INDIVIDUAL || m_mode == FROM_INFO || m_mode == FROM_INFO_SIGNED, ValueError,
-		"Paramter mode of operator InitLineage can only be one of PER_LOCI, PER_CHROMOSOME, "
+		"Paramter mode of operator InitLineage can only be one of PER_ALLELE, PER_CHROMOSOME, "
 		"PER_PLOIDY, PER_INDIVIDUAL, FROM_INFO, or FROM_INFO_SIGNED.");
 	PARAM_FAILIF((m_mode == FROM_INFO || m_mode == FROM_INFO_SIGNED) && infoSize() != 1,
 		ValueError, "An information field is needed for mode FROM_INFO or FROM_INFO_SIGNED");
 	PARAM_FAILIF((m_mode == FROM_INFO || m_mode == FROM_INFO_SIGNED) && !m_lineage.empty(),
 		ValueError, "A list of lineage values is specified for mode FROM_INFO or FROM_INFO_SIGNED");
-	PARAM_FAILIF((m_mode == PER_LOCI || m_mode == PER_CHROMOSOME || m_mode == PER_PLOIDY || m_mode == PER_INDIVIDUAL) && m_lineage.empty(),
-		ValueError, "A list of lineage values is needed for mode PER_LOCI, PER_CHROMOSOME, PER_PLOIDY or PER_INDIVIDUAL");
 }
 
 
@@ -348,7 +346,7 @@ string InitLineage::describe(bool /* format */) const
 
 	if (!m_lineage.empty()) {
 		desc += "using specified lineage at each ";
-		if (m_mode == PER_LOCI)
+		if (m_mode == PER_ALLELE)
 			desc += "loci";
 		else if (m_mode == PER_CHROMOSOME)
 			desc += "chromosome";
@@ -385,7 +383,7 @@ bool InitLineage::apply(Population & pop) const
 	subPopList::const_iterator sp_end = subPops.end();
 	size_t sz = m_lineage.size();
 
-	if (m_mode == PER_LOCI) {
+	if (m_mode == PER_ALLELE) {
 		DBG_WARNIF(sz >= 1 && sz != loci.size() && sz != loci.size() * pop.ploidy(),
 			"Lineage [" + shorten(toStr(m_lineage)) + "] specified in operator InitLineage has "
 			+ toStr(m_lineage.size()) + " lineages, which does not match number of loci of individuals. "
@@ -412,13 +410,13 @@ bool InitLineage::apply(Population & pop) const
 	for (size_t idx = 0; sp != sp_end; ++sp) {
 		// will go through virtual subpopulation if sp is virtual
 		pop.activateVirtualSubPop(*sp);
-		if (!m_lineage.empty()) {
+		if (m_mode != FROM_INFO && m_mode != FROM_INFO_SIGNED) {
 #  pragma omp parallel firstprivate(idx) if(numThreads() > 1)
 			{
 #  ifdef _OPENMP
 				size_t id = omp_get_thread_num();
 				IndIterator it = pop.indIterator(sp->subPop(), id);
-				if (m_mode == PER_LOCI)
+				if (m_mode == PER_ALLELE)
 					idx += id * (pop.subPopSize(sp->subPop()) / numThreads()) *
 					       (ploidy.end() - ploidy.begin()) * (loci.end() - loci.begin());
 				else if (m_mode == PER_CHROMOSOME)
@@ -432,33 +430,61 @@ bool InitLineage::apply(Population & pop) const
 #  else
 				IndIterator it = pop.indIterator(sp->subPop());
 #  endif
-				for (; it.valid(); ++it) {
-					if (m_mode == PER_LOCI)
-						for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
-							for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++idx)
-								it->setAlleleLineage(m_lineage[idx % sz], *loc, static_cast<int>(*p));
-					else if (m_mode == PER_CHROMOSOME)
-						for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p, idx += nCh) {
-							vectoru::const_iterator loc = loci.begin();
-							vectoru::const_iterator locEnd = loci.end();
-							vectoru::const_iterator chIdx = chromIndex.begin();
-							for (; loc != locEnd; ++loc, ++chIdx)
-								it->setAlleleLineage(m_lineage[(idx + *chIdx) % sz], *loc, static_cast<int>(*p));
+				if (sz == 0) {
+					for (; it.valid(); ++it) {
+						if (m_mode == PER_ALLELE)
+							for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
+								for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++idx)
+									it->setAlleleLineage(idx, *loc, static_cast<int>(*p));
+						else if (m_mode == PER_CHROMOSOME)
+							for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p, idx += nCh) {
+								vectoru::const_iterator loc = loci.begin();
+								vectoru::const_iterator locEnd = loci.end();
+								vectoru::const_iterator chIdx = chromIndex.begin();
+								for (; loc != locEnd; ++loc, ++chIdx)
+									it->setAlleleLineage((idx + *chIdx), *loc, static_cast<int>(*p));
+							}
+						else if (m_mode == PER_PLOIDY)
+							for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p, ++idx)
+								for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc)
+									it->setAlleleLineage(idx, *loc, static_cast<int>(*p));
+						else {
+							for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
+								for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc)
+									it->setAlleleLineage(idx, *loc, static_cast<int>(*p));
+							++idx;
 						}
-					else if (m_mode == PER_PLOIDY)
-						for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p, ++idx)
-							for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc)
-								it->setAlleleLineage(m_lineage[idx % sz], *loc, static_cast<int>(*p));
-					else {
-						for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
-							for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc)
-								it->setAlleleLineage(m_lineage[idx % sz], *loc, static_cast<int>(*p));
-						++idx;
+					}
+
+				} else {
+					for (; it.valid(); ++it) {
+						if (m_mode == PER_ALLELE)
+							for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
+								for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++idx)
+									it->setAlleleLineage(m_lineage[idx % sz], *loc, static_cast<int>(*p));
+						else if (m_mode == PER_CHROMOSOME)
+							for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p, idx += nCh) {
+								vectoru::const_iterator loc = loci.begin();
+								vectoru::const_iterator locEnd = loci.end();
+								vectoru::const_iterator chIdx = chromIndex.begin();
+								for (; loc != locEnd; ++loc, ++chIdx)
+									it->setAlleleLineage(m_lineage[(idx + *chIdx) % sz], *loc, static_cast<int>(*p));
+							}
+						else if (m_mode == PER_PLOIDY)
+							for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p, ++idx)
+								for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc)
+									it->setAlleleLineage(m_lineage[idx % sz], *loc, static_cast<int>(*p));
+						else {
+							for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
+								for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc)
+									it->setAlleleLineage(m_lineage[idx % sz], *loc, static_cast<int>(*p));
+							++idx;
+						}
 					}
 				}
 			}
 #  ifdef _OPENMP
-			if (m_mode == PER_LOCI)
+			if (m_mode == PER_ALLELE)
 				idx += pop.subPopSize(sp->subPop()) *
 				       (ploidy.end() - ploidy.begin()) * (loci.end() - loci.begin());
 			else if (m_mode == PER_CHROMOSOME)
