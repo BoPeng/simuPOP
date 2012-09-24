@@ -1355,15 +1355,17 @@ public:
 	 *  State). This statistics go through all loci of individuals in a diploid
 	 *  population and calculate the number and proportions of alleles that are
 	 *  identitcal by decent and by state. Because ancestral information is only
-	 *  available in lineage module, variables Inbreeding are always set to zero in other
-	 *  modules. Loci on sex and mitochondrial chromosomes, and non-diploid
-	 *  populations are currently not supported. This statistic outputs the
-	 *  following variables:
-	 *  \li \c Inbreeding (default) The proportion of Inbreeding pairs among all allele pairs.
+	 *  available in lineage module, variables IBD_freq are always set to zero
+	 *  in other modules. Loci on sex and mitochondrial chromosomes, and
+	 *  non-diploid populations are currently not supported. This statistic
+	 *  outputs the following variables:
+	 *  \li \c IBD_freq (default) The frequency of IBD pairs among all allele pairs.
 	 *       To use this statistic, the population must be initialized by
 	 *       operator InitLineage() to assign each ancestral allele an unique
 	 *       identify.
-	 *  \li \c IBS (default) The proportion of IBS pairs among all allele pairs.
+	 *  \li \c IBS_freq (default) The proportion of IBS pairs among all allele pairs.
+	 *  \li \c IBD_freq_sp frequency of IBD in each (virtual) subpopulations.
+	 *  \li \c IBS_freq_sp frequency of IBS in each (virtual) subpopulations.
 	 *
 	 *  <b>effectiveSize</b>: Parameter \c effectiveSize accepts a list of loci
 	 *  at which the effective population size for the whole or specified
