@@ -19026,6 +19026,42 @@ lstparams "caption={Hardy Weinberg Equilibrium test},label={statHWE}"
 \end_layout
 
 \begin_layout Subsection
+Measure of Inbreeding 
+\end_layout
+
+\begin_layout Standard
+Inbreeding coefficient at a generation is defined as the probability that
+ the two alleles in a given individual are identical by decent (IBD).
+ Although it is usually very difficult to estimate this quantity, it is
+ easy to observe it directly during evolution if the ancestors of alleles
+ are tracked.
+ This can be done using the lineage module of simuPOP where allelic lineage
+ is tracked during evolution.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "statIBD"
+
+\end_inset
+
+ output the frequency of IBD loci in a population of size 500.
+ It also outputs the frequency of IBS (Identical by State), which should
+ always be larger than IBD frequency, and theoretical estimate of the decay
+ of inbreeding coefficient.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/statIBD.log"
+lstparams "caption={Frequency of IBD as a measure of inbreeding coefficient},label={statIBD}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Effective population size
 \end_layout
 

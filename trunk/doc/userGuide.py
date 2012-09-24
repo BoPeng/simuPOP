@@ -3541,6 +3541,37 @@ pop.evolve(
 )
 #end_file
 
+#begin_file log/statIBD.py
+import simuOpt
+simuOpt.setOptions(alleleType='lineage')
+#begin_ignore
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+#sim.setRNG(seed=12345)
+#end_ignore
+pop = sim.Population([500], loci=[1]*100)
+pop.evolve(
+    initOps=[
+        sim.InitLineage(),
+        sim.InitSex(),
+        sim.InitGenotype(freq=[0.2]*5),
+    ],
+    preOps=[
+        sim.Stat(inbreeding=sim.ALL_AVAIL, popSize=True, step=10),
+        sim.PyEval(r'"gen %d: IBD freq %.4f, IBS freq %.4f, est: %.4f\n" % '
+            '(gen, sum(IBD_freq.values()) /len(IBD_freq), '
+            ' sum(IBS_freq.values()) /len(IBS_freq), '
+            ' 1 - (1-1/(2.*popSize))**gen)', step=10)
+    ],
+    matingScheme=sim.RandomMating(),
+    gen = 100
+)
+#end_file
+
+
+
 #begin_file log/statNeTemporal.py
 #begin_ignore
 import simuOpt
