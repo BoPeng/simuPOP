@@ -3335,7 +3335,6 @@ bool statInbreeding::apply(Population & pop) const
 		uintDict IBSCnt;
 
 #pragma omp parallel for if(numThreads() > 1)
-		size_t cnt = 0;
 		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
 			size_t loc = loci[idx];
 
@@ -3349,7 +3348,7 @@ bool statInbreeding::apply(Population & pop) const
 
 			// go through all alleles
 			IndIterator ind = pop.indIterator(it->subPop());
-			for (; ind.valid(); ++ind, ++cnt) {
+			for (; ind.valid(); ++ind) {
 				if (ind->allele(loc, 0) == ind->allele(loc, 1))
 					IBS += 1;
 #ifdef LINEAGE
@@ -3367,14 +3366,15 @@ bool statInbreeding::apply(Population & pop) const
 			}
 		}
 		//
-		allCnt += cnt;
 		pop.deactivateVirtualSubPop(it->subPop());
+		size_t cnt = pop.subPopSize(*it);
+		allCnt += cnt;
 		// output subpopulation variable?
 		if (m_vars.contains(IBD_freq_sp_String)) {
 			uintDict freq;
 			for (size_t idx = 0; idx < loci.size(); ++idx) {
 				size_t loc = loci[idx];
-				freq[loc] = cnt == 0. ? 0 : IBDCnt[loc] * nLoci / static_cast<double>(cnt);
+				freq[loc] = cnt == 0. ? 0 : IBDCnt[loc] / static_cast<double>(cnt);
 			}
 			uintDict::const_iterator ct = freq.begin();
 			uintDict::const_iterator ct_end = freq.end();
@@ -3386,7 +3386,7 @@ bool statInbreeding::apply(Population & pop) const
 			uintDict freq;
 			for (size_t idx = 0; idx < loci.size(); ++idx) {
 				size_t loc = loci[idx];
-				freq[loc] = cnt == 0. ? 0 : IBSCnt[loc] * nLoci / static_cast<double>(cnt);
+				freq[loc] = cnt == 0. ? 0 : IBSCnt[loc] / static_cast<double>(cnt);
 			}
 			uintDict::const_iterator ct = freq.begin();
 			uintDict::const_iterator ct_end = freq.end();
@@ -3400,7 +3400,7 @@ bool statInbreeding::apply(Population & pop) const
 		uintDict freq;
 		for (size_t idx = 0; idx < loci.size(); ++idx) {
 			size_t loc = loci[idx];
-			freq[loc] = allCnt == 0. ? 0 : allIBDCnt[loc] * nLoci / static_cast<double>(allCnt);
+			freq[loc] = allCnt == 0. ? 0 : allIBDCnt[loc] / static_cast<double>(allCnt);
 		}
 		uintDict::const_iterator ct = freq.begin();
 		uintDict::const_iterator ct_end = freq.end();
@@ -3412,7 +3412,7 @@ bool statInbreeding::apply(Population & pop) const
 		uintDict freq;
 		for (size_t idx = 0; idx < loci.size(); ++idx) {
 			size_t loc = loci[idx];
-			freq[loc] = allCnt == 0. ? 0 : allIBSCnt[loc] * nLoci / static_cast<double>(allCnt);
+			freq[loc] = allCnt == 0. ? 0 : allIBSCnt[loc] / static_cast<double>(allCnt);
 		}
 		uintDict::const_iterator ct = freq.begin();
 		uintDict::const_iterator ct_end = freq.end();
