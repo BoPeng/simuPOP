@@ -3591,7 +3591,8 @@ pop.evolve(
             vars='Ne_temporal_base'),
     ],
     preOps=[
-        sim.Stat(effectiveSize=range(50), subPops=[(0,0)], step=20),
+        sim.Stat(effectiveSize=range(50), subPops=[(0,0)],
+            vars=['Ne_waples89', 'Ne_tempoFS'], step=20),
         sim.PyEval(r'"Waples Ne: %.1f (%.1f - %.1f), TempoFS: '
             r'%.1f (%.1f - %.1f), at generation %d\n" % '
             'tuple(Ne_waples89 + Ne_tempoFS + [gen])', step=20)
@@ -3620,7 +3621,8 @@ pop.evolve(
             vars='Ne_temporal_base'),
     ],
     preOps=[
-        sim.Stat(effectiveSize=range(50), subPops=[(0,0)], step=20),
+        sim.Stat(effectiveSize=range(50), subPops=[(0,0)], 
+            vars='Ne_waples89', step=20),
         sim.Stat(effectiveSize=range(50), subPops=[(0,0)], step=20,
             suffix='_i', vars=['Ne_temporal_base', 'Ne_waples89']),
         sim.PyEval(r'"Waples Ne (till %d): %.1f (%.1f - %.1f), '
