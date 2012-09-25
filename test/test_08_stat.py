@@ -12,8 +12,6 @@ import math
 import unittest, os, sys
 from simuOpt import setOptions
 from random import randint
-from simuPOP.utils import export
-from simuPOP.gsl import gsl_cdf_chisq_Pinv
 
 #setOptions(quiet=True) 
 new_argv = []
@@ -27,6 +25,8 @@ for arg in sys.argv:
 
 sys.argv=new_argv
 from simuPOP import *
+from simuPOP.utils import export
+from simuPOP.gsl import gsl_cdf_chisq_Pinv
 
 try:
     import rpy
@@ -724,7 +724,7 @@ class TestStat(unittest.TestCase):
         P02 = pop.dvars(2).Ne_temporal_base['freq']
         # now, evolve population
         pop.evolve(
-            initOps = InitSex(),
+            initOps = [InitLineage(), InitSex()],
             matingScheme = RandomMating(subPopSize=(500, 100, 1000)),
             gen = t
         )
@@ -766,7 +766,20 @@ class TestStat(unittest.TestCase):
         self.assertAlmostEqual(pop.dvars(1).Ne_tempoFS[1], 28, 0)
         self.assertAlmostEqual(pop.dvars(2).Ne_tempoFS[0], 2276, 0)
         self.assertAlmostEqual(pop.dvars(2).Ne_tempoFS[1], 689, 0)
-
+        #
+        # 
+        pop.vars().clear()
+        stat(pop, effectiveSize=[0,1], vars=['Ne_parental_info'])
+        if moduleInfo()['alleleType'] == 'lineage':
+            self.assertGreater(pop.dvars().Ne_parental_info['F_t'], 0.)
+        else:
+            self.assertEqual(pop.dvars().Ne_parental_info['F_t'], 0.)
+        self.assertGreater(pop.dvars().Ne_parental_info['H_t'], 0.)
+        # 
+        pop.evolve(matingScheme=RandomMating(), gen=1)
+        # calculate Ne
+        stat(pop, effectiveSize=[0,1], vars=['Ne_het', 'Ne_inb'])
+        print pop.dvars()
 
 if __name__ == '__main__':
     unittest.main()
