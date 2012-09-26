@@ -1389,17 +1389,20 @@ public:
 	 *  size. The \e vars parameter specified which method to use and which
 	 *  variable to set. Acceptable values include:
 	 *  \li \c Ne_demo_base When this variable is set before mating, it stores
-	 *       parental population size and, more importantly, assign an unique
+	 *       IDs of breeding parents and, more importantly, assign an unique
 	 *       lineage value to alleles at specified loci of each individual.
 	 *       <b>This feature is only available for lineage modules and will
 	 *       change lineage values at specified loci of all individuals</b>.
-	 *  \li \c Ne_demo When this variable is set after mating, it counts the
-	 *       number of gametes transmitted by each parent (can be different
-	 *       between loci on autosome and sex chromosomes), and calculate
-	 *       demographic effective size based on Crow & Denniston 1988 (
-	 *       Ne = KN-1/k-1+Vk/k). <b>Effective size estimated from this
-	 *       formula is model dependent and might not be applicable to your
-	 *       mating schemes.</b>
+	 *  \li \c Ne_demo_base_sp Pre-mating information for each (virtual)
+	 *       subpopulation, used by variable \c Ne_demo_sp. 
+	 *  \li \c Ne_demo A dictionary of locus-specific demographic effective
+	 *       population size, calculated using number of gemetes each parent
+	 *       transmits to the offspring population. The method is vased on 
+	 *       Crow & Denniston 1988 (Ne = KN-1/k-1+Vk/k) and need variable
+	 *       \c Ne_demo_base set before mating. <b>Effective size estimated
+	 *       from this formula is model dependent and might not be applicable
+	 *       to your mating schemes.</b>
+	 *  \li \c Ne_demo_sp Calculate subpopulation-specific effective size.
 	 *  \li \c Ne_temporal_base When this variable is set in parameter \e vars,
 	 *       the Stat operator saves baseline allele frequencies and other
 	 *       information in this variable, which are used by temporary methods
