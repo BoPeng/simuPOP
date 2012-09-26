@@ -910,13 +910,6 @@ private:
 class statEffectiveSize
 {
 private:
-#define  Ne_parental_info_String     "Ne_parental_info"
-#define  Ne_parental_info_sp_String  "Ne_parental_info_sp"
-
-#define  Ne_inb_String               "Ne_inb"
-#define  Ne_inb_sp_String            "Ne_inb_sp"
-#define  Ne_het_String               "Ne_het"
-#define  Ne_het_sp_String            "Ne_het_sp"
 
 #define  Ne_temporal_base_String     "Ne_temporal_base"
 #define  Ne_temporal_base_sp_String  "Ne_temporal_base_sp"
@@ -948,9 +941,6 @@ public:
 	string describe(bool format = true) const;
 
 	bool apply(Population & pop) const;
-
-	bool calculateExactSize(Population & pop) const;
-	bool estimateEffectiveSize(Population & pop) const;
 
 private:
 	lociList m_loci;
@@ -1390,25 +1380,6 @@ public:
 	 *  more than one Stat operators might be needed to calculate effective
 	 *  size. The \e vars parameter specified which method to use and which
 	 *  variable to set. Acceptable values include:
-	 *  \li \c Ne_parental_info This variable is used to collect properties of
-	 *       the parental population immediately before mating. Setting this
-	 *       variable is required for the calculation of \c Ne_inb and
-	 *       \c Ne_het.
-	 *  \li \c Ne_parental_info_sp Save properties of each (virtual) subpopulation
-	 *       of the parental population.
-	 *  \li \c Ne_inb Observed inbreeding effective population size calculated
-	 *       from changes of inbreeding coefficient before and after mating.
-	 *       ( Ne_inb = (1-f_t)/(2*(f_(t+1) - f_t) ). This statistic is only
-	 *       available for lineage module where allelic lineage information is
-	 *       tracked. A call to \c InitLineage in \e initOps is required to
-	 *       assign each allele an unique ID.
-	 *  \li \c Ne_inb_sp Calculate inbreeding effective size for each (virtual)
-	 *       subpopulation.
-	 *  \li \c Ne_het Observed eigenvalue effective population size 
-	 *       calculated from changes of heterozygosity before and after mating.
-	 *       (Ne_het = H_t/2(H_t - H_{t+1}) ).
-	 *  \li \c Ne_het_sp Calculate eigenvalue effctive population size for
-	 *       each (virtual) subpopulation.
 	 *  \li \c Ne_temporal_base When this variable is set in parameter \e vars,
 	 *       the Stat operator saves baseline allele frequencies and other
 	 *       information in this variable, which are used by temporary methods
@@ -1417,6 +1388,18 @@ public:
 	 *       This variable could be set repeatedly to change baselines.
 	 *  \li \c Ne_temporal_base_sp Set baseline information for each (virtual)
 	 *       subpopulation specified.
+	 *  \li \c Ne_tempoFS (default) Effective population size, 2.5% and 97.5%
+	 *       confidence interval as a list of size three, estimated using a
+	 *       temporal method as described in Jorde & Ryman (2007), and as
+	 *       implemented by software tempoFS (http://www.zoologi.su.se/~ryman/).
+	 *       This variable is set to census population size no baseline has
+	 *       been set, and to the temporal effective size between the present
+	 *       and the baseline generation otherwise. This method does not make
+	 *       use of more than two samples, and assumes unknown census population
+	 *       size (sampling plan 2). A value of -1 implies an infinite estimate
+	 *       of effective size.
+	 *  \li \c Ne_tempoFS_sp Estimate effective size of each (virtual)
+	 *       subpopulation using method Jorde & Ryman 2007.
 	 *  \li \c Ne_waples89 Effective population size, 2.5% and 97.5%
 	 *       confidence interval as a list of size three, estimated using
 	 *       a temporal method as described in Waples 1989, Genetics. Because
@@ -1433,18 +1416,6 @@ public:
 	 *       plan 2.
 	 *  \li \c Ne_waples89_sp Estimate effective size for each (virtual)
 	 *       subpopulation using method Waples 89.
-	 *  \li \c Ne_tempoFS Effective population size, 2.5% and 97.5%
-	 *       confidence interval as a list of size three, estimated using a
-	 *       temporal method as described in Jorde & Ryman (2007), and as
-	 *       implemented by software tempoFS (http://www.zoologi.su.se/~ryman/).
-	 *       This variable is set to census population size no baseline has
-	 *       been set, and to the temporal effective size between the present
-	 *       and the baseline generation otherwise. This method does not make
-	 *       use of more than two samples, and assumes unknown census population
-	 *       size (sampling plan 2). A value of -1 implies an infinite estimate
-	 *       of effective size.
-	 *  \li \c Ne_tempoFS_sp Estimate effective size of each (virtual)
-	 *       subpopulation using method Jorde & Ryman 2007.
 	 **/
 	Stat(bool popSize = false,
 		//

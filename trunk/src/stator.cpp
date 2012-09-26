@@ -3430,14 +3430,11 @@ statEffectiveSize::statEffectiveSize(const lociList & loci,  const subPopList & 
 	: m_loci(loci), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
-		Ne_parental_info_String, Ne_parental_info_sp_String,
-		Ne_inb_String,			 Ne_inb_sp_String,
-		Ne_het_String,			 Ne_het_sp_String,
 		Ne_temporal_base_String, Ne_temporal_base_sp_String,
 		Ne_waples89_String,		 Ne_waples89_sp_String,
 		Ne_tempoFS_String,		 Ne_tempoFS_sp_String,		""
 	};
-	const char * defaultVars[] = { "" };
+	const char * defaultVars[] = { Ne_tempoFS_String, "" };
 
 	m_vars.obtainFrom(vars, allowedVars, defaultVars);
 }
@@ -3454,12 +3451,6 @@ string statEffectiveSize::describe(bool /* format */) const
 			desc += "Estimate effective population size using temporal method as described in  Jorde & Ryman, 2007.";
 		if (m_vars.contains(Ne_temporal_base_String) || m_vars.contains(Ne_temporal_base_sp_String))
 			desc += "Setting temporal base.";
-		if (m_vars.contains(Ne_parental_info_String) || m_vars.contains(Ne_parental_info_sp_String))
-			desc += "Store information of the parental population.";
-		if (m_vars.contains(Ne_inb_String) || m_vars.contains(Ne_inb_sp_String))
-			desc += "Calculate inbreeding effective population size.";
-		if (m_vars.contains(Ne_het_String) || m_vars.contains(Ne_het_sp_String))
-			desc += "Calculate eigenvalue effective population size.";
 	}
 	return desc;
 }
@@ -3629,157 +3620,6 @@ bool statEffectiveSize::apply(Population & pop) const
 	if (m_loci.empty())
 		return true;
 
-	if (m_vars.contains(Ne_temporal_base_String) || m_vars.contains(Ne_temporal_base_sp_String)
-	    || m_vars.contains(Ne_waples89_String) || m_vars.contains(Ne_waples89_sp_String)
-	    || m_vars.contains(Ne_tempoFS_String) || m_vars.contains(Ne_tempoFS_sp_String))
-		estimateEffectiveSize(pop);
-
-	if (m_vars.contains(Ne_parental_info_String) || m_vars.contains(Ne_parental_info_sp_String)
-	    || m_vars.contains(Ne_inb_String) || m_vars.contains(Ne_inb_sp_String)
-	    || m_vars.contains(Ne_het_String) || m_vars.contains(Ne_het_sp_String))
-		calculateExactSize(pop);
-
-	return true;
-}
-
-
-bool statEffectiveSize::calculateExactSize(Population & pop) const
-{
-	const vectoru & loci = m_loci.elems(&pop);
-
-	// count for all specified subpopulations
-	uintDict allIBDCnt;
-	uintDict allHeteroCnt;
-	size_t allCnt = 0;
-	size_t nLoci = loci.size();
-
-	// selected (virtual) subpopulatons.
-	subPopList subPops = m_subPops.expandFrom(pop);
-	subPopList::const_iterator it = subPops.begin();
-	subPopList::const_iterator itEnd = subPops.end();
-
-	for (; it != itEnd; ++it) {
-		pop.activateVirtualSubPop(*it);
-
-		uintDict IBDCnt;
-		uintDict HeteroCnt;
-
-#pragma omp parallel for if(numThreads() > 1)
-		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
-			size_t loc = loci[idx];
-
-#ifndef OPTIMIZED
-			size_t chromType = pop.chromType(pop.chromLocusPair(loc).first);
-			DBG_FAILIF(chromType == CHROMOSOME_X || chromType == CHROMOSOME_Y || chromType == MITOCHONDRIAL,
-				ValueError, "IBD/Hetero count for sex and mitochondrial chromosomes is not supported.");
-#endif
-			size_t IBD = 0;
-			size_t Hetero = 0;
-
-			// go through all alleles
-			IndIterator ind = pop.indIterator(it->subPop());
-			for (; ind.valid(); ++ind) {
-				if (ind->allele(loc, 0) != ind->allele(loc, 1))
-					Hetero += 1;
-#ifdef LINEAGE
-				if (ind->alleleLineage(loc, 0) == ind->alleleLineage(loc, 1))
-					IBD += 1;
-#endif
-			}
-#pragma omp critical
-			{
-				IBDCnt[loc] = static_cast<double>(IBD);
-				HeteroCnt[loc] = static_cast<double>(Hetero);
-				//
-				allIBDCnt[loc] += IBDCnt[loc];
-				allHeteroCnt[loc] += HeteroCnt[loc];
-			}
-		}
-		//
-		pop.deactivateVirtualSubPop(it->subPop());
-		size_t cnt = pop.subPopSize(*it);
-		allCnt += cnt;
-		//
-		// calculate average F_t and H_t
-		double F_t = 0;
-		double H_t = 0;
-		for (size_t idx = 0; idx < loci.size(); ++idx) {
-			size_t loc = loci[idx];
-			F_t += allCnt == 0. ? 0 : IBDCnt[loc] / static_cast<double>(cnt);
-			H_t += allCnt == 0. ? 0 : HeteroCnt[loc] / static_cast<double>(cnt);
-		}
-		F_t /= loci.size();
-		H_t /= loci.size();
-
-		// for whole population.
-		if (m_vars.contains(Ne_inb_sp_String)) {
-			try {
-				double F_base = pop.getVars().getVarAsDouble(
-					subPopVar_String(*it, Ne_parental_info_String, m_suffix) + "{'F_t'}");
-				pop.getVars().setVar(subPopVar_String(*it, Ne_inb_String, m_suffix),
-					fabs(F_t - F_base) < 1e-8 ? 0 : (1. - F_base) / (2 * (F_t - F_base)));
-			} catch (ValueError) {
-				pop.getVars().setVar(subPopVar_String(*it, Ne_inb_String, m_suffix), 0.);
-			}
-		}
-		if (m_vars.contains(Ne_het_sp_String)) {
-			try {
-				double H_base = pop.getVars().getVarAsDouble(
-					subPopVar_String(*it, Ne_parental_info_String, m_suffix) + "{'H_t'}");
-				pop.getVars().setVar(subPopVar_String(*it, Ne_het_String, m_suffix),
-					fabs(H_t - H_base) < 1e-8 ? 0 : H_base / (2 * (H_base - H_t)));
-			} catch (ValueError) {
-				pop.getVars().setVar(subPopVar_String(*it, Ne_het_String, m_suffix), 0.);
-			}
-		}
-		if (m_vars.contains(Ne_parental_info_sp_String)) {
-			pop.getVars().setVar(subPopVar_String(*it, Ne_parental_info_String, m_suffix)
-				+ "{'F_t'}", F_t);
-			pop.getVars().setVar(subPopVar_String(*it, Ne_parental_info_String, m_suffix)
-				+ "{'H_t'}", H_t);
-		}
-	}
-	// calculate average F_t and H_t
-	double F_t = 0;
-	double H_t = 0;
-	for (size_t idx = 0; idx < loci.size(); ++idx) {
-		size_t loc = loci[idx];
-		F_t += allCnt == 0. ? 0 : allIBDCnt[loc] / static_cast<double>(allCnt);
-		H_t += allCnt == 0. ? 0 : allHeteroCnt[loc] / static_cast<double>(allCnt);
-	}
-	F_t /= loci.size();
-	H_t /= loci.size();
-
-	// for whole population.
-	if (m_vars.contains(Ne_inb_String)) {
-		try {
-			double F_base = pop.getVars().getVarAsDouble(Ne_parental_info_String + m_suffix + "{'F_t'}");
-			pop.getVars().setVar(Ne_inb_String + m_suffix,
-				fabs(F_t - F_base) < 1e-8 ? 0 : (1. - F_base) / (2. * (F_t - F_base)));
-		} catch (ValueError) {
-			pop.getVars().setVar(Ne_inb_String + m_suffix, 0.);
-		}
-	}
-	if (m_vars.contains(Ne_het_String)) {
-		try {
-			double H_base = pop.getVars().getVarAsDouble(Ne_parental_info_String + m_suffix + "{'H_t'}");
-			pop.getVars().setVar(Ne_het_String + m_suffix,
-				fabs(H_t - H_base) < 1e-8 ? 0 : H_base / (2. * (H_base - H_t)));
-		} catch (ValueError) {
-			pop.getVars().setVar(Ne_het_String + m_suffix, 0.);
-		}
-	}
-	if (m_vars.contains(Ne_parental_info_String)) {
-		pop.getVars().setVar(Ne_parental_info_String + m_suffix + "{'F_t'}", F_t);
-		pop.getVars().setVar(Ne_parental_info_String + m_suffix + "{'H_t'}", H_t);
-	}
-
-	return true;
-}
-
-
-bool statEffectiveSize::estimateEffectiveSize(Population & pop) const
-{
 	const vectoru & loci = m_loci.elems(&pop);
 	//
 	// find out current allele frequency, this is copied from statAlleleFreq
