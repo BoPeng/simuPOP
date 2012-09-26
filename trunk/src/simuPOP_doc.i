@@ -740,7 +740,7 @@ Details:
     distrubution to find the next true event.  Also, for the cases of
     p=0.5, random bits are generated.  This class maintain a two
     dimensional table: a vector of probabilities cross expected number
-    of trials p1 p2 p3 p4 p5  trial 1 trial 2 ... trial N  We expect
+    of trials  p1 p2 p3 p4 p5 trial 1 trial 2 ... trial N  We expect
     that N is big (usually populaiton size) and p_i are small  using
     fast bernulliTrial method for fix p, we can fill up this table
     very quickly column by column  This class will provide easy access
@@ -3092,9 +3092,9 @@ Details:
     this class implements a C++ iterator class that iterate through
     individuals in a (sub)population. If allInds are true, the
     visiblility of individuals will not be checked. Note that
-    IndividualIteratorwill iterate through only visible individuals,
-    and allInds is only provided when we know in advance that all
-    individuals are visible. This is a way to obtain better
+    IndividualIterator *will* iterate through only visible
+    individuals, and allInds is only provided when we know in advance
+    that all individuals are visible. This is a way to obtain better
     performance in simple cases.
 
 "; 
@@ -4027,7 +4027,7 @@ Details:
     through all mutable allele and mutate it to another state
     according to probabilities in the corresponding row of the rate
     matrix. Only one mutation rate matrix can be specified which will
-    be used for all specified loci.
+    be used for all specified loci. #
 
 "; 
 
@@ -4967,11 +4967,11 @@ Details:
     it is applied to this population. If stopOnKeyStroke is False
     (default), it will always pause a population when it is applied,
     if this parameter is set to True, the operator will pause a
-    population if any key has been pressed. If a specific character is
-    set, the operator will stop when this key has been pressed. This
-    allows, for example, the use of several pause operators to pause
-    different populations.  After a population has been paused, a
-    message will be displayed (unless prompt is set to False) and
+    population if *any* key has been pressed. If a specific character
+    is set, the operator will stop when this key has been pressed.
+    This allows, for example, the use of several pause operators to
+    pause different populations.  After a population has been paused,
+    a message will be displayed (unless prompt is set to False) and
     tells you how to proceed. You can press 's' to stop the evolution
     of this population, 'S' to stop the evolution of all populations,
     or 'p' to enter a Python shell. The current population will be
@@ -5473,8 +5473,9 @@ Details:
     parameter ploidy. This operator is by default applied to
     individuals in the first subpopulation but you can apply it to a
     different or more than one (virtual) subpopulations using
-    parameter subPops (AllAvail is also accepted). Please refer to
-    class BaseOperator for detailed descriptions of other parameters.
+    parameter *subPops* (``AllAvail`` is also accepted). Please refer
+    to class BaseOperator for detailed descriptions of other
+    parameters.
 
 "; 
 
@@ -9583,17 +9584,20 @@ Details:
     specified which method to use and which variable to set.
     Acceptable values include:
     *   Ne_demo_base When this variable is set before mating, it
-    stores parental population size and, more importantly, assign an
+    stores IDs of breeding parents and, more importantly, assign an
     unique lineage value to alleles at specified loci of each
     individual. This feature is only available for lineage modules and
     will change lineage values at specified loci of all individuals.
-    *   Ne_demo When this variable is set after mating, it counts the
-    number of gametes transmitted by each parent (can be different
-    between loci on autosome and sex chromosomes), and calculate
-    demographic effective size based on Crow & Denniston 1988 ( Ne =
-    KN-1/k-1+Vk/k). Effective size estimated from this formula is
-    model dependent and might not be applicable to your mating
-    schemes.
+    *   Ne_demo_base_sp Pre-mating information for each (virtual)
+    subpopulation, used by variable Ne_demo_sp.
+    *   Ne_demo A dictionary of locus-specific demographic effective
+    population size, calculated using number of gemetes each parent
+    transmits to the offspring population. The method is vased on Crow
+    & Denniston 1988 (Ne = KN-1/k-1+Vk/k) and need variable
+    Ne_demo_base set before mating. Effective size estimated from this
+    formula is model dependent and might not be applicable to your
+    mating schemes.
+    *   Ne_demo_sp Calculate subpopulation-specific effective size.
     *   Ne_temporal_base When this variable is set in parameter vars,
     the Stat operator saves baseline allele frequencies and other
     information in this variable, which are used by temporary methods
@@ -10860,10 +10864,10 @@ Details:
     Individuals without parents are assumed to be in the top-most
     ancestral generation. This is the case for individuals in the top-
     most ancestral generation if the file is saved by function
-    Pedigree.save(), and for individuals who only appear as another
-    individual's parent, if the file is saved by operator
-    PedigreeTagger. The order at which offsprng is specified is not
-    important because this function essentially creates a top-most
+    ``Pedigree.save()``, and for individuals who only appear as
+    another individual's parent, if the file is saved by operator
+    ``PedigreeTagger``. The order at which offsprng is specified is
+    not important because this function essentially creates a top-most
     ancestral generation using IDs without parents, and creates the
     next generation using offspring of these parents, and so on until
     all generations are recreated. That is to say, if you have a
