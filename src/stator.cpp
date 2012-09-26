@@ -3430,9 +3430,11 @@ statEffectiveSize::statEffectiveSize(const lociList & loci,  const subPopList & 
 	: m_loci(loci), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
+		Ne_demo_base_String,     Ne_demo_base_sp_String,
+		Ne_demo_String,          Ne_demo_sp_String,
 		Ne_temporal_base_String, Ne_temporal_base_sp_String,
-		Ne_waples89_String,		 Ne_waples89_sp_String,
-		Ne_tempoFS_String,		 Ne_tempoFS_sp_String,		""
+		Ne_waples89_String,      Ne_waples89_sp_String,
+		Ne_tempoFS_String,       Ne_tempoFS_sp_String,		""
 	};
 	const char * defaultVars[] = { Ne_tempoFS_String, "" };
 
@@ -3445,6 +3447,10 @@ string statEffectiveSize::describe(bool /* format */) const
 	string desc;
 
 	if (!m_loci.empty()) {
+		if (m_vars.contains(Ne_demo_base_String) || m_vars.contains(Ne_demo_base_sp_String))
+			desc += "Store information of the parental population.";
+		if (m_vars.contains(Ne_demo_String) || m_vars.contains(Ne_demo_sp_String))
+			desc += "Calculate demographic effective population size.";
 		if (m_vars.contains(Ne_waples89_String) || m_vars.contains(Ne_waples89_sp_String))
 			desc += "Estimate effective population size using temporal method as described in Waples 1989. ";
 		if (m_vars.contains(Ne_tempoFS_String) || m_vars.contains(Ne_tempoFS_sp_String))
@@ -3620,6 +3626,74 @@ bool statEffectiveSize::apply(Population & pop) const
 	if (m_loci.empty())
 		return true;
 
+	if (m_vars.contains(Ne_demo_base_String) || m_vars.contains(Ne_demo_base_sp_String)
+	    || m_vars.contains(Ne_demo_String) || m_vars.contains(Ne_demo_sp_String))
+		demographicEffectiveSize(pop);
+
+	if (m_vars.contains(Ne_temporal_base_String) || m_vars.contains(Ne_temporal_base_sp_String)
+	    || m_vars.contains(Ne_waples89_String) || m_vars.contains(Ne_waples89_sp_String)
+	    || m_vars.contains(Ne_tempoFS_String) || m_vars.contains(Ne_tempoFS_sp_String))
+		temporalEffectiveSize(pop);
+
+	return true;
+}
+
+
+bool statEffectiveSize::demographicEffectiveSize(Population & pop) const
+{
+	if (m_vars.contains(Ne_demo_base_String) || m_vars.contains(Ne_demo_base_sp_String)) {
+		// go through all individuals, record population size and set lineage
+		size_t idx = 0;
+		const vectoru & loci = m_loci.elems(&pop);
+
+		// store population size
+		// TODO
+#ifdef LINEAGE
+		size_t ploidy = pop.ploidy();
+		// all individuals? set to 0, 1, ... good
+		// otherwise set all lineage to zero
+		bool setAll = m_subPops.allAvail();
+		RawIndIterator ind = pop.rawIndBegin();
+		RawIndIterator ind_end = pop.rawIndBegin();
+		for (; ind != ind_end; ++ind) {
+			for (size_t i = 0; i < loci.size(); ++i)
+				for (size_t p = 0; p < ploidy; ++p)
+					ind->setAlleleLineage(idx, i, p);
+			if (setAll)
+				++idx;
+		}
+		//
+		if (!setAll) {
+			idx = 0;
+			// selected (virtual) subpopulatons.
+			subPopList subPops = m_subPops.expandFrom(pop);
+			subPopList::const_iterator it = subPops.begin();
+			subPopList::const_iterator itEnd = subPops.end();
+			//
+			for (; it != itEnd; ++it) {
+				IndIterator ind = pop.indIterator(it->subPop());
+				for (; ind.valid(); ++ind) {
+					for (size_t i = 0; i < loci.size(); ++i)
+						for (size_t p = 0; p < ploidy; ++p) {
+							ind->setAlleleLineage(idx, i, p);
+						}
+					if (setAll)
+						++idx;
+				}
+				pop.deactivateVirtualSubPop(it->subPop());
+			}
+		}
+#endif
+	} else if (m_vars.contains(Ne_demo_String) || m_vars.contains(Ne_demo_sp_String)) {
+	} else
+		throw ValueError("Demographic effective size has to be estimated before and after mating.");
+	//
+	return true;
+}
+
+
+bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
+{
 	const vectoru & loci = m_loci.elems(&pop);
 	//
 	// find out current allele frequency, this is copied from statAlleleFreq
