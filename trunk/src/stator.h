@@ -910,6 +910,10 @@ private:
 class statEffectiveSize
 {
 private:
+#define  Ne_demo_base_String         "Ne_demo_base"
+#define  Ne_demo_base_sp_String      "Ne_demo_base_sp"
+#define  Ne_demo_String              "Ne_demo"
+#define  Ne_demo_sp_String           "Ne_demo_sp"
 
 #define  Ne_temporal_base_String     "Ne_temporal_base"
 #define  Ne_temporal_base_sp_String  "Ne_temporal_base_sp"
@@ -941,6 +945,10 @@ public:
 	string describe(bool format = true) const;
 
 	bool apply(Population & pop) const;
+
+	bool demographicEffectiveSize(Population & pop) const;
+
+	bool temporalEffectiveSize(Population & pop) const;
 
 private:
 	lociList m_loci;
@@ -1374,12 +1382,24 @@ public:
 	 *  of loci indexes, names or \c ALL_AVAIL. Parameter \e subPops is usually
 	 *  used to define samples from which effective sizes are estimated. This
 	 *  statistic allows the calculation of true effective size based on
-	 *  population level change of properties between parental and offspring
-	 *  generations (before and after mating), and estimated effective size
+	 *  number of gametes each parents transmit to the offspring population
+	 *  (per-locus before and after mating), and estimated effective size
 	 *  based on sample genotypes. Due to the temporal natural of some methods,
 	 *  more than one Stat operators might be needed to calculate effective
 	 *  size. The \e vars parameter specified which method to use and which
 	 *  variable to set. Acceptable values include:
+	 *  \li \c Ne_demo_base When this variable is set before mating, it stores
+	 *       parental population size and, more importantly, assign an unique
+	 *       lineage value to alleles at specified loci of each individual.
+	 *       <b>This feature is only available for lineage modules and will
+	 *       change lineage values at specified loci of all individuals</b>.
+	 *  \li \c Ne_demo When this variable is set after mating, it counts the
+	 *       number of gametes transmitted by each parent (can be different
+	 *       between loci on autosome and sex chromosomes), and calculate
+	 *       demographic effective size based on Crow & Denniston 1988 (
+	 *       Ne = KN-1/k-1+Vk/k). <b>Effective size estimated from this
+	 *       formula is model dependent and might not be applicable to your
+	 *       mating schemes.</b>
 	 *  \li \c Ne_temporal_base When this variable is set in parameter \e vars,
 	 *       the Stat operator saves baseline allele frequencies and other
 	 *       information in this variable, which are used by temporary methods
