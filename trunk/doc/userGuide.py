@@ -3575,7 +3575,7 @@ pop.evolve(
 
 #begin_file log/statNeDemographic.py
 import simuOpt
-simuOpt.setOptions(alleleType='lineage')
+simuOpt.setOptions(alleleType='lineage', quiet=True)
 import simuPOP as sim
 #begin_ignore
 sim.setRNG(seed=12345)
