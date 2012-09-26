@@ -1262,25 +1262,6 @@ public:
 
 #endif
 
-#ifdef LINEAGE
-	size_t lineage()
-	{
-		if (m_useGappedIterator)
-			throw RuntimeError("Lineage information is unavailable for gapped iterator.");
-		DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
-		return *(m_it->lineageBegin() + m_index + m_p * m_size);
-	}
-
-
-#else
-	size_t lineage()
-	{
-		return 0;
-	}
-
-
-#endif
-
 	ITER ptr()
 	{
 		if (m_useGappedIterator)

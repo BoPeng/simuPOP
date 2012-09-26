@@ -615,6 +615,26 @@ ConstIndAlleleIterator Population::alleleIterator(size_t locus, size_t subPop) c
 
 #ifdef LINEAGE
 
+/// CPPONLY allele begin
+IndLineageIterator Population::lineageIterator(size_t locus)
+{
+	CHECKRANGEABSLOCUS(locus);
+
+	size_t ct = chromType(chromLocusPair(locus).first);
+	// this is a complex case
+	if (hasActivatedVirtualSubPop() || !indOrdered()
+	    || (ct != AUTOSOME && ct != CUSTOMIZED && ct != MITOCHONDRIAL) || isHaplodiploid())
+		// this is a complex case
+		return IndLineageIterator(locus, indIterator());
+	else
+		// this is a complex case
+		return IndLineageIterator(locus,
+			indIterator(),
+			m_lineage.begin(), m_lineage.end(),
+			totNumLoci());
+}
+
+
 /// CPPONLY allele begin, for given subPop
 IndLineageIterator Population::lineageIterator(size_t locus, size_t subPop)
 {
@@ -2794,7 +2814,7 @@ void Population::removeLoci(const lociList & removeList, const lociList & keepLi
 				vectoru::iterator loc = kept.begin();
 				for (; loc != kept.end(); ++loc, ++newPtr) {
 					// this line needs ordered kept array
-					REF_ASSIGN_ALLELE(newPtr, DEREF_ALLELE(oldPtr + *loc));      //assignGenotype
+					REF_ASSIGN_ALLELE(newPtr, DEREF_ALLELE(oldPtr + *loc)); //assignGenotype
 					LINEAGE_EXPR(*(newLineagePtr++) = oldLineagePtr[*loc]); //assignLineage
 				}
 				oldPtr += oldTotNumLoci;
@@ -3902,6 +3922,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 void Population::save(const string & filename) const
 {
 	boost::iostreams::filtering_ostream ofs;
+
 	// compress output
 	ofs.push(boost::iostreams::gzip_compressor());
 	// open file to write

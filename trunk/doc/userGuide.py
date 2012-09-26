@@ -3572,6 +3572,41 @@ pop.evolve(
 
 
 
+
+#begin_file log/statNeDemographic.py
+import simuOpt
+simuOpt.setOptions(alleleType='lineage')
+import simuPOP as sim
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+pop = sim.Population([2000], loci=[1]*3,
+    chromTypes=[sim.AUTOSOME, sim.CHROMOSOME_X, sim.CHROMOSOME_Y])
+pop.setVirtualSplitter(sim.SexSplitter())
+pop.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.InitGenotype(freq=[0.3, 0.7]),
+    ],
+    preOps=[
+        sim.Stat(effectiveSize=range(3), subPops=[0, (0,0), (0,1)],
+            vars='Ne_demo_base_sp'),
+    ],
+    matingScheme=sim.RandomMating(),
+    postOps=[
+        sim.Stat(effectiveSize=range(3), subPops=[0, (0,0), (0,1)],
+            vars='Ne_demo_sp'),
+        sim.PyEval(r'"Demographic Ne: %.1f (auto), %.1f (X), %.1f (Y), '
+            r'Males: %.1f, %.1f, %.1f, Females: %.1f, %.1f, %.1f\n"'
+            '% tuple([subPop[0]["Ne_demo"][x] for x in (0, 1, 2)] + '
+            '[subPop[(0,0)]["Ne_demo"][x] for x in (0, 1, 2)] + '
+            '[subPop[(0,1)]["Ne_demo"][x] for x in (0, 1, 2)])')
+    ],
+    gen = 5
+)
+#end_file
+
+
 #begin_file log/statNeTemporal.py
 #begin_ignore
 import simuOpt

@@ -8,8 +8,8 @@ version 1.0.9 - Not released, available at https://simupop.svn.sourceforge.net/s
 
 Major New Features:
   - Add parameter effectiveSize to operator Stat to calculate effective population size.
-	Currently based on the moment method of Waples 1989, and TempoFS method of Jorde
-	 & Ryman 2007.
+	Currently based on the moment method of Waples 1989, TempoFS method of Jorde
+	 & Ryman 2007, and an esimate of the demographic effectize size.
  
 New Feature:
   - Rename PER_LOCI to PER_ALLELE in InitLineage. PER_LOCI can still be used for backward compatibility.
