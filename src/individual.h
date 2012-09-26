@@ -1247,6 +1247,7 @@ public:
 		}
 	}
 
+
 	// this is the most important part!
 	REF operator *()
 	{
@@ -1257,8 +1258,28 @@ public:
 			return *(m_it->genoBegin() + m_index + m_p * m_size);
 		}
 	}
+
+
 #endif
 
+#ifdef LINEAGE
+	size_t lineage()
+	{
+		if (m_useGappedIterator)
+			throw RuntimeError("Lineage information is unavailable for gapped iterator.");
+		DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
+		return *(m_it->lineageBegin() + m_index + m_p * m_size);
+	}
+
+
+#else
+	size_t lineage()
+	{
+		return 0;
+	}
+
+
+#endif
 
 	ITER ptr()
 	{

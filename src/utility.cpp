@@ -1774,6 +1774,21 @@ void SharedVariables::getVarAsIntDict(const string & name, uintDict & res, bool 
 }
 
 
+void SharedVariables::getVectorVarAsIntDict(const string & name, uintDict & res, bool nameError) const
+{
+	res.clear();
+	PyObject * obj = getVar(name, nameError);
+
+	Py_ssize_t sz = PySequence_Size(obj);
+	for (Py_ssize_t i = 0; i < sz; ++i) {
+		PyObject * item = PySequence_GetItem(obj, i);
+		size_t k = PyInt_AsLong(item);
+		res[k] = 0;
+		Py_XDECREF(item);
+	}
+}
+
+
 PyObject * SharedVariables::setVar(const string & name, const uintDict & val)
 {
 	PyObject * obj = PyDefDict_New();

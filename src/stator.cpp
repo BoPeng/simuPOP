@@ -3430,11 +3430,11 @@ statEffectiveSize::statEffectiveSize(const lociList & loci,  const subPopList & 
 	: m_loci(loci), m_subPops(subPops), m_vars(), m_suffix(suffix)
 {
 	const char * allowedVars[] = {
-		Ne_demo_base_String,     Ne_demo_base_sp_String,
-		Ne_demo_String,          Ne_demo_sp_String,
+		Ne_demo_base_String,	 Ne_demo_base_sp_String,
+		Ne_demo_String,			 Ne_demo_sp_String,
 		Ne_temporal_base_String, Ne_temporal_base_sp_String,
-		Ne_waples89_String,      Ne_waples89_sp_String,
-		Ne_tempoFS_String,       Ne_tempoFS_sp_String,		""
+		Ne_waples89_String,		 Ne_waples89_sp_String,
+		Ne_tempoFS_String,		 Ne_tempoFS_sp_String,		""
 	};
 	const char * defaultVars[] = { Ne_tempoFS_String, "" };
 
@@ -3646,9 +3646,9 @@ bool statEffectiveSize::demographicEffectiveSize(Population & pop) const
 		size_t idx = 0;
 		const vectoru & loci = m_loci.elems(&pop);
 
-		// store population size
-		// TODO
 #ifdef LINEAGE
+		// store involved parents
+		vectoru parents(0);
 		size_t ploidy = pop.ploidy();
 		// all individuals? set to 0, 1, ... good
 		// otherwise set all lineage to zero
@@ -3659,32 +3659,73 @@ bool statEffectiveSize::demographicEffectiveSize(Population & pop) const
 			for (size_t i = 0; i < loci.size(); ++i)
 				for (size_t p = 0; p < ploidy; ++p)
 					ind->setAlleleLineage(idx, i, p);
-			if (setAll)
+			if (setAll) {
+				parents.push_back(idx);
 				++idx;
+			}
 		}
 		//
-		if (!setAll) {
+		if (setAll) {
+			// set variable
+			if (m_vars.contains(Ne_demo_base_String))
+				pop.getVars().setVar(Ne_demo_base_String + m_suffix, parents);
+		} else {
 			idx = 0;
 			// selected (virtual) subpopulatons.
+			//
 			subPopList subPops = m_subPops.expandFrom(pop);
 			subPopList::const_iterator it = subPops.begin();
 			subPopList::const_iterator itEnd = subPops.end();
-			//
 			for (; it != itEnd; ++it) {
+				vectoru parents_in_sp(0);
+				pop.activateVirtualSubPop(*it);
 				IndIterator ind = pop.indIterator(it->subPop());
-				for (; ind.valid(); ++ind) {
+				for (; ind.valid(); ++ind, ++idx) {
 					for (size_t i = 0; i < loci.size(); ++i)
-						for (size_t p = 0; p < ploidy; ++p) {
+						for (size_t p = 0; p < ploidy; ++p)
 							ind->setAlleleLineage(idx, i, p);
-						}
-					if (setAll)
-						++idx;
+					parents_in_sp.push_back(idx);
 				}
+				// save vars?
+				if (m_vars.contains(Ne_demo_base_sp_String))
+					pop.getVars().setVar(subPopVar_String(*it, Ne_demo_base_String, m_suffix), parents_in_sp);
+				parents.insert(parents.end(), parents_in_sp.begin(), parents_in_sp.end());
 				pop.deactivateVirtualSubPop(it->subPop());
 			}
+			if (m_vars.contains(Ne_demo_base_String))
+				pop.getVars().setVar(Ne_demo_base_String + m_suffix, parents);
 		}
 #endif
 	} else if (m_vars.contains(Ne_demo_String) || m_vars.contains(Ne_demo_sp_String)) {
+#ifdef LINEAGE
+		const vectoru & loci = m_loci.elems(&pop);
+		// if lineage information is available, first get all involved parents
+		if (m_vars.contains(Ne_demo_String)) {
+			// every one, first get parents
+			uintDict parents;
+			pop.getVars().getVectorVarAsIntDict(Ne_demo_String + m_suffix, parents);
+			for (size_t l = 0; l < loci.size(); ++l) {
+				size_t loc = loci[l];
+				IndAlleleIterator a = pop.alleleIterator(loc);
+				for (; a.valid(); ++a) {
+					uintDict::iterator p = parents.find(a.lineage());
+					if (p != parents.end())
+						p->second += 1;
+				}
+			}
+			// get mean and variance
+		}
+#else
+		if (m_vars.contains(Ne_demo_String))
+			pop.getVars().setVar(Ne_demo_String + m_suffix, 0.);
+		if (m_vars.contains(Ne_demo_sp_String)) {
+			subPopList subPops = m_subPops.expandFrom(pop);
+			subPopList::const_iterator it = subPops.begin();
+			subPopList::const_iterator itEnd = subPops.end();
+			for (; it != itEnd; ++it)
+				pop.getVars().setVar(subPopVar_String(*it, Ne_demo_String, m_suffix), 0.);
+		}
+#endif
 	} else
 		throw ValueError("Demographic effective size has to be estimated before and after mating.");
 	//
