@@ -682,6 +682,21 @@ class TestStat(unittest.TestCase):
             output.write('%.8f %.8f %d loc1 0\n' % (P0[1][0], P0[1][1], S0*2))
             output.write('%.8f %.8f %d loc1 %d\n' % (Pt[1][0], Pt[1][1], St*2, t))
 
+    def demoNe(self, pop):
+        #
+        # get all lineage
+        lin = [ind.alleleLineage(0, 0) for ind in pop.individuals()] + [ind.alleleLineage(0, 1) for ind in pop.individuals()]
+        parent = {x: 0 for x in range(pop.popSize())}
+        for x in lin:
+            # get only the first locus
+            parent[x] += 1
+        # mean and variance
+        N = pop.popSize()
+        cnt = parent.values()
+        k = sum(cnt) * 1.0 / N
+        Vk = sum([(x-k)*(x-k) for x in cnt]) / (N * 1.)
+        return (k * N - 1 ) / (k - 1 + Vk / k)
+
     def testEffectiveSize(self):
         '''Testing the effective population size estimated from genotype data'''
         getRNG().set(seed=1235)
@@ -769,17 +784,21 @@ class TestStat(unittest.TestCase):
         #
         # 
         pop.vars().clear()
-        stat(pop, effectiveSize=[0,1], vars=['Ne_parental_info'])
+        pop.setLineage(0)
+        stat(pop, effectiveSize=[0,1], vars=['Ne_demo_base'])
         if moduleInfo()['alleleType'] == 'lineage':
-            self.assertGreater(pop.dvars().Ne_parental_info['F_t'], 0.)
+            l = []
+            [l.extend([x,x,0,0,x,x,0,0]) for x in range(pop.popSize())]
+            self.assertEqual(pop.lineage(), l)
+            self.assertEqual(pop.dvars().Ne_demo_base, range(pop.popSize()))
         else:
-            self.assertEqual(pop.dvars().Ne_parental_info['F_t'], 0.)
-        self.assertGreater(pop.dvars().Ne_parental_info['H_t'], 0.)
+            self.assertEqual(pop.dvars().Ne_demo_base, 0.)
         # 
         pop.evolve(matingScheme=RandomMating(), gen=1)
         # calculate Ne
-        stat(pop, effectiveSize=[0,1], vars=['Ne_het', 'Ne_inb'])
-        print pop.dvars()
+        stat(pop, effectiveSize=[0,1], vars=['Ne_demo'])
+        self.assertEqual(pop.dvars().Ne_demo[0], self.demoNe(pop))
+        self.assertEqual(pop.dvars().Ne_demo[0], pop.dvars().Ne_demo[1])
 
 if __name__ == '__main__':
     unittest.main()

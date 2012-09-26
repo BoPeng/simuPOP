@@ -3643,7 +3643,7 @@ bool statEffectiveSize::demographicEffectiveSize(Population & pop) const
 {
 	if (m_vars.contains(Ne_demo_base_String) || m_vars.contains(Ne_demo_base_sp_String)) {
 		// go through all individuals, record population size and set lineage
-		size_t idx = 0;
+		size_t idx = 1;
 		const vectoru & loci = m_loci.elems(&pop);
 
 #ifdef LINEAGE
@@ -3652,13 +3652,14 @@ bool statEffectiveSize::demographicEffectiveSize(Population & pop) const
 		size_t ploidy = pop.ploidy();
 		// all individuals? set to 0, 1, ... good
 		// otherwise set all lineage to zero
-		bool setAll = m_subPops.allAvail();
+		bool setAll = m_subPops.allAvail() && !m_vars.contains(Ne_demo_base_sp_String);
 		RawIndIterator ind = pop.rawIndBegin();
-		RawIndIterator ind_end = pop.rawIndBegin();
+		RawIndIterator ind_end = pop.rawIndEnd();
 		for (; ind != ind_end; ++ind) {
 			for (size_t i = 0; i < loci.size(); ++i)
 				for (size_t p = 0; p < ploidy; ++p)
-					ind->setAlleleLineage(idx, i, p);
+					// lineage ID starts from 1, but will set to 0 to clear values for not setAll cases
+					ind->setAlleleLineage(setAll ? idx : 0, loci[i], p);
 			if (setAll) {
 				parents.push_back(idx);
 				++idx;
@@ -3670,7 +3671,7 @@ bool statEffectiveSize::demographicEffectiveSize(Population & pop) const
 			if (m_vars.contains(Ne_demo_base_String))
 				pop.getVars().setVar(Ne_demo_base_String + m_suffix, parents);
 		} else {
-			idx = 0;
+			idx = 1;
 			// selected (virtual) subpopulatons.
 			//
 			subPopList subPops = m_subPops.expandFrom(pop);
@@ -3680,11 +3681,17 @@ bool statEffectiveSize::demographicEffectiveSize(Population & pop) const
 				vectoru parents_in_sp(0);
 				pop.activateVirtualSubPop(*it);
 				IndIterator ind = pop.indIterator(it->subPop());
-				for (; ind.valid(); ++ind, ++idx) {
-					for (size_t i = 0; i < loci.size(); ++i)
-						for (size_t p = 0; p < ploidy; ++p)
-							ind->setAlleleLineage(idx, i, p);
-					parents_in_sp.push_back(idx);
+				// the individual has been in another vsp
+				for (; ind.valid(); ++ind) {
+					if (ind->alleleLineage(0) > 0)
+						parents_in_sp.push_back(ind->alleleLineage(0));
+					else {
+						for (size_t i = 0; i < loci.size(); ++i)
+							for (size_t p = 0; p < ploidy; ++p)
+								ind->setAlleleLineage(idx, loci[i], p);
+						parents_in_sp.push_back(idx);
+						++idx;
+					}
 				}
 				// save vars?
 				if (m_vars.contains(Ne_demo_base_sp_String))
@@ -3703,18 +3710,91 @@ bool statEffectiveSize::demographicEffectiveSize(Population & pop) const
 		if (m_vars.contains(Ne_demo_String)) {
 			// every one, first get parents
 			uintDict parents;
-			pop.getVars().getVectorVarAsIntDict(Ne_demo_String + m_suffix, parents);
+			try {
+				pop.getVars().getVectorVarAsIntDict(Ne_demo_base_String + m_suffix, parents);
+			} catch (ValueError) {
+				throw ValueError("Cannot get varianble Ne_demo_base for the calculation of demographic effective population size, please set it before mating");
+			}
 			for (size_t l = 0; l < loci.size(); ++l) {
+				// reset count
+				uintDict::iterator p = parents.begin();
+				uintDict::iterator p_end = parents.end();
+				for (; p != p_end; ++p)
+					p->second = 0;
+				//
 				size_t loc = loci[l];
-				IndAlleleIterator a = pop.alleleIterator(loc);
+				IndLineageIterator a = pop.lineageIterator(loc);
 				for (; a.valid(); ++a) {
-					uintDict::iterator p = parents.find(a.lineage());
-					if (p != parents.end())
+					p = parents.find(*a);
+					if (p != p_end)
 						p->second += 1;
 				}
+				// get mean and variance
+				p = parents.begin();
+				double x = 0;
+				double xx = 0;
+				for (; p != p_end; ++p) {
+					x += p->second;
+					xx += p->second * p->second;
+				}
+				size_t N = parents.size();
+				double k = x / N;
+				double Vk = xx / N - k * k;
+				// k == 0 for the case of female population for y chromosome...
+				double Ne = k == 0 ? 0 : (k * N - 1) / (k - 1 + Vk / k);
+				DBG_DO(DBG_STATOR, cerr << "Loc " << loc << " N " << N << " k " << k << " Vk " << Vk << " Ne " << Ne << endl);
+				pop.getVars().setVar(Ne_demo_String + m_suffix + "{" + toStr(loc) + "}", Ne);
 			}
-			// get mean and variance
 		}
+		// for simplicity, repeat the code here, although the code could be combined with better performance
+		// (e.g. scanning lineage only once
+		if (m_vars.contains(Ne_demo_sp_String)) {
+			subPopList subPops = m_subPops.expandFrom(pop);
+			subPopList::const_iterator it = subPops.begin();
+			subPopList::const_iterator itEnd = subPops.end();
+			for (; it != itEnd; ++it) {
+				// every one, first get parents
+				uintDict parents;
+				try {
+					pop.getVars().getVectorVarAsIntDict(subPopVar_String(*it, Ne_demo_base_String, m_suffix), parents);
+				} catch (ValueError) {
+					throw ValueError("Cannot get varianble Ne_demo_base for the calculation of demographic effective population size, please set it before mating");
+				}
+				for (size_t l = 0; l < loci.size(); ++l) {
+					// reset count
+					uintDict::iterator p = parents.begin();
+					uintDict::iterator p_end = parents.end();
+					for (; p != p_end; ++p)
+						p->second = 0;
+					//
+					size_t loc = loci[l];
+					// NOTE: we are scanning all individuals in the offspring population
+					// and are not limited to specified subpopulations, because alleles from
+					// a parent in a subpopulation might went outside of that vsp.
+					IndLineageIterator a = pop.lineageIterator(loc);
+					for (; a.valid(); ++a) {
+						p = parents.find(*a);
+						if (p != p_end)
+							p->second += 1;
+					}
+					// get mean and variance
+					p = parents.begin();
+					double x = 0;
+					double xx = 0;
+					for (; p != p_end; ++p) {
+						x += p->second;
+						xx += p->second * p->second;
+					}
+					size_t N = parents.size();
+					double k = x / N;
+					double Vk = xx / N - k * k;
+					double Ne = (k * N - 1) / (k - 1 + Vk / k);
+					DBG_DO(DBG_STATOR, cerr << "Loc " << loc << " N " << N << " k " << k << " Vk " << Vk << " Ne " << Ne << endl);
+					pop.getVars().setVar(subPopVar_String(*it, Ne_demo_String, m_suffix) + "{" + toStr(loc) + "}", Ne);
+				}
+			}
+		}
+
 #else
 		if (m_vars.contains(Ne_demo_String))
 			pop.getVars().setVar(Ne_demo_String + m_suffix, 0.);

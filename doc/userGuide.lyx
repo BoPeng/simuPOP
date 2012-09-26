@@ -19066,6 +19066,98 @@ Effective population size
 \end_layout
 
 \begin_layout Standard
+Effective population size is an important, yet complicated concept in population
+ genetics.
+ Simply put, the effective population size is determined by a mating scheme,
+ namely how parents are selected and how offsprings are generated.
+ In the context of forward-time simulation, if we population an offspring
+ population from a parental population, a true effective population size
+ can be calculated, under certain assumptions, as 
+\begin_inset Formula 
+\[
+Ne=\frac{kN-1}{k-1+V_{k}/k}
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $k$
+\end_inset
+
+ and 
+\begin_inset Formula $V_{k}$
+\end_inset
+
+ are the mean and variance of the number of gametes each parent that are
+ transmitted to the offspring generation.
+ Naturally, the number of sex chromosomes transmitted will be different
+ for males and females.
+ This effective size is independent of genotypes and is called the demographic
+ effective size.
+\end_layout
+
+\begin_layout Standard
+Because the calculation of demographic effective size need to track which
+ alleles are transmitted from parental to offspring population, it has to
+ collect information from both parental and offspring populations, and can
+ only be calculated using the lineage modules of simuPOP.
+ As shown in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "statNeDemographic"
+
+\end_inset
+
+, a 
+\family typewriter
+Stat
+\family default
+ operator is applied before mating to mark lineage of alleles of each locus
+ with an individual index, and save the IDs of parents in a variable 
+\family typewriter
+Ne_demo_base
+\family default
+.
+ After mating, another 
+\family typewriter
+Stat
+\family default
+ operator is used to count how many alleles each parent has contributed
+ to the offspring generation, and calculate demographic effective size according
+ly.
+ This example uses three virtual subpopulations, a whole subpopulation,
+ all male individuals, and all female individuals, and calculated effective
+ size for loci on an autosome, an X chromosome, and a Y chromosome.
+ As we can imagine, the effective size is 0 at the Y chromosome for all
+ females, because no such chromsome is transmitted from the parental population.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/statNeDemographic.log"
+lstparams "caption={Demographic effective population size},label={statNeDemographic}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Effective population sizes could also be estimated from genotypes because
+ changes of genotypes reflects properties of the mating scheme.
+ However, it is important to realize that 
+\emph on
+evolving a population for one generation is only one realization of many
+ possible realizations of the same mating scheme
+\emph default
+ (effective size).
+ If we consider the demographic effective size the average effective size
+ of all realizations, estimating effective size from genotypes will be inaccurat
+e unless a large number of unlinked loci are used.
+\end_layout
+
+\begin_layout Standard
 Many statistical methods have been developed to estimate the effective size
  of a population from genotype data.
  simuPOP currently provides two temporal methods proposed by Waples, 1989,

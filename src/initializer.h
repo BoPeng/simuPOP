@@ -250,7 +250,7 @@ public:
 	 *  PER_PLOIDY), or for each individual (\c PER_INDIVIDUAL) have the same
 	 *  lineage. A single value is allowed and values in \e lineage will be
 	 *  re-used if not enough values are provided. If an empty list is provided,
-	 *  values 0, 1, 2, .. will be used to provide an unique identify for each
+	 *  values 1, 2, 3, .. will be used to provide an unique identify for each
 	 *  allele, genotype, chromosome, etc. If a valid field is specified (default
 	 *  to \c ind_id), the value of this field will be used for all alleles of
 	 *  each individual if \e mode is set to  \c FROM_INFO, or be adjusted to

@@ -432,23 +432,23 @@ bool InitLineage::apply(Population & pop) const
 						if (m_mode == PER_ALLELE)
 							for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
 								for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++idx)
-									it->setAlleleLineage(idx, *loc, static_cast<int>(*p));
+									it->setAlleleLineage(idx + 1, *loc, static_cast<int>(*p));
 						else if (m_mode == PER_CHROMOSOME)
 							for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p, idx += nCh) {
 								vectoru::const_iterator loc = loci.begin();
 								vectoru::const_iterator locEnd = loci.end();
 								vectoru::const_iterator chIdx = chromIndex.begin();
 								for (; loc != locEnd; ++loc, ++chIdx)
-									it->setAlleleLineage((idx + *chIdx), *loc, static_cast<int>(*p));
+									it->setAlleleLineage((idx + *chIdx + 1), *loc, static_cast<int>(*p));
 							}
 						else if (m_mode == PER_PLOIDY)
 							for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p, ++idx)
 								for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc)
-									it->setAlleleLineage(idx, *loc, static_cast<int>(*p));
+									it->setAlleleLineage(idx + 1, *loc, static_cast<int>(*p));
 						else {
 							for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
 								for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc)
-									it->setAlleleLineage(idx, *loc, static_cast<int>(*p));
+									it->setAlleleLineage(idx + 1, *loc, static_cast<int>(*p));
 							++idx;
 						}
 					}
