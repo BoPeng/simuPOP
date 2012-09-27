@@ -947,7 +947,14 @@ private:
 	typedef std::vector<size_t> GENOTYPE;
 	typedef std::map<GENOTYPE, size_t> GENOTYPECNT;
 	typedef uintDict HOMOCNT;
-	// void LDNe(const GENOTYPECNTLIST & genoCnts, vectorf & res) const;
+
+	typedef std::pair<size_t, size_t> LOCPAIR;
+	typedef std::map<LOCPAIR, double> LDMAP;
+
+	double Burrows(size_t N, const ALLELECNT & a1, const ALLELECNT & a2,
+		const HOMOCNT & h1, const HOMOCNT & h2, const GENOTYPECNT & g) const;
+
+	void LDNe(const LDMAP & ld, size_t S, vectorf & res) const;
 
 public:
 	statEffectiveSize(const lociList & loci, const subPopList & subPops,
@@ -1408,10 +1415,10 @@ public:
 	 *       <b>This feature is only available for lineage modules and will
 	 *       change lineage values at specified loci of all individuals</b>.
 	 *  \li \c Ne_demo_base_sp Pre-mating information for each (virtual)
-	 *       subpopulation, used by variable \c Ne_demo_sp. 
+	 *       subpopulation, used by variable \c Ne_demo_sp.
 	 *  \li \c Ne_demo A dictionary of locus-specific demographic effective
 	 *       population size, calculated using number of gemetes each parent
-	 *       transmits to the offspring population. The method is vased on 
+	 *       transmits to the offspring population. The method is vased on
 	 *       Crow & Denniston 1988 (Ne = KN-1/k-1+Vk/k) and need variable
 	 *       \c Ne_demo_base set before mating. <b>Effective size estimated
 	 *       from this formula is model dependent and might not be applicable
