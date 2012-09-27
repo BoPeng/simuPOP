@@ -4054,10 +4054,11 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 
 
 double statEffectiveSize::Burrows(size_t N, const ALLELECNT & allele_cnt_i, const ALLELECNT & allele_cnt_j,
-                                  const HOMOCNT & h1, const HOMOCNT & h2, const GENOTYPECNT & geno_cnt) const
+                                  const HOMOCNT & homo_cnt_i, const HOMOCNT & homo_cnt_j,
+                                  const GENOTYPECNT & geno_cnt) const
 {
 	DBG_DO(DBG_STATOR, cerr << " allele1: " << allele_cnt_i << " allele2: " << allele_cnt_j
-		                    << " homo1: " << h1 << " homo2: " << h2
+		                    << " homo1: " << homo_cnt_i << " homo2: " << homo_cnt_j
 		                    << " geno: " << geno_cnt << endl);
 
 	/* Formula from Weir 1979, for alleles i at locus A and j at locus B
@@ -4085,18 +4086,36 @@ double statEffectiveSize::Burrows(size_t N, const ALLELECNT & allele_cnt_i, cons
 	ALLELECNT::const_iterator a1_it = allele_cnt_i.begin();
 	ALLELECNT::const_iterator a1_it_end = allele_cnt_j.end();
 	vectoru alleles_1;
+	vectorf freq_1;
+	vectorf homo_freq_1;
 	for (; a1_it != a1_it_end; ++a1_it)
 		// remove a1 if its frequency is less than 0.01
-		if (a1_it->second > allele_cutoff)
+		if (a1_it->second > allele_cutoff) {
 			alleles_1.push_back(a1_it->first);
+			freq_1.push_back(a1_it->second / (2. * N));
+			HOMOCNT::const_iterator hit = homo_cnt_i.find(a1_it->first);
+			if (hit != homo_cnt_i.end())
+				homo_freq_1.push_back(hit->second / static_cast<double>(N));
+			else
+				homo_freq_1.push_back(0);
+		}
 	//
 	ALLELECNT::const_iterator a2_it = allele_cnt_i.begin();
 	ALLELECNT::const_iterator a2_it_end = allele_cnt_j.end();
 	vectoru alleles_2;
+	vectorf freq_2;
+	vectorf homo_freq_2;
 	for (; a2_it != a2_it_end; ++a2_it)
 		// remove a2 if its frequency is less than 0.01
-		if (a2_it->second > allele_cutoff)
+		if (a2_it->second > allele_cutoff) {
 			alleles_2.push_back(a2_it->first);
+			freq_2.push_back(a2_it->second / (2. * N));
+			HOMOCNT::const_iterator hit = homo_cnt_j.find(a2_it->first);
+			if (hit != homo_cnt_j.end())
+				homo_freq_2.push_back(hit->second / static_cast<double>(N));
+			else
+				homo_freq_2.push_back(0);
+		}
 	//
 	// for each pair of alleles
 	GENOTYPE geno(4);
@@ -4177,7 +4196,15 @@ double statEffectiveSize::Burrows(size_t N, const ALLELECNT & allele_cnt_i, cons
 			}
 			// - 2 p_i q_j
 			Dij /= N;
-			Dij -= allele_cnt_i.find(a1)->second * allele_cnt_j.find(a2)->second / (2. * N * N);
+			Dij -= -2. * freq_1[i] * freq_2[j];
+			// adjustment
+			Dij *= N / (N - 1.0);
+			//
+			double r_ij_2 = Dij * Dij / (
+			                             // (p (1-p) + (h1 - p^2) ) * (q (1-q) + (h2 - q^2)
+			                             (freq_1[i] * (1. - freq_1[i]) + (homo_freq_1[i] - freq_1[i] * freq_1[i])) *
+			                             (freq_2[j] * (1. - freq_2[j]) + (homo_freq_2[j] - freq_2[j] * freq_2[j]))
+			                             );
 		}
 	}
 	return 0;
@@ -4245,7 +4272,10 @@ bool statEffectiveSize::LDEffectiveSize(Population & pop) const
 					++allele_cnt_j[b1];
 					++allele_cnt_j[b2];
 					//
-					GENOTYPE alleles(4); // P_ij^kl
+					GENOTYPE alleles(4);
+					// P_ij^kl, we order alleles so that i <=k and j <= l to
+					// reduce the number of items (and needed search) because here
+					// we assume that there is no haplotype information
 					alleles[0] = a1 < a2 ? a1 : a2;
 					alleles[1] = b1 < b2 ? b1 : b2;
 					alleles[2] = a1 < a2 ? a2 : a1;
