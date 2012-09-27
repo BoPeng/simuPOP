@@ -1460,11 +1460,15 @@ public:
 	 *       plan 2.
 	 *  \li \c Ne_waples89_sp Estimate effective size for each (virtual)
 	 *       subpopulation using method Waples 89.
-	 *  \li \c Ne_LD Effective population size estimated from linkage disequilibrim
+	 *  \li \c Ne_LD Effective population size, 2.5% and 97.% confidence interval
+	 *       using a parametric method, estimated from linkage disequilibrim
 	 *       information of one sample, using LD method developed by Waples & Do
 	 *       2008, 2010. This method assumes unlinked loci and uses LD measured
 	 *       from genotypes at loci. Because this is a sample based method, it
-	 *       should better be applied to a random sample of the population.
+	 *       should better be applied to a random sample of the population. To
+	 *       reduce bias caused by rare alleles, alleles with frequencies less than
+	 *       0.01 are ignored (program LDNe gives option for 0, 0.01, 0.02, 
+	 *       and 0.05).
 	 *  \li \c Ne_LD_sp Estimate LD-based effective population size for each specified
 	 *       (virtual) subpopulation.
 	 **/
