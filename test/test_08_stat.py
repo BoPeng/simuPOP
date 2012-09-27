@@ -803,7 +803,8 @@ class TestStat(unittest.TestCase):
     def testLDNe(self):
         # calculate LD Ne
         turnOnDebug('DBG_STATOR')
-        pop = Population(size=[500,100,1000], loci = [1]*4)
+        getRNG().set(seed=12345)
+        pop = Population(size=[100], loci = [1]*10)
         pop.evolve(
             preOps=[
                 InitSex(),
@@ -812,7 +813,10 @@ class TestStat(unittest.TestCase):
             matingScheme=RandomMating(),
             gen=10
         )
-        stat(pop, effectiveSize=[0,1,2], vars=['Ne_LD'])
+        stat(pop, LD=[[0,1], [1,2],[2,3]], vars=['R2'])
+        #export(pop, output='ldne.txt', format='GENEPOP')
+        stat(pop, effectiveSize=ALL_AVAIL, vars=['Ne_LD'])
+        print pop.dvars()
 
 if __name__ == '__main__':
     unittest.main()

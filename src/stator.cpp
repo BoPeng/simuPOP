@@ -4053,13 +4053,15 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 }
 
 
-double statEffectiveSize::Burrows(size_t N, const ALLELECNT & allele_cnt_i, const ALLELECNT & allele_cnt_j,
-                                  const HOMOCNT & homo_cnt_i, const HOMOCNT & homo_cnt_j,
-                                  const GENOTYPECNT & geno_cnt) const
+statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT & allele_cnt_i, const ALLELECNT & allele_cnt_j,
+                                                       const HOMOCNT & homo_cnt_i, const HOMOCNT & homo_cnt_j,
+                                                       const GENOTYPECNT & geno_cnt) const
 {
 	DBG_DO(DBG_STATOR, cerr << " allele1: " << allele_cnt_i << " allele2: " << allele_cnt_j
 		                    << " homo1: " << homo_cnt_i << " homo2: " << homo_cnt_j
 		                    << " geno: " << geno_cnt << endl);
+	if (N <= 1)
+		return R2WEIGHT(0., 0);
 
 	/* Formula from Weir 1979, for alleles i at locus A and j at locus B
 
@@ -4084,7 +4086,7 @@ double statEffectiveSize::Burrows(size_t N, const ALLELECNT & allele_cnt_i, cons
 	double allele_cutoff = 0.01 * 2 * N;
 	//
 	ALLELECNT::const_iterator a1_it = allele_cnt_i.begin();
-	ALLELECNT::const_iterator a1_it_end = allele_cnt_j.end();
+	ALLELECNT::const_iterator a1_it_end = allele_cnt_i.end();
 	vectoru alleles_1;
 	vectorf freq_1;
 	vectorf homo_freq_1;
@@ -4100,7 +4102,7 @@ double statEffectiveSize::Burrows(size_t N, const ALLELECNT & allele_cnt_i, cons
 				homo_freq_1.push_back(0);
 		}
 	//
-	ALLELECNT::const_iterator a2_it = allele_cnt_i.begin();
+	ALLELECNT::const_iterator a2_it = allele_cnt_j.begin();
 	ALLELECNT::const_iterator a2_it_end = allele_cnt_j.end();
 	vectoru alleles_2;
 	vectorf freq_2;
@@ -4123,13 +4125,18 @@ double statEffectiveSize::Burrows(size_t N, const ALLELECNT & allele_cnt_i, cons
 	GENOTYPECNT::const_iterator geno_cnt_it_end = geno_cnt.end();
 	size_t Ki = alleles_1.size();
 	size_t Kj = alleles_2.size();
+	DBG_DO(DBG_STATOR, cerr << "Ki=" << Ki << " Kj=" << Kj << " freq1=" << freq_1
+		                    << " freq2=" << freq_2 << " homo1=" << homo_freq_1 << " homo2=" << homo_freq_2 << endl);
+	double r2 = 0.;
 	for (size_t i = 0; i < Ki; ++i) {
 		for (size_t j = 0; j < Kj; ++j) {
 			size_t a1 = alleles_1[i];
 			size_t a2 = alleles_2[j];
+			cerr << "i=" << i << " j=" << j << " a1=" << a1 << " a2=" << a2 <<
+			" p1=" << freq_1[i] << " q2=" << freq_2[j] << endl;
 			//
 			// for allele pairs a1, a2,
-			double Dij = 0;
+			double Dij = 0.;
 			//
 			// ij ij
 			geno[0] = a1;
@@ -4144,27 +4151,24 @@ double statEffectiveSize::Burrows(size_t N, const ALLELECNT & allele_cnt_i, cons
 			for (size_t k = 0; k < Ki; ++k) {
 				if (k != i) {
 					geno[0] = alleles_1[k];
-					if (geno[0] <= geno[2]) {
-						geno_cnt_it = geno_cnt.find(geno);
-						if (geno_cnt_it != geno_cnt_it_end)
-							Dij += geno_cnt_it->second;
-					}
+					geno_cnt_it = geno_cnt.find(geno);
+					if (geno_cnt_it != geno_cnt_it_end)
+						Dij += geno_cnt_it->second;
 				}
 			}
 			geno[0] = a1;  // reset to ijij
 			for (size_t l = 0; l < Kj; ++l) {
 				if (l != j) {
 					geno[1] = alleles_2[l];
-					if (geno[1] <= geno[3]) {
-						// Dij += geno_cnt[geno];
-						geno_cnt_it = geno_cnt.find(geno);
-						if (geno_cnt_it != geno_cnt_it_end)
-							Dij += geno_cnt_it->second;
-					}
+					// Dij += geno_cnt[geno];
+					geno_cnt_it = geno_cnt.find(geno);
+					if (geno_cnt_it != geno_cnt_it_end)
+						Dij += geno_cnt_it->second;
 				}
 			}
 			//
 			// Sum_{k \en i, l \ne j} (P_kl^ij + P_kj^il)
+			geno[2] = a1;
 			for (size_t k = 0; k < Ki; ++k) {
 				if (k == i)
 					continue;
@@ -4172,51 +4176,90 @@ double statEffectiveSize::Burrows(size_t N, const ALLELECNT & allele_cnt_i, cons
 				for (size_t l = 0; l < Kj; ++l) {
 					if (l == j)
 						continue;
-					// kl ij
+					// kl ij and kj il
 					geno[1] = alleles_2[l];
-					geno[2] = a1;
 					geno[3] = a2;
-					if (geno[0] <= geno[2] && geno[1] <= geno[3]) {
-						// Dij += geno_cnt[geno];
-						geno_cnt_it = geno_cnt.find(geno);
-						if (geno_cnt_it != geno_cnt_it_end)
-							Dij += geno_cnt_it->second;
-					}
-					// kj il
+					// Dij += geno_cnt[geno];
+					geno_cnt_it = geno_cnt.find(geno);
+					if (geno_cnt_it != geno_cnt_it_end)
+						Dij += geno_cnt_it->second;
+					// kl ij and kj il
 					geno[1] = a2;
-					geno[2] = a1;
 					geno[3] = alleles_2[l];
-					if (geno[0] <= geno[2] && geno[1] <= geno[3]) {
-						// Dij += geno_cnt[geno];
-						geno_cnt_it = geno_cnt.find(geno);
-						if (geno_cnt_it != geno_cnt_it_end)
-							Dij += geno_cnt_it->second;
-					}
+					// Dij += geno_cnt[geno];
+					geno_cnt_it = geno_cnt.find(geno);
+					if (geno_cnt_it != geno_cnt_it_end)
+						Dij += geno_cnt_it->second;
 				}
 			}
+			// change from counts to freq
+			Dij /= (2 * N);
 			// - 2 p_i q_j
-			Dij /= N;
-			Dij -= -2. * freq_1[i] * freq_2[j];
+			Dij -= 2. * freq_1[i] * freq_2[j];
 			// adjustment
 			Dij *= N / (N - 1.0);
-			//
-			double r_ij_2 = Dij * Dij / (
-			                             // (p (1-p) + (h1 - p^2) ) * (q (1-q) + (h2 - q^2)
-			                             (freq_1[i] * (1. - freq_1[i]) + (homo_freq_1[i] - freq_1[i] * freq_1[i])) *
-			                             (freq_2[j] * (1. - freq_2[j]) + (homo_freq_2[j] - freq_2[j] * freq_2[j]))
-			                             );
+			// Dij^2 / (p (1-p) + (h1 - p^2) ) * (q (1-q) + (h2 - q^2)
+			double r2_ij = Dij * Dij / (
+			                            (freq_1[i] * (1. - freq_1[i]) + (homo_freq_1[i] - freq_1[i] * freq_1[i])) *
+			                            (freq_2[j] * (1. - freq_2[j]) + (homo_freq_2[j] - freq_2[j] * freq_2[j]))
+			                            );
+			r2 += r2_ij;
+			cerr << "Dij=" << Dij*Dij << " r2_ij=" << r2_ij << endl;
 		}
 	}
-	return 0;
+	// theoretical weight has S2 but we do not have any missing data so S2 can be ignored
+	DBG_DO(DBG_STATOR, cerr << "r2=" << (r2 / (Ki * Kj)) << " Weight=" << (Ki - 1) * (Kj - 1) << endl);
+	return R2WEIGHT(r2 / (Ki * Kj), (Ki - 1) * (Kj - 1));
 }
 
 
-void statEffectiveSize::LDNe(const LDMAP & ld, size_t S, vectorf & res) const
+void statEffectiveSize::LDNe(const LDLIST & ld, size_t S, vectorf & res) const
 {
 	DBG_DO(DBG_STATOR, cerr << "LD: " << ld << endl);
+
+	res.clear();
+	res.resize(3, 0);
 	//
+	// r2 = sum(r2 * w)/ sum(w)
 	double r2 = 0;
-	double Ne = 1. / 3. * (r2 - 1. / S);
+	double weight = 0;
+	size_t J = ld.size();
+	for (size_t i = 0; i < J; ++i) {
+		r2 += ld[i].first * ld[i].second;
+		weight += ld[i].second;
+	}
+	r2 /= weight;
+	res[0] = r2;
+	cerr << "weight (ind comp)=" << weight << " r2=" << r2 << endl;
+
+	//
+	// jackknife estimate of Var(r2)
+	if (J > 1) {
+		double x = 0;
+		double xx = 0;
+		for (size_t i = 0; i < J; ++i) {
+			double r2_jn = 0;
+			double weight_jn = 0;
+			for (size_t j = 0; j < J; ++j) {
+				if (j == i)
+					continue;
+				r2_jn += ld[j].first * ld[j].second;
+				weight_jn += ld[j].second;
+			}
+			r2_jn /= weight_jn;
+			x += r2_jn;
+			xx += r2_jn * r2_jn;
+		}
+		double var_r2 = (J - 1.) / J * (xx / J - x * x / (J * J));
+		double phi = var_r2 / (r2 * r2);
+		double n_prime = 2. / phi;
+		cerr << " J=" << J << " var_r2=" << var_r2 << " phi=" << phi << " n'=" << n_prime << endl;
+		res[1] = J * var_r2 / gsl_cdf_chisq_Pinv(0.025, J);
+		res[2] = J * var_r2 / gsl_cdf_chisq_Pinv(0.975, J);
+	}
+	// res now holds r2, r2_low and r2_high
+	for (size_t i = 0; i < 3; ++i)
+		res[i] = 1. / 3. * (res[i] - 1. / S);
 }
 
 
@@ -4227,9 +4270,9 @@ bool statEffectiveSize::LDEffectiveSize(Population & pop) const
 	// selected (virtual) subpopulatons.
 	subPopList subPops = m_subPops.expandFrom(pop);
 	//
-	LDMAP all_ld;
+	LDLIST all_ld;
 
-	vector<LDMAP> subpop_ld(subPops.size());
+	vector<LDLIST> subpop_ld(subPops.size());
 
 	bool all_stat = m_vars.contains(Ne_LD_String);
 	bool subpop_stat = m_vars.contains(Ne_LD_sp_String);
@@ -4273,20 +4316,27 @@ bool statEffectiveSize::LDEffectiveSize(Population & pop) const
 					++allele_cnt_j[b2];
 					//
 					GENOTYPE alleles(4);
-					// P_ij^kl, we order alleles so that i <=k and j <= l to
-					// reduce the number of items (and needed search) because here
-					// we assume that there is no haplotype information
-					alleles[0] = a1 < a2 ? a1 : a2;
-					alleles[1] = b1 < b2 ? b1 : b2;
-					alleles[2] = a1 < a2 ? a2 : a1;
-					alleles[3] = b1 < b2 ? b2 : b1;
+					// a1,b1  a2,b2
+					// we need to assign it in two cases
+					//    a1,b1  a2,b2
+					// and
+					//    a2,b2  a1,b1
+					// for maternal and paternal counts
+					alleles[0] = a1;
+					alleles[1] = b1;
+					alleles[2] = a2;
+					alleles[3] = b2;
+					++geno_cnt[alleles];
+					alleles[0] = a2;
+					alleles[1] = b2;
+					alleles[2] = a1;
+					alleles[3] = b1;
 					++geno_cnt[alleles];
 				}
 				pop.deactivateVirtualSubPop(sp->subPop());
 				if (subpop_stat)
-					subpop_ld[spIdx][LOCPAIR(loc1, loc2)] =
-					    Burrows(N, allele_cnt_i, allele_cnt_j,
-							homo_cnt_i, homo_cnt_j, geno_cnt);
+					subpop_ld[spIdx].push_back(Burrows(N, allele_cnt_i, allele_cnt_j,
+							homo_cnt_i, homo_cnt_j, geno_cnt));
 				subpop_size[spIdx] = N;
 				if (all_stat) {
 					// homozygote
@@ -4317,10 +4367,9 @@ bool statEffectiveSize::LDEffectiveSize(Population & pop) const
 				}
 			}
 			if (all_stat)
-				all_ld[LOCPAIR(loc1, loc2)] =
-				    Burrows(accumulate(subpop_size.begin(), subpop_size.end(), 0),
+				all_ld.push_back(Burrows(accumulate(subpop_size.begin(), subpop_size.end(), 0),
 						all_allele_cnt_i, all_allele_cnt_j,
-						all_homo_cnt_i, all_homo_cnt_j, all_geno_cnt);
+						all_homo_cnt_i, all_homo_cnt_j, all_geno_cnt));
 		}
 	}
 	// step 2, after we get all the pairwise ld values, ...
