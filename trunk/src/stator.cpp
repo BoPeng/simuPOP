@@ -4053,12 +4053,133 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 }
 
 
-double statEffectiveSize::Burrows(size_t N, const ALLELECNT & a1, const ALLELECNT & a2,
-                                  const HOMOCNT & h1, const HOMOCNT & h2, const GENOTYPECNT & g) const
+double statEffectiveSize::Burrows(size_t N, const ALLELECNT & allele_cnt_i, const ALLELECNT & allele_cnt_j,
+                                  const HOMOCNT & h1, const HOMOCNT & h2, const GENOTYPECNT & geno_cnt) const
 {
-	DBG_DO(DBG_STATOR, cerr << " allele1: " << a1 << " allele2: " << a2
+	DBG_DO(DBG_STATOR, cerr << " allele1: " << allele_cnt_i << " allele2: " << allele_cnt_j
 		                    << " homo1: " << h1 << " homo2: " << h2
-		                    << " geno: " << g << endl);
+		                    << " geno: " << geno_cnt << endl);
+
+	/* Formula from Weir 1979, for alleles i at locus A and j at locus B
+
+	   D_ij = P_..^ij + P_.j^i. - 2 p_i q_j
+	   = P_ij^ij + Sum_{k \ne i} P_kj^ij + Sum_{l \ne j} P_il^ij
+	 + Sum_{k \en i, l \ne j} (P_kl^ij + P_kj^il) - 2 p_i q_j
+
+	   The first three items, ij/ij, kj/ij, il/ij, phase is not important
+	   because of homozygosity at one of the two loci. Our data can be used
+	   as it is.
+
+	   The next two items, kl/ij kj/il are added together. This is what
+	   we are doing because we ordered alleles by number and add the counts
+	   together. Only one counte is needed.
+
+	   The last item is from allele frequency and is easy to calculate. Here
+	   we ignore alleles with frequency less than 0.01.
+	 */
+	//
+	// step 1: get qualifying alleles at two loci
+	//
+	double allele_cutoff = 0.01 * 2 * N;
+	//
+	ALLELECNT::const_iterator a1_it = allele_cnt_i.begin();
+	ALLELECNT::const_iterator a1_it_end = allele_cnt_j.end();
+	vectoru alleles_1;
+	for (; a1_it != a1_it_end; ++a1_it)
+		// remove a1 if its frequency is less than 0.01
+		if (a1_it->second > allele_cutoff)
+			alleles_1.push_back(a1_it->first);
+	//
+	ALLELECNT::const_iterator a2_it = allele_cnt_i.begin();
+	ALLELECNT::const_iterator a2_it_end = allele_cnt_j.end();
+	vectoru alleles_2;
+	for (; a2_it != a2_it_end; ++a2_it)
+		// remove a2 if its frequency is less than 0.01
+		if (a2_it->second > allele_cutoff)
+			alleles_2.push_back(a2_it->first);
+	//
+	// for each pair of alleles
+	GENOTYPE geno(4);
+	GENOTYPECNT::const_iterator geno_cnt_it;
+	GENOTYPECNT::const_iterator geno_cnt_it_end = geno_cnt.end();
+	size_t Ki = alleles_1.size();
+	size_t Kj = alleles_2.size();
+	for (size_t i = 0; i < Ki; ++i) {
+		for (size_t j = 0; j < Kj; ++j) {
+			size_t a1 = alleles_1[i];
+			size_t a2 = alleles_2[j];
+			//
+			// for allele pairs a1, a2,
+			double Dij = 0;
+			//
+			// ij ij
+			geno[0] = a1;
+			geno[1] = a2;
+			geno[2] = a1;
+			geno[3] = a2;
+			// Dij += geno_cnt[geno];
+			geno_cnt_it = geno_cnt.find(geno);
+			if (geno_cnt_it != geno_cnt_it_end)
+				Dij += geno_cnt_it->second;
+			// Sum_{k \ne i} P_kj^ij + Sum_{l \ne j} P_il^ij
+			for (size_t k = 0; k < Ki; ++k) {
+				if (k != i) {
+					geno[0] = alleles_1[k];
+					if (geno[0] <= geno[2]) {
+						geno_cnt_it = geno_cnt.find(geno);
+						if (geno_cnt_it != geno_cnt_it_end)
+							Dij += geno_cnt_it->second;
+					}
+				}
+			}
+			geno[0] = a1;  // reset to ijij
+			for (size_t l = 0; l < Kj; ++l) {
+				if (l != j) {
+					geno[1] = alleles_2[l];
+					if (geno[1] <= geno[3]) {
+						// Dij += geno_cnt[geno];
+						geno_cnt_it = geno_cnt.find(geno);
+						if (geno_cnt_it != geno_cnt_it_end)
+							Dij += geno_cnt_it->second;
+					}
+				}
+			}
+			//
+			// Sum_{k \en i, l \ne j} (P_kl^ij + P_kj^il)
+			for (size_t k = 0; k < Ki; ++k) {
+				if (k == i)
+					continue;
+				geno[0] = alleles_1[k];
+				for (size_t l = 0; l < Kj; ++l) {
+					if (l == j)
+						continue;
+					// kl ij
+					geno[1] = alleles_2[l];
+					geno[2] = a1;
+					geno[3] = a2;
+					if (geno[0] <= geno[2] && geno[1] <= geno[3]) {
+						// Dij += geno_cnt[geno];
+						geno_cnt_it = geno_cnt.find(geno);
+						if (geno_cnt_it != geno_cnt_it_end)
+							Dij += geno_cnt_it->second;
+					}
+					// kj il
+					geno[1] = a2;
+					geno[2] = a1;
+					geno[3] = alleles_2[l];
+					if (geno[0] <= geno[2] && geno[1] <= geno[3]) {
+						// Dij += geno_cnt[geno];
+						geno_cnt_it = geno_cnt.find(geno);
+						if (geno_cnt_it != geno_cnt_it_end)
+							Dij += geno_cnt_it->second;
+					}
+				}
+			}
+			// - 2 p_i q_j
+			Dij /= N;
+			Dij -= allele_cnt_i.find(a1)->second * allele_cnt_j.find(a2)->second / (2. * N * N);
+		}
+	}
 	return 0;
 }
 
@@ -4124,10 +4245,10 @@ bool statEffectiveSize::LDEffectiveSize(Population & pop) const
 					++allele_cnt_j[b1];
 					++allele_cnt_j[b2];
 					//
-					GENOTYPE alleles(4);
+					GENOTYPE alleles(4); // P_ij^kl
 					alleles[0] = a1 < a2 ? a1 : a2;
-					alleles[1] = a1 < a2 ? a2 : a1;
-					alleles[2] = b1 < b2 ? b1 : b2;
+					alleles[1] = b1 < b2 ? b1 : b2;
+					alleles[2] = a1 < a2 ? a2 : a1;
 					alleles[3] = b1 < b2 ? b2 : b1;
 					++geno_cnt[alleles];
 				}
