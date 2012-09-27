@@ -925,6 +925,8 @@ private:
 
 #define  Ne_LD_String             "Ne_LD"
 #define  Ne_LD_sp_String          "Ne_LD_sp"
+#define  Ne_LD_mono_String        "Ne_LD_mono"
+#define  Ne_LD_mono_sp_String     "Ne_LD_mono_sp"
 
 private:
 	typedef uintDict ALLELECNT;
@@ -954,7 +956,7 @@ private:
 	R2WEIGHT Burrows(size_t N, const ALLELECNT & a1, const ALLELECNT & a2,
 		const HOMOCNT & h1, const HOMOCNT & h2, const GENOTYPECNT & g) const;
 
-	void LDNe(const LDLIST & ld, size_t S, vectorf & res) const;
+	void LDNe(const LDLIST & ld, size_t S, size_t L, vectorf & res, vectorf & res_mono) const;
 
 public:
 	statEffectiveSize(const lociList & loci, const subPopList & subPops,
@@ -1463,7 +1465,7 @@ public:
 	 *  \li \c Ne_LD Effective population size, 2.5% and 97.% confidence interval
 	 *       using a parametric method, estimated from linkage disequilibrim
 	 *       information of one sample, using LD method developed by Waples & Do
-	 *       2008, 2010. This method assumes unlinked loci and uses LD measured
+	 *       2006, 2008, 2010. This method assumes unlinked loci and uses LD measured
 	 *       from genotypes at loci. Because this is a sample based method, it
 	 *       should better be applied to a random sample of the population. To
 	 *       reduce bias caused by rare alleles, alleles with frequencies less than
@@ -1471,6 +1473,9 @@ public:
 	 *       and 0.05).
 	 *  \li \c Ne_LD_sp Estimate LD-based effective population size for each specified
 	 *       (virtual) subpopulation.
+	 *  \li \c Ne_LD_mono A version of Ne_LD that assumes monogamy (see Waples 2006
+	 *        for details.
+	 *  \li \c Ne_LD_mono_sp Ne_LD_mono calculated for each (virtual) subpopulation.
 	 **/
 	Stat(bool popSize = false,
 		//
