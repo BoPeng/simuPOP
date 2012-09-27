@@ -3435,7 +3435,7 @@ statEffectiveSize::statEffectiveSize(const lociList & loci,  const subPopList & 
 		Ne_temporal_base_String, Ne_temporal_base_sp_String,
 		Ne_waples89_String,		 Ne_waples89_sp_String,
 		Ne_tempoFS_String,		 Ne_tempoFS_sp_String,
-		Ne_LD_String,            Ne_LD_sp_String,
+		Ne_LD_String,			 Ne_LD_sp_String,
 		""
 	};
 	const char * defaultVars[] = { "" };
@@ -4052,6 +4052,26 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 	return true;
 }
 
+
+double statEffectiveSize::Burrows(size_t N, const ALLELECNT & a1, const ALLELECNT & a2,
+                                  const HOMOCNT & h1, const HOMOCNT & h2, const GENOTYPECNT & g) const
+{
+	DBG_DO(DBG_STATOR, cerr << " allele1: " << a1 << " allele2: " << a2
+		                    << " homo1: " << h1 << " homo2: " << h2
+		                    << " geno: " << g << endl);
+	return 0;
+}
+
+
+void statEffectiveSize::LDNe(const LDMAP & ld, size_t S, vectorf & res) const
+{
+	DBG_DO(DBG_STATOR, cerr << "LD: " << ld << endl);
+	//
+	double r2 = 0;
+	double Ne = 1. / 3. * (r2 - 1. / S);
+}
+
+
 bool statEffectiveSize::LDEffectiveSize(Population & pop) const
 {
 	const vectoru & loci = m_loci.elems(&pop);
@@ -4059,14 +4079,19 @@ bool statEffectiveSize::LDEffectiveSize(Population & pop) const
 	// selected (virtual) subpopulatons.
 	subPopList subPops = m_subPops.expandFrom(pop);
 	//
+	LDMAP all_ld;
+
+	vector<LDMAP> subpop_ld(subPops.size());
+
 	bool all_stat = m_vars.contains(Ne_LD_String);
-	bool sp_stat = m_vars.contains(Ne_LD_sp_String);
+	bool subpop_stat = m_vars.contains(Ne_LD_sp_String);
+	vectoru subpop_size(subPops.size());
 	for (size_t locIdx1 = 0; locIdx1 + 1 < loci.size(); ++locIdx1) {
 		for (size_t locIdx2 = locIdx1 + 1; locIdx2 < loci.size(); ++locIdx2) {
 			size_t loc1 = loci[locIdx1];
 			size_t loc2 = loci[locIdx2];
 			// accumulate genotypes
-			GENOTYPECNT all_geno_cnt;				
+			GENOTYPECNT all_geno_cnt;
 			HOMOCNT all_homo_cnt_i;
 			HOMOCNT all_homo_cnt_j;
 			ALLELECNT all_allele_cnt_i;
@@ -4074,16 +4099,17 @@ bool statEffectiveSize::LDEffectiveSize(Population & pop) const
 
 			subPopList::const_iterator sp = subPops.begin();
 			subPopList::const_iterator spEnd = subPops.end();
-			for (; sp != spEnd; ++sp) {
+			for (size_t spIdx = 0; sp != spEnd; ++sp, ++spIdx) {
 				pop.activateVirtualSubPop(*sp);
 
 				HOMOCNT homo_cnt_i;
 				HOMOCNT homo_cnt_j;
 				ALLELECNT allele_cnt_i;
 				ALLELECNT allele_cnt_j;
-				GENOTYPECNT geno_cnt;				
+				GENOTYPECNT geno_cnt;
+				size_t N = 0;
 				IndIterator ind = pop.indIterator(sp->subPop());
-				for (; ind.valid(); ++ind) {
+				for (; ind.valid(); ++ind, ++N) {
 					Allele a1 = ind->allele(loc1, 0);
 					Allele a2 = ind->allele(loc1, 1);
 					Allele b1 = ind->allele(loc2, 0);
@@ -4106,6 +4132,11 @@ bool statEffectiveSize::LDEffectiveSize(Population & pop) const
 					++geno_cnt[alleles];
 				}
 				pop.deactivateVirtualSubPop(sp->subPop());
+				if (subpop_stat)
+					subpop_ld[spIdx][LOCPAIR(loc1, loc2)] =
+					    Burrows(N, allele_cnt_i, allele_cnt_j,
+							homo_cnt_i, homo_cnt_j, geno_cnt);
+				subpop_size[spIdx] = N;
 				if (all_stat) {
 					// homozygote
 					HOMOCNT::iterator hit = homo_cnt_i.begin();
@@ -4126,7 +4157,7 @@ bool statEffectiveSize::LDEffectiveSize(Population & pop) const
 					ait = allele_cnt_j.begin();
 					ait_end = allele_cnt_j.end();
 					for (; ait != ait_end; ++ait)
-						all_allele_cnt_j[hit->first] += hit->second;
+						all_allele_cnt_j[ait->first] += ait->second;
 					// genotype
 					GENOTYPECNT::iterator git = geno_cnt.begin();
 					GENOTYPECNT::iterator git_end = geno_cnt.end();
@@ -4134,11 +4165,31 @@ bool statEffectiveSize::LDEffectiveSize(Population & pop) const
 						all_geno_cnt[git->first] += git->second;
 				}
 			}
-			//
+			if (all_stat)
+				all_ld[LOCPAIR(loc1, loc2)] =
+				    Burrows(accumulate(subpop_size.begin(), subpop_size.end(), 0),
+						all_allele_cnt_i, all_allele_cnt_j,
+						all_homo_cnt_i, all_homo_cnt_j, all_geno_cnt);
+		}
+	}
+	// step 2, after we get all the pairwise ld values, ...
+	if (all_stat) {
+		vectorf res;
+		LDNe(all_ld, accumulate(subpop_size.begin(), subpop_size.end(), 0), res);
+		pop.getVars().setVar(Ne_LD_String + m_suffix, res);
+	}
+	if (subpop_stat) {
+		subPopList::const_iterator sp = subPops.begin();
+		subPopList::const_iterator spEnd = subPops.end();
+		for (size_t spIdx = 0; sp != spEnd; ++sp, ++spIdx) {
+			vectorf res;
+			LDNe(subpop_ld[spIdx], subpop_size[spIdx], res);
+			pop.getVars().setVar(subPopVar_String(*sp, Ne_LD_String, m_suffix), res);
 		}
 	}
 	return true;
 }
+
 
 }
 

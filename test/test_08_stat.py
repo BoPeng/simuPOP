@@ -699,7 +699,6 @@ class TestStat(unittest.TestCase):
 
     def testEffectiveSize(self):
         '''Testing the effective population size estimated from genotype data'''
-        getRNG().set(seed=1235)
         pop = Population(size=[500,100,1000], loci = 4)
         pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
@@ -799,6 +798,21 @@ class TestStat(unittest.TestCase):
         stat(pop, effectiveSize=[0,1], vars=['Ne_demo'])
         self.assertEqual(pop.dvars().Ne_demo[0], self.demoNe(pop))
         self.assertEqual(pop.dvars().Ne_demo[0], pop.dvars().Ne_demo[1])
+        #
+
+    def testLDNe(self):
+        # calculate LD Ne
+        turnOnDebug('DBG_STATOR')
+        pop = Population(size=[500,100,1000], loci = [1]*4)
+        pop.evolve(
+            preOps=[
+                InitSex(),
+                InitGenotype(freq=[0.25]*4),
+            ],
+            matingScheme=RandomMating(),
+            gen=10
+        )
+        stat(pop, effectiveSize=[0,1,2], vars=['Ne_LD'])
 
 if __name__ == '__main__':
     unittest.main()
