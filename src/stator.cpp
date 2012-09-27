@@ -3292,7 +3292,7 @@ statInbreeding::statInbreeding(const lociList & loci,  const subPopList & subPop
 	m_vars.obtainFrom(vars, allowedVars, defaultVars);
 
 #ifndef LINEAGE
-	DBG_WARNIF(m_vars.contains(IBD_freq_String) || m_vars.contains(IBD_freq_sp_String),
+	DBG_WARNIF((m_vars.contains(IBD_freq_String) || m_vars.contains(IBD_freq_sp_String)),
 		"Warning: IBD statistics will be set to zero in non-lineage modules");
 #endif
 }
@@ -3434,9 +3434,11 @@ statEffectiveSize::statEffectiveSize(const lociList & loci,  const subPopList & 
 		Ne_demo_String,			 Ne_demo_sp_String,
 		Ne_temporal_base_String, Ne_temporal_base_sp_String,
 		Ne_waples89_String,		 Ne_waples89_sp_String,
-		Ne_tempoFS_String,		 Ne_tempoFS_sp_String,		""
+		Ne_tempoFS_String,		 Ne_tempoFS_sp_String,
+		Ne_LD_String,            Ne_LD_sp_String,
+		""
 	};
-	const char * defaultVars[] = { Ne_tempoFS_String, "" };
+	const char * defaultVars[] = { "" };
 
 	m_vars.obtainFrom(vars, allowedVars, defaultVars);
 }
@@ -3457,6 +3459,8 @@ string statEffectiveSize::describe(bool /* format */) const
 			desc += "Estimate effective population size using temporal method as described in  Jorde & Ryman, 2007.";
 		if (m_vars.contains(Ne_temporal_base_String) || m_vars.contains(Ne_temporal_base_sp_String))
 			desc += "Setting temporal base.";
+		if (m_vars.contains(Ne_LD_String) || m_vars.contains(Ne_LD_sp_String))
+			desc += "Estimate effective population size using linkage disequilibrium method.";
 	}
 	return desc;
 }
@@ -3634,6 +3638,9 @@ bool statEffectiveSize::apply(Population & pop) const
 	    || m_vars.contains(Ne_waples89_String) || m_vars.contains(Ne_waples89_sp_String)
 	    || m_vars.contains(Ne_tempoFS_String) || m_vars.contains(Ne_tempoFS_sp_String))
 		temporalEffectiveSize(pop);
+
+	if (m_vars.contains(Ne_LD_String) || m_vars.contains(Ne_LD_sp_String))
+		LDEffectiveSize(pop);
 
 	return true;
 }
@@ -3976,7 +3983,7 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 	//
 	// get previous ...
 	if (m_vars.contains(Ne_waples89_String) || m_vars.contains(Ne_tempoFS_String)) {
-		size_t S0_all;
+		size_t S0_all = 0;
 		ALLELECNTLIST P0_all;
 		long gen = 0;
 		bool has_base = true;
@@ -4045,6 +4052,93 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 	return true;
 }
 
+bool statEffectiveSize::LDEffectiveSize(Population & pop) const
+{
+	const vectoru & loci = m_loci.elems(&pop);
+	//
+	// selected (virtual) subpopulatons.
+	subPopList subPops = m_subPops.expandFrom(pop);
+	//
+	bool all_stat = m_vars.contains(Ne_LD_String);
+	bool sp_stat = m_vars.contains(Ne_LD_sp_String);
+	for (size_t locIdx1 = 0; locIdx1 + 1 < loci.size(); ++locIdx1) {
+		for (size_t locIdx2 = locIdx1 + 1; locIdx2 < loci.size(); ++locIdx2) {
+			size_t loc1 = loci[locIdx1];
+			size_t loc2 = loci[locIdx2];
+			// accumulate genotypes
+			GENOTYPECNT all_geno_cnt;				
+			HOMOCNT all_homo_cnt_i;
+			HOMOCNT all_homo_cnt_j;
+			ALLELECNT all_allele_cnt_i;
+			ALLELECNT all_allele_cnt_j;
+
+			subPopList::const_iterator sp = subPops.begin();
+			subPopList::const_iterator spEnd = subPops.end();
+			for (; sp != spEnd; ++sp) {
+				pop.activateVirtualSubPop(*sp);
+
+				HOMOCNT homo_cnt_i;
+				HOMOCNT homo_cnt_j;
+				ALLELECNT allele_cnt_i;
+				ALLELECNT allele_cnt_j;
+				GENOTYPECNT geno_cnt;				
+				IndIterator ind = pop.indIterator(sp->subPop());
+				for (; ind.valid(); ++ind) {
+					Allele a1 = ind->allele(loc1, 0);
+					Allele a2 = ind->allele(loc1, 1);
+					Allele b1 = ind->allele(loc2, 0);
+					Allele b2 = ind->allele(loc2, 1);
+					//
+					if (a1 == a2)
+						++homo_cnt_i[a1];
+					if (b1 == b2)
+						++homo_cnt_j[b1];
+					++allele_cnt_i[a1];
+					++allele_cnt_i[a2];
+					++allele_cnt_j[b1];
+					++allele_cnt_j[b2];
+					//
+					GENOTYPE alleles(4);
+					alleles[0] = a1 < a2 ? a1 : a2;
+					alleles[1] = a1 < a2 ? a2 : a1;
+					alleles[2] = b1 < b2 ? b1 : b2;
+					alleles[3] = b1 < b2 ? b2 : b1;
+					++geno_cnt[alleles];
+				}
+				pop.deactivateVirtualSubPop(sp->subPop());
+				if (all_stat) {
+					// homozygote
+					HOMOCNT::iterator hit = homo_cnt_i.begin();
+					HOMOCNT::iterator hit_end = homo_cnt_i.end();
+					for (; hit != hit_end; ++hit)
+						all_homo_cnt_i[hit->first] += hit->second;
+					//
+					hit = homo_cnt_j.begin();
+					hit_end = homo_cnt_j.end();
+					for (; hit != hit_end; ++hit)
+						all_homo_cnt_j[hit->first] += hit->second;
+					// allele
+					ALLELECNT::iterator ait = allele_cnt_i.begin();
+					ALLELECNT::iterator ait_end = allele_cnt_i.end();
+					for (; ait != ait_end; ++ait)
+						all_allele_cnt_i[ait->first] += ait->second;
+					//
+					ait = allele_cnt_j.begin();
+					ait_end = allele_cnt_j.end();
+					for (; ait != ait_end; ++ait)
+						all_allele_cnt_j[hit->first] += hit->second;
+					// genotype
+					GENOTYPECNT::iterator git = geno_cnt.begin();
+					GENOTYPECNT::iterator git_end = geno_cnt.end();
+					for (; git != git_end; ++git)
+						all_geno_cnt[git->first] += git->second;
+				}
+			}
+			//
+		}
+	}
+	return true;
+}
 
 }
 
