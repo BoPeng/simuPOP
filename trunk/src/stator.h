@@ -923,9 +923,13 @@ private:
 #define  Ne_tempoFS_String        "Ne_tempoFS"
 #define  Ne_tempoFS_sp_String     "Ne_tempoFS_sp"
 
+#define  Ne_LD_String             "Ne_LD"
+#define  Ne_LD_sp_String          "Ne_LD_sp"
+
 private:
 	typedef uintDict ALLELECNT;
 	typedef vector<ALLELECNT> ALLELECNTLIST;
+
 
 	// calculate moment based estimate of Ne based on Waples 89
 	void Waples89(size_t S0, size_t St, size_t t,
@@ -936,6 +940,14 @@ private:
 	void TempoFS(size_t S0, size_t St, size_t t,
 		const ALLELECNTLIST & P0,
 		const ALLELECNTLIST & Pt, vectorf & res) const;
+
+	// calculate LD based on genotype counts
+	// genotype at two loci i,j, k, l
+	// no phase is assumed so i < j and k <l is assumed
+	typedef std::vector<size_t> GENOTYPE;
+	typedef std::map<GENOTYPE, size_t> GENOTYPECNT;
+	typedef uintDict HOMOCNT;
+	// void LDNe(const GENOTYPECNTLIST & genoCnts, vectorf & res) const;
 
 public:
 	statEffectiveSize(const lociList & loci, const subPopList & subPops,
@@ -949,6 +961,8 @@ public:
 	bool demographicEffectiveSize(Population & pop) const;
 
 	bool temporalEffectiveSize(Population & pop) const;
+
+	bool LDEffectiveSize(Population & pop) const;
 
 private:
 	lociList m_loci;
@@ -1411,7 +1425,7 @@ public:
 	 *       This variable could be set repeatedly to change baselines.
 	 *  \li \c Ne_temporal_base_sp Set baseline information for each (virtual)
 	 *       subpopulation specified.
-	 *  \li \c Ne_tempoFS (default) Effective population size, 2.5% and 97.5%
+	 *  \li \c Ne_tempoFS Effective population size, 2.5% and 97.5%
 	 *       confidence interval as a list of size three, estimated using a
 	 *       temporal method as described in Jorde & Ryman (2007), and as
 	 *       implemented by software tempoFS (http://www.zoologi.su.se/~ryman/).
@@ -1439,6 +1453,13 @@ public:
 	 *       plan 2.
 	 *  \li \c Ne_waples89_sp Estimate effective size for each (virtual)
 	 *       subpopulation using method Waples 89.
+	 *  \li \c Ne_LD Effective population size estimated from linkage disequilibrim
+	 *       information of one sample, using LD method developed by Waples & Do
+	 *       2008, 2010. This method assumes unlinked loci and uses LD measured
+	 *       from genotypes at loci. Because this is a sample based method, it
+	 *       should better be applied to a random sample of the population.
+	 *  \li \c Ne_LD_sp Estimate LD-based effective population size for each specified
+	 *       (virtual) subpopulation.
 	 **/
 	Stat(bool popSize = false,
 		//
