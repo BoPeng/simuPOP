@@ -3436,6 +3436,7 @@ statEffectiveSize::statEffectiveSize(const lociList & loci,  const subPopList & 
 		Ne_waples89_String,		 Ne_waples89_sp_String,
 		Ne_tempoFS_String,		 Ne_tempoFS_sp_String,
 		Ne_LD_String,			 Ne_LD_sp_String,
+		Ne_LD_mono_String,		 Ne_LD_mono_sp_String,
 		""
 	};
 	const char * defaultVars[] = { "" };
@@ -3459,7 +3460,8 @@ string statEffectiveSize::describe(bool /* format */) const
 			desc += "Estimate effective population size using temporal method as described in  Jorde & Ryman, 2007.";
 		if (m_vars.contains(Ne_temporal_base_String) || m_vars.contains(Ne_temporal_base_sp_String))
 			desc += "Setting temporal base.";
-		if (m_vars.contains(Ne_LD_String) || m_vars.contains(Ne_LD_sp_String))
+		if (m_vars.contains(Ne_LD_String) || m_vars.contains(Ne_LD_sp_String) ||
+		    m_vars.contains(Ne_LD_mono_String) || m_vars.contains(Ne_LD_mono_sp_String))
 			desc += "Estimate effective population size using linkage disequilibrium method.";
 	}
 	return desc;
@@ -3639,7 +3641,8 @@ bool statEffectiveSize::apply(Population & pop) const
 	    || m_vars.contains(Ne_tempoFS_String) || m_vars.contains(Ne_tempoFS_sp_String))
 		temporalEffectiveSize(pop);
 
-	if (m_vars.contains(Ne_LD_String) || m_vars.contains(Ne_LD_sp_String))
+	if (m_vars.contains(Ne_LD_String) || m_vars.contains(Ne_LD_sp_String) ||
+	    m_vars.contains(Ne_LD_mono_String) || m_vars.contains(Ne_LD_mono_sp_String))
 		LDEffectiveSize(pop);
 
 	return true;
@@ -4057,7 +4060,7 @@ statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT
                                                        const HOMOCNT & homo_cnt_i, const HOMOCNT & homo_cnt_j,
                                                        const GENOTYPECNT & geno_cnt) const
 {
-	DBG_DO(DBG_STATOR, cerr << " allele1: " << allele_cnt_i << " allele2: " << allele_cnt_j
+	DBG_DO(DBG_DEVEL, cerr	<< " allele1: " << allele_cnt_i << " allele2: " << allele_cnt_j
 		                    << " homo1: " << homo_cnt_i << " homo2: " << homo_cnt_j
 		                    << " geno: " << geno_cnt << endl);
 	if (N <= 1)
@@ -4125,68 +4128,33 @@ statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT
 	GENOTYPECNT::const_iterator geno_cnt_it_end = geno_cnt.end();
 	size_t Ki = alleles_1.size();
 	size_t Kj = alleles_2.size();
-	DBG_DO(DBG_STATOR, cerr << "Ki=" << Ki << " Kj=" << Kj << " freq1=" << freq_1
-		                    << " freq2=" << freq_2 << " homo1=" << homo_freq_1 << " homo2=" << homo_freq_2 << endl);
 	double r2 = 0.;
 	for (size_t i = 0; i < Ki; ++i) {
 		for (size_t j = 0; j < Kj; ++j) {
 			size_t a1 = alleles_1[i];
 			size_t a2 = alleles_2[j];
-			cerr << "i=" << i << " j=" << j << " a1=" << a1 << " a2=" << a2 <<
-			" p1=" << freq_1[i] << " q2=" << freq_2[j] << endl;
 			//
 			// for allele pairs a1, a2,
 			double Dij = 0.;
 			//
-			// ij ij
-			geno[0] = a1;
-			geno[1] = a2;
+			// P_..^ij + P_.j^i.
 			geno[2] = a1;
 			geno[3] = a2;
-			// Dij += geno_cnt[geno];
-			geno_cnt_it = geno_cnt.find(geno);
-			if (geno_cnt_it != geno_cnt_it_end)
-				Dij += geno_cnt_it->second;
-			// Sum_{k \ne i} P_kj^ij + Sum_{l \ne j} P_il^ij
 			for (size_t k = 0; k < Ki; ++k) {
-				if (k != i) {
-					geno[0] = alleles_1[k];
-					geno_cnt_it = geno_cnt.find(geno);
-					if (geno_cnt_it != geno_cnt_it_end)
-						Dij += geno_cnt_it->second;
-				}
-			}
-			geno[0] = a1;  // reset to ijij
-			for (size_t l = 0; l < Kj; ++l) {
-				if (l != j) {
-					geno[1] = alleles_2[l];
-					// Dij += geno_cnt[geno];
-					geno_cnt_it = geno_cnt.find(geno);
-					if (geno_cnt_it != geno_cnt_it_end)
-						Dij += geno_cnt_it->second;
-				}
-			}
-			//
-			// Sum_{k \en i, l \ne j} (P_kl^ij + P_kj^il)
-			geno[2] = a1;
-			for (size_t k = 0; k < Ki; ++k) {
-				if (k == i)
-					continue;
 				geno[0] = alleles_1[k];
 				for (size_t l = 0; l < Kj; ++l) {
-					if (l == j)
-						continue;
-					// kl ij and kj il
 					geno[1] = alleles_2[l];
-					geno[3] = a2;
-					// Dij += geno_cnt[geno];
 					geno_cnt_it = geno_cnt.find(geno);
 					if (geno_cnt_it != geno_cnt_it_end)
 						Dij += geno_cnt_it->second;
-					// kl ij and kj il
-					geno[1] = a2;
+				}
+			}
+			geno[1] = a2;
+			geno[2] = a1;
+			for (size_t k = 0; k < Ki; ++k) {
+				geno[0] = alleles_1[k];
+				for (size_t l = 0; l < Kj; ++l) {
 					geno[3] = alleles_2[l];
-					// Dij += geno_cnt[geno];
 					geno_cnt_it = geno_cnt.find(geno);
 					if (geno_cnt_it != geno_cnt_it_end)
 						Dij += geno_cnt_it->second;
@@ -4204,7 +4172,6 @@ statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT
 			                            (freq_2[j] * (1. - freq_2[j]) + (homo_freq_2[j] - freq_2[j] * freq_2[j]))
 			                            );
 			r2 += r2_ij;
-			cerr << "Dij=" << Dij*Dij << " r2_ij=" << r2_ij << endl;
 		}
 	}
 	// theoretical weight has S2 but we do not have any missing data so S2 can be ignored
@@ -4213,12 +4180,21 @@ statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT
 }
 
 
-void statEffectiveSize::LDNe(const LDLIST & ld, size_t S, vectorf & res) const
+// S is sample size
+// ld is from pairs of loci. e.g.
+// when number of loci is 4
+// 0-1 0-2 0-3
+//     1-2 1-3
+//         2-3
+// and there will be 6=4*3/2 pairs.
+void statEffectiveSize::LDNe(const LDLIST & ld, size_t S, size_t L, vectorf & res, vectorf & res_mono) const
 {
 	DBG_DO(DBG_STATOR, cerr << "LD: " << ld << endl);
 
 	res.clear();
 	res.resize(3, 0);
+	res_mono.clear();
+	res_mono.resize(3, 0);
 	//
 	// r2 = sum(r2 * w)/ sum(w)
 	double r2 = 0;
@@ -4230,36 +4206,52 @@ void statEffectiveSize::LDNe(const LDLIST & ld, size_t S, vectorf & res) const
 	}
 	r2 /= weight;
 	res[0] = r2;
-	cerr << "weight (ind comp)=" << weight << " r2=" << r2 << endl;
-
+	cerr << "weight (ind comp)=" << weight << " r2=" << r2 << " S " << S << endl;
 	//
 	// jackknife estimate of Var(r2)
 	if (J > 1) {
 		double x = 0;
 		double xx = 0;
-		for (size_t i = 0; i < J; ++i) {
+		for (size_t loc = 0; loc < L; ++loc) {
+			// remove any LD values related to locus loc
 			double r2_jn = 0;
 			double weight_jn = 0;
-			for (size_t j = 0; j < J; ++j) {
-				if (j == i)
-					continue;
-				r2_jn += ld[j].first * ld[j].second;
-				weight_jn += ld[j].second;
+			for (size_t i = 0, k = 0; i + 1 < L; ++i) {
+				for (size_t j = i + 1; j < L; ++j, ++k) {
+					if (i == loc || j == loc)
+						continue;
+					r2_jn += ld[k].first * ld[k].second;
+					weight_jn += ld[k].second;
+				}
 			}
 			r2_jn /= weight_jn;
 			x += r2_jn;
 			xx += r2_jn * r2_jn;
 		}
-		double var_r2 = (J - 1.) / J * (xx / J - x * x / (J * J));
+		double var_r2 = (L - 1.) / L * (xx / L - x * x / (L * L));
 		double phi = var_r2 / (r2 * r2);
 		double n_prime = 2. / phi;
-		cerr << " J=" << J << " var_r2=" << var_r2 << " phi=" << phi << " n'=" << n_prime << endl;
-		res[1] = J * var_r2 / gsl_cdf_chisq_Pinv(0.025, J);
-		res[2] = J * var_r2 / gsl_cdf_chisq_Pinv(0.975, J);
 	}
+	res[1] = J * r2 / gsl_cdf_chisq_Pinv(0.025, J);
+	res[2] = J * r2 / gsl_cdf_chisq_Pinv(0.975, J);
 	// res now holds r2, r2_low and r2_high
-	for (size_t i = 0; i < 3; ++i)
-		res[i] = 1. / 3. * (res[i] - 1. / S);
+	/*
+	   for (size_t i = 0; i < 3; ++i)
+	    res[i] = 1. / (3. * (res[i] - 1. / S));
+	 */
+	// applying correction from Waples 2006
+	for (size_t i = 0; i < 3; ++i) {
+		// correct r2 by sampling error
+		res[i] -= 1. / S + 3.19 / (S * S);
+		if (S >= 30) {
+			res[i] = (1 / 3. + sqrt(1 / 9. - 2.76 * res[i])) / (2. * res[i]);
+			res_mono[i] = (2 / 3. + sqrt(4 / 9. - 7.2 * res[i])) / (2. * res[i]);
+		} else {
+			res[i] = (0.308 + sqrt(0.308 * 0.308 - 2.08 * res[i])) / (2. * res[i]);
+			res_mono[i] = (0.618 + sqrt(0.618 * 0.618 - 5.24 * res[i])) / (2 * res[i]);
+		}
+	}
+	DBG_DO(DBG_STATOR, cerr << "Ne " << res << endl);
 }
 
 
@@ -4274,8 +4266,8 @@ bool statEffectiveSize::LDEffectiveSize(Population & pop) const
 
 	vector<LDLIST> subpop_ld(subPops.size());
 
-	bool all_stat = m_vars.contains(Ne_LD_String);
-	bool subpop_stat = m_vars.contains(Ne_LD_sp_String);
+	bool all_stat = m_vars.contains(Ne_LD_String) || m_vars.contains(Ne_LD_mono_String);
+	bool subpop_stat = m_vars.contains(Ne_LD_sp_String) || m_vars.contains(Ne_LD_mono_sp_String);
 	vectoru subpop_size(subPops.size());
 	for (size_t locIdx1 = 0; locIdx1 + 1 < loci.size(); ++locIdx1) {
 		for (size_t locIdx2 = locIdx1 + 1; locIdx2 < loci.size(); ++locIdx2) {
@@ -4375,16 +4367,24 @@ bool statEffectiveSize::LDEffectiveSize(Population & pop) const
 	// step 2, after we get all the pairwise ld values, ...
 	if (all_stat) {
 		vectorf res;
-		LDNe(all_ld, accumulate(subpop_size.begin(), subpop_size.end(), 0), res);
-		pop.getVars().setVar(Ne_LD_String + m_suffix, res);
+		vectorf res_mono;
+		LDNe(all_ld, accumulate(subpop_size.begin(), subpop_size.end(), 0), loci.size(), res, res_mono);
+		if (m_vars.contains(Ne_LD_String))
+			pop.getVars().setVar(Ne_LD_String + m_suffix, res);
+		if (m_vars.contains(Ne_LD_mono_String))
+			pop.getVars().setVar(Ne_LD_mono_String + m_suffix, res_mono);
 	}
 	if (subpop_stat) {
 		subPopList::const_iterator sp = subPops.begin();
 		subPopList::const_iterator spEnd = subPops.end();
 		for (size_t spIdx = 0; sp != spEnd; ++sp, ++spIdx) {
 			vectorf res;
-			LDNe(subpop_ld[spIdx], subpop_size[spIdx], res);
-			pop.getVars().setVar(subPopVar_String(*sp, Ne_LD_String, m_suffix), res);
+			vectorf res_mono;
+			LDNe(subpop_ld[spIdx], subpop_size[spIdx], loci.size(), res, res_mono);
+			if (m_vars.contains(Ne_LD_sp_String))
+				pop.getVars().setVar(subPopVar_String(*sp, Ne_LD_String, m_suffix), res);
+			if (m_vars.contains(Ne_LD_mono_sp_String))
+				pop.getVars().setVar(subPopVar_String(*sp, Ne_LD_mono_String, m_suffix), res_mono);
 		}
 	}
 	return true;
