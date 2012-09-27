@@ -948,13 +948,13 @@ private:
 	typedef std::map<GENOTYPE, size_t> GENOTYPECNT;
 	typedef uintDict HOMOCNT;
 
-	typedef std::pair<size_t, size_t> LOCPAIR;
-	typedef std::map<LOCPAIR, double> LDMAP;
+	typedef std::pair<double, size_t> R2WEIGHT;
+	typedef std::vector<R2WEIGHT> LDLIST;
 
-	double Burrows(size_t N, const ALLELECNT & a1, const ALLELECNT & a2,
+	R2WEIGHT Burrows(size_t N, const ALLELECNT & a1, const ALLELECNT & a2,
 		const HOMOCNT & h1, const HOMOCNT & h2, const GENOTYPECNT & g) const;
 
-	void LDNe(const LDMAP & ld, size_t S, vectorf & res) const;
+	void LDNe(const LDLIST & ld, size_t S, vectorf & res) const;
 
 public:
 	statEffectiveSize(const lociList & loci, const subPopList & subPops,
@@ -1467,7 +1467,7 @@ public:
 	 *       from genotypes at loci. Because this is a sample based method, it
 	 *       should better be applied to a random sample of the population. To
 	 *       reduce bias caused by rare alleles, alleles with frequencies less than
-	 *       0.01 are ignored (program LDNe gives option for 0, 0.01, 0.02, 
+	 *       0.01 are ignored (program LDNe gives option for 0, 0.01, 0.02,
 	 *       and 0.05).
 	 *  \li \c Ne_LD_sp Estimate LD-based effective population size for each specified
 	 *       (virtual) subpopulation.
