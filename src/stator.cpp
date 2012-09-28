@@ -3622,8 +3622,11 @@ void statEffectiveSize::TempoFS(size_t S0, size_t St, size_t t,
 	JackFsprim /= nLoci;
 	// return results
 	res[0] = Ne;
-	res[1] = JackFsprim + 1.96 * JackFsprimSE < 1e-8 ? -1 : 0.5 * t / (JackFsprim + 1.96 * JackFsprimSE);
-	res[2] = JackFsprim - 1.96 * JackFsprimSE < 1e-8 ? -1 : 0.5 * t / (JackFsprim - 1.96 * JackFsprimSE);
+	res[1] = 0.5 * t / (JackFsprim + 1.96 * JackFsprimSE);
+	res[2] = 0.5 * t / (JackFsprim - 1.96 * JackFsprimSE);
+	for (size_t i = 0; i < 3; ++i)
+		if (res[i] < 0)
+			res[i] = 1.0 / 0.0;  // inf
 }
 
 
@@ -4167,15 +4170,14 @@ statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT
 			// adjustment
 			Dij *= N / (N - 1.0);
 			// Dij^2 / (p (1-p) + (h1 - p^2) ) * (q (1-q) + (h2 - q^2)
-			double r2_ij = Dij * Dij / (
-			                            (freq_1[i] * (1. - freq_1[i]) + (homo_freq_1[i] - freq_1[i] * freq_1[i])) *
-			                            (freq_2[j] * (1. - freq_2[j]) + (homo_freq_2[j] - freq_2[j] * freq_2[j]))
-			                            );
-			r2 += r2_ij;
+			r2 += Dij * Dij / (
+			                   (freq_1[i] * (1. - freq_1[i]) + (homo_freq_1[i] - freq_1[i] * freq_1[i])) *
+			                   (freq_2[j] * (1. - freq_2[j]) + (homo_freq_2[j] - freq_2[j] * freq_2[j]))
+			                   );
 		}
 	}
 	// theoretical weight has S2 but we do not have any missing data so S2 can be ignored
-	DBG_DO(DBG_STATOR, cerr << "r2=" << (r2 / (Ki * Kj)) << " Weight=" << (Ki - 1) * (Kj - 1) << endl);
+	DBG_DO(DBG_DEVEL, cerr << "r2=" << (r2 / (Ki * Kj)) << " Weight=" << (Ki - 1) * (Kj - 1) << endl);
 	return R2WEIGHT(r2 / (Ki * Kj), (Ki - 1) * (Kj - 1));
 }
 
@@ -4189,7 +4191,7 @@ statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT
 // and there will be 6=4*3/2 pairs.
 void statEffectiveSize::LDNe(const LDLIST & ld, size_t S, size_t L, vectorf & res, vectorf & res_mono) const
 {
-	DBG_DO(DBG_STATOR, cerr << "LD: " << ld << endl);
+	DBG_DO(DBG_DEVEL, cerr << "LD: " << ld << endl);
 
 	res.clear();
 	res.resize(3, 0);
@@ -4198,42 +4200,45 @@ void statEffectiveSize::LDNe(const LDLIST & ld, size_t S, size_t L, vectorf & re
 	//
 	// r2 = sum(r2 * w)/ sum(w)
 	double r2 = 0;
-	double weight = 0;
+	size_t weight = 0;
 	size_t J = ld.size();
 	for (size_t i = 0; i < J; ++i) {
 		r2 += ld[i].first * ld[i].second;
 		weight += ld[i].second;
 	}
 	r2 /= weight;
-	res[0] = r2;
-	cerr << "weight (ind comp)=" << weight << " r2=" << r2 << " S " << S << endl;
 	//
 	// jackknife estimate of Var(r2)
-	if (J > 1) {
-		double x = 0;
-		double xx = 0;
-		for (size_t loc = 0; loc < L; ++loc) {
-			// remove any LD values related to locus loc
-			double r2_jn = 0;
-			double weight_jn = 0;
-			for (size_t i = 0, k = 0; i + 1 < L; ++i) {
-				for (size_t j = i + 1; j < L; ++j, ++k) {
-					if (i == loc || j == loc)
-						continue;
-					r2_jn += ld[k].first * ld[k].second;
-					weight_jn += ld[k].second;
-				}
-			}
-			r2_jn /= weight_jn;
-			x += r2_jn;
-			xx += r2_jn * r2_jn;
-		}
-		double var_r2 = (L - 1.) / L * (xx / L - x * x / (L * L));
-		double phi = var_r2 / (r2 * r2);
-		double n_prime = 2. / phi;
-	}
-	res[1] = J * r2 / gsl_cdf_chisq_Pinv(0.025, J);
-	res[2] = J * r2 / gsl_cdf_chisq_Pinv(0.975, J);
+	// Note used now because not sure how to calculate CI from it
+	/*
+	   if (J > 1) {
+	    double x = 0;
+	    double xx = 0;
+	    for (size_t loc = 0; loc < L; ++loc) {
+	        // remove any LD values related to locus loc
+	        double r2_jn = 0;
+	        double weight_jn = 0;
+	        for (size_t i = 0, k = 0; i + 1 < L; ++i) {
+	            for (size_t j = i + 1; j < L; ++j, ++k) {
+	                if (i == loc || j == loc)
+	                    continue;
+	                r2_jn += ld[k].first * ld[k].second;
+	                weight_jn += ld[k].second;
+	            }
+	        }
+	        r2_jn /= weight_jn;
+	        x += r2_jn;
+	        xx += r2_jn * r2_jn;
+	    }
+	    double var_r2 = (L - 1.) / L * (xx / L - x * x / (L * L));
+	    double phi = var_r2 / (r2 * r2);
+	    double n_prime = 2. / phi;
+	   }
+	 */
+	res[0] = r2;
+	res[1] = weight * r2 / gsl_cdf_chisq_Pinv(0.025, weight);
+	res[2] = weight * r2 / gsl_cdf_chisq_Pinv(0.975, weight);
+	DBG_DO(DBG_STATOR, cerr << "r2 (CI): " << res << endl);
 	// res now holds r2, r2_low and r2_high
 	/*
 	   for (size_t i = 0; i < 3; ++i)
@@ -4241,17 +4246,25 @@ void statEffectiveSize::LDNe(const LDLIST & ld, size_t S, size_t L, vectorf & re
 	 */
 	// applying correction from Waples 2006
 	for (size_t i = 0; i < 3; ++i) {
-		// correct r2 by sampling error
-		res[i] -= 1. / S + 3.19 / (S * S);
 		if (S >= 30) {
-			res[i] = (1 / 3. + sqrt(1 / 9. - 2.76 * res[i])) / (2. * res[i]);
-			res_mono[i] = (2 / 3. + sqrt(4 / 9. - 7.2 * res[i])) / (2. * res[i]);
+			// correct r2 by sampling error
+			double r2prime = res[i] - 1. / S - 3.19 / (S * S);
+			res[i] = (1 / 3. + sqrt(1 / 9. - 2.76 * r2prime)) / (2. * r2prime);
+			res_mono[i] = (2 / 3. + sqrt(4 / 9. - 7.2 * r2prime)) / (2. * r2prime);
+			if (res[i] < 0)
+				res[i] = 1.0 / 0.0;
+			if (res_mono[i] < 0)
+				res_mono[i] = 1.0 / 0.0;  // infinity
 		} else {
-			res[i] = (0.308 + sqrt(0.308 * 0.308 - 2.08 * res[i])) / (2. * res[i]);
-			res_mono[i] = (0.618 + sqrt(0.618 * 0.618 - 5.24 * res[i])) / (2 * res[i]);
+			double r2prime = res[i] - 0.0018 - 0.907 / S - 4.44 / (S * S);
+			res[i] = (0.308 + sqrt(0.308 * 0.308 - 2.08 * r2prime)) / (2. * r2prime);
+			res_mono[i] = (0.618 + sqrt(0.618 * 0.618 - 5.24 * r2prime)) / (2 * r2prime);
+			if (res[i] < 0)
+				res[i] = 1.0 / 0.0;
+			if (res_mono[i] < 0)
+				res_mono[i] = 1.0 / 0.0;
 		}
 	}
-	DBG_DO(DBG_STATOR, cerr << "Ne " << res << endl);
 }
 
 

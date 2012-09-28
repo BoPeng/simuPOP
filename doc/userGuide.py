@@ -3671,6 +3671,34 @@ pop.evolve(
 #end_file
 
 
+#begin_file log/statNeLD.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+pop = sim.Population([2000], loci=[1]*50)
+pop.setVirtualSplitter(sim.RangeSplitter([0, 500]))
+pop.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.InitGenotype(freq=[0.3, 0.7]),
+    ],
+    preOps=[
+        sim.Stat(effectiveSize=sim.ALL_AVAIL, subPops=[(0,0)], 
+            vars='Ne_LD', step=20),
+        sim.PyEval(r'"LD Ne (till %d): %.1f (%.1f - %.1f)\n" % '
+            'tuple([gen] + Ne_LD)',
+            step=20)
+    ],
+    matingScheme=sim.RandomMating(),
+    gen = 101
+)
+#end_file
+
 
 #begin_file log/statChromTypes.py
 #begin_ignore

@@ -1769,7 +1769,8 @@ class GenePopExporter:
                 # for each subpopulation, output pop
                 #
                 out.write('POP\n')
-                name = pop.subPopName(vsp)
+                # the name might contain space etc
+                name = ''.join([x for x in pop.subPopName(vsp) if x.isalnum()])
                 if not name:
                     name = 'SubPop%d' % (vsp if type(vsp) == type(0) else vsp[0])
                 #
