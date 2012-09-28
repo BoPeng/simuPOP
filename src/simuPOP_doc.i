@@ -9606,7 +9606,7 @@ Details:
     This variable could be set repeatedly to change baselines.
     *   Ne_temporal_base_sp Set baseline information for each
     (virtual) subpopulation specified.
-    *   Ne_tempoFS (default) Effective population size, 2.5% and 97.5%
+    *   Ne_tempoFS Effective population size, 2.5% and 97.5%
     confidence interval as a list of size three, estimated using a
     temporal method as described in Jorde & Ryman (2007), and as
     implemented by software tempoFS
@@ -9614,8 +9614,7 @@ Details:
     population size no baseline has been set, and to the temporal
     effective size between the present and the baseline generation
     otherwise. This method does not make use of more than two samples,
-    and assumes unknown census population size (sampling plan 2). A
-    value of -1 implies an infinite estimate of effective size.
+    and assumes unknown census population size (sampling plan 2).
     *   Ne_tempoFS_sp Estimate effective size of each (virtual)
     subpopulation using method Jorde & Ryman 2007.
     *   Ne_waples89 Effective population size, 2.5% and 97.5%
@@ -9634,6 +9633,22 @@ Details:
     plan 2.
     *   Ne_waples89_sp Estimate effective size for each (virtual)
     subpopulation using method Waples 89.
+    *   Ne_LD Effective population size, 2.5% and 97.% confidence
+    interval using a parametric method, estimated from linkage
+    disequilibrim information of one sample, using LD method developed
+    by Waples & Do 2006, 2008, 2010. This method assumes unlinked loci
+    and uses LD measured from genotypes at loci. Because this is a
+    sample based method, it should better be applied to a random
+    sample of the population. To reduce bias caused by rare alleles,
+    alleles with frequencies less than 0.01 are ignored (program LDNe
+    gives option for 0, 0.01, 0.02, and 0.05). 95% CI is calculated
+    using a parametric method.
+    *   Ne_LD_sp Estimate LD-based effective population size for each
+    specified (virtual) subpopulation.
+    *   Ne_LD_mono A version of Ne_LD that assumes monogamy (see
+    Waples 2006 for details.
+    *   Ne_LD_mono_sp Ne_LD_mono calculated for each (virtual)
+    subpopulation.
 
 "; 
 
@@ -9754,6 +9769,14 @@ Usage:
 Usage:
 
     x.temporalEffectiveSize(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statEffectiveSize::LDEffectiveSize "
+
+Usage:
+
+    x.LDEffectiveSize(pop)
 
 "; 
 
