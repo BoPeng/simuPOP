@@ -19158,9 +19158,7 @@ e unless a large number of unlinked loci are used.
 \end_layout
 
 \begin_layout Standard
-Many statistical methods have been developed to estimate the effective size
- of a population from genotype data.
- simuPOP currently provides two temporal methods proposed by Waples, 1989,
+simuPOP currently provides two temporal methods proposed by Waples, 1989,
  and Jorde & Ryman's (2007).
  Because these methods estimate effective population size using changes
  of allele frequencies of samples at two generations, it is necessary to
@@ -19274,6 +19272,42 @@ Ne_waples89
 LatexCommand lstinputlisting
 filename "log/statNeInterval.log"
 lstparams "caption={Temporal effective population size between consecutive samples},label={statNeInterval}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Linkage disequilibrium method is another popular method to estimate effective
+ population size.
+ Compared to temporal methods, it has the distinct advantage that it requires
+ only one sample.
+ simuPOP provides a method that is developed by Waples in his 2006 paper.
+ To use this method, you will need to specify variable 
+\family typewriter
+Ne_LD
+\family default
+ for a random mating scheme, or 
+\family typewriter
+Ne_LD_mono
+\family default
+ for a monogamous mating scheme.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "statNeLD"
+
+\end_inset
+
+ demonstrates this usage.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/statNeLD.log"
+lstparams "caption={Effective population size estimated using a LD based method},label={statNeLD}"
 
 \end_inset
 

@@ -1442,8 +1442,7 @@ public:
 	 *       been set, and to the temporal effective size between the present
 	 *       and the baseline generation otherwise. This method does not make
 	 *       use of more than two samples, and assumes unknown census population
-	 *       size (sampling plan 2). A value of -1 implies an infinite estimate
-	 *       of effective size.
+	 *       size (sampling plan 2).
 	 *  \li \c Ne_tempoFS_sp Estimate effective size of each (virtual)
 	 *       subpopulation using method Jorde & Ryman 2007.
 	 *  \li \c Ne_waples89 Effective population size, 2.5% and 97.5%
@@ -1470,7 +1469,7 @@ public:
 	 *       should better be applied to a random sample of the population. To
 	 *       reduce bias caused by rare alleles, alleles with frequencies less than
 	 *       0.01 are ignored (program LDNe gives option for 0, 0.01, 0.02,
-	 *       and 0.05).
+	 *       and 0.05). 95% CI is calculated using a parametric method.
 	 *  \li \c Ne_LD_sp Estimate LD-based effective population size for each specified
 	 *       (virtual) subpopulation.
 	 *  \li \c Ne_LD_mono A version of Ne_LD that assumes monogamy (see Waples 2006

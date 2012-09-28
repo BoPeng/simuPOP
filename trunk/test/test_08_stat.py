@@ -802,7 +802,7 @@ class TestStat(unittest.TestCase):
 
     def testLDNe(self):
         # calculate LD Ne
-        turnOnDebug('DBG_STATOR')
+        #turnOnDebug('DBG_STATOR')
         getRNG().set(seed=12345)
         pop = Population(size=[100], loci = [1]*10)
         pop.evolve(
@@ -814,9 +814,14 @@ class TestStat(unittest.TestCase):
             gen=10
         )
         stat(pop, LD=[[0,1], [1,2],[2,3]], vars=['R2'])
-        #export(pop, output='ldne.txt', format='GENEPOP')
-        stat(pop, effectiveSize=ALL_AVAIL, vars=['Ne_LD'])
-        print pop.dvars()
+        # export(pop, output='ldne.txt', format='GENEPOP')
+        stat(pop, effectiveSize=ALL_AVAIL, vars=['Ne_LD', 'Ne_LD_mono'])
+        self.assertAlmostEqual(pop.dvars().Ne_LD[0], 137.6, 1)
+        self.assertAlmostEqual(pop.dvars().Ne_LD[1], 74.8, 1)
+        self.assertAlmostEqual(pop.dvars().Ne_LD[2], 413.4, 1)
+        self.assertAlmostEqual(pop.dvars().Ne_LD_mono[0], 276.7, 1)
+        self.assertAlmostEqual(pop.dvars().Ne_LD_mono[1], 151.1, 1)
+        self.assertAlmostEqual(pop.dvars().Ne_LD_mono[2], 828.3, 0)
 
 if __name__ == '__main__':
     unittest.main()
