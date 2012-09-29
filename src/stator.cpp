@@ -3526,10 +3526,23 @@ void statEffectiveSize::Waples89(size_t S0, size_t St, size_t t,
 	res[0] = t / (2 * (F_all - 0.5 / S0 - 0.5 / St));
 	// lower
 	size_t n = K_all - P0.size();  // total number of independent alleles
-	double F_lower = n * F_all / gsl_cdf_chisq_Pinv(0.025, n);
-	double F_higher = n * F_all / gsl_cdf_chisq_Pinv(0.975, n);
-	res[1] = t / (2 * (F_lower - 0.5 / S0 - 0.5 / St));
-	res[2] = t / (2 * (F_higher - 0.5 / S0 - 0.5 / St));
+	try {
+		double F_lower = n * F_all / gsl_cdf_chisq_Pinv(0.025, n);
+		res[1] = t / (2 * (F_lower - 0.5 / S0 - 0.5 / St));
+	} catch (SystemError) {
+		DBG_WARNIF(true, "2.5% CI for waples 89 is set to inf at df=" + toStr(n));
+		res[1] = -9999;
+	}
+	try {
+		double F_higher = n * F_all / gsl_cdf_chisq_Pinv(0.975, n);
+		res[2] = t / (2 * (F_higher - 0.5 / S0 - 0.5 / St));
+	} catch (SystemError) {
+		DBG_WARNIF(true, "97.5% CI for waples 89 is set to inf at df=" + toStr(n));
+		res[2] = -9999;
+	}
+	for (size_t i = 0; i < 3; ++i)
+		if (res[i] < 0)
+			res[i] = 1.0 / 0.0;  // inf
 }
 
 
@@ -4232,14 +4245,14 @@ void statEffectiveSize::LDNe(const LDLIST & ld, size_t S, size_t L, vectorf & re
 	res[0] = r2;
 	try {
 		res[1] = n_prime * r2 / gsl_cdf_chisq_Pinv(0.025, n_prime);
-	} catch (SystemError & e) {
-		DBG_WARNIF(true, "GSL Error raised during CI calculation. nan is returned.");
+	} catch (SystemError &) {
+		DBG_WARNIF(true, "2.5% CI for LDNe is set to inf at df=" + toStr(n_prime));
 		res[1] = -9999;
 	}
 	try {
 		res[2] = n_prime * r2 / gsl_cdf_chisq_Pinv(0.975, n_prime);
-	} catch (SystemError & e) {
-		DBG_WARNIF(true, "GSL Error raised during CI calculation. nan is returned.");
+	} catch (SystemError &) {
+		DBG_WARNIF(true, "97.5% CI for LDNe is set to inf at df=" + toStr(n_prime));
 		res[2] = -9999;
 	}
 	DBG_DO(DBG_STATOR, cerr << "r2 (CI): " << res << " (weight=" << weight << " JN n'=" << n_prime << endl);
