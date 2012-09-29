@@ -1,10 +1,11 @@
 /* specfunc/gamma_inc.c
  *
+ * Copyright (C) 2007 Brian Gough
  * Copyright (C) 1996, 1997, 1998, 1999, 2000 Gerard Jungman
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
@@ -58,11 +59,16 @@ gamma_inc_D(const double a, const double x, gsl_sf_result * result)
     } else {
       double mu = (x-a)/a;
       gsl_sf_log_1plusx_mx_e(mu, &ln_term);  /* log(1+mu) - mu */
+      /* Propagate cancellation error from x-a, since the absolute
+         error of mu=x-a is DBL_EPSILON */
+      ln_term.err += GSL_DBL_EPSILON * fabs(mu);
     };
     gsl_sf_gammastar_e(a, &gstar);
     term1 = exp(a*ln_term.val)/sqrt(2.0*M_PI*a);
     result->val  = term1/gstar.val;
     result->err  = 2.0 * GSL_DBL_EPSILON * (fabs(a*ln_term.val) + 1.0) * fabs(result->val);
+    /* Include propagated error from log term */
+    result->err += fabs(a) * ln_term.err * fabs(result->val);
     result->err += gstar.err/fabs(gstar.val) * fabs(result->val);
     return GSL_SUCCESS;
   }
@@ -76,28 +82,71 @@ static
 int
 gamma_inc_P_series(const double a, const double x, gsl_sf_result * result)
 {
-  const int nmax = 5000;
+  const int nmax = 10000;
 
   gsl_sf_result D;
   int stat_D = gamma_inc_D(a, x, &D);
 
-  double sum  = 1.0;
-  double term = 1.0;
-  int n;
-  for(n=1; n<nmax; n++) {
-    term *= x/(a+n);
-    sum  += term;
-    if(fabs(term/sum) < GSL_DBL_EPSILON) break;
+  /* Approximating the terms of the series using Stirling's
+     approximation gives t_n = (x/a)^n * exp(-n(n+1)/(2a)), so the
+     convergence condition is n^2 / (2a) + (1-(x/a) + (1/2a)) n >>
+     -log(GSL_DBL_EPS) if we want t_n < O(1e-16) t_0. The condition
+     below detects cases where the minimum value of n is > 5000 */
+
+  if (x > 0.995 * a && a > 1e5) { /* Difficult case: try continued fraction */
+    gsl_sf_result cf_res;
+    int status =  gsl_sf_exprel_n_CF_e(a, x, &cf_res);
+    result->val = D.val * cf_res.val;
+    result->err = fabs(D.val * cf_res.err) + fabs(D.err * cf_res.val);
+    return status;
   }
 
-  result->val  = D.val * sum;
-  result->err  = D.err * fabs(sum);
-  result->err += (1.0 + n) * GSL_DBL_EPSILON * fabs(result->val);
+  /* Series would require excessive number of terms */
 
-  if(n == nmax)
-    GSL_ERROR ("error", GSL_EMAXITER);
-  else
-    return stat_D;
+  if (x > (a + nmax)) {
+    GSL_ERROR ("gamma_inc_P_series x>>a exceeds range", GSL_EMAXITER);
+  }
+
+  /* Normal case: sum the series */
+
+  {
+    double sum  = 1.0;
+    double term = 1.0;
+    double remainder;
+    int n;
+
+    /* Handle lower part of the series where t_n is increasing, |x| > a+n */
+
+    int nlow = (x > a) ? (x - a): 0;
+
+    for(n=1; n < nlow; n++) {
+      term *= x/(a+n);
+      sum  += term;
+    }
+
+    /* Handle upper part of the series where t_n is decreasing, |x| < a+n */
+
+    for (/* n = previous n */ ; n<nmax; n++)  {
+      term *= x/(a+n);
+      sum  += term;
+      if(fabs(term/sum) < GSL_DBL_EPSILON) break;
+    }
+
+    /*  Estimate remainder of series ~ t_(n+1)/(1-x/(a+n+1)) */
+    {
+      double tnp1 = (x/(a+n)) * term;
+      remainder =  tnp1 / (1.0 - x/(a + n + 1.0));
+    }
+
+    result->val  = D.val * sum;
+    result->err  = D.err * fabs(sum) + fabs(D.val * remainder);
+    result->err += (1.0 + n) * GSL_DBL_EPSILON * fabs(result->val);
+
+    if(n == nmax && fabs(remainder/sum) > GSL_SQRT_DBL_EPSILON)
+      GSL_ERROR ("gamma_inc_P_series failed to converge", GSL_EMAXITER);
+    else
+      return stat_D;
+  }
 }
 
 
@@ -429,12 +478,13 @@ gamma_inc_CF(double a, double x, gsl_sf_result * result)
 {
   gsl_sf_result F;
   gsl_sf_result pre;
+  const double am1lgx = (a-1.0)*log(x);
   const int stat_F = gamma_inc_F_CF(a, x, &F);
-  const int stat_E = gsl_sf_exp_e((a-1.0)*log(x) - x, &pre);
+  const int stat_E = gsl_sf_exp_err_e(am1lgx - x, GSL_DBL_EPSILON*fabs(am1lgx), &pre);
 
   result->val = F.val * pre.val;
   result->err = fabs(F.err * pre.val) + fabs(F.val * pre.err);
-  result->err += (2.0 + fabs(a)) * GSL_DBL_EPSILON * fabs(result->val);
+  result->err += 2.0 * GSL_DBL_EPSILON * fabs(result->val);
 
   return GSL_ERROR_SELECT_2(stat_F, stat_E);
 }

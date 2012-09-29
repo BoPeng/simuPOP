@@ -4,7 +4,7 @@
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but
@@ -27,7 +27,7 @@ gsl_rng_fread (FILE * stream, gsl_rng * r)
 {
   size_t n = r->type->size ;
 
-  char * state = r->state;
+  char * state = (char *)r->state;
 
   size_t items = fread (state, 1, n, stream);
   
@@ -44,7 +44,7 @@ gsl_rng_fwrite (FILE * stream, const gsl_rng * r)
 {
   size_t n = r->type->size ;
 
-  char * state = r->state;
+  char * state = (char *)r->state;
   
   size_t items = fwrite (state, 1, n, stream);
   

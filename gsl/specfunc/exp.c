@@ -4,7 +4,7 @@
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but
@@ -32,7 +32,7 @@
  */
 static
 int
-exprel_n_CF(const int N, const double x, gsl_sf_result * result)
+exprel_n_CF(const double N, const double x, gsl_sf_result * result)
 {
   const double RECUR_BIG = GSL_SQRT_DBL_MAX;
   const int maxiter = 5000;
@@ -93,7 +93,7 @@ exprel_n_CF(const int N, const double x, gsl_sf_result * result)
   }
 
   result->val = fn;
-  result->err = 2.0*(n+1.0)*GSL_DBL_EPSILON*fabs(fn);
+  result->err = 4.0*(n+1.0)*GSL_DBL_EPSILON*fabs(fn);
 
   if(n == maxiter)
     GSL_ERROR ("error", GSL_EMAXITER);
@@ -128,7 +128,7 @@ int gsl_sf_exp_e10_e(const double x, gsl_sf_result_e10 * result)
     UNDERFLOW_ERROR_E10(result);
   }
   else {
-    const int N = (int) floor(x/M_LN10);
+    const int N = (x > GSL_LOG_DBL_MAX || x < GSL_LOG_DBL_MIN) ? (int) floor(x/M_LN10) : 0;
     result->val = exp(x-N*M_LN10);
     result->err = 2.0 * (fabs(x)+1.0) * GSL_DBL_EPSILON * fabs(result->val);
     result->e10 = N;
@@ -213,7 +213,7 @@ int gsl_sf_exp_mult_e10_e(const double x, const double y, gsl_sf_result_e10 * re
       const double sy  = GSL_SIGN(y);
       const int    N   = (int) floor(l10_val);
       const double arg_val = (l10_val - N) * M_LN10;
-      const double arg_err = 2.0 * GSL_DBL_EPSILON * fabs(ly);
+      const double arg_err = 2.0 * GSL_DBL_EPSILON * (fabs(x) + fabs(ly) + M_LN10*fabs(N));
 
       result->val  = sy * exp(arg_val);
       result->err  = arg_err * fabs(result->val);
@@ -412,6 +412,12 @@ int gsl_sf_exprel_2_e(double x, gsl_sf_result * result)
   }
 }
 
+
+int
+gsl_sf_exprel_n_CF_e(const double N, const double x, gsl_sf_result * result)
+{
+  return exprel_n_CF(N, x, result);
+}
 
 int
 gsl_sf_exprel_n_e(const int N, const double x, gsl_sf_result * result)

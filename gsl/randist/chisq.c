@@ -1,10 +1,10 @@
 /* randist/chisq.c
  * 
- * Copyright (C) 1996, 1997, 1998, 1999, 2000 James Theiler, Brian Gough
+ * Copyright (C) 1996, 1997, 1998, 1999, 2000, 2007 James Theiler, Brian Gough
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but
@@ -39,16 +39,23 @@ gsl_ran_chisq (const gsl_rng * r, const double nu)
 double
 gsl_ran_chisq_pdf (const double x, const double nu)
 {
-  if (x <= 0)
+  if (x < 0)
     {
       return 0 ;
     }
   else
     {
-      double p;
-      double lngamma = gsl_sf_lngamma (nu / 2);
-      
-      p = exp ((nu / 2 - 1) * log (x/2) - x/2 - lngamma) / 2;
-      return p;
+      if(nu == 2.0)
+        {
+          return exp(-x/2.0) / 2.0;
+        }
+      else
+        {
+          double p;
+          double lngamma = gsl_sf_lngamma (nu / 2);
+
+          p = exp ((nu / 2 - 1) * log (x/2) - x/2 - lngamma) / 2;
+          return p;
+        }
     }
 }

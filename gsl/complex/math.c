@@ -1,10 +1,10 @@
 /* complex/math.c
  * 
- * Copyright (C) 1996, 1997, 1998, 1999, 2000 Jorma Olavi Tähtinen, Brian Gough
+ * Copyright (C) 1996, 1997, 1998, 1999, 2000, 2007 Jorma Olavi Tähtinen, Brian Gough
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but
@@ -50,16 +50,6 @@
 /**********************************************************************
  * Complex numbers
  **********************************************************************/
-
-#ifndef HIDE_INLINE_STATIC
-gsl_complex
-gsl_complex_rect (double x, double y)
-{                               /* return z = x + i y */
-  gsl_complex z;
-  GSL_SET_COMPLEX (&z, x, y);
-  return z;
-}
-#endif
 
 gsl_complex
 gsl_complex_polar (double r, double theta)
@@ -354,7 +344,22 @@ gsl_complex_pow (gsl_complex a, gsl_complex b)
 
   if (GSL_REAL (a) == 0 && GSL_IMAG (a) == 0.0)
     {
-      GSL_SET_COMPLEX (&z, 0.0, 0.0);
+      if (GSL_REAL (b) == 0 && GSL_IMAG (b) == 0.0)
+        {
+          GSL_SET_COMPLEX (&z, 1.0, 0.0);
+        }
+      else 
+        {
+          GSL_SET_COMPLEX (&z, 0.0, 0.0);
+        }
+    }
+  else if (GSL_REAL (b) == 1.0 && GSL_IMAG (b) == 0.0) 
+    {
+      return a;
+    }
+  else if (GSL_REAL (b) == -1.0 && GSL_IMAG (b) == 0.0) 
+    {
+      return gsl_complex_inverse (a);
     }
   else
     {
@@ -379,7 +384,14 @@ gsl_complex_pow_real (gsl_complex a, double b)
 
   if (GSL_REAL (a) == 0 && GSL_IMAG (a) == 0)
     {
-      GSL_SET_COMPLEX (&z, 0, 0);
+      if (b == 0)
+        {
+          GSL_SET_COMPLEX (&z, 1, 0);
+        }
+      else
+        {
+          GSL_SET_COMPLEX (&z, 0, 0);
+        }
     }
   else
     {

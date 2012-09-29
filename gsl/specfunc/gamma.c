@@ -4,7 +4,7 @@
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but
@@ -1246,7 +1246,7 @@ int gsl_sf_lngamma_sgn_e(double x, gsl_sf_result * result_lg, double * sgn)
     result_lg->val = 0.0;
     result_lg->err = 0.0;
     *sgn = 0.0;
-    GSL_ERROR ("error", GSL_EROUND);
+    GSL_ERROR ("x too large to extract fraction part", GSL_EROUND);
   }
 }
 

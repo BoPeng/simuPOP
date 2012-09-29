@@ -1,10 +1,10 @@
 /* randist/exponential.c
  * 
- * Copyright (C) 1996, 1997, 1998, 1999, 2000 James Theiler, Brian Gough
+ * Copyright (C) 1996, 1997, 1998, 1999, 2000, 2007, 2009 James Theiler, Brian Gough
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but
@@ -19,6 +19,7 @@
 
 #include <config.h>
 #include <math.h>
+#include <gsl/gsl_math.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
@@ -31,9 +32,9 @@
 double
 gsl_ran_exponential (const gsl_rng * r, const double mu)
 {
-  double u = gsl_rng_uniform_pos (r);
+  double u = gsl_rng_uniform (r);
 
-  return -mu * log (u);
+  return -mu * log1p (-u);
 }
 
 double

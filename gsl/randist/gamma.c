@@ -1,10 +1,10 @@
 /* randist/gamma.c
  * 
- * Copyright (C) 1996, 1997, 1998, 1999, 2000 James Theiler, Brian Gough
+ * Copyright (C) 1996, 1997, 1998, 1999, 2000, 2007 James Theiler, Brian Gough
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but
@@ -43,7 +43,11 @@ gsl_ran_gamma_knuth (const gsl_rng * r, const double a, const double b)
   /* assume a > 0 */
   unsigned int na = floor (a);
 
-  if (a == na)
+  if(a >= UINT_MAX) 
+    {
+      return b * (gamma_large (r, floor (a)) + gamma_frac (r, a - floor (a)));
+    }
+  else if (a == na)
     {
       return b * gsl_ran_gamma_int (r, na);
     }
@@ -116,6 +120,11 @@ gamma_frac (const gsl_rng * r, const double a)
      on page 551.  */
 
   double p, q, x, u, v;
+
+  if (a == 0) {
+    return 0;
+  }
+
   p = M_E / (a + M_E);
   do
     {

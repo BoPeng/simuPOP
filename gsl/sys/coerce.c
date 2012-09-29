@@ -1,10 +1,10 @@
 /* sys/coerce.c
  * 
- * Copyright (C) 1996, 1997, 1998, 1999, 2000 Brian Gough
+ * Copyright (C) 1996, 1997, 1998, 1999, 2000, 2007 Brian Gough
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but
@@ -19,8 +19,7 @@
 
 #include <config.h>
 #include <math.h>
-
-double gsl_coerce_double (const double x);
+#include <gsl/gsl_sys.h>
 
 double 
 gsl_coerce_double (const double x)
@@ -29,8 +28,6 @@ gsl_coerce_double (const double x)
   y = x;
   return y;
 }
-
-float gsl_coerce_float (const float x);
 
 float 
 gsl_coerce_float (const float x)
@@ -41,8 +38,6 @@ gsl_coerce_float (const float x)
 }
 
 /* The following function is not needed, but is included for completeness */
-
-long double gsl_coerce_long_double (const long double x);
 
 long double 
 gsl_coerce_long_double (const long double x)
