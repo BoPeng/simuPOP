@@ -4209,43 +4209,54 @@ void statEffectiveSize::LDNe(const LDLIST & ld, size_t S, size_t L, vectorf & re
 	r2 /= weight;
 	//
 	// jackknife estimate of Var(r2)
-	// Note used now because not sure how to calculate CI from it
-	/*
-	   if (J > 1) {
-	    double x = 0;
-	    double xx = 0;
-	    for (size_t loc = 0; loc < L; ++loc) {
-	        // remove any LD values related to locus loc
-	        double r2_jn = 0;
-	        double weight_jn = 0;
-	        for (size_t i = 0, k = 0; i + 1 < L; ++i) {
-	            for (size_t j = i + 1; j < L; ++j, ++k) {
-	                if (i == loc || j == loc)
-	                    continue;
-	                r2_jn += ld[k].first * ld[k].second;
-	                weight_jn += ld[k].second;
-	            }
-	        }
-	        r2_jn /= weight_jn;
-	        x += r2_jn;
-	        xx += r2_jn * r2_jn;
-	    }
-	    double var_r2 = (L - 1.) / L * (xx / L - x * x / (L * L));
-	    double phi = var_r2 / (r2 * r2);
-	    double n_prime = 2. / phi;
-	   }
-	 */
+	double x = 0.;
+	double xx = 0.;
+	for (size_t i = 0; i < J; ++i) {
+		double r2_jn = 0;
+		double weight_jn = 0;
+		for (size_t j = 0; j < J; ++j) {
+			if (i == j)
+				continue;
+			r2_jn += ld[j].first * ld[j].second;
+			weight_jn += ld[j].second;
+		}
+		r2_jn /= weight_jn;
+		x += r2_jn;
+		xx += r2_jn * r2_jn;
+	}
+	double var_r2 = (J - 1.) / J * (xx - x * x / J);
+	size_t n_prime = static_cast<size_t>(2. / var_r2 * r2 * r2);
+
+	// in the parametric case, weight is used as n
+	// in the nonparametric case, n' is used as a jackknife estimate of n
 	res[0] = r2;
-	res[1] = weight * r2 / gsl_cdf_chisq_Pinv(0.025, weight);
-	res[2] = weight * r2 / gsl_cdf_chisq_Pinv(0.975, weight);
-	DBG_DO(DBG_STATOR, cerr << "r2 (CI): " << res << endl);
+	try {
+		res[1] = n_prime * r2 / gsl_cdf_chisq_Pinv(0.025, n_prime);
+	} catch (SystemError & e) {
+		DBG_WARNIF(true, "GSL Error raised during CI calculation. nan is returned.");
+		res[1] = -9999;
+	}
+	try {
+		res[2] = n_prime * r2 / gsl_cdf_chisq_Pinv(0.975, n_prime);
+	} catch (SystemError & e) {
+		DBG_WARNIF(true, "GSL Error raised during CI calculation. nan is returned.");
+		res[2] = -9999;
+	}
+	DBG_DO(DBG_STATOR, cerr << "r2 (CI): " << res << " (weight=" << weight << " JN n'=" << n_prime << endl);
 	// res now holds r2, r2_low and r2_high
+	//
+	// this is the original formula
 	/*
 	   for (size_t i = 0; i < 3; ++i)
 	    res[i] = 1. / (3. * (res[i] - 1. / S));
 	 */
 	// applying correction from Waples 2006
 	for (size_t i = 0; i < 3; ++i) {
+		if (res[i] == -9999) {
+			// use -9999 to avoid using isnan which is not always available
+			res[i] = 1.0 / 0.0;
+			continue;
+		}
 		if (S >= 30) {
 			// correct r2 by sampling error
 			double r2prime = res[i] - 1. / S - 3.19 / (S * S);

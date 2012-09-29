@@ -815,13 +815,24 @@ class TestStat(unittest.TestCase):
         )
         stat(pop, LD=[[0,1], [1,2],[2,3]], vars=['R2'])
         # export(pop, output='ldne.txt', format='GENEPOP')
+        turnOnDebug('DBG_STATOR')
         stat(pop, effectiveSize=ALL_AVAIL, vars=['Ne_LD', 'Ne_LD_mono'])
         self.assertAlmostEqual(pop.dvars().Ne_LD[0], 137.6, 1)
-        self.assertAlmostEqual(pop.dvars().Ne_LD[1], 74.8, 1)
-        self.assertAlmostEqual(pop.dvars().Ne_LD[2], 413.4, 1)
+        # parametric estimates 
+        #self.assertAlmostEqual(pop.dvars().Ne_LD[1], 74.8, 1)
+        #self.assertAlmostEqual(pop.dvars().Ne_LD[2], 413.4, 1)
+        # Jackknife
+        self.assertAlmostEqual(pop.dvars().Ne_LD[1], 76.4, 0)
+        self.assertAlmostEqual(pop.dvars().Ne_LD[2], 383.9, 0)
+        #
+        # monopoly
         self.assertAlmostEqual(pop.dvars().Ne_LD_mono[0], 276.7, 1)
-        self.assertAlmostEqual(pop.dvars().Ne_LD_mono[1], 151.1, 1)
-        self.assertAlmostEqual(pop.dvars().Ne_LD_mono[2], 828.3, 0)
+        # parametric estimate
+        #self.assertAlmostEqual(pop.dvars().Ne_LD_mono[1], 151.1, 1)
+        #self.assertAlmostEqual(pop.dvars().Ne_LD_mono[2], 828.3, 0)
+        # jackknife
+        self.assertAlmostEqual(pop.dvars().Ne_LD_mono[1], 154.4, 1)
+        self.assertAlmostEqual(pop.dvars().Ne_LD_mono[2], 769.2, 0)
 
 if __name__ == '__main__':
     unittest.main()
