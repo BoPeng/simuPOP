@@ -95,7 +95,7 @@
 /* #undef HAVE_IEEE_DENORMALS */
 
 /* "Define if you have inline" */
-/* #undef HAVE_INLINE */
+#define HAVE_INLINE 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
@@ -299,3 +299,5 @@
 #if defined(GSL_RANGE_CHECK_OFF) || !defined(GSL_RANGE_CHECK)
 #define GSL_RANGE_CHECK 0                         /* turn off range checking by default internally */
 #endif
+
+#define RETURN_IF_NULL(x) if (!x) { return ; }
