@@ -3542,7 +3542,7 @@ void statEffectiveSize::Waples89(size_t S0, size_t St, size_t t,
 	}
 	for (size_t i = 0; i < 3; ++i)
 		if (res[i] < 0)
-			res[i] = 1.0 / 0.0;  // inf
+			res[i] = std::numeric_limits<float>::infinity();
 }
 
 
@@ -3639,7 +3639,7 @@ void statEffectiveSize::TempoFS(size_t S0, size_t St, size_t t,
 	res[2] = 0.5 * t / (JackFsprim - 1.96 * JackFsprimSE);
 	for (size_t i = 0; i < 3; ++i)
 		if (res[i] < 0)
-			res[i] = 1.0 / 0.0;  // inf
+			res[i] = std::numeric_limits<float>::infinity();
 }
 
 
@@ -3668,11 +3668,11 @@ bool statEffectiveSize::apply(Population & pop) const
 bool statEffectiveSize::demographicEffectiveSize(Population & pop) const
 {
 	if (m_vars.contains(Ne_demo_base_String) || m_vars.contains(Ne_demo_base_sp_String)) {
+#ifdef LINEAGE
 		// go through all individuals, record population size and set lineage
 		size_t idx = 1;
 		const vectoru & loci = m_loci.elems(&pop);
 
-#ifdef LINEAGE
 		// store involved parents
 		vectoru parents(0);
 		size_t ploidy = pop.ploidy();
@@ -4202,7 +4202,7 @@ statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT
 //     1-2 1-3
 //         2-3
 // and there will be 6=4*3/2 pairs.
-void statEffectiveSize::LDNe(const LDLIST & ld, size_t S, size_t L, vectorf & res, vectorf & res_mono) const
+void statEffectiveSize::LDNe(const LDLIST & ld, size_t S, vectorf & res, vectorf & res_mono) const
 {
 	DBG_DO(DBG_DEVEL, cerr << "LD: " << ld << endl);
 
@@ -4267,7 +4267,7 @@ void statEffectiveSize::LDNe(const LDLIST & ld, size_t S, size_t L, vectorf & re
 	for (size_t i = 0; i < 3; ++i) {
 		if (res[i] == -9999) {
 			// use -9999 to avoid using isnan which is not always available
-			res[i] = 1.0 / 0.0;
+			res[i] = std::numeric_limits<double>::infinity();
 			continue;
 		}
 		if (S >= 30) {
@@ -4276,17 +4276,17 @@ void statEffectiveSize::LDNe(const LDLIST & ld, size_t S, size_t L, vectorf & re
 			res[i] = (1 / 3. + sqrt(1 / 9. - 2.76 * r2prime)) / (2. * r2prime);
 			res_mono[i] = (2 / 3. + sqrt(4 / 9. - 7.2 * r2prime)) / (2. * r2prime);
 			if (res[i] < 0)
-				res[i] = 1.0 / 0.0;
+				res[i] = std::numeric_limits<double>::infinity();
 			if (res_mono[i] < 0)
-				res_mono[i] = 1.0 / 0.0;  // infinity
+				res_mono[i] = std::numeric_limits<double>::infinity();
 		} else {
 			double r2prime = res[i] - 0.0018 - 0.907 / S - 4.44 / (S * S);
 			res[i] = (0.308 + sqrt(0.308 * 0.308 - 2.08 * r2prime)) / (2. * r2prime);
 			res_mono[i] = (0.618 + sqrt(0.618 * 0.618 - 5.24 * r2prime)) / (2 * r2prime);
 			if (res[i] < 0)
-				res[i] = 1.0 / 0.0;
+				res[i] = std::numeric_limits<double>::infinity();
 			if (res_mono[i] < 0)
-				res_mono[i] = 1.0 / 0.0;
+				res_mono[i] = std::numeric_limits<double>::infinity();
 		}
 	}
 }
@@ -4405,7 +4405,7 @@ bool statEffectiveSize::LDEffectiveSize(Population & pop) const
 	if (all_stat) {
 		vectorf res;
 		vectorf res_mono;
-		LDNe(all_ld, accumulate(subpop_size.begin(), subpop_size.end(), 0), loci.size(), res, res_mono);
+		LDNe(all_ld, accumulate(subpop_size.begin(), subpop_size.end(), 0), res, res_mono);
 		if (m_vars.contains(Ne_LD_String))
 			pop.getVars().setVar(Ne_LD_String + m_suffix, res);
 		if (m_vars.contains(Ne_LD_mono_String))
@@ -4417,7 +4417,7 @@ bool statEffectiveSize::LDEffectiveSize(Population & pop) const
 		for (size_t spIdx = 0; sp != spEnd; ++sp, ++spIdx) {
 			vectorf res;
 			vectorf res_mono;
-			LDNe(subpop_ld[spIdx], subpop_size[spIdx], loci.size(), res, res_mono);
+			LDNe(subpop_ld[spIdx], subpop_size[spIdx], res, res_mono);
 			if (m_vars.contains(Ne_LD_sp_String))
 				pop.getVars().setVar(subPopVar_String(*sp, Ne_LD_String, m_suffix), res);
 			if (m_vars.contains(Ne_LD_mono_sp_String))

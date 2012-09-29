@@ -956,7 +956,7 @@ private:
 	R2WEIGHT Burrows(size_t N, const ALLELECNT & a1, const ALLELECNT & a2,
 		const HOMOCNT & h1, const HOMOCNT & h2, const GENOTYPECNT & g) const;
 
-	void LDNe(const LDLIST & ld, size_t S, size_t L, vectorf & res, vectorf & res_mono) const;
+	void LDNe(const LDLIST & ld, size_t S, vectorf & res, vectorf & res_mono) const;
 
 public:
 	statEffectiveSize(const lociList & loci, const subPopList & subPops,
