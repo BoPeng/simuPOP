@@ -1469,7 +1469,8 @@ public:
 	 *       should better be applied to a random sample of the population. To
 	 *       reduce bias caused by rare alleles, alleles with frequencies less than
 	 *       0.01 are ignored (program LDNe gives option for 0, 0.01, 0.02,
-	 *       and 0.05). 95% CI is calculated using a parametric method.
+	 *       and 0.05). 95% CI is calculated using a Jackknife estimated effective
+	 *       number of independent alleles.
 	 *  \li \c Ne_LD_sp Estimate LD-based effective population size for each specified
 	 *       (virtual) subpopulation.
 	 *  \li \c Ne_LD_mono A version of Ne_LD that assumes monogamy (see Waples 2006
