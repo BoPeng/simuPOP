@@ -1,10 +1,10 @@
 /* rng/ran3.c
  * 
- * Copyright (C) 1996, 1997, 1998, 1999, 2000 James Theiler, Brian Gough
+ * Copyright (C) 1996, 1997, 1998, 1999, 2000, 2007, 2010 James Theiler, Brian Gough
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but
@@ -83,6 +83,9 @@ ran3_set (void *vstate, unsigned long int s)
     s = 1;      /* default seed is 1 */
 
   j = (M_SEED - s) % M_BIG;
+
+  /* Avoid potential problem with negative values */
+  if (j < 0) j += M_BIG;
 
   /* the zeroth element is never used, but we initialize it for
      consistency between states */

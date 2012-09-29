@@ -1,10 +1,10 @@
 /* rng/ranlxs.c
  * 
- * Copyright (C) 1996, 1997, 1998, 1999, 2000 James Theiler, Brian Gough
+ * Copyright (C) 1996, 1997, 1998, 1999, 2000, 2007 James Theiler, Brian Gough
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but
@@ -217,7 +217,7 @@ ranlxs_set_lux (void *vstate, unsigned long int s, unsigned int luxury)
 
   seed = s;
 
-  i = seed & 0xFFFFFFFFUL;
+  i = seed & 0x7FFFFFFFUL;  /* Allowed seeds for ranlxs are 0 .. 2^31-1 */
 
   for (k = 0; k < 31; ++k)
     {

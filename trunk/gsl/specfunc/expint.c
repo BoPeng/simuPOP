@@ -1,10 +1,11 @@
 /* specfunc/expint.c
  * 
+ * Copyright (C) 2007 Brian Gough
  * Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002 Gerard Jungman
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but
@@ -23,8 +24,10 @@
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_sf_expint.h>
+#include <gsl/gsl_sf_gamma.h>
 
 #include "error.h"
+#include "check.h"
 
 #include "chebyshev.h"
 #include "cheb_eval.c"
@@ -416,7 +419,46 @@ int expint_E2_impl(const double x, gsl_sf_result * result, const int scale)
   }
 }
 
-
+static
+int expint_En_impl(const int n, const double x, gsl_sf_result * result, const int scale)
+{
+  if (n < 0) {
+    DOMAIN_ERROR(result);
+  } else if (n == 0) {
+    if (x == 0) {
+      DOMAIN_ERROR(result);
+    } else {
+      result->val = (scale ? 1.0 : exp(-x)) / x;
+      result->err = 2 * GSL_DBL_EPSILON * fabs(result->val);
+      CHECK_UNDERFLOW(result);
+      return GSL_SUCCESS;
+    }
+  } else if (n == 1) {
+    return expint_E1_impl(x, result, scale);
+  } else if (n == 2) {
+    return expint_E2_impl(x, result, scale);
+  } else { 
+    if(x < 0) {
+      DOMAIN_ERROR(result);
+    }
+    if (x == 0) {
+      result->val = (scale ? exp(x) : 1 ) * (1/(n-1.0));
+      result->err = 2 * GSL_DBL_EPSILON * fabs(result->val);
+      CHECK_UNDERFLOW(result);
+      return GSL_SUCCESS;
+    } else {
+      gsl_sf_result result_g;
+      double prefactor = pow(x, n-1);
+      int status = gsl_sf_gamma_inc_e (1-n, x, &result_g);
+      double scale_factor = ( scale ? exp(x) : 1.0 );
+      result->val = scale_factor * prefactor * result_g.val;
+      result->err = 2 * GSL_DBL_EPSILON * fabs(result->val);
+      result->err += 2 * fabs(scale_factor * prefactor * result_g.err);
+      if (status == GSL_SUCCESS) CHECK_UNDERFLOW(result);
+      return status;
+    }
+  }
+}
 
 /*-*-*-*-*-*-*-*-*-*-*-* Functions with Error Codes *-*-*-*-*-*-*-*-*-*-*-*/
 
@@ -442,6 +484,17 @@ int gsl_sf_expint_E2_e(const double x, gsl_sf_result * result)
 int gsl_sf_expint_E2_scaled_e(const double x, gsl_sf_result * result)
 {
   return expint_E2_impl(x, result, 1);
+}
+
+int gsl_sf_expint_En_e(const int n, const double x, gsl_sf_result * result)
+{
+  return expint_En_impl(n, x, result, 0);
+}
+
+
+int gsl_sf_expint_En_scaled_e(const int n, const double x, gsl_sf_result * result)
+{
+  return expint_En_impl(n, x, result, 1);
 }
 
 
@@ -505,6 +558,16 @@ double gsl_sf_expint_E2(const double x)
 double gsl_sf_expint_E2_scaled(const double x)
 {
   EVAL_RESULT(gsl_sf_expint_E2_scaled_e(x, &result));
+}
+
+double gsl_sf_expint_En(const int n, const double x)
+{
+  EVAL_RESULT(gsl_sf_expint_En_e(n, x, &result));
+}
+
+double gsl_sf_expint_En_scaled(const int n, const double x)
+{
+  EVAL_RESULT(gsl_sf_expint_En_scaled_e(n, x, &result));
 }
 
 double gsl_sf_expint_Ei(const double x)

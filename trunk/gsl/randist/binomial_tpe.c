@@ -1,10 +1,10 @@
 /* randist/binomial_tpe.c
  * 
- * Copyright (C) 1996-2003 James Theiler, Brian Gough
+ * Copyright (C) 1996, 2003, 2007 James Theiler, Brian Gough
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but
@@ -117,7 +117,7 @@ gsl_ran_binomial (const gsl_rng * rng, double p, unsigned int n)
 
   if (np < SMALL_MEAN)
     {
-      double f0 = gsl_pow_int (q, n);   /* f(x), starting with x=0 */
+      double f0 = gsl_pow_uint (q, n);   /* f(x), starting with x=0 */
 
       while (1)
         {

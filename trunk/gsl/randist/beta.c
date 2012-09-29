@@ -1,10 +1,10 @@
 /* randist/beta.c
  * 
- * Copyright (C) 1996, 1997, 1998, 1999, 2000 James Theiler, Brian Gough
+ * Copyright (C) 1996, 1997, 1998, 1999, 2000, 2007 James Theiler, Brian Gough
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but
@@ -56,7 +56,14 @@ gsl_ran_beta_pdf (const double x, const double a, const double b)
       
       if (x == 0.0 || x == 1.0) 
         {
-          p = exp (gab - ga - gb) * pow (x, a - 1) * pow (1 - x, b - 1);
+	  if (a > 1.0 && b > 1.0)
+	    {
+	      p = 0.0;
+	    }
+	  else
+	    {
+	      p = exp (gab - ga - gb) * pow (x, a - 1) * pow (1 - x, b - 1);
+	    }
         }
       else
         {

@@ -4,7 +4,7 @@
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but
@@ -18,27 +18,30 @@
  */
 #include <config.h>
 #include <math.h>
-#include <gsl/gsl_pow_int.h>
 
-#ifndef HIDE_INLINE_STATIC
-double gsl_pow_2(const double x) { return x*x;   }
-double gsl_pow_3(const double x) { return x*x*x; }
-double gsl_pow_4(const double x) { double x2 = x*x;   return x2*x2;    }
-double gsl_pow_5(const double x) { double x2 = x*x;   return x2*x2*x;  }
-double gsl_pow_6(const double x) { double x2 = x*x;   return x2*x2*x2; }
-double gsl_pow_7(const double x) { double x3 = x*x*x; return x3*x3*x;  }
-double gsl_pow_8(const double x) { double x2 = x*x;   double x4 = x2*x2; return x4*x4; }
-double gsl_pow_9(const double x) { double x3 = x*x*x; return x3*x3*x3; }
-#endif
+/* Compile all the inline functions */
+
+#define COMPILE_INLINE_STATIC
+#include "build.h"
+#include <gsl/gsl_pow_int.h>
 
 double gsl_pow_int(double x, int n)
 {
-  double value = 1.0;
+  unsigned int un;
 
   if(n < 0) {
     x = 1.0/x;
-    n = -n;
+    un = -n;
+  } else {
+    un = n;
   }
+
+  return gsl_pow_uint(x, un);
+}
+
+double gsl_pow_uint(double x, unsigned int n)
+{
+  double value = 1.0;
 
   /* repeated squaring method 
    * returns 0.0^0 = 1.0, so continuous in x
@@ -51,4 +54,3 @@ double gsl_pow_int(double x, int n)
 
   return value;
 }
-

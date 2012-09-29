@@ -1,10 +1,11 @@
 /* specfunc/psi.c
  * 
+ * Copyright (C) 2007 Brian Gough
  * Copyright (C) 1996, 1997, 1998, 1999, 2000, 2004, 2005, 2006 Gerard Jungman
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
+ * the Free Software Foundation; either version 3 of the License, or (at
  * your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful, but
@@ -526,18 +527,26 @@ psi_complex_rhp(
   /* compute asymptotic at the large value z + n_recurse */
   a = psi_complex_asymp(gsl_complex_add_real(z, n_recurse));
 
+  result_re->err = 2.0 * GSL_DBL_EPSILON * fabs(GSL_REAL(a));
+  result_im->err = 2.0 * GSL_DBL_EPSILON * fabs(GSL_IMAG(a));
+
   /* descend recursively, if necessary */
   for(i = n_recurse; i >= 1; --i)
   {
     gsl_complex zn = gsl_complex_add_real(z, i - 1.0);
     gsl_complex zn_inverse = gsl_complex_inverse(zn);
     a = gsl_complex_sub(a, zn_inverse);
+
+    /* accumulate the error, to catch cancellations */
+    result_re->err += 2.0 * GSL_DBL_EPSILON * fabs(GSL_REAL(zn_inverse));
+    result_im->err += 2.0 * GSL_DBL_EPSILON * fabs(GSL_IMAG(zn_inverse));
   }
 
   result_re->val = GSL_REAL(a);
   result_im->val = GSL_IMAG(a);
-  result_re->err = 2.0 * (1.0 + n_recurse) * GSL_DBL_EPSILON * fabs(result_re->val);
-  result_im->err = 2.0 * (1.0 + n_recurse) * GSL_DBL_EPSILON * fabs(result_im->val);
+
+  result_re->err += 2.0 * GSL_DBL_EPSILON * fabs(result_re->val);
+  result_im->err += 2.0 * GSL_DBL_EPSILON * fabs(result_im->val);
 
   return GSL_SUCCESS;
 }
