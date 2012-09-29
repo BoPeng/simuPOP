@@ -409,3 +409,6 @@ library with HAVE_EXTENDED_PRECISION_REGISTERS turned off. */
 #else
 #define DISCARD_POINTER(p)                        /* ignoring discarded pointer */
 #endif
+
+#define RETURN_IF_NULL(x) if (!x) { return ; }
+

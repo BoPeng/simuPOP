@@ -111,6 +111,7 @@ include src/sampling.py
 include src/sandbox.py
 
 # gsl files
+include gsl/build.h
 include gsl/gsl_machine.h
 include gsl/gsl_minmax.h
 include gsl/gsl_inline.h

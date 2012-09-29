@@ -300,3 +300,5 @@
 #if defined(GSL_RANGE_CHECK_OFF) || !defined(GSL_RANGE_CHECK)
 #define GSL_RANGE_CHECK 0                         /* turn off range checking by default internally */
 #endif
+
+#define RETURN_IF_NULL(x) if (!x) { return ; }
