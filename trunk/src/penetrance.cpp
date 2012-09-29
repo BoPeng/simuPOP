@@ -114,7 +114,7 @@ bool BasePenetrance::applyToIndividual(Individual * ind, Population * pop)
 }
 
 
-bool BasePenetrance::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
+bool BasePenetrance::applyDuringMating(Population & /* pop */, Population & offPop, RawIndIterator offspring,
                                        Individual * /* dad */, Individual * /* mom */) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
@@ -376,7 +376,7 @@ double PyPenetrance::penet(Population * pop, RawIndIterator ind) const
 
 PyMlPenetrance::PyMlPenetrance(PyObject * func, int mode, const lociList & loci,
 	const uintList & ancGens,
-	const stringFunc & output, int begin, int end, int step, const intList & at,
+	const stringFunc & /* output */, int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops, const stringList & infoFields) :
 	BasePenetrance(ancGens, begin, end, step, at, reps, subPops, infoFields),
 	m_func(func), m_mode(mode), m_loci(loci), m_searchMode(0),
