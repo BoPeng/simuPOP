@@ -155,6 +155,7 @@ public:
 	bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
 	                       Individual * dad = NULL, Individual * mom = NULL) const
 	{
+		(void)pop;  // avoid warning about unused parameter
 		(void)dad;  // avoid warning about unused parameter
 		(void)mom;  // avoid warning about unused parameter
 		// if offspring does not belong to subPops, do nothing, but does not fail.

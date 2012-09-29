@@ -3322,7 +3322,6 @@ bool statInbreeding::apply(Population & pop) const
 	uintDict allIBDCnt;
 	uintDict allIBSCnt;
 	size_t allCnt = 0;
-	size_t nLoci = loci.size();
 
 	// selected (virtual) subpopulatons.
 	subPopList subPops = m_subPops.expandFrom(pop);
