@@ -19301,6 +19301,18 @@ reference "statNeLD"
 \end_inset
 
  demonstrates this usage.
+ Note that because the LDNe mehod is sensitive to rare alleles (which can
+ lead to inflated measure of LD), simuPOP provides estimates that ignores
+ alleles with frequencies less than 0 (all alleles are kept), 0.01, 0.02 and
+ 0.05.
+ The results are saved in variable 
+\family typewriter
+Ne_LD
+\family default
+ as a dictionary with keys 0, 0.01, 0.02, 0.05, and values as lists of estimated
+ effective population sizes and their 95% confidence intervals.
+ Because of the existence of many rare alleles, the example gives quite
+ different estimates with and without rare alleles (using cutoff=0.02).
 \end_layout
 
 \begin_layout Standard
@@ -19346,7 +19358,7 @@ LDNe: Markers are selectively neutral and independent; population has discrete
 \begin_layout Standard
 In addition, to keep the interface simple, simuPOP does not provide many
  options as dedicated programs do (e.g.
- TempoFS, LDNe).
+ TempoFS).
  Please export your samples in other formats (e.g.
  use operator 
 \family typewriter

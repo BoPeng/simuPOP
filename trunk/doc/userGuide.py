@@ -3685,13 +3685,14 @@ pop.setVirtualSplitter(sim.RangeSplitter([0, 500]))
 pop.evolve(
     initOps=[
         sim.InitSex(),
-        sim.InitGenotype(freq=[0.3, 0.7]),
+        sim.InitGenotype(freq=[0.005]*4 + [0.015]*2 + [0.25, 0.7]),
     ],
     preOps=[
         sim.Stat(effectiveSize=sim.ALL_AVAIL, subPops=[(0,0)], 
             vars='Ne_LD', step=20),
-        sim.PyEval(r'"LD Ne (till %d): %.1f (%.1f - %.1f)\n" % '
-            'tuple([gen] + Ne_LD)',
+        sim.PyEval(r'"LD Ne (gen %d): %.1f (%.1f - %.1f)'
+            r', %.1f (%.1f - %.1f, adjusted)\n" % '
+            'tuple([gen] + Ne_LD[0.] + Ne_LD[0.02])',
             step=20)
     ],
     matingScheme=sim.RandomMating(),

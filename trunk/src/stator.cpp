@@ -4091,29 +4091,23 @@ statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT
 	   we are doing because we ordered alleles by number and add the counts
 	   together. Only one counte is needed.
 
-	   The last item is from allele frequency and is easy to calculate. Here
-	   we ignore alleles with frequency less than 0.01
 	 */
-	//
-	// step 1: get qualifying alleles at two loci
-	//
-	//
 	vectoru alleles_1;
 	vectorf freq_1;
 	vectorf homo_freq_1;
-	size_t Ki_all = allele_cnt_i.size();
-	vectoru Ki(3, 0);
+	vectoru Ki(4, 0);
 	ALLELECNT::const_iterator a1_it = allele_cnt_i.begin();
 	ALLELECNT::const_iterator a1_it_end = allele_cnt_i.end();
 	for (; a1_it != a1_it_end; ++a1_it) {
 		alleles_1.push_back(a1_it->first);
 		freq_1.push_back(a1_it->second / (2. * N));
+		Ki[0] += 1;
 		if (freq_1.back() >= 0.01) {
-			Ki[0] += 1;
+			Ki[1] += 1;
 			if (freq_1.back() >= 0.02) {
-				Ki[1] += 1;
+				Ki[2] += 1;
 				if (freq_1.back() >= 0.05)
-					Ki[2] += 1;
+					Ki[3] += 1;
 			}
 		}
 		HOMOCNT::const_iterator hit = homo_cnt_i.find(a1_it->first);
@@ -4126,19 +4120,19 @@ statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT
 	vectoru alleles_2;
 	vectorf freq_2;
 	vectorf homo_freq_2;
-	size_t Kj_all = allele_cnt_j.size();
-	vectoru Kj(3, 0);
+	vectoru Kj(4, 0);
 	ALLELECNT::const_iterator a2_it = allele_cnt_j.begin();
 	ALLELECNT::const_iterator a2_it_end = allele_cnt_j.end();
 	for (; a2_it != a2_it_end; ++a2_it) {
 		alleles_2.push_back(a2_it->first);
 		freq_2.push_back(a2_it->second / (2. * N));
+		Kj[0] += 1;
 		if (freq_2.back() >= 0.01) {
-			Kj[0] += 1;
+			Kj[1] += 1;
 			if (freq_2.back() >= 0.02) {
-				Kj[1] += 1;
+				Kj[2] += 1;
 				if (freq_2.back() >= 0.05)
-					Kj[2] += 1;
+					Kj[3] += 1;
 			}
 		}
 		HOMOCNT::const_iterator hit = homo_cnt_j.find(a2_it->first);
@@ -4152,11 +4146,9 @@ statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT
 	GENOTYPE geno(4);
 	GENOTYPECNT::const_iterator geno_cnt_it;
 	GENOTYPECNT::const_iterator geno_cnt_it_end = geno_cnt.end();
-	vectorf r2(3, 0.);
-	for (size_t i = 0; i < Ki_all; ++i) {
-		for (size_t j = 0; j < Kj_all; ++j) {
-			if (freq_1[i] < 0.01 || freq_2[j] < 0.01)
-				continue;
+	vectorf r2(4, 0.);
+	for (size_t i = 0; i < Ki[0]; ++i) {
+		for (size_t j = 0; j < Kj[0]; ++j) {
 			size_t a1 = alleles_1[i];
 			size_t a2 = alleles_2[j];
 			//
@@ -4166,9 +4158,9 @@ statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT
 			// P_..^ij + P_.j^i.
 			geno[2] = a1;
 			geno[3] = a2;
-			for (size_t k = 0; k < Ki_all; ++k) {
+			for (size_t k = 0; k < Ki[0]; ++k) {
 				geno[0] = alleles_1[k];
-				for (size_t l = 0; l < Kj_all; ++l) {
+				for (size_t l = 0; l < Kj[0]; ++l) {
 					geno[1] = alleles_2[l];
 					geno_cnt_it = geno_cnt.find(geno);
 					if (geno_cnt_it != geno_cnt_it_end)
@@ -4177,9 +4169,9 @@ statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT
 			}
 			geno[1] = a2;
 			geno[2] = a1;
-			for (size_t k = 0; k < Ki_all; ++k) {
+			for (size_t k = 0; k < Ki[0]; ++k) {
 				geno[0] = alleles_1[k];
-				for (size_t l = 0; l < Kj_all; ++l) {
+				for (size_t l = 0; l < Kj[0]; ++l) {
 					geno[3] = alleles_2[l];
 					geno_cnt_it = geno_cnt.find(geno);
 					if (geno_cnt_it != geno_cnt_it_end)
@@ -4198,20 +4190,23 @@ statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT
 			                            (freq_2[j] * (1. - freq_2[j]) + (homo_freq_2[j] - freq_2[j] * freq_2[j]))
 			                            );
 			r2[0] += r2_ij;
-			if (freq_1[i] >= 0.02 && freq_2[j] >= 0.02) {
+			if (freq_1[i] >= 0.01 && freq_2[j] >= 0.01) {
 				r2[1] += r2_ij;
-				if (freq_1[i] >= 0.05 && freq_2[j] >= 0.05)
+				if (freq_1[i] >= 0.02 && freq_2[j] >= 0.02) {
 					r2[2] += r2_ij;
+					if (freq_1[i] >= 0.05 && freq_2[j] >= 0.05)
+						r2[3] += r2_ij;
+				}
 			}
 		}
 	}
-	vectoru weight(3, 0);
-	for (size_t c = 0; c < 3; ++c) {
+	vectoru weight(4, 0);
+	for (size_t c = 0; c < 4; ++c) {
 		r2[c] /= Ki[c] * Kj[c];
 		// allele_cnt_i/j give total number of alleles
 		// if Ki == cnt, degree of freedom - 1 (independence)
 		// otherwise, use Ki directly
-		weight[c] = (Ki[c] - (Ki[c] == Ki_all ? 1 : 0)) * (Kj[c] - (Kj[c] == Kj_all ? 1 : 0));
+		weight[c] = (Ki[c] - (Ki[c] == Ki[0] ? 1 : 0)) * (Kj[c] - (Kj[c] == Kj[0] ? 1 : 0));
 	}
 
 	// theoretical weight has S2 but we do not have any missing data so S2 can be ignored
@@ -4432,11 +4427,12 @@ bool statEffectiveSize::LDEffectiveSize(Population & pop) const
 	}
 	// step 2, after we get all the pairwise ld values, ...
 	vectorstr cutoff_keys;
+	cutoff_keys.push_back("{0.}");
 	cutoff_keys.push_back("{0.01}");
 	cutoff_keys.push_back("{0.02}");
 	cutoff_keys.push_back("{0.05}");
 	if (all_stat) {
-		for (size_t cutoff = 0; cutoff < 3; ++cutoff) {
+		for (size_t cutoff = 0; cutoff < 4; ++cutoff) {
 			vectorf res;
 			vectorf res_mono;
 			LDNe(all_ld, cutoff, accumulate(subpop_size.begin(), subpop_size.end(), 0), res, res_mono);
@@ -4450,7 +4446,7 @@ bool statEffectiveSize::LDEffectiveSize(Population & pop) const
 		subPopList::const_iterator sp = subPops.begin();
 		subPopList::const_iterator spEnd = subPops.end();
 		for (size_t spIdx = 0; sp != spEnd; ++sp, ++spIdx) {
-			for (size_t cutoff = 0; cutoff < 3; ++cutoff) {
+			for (size_t cutoff = 0; cutoff < 4; ++cutoff) {
 				vectorf res;
 				vectorf res_mono;
 				LDNe(subpop_ld[spIdx], cutoff, subpop_size[spIdx], res, res_mono);
