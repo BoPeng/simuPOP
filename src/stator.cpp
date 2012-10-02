@@ -4078,9 +4078,6 @@ statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT
 	DBG_DO(DBG_DEVEL, cerr	<< " allele1: " << allele_cnt_i << " allele2: " << allele_cnt_j
 		                    << " homo1: " << homo_cnt_i << " homo2: " << homo_cnt_j
 		                    << " geno: " << geno_cnt << endl);
-	if (N <= 1)
-		return R2WEIGHT(0., 0);
-
 	/* Formula from Weir 1979, for alleles i at locus A and j at locus B
 
 	   D_ij = P_..^ij + P_.j^i. - 2 p_i q_j
@@ -4096,7 +4093,7 @@ statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT
 	   together. Only one counte is needed.
 
 	   The last item is from allele frequency and is easy to calculate. Here
-	   we ignore alleles with frequency less than 0.01.
+	   we ignore alleles with frequency less than 0.01
 	 */
 	//
 	// step 1: get qualifying alleles at two loci
@@ -4108,11 +4105,18 @@ statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT
 	vectoru alleles_1;
 	vectorf freq_1;
 	vectorf homo_freq_1;
+	vectoru Ki(3, 0);
 	for (; a1_it != a1_it_end; ++a1_it)
 		// remove a1 if its frequency is less than 0.01
-		if (a1_it->second > allele_cutoff) {
+		if (a1_it->second >= allele_cutoff) {
+			Ki[0] += 1;
 			alleles_1.push_back(a1_it->first);
 			freq_1.push_back(a1_it->second / (2. * N));
+			if (freq_1.back() >= 0.02) {
+				Ki[1] += 1;
+				if (freq_1.back() >= 0.05)
+					Ki[2] += 1;
+			}
 			HOMOCNT::const_iterator hit = homo_cnt_i.find(a1_it->first);
 			if (hit != homo_cnt_i.end())
 				homo_freq_1.push_back(hit->second / static_cast<double>(N));
@@ -4125,11 +4129,18 @@ statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT
 	vectoru alleles_2;
 	vectorf freq_2;
 	vectorf homo_freq_2;
+	vectoru Kj(3, 0);
 	for (; a2_it != a2_it_end; ++a2_it)
 		// remove a2 if its frequency is less than 0.01
-		if (a2_it->second > allele_cutoff) {
+		if (a2_it->second >= allele_cutoff) {
+			Kj[0] += 1;
 			alleles_2.push_back(a2_it->first);
 			freq_2.push_back(a2_it->second / (2. * N));
+			if (freq_2.back() >= 0.02) {
+				Kj[1] += 1;
+				if (freq_2.back() >= 0.05)
+					Kj[2] += 1;
+			}
 			HOMOCNT::const_iterator hit = homo_cnt_j.find(a2_it->first);
 			if (hit != homo_cnt_j.end())
 				homo_freq_2.push_back(hit->second / static_cast<double>(N));
@@ -4141,11 +4152,9 @@ statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT
 	GENOTYPE geno(4);
 	GENOTYPECNT::const_iterator geno_cnt_it;
 	GENOTYPECNT::const_iterator geno_cnt_it_end = geno_cnt.end();
-	size_t Ki = alleles_1.size();
-	size_t Kj = alleles_2.size();
-	double r2 = 0.;
-	for (size_t i = 0; i < Ki; ++i) {
-		for (size_t j = 0; j < Kj; ++j) {
+	vectorf r2(3, 0.);
+	for (size_t i = 0; i < Ki[0]; ++i) {
+		for (size_t j = 0; j < Kj[0]; ++j) {
 			size_t a1 = alleles_1[i];
 			size_t a2 = alleles_2[j];
 			//
@@ -4155,9 +4164,9 @@ statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT
 			// P_..^ij + P_.j^i.
 			geno[2] = a1;
 			geno[3] = a2;
-			for (size_t k = 0; k < Ki; ++k) {
+			for (size_t k = 0; k < Ki[0]; ++k) {
 				geno[0] = alleles_1[k];
-				for (size_t l = 0; l < Kj; ++l) {
+				for (size_t l = 0; l < Kj[0]; ++l) {
 					geno[1] = alleles_2[l];
 					geno_cnt_it = geno_cnt.find(geno);
 					if (geno_cnt_it != geno_cnt_it_end)
@@ -4166,9 +4175,9 @@ statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT
 			}
 			geno[1] = a2;
 			geno[2] = a1;
-			for (size_t k = 0; k < Ki; ++k) {
+			for (size_t k = 0; k < Ki[0]; ++k) {
 				geno[0] = alleles_1[k];
-				for (size_t l = 0; l < Kj; ++l) {
+				for (size_t l = 0; l < Kj[0]; ++l) {
 					geno[3] = alleles_2[l];
 					geno_cnt_it = geno_cnt.find(geno);
 					if (geno_cnt_it != geno_cnt_it_end)
@@ -4182,15 +4191,27 @@ statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT
 			// adjustment
 			Dij *= N / (N - 1.0);
 			// Dij^2 / (p (1-p) + (h1 - p^2) ) * (q (1-q) + (h2 - q^2)
-			r2 += Dij * Dij / (
-			                   (freq_1[i] * (1. - freq_1[i]) + (homo_freq_1[i] - freq_1[i] * freq_1[i])) *
-			                   (freq_2[j] * (1. - freq_2[j]) + (homo_freq_2[j] - freq_2[j] * freq_2[j]))
-			                   );
+			double r2_ij = Dij * Dij / (
+			                            (freq_1[i] * (1. - freq_1[i]) + (homo_freq_1[i] - freq_1[i] * freq_1[i])) *
+			                            (freq_2[j] * (1. - freq_2[j]) + (homo_freq_2[j] - freq_2[j] * freq_2[j]))
+			                            );
+			r2[0] += r2_ij;
+			if (freq_1[i] >= 0.02 && freq_2[j] >= 0.02) {
+				r2[1] += r2_ij;
+				if (freq_1[i] >= 0.05 && freq_2[j] >= 0.05)
+					r2[2] += r2_ij;
+			}
 		}
 	}
+	vectoru weight(3, 0);
+	for (size_t c = 0; c < 3; ++c) {
+		r2[c] /= Ki[c] * Kj[c];
+		weight[c] = (Ki[c] - 1) * (Kj[c] - 1);
+	}
+
 	// theoretical weight has S2 but we do not have any missing data so S2 can be ignored
-	DBG_DO(DBG_DEVEL, cerr << "r2=" << (r2 / (Ki * Kj)) << " Weight=" << (Ki - 1) * (Kj - 1) << endl);
-	return R2WEIGHT(r2 / (Ki * Kj), (Ki - 1) * (Kj - 1));
+	DBG_DO(DBG_DEVEL, cerr << "r2=" << r2 << " Weight=" << weight << endl);
+	return R2WEIGHT(r2, weight);
 }
 
 
@@ -4201,7 +4222,7 @@ statEffectiveSize::R2WEIGHT statEffectiveSize::Burrows(size_t N, const ALLELECNT
 //     1-2 1-3
 //         2-3
 // and there will be 6=4*3/2 pairs.
-void statEffectiveSize::LDNe(const LDLIST & ld, size_t S, vectorf & res, vectorf & res_mono) const
+void statEffectiveSize::LDNe(const LDLIST & ld, int cutoff, size_t S, vectorf & res, vectorf & res_mono) const
 {
 	DBG_DO(DBG_DEVEL, cerr << "LD: " << ld << endl);
 
@@ -4215,8 +4236,8 @@ void statEffectiveSize::LDNe(const LDLIST & ld, size_t S, vectorf & res, vectorf
 	size_t weight = 0;
 	size_t J = ld.size();
 	for (size_t i = 0; i < J; ++i) {
-		r2 += ld[i].first * ld[i].second;
-		weight += ld[i].second;
+		r2 += ld[i].first[cutoff] * ld[i].second[cutoff];
+		weight += ld[i].second[cutoff];
 	}
 	r2 /= weight;
 	//
@@ -4229,8 +4250,8 @@ void statEffectiveSize::LDNe(const LDLIST & ld, size_t S, vectorf & res, vectorf
 		for (size_t j = 0; j < J; ++j) {
 			if (i == j)
 				continue;
-			r2_jn += ld[j].first * ld[j].second;
-			weight_jn += ld[j].second;
+			r2_jn += ld[j].first[cutoff] * ld[j].second[cutoff];
+			weight_jn += ld[j].second[cutoff];
 		}
 		r2_jn /= weight_jn;
 		x += r2_jn;
@@ -4239,6 +4260,7 @@ void statEffectiveSize::LDNe(const LDLIST & ld, size_t S, vectorf & res, vectorf
 	double var_r2 = (J - 1.) / J * (xx - x * x / J);
 	size_t n_prime = static_cast<size_t>(2. / var_r2 * r2 * r2);
 
+	DBG_DO(DBG_STATOR, cerr << "r2=" << r2 << " wegith=" << weight << endl);
 	// in the parametric case, weight is used as n
 	// in the nonparametric case, n' is used as a jackknife estimate of n
 	res[0] = r2;
@@ -4254,7 +4276,7 @@ void statEffectiveSize::LDNe(const LDLIST & ld, size_t S, vectorf & res, vectorf
 		DBG_WARNIF(true, "97.5% CI for LDNe is set to inf at df=" + toStr(n_prime));
 		res[2] = -9999;
 	}
-	DBG_DO(DBG_STATOR, cerr << "r2 (CI): " << res << " (weight=" << weight << " JN n'=" << n_prime << endl);
+	DBG_DO(DBG_STATOR, cerr << "cutoff=" << cutoff << " r2 (CI): " << res << " (weight=" << weight << " JackKnife n'=" << n_prime << ")" << endl);
 	// res now holds r2, r2_low and r2_high
 	//
 	// this is the original formula
@@ -4401,26 +4423,36 @@ bool statEffectiveSize::LDEffectiveSize(Population & pop) const
 		}
 	}
 	// step 2, after we get all the pairwise ld values, ...
+	vectorstr cutoff_keys;
+	cutoff_keys.push_back("{0.01}");
+	cutoff_keys.push_back("{0.02}");
+	cutoff_keys.push_back("{0.05}");
 	if (all_stat) {
-		vectorf res;
-		vectorf res_mono;
-		LDNe(all_ld, accumulate(subpop_size.begin(), subpop_size.end(), 0), res, res_mono);
-		if (m_vars.contains(Ne_LD_String))
-			pop.getVars().setVar(Ne_LD_String + m_suffix, res);
-		if (m_vars.contains(Ne_LD_mono_String))
-			pop.getVars().setVar(Ne_LD_mono_String + m_suffix, res_mono);
+		for (size_t cutoff = 0; cutoff < 3; ++cutoff) {
+			vectorf res;
+			vectorf res_mono;
+			LDNe(all_ld, cutoff, accumulate(subpop_size.begin(), subpop_size.end(), 0), res, res_mono);
+			if (m_vars.contains(Ne_LD_String))
+				pop.getVars().setVar(Ne_LD_String + m_suffix + cutoff_keys[cutoff], res);
+			if (m_vars.contains(Ne_LD_mono_String))
+				pop.getVars().setVar(Ne_LD_mono_String + m_suffix + cutoff_keys[cutoff], res_mono);
+		}
 	}
 	if (subpop_stat) {
 		subPopList::const_iterator sp = subPops.begin();
 		subPopList::const_iterator spEnd = subPops.end();
 		for (size_t spIdx = 0; sp != spEnd; ++sp, ++spIdx) {
-			vectorf res;
-			vectorf res_mono;
-			LDNe(subpop_ld[spIdx], subpop_size[spIdx], res, res_mono);
-			if (m_vars.contains(Ne_LD_sp_String))
-				pop.getVars().setVar(subPopVar_String(*sp, Ne_LD_String, m_suffix), res);
-			if (m_vars.contains(Ne_LD_mono_sp_String))
-				pop.getVars().setVar(subPopVar_String(*sp, Ne_LD_mono_String, m_suffix), res_mono);
+			for (size_t cutoff = 0; cutoff < 3; ++cutoff) {
+				vectorf res;
+				vectorf res_mono;
+				LDNe(subpop_ld[spIdx], cutoff, subpop_size[spIdx], res, res_mono);
+				if (m_vars.contains(Ne_LD_sp_String))
+					pop.getVars().setVar(subPopVar_String(*sp, Ne_LD_String, m_suffix)
+						+ cutoff_keys[cutoff], res);
+				if (m_vars.contains(Ne_LD_mono_sp_String))
+					pop.getVars().setVar(subPopVar_String(*sp, Ne_LD_mono_String, m_suffix)
+						+ cutoff_keys[cutoff], res_mono);
+			}
 		}
 	}
 	return true;
