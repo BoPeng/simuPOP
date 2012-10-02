@@ -1369,6 +1369,7 @@ next:
 		goto next;
 	} else if (name[i] == '{') {                                      // dictionary
 		//	keytype can be numeric 0: subPop{0}
+		//                 float   3: Ne_LD[0.01]
 		//                 tuple   1: subPop{(0,1)}
 		//                 string  2: subPop{0}{'alleleNum'}
 		int keyType;
@@ -1382,7 +1383,10 @@ next:
 		else
 			keyType = 0;
 
-		for ( ; name[i] != '}' && i < name.size(); ++i) ;
+		for ( ; name[i] != '}' && i < name.size(); ++i) {
+			if (name[i] == '.' && keyType == 0)
+				keyType = 3;
+		}
 
 		DBG_ASSERT(name[i] == '}', ValueError, "Unmatched dictionary delimiter");
 
@@ -1390,7 +1394,10 @@ next:
 
 		if (keyType == 0)
 			childKey = PyInt_FromString(const_cast<char *>(name.substr(s, i - s).c_str()), NULL, 0);
-		else if (keyType == 1) {
+		else if (keyType == 3) {
+			PyObject * key_str = PyString_FromString(const_cast<char *>(name.substr(s, i - s).c_str()));
+			childKey = PyFloat_FromString(key_str, NULL);
+		} else if (keyType == 1) {
 			vectori key;
 			for (size_t j = s + 1, k = j; j < i; j = k + 1) {
 				for (k = j + 1; k < i && name[k] != ',' && name[k] != ')'; ++k) ;
@@ -1495,6 +1502,7 @@ next:
 		goto next;
 	} else if (name[i] == '{') {
 		//	keytype can be numeric 0: subPop{0}
+		//                 float   3: 
 		//                 tuple   1: subPop{(0,1)}
 		//                 string  2: subPop{0}{'alleleNum'}
 		int keyType;
@@ -1508,14 +1516,20 @@ next:
 		else
 			keyType = 0;
 
-		for ( ; name[i] != '}' && i < name.size(); ++i) ;
+		for ( ; name[i] != '}' && i < name.size(); ++i) {
+			if (name[i] == '.' && keyType == '0')
+				keyType = 3;
+		}
 
 		assert(name[i] == '}');
 
 		PyObject * childKey;
 		if (keyType == 0)
 			childKey = PyInt_FromString(const_cast<char *>(name.substr(s, i - s).c_str()), NULL, 0);
-		else if (keyType == 1) {
+		else if (keyType == 3) {
+			PyObject * key_str = PyString_FromString(const_cast<char *>(name.substr(s, i - s).c_str()));
+			childKey = PyFloat_FromString(key_str, NULL);
+		 }else if (keyType == 1) {
 			vectori key;
 			for (size_t j = s + 1, k = j; j < i; j = k + 1) {
 				for (k = j + 1; k < i && name[k] != ',' && name[k] != ')'; ++k) ;
