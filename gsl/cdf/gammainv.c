@@ -84,7 +84,7 @@ gsl_cdf_gamma_Pinv (const double P, const double a, const double b)
 	// adjusted by Bo Peng, make more attemps (from 32 to 320) to
 	// make gamma converge for large values of a. dP condition is
 	// also adjusted to make it possible to quite before n reach 320
-    if (dP < 1e-10 || n++ > 320)
+    if (fabs(dP) < GSL_SQRT_DBL_EPSILON * P || n++ > 320)
       goto end;
 
     lambda = dP / GSL_MAX (2 * fabs (dP / x), phi);
