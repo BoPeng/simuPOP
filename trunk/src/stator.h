@@ -950,13 +950,15 @@ private:
 	typedef std::map<GENOTYPE, size_t> GENOTYPECNT;
 	typedef uintDict HOMOCNT;
 
-	typedef std::pair<double, size_t> R2WEIGHT;
+	// the first list for R2, the second list for weight, for
+	// 0.01, 0.02 and 0.05 cutoff values
+	typedef std::pair<vectorf, vectoru> R2WEIGHT;
 	typedef std::vector<R2WEIGHT> LDLIST;
 
 	R2WEIGHT Burrows(size_t N, const ALLELECNT & a1, const ALLELECNT & a2,
 		const HOMOCNT & h1, const HOMOCNT & h2, const GENOTYPECNT & g) const;
 
-	void LDNe(const LDLIST & ld, size_t S, vectorf & res, vectorf & res_mono) const;
+	void LDNe(const LDLIST & ld, int cutoff, size_t S, vectorf & res, vectorf & res_mono) const;
 
 public:
 	statEffectiveSize(const lociList & loci, const subPopList & subPops,
@@ -1461,16 +1463,16 @@ public:
 	 *       plan 2.
 	 *  \li \c Ne_waples89_sp Estimate effective size for each (virtual)
 	 *       subpopulation using method Waples 89.
-	 *  \li \c Ne_LD Effective population size, 2.5% and 97.% confidence interval
-	 *       using a parametric method, estimated from linkage disequilibrim
-	 *       information of one sample, using LD method developed by Waples & Do
-	 *       2006, 2008, 2010. This method assumes unlinked loci and uses LD measured
-	 *       from genotypes at loci. Because this is a sample based method, it
-	 *       should better be applied to a random sample of the population. To
-	 *       reduce bias caused by rare alleles, alleles with frequencies less than
-	 *       0.01 are ignored (program LDNe gives option for 0, 0.01, 0.02,
-	 *       and 0.05). 95% CI is calculated using a Jackknife estimated effective
-	 *       number of independent alleles.
+	 *  \li \c Ne_LD Lists of length three for effective population size, 2.5%
+	 *       and 97.% confidence interval for cutoff allele frequency 0.01, 0.02
+	 *       and 0.05 (as dictionary keys), using a parametric method, estimated
+	 *       from linkage disequilibrim information of one sample, using LD
+	 *       method developed by Waples & Do 2006, 2008, 2010 (LDNe). This method
+	 *       assumes unlinked loci and uses LD measured from genotypes at loci.
+	 *       Because this is a sample based method, it should better be applied
+	 *       to a random sample of the population. 95% CI is calculated using a
+	 *       Jackknife estimated effective number of independent alleles. Please
+	 *       refer to relevant papers and the LDNe user's guide for details.
 	 *  \li \c Ne_LD_sp Estimate LD-based effective population size for each specified
 	 *       (virtual) subpopulation.
 	 *  \li \c Ne_LD_mono A version of Ne_LD that assumes monogamy (see Waples 2006
