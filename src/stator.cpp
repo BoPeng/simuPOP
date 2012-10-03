@@ -3310,7 +3310,7 @@ string statInbreeding::describe(bool /* format */) const
 
 bool statInbreeding::apply(Population & pop) const
 {
-	DBG_FAILIF(pop.ploidy() != 2, ValueError,
+	DBG_WARNIF(pop.ploidy() != 2,
 		"Statistics for inbreeding is currently only available for diploid populations.");
 
 	if (m_loci.empty())
@@ -3727,6 +3727,17 @@ bool statEffectiveSize::demographicEffectiveSize(Population & pop) const
 			if (m_vars.contains(Ne_demo_base_String))
 				pop.getVars().setVar(Ne_demo_base_String + m_suffix, parents);
 		}
+#else
+		vectoru parents(0);
+		if (m_vars.contains(Ne_demo_base_String))
+			pop.getVars().setVar(Ne_demo_base_String + m_suffix, parents);
+		if (m_vars.contains(Ne_demo_base_sp_String)) {
+			subPopList subPops = m_subPops.expandFrom(pop);
+			subPopList::const_iterator it = subPops.begin();
+			subPopList::const_iterator itEnd = subPops.end();
+			for (; it != itEnd; ++it)
+				pop.getVars().setVar(subPopVar_String(*it, Ne_demo_base_String, m_suffix), parents);
+		}
 #endif
 	} else if (m_vars.contains(Ne_demo_String) || m_vars.contains(Ne_demo_sp_String)) {
 #ifdef LINEAGE
@@ -3821,14 +3832,17 @@ bool statEffectiveSize::demographicEffectiveSize(Population & pop) const
 		}
 
 #else
+		const vectoru & loci = m_loci.elems(&pop);
 		if (m_vars.contains(Ne_demo_String))
-			pop.getVars().setVar(Ne_demo_String + m_suffix, 0.);
+			for (size_t l = 0; l < loci.size(); ++l)
+				pop.getVars().setVar(Ne_demo_String + m_suffix + "{" + toStr(loci[l]) + "}", 0.);
 		if (m_vars.contains(Ne_demo_sp_String)) {
 			subPopList subPops = m_subPops.expandFrom(pop);
 			subPopList::const_iterator it = subPops.begin();
 			subPopList::const_iterator itEnd = subPops.end();
 			for (; it != itEnd; ++it)
-				pop.getVars().setVar(subPopVar_String(*it, Ne_demo_String, m_suffix), 0.);
+				for (size_t l = 0; l < loci.size(); ++l)
+					pop.getVars().setVar(subPopVar_String(*it, Ne_demo_String, m_suffix) + "{" + toStr(loci[l]) + "}", 0.);
 		}
 #endif
 	} else

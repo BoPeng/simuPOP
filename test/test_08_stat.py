@@ -318,7 +318,7 @@ class TestStat(unittest.TestCase):
         initGenotype(pop, freq=[0.5, 0.5])
         stat(pop, heteroFreq=0)
         self.assertNotEqual(pop.dvars().heteroFreq[0], 0)
-        self.assertRaises(IndexError, pop.dvars().heteroFreq.__getitem__, 1)
+        self.assertRaises(KeyError, pop.dvars().heteroFreq.__getitem__, 1)
         stat(pop, heteroFreq=1)
         # calculating again at locus 1 should not override result at locus 0
         self.assertNotEqual(pop.dvars().heteroFreq[0], 0)
@@ -671,7 +671,8 @@ class TestStat(unittest.TestCase):
         n = K_all - len(P0)
         F_lower = n * F_all / gsl_cdf_chisq_Pinv(0.025, n)
         F_higher = n * F_all / gsl_cdf_chisq_Pinv(0.975, n)
-        return [t / (2 * (x - 0.5/S0 - 0.5/St)) for x in [F_all, F_lower, F_higher]]
+        Ne = [t / (2 * (x - 0.5/S0 - 0.5/St)) for x in [F_all, F_lower, F_higher]]
+        return [x if x > 0 else float('inf') for x in Ne]
 
     def saveToTempoFS(self, filename, S0, St, t, P0, Pt):
         with open(filename, 'w') as output:
@@ -686,7 +687,7 @@ class TestStat(unittest.TestCase):
         #
         # get all lineage
         lin = [ind.alleleLineage(0, 0) for ind in pop.individuals()] + [ind.alleleLineage(0, 1) for ind in pop.individuals()]
-        parent = {x: 0 for x in range(pop.popSize())}
+        parent = {x: 0 for x in range(1, pop.popSize() + 1)}
         for x in lin:
             # get only the first locus
             parent[x] += 1
@@ -699,6 +700,7 @@ class TestStat(unittest.TestCase):
 
     def testEffectiveSize(self):
         '''Testing the effective population size estimated from genotype data'''
+        getRNG().set(seed=1235)
         pop = Population(size=[500,100,1000], loci = 4)
         pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
@@ -768,9 +770,10 @@ class TestStat(unittest.TestCase):
         #turnOnDebug('DBG_STATOR')
         stat(pop, effectiveSize=[0,1], vars=['Ne_waples89', 'Ne_waples89_sp', 'Ne_tempoFS', 'Ne_tempoFS_sp'])
         self.assertAlmostEqual(self.Waples89(S0, S1, t, P0, Pt), pop.dvars().Ne_waples89)
-        self.assertAlmostEqual(self.Waples89(S00, S10, t, P00, Pt0), pop.dvars(0).Ne_waples89)
-        self.assertAlmostEqual(self.Waples89(S01, S11, t, P01, Pt1), pop.dvars(1).Ne_waples89)
-        self.assertAlmostEqual(self.Waples89(S02, S12, t, P02, Pt2), pop.dvars(2).Ne_waples89)
+        for i in range(3):
+            self.assertAlmostEqual(self.Waples89(S00, S10, t, P00, Pt0)[i], pop.dvars(0).Ne_waples89[i])
+            self.assertAlmostEqual(self.Waples89(S01, S11, t, P01, Pt1)[i], pop.dvars(1).Ne_waples89[i])
+            self.assertAlmostEqual(self.Waples89(S02, S12, t, P02, Pt2)[i], pop.dvars(2).Ne_waples89[i])
         #
         self.assertAlmostEqual(pop.dvars().Ne_tempoFS[0], 3026, 0)
         self.assertAlmostEqual(pop.dvars().Ne_tempoFS[1], 1494, 0)
@@ -787,17 +790,21 @@ class TestStat(unittest.TestCase):
         stat(pop, effectiveSize=[0,1], vars=['Ne_demo_base'])
         if moduleInfo()['alleleType'] == 'lineage':
             l = []
-            [l.extend([x,x,0,0,x,x,0,0]) for x in range(pop.popSize())]
+            [l.extend([x,x,0,0,x,x,0,0]) for x in range(1, pop.popSize() + 1)]
             self.assertEqual(pop.lineage(), l)
-            self.assertEqual(pop.dvars().Ne_demo_base, range(pop.popSize()))
+            self.assertEqual(pop.dvars().Ne_demo_base, range(1, pop.popSize() + 1))
         else:
-            self.assertEqual(pop.dvars().Ne_demo_base, 0.)
+            self.assertEqual(pop.dvars().Ne_demo_base, [])
         # 
         pop.evolve(matingScheme=RandomMating(), gen=1)
         # calculate Ne
         stat(pop, effectiveSize=[0,1], vars=['Ne_demo'])
-        self.assertEqual(pop.dvars().Ne_demo[0], self.demoNe(pop))
-        self.assertEqual(pop.dvars().Ne_demo[0], pop.dvars().Ne_demo[1])
+        if moduleInfo()['alleleType'] == 'lineage':
+            self.assertEqual(pop.dvars().Ne_demo[0], self.demoNe(pop))
+            self.assertEqual(pop.dvars().Ne_demo[0], pop.dvars().Ne_demo[1])
+        else:
+            self.assertEqual(pop.dvars().Ne_demo[0], 0)
+            self.assertEqual(pop.dvars().Ne_demo[0], pop.dvars().Ne_demo[1])
         #
 
     def testLDNe(self):
@@ -867,7 +874,9 @@ class TestStat(unittest.TestCase):
         self.assertAlmostEqual(pop.dvars().Ne_LD_mono[0.01][1], 847.5, 1)
         self.assertAlmostEqual(pop.dvars().Ne_LD_mono[0.01][2], 1180.4, 0)
         #
-        # 
+        #  do not crash for fixed loci (will return nan, inf etc)
+        pop = Population(size=[500], loci=[1]*10)
+        stat(pop, effectiveSize=range(10), vars='Ne_LD')
  
 
 if __name__ == '__main__':
