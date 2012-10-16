@@ -930,6 +930,37 @@ class TestUtils(unittest.TestCase):
         # cleanup
         os.remove('pop.csv')
 
+    def testExportPED(self):
+        '''Testing export population in PED format'''
+        pop = Population(size=[4, 5], loci=[2, 4], ploidy=2, 
+            lociNames=['a', 'b', 'c', 'd', 'e', 'f'])
+        initGenotype(pop, haplotypes=[0,1])
+        initSex(pop, sex=[MALE, FEMALE])
+        pop.setVirtualSplitter(SexSplitter())
+        # test basic
+        export(pop, format='ped', output='pop.ped')
+        self.assertEqual(self.lineOfFile('pop.ped', 1), '1 0 0 0 1 1 1 1 2 2 1 1 2 2 1 1 2 2\n')
+        self.assertEqual(self.lineOfFile('pop.ped', 2), '2 0 0 0 2 1 1 1 2 2 1 1 2 2 1 1 2 2\n')
+        # test parameter subPops
+        export(pop, format='ped', output='pop.ped', subPops=[(0,0)])
+        self.assertEqual(self.lineOfFile('pop.ped', 1), '1 0 0 0 1 1 1 1 2 2 1 1 2 2 1 1 2 2\n')
+        self.assertEqual(self.lineOfFile('pop.ped', 2), '2 0 0 0 1 1 1 1 2 2 1 1 2 2 1 1 2 2\n')
+        # test ind_id 
+        pop = Population(size=[4, 5], loci=[2, 4], ploidy=2, 
+            lociNames=['a', 'b', 'c', 'd', 'e', 'f'], infoFields='ind_id')
+        initGenotype(pop, haplotypes=[0,1])
+        initSex(pop, sex=[MALE, FEMALE])
+        tagID(pop)
+        pop.setVirtualSplitter(SexSplitter())
+        # test basic
+        export(pop, format='ped', output='pop.ped')
+        self.assertEqual(self.lineOfFile('pop.ped', 1), '1 1 0 0 1 1 1 1 2 2 1 1 2 2 1 1 2 2\n')
+        self.assertEqual(self.lineOfFile('pop.ped', 2), '2 2 0 0 2 1 1 1 2 2 1 1 2 2 1 1 2 2\n')
+        # test parameter subPops
+        export(pop, format='ped', output='pop.ped', subPops=[(0,0)])
+        self.assertEqual(self.lineOfFile('pop.ped', 1), '1 1 0 0 1 1 1 1 2 2 1 1 2 2 1 1 2 2\n')
+        self.assertEqual(self.lineOfFile('pop.ped', 2), '2 3 0 0 1 1 1 1 2 2 1 1 2 2 1 1 2 2\n')
+
 
 if __name__ == '__main__':
     unittest.main()
