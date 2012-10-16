@@ -15,6 +15,7 @@ Major New Features:
 New Feature:
   - Rename PER_LOCI to PER_ALLELE in InitLineage. PER_LOCI can still be used for backward compatibility.
   - Allow empty value list in InitLineage. In this case, unique values will be provided for each case.
+  - Allow export in PED format in operator utils.Exporter and function utils.export.
 
 BUG:
   - Fix a HWE test crash when one of the homozygote count is zero.
