@@ -948,7 +948,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(self.lineOfFile('pop.ped', 2), '2 0 0 0 1 1 1 1 2 2 1 1 2 2 1 1 2 2\n')
         # test ind_id 
         pop = Population(size=[4, 5], loci=[2, 4], ploidy=2, 
-            lociNames=['a', 'b', 'c', 'd', 'e', 'f'], infoFields='ind_id')
+            lociNames=['a', 'b', 'c', 'd', 'e', 'f'], infoFields=['ind_id', 'pheno'])
         initGenotype(pop, haplotypes=[0,1])
         initSex(pop, sex=[MALE, FEMALE])
         tagID(pop)
@@ -961,6 +961,11 @@ class TestUtils(unittest.TestCase):
         export(pop, format='ped', output='pop.ped', subPops=[(0,0)])
         self.assertEqual(self.lineOfFile('pop.ped', 1), '1 1 0 0 1 1 1 1 2 2 1 1 2 2 1 1 2 2\n')
         self.assertEqual(self.lineOfFile('pop.ped', 2), '2 3 0 0 1 1 1 1 2 2 1 1 2 2 1 1 2 2\n')
+        # test pheno field
+        pop.setIndInfo(range(pop.popSize()), field='pheno')
+        export(pop, format='ped', output='pop.ped', subPops=[(0,0)], phenoField='pheno')
+        self.assertEqual(self.lineOfFile('pop.ped', 1), '1 1 0 0 1 0.0 1 1 2 2 1 1 2 2 1 1 2 2\n')
+        self.assertEqual(self.lineOfFile('pop.ped', 2), '2 3 0 0 1 2.0 1 1 2 2 1 1 2 2 1 1 2 2\n')
         # create a large population
         pop = Population(size=[5000, 20000], ploidy=2, loci=[5,10],
                 ancGen=2, infoFields=['fitness', 'father_id', 'mother_id', 'ind_id'])
@@ -990,7 +995,37 @@ class TestUtils(unittest.TestCase):
         # write in PED format?
         export(s, format='ped', output='pop.ped')
         # get number of families
+        # cleanup
+        os.remove('pop.ped')
 
+    def testExportMAP(self):
+        'Testing export loci information in MAP format'''
+        pop = Population(size=[4, 5], loci=[2, 4], ploidy=2, 
+            lociNames=['a', 'b', 'c', 'd', 'e', 'f'])
+        export(pop, format='map', output='pop.map')
+        self.assertEqual(self.lineOfFile('pop.map', 1), '1 a 1\n')
+        self.assertEqual(self.lineOfFile('pop.map', 3), '2 c 1\n')
+        self.assertEqual(self.lineOfFile('pop.map', 6), '2 f 4\n')
+        # test no loci name
+        pop = Population(size=[4, 5], loci=[2, 4], ploidy=2)
+        export(pop, format='map', output='pop.map')
+        self.assertEqual(self.lineOfFile('pop.map', 1), '1 . 1\n')
+        self.assertEqual(self.lineOfFile('pop.map', 3), '2 . 1\n')
+        self.assertEqual(self.lineOfFile('pop.map', 6), '2 . 4\n')
+        # test float position
+        pop = Population(size=[4, 5], loci=[2, 4], ploidy=2,
+            lociPos=[0.5, 1.4, 0.001, 1, 2, 4])
+        export(pop, format='map', output='pop.map')
+        self.assertEqual(self.lineOfFile('pop.map', 1), '1 . 0.5\n')
+        self.assertEqual(self.lineOfFile('pop.map', 3), '2 . 0.001\n')
+        self.assertEqual(self.lineOfFile('pop.map', 6), '2 . 4\n')
+        # test multiplier
+        export(pop, format='map', output='pop.map', posMultiplier=1000)
+        self.assertEqual(self.lineOfFile('pop.map', 1), '1 . 500\n')
+        self.assertEqual(self.lineOfFile('pop.map', 3), '2 . 1\n')
+        self.assertEqual(self.lineOfFile('pop.map', 6), '2 . 4000\n')
+        # cleanup
+        os.remove('pop.map')
 
 if __name__ == '__main__':
     unittest.main()
