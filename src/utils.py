@@ -1989,17 +1989,51 @@ class FStatImporter:
         pop.setGenotype(genotypes)
         return pop
 
+
+#
+# Format MAP
+#
+class MapExporter:
+    '''An exporter to export loci information in MAP format'''
+    def __init__(self, posMultiplier = 1):
+        self.posMultiplier = posMultiplier
+
+    def export(self, pop, filename, subPops, infoFields, gui):
+        '''Export in MAP format
+        '''
+        with open(filename, 'w') as out:
+            # progress bar
+            prog = ProgressBar(filename, pop.totNumLoci(), gui=gui)
+            count = 0
+            for ch in range(pop.numChrom()):
+                for loc in range(pop.chromBegin(ch), pop.chromEnd(ch)):
+                    chName = pop.chromName(ch)
+                    if chName == '':
+                        chName = str(ch + 1)
+                    locusName = pop.locusName(loc)
+                    if locusName == '':
+                        locusName = '.'
+                    locusPos = str(pop.locusPos(loc) * self.posMultiplier)
+                    if locusPos.endswith('.0'):
+                        locusPos = locusPos[:-2]
+                    out.write('%s %s %s\n' % (chName, locusName, locusPos))
+                    count += 1
+                    prog.update(count)
+            prog.done()
+
+
 #
 # Format PED
 #
 class PEDExporter:
     '''An exporter to export given population in PED format'''
     def __init__(self, idField = 'ind_id', fatherField = 'father_id',
-        motherField = 'mother_id',
+        motherField = 'mother_id', phenoField = None,
         adjust = 1):
         self.idField = idField
         self.fatherField = fatherField
         self.motherField = motherField
+        self.phenoField = phenoField
         self.adjust = adjust
         self.sexCode = {MALE: '1', FEMALE: '2'}
         self.affectedCode = {True: '2', False: '1'}
@@ -2018,14 +2052,13 @@ class PEDExporter:
                     values = [str(count + 1), '0', '0', '0', self.sexCode[ind.sex()], self.affectedCode[ind.affected()]]
                     if hasID:
                         values[1] = str(int(ind.info(self.idField)))
+                    if self.phenoField is not None:
+                        values[5] = str(ind.info(self.phenoField))
                     for geno in zip(*[ind.genotype(p) for p in range(ploidy)]):
                         values.extend([str(geno[0] + self.adjust), str(geno[1] + self.adjust)])
                     out.write(' '.join(values) + '\n')
                     count += 1
                     prog.update(count)
-            # clode output
-            if filename:
-                out.close()
             prog.done()
 
     def _exportPedigree(self, pop, filename, subPops, gui):
@@ -2059,14 +2092,13 @@ class PEDExporter:
                         fa = 0
                         mo = 0
                     values = [str(count + 1), str(ind_id), str(fa), str(mo), self.sexCode[ind.sex()], self.affectedCode[ind.affected()]]
+                    if self.phenoField is not None:
+                        values[5] = str(ind.info(self.phenoField))
                     for geno in zip(*[ind.genotype(p) for p in range(2)]):
                         values.extend([str(geno[0] + self.adjust), str(geno[1] + self.adjust)])
                     out.write(' '.join(values) + '\n')
                 count += 1
                 prog.update(count)
-            # clode output
-            if filename:
-                out.close()
             prog.done()
         # change ped to a population again
         pop.removeInfoFields('ped_index')
@@ -2179,9 +2211,6 @@ class CSVExporter:
                     out.write(self.delimiter.join(values) + '\n')
                     count += 1
                     prog.update(count)
-            # clode output
-            if filename:
-                out.close()
             prog.done()
 
 
@@ -2273,10 +2302,25 @@ class Exporter(PyOperator):
         simuPOP treats allele 0 as a valid allele. Exporting alleles 0 and 1 as 1 and 2
         will allow FSTAT to analyze simuPOP-exported files correctly.
         
+    MAP (marker information format) output information about each loci. Each line of
+    the map file describes a single marker and contains chromosome name, locus name,
+    and position. Chromosome and loci names will be the names specified by parameters
+    ``chromNames`` and ``lociNames`` of the ``Population`` object, and will be
+    chromosome index + 1, and '.' if these parameters are not specified. This
+    format output loci position to the third column. If the unit assumed in your
+    population does not match the intended unit in the MAP file, (e.g. you would like
+    to output position in basepair while the population uses Mbp), you can use parameter
+    ``posMultiplier`` to adjust it. This format accepts the following parameters:
+
+    posMultiplier
+        A number that will be multiplied to loci positions (default to 1). The result
+        will be outputted in the third column of the output.
+
+
     PED (Linkage Pedigree pre MAKEPED format), with columns of family, individual,
     father mother, gender, affection status and genotypes. The output should be 
-    acceptable by HaploView, which provides more details of this format in its 
-    documentation. If a population does not have ``ind_id``, ``father_id`` or 
+    acceptable by HaploView or plink, which provides more details of this format in
+    their documentation. If a population does not have ``ind_id``, ``father_id`` or 
     ``mother_id``, this format will output individuals in specified (virtual) 
     subpopulations in the current generation (parental generations are ignored) 
     as unrelated individuals with 0, 0 as parent IDs. An incremental family
@@ -2284,8 +2328,10 @@ class Exporter(PyOperator):
     ``father_id`` and ``mother_id``, parents will be recursively traced to separate
     all individuals in a (multigenerational) population into families of related
     individuals. father and mother id will be set to zero if one of them does not
-    exist. This format uses 1 for MALE, 2 for FEMALE, 1 for Unaffected and
-    2 for affected. Because 0 value indicates missing value, values of alleles will
+    exist. This format uses 1 for MALE, 2 for FEMALE. If phenoField is ``None``,
+    individual affection status will be outputted with 1 for Unaffected and 2
+    for affected. Otherwise, values of an information field will be outputted as
+    phenotype. Because 0 value indicates missing value, values of alleles will
     be adjusted by 1 by default, which should be avoided if you are using non-zero
     alleles to model ACTG alleles in simuPOP. This format will ignore subpopulation
     structure because parents might belong to different subpopulations. This format
@@ -2304,6 +2350,11 @@ class Exporter(PyOperator):
         A field for mother id, default to ``mother_id``. Value at this field will be
         used to output mother of an individual, if an individual with this ID exists
         in the population.
+
+    phenoField
+        A field for individual phenotype that will be outputted as the sixth column of
+        the PED file. If ``None`` is specified (default), individual affection status
+        will be outputted (1 for unaffected and 2 for affected).
 
     adjust
         Adjust values of alleles by specified value (1 as default). This adjustment
@@ -2383,6 +2434,8 @@ class Exporter(PyOperator):
             self.exporter = FStatExporter(*args, **kwargs)
         elif format.lower() == 'csv':
             self.exporter = CSVExporter(*args, **kwargs)
+        elif format.lower() == 'map':
+            self.exporter = MapExporter(*args, **kwargs)
         elif format.lower() == 'ped':
             self.exporter = PEDExporter(*args, **kwargs)
         else:
