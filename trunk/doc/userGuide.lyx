@@ -5458,10 +5458,6 @@ lstparams "caption={Save and load a population},label={savePop}"
 
 \end_layout
 
-\begin_layout Subsection
-Import and export a population in other formats
-\end_layout
-
 \begin_layout Standard
 The native simuPOP format is portable across different platforms but is
  not human readable and is not recognized by other applications.
@@ -5484,85 +5480,6 @@ Exporter
 simuPOP.utils
 \family default
 .
- Commonly used population genetics file formats such as GENEPOP, FSTAT and
- STRUCTURE are supported.
- Because these formats cannot store all information in a simuPOP population,
- export and import operations can lose information.
- Also, because the processing application have different assumptions, some
- conversion of genotypes might be needed.
- For example, because GENEPOP uses allele 0 as missing genotype, function
- 
-\family typewriter
-export(format='genepop')
-\family default
- accepts a parameter 
-\family typewriter
-adjust
-\family default
- with default value 
-\family typewriter
-1
-\family default
- to export alleles 0, 1 etc to 1, 2, ....
- The same applies to function 
-\family typewriter
-importPopulation
-\family default
- where some file formats accepts a parameter 
-\family typewriter
-adjust
-\family default
- (with default value 0) to adjust allele values.
- 
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "importExport"
-
-\end_inset
-
- demonstrates how to import and export a population in formats FSTAT and
- STRUCTURE.
- For the FSTAT format, because the population is exported with allele values
- shifted by 1, the imported population has different alleles than the original
- population.
- This can be fixed by adding parameter 
-\family typewriter
-adjust=-1
-\family default
- to the 
-\family typewriter
-importPopulation
-\family default
- function.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/importExport.log"
-lstparams "caption={Save and load a population},label={importExport}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-If the file format you are interested in is not supported, you can use the
- 
-\family typewriter
-saveCSV
-\family default
- function (also in the 
-\family typewriter
-simuPOP.utils
-\family default
- module) to export genotype to a general comma or tab-delimited format,
- and convert the file by yourself.
- You can also try to write your own import or export functions as described
- in the advanced topics section of this guide.
  
 \end_layout
 
@@ -21890,22 +21807,180 @@ Using wxPython to display population variables
 \end_layout
 
 \begin_layout Subsection
-Export simuPOP population in csv format (function 
+Import simuPOP population from files in 
 \family typewriter
-saveCSV
+GENEPOP
+\family default
+ and 
+\family typewriter
+FSTAT
+\family default
+ formats (function 
+\family typewriter
+importPopulation
 \family default
 )
 \end_layout
 
 \begin_layout Standard
-A large number of file formats are used by different software applications
- that analyze genetic data.
- Because it is relatively easy to write functions to import and export files
- in these formats, a number of functions have been written to allow interoperati
-on between simuPOP and various genetic analysis software such as Linkage
- and merlin.
- These functions are available in the import and export section of the simuPOP
- online cookbook.
+A function importPopulation is provided in the 
+\family typewriter
+simuPOP.utils
+\family default
+ module to import populations from files in 
+\family typewriter
+GENEPOP
+\family default
+ and 
+\family typewriter
+FSTAT
+\family default
+ formats.
+ Because these formats do not support many of the features of a simuPOP
+ population, this function can only import genotype and basic information
+ of a population.
+ Because these formats uses allele 0 to indicate missing value, true alleles
+ in these formats start at value 1.
+ If you would like to import alleles with starting value 0, you can use
+ parameter adjust=-1 to adjust imported values, if you data do not have
+ any missing value.
+ 
+\end_layout
+
+\begin_layout Subsection
+Export simuPOP population to files in 
+\family typewriter
+STRUCTURE, GENEPOP
+\family default
+, 
+\family typewriter
+FSTAT, PED, MAP
+\family default
+ and 
+\family typewriter
+CSV
+\family default
+ formats (function 
+\family typewriter
+export
+\family default
+ and operator 
+\family typewriter
+Exporter
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+simuPOP uses a program-specific binary format to save and load populations
+ but you can use the 
+\family typewriter
+export
+\family default
+ function to export a simuPOP population in other formats if you would like
+ to use other programs to analyze simulated populations.
+ An operator Exporter is also provided so that you could export populations
+ during evolution.
+ Operator arameters such as output, begin, end, step, at, reps, and subPops
+ are supported so that you could export subsets of individuals at multiple
+ generations using different file names (e.g.
+ 
+\family typewriter
+output='!
+\begin_inset Quotes erd
+\end_inset
+
+%d.ped
+\begin_inset Quotes erd
+\end_inset
+
+ % gen'
+\family default
+ to output to different files at different generations).
+\end_layout
+
+\begin_layout Standard
+Commonly used population genetics file formats such as GENEPOP, FSTAT and
+ STRUCTURE are supported.
+ Because these formats cannot store all information in a simuPOP population,
+ export and import operations can lose information.
+ Also, because the processing application have different assumptions, some
+ conversion of genotypes might be needed.
+ For example, because GENEPOP uses allele 0 as missing genotype, function
+ 
+\family typewriter
+export(format='genepop')
+\family default
+ accepts a parameter 
+\family typewriter
+adjust
+\family default
+ with default value 
+\family typewriter
+1
+\family default
+ to export alleles 0, 1 etc to 1, 2, ....
+ The same applies to function 
+\family typewriter
+importPopulation
+\family default
+ where some file formats accepts a parameter 
+\family typewriter
+adjust
+\family default
+ (with default value 1) to adjust allele values.
+ Please refer to the simuPOP reference manual for a detailed list of acceptable
+ parameters for each format.
+ 
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "importExport"
+
+\end_inset
+
+ demonstrates how to import and export a population in formats FSTAT and
+ STRUCTURE.
+ For the FSTAT format, because the population is exported with allele values
+ shifted by 1, the imported population has different alleles than the original
+ population.
+ This can be fixed by adding parameter 
+\family typewriter
+adjust=-1
+\family default
+ to the 
+\family typewriter
+importPopulation
+\family default
+ function.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/importExport.log"
+lstparams "caption={Save and load a population},label={importExport}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If the file format you are interested in is not supported, you can export
+ data in csv format and convert the file by yourself.
+ You can also try to write your own import or export functions as described
+ in the advanced topics section of this guide.
+ 
+\end_layout
+
+\begin_layout Subsection
+Export simuPOP population in csv format (function 
+\family typewriter
+saveCSV
+\family default
+)
 \end_layout
 
 \begin_layout Standard
@@ -21940,10 +22015,7 @@ genoFormatter
 \family default
 , this function can already be used to export a simuPOP population to formats
  that are recognizable by some populat software applications.
-\end_layout
-
-\begin_layout Standard
-Example 
+ Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "saveCSV"
@@ -21961,6 +22033,20 @@ lstparams "caption={Using function saveCSV to save a simuPOP population in diffe
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+This function is now deprecated with the introduction of function 
+\family typewriter
+export
+\family default
+ and operator 
+\family typewriter
+Exporter
+\family default
+.
 \end_layout
 
 \begin_layout Section
