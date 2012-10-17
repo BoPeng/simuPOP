@@ -24,6 +24,7 @@ for arg in sys.argv:
 
 sys.argv=new_argv
 from simuPOP import *
+from simuPOP.sampling import *
 from simuPOP.utils import *
 from simuPOP.gsl import *
 
@@ -960,6 +961,35 @@ class TestUtils(unittest.TestCase):
         export(pop, format='ped', output='pop.ped', subPops=[(0,0)])
         self.assertEqual(self.lineOfFile('pop.ped', 1), '1 1 0 0 1 1 1 1 2 2 1 1 2 2 1 1 2 2\n')
         self.assertEqual(self.lineOfFile('pop.ped', 2), '2 3 0 0 1 1 1 1 2 2 1 1 2 2 1 1 2 2\n')
+        # create a large population
+        pop = Population(size=[5000, 20000], ploidy=2, loci=[5,10],
+                ancGen=2, infoFields=['fitness', 'father_id', 'mother_id', 'ind_id'])
+        pop.evolve(
+            initOps=[
+                 InitSex(),
+                 InitGenotype(freq=[.2, .8], loci=[0]),
+                 InitGenotype(freq=[.2]*5, loci=list(range(1, pop.totNumLoci()))),
+                 IdTagger(),
+            ],
+            matingScheme=RandomMating(
+                numOffspring=(UNIFORM_DISTRIBUTION, 2, 5),
+                ops=[MendelianGenoTransmitter(),
+                IdTagger(),
+                PedigreeTagger(),
+                ]),
+            postOps = [
+                Stat( alleleFreq=[0,1], genoFreq=[0,1]),
+                MapPenetrance(loci=0,
+                    penetrance={(0,0):0.1, (0,1):.7, (1,1):1}),
+            ],
+            gen = 10
+        )
+        # export pedigree
+        s = drawThreeGenFamilySample(pop, families=10, pedSize=(3, 20),
+            numOffspring=(1,5), numOfAffected=(0, 5))
+        # write in PED format?
+        export(s, format='ped', output='pop.ped')
+        # get number of families
 
 
 if __name__ == '__main__':

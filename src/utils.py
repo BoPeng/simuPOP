@@ -1994,34 +1994,30 @@ class FStatImporter:
 #
 class PEDExporter:
     '''An exporter to export given population in PED format'''
-    def __init__(self, ind_id = 'ind_id', father_id = 'father_id', mother_id = 'mother_id',
+    def __init__(self, idField = 'ind_id', fatherField = 'father_id',
+        motherField = 'mother_id',
         adjust = 1):
-        self.ind_id = ind_id
-        self.father_id = father_id
-        self.mother_id = mother_id
+        self.idField = idField
+        self.fatherField = fatherField
+        self.motherField = motherField
         self.adjust = adjust
         self.sexCode = {MALE: '1', FEMALE: '2'}
         self.affectedCode = {True: '2', False: '1'}
-    
-    def _writeInd(self, ind, famID, id, fa, mo):
-        pedOut.write('%d %d %d %d %s %s' % (famID, id, fa, mo, sexCode[ind.sex()], affectedCode[ind.affected()]))
-        for marker in loci:
-             print >> pedOut, " %d" % combine([ind.allele(marker, p) for p in range(pldy)]),
-
 
     def _exportUnrelated(self, pop, filename, subPops, gui):
+        '''Export unrelated individuals, this is easy...'''
         #
         ploidy = pop.ploidy()
         with open(filename, 'w') as out:
             # progress bar
             prog = ProgressBar(filename, pop.popSize(), gui=gui)
             count = 0
-            hasID = self.ind_id in pop.infoFields()
+            hasID = self.idField in pop.infoFields()
             for vsp in subPops:
                 for ind in pop.individuals(vsp):
                     values = [str(count + 1), '0', '0', '0', self.sexCode[ind.sex()], self.affectedCode[ind.affected()]]
                     if hasID:
-                        values[1] = str(int(ind.info(self.ind_id)))
+                        values[1] = str(int(ind.info(self.idField)))
                     for geno in zip(*[ind.genotype(p) for p in range(ploidy)]):
                         values.extend([str(geno[0] + self.adjust), str(geno[1] + self.adjust)])
                     out.write(' '.join(values) + '\n')
@@ -2033,17 +2029,61 @@ class PEDExporter:
             prog.done()
 
     def _exportPedigree(self, pop, filename, subPops, gui):
-        raise ValueError('Exporting pedigrees in PED format has not been implemented')
+        # find set of families
+        pop.asPedigree(idField=self.idField, fatherField=self.fatherField,
+            motherField=self.motherField)
+        pop.addInfoFields('ped_index')
+        sizes = pop.identifyFamilies(pedField='ped_index', subPops=subPops)
+        # group ind_id by sizes
+        fam_ids = [[] for x in sizes]
+        for ind in pop.allIndividuals(subPops=subPops):
+            try:
+                fam_ids[int(ind.ped_index)].append(int(ind.info(self.idField)))
+            except:
+                # unacceptable ped_index will be ignored
+                pass
+        #
+        with open(filename, 'w') as out:
+            # progress bar
+            prog = ProgressBar(filename, len(sizes), gui=gui)
+            count = 0
+            for fam_id in fam_ids:
+                for ind_id in fam_id:
+                    ind = pop.indByID(ind_id)
+                    try:
+                        father = pop.indByID(ind.info(self.fatherField))
+                        fa = int(father.info(self.idField))
+                        mother = pop.indByID(ind.info(self.motherField))
+                        mo = int(mother.info(self.idField))
+                    except IndexError:
+                        fa = 0
+                        mo = 0
+                    values = [str(count + 1), str(ind_id), str(fa), str(mo), self.sexCode[ind.sex()], self.affectedCode[ind.affected()]]
+                    for geno in zip(*[ind.genotype(p) for p in range(2)]):
+                        values.extend([str(geno[0] + self.adjust), str(geno[1] + self.adjust)])
+                    out.write(' '.join(values) + '\n')
+                count += 1
+                prog.update(count)
+            # clode output
+            if filename:
+                out.close()
+            prog.done()
+        # change ped to a population again
+        pop.removeInfoFields('ped_index')
+        pop.asPopulation()
+        
 
     def export(self, pop, filename, subPops, infoFields, gui):
         '''Export in PED format
         '''
         fields = pop.infoFields()
-        if self.ind_id not in fields or self.father_id not in fields or self.mother_id not in fields:
+        if self.idField not in fields or self.fatherField not in fields or self.motherField not in fields:
             # output as unrelated individuals
             self._exportUnrelated(pop, filename, subPops, gui)
         else:
             # output pedigree
+            if pop.ploidy() != 2:
+                raise ValueError('Exporting non-diploid population in PED format is not currently supported.')
             self._exportPedigree(pop, filename, subPops, gui)
 
 #
@@ -2233,31 +2273,34 @@ class Exporter(PyOperator):
         simuPOP treats allele 0 as a valid allele. Exporting alleles 0 and 1 as 1 and 2
         will allow FSTAT to analyze simuPOP-exported files correctly.
         
-    PED (Linkage Pedigree pre MAKEPED format), with columns of family, individual, father
-    mother, gender, affection status and genotypes. The output should be acceptable by
-    HaploView, which provides more details of this format in its documentation. If a
-    population does not have ``ind_id``, ``father_id`` and ``mother_id``, this format
-    will output individuals as unrelated individuals with 0 parent IDs. An incremental
-    family ID will be assigned for each individual. If a population have ``ind_id``,
-    ``father_id`` and ``mother_id``, parents will be recursively traced to generate
-    families. father and mother id will be set to zero if one of them does not appear
-    in the population. This format uses 1 for MALE, 2 for FEMALE, 1 for Unaffected and
+    PED (Linkage Pedigree pre MAKEPED format), with columns of family, individual,
+    father mother, gender, affection status and genotypes. The output should be 
+    acceptable by HaploView, which provides more details of this format in its 
+    documentation. If a population does not have ``ind_id``, ``father_id`` or 
+    ``mother_id``, this format will output individuals in specified (virtual) 
+    subpopulations in the current generation (parental generations are ignored) 
+    as unrelated individuals with 0, 0 as parent IDs. An incremental family
+    ID will be assigned for each individual. If a population have ``ind_id``,
+    ``father_id`` and ``mother_id``, parents will be recursively traced to separate
+    all individuals in a (multigenerational) population into families of related
+    individuals. father and mother id will be set to zero if one of them does not
+    exist. This format uses 1 for MALE, 2 for FEMALE, 1 for Unaffected and
     2 for affected. Because 0 value indicates missing value, values of alleles will
     be adjusted by 1 by default, which should be avoided if you are using non-zero
     alleles to model ACTG alleles in simuPOP. This format will ignore subpopulation
     structure because parents might belong to different subpopulations. This format
     accepts the following parameters:
 
-    ind_id
+    idField
         A field for individual id, default to ``ind_id``. Value at this field will be
         individual ID inside a pedigree.
 
-    father_id
+    fatherField
         A field for father id, default to ``father_id``. Value at this field will be
         used to output father of an individual, if an individual with this ID exists
         in the population.
 
-    mother_id
+    motherField
         A field for mother id, default to ``mother_id``. Value at this field will be
         used to output mother of an individual, if an individual with this ID exists
         in the population.
