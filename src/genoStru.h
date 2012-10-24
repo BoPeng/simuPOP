@@ -303,8 +303,8 @@ public:
 	void setGenoStruIdx(size_t idx)
 	{
 		DBG_FAILIF(idx >= s_genoStruRepository.size(), IndexError,
-			"Index " + toStr(idx) + " to geno structure repository should be less than " +
-			toStr(s_genoStruRepository.size()) );
+			(boost::format("Index %1%  to geno structure repository should be less than %2%") % idx % 
+			s_genoStruRepository.size()).str());
 		m_genoStruIdx = static_cast<TraitIndexType>(idx);
 	}
 
@@ -636,8 +636,8 @@ public:
 	string chromName(const size_t chrom) const
 	{
 		DBG_FAILIF(chrom >= s_genoStruRepository[m_genoStruIdx].m_numLoci.size(), IndexError,
-			"Chromosome index " + toStr(chrom) + " out of range of 0 ~ " +
-			toStr(s_genoStruRepository[m_genoStruIdx].m_numLoci.size()));
+			(boost::format("Chromosome index %1% out of range of 0 ~ %2%") % chrom %
+			s_genoStruRepository[m_genoStruIdx].m_numLoci.size()).str());
 
 		return s_genoStruRepository[m_genoStruIdx].m_chromNames[chrom];
 	}
@@ -659,8 +659,8 @@ public:
 	size_t chromType(const size_t chrom) const
 	{
 		DBG_FAILIF(chrom >= s_genoStruRepository[m_genoStruIdx].m_numLoci.size(), IndexError,
-			"Chromosome index " + toStr(chrom) + " out of range of 0 ~ " +
-			toStr(s_genoStruRepository[m_genoStruIdx].m_numLoci.size()));
+			(boost::format("Chromosome index %1% out of range of 0 ~ %2%") % chrom %
+			s_genoStruRepository[m_genoStruIdx].m_numLoci.size()).str());
 
 		return s_genoStruRepository[m_genoStruIdx].m_chromTypes[chrom];
 	}
@@ -726,8 +726,8 @@ public:
 	string locusName(const size_t locus) const
 	{
 		DBG_FAILIF(locus >= s_genoStruRepository[m_genoStruIdx].m_totNumLoci, IndexError,
-			"Locus index " + toStr(locus) + " out of range of 0 ~ " +
-			toStr(s_genoStruRepository[m_genoStruIdx].m_totNumLoci));
+			(boost::format("Locus index %1% out of range of 0 ~ %2%") % locus %
+			s_genoStruRepository[m_genoStruIdx].m_totNumLoci).str());
 
 		const vectorstr & names = s_genoStruRepository[m_genoStruIdx].m_lociNames;
 		return names.empty() ? string() : names[locus];
@@ -840,8 +840,8 @@ public:
 	/// CPPONLY Decrease the reference count of this structure
 	void decGenoStruRef() const
 	{
-		DBG_FAILIF(s_genoStruRepository[m_genoStruIdx].m_refCount == 0,
-			SystemError, "Unknow error for reference counting of genotypic structure " + toStr(int(m_genoStruIdx)) + ".");
+		DBG_FAILIF(s_genoStruRepository[m_genoStruIdx].m_refCount == 0, SystemError,
+			(boost::format("Unknow error for reference counting of genotypic structure %1%.") % int(m_genoStruIdx)).str());
 		--s_genoStruRepository[m_genoStruIdx].m_refCount;
 		DBG_DO(DBG_POPULATION, cerr << "Dec ref of " << int(m_genoStruIdx) << " to "
 			                        << s_genoStruRepository[m_genoStruIdx].m_refCount << endl);

@@ -317,8 +317,7 @@ public:
 	string describe(bool format = true) const
 	{
 		(void)format;  // avoid warning about unused parameter
-		return "<simuPOP.KAlleleMutator> A k-allele mutation model with K=" +
-		       toStr(m_k);
+		return (boost::format("<simuPOP.KAlleleMutator> A k-allele mutation model with K=%1%") % m_k).str();
 	}
 
 

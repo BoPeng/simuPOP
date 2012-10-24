@@ -85,7 +85,7 @@ public:
 		const_val_iterator it_end = m_data.end();
 		for (; it != it_end; ++it) {
 			DBG_ASSERT(it->second != 0, RuntimeError,
-				"Mutant with zero value is detected at location " + toStr(it->first));
+				(boost::format("Mutant with zero value is detected at location %1%") % it->first).str());
 		}
 #  endif
 	}

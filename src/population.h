@@ -449,9 +449,9 @@ public:
 	{
 		if (ancGen < 0 || ancGen == m_curAncestralGen)
 			return m_subPopSize;
-		DBG_FAILIF(ancGen > ancestralGens(),
-			IndexError, "Ancestral generation " + toStr(ancGen) + " out of range of 0 ~ "
-			+ toStr(ancestralGens()));
+		DBG_FAILIF(ancGen > ancestralGens(), IndexError, 
+			(boost::format("Ancestral generation %1% out of range of 0 ~ %2%") % ancGen %
+			ancestralGens()).str());
 		return m_ancestralPops[ancGen - 1].m_subPopSize;
 	}
 
@@ -470,9 +470,9 @@ public:
 	{
 		if (ancGen < 0 || ancGen == m_curAncestralGen)
 			return m_popSize;
-		DBG_FAILIF(ancGen > ancestralGens(),
-			IndexError, "Ancestral generation " + toStr(ancGen) + " out of range of 0 ~ "
-			+ toStr(ancestralGens()));
+		DBG_FAILIF(ancGen > ancestralGens(), IndexError,
+			(boost::format("Ancestral generation %1% out of range of 0 ~ %2%") % ancGen %
+			ancestralGens()).str());
 		const vectoru & sizes = m_ancestralPops[ancGen - 1].m_subPopSize;
 		return accumulate(sizes.begin(), sizes.end(), size_t(0));
 	}
@@ -707,7 +707,7 @@ public:
 	{
 		CHECKRANGESUBPOP(subPop);
 		DBG_FAILIF(threadID >= numThreads(), RuntimeError,
-			"Thread ID " + toStr(threadID) + " execeed total number of threads " + toStr(numThreads()));
+			(boost::format("Thread ID %1% execeed total number of threads %2%") % threadID % numThreads()).str());
 		size_t blockSize = m_subPopSize[subPop] / numThreads();
 		if (threadID + 1 != numThreads())
 			return IndIterator(m_inds.begin() + m_subPopIndex[subPop] + blockSize * threadID,

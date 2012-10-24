@@ -491,21 +491,20 @@ public:
 #pragma GCC system_header
 #include "boost/lexical_cast.hpp"
 #define toStr(val) (boost::lexical_cast < string > (val))
+#include <boost/format.hpp>
 
 namespace simuPOP {
 
 // standard library
 #ifndef OPTIMIZED
 
-// toStr(__LINE__) would trigger a icc warning about using temporary variate in function.
-// a variable is therefore defined to hold __LINE__
 #  define DBG_ASSERT(cond, exception, message) \
     if (!(cond)) \
 	{ \
 		int line = __LINE__; \
 		const char * filename = strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : \
 		                        (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__); \
-		throw exception(filename + string(":") + toStr(line) + string(" ") + message); \
+		throw exception((boost::format("%1%: %2% %3%") % filename % line % (message)).str()); \
 	}
 
 #  define DBG_FAILIF(cond, exception, message) \
@@ -514,7 +513,7 @@ namespace simuPOP {
 		int line = __LINE__; \
 		const char * filename = strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : \
 		                        (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__); \
-		throw exception(filename + string(":") + toStr(line) + string(" ") + message); \
+		throw exception((boost::format("%1%: %2% %3%") % filename % line % (message)).str()); \
 	}
 
 #  define PARAM_ASSERT DBG_ASSERT
@@ -542,7 +541,7 @@ namespace simuPOP {
 		int line = __LINE__; \
 		const char * filename = strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : \
 		                        (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__); \
-		throw exception(filename + string(":") + toStr(line) + string(" ") + message); \
+		throw exception((boost::format("%1%: %2% %3%") % filename % line % (message)).str()); \
 	}
 
 #  define PARAM_FAILIF(cond, exception, message) \
@@ -551,7 +550,7 @@ namespace simuPOP {
 		int line = __LINE__; \
 		const char * filename = strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : \
 		                        (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__); \
-		throw exception(filename + string(":") + toStr(line) + string(" ") + message); \
+		throw exception((boost::format("%1%: %2% %3%") % filename % line % (message)).str()); \
 	}
 
 #  define DBG_WARNIF(cond, message)
@@ -570,19 +569,30 @@ namespace simuPOP {
 #define ISSETFLAG(var, flag) (!!(var & flag))
 
 // check range.
-#define CHECKRANGEPLOIDY(p)  DBG_FAILIF(p >= ploidy(), IndexError, "index (" + toStr(p) + ") out of range of ploidy of 0 ~ " + toStr(ploidy() - 1))
-#define CHECKRANGESEX(sex) DBG_FAILIF(sex != MALE && sex != FEMALE, IndexError, "Wrong sex info. Only MALE or FEMALE is allowed.")
-#define CHECKRANGESUBPOP(subPop) DBG_FAILIF(static_cast<UINT>(subPop) >= numSubPop(), IndexError, "Subpop index (" + toStr(subPop) + ") out of range of 0  ~ " + toStr(numSubPop() - 1))
-#define CHECKRANGEVIRTUALSUBPOP(subPop) DBG_FAILIF(subPop != InvalidValue && static_cast<UINT>(subPop) >= numVirtualSubPop(), IndexError, "No virtual subpopulation is defined, or subpop index (" + toStr(subPop) + ") out of range of 0  ~ " + toStr(numVirtualSubPop() - 1))
-#define CHECKRANGECHROM(chrom)   DBG_FAILIF(chrom >= numChrom(), IndexError, "chromosome index (" + toStr(chrom) + ") out of range of 0 ~ " + toStr(numChrom() - 1))
-#define CHECKRANGELOCUS(chrom, locus) DBG_FAILIF(locus >= numLoci(chrom), IndexError, "locus index (" + toStr(locus) + ") out of range of 0 ~ " + toStr(numLoci(chrom) - 1))
-#define CHECKRANGEABSLOCUS(locus) DBG_FAILIF(locus >= totNumLoci(), IndexError, "absolute locus index (" + toStr(locus) + ") out of range of 0 ~ " + toStr(totNumLoci() - 1))
-#define CHECKRANGEGENOSIZE(p) DBG_FAILIF(p >= genoSize(), IndexError, "locus index  (" + toStr(p) + ") out of range of 0 ~ " + toStr(genoSize() - 1))
-#define CHECKRANGESUBPOPMEMBER(ind, sp) DBG_FAILIF(subPopSize(sp) > 0 && ind >= subPopSize(sp), IndexError, "individual index (" + toStr(ind) + ") out of range 0 ~" + toStr(subPopSize(sp) - 1) + " in subpopulation " + toStr(sp))
-#define CHECKRANGEIND(ind) DBG_FAILIF(ind >= popSize(), IndexError, "individual index (" + toStr(ind) + ") " \
-	+ (popSize() > 0 ? (" out of range of 0 ~ " + toStr(popSize() - 1)) : "invoked on a population without any individual."))
-#define CHECKRANGEINFO(ind) DBG_FAILIF(ind >= infoSize(), IndexError, "info index (" + toStr(ind) + ") " \
-	+ (infoSize() > 0 ? (" out of range of 0 ~ " + toStr(infoSize() - 1)) : "invoked on a population without any information field."))
+#define CHECKRANGEPLOIDY(p)  DBG_FAILIF(p >= ploidy(), IndexError, \
+	(boost::format("index (%1%) out of range of ploidy of 0 ~ %2%") % p % (ploidy() - 1)).str())
+#define CHECKRANGESEX(sex) DBG_FAILIF(sex != MALE && sex != FEMALE, IndexError, \
+	"Wrong sex info. Only MALE or FEMALE is allowed.")
+#define CHECKRANGESUBPOP(subPop) DBG_FAILIF(static_cast<UINT>(subPop) >= numSubPop(), IndexError, \
+	(boost::format("Subpop index (%1%) out of range of 0  ~ %2%") % subPop % (numSubPop() - 1)).str())
+#define CHECKRANGEVIRTUALSUBPOP(subPop) DBG_FAILIF(subPop != InvalidValue && static_cast<UINT>(subPop) >= numVirtualSubPop(), IndexError, \
+	(boost::format("No virtual subpopulation is defined, or subpop index (%1%) out of range of 0  ~ %2%") % subPop % (numVirtualSubPop() - 1)).str())
+#define CHECKRANGECHROM(chrom)   DBG_FAILIF(chrom >= numChrom(), IndexError,\
+	(boost::format("chromosome index (%1%) out of range of 0 ~ %2%") % chrom % (numChrom() - 1)).str())
+#define CHECKRANGELOCUS(chrom, locus) DBG_FAILIF(locus >= numLoci(chrom), IndexError, \
+	(boost::format("locus index (%1%) out of range of 0 ~ %2%") % locus % (numLoci(chrom) - 1)).str())
+#define CHECKRANGEABSLOCUS(locus) DBG_FAILIF(locus >= totNumLoci(), IndexError, \
+	(boost::format("absolute locus index (%1%) out of range of 0 ~ %2%") % locus % (totNumLoci() - 1)).str())
+#define CHECKRANGEGENOSIZE(p) DBG_FAILIF(p >= genoSize(), IndexError, \
+	(boost::format("locus index (%1%) out of range of 0 ~ %2%") % p % (genoSize() - 1)).str())
+#define CHECKRANGESUBPOPMEMBER(ind, sp) DBG_FAILIF(subPopSize(sp) > 0 && ind >= subPopSize(sp), IndexError, \
+	(boost::format("individual index (%1%) out of range 0 ~ %2% in subpopulation %3%") % ind % (subPopSize(sp) - 1) % sp).str())
+#define CHECKRANGEIND(ind) DBG_FAILIF(ind >= popSize(), IndexError, \
+	(boost::format("individual index (%1%) %2%") % ind % \
+	(popSize() > 0 ? (boost::format(" out of range of 0 ~ %1%") % (popSize() - 1)).str() : string("invoked on a population without any individual."))).str())
+#define CHECKRANGEINFO(ind) DBG_FAILIF(ind >= infoSize(), IndexError, \
+	(boost::format("info index (%1%) %2%") % ind % \
+	(infoSize() > 0 ? (boost::format(" out of range of 0 ~ %1%") % (infoSize() - 1)).str() : string("invoked on a population without any information field."))).str())
 }
 
 // for mutant vector -- the class wrapper for compressed vector

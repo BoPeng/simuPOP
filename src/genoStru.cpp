@@ -40,7 +40,7 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 	m_infoFields(infoFields), m_refCount(0)
 {
 	DBG_ASSERT(ploidy >= 1, ValueError,
-		"Ploidy must be >= 1. Given " + toStr(ploidy));
+		(boost::format("Ploidy must be >= 1. Given %1%") % ploidy).str());
 
 	// default: one chromosome, one locus
 	// otherwise, Loci copies from loci
@@ -74,7 +74,7 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 	} else {                                                                            // check loci distance
 		// loci distance, if specified, chould have length of chromosome.
 		DBG_FAILIF(m_lociPos.size() != m_totNumLoci, ValueError,
-			"You should specify loci distance for every locus (" + toStr(m_totNumLoci) + ")");
+			(boost::format("You should specify loci distance for every locus (%1%)") %  m_totNumLoci).str());
 
 		for (size_t ch = 0; ch < m_numLoci.size(); ++ch) {
 			if (m_numLoci[ch] <= 1)
@@ -283,6 +283,7 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 
 // initialize static variable s)genoStruRepository.
 vector<GenoStructure> GenoStruTrait::s_genoStruRepository = vector<GenoStructure>();
+vectorstr g_alleleName;
 
 
 double GenoStruTrait::lociDist(size_t loc1, size_t loc2) const
@@ -354,10 +355,10 @@ void GenoStruTrait::setGenoStructure(const GenoStructure & rhs)
 	// As a matter of fact, most simuPOP scripts have only one
 	// Population type.
 	if (s_genoStruRepository.size() + 1 == MaxTraitIndex) {
-		throw SystemError("This simuPOP library only allows " + toStr(MaxTraitIndex - 1)
-			+ " different genotype structures. \n" +
-			+"If you do need more structures, modify individual.h/TraitMaxType and " +
-			+"recompile simuPOP.");
+		throw SystemError((boost::format("This simuPOP library only allows %1%"
+			 " different genotype structures. \n"
+			"If you do need more structures, modify individual.h/TraitMaxType and "
+			"recompile simuPOP.") % (MaxTraitIndex - 1)).str());
 	}
 
 	if (m_genoStruIdx != MaxTraitIndex)
@@ -661,7 +662,7 @@ const GenoStructure GenoStruTrait::gsAddChrom(const vectorf & lociPos, const vec
 	}
 	//
 	vectorstr newChromNames = gs.m_chromNames;
-	newChromNames.push_back(chromName.empty() ? "chrom" + toStr(gs.m_numLoci.size() + 1) : chromName);
+	newChromNames.push_back(chromName.empty() ? (boost::format("chrom%1%") % (gs.m_numLoci.size() + 1)).str() : chromName);
 	//
 	vectoru newChromTypes = gs.m_chromTypes;
 	newChromTypes.push_back(chromType);
@@ -822,7 +823,7 @@ string GenoStruTrait::ploidyName() const
 	else if (s_genoStruRepository[m_genoStruIdx].m_ploidy == 4)
 		return "tetraploid";
 	else
-		return toStr(s_genoStruRepository[m_genoStruIdx].m_ploidy) + "-ploid";
+		return (boost::format("%1%-ploid") % s_genoStruRepository[m_genoStruIdx].m_ploidy).str();
 }
 
 
@@ -842,20 +843,22 @@ pairu GenoStruTrait::chromLocusPair(size_t locus) const
 	return loc;
 }
 
-
 string GenoStruTrait::alleleName(const ULONG allele, const size_t locus) const
 {
-	DBG_FAILIF(allele > ModuleMaxAllele,
-		IndexError, "Allele " + toStr(allele) + " out of range of 0 ~ " +
-		toStr(ModuleMaxAllele));
+	DBG_FAILIF(allele > ModuleMaxAllele, IndexError,
+		(boost::format("Allele %1% out of range of 0 ~ %2%") % allele % ModuleMaxAllele).str());
+	if (g_alleleName.empty())
+		// try to avoid excessive format call...
+		for (size_t i = 0; i < 16; i++)
+			g_alleleName.push_back((boost::format("%1%") % i).str());
 	const matrixstr & allNames = s_genoStruRepository[m_genoStruIdx].m_alleleNames;
 	if (allNames.empty())
-		return toStr(allele);
+		return allele < 16 ? g_alleleName[allele] : (boost::format("%1%") % allele).str();
 	const vectorstr & names = allNames.size() > locus ? allNames[locus] : allNames[0];
 	if (allele < names.size()) {
 		return names[allele];
 	} else
-		return toStr(allele);
+		return allele < 16 ? g_alleleName[allele] : (boost::format("%1%") % allele).str();
 }
 
 
