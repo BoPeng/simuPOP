@@ -311,8 +311,8 @@ size_t BaseVspSplitter::vspByName(const string & vspName) const
 {
 	if (!m_names.empty()) {
 		vectorstr::const_iterator it = std::find(m_names.begin(), m_names.end(), vspName);
-		DBG_FAILIF(it == m_names.end(), ValueError, "An invalid virtual subpopulation name is given: "
-			+ vspName + ". Available names are: " + toStr(m_names));
+		DBG_FAILIF(it == m_names.end(), ValueError, 
+			(boost::format("An invalid virtual subpopulation name is given: %1%. Available names are: %2%") % vspName % m_names).str());
 		return static_cast<size_t>(it - m_names.begin());
 	}
 	for (size_t i = 0; i < static_cast<size_t>(numVirtualSubPop()); ++i) {
@@ -322,8 +322,7 @@ size_t BaseVspSplitter::vspByName(const string & vspName) const
 	string allNames;
 	for (size_t i = 0; i < static_cast<size_t>(numVirtualSubPop()); ++i)
 		allNames += name(i) + ", ";
-	DBG_FAILIF(true, ValueError, "An invalid virtual subpopulation name is given: "
-		+ vspName + ". Available names are: " + allNames);
+	DBG_FAILIF(true, ValueError, (boost::format("An invalid virtual subpopulation name is given: %1%. Available names are: %2%") % vspName % allNames).str());
 	return InvalidValue;
 }
 
@@ -363,7 +362,7 @@ CombinedSplitter::CombinedSplitter(const vectorsplitter & splitters,
 					lower = higher;
 				}
 				DBG_ASSERT(done, IndexError,
-					"Given vsp index " + toStr(vspMap[i][j]) + " is larger than the number of total VSPs");
+					(boost::format("Given vsp index %1% is larger than the number of total VSPs") % vspMap[i][j]).str());
 			}
 			m_vspMap.push_back(list);
 		}
@@ -744,8 +743,7 @@ size_t InfoSplitter::size(const Population & pop, size_t subPop, size_t virtualS
 
 	if (!m_cutoff.empty()) {
 		DBG_FAILIF(static_cast<UINT>(virtualSubPop) > m_cutoff.size(), IndexError,
-			"Virtual Subpoplation index out of range of 0 ~ "
-			+ toStr(m_cutoff.size()));
+			(boost::format("Virtual Subpoplation index out of range of 0 ~ %1%") % m_cutoff.size()).str());
 
 		// using cutoff, below
 		if (virtualSubPop == 0) {
@@ -771,8 +769,7 @@ size_t InfoSplitter::size(const Population & pop, size_t subPop, size_t virtualS
 		}
 	} else if (!m_values.empty()) {
 		DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_values.size(), IndexError,
-			"Virtual Subpoplation index out of range of 0 ~ "
-			+ toStr(m_values.size() - 1));
+			(boost::format("Virtual Subpoplation index out of range of 0 ~ %1%") % (m_values.size() - 1)).str());
 		double v = m_values[virtualSubPop];
 		for (; it != it_end; ++it)
 			if (fcmp_eq(it->info(idx), v))
@@ -780,8 +777,7 @@ size_t InfoSplitter::size(const Population & pop, size_t subPop, size_t virtualS
 		return count;
 	} else {
 		DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_ranges.size(), IndexError,
-			"Virtual Subpoplation index out of range of 0 ~ "
-			+ toStr(m_ranges.size() - 1));
+			(boost::format("Virtual Subpoplation index out of range of 0 ~ %1%") % (m_ranges.size() - 1)).str());
 		double v1 = m_ranges[virtualSubPop][0];
 		double v2 = m_ranges[virtualSubPop][1];
 		for (; it != it_end; ++it) {
@@ -814,8 +810,7 @@ bool InfoSplitter::contains(const Population & pop, size_t ind, vspID vsp) const
 
 	if (!m_cutoff.empty()) {
 		DBG_FAILIF(static_cast<UINT>(virtualSubPop) > m_cutoff.size(), IndexError,
-			"Virtual Subpoplation index out of range of 0 ~ "
-			+ toStr(m_cutoff.size()));
+			(boost::format("Virtual Subpoplation index out of range of 0 ~ %1%") % m_cutoff.size()).str());
 
 		// using cutoff, below
 		if (virtualSubPop == 0)
@@ -830,13 +825,11 @@ bool InfoSplitter::contains(const Population & pop, size_t ind, vspID vsp) const
 		}
 	} else if (!m_values.empty()) {
 		DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_values.size(), IndexError,
-			"Virtual Subpoplation index " + toStr(virtualSubPop) + " out of range of 0 ~ "
-			+ toStr(m_values.size() - 1));
+			(boost::format("Virtual Subpoplation index out of range of 0 ~ %1%") % m_values.size()).str());
 		return fcmp_eq(pop.individual(ind, vsp.subPop()).info(idx), m_values[virtualSubPop]);
 	} else {
 		DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_ranges.size(), IndexError,
-			"Virtual Subpoplation index " + toStr(virtualSubPop) + " out of range of 0 ~ "
-			+ toStr(m_ranges.size() - 1));
+			(boost::format("Virtual Subpoplation index out of range of 0 ~ %1%") % m_ranges.size()).str());
 		double v = pop.individual(ind, vsp.subPop()).info(idx);
 		return v >= m_ranges[virtualSubPop][0] && v < m_ranges[virtualSubPop][1];
 	}
@@ -854,8 +847,7 @@ void InfoSplitter::activate(const Population & pop, size_t subPop, size_t virtua
 
 	if (!m_cutoff.empty()) {
 		DBG_FAILIF(static_cast<UINT>(virtualSubPop) > m_cutoff.size(), IndexError,
-			"Virtual Subpoplation index out of range of 0 ~ "
-			+ toStr(m_cutoff.size()));
+			(boost::format("Virtual Subpoplation index out of range of 0 ~ %1%") % m_cutoff.size()).str());
 
 		// using cutoff, below
 		if (virtualSubPop == 0) {
@@ -875,15 +867,13 @@ void InfoSplitter::activate(const Population & pop, size_t subPop, size_t virtua
 		}
 	} else if (!m_values.empty()) {
 		DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_values.size(), IndexError,
-			"Virtual Subpoplation index out of range of 0 ~ "
-			+ toStr(m_values.size() - 1));
+			(boost::format("Virtual Subpoplation index out of range of 0 ~ %1%") % m_values.size()).str());
 		double v = m_values[virtualSubPop];
 		for (; it != it_end; ++it)
 			it->setVisible(fcmp_eq(it->info(idx), v));
 	} else {
 		DBG_FAILIF(static_cast<size_t>(virtualSubPop) >= m_ranges.size(), IndexError,
-			"Virtual Subpoplation index out of range of 0 ~ "
-			+ toStr(m_ranges.size() - 1));
+			(boost::format("Virtual Subpoplation index out of range of 0 ~ %1%") % m_ranges.size()).str());
 		double v1 = m_ranges[virtualSubPop][0];
 		double v2 = m_ranges[virtualSubPop][1];
 		for (; it != it_end; ++it) {
@@ -908,26 +898,21 @@ string InfoSplitter::name(size_t sp) const
 
 	if (!m_cutoff.empty()) {
 		DBG_FAILIF(static_cast<UINT>(sp) > m_cutoff.size(), IndexError,
-			"Virtual Subpoplation index out of range of 0 ~ "
-			+ toStr(m_cutoff.size()));
+			(boost::format("Virtual Subpoplation index out of range of 0 ~ %1%") % m_cutoff.size()).str());
 		if (sp == 0)
-			return m_info + " < " + toStr(m_cutoff[0]);
+			return (boost::format("%1% < %2%") % m_info % m_cutoff[0]).str();
 		else if (static_cast<UINT>(sp) == m_cutoff.size())
-			return m_info + " >= " + toStr(m_cutoff[sp - 1]);
+			return (boost::format("%1% >= %2%") % m_info % m_cutoff[sp - 1]).str();
 		else
-			return toStr(m_cutoff[sp - 1]) + " <= " + m_info + " < "
-			       + toStr(m_cutoff[sp]);
+			return (boost::format("%1% <= %2% < %3%") %  m_cutoff[sp - 1] % m_info % m_cutoff[sp]).str();
 	} else if (!m_values.empty()) {
 		DBG_FAILIF(static_cast<UINT>(sp) >= m_values.size(), IndexError,
-			"Virtual Subpoplation index out of range of 0 ~ "
-			+ toStr(m_values.size() - 1));
-		return m_info + " = " + toStr(m_values[sp]);
+			(boost::format("Virtual Subpoplation index out of range of 0 ~ %1%") % m_values.size()).str());
+		return (boost::format("%1% = %2%") % m_info % m_values[sp]).str();
 	} else {
 		DBG_FAILIF(static_cast<UINT>(sp) >= m_ranges.size(), IndexError,
-			"Virtual Subpoplation index out of range of 0 ~ "
-			+ toStr(m_ranges.size() - 1));
-		return toStr(m_ranges[sp][0]) + " <= " + m_info + " < "
-		       + toStr(m_ranges[sp][1]);
+			(boost::format("Virtual Subpoplation index out of range of 0 ~ %1%") % m_ranges.size()).str());
+		return (boost::format("%1% <= %2% < %3%") % m_ranges[sp][0] % m_info % m_ranges[sp][1]).str();
 	}
 }
 
@@ -1018,7 +1003,7 @@ string ProportionSplitter::name(size_t subPop) const
 	if (!m_names.empty())
 		return m_names[subPop];
 
-	return "Prop " + toStr(m_proportions[subPop]);
+	return (boost::format("Prop %1%") % m_proportions[subPop]).str();
 }
 
 
@@ -1026,11 +1011,8 @@ RangeSplitter::RangeSplitter(const intMatrix & ranges, const stringList & names)
 	: BaseVspSplitter(names), m_ranges(ranges.elems())
 {
 	for (size_t i = 0; i < m_ranges.size(); ++i) {
-		DBG_FAILIF(m_ranges[i].size() != 2
-			|| m_ranges[i][0] > m_ranges[i][1],
-			ValueError, "Wrong range [" +
-			toStr(m_ranges[i][0]) + ", " +
-			toStr(m_ranges[i][1]) + ")");
+		DBG_FAILIF(m_ranges[i].size() != 2 || m_ranges[i][0] > m_ranges[i][1], ValueError,
+			(boost::format("Wrong range [%1%, %2%)") % m_ranges[i][0] %  m_ranges[i][1]).str());
 	}
 }
 
@@ -1092,8 +1074,7 @@ string RangeSplitter::name(size_t subPop) const
 	if (!m_names.empty())
 		return m_names[subPop];
 
-	return "Range [" + toStr(m_ranges[subPop][0]) + ", " +
-	       toStr(m_ranges[subPop][1]) + ")";
+	return (boost::format("Range [%1%, %2%)") % m_ranges[subPop][0] % m_ranges[subPop][1]).str();
 }
 
 
@@ -1188,12 +1169,12 @@ string GenotypeSplitter::name(size_t subPop) const
 		for (size_t i = 0; i < m_loci.size(); ++i) {
 			if (i != 0)
 				label += ", ";
-			label += toStr(loci[i]);
+			label += (boost::format("%1%") % loci[i]).str();
 		}
 	}
 	label += ":";
 	for (size_t i = 0; i < m_alleles[subPop].size(); ++i)
-		label += " " + toStr(m_alleles[subPop][i]);
+		label += (boost::format(" %1%") %  m_alleles[subPop][i]).str();
 	return label;
 }
 

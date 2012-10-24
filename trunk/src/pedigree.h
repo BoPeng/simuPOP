@@ -159,7 +159,7 @@ public:
 
 		// if still cannot be found, raise an IndexError.
 		if (it == m_idMap.end())
-			throw IndexError("No individual with ID " + toStr(id) + " could be found.");
+			throw IndexError((boost::format("No individual with ID %1% could be found.") % id).str());
 		return *it->second;
 	}
 

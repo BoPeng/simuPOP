@@ -949,7 +949,7 @@ public:
 	double operator[](size_t i) const
 	{
 		DBG_FAILIF(i >= size(), IndexError,
-			"Index " + toStr(i) + " out of range of 0 ~ " + toStr(size() - 1));
+			(boost::format("Index %1% out of range of 0 ~ %2%") % i % (size() - 1)).str());
 		return m_elems[i];
 	}
 

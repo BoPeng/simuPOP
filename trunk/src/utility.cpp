@@ -41,6 +41,7 @@
 
 
 #include <sstream>
+using std::ostringstream;
 using std::stringstream;
 using std::ostringstream;
 using std::hex;
@@ -1841,9 +1842,9 @@ PyObject * SharedVariables::setVar(const string & name, const tupleDict & val)
 }
 
 
-void save_none(string & str)
+void save_none(ostringstream & str)
 {
-	str += "n";
+	str << "n";
 }
 
 
@@ -1855,12 +1856,12 @@ PyObject * load_none(const string & /* str */, size_t & offset)
 }
 
 
-void save_int(string & str, PyObject * args)
+void save_int(ostringstream & str, PyObject * args)
 {
 	long l = PyInt_AsLong(args);
 
 	// type + string + ' '
-	str += 'i' + toStr(l) + ' ';
+	str << 'i' << l << ' ';
 }
 
 
@@ -1878,12 +1879,12 @@ PyObject * load_int(const string & str, size_t & offset)
 }
 
 
-void save_long(string & str, PyObject * args)
+void save_long(ostringstream & str, PyObject * args)
 {
 	long l = PyInt_AsLong(args);
 
 	// type +  string + ' '
-	str += 'l' + toStr(l) + ' ';
+	str << 'l' << l << ' ';
 }
 
 
@@ -1900,12 +1901,12 @@ PyObject * load_long(const string & str, size_t & offset)
 }
 
 
-void save_float(string & str, PyObject * args)
+void save_float(ostringstream & str, PyObject * args)
 {
 	double d = PyFloat_AsDouble(args);
 
 	// type + string
-	str += 'f' + toStr(d) + ' ';
+	str << 'f' << d << ' ';
 }
 
 
@@ -1920,9 +1921,9 @@ PyObject * load_float(const string & str, size_t & offset)
 }
 
 
-void save_string(string & str, PyObject * args)
+void save_string(ostringstream & str, PyObject * args)
 {
-	str += 's' + PyObj_AsString(args) + '\0';
+	str << 's' << PyObj_AsString(args) << '\0';
 }
 
 
@@ -1939,15 +1940,15 @@ PyObject * load_string(const string & str, size_t & offset)
 }
 
 
-void saveObj(string & str, PyObject * args);
+void saveObj(ostringstream & str, PyObject * args);
 
 PyObject * loadObj(const string & vars, size_t & offset);
 
-void save_dict(string & str, PyObject * args)
+void save_dict(ostringstream & str, PyObject * args)
 {
 	PyObject * key = 0, * value = 0;
 
-	str += 'd';                                                                       // dictionary
+	str << 'd';                                                                       // dictionary
 	Py_ssize_t i = 0;
 	while (PyDict_Next(args, &i, &key, &value)) {
 		if (PyString_Check(key)) {
@@ -1959,7 +1960,7 @@ void save_dict(string & str, PyObject * args)
 		saveObj(str, key);
 		saveObj(str, value);
 	}
-	str += 'e';                                                                       // ending of a dictionary
+	str << 'e';                                                                       // ending of a dictionary
 }
 
 
@@ -1983,17 +1984,17 @@ PyObject * load_dict(const string & vars, size_t & offset)
 }
 
 
-void save_defdict(string & str, PyObject * args)
+void save_defdict(ostringstream & str, PyObject * args)
 {
 	PyObject * key = 0, * value = 0;
 
-	str += 'D';                                                                       // dictionary
+	str << 'D';                                                                       // dictionary
 	Py_ssize_t i = 0;
 	while (PyDict_Next(args, &i, &key, &value)) {
 		saveObj(str, key);
 		saveObj(str, value);
 	}
-	str += 'e';                                                                       // ending of a dictionary
+	str << 'e';                                                                       // ending of a dictionary
 }
 
 
@@ -2017,16 +2018,16 @@ PyObject * load_defdict(const string & vars, size_t & offset)
 }
 
 
-void save_list(string & str, PyObject * args)
+void save_list(ostringstream & str, PyObject * args)
 {
-	str += 'L';                                                                       // dictionary
+	str << 'L';                                                                       // dictionary
 	size_t len = PyList_Size(args);
 	for (size_t i = 0; i < len; i++) {
 		PyObject * elem = PyList_GET_ITEM((PyListObject *)args, i);
 		saveObj(str, elem);
 	}
 
-	str += 'e';                                                                       // ending of a dictionary
+	str << 'e';                                                                       // ending of a dictionary
 }
 
 
@@ -2045,12 +2046,12 @@ PyObject * load_list(const string & vars, size_t & offset)
 }
 
 
-void save_tuple(string & str, PyObject * args)
+void save_tuple(ostringstream & str, PyObject * args)
 {
-	str += 't';                                                                       // dictionary
+	str << 't';                                                                       // dictionary
 	size_t len = PyTuple_Size(args);
 	// save length
-	str += toStr(len) + ' ';
+	str << len << ' ';
 	// save items
 	for (size_t i = 0; i < len; i++) {
 		PyObject * elem = PyTuple_GET_ITEM((PyTupleObject *)args, i);
@@ -2080,7 +2081,7 @@ PyObject * load_tuple(const string & vars, size_t & offset)
 }
 
 
-void saveObj(string & str, PyObject * args)
+void saveObj(ostringstream & str, PyObject * args)
 {
 	PyTypeObject * type;
 
@@ -2108,7 +2109,7 @@ void saveObj(string & str, PyObject * args)
 		save_defdict(str, args);
 	else {
 		// some other unknown type
-		DBG_DO(DBG_UTILITY, cerr << "Warning: object of type '" + toStr(type->tp_name) + "' cannot be saved. Use none.");
+		DBG_DO(DBG_UTILITY, cerr << boost::format("Warning: object of type '%1%' cannot be saved. Use none.")  % type->tp_name);
 		save_none(str);
 	}
 }
@@ -2138,7 +2139,7 @@ PyObject * loadObj(const string & vars, size_t & offset)
 	default:
 	{
 		DBG_DO(DBG_UTILITY, cerr << endl);
-		throw ValueError("Unknown type code at offset " + toStr(offset));
+		throw ValueError((boost::format("Unknown type code at offset %1%") % offset).str());
 	}
 	}
 }
@@ -2147,11 +2148,11 @@ PyObject * loadObj(const string & vars, size_t & offset)
 string SharedVariables::asString() const
 {
 	// go through each variable and save
-	string str;
+	ostringstream str;
 
 	saveObj(str, m_dict);
-	str += 'e';                                                                       // ending character
-	return str;
+	str << 'e';                                                                       // ending character
+	return str.str();
 }
 
 
@@ -3063,8 +3064,7 @@ void RNG::set(const char * rng, unsigned long seed)
 		}
 
 		if (*t == 0)
-			throw SystemError("GSL_RNG_TYPE=" + toStr(rng_name)
-				+ " not recognized or can not generate full range (0-2^32-1) of integers.");
+			throw SystemError((boost::format("GSL_RNG_TYPE=%1% not recognized or can not generate full range (0-2^32-1) of integers.") % rng_name).str());
 	} else if (m_RNG == NULL)
 		// no name is given so we use a default one (mt19937)
 		m_RNG = gsl_rng_alloc(gsl_rng_mt19937);
@@ -3350,7 +3350,7 @@ double hweTest(const vectoru & cnt)
 
 	//make sure numbers aren't screwy
 	if (hets > rare)
-		throw ValueError("HW test: " + toStr(hets) + "heterozygotes but only " + toStr(rare) + "rare alleles.");
+		throw ValueError((boost::format("HW test: %1% heterozygotes but only %2% rare alleles.") % hets % rare).str());
 
 	vectorf tailProbs(rare + 1, 0.0);
 
@@ -3563,8 +3563,7 @@ Bernullitrials::Bernullitrials(RNG & /* rng */, const vectorf & prob, ULONG tria
 	// initialize the table
 	for (size_t i = 0; i < probSize(); ++i) {
 		DBG_FAILIF(m_prob[i] < 0 || m_prob[i] > 1, ValueError,
-			"Probability for a Bernulli trail should be between 0 and 1 (value "
-			+ toStr(m_prob[i]) + " at index " + toStr(i) + ")");
+			(boost::format("Probability for a Bernulli trail should be between 0 and 1 (value %1% at index %2%)") % m_prob[i] % i).str());
 		m_table[i].resize(m_N);
 		m_pointer[i] = BITPTR(m_table[i].begin());
 	}
@@ -3596,8 +3595,7 @@ void Bernullitrials::setParameter(const vectorf & prob, size_t trials)
 
 	for (size_t i = 0; i < probSize(); ++i) {
 		DBG_FAILIF(m_prob[i] < 0 || m_prob[i] > 1, ValueError,
-			"Probability for a Bernulli trail should be between 0 and 1 (value "
-			+ toStr(m_prob[i]) + " at index " + toStr(i) + ")");
+			(boost::format("Probability for a Bernulli trail should be between 0 and 1 (value %1% at index %2%)") % m_prob[i] % i).str());
 		m_table[i].resize(m_N);
 		m_pointer[i] = BITPTR(m_table[i].begin());
 	}
@@ -3886,8 +3884,7 @@ double Bernullitrials::probSuccRate() const
 void gsl_error_handler(const char * reason, const char *,
                        int, int gsl_errno)
 {
-	throw SystemError("GSL Error " + toStr(gsl_errno) + ":\t"
-		+ reason);
+	throw SystemError((boost::format("GSL Error %1%:\t %2%") % gsl_errno % reason).str());
 }
 
 

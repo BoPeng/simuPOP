@@ -202,8 +202,8 @@ public:
 	/// CPPONLY
 	string infoField(size_t idx) const
 	{
-		DBG_ASSERT(idx < m_infoFields.elems().size(), IndexError, "Given info index " + toStr(idx) +
-			" is out of range of 0 ~ " + toStr(m_infoFields.elems().size()));
+		DBG_ASSERT(idx < m_infoFields.elems().size(), IndexError,
+			(boost::format("Given info index %1% is out of range of 0 ~ %2%") % idx % m_infoFields.elems().size()).str());
 		return m_infoFields.elems()[idx];
 	}
 
