@@ -311,7 +311,7 @@ size_t BaseVspSplitter::vspByName(const string & vspName) const
 {
 	if (!m_names.empty()) {
 		vectorstr::const_iterator it = std::find(m_names.begin(), m_names.end(), vspName);
-		DBG_FAILIF(it == m_names.end(), ValueError, 
+		DBG_FAILIF(it == m_names.end(), ValueError,
 			(boost::format("An invalid virtual subpopulation name is given: %1%. Available names are: %2%") % vspName % m_names).str());
 		return static_cast<size_t>(it - m_names.begin());
 	}
@@ -904,7 +904,7 @@ string InfoSplitter::name(size_t sp) const
 		else if (static_cast<UINT>(sp) == m_cutoff.size())
 			return (boost::format("%1% >= %2%") % m_info % m_cutoff[sp - 1]).str();
 		else
-			return (boost::format("%1% <= %2% < %3%") %  m_cutoff[sp - 1] % m_info % m_cutoff[sp]).str();
+			return (boost::format("%1% <= %2% < %3%") % m_cutoff[sp - 1] % m_info % m_cutoff[sp]).str();
 	} else if (!m_values.empty()) {
 		DBG_FAILIF(static_cast<UINT>(sp) >= m_values.size(), IndexError,
 			(boost::format("Virtual Subpoplation index out of range of 0 ~ %1%") % m_values.size()).str());
@@ -1012,7 +1012,7 @@ RangeSplitter::RangeSplitter(const intMatrix & ranges, const stringList & names)
 {
 	for (size_t i = 0; i < m_ranges.size(); ++i) {
 		DBG_FAILIF(m_ranges[i].size() != 2 || m_ranges[i][0] > m_ranges[i][1], ValueError,
-			(boost::format("Wrong range [%1%, %2%)") % m_ranges[i][0] %  m_ranges[i][1]).str());
+			(boost::format("Wrong range [%1%, %2%)") % m_ranges[i][0] % m_ranges[i][1]).str());
 	}
 }
 
@@ -1174,7 +1174,7 @@ string GenotypeSplitter::name(size_t subPop) const
 	}
 	label += ":";
 	for (size_t i = 0; i < m_alleles[subPop].size(); ++i)
-		label += (boost::format(" %1%") %  m_alleles[subPop][i]).str();
+		label += (boost::format(" %1%") % m_alleles[subPop][i]).str();
 	return label;
 }
 

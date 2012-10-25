@@ -25,6 +25,7 @@
 
 #include "simulator.h"
 
+#include <sstream>
 using std::ostringstream;
 
 namespace simuPOP {
@@ -183,8 +184,7 @@ void Simulator::add(const Population & pop, bool steal)
 
 string Simulator::describe(bool /* format */) const
 {
-	return "<simuPOP.Simulator> a simulator with " + toStr(m_pops.size())
-	       + " Population" + (m_pops.size() == 1 ? "." : "s.");
+	return (boost::format("<simuPOP.Simulator> a simulator with %1% populations") % m_pops.size()).str();
 }
 
 
@@ -276,8 +276,8 @@ vectoru Simulator::evolve(
 
 					try {
 						if (!preOps[it]->apply(curPop)) {
-							DBG_DO(DBG_SIMULATOR, cerr << "Pre-mating Operator " + preOps[it]->describe() +
-								" stops at replicate " + toStr(curRep) << endl);
+							DBG_DO(DBG_SIMULATOR, cerr << "Pre-mating Operator " << preOps[it]->describe() <<
+								" stops at replicate " << curRep << endl);
 
 							if (activeReps[curRep]) {
 								numStopped++;
@@ -289,8 +289,8 @@ vectoru Simulator::evolve(
 							throw StopEvolution("Evolution stopped due to keyboard interruption.");
 					} catch (StopEvolution e) {
 						DBG_DO(DBG_SIMULATOR, cerr	<< "All replicates are stopped due to a StopEvolution exception raised by "
-							                        << "Pre-mating Operator " + preOps[it]->describe() +
-							" stops at replicate " + toStr(curRep) << endl);
+							                        << "Pre-mating Operator " << preOps[it]->describe() <<
+							" stops at replicate " << curRep << endl);
 						if (e.message()[0] != '\0')
 							cerr << e.message() << endl;
 						fill(activeReps.begin(), activeReps.end(), false);
@@ -303,11 +303,11 @@ vectoru Simulator::evolve(
 
 			if (!activeReps[curRep])
 				continue;
-			elapsedTime("Start mating at generation " + toStr(curGen));
+			elapsedTime((boost::format("Start mating at generation %1%") % curGen).str());
 			// start mating:
 			try {
 				if (!const_cast<MatingScheme &>(matingScheme).mate(curPop, scratchPopulation())) {
-					DBG_DO(DBG_SIMULATOR, cerr << "Mating stops at replicate " + toStr(curRep) << endl);
+					DBG_DO(DBG_SIMULATOR, cerr << "Mating stops at replicate " << curRep << endl);
 
 					numStopped++;
 					activeReps[curRep] = false;
@@ -318,7 +318,7 @@ vectoru Simulator::evolve(
 					throw StopEvolution("Evolution stopped due to keyboard interruption.");
 			} catch (StopEvolution e) {
 				DBG_DO(DBG_SIMULATOR, cerr	<< "All replicates are stopped due to a StopEvolution exception raised by "
-					                        << "During-mating Operator at replicate " + toStr(curRep) << endl);
+					                        << "During-mating Operator at replicate " << curRep << endl);
 
 				fill(activeReps.begin(), activeReps.end(), false);
 				numStopped = activeReps.size();
@@ -337,7 +337,7 @@ vectoru Simulator::evolve(
 					try {
 						if (!postOps[it]->apply(curPop)) {
 							DBG_DO(DBG_SIMULATOR, cerr << "Post-mating Operator " + postOps[it]->describe() +
-								" stops at replicate " + toStr(curRep) << endl);
+								" stops at replicate " << curRep << endl);
 							numStopped++;
 							activeReps[curRep] = false;
 							// does not run the rest of the post-mating operators.
@@ -348,7 +348,7 @@ vectoru Simulator::evolve(
 					} catch (StopEvolution e) {
 						DBG_DO(DBG_SIMULATOR, cerr	<< "All replicates are stopped due to a StopEvolution exception raised by "
 							                        << "Post-mating Operator " + postOps[it]->describe() +
-							" stops at replicate " + toStr(curRep) << endl);
+							" stops at replicate " << curRep << endl);
 						if (e.message()[0] != '\0')
 							cerr << e.message() << endl;
 						fill(activeReps.begin(), activeReps.end(), false);

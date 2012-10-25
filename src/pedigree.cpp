@@ -103,9 +103,9 @@ void Pedigree::buildIDMap()
 		for (IndIterator it = indIterator(); it.valid(); ++it) {
 			size_t id = toID(it->info(m_idIdx));
 			DBG_WARNIF(m_idMap.find(id) != m_idMap.end() && *m_idMap[id] != *it,
-				"Different individuals share the same ID " + toStr(id) +
-				" so only the latest Individual will be used. If this is an "
-				"age-structured population, you may want to remove parental generations.");
+				(boost::format("Different individuals share the same ID %1%"
+					           " so only the latest Individual will be used. If this is an "
+					           "age-structured population, you may want to remove parental generations.") % id).str());
 			m_idMap[id] = &*it;
 		}
 	}
@@ -201,7 +201,7 @@ Individual & Pedigree::indByID(double fid) const
 	IdMap::iterator it = m_idMap.find(id);
 	// if still cannot be found, raise an IndexError.
 	if (it == m_idMap.end())
-		throw IndexError("No individual with ID " + toStr(id) + " could be found.");
+		throw IndexError((boost::format("No individual with ID %1% could be found.") % id).str());
 
 	return *it->second;
 }
@@ -1382,7 +1382,7 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 			if (part == 0) {
 				myID = atoi(q);
 				if (individuals.find(myID) != individuals.end())
-					throw ValueError("Duplicate individual ID " + toStr(myID));
+					throw ValueError((boost::format("Duplicate individual ID %1%") % myID).str());
 				info = (individuals.insert(IdMap::value_type(myID, new IndInfo())).first)->second;
 				++part;
 				continue;

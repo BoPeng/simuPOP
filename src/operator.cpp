@@ -24,6 +24,8 @@
  */
 
 #include "operator.h"
+#include <sstream>
+using std::ostringstream;
 
 #if PY_VERSION_HEX >= 0x03000000
 #  define PyString_Check PyUnicode_Check
@@ -200,55 +202,55 @@ bool BaseOperator::applyDuringMating(Population & /* pop */, Population & /* off
 
 string BaseOperator::applicability(bool subPops, bool gen) const
 {
-	string desc;
+	ostringstream desc;
 
 	if (gen) {
 		if (ISSETFLAG(m_flags, m_flagAtAllGen))
-			desc += "";
+			desc << "";
 		else if (ISSETFLAG(m_flags, m_flagOnlyAtBegin))
-			desc += "at generation 0";
+			desc << "at generation 0";
 		else if (ISSETFLAG(m_flags, m_flagOnlyAtEnd))
-			desc += "at ending generation";
+			desc << "at ending generation";
 		else if (!m_atGen.empty()) {
 			if (m_atGen.size() == 1)
-				desc += "at generation";
+				desc << "at generation";
 			else
-				desc += "at generations";
+				desc << "at generations";
 			for (size_t i = 0; i < m_atGen.size(); ++i) {
 				if (i == 0)
-					desc += ", ";
-				desc += " " + toStr(m_atGen[i]);
+					desc << ", ";
+				desc << " " << m_atGen[i];
 			}
 		} else {
 			if (m_beginGen != 0)
-				desc += "begin at " + toStr(m_beginGen) + " ";
+				desc << "begin at " << m_beginGen << " ";
 			if (m_endGen != -1)
-				desc += "end at " + toStr(m_endGen) + " ";
+				desc << "end at " << m_endGen << " ";
 			if (m_stepGen != 1)
-				desc += "at interval " + toStr(m_stepGen);
+				desc << "at interval " << m_stepGen;
 		}
 	}
 	if (subPops) {
 		if (m_subPops.allAvail())
-			desc += "";
+			desc << "";
 		else {
-			if (desc.size() != 1)
-				desc += ", ";
-			desc += "to subpopulations ";
+			if (desc.str().size() != 1)
+				desc << ", ";
+			desc << "to subpopulations ";
 			for (size_t i = 0; i < m_subPops.size(); ++i) {
 				vspID sp = m_subPops[i];
 				if (i != 0)
-					desc += ", ";
+					desc << ", ";
 				if (sp.isVirtual())
-					desc += "(" + toStr(sp.subPop()) + ", " + toStr(sp.virtualSubPop()) + ")";
+					desc << "(" << sp.subPop() << ", " << sp.virtualSubPop() << ")";
 				else
-					desc += toStr(sp.subPop());
+					desc << sp.subPop();
 			}
 		}
 	}
-	if (desc.empty())
-		return desc;
-	return "(" + desc + ")";
+	if (desc.str().empty())
+		return desc.str();
+	return "(" + desc.str() + ")";
 }
 
 
@@ -346,7 +348,7 @@ bool Pause::apply(Population & pop) const
 	// clear input and wait for user input
 	std::cin.clear();
 
-	string popName = "pop_" + toStr(pop.gen()) + "_" + toStr(pop.rep());
+	string popName = (boost::format("pop_%1%_%2%") % pop.gen() % pop.rep()).str();
 	if (m_prompt) {
 		cerr	<< "Simulation Paused for population " << pop.rep() << "\n"
 		        << "Press\n"

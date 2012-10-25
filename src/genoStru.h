@@ -303,8 +303,8 @@ public:
 	void setGenoStruIdx(size_t idx)
 	{
 		DBG_FAILIF(idx >= s_genoStruRepository.size(), IndexError,
-			(boost::format("Index %1%  to geno structure repository should be less than %2%") % idx % 
-			s_genoStruRepository.size()).str());
+			(boost::format("Index %1%  to geno structure repository should be less than %2%") % idx %
+			 s_genoStruRepository.size()).str());
 		m_genoStruIdx = static_cast<TraitIndexType>(idx);
 	}
 
@@ -637,7 +637,7 @@ public:
 	{
 		DBG_FAILIF(chrom >= s_genoStruRepository[m_genoStruIdx].m_numLoci.size(), IndexError,
 			(boost::format("Chromosome index %1% out of range of 0 ~ %2%") % chrom %
-			s_genoStruRepository[m_genoStruIdx].m_numLoci.size()).str());
+			 s_genoStruRepository[m_genoStruIdx].m_numLoci.size()).str());
 
 		return s_genoStruRepository[m_genoStruIdx].m_chromNames[chrom];
 	}
@@ -660,7 +660,7 @@ public:
 	{
 		DBG_FAILIF(chrom >= s_genoStruRepository[m_genoStruIdx].m_numLoci.size(), IndexError,
 			(boost::format("Chromosome index %1% out of range of 0 ~ %2%") % chrom %
-			s_genoStruRepository[m_genoStruIdx].m_numLoci.size()).str());
+			 s_genoStruRepository[m_genoStruIdx].m_numLoci.size()).str());
 
 		return s_genoStruRepository[m_genoStruIdx].m_chromTypes[chrom];
 	}
@@ -727,7 +727,7 @@ public:
 	{
 		DBG_FAILIF(locus >= s_genoStruRepository[m_genoStruIdx].m_totNumLoci, IndexError,
 			(boost::format("Locus index %1% out of range of 0 ~ %2%") % locus %
-			s_genoStruRepository[m_genoStruIdx].m_totNumLoci).str());
+			 s_genoStruRepository[m_genoStruIdx].m_totNumLoci).str());
 
 		const vectorstr & names = s_genoStruRepository[m_genoStruIdx].m_lociNames;
 		return names.empty() ? string() : names[locus];
