@@ -36,9 +36,9 @@ string InitSex::describe(bool /* format */) const
 	else if (m_maleProp < 0) {
 		desc += "randomly";
 		if (m_maleFreq != 0.5)
-			desc += " with probability " + toStr(m_maleFreq) + " being a male";
+			desc += (boost::format(" with probability %1% being a male") % m_maleFreq).str();
 	} else
-		desc += "randomly with " + toStr(m_maleProp * 100) + " percent of males";
+		desc += (boost::format("randomly with %1% percent of males") % (m_maleProp * 100)).str();
 	return desc;
 }
 
@@ -210,9 +210,8 @@ bool InitGenotype::apply(Population & pop) const
 
 	for (size_t i = 0; i < m_haplotypes.size(); ++i) {
 		DBG_WARNIF(m_haplotypes[i].size() != loci.size(),
-			"Haplotype [" + shorten(toStr(m_haplotypes[i])) + "] specified in operator InitGenotype has "
-			+ toStr(m_haplotypes[i].size()) + " alleles but " + toStr(loci.size())
-			+ " alleles are needed. This haplotype will be truncated or repeated.");
+			(boost::format("Haplotype [%1%] specified in operator InitGenotype has %2% alleles but %3%"
+				           " alleles are needed. This haplotype will be truncated or repeated.") % m_haplotypes[i] % m_haplotypes[i].size() % loci.size()).str());
 	}
 	vectoru ploidy = m_ploidy.elems();
 	if (m_ploidy.allAvail())
@@ -226,9 +225,9 @@ bool InitGenotype::apply(Population & pop) const
 	size_t sz = m_genotype.size();
 
 	DBG_WARNIF(sz >= 1 && sz != loci.size() && sz != loci.size() * pop.ploidy(),
-		"Genotype [" + shorten(toStr(m_genotype)) + "} specified in operator InitGenotype has "
-		+ toStr(m_genotype.size()) + " alleles, which does not match number of loci of individuals. "
-		                             "This sequence will be truncated or repeated and may lead to erroneous results.");
+		(boost::format("Genotype [%1%] specified in operator InitGenotype has %2% alleles, which does not match"
+			           " number of loci of individuals. This sequence will be truncated or repeated and may lead to erroneous results.")
+		 % m_genotype % m_genotype.size()).str());
 	for (size_t idx = 0; sp != sp_end; ++sp) {
 		// will go through virtual subpopulation if sp is virtual
 		pop.activateVirtualSubPop(*sp);
@@ -382,19 +381,22 @@ bool InitLineage::apply(Population & pop) const
 
 	if (m_mode == PER_ALLELE) {
 		DBG_WARNIF(sz >= 1 && sz != loci.size() && sz != loci.size() * pop.ploidy(),
-			"Lineage [" + shorten(toStr(m_lineage)) + "] specified in operator InitLineage has "
-			+ toStr(m_lineage.size()) + " lineages, which does not match number of loci of individuals. "
-			                            "This sequence will be truncated or repeated and may lead to erroneous results.");
+			(boost::format("Lineage [%1%] specified in operator InitLineage has %2% "
+				           " lineages, which does not match number of loci of individuals. "
+				           "This sequence will be truncated or repeated and may lead to erroneous results.")
+			 % m_lineage % m_lineage.size()).str());
 	} else if (m_mode == PER_PLOIDY) {
 		DBG_WARNIF(sz >= 1 && sz != pop.ploidy() && sz != pop.ploidy() * pop.popSize(),
-			"Lineage [" + shorten(toStr(m_lineage)) + "] specified in operator InitLineage has "
-			+ toStr(m_lineage.size()) + " lineages, which does not match number of ploidy of individuals. "
-			                            "This sequence will be truncated or repeated and may lead to erroneous results.");
+			(boost::format("Lineage [%1%] specified in operator InitLineage has %2% lineages, "
+				           "which does not match number of ploidy of individuals. "
+				           "This sequence will be truncated or repeated and may lead to erroneous results.")
+			 % m_lineage % m_lineage.size()).str());
 	} else {
 		DBG_WARNIF(sz > 1 && sz != pop.popSize(),
-			"Lineage [" + shorten(toStr(m_lineage)) + "] specified in operator InitLineage has "
-			+ toStr(m_lineage.size()) + " lineages, which does not match number of individuals. "
-			                            "This sequence will be truncated or repeated and may lead to erroneous results.");
+			(boost::format("Lineage [%1%] specified in operator InitLineage has %2%"
+				           " lineages, which does not match number of individuals. "
+				           "This sequence will be truncated or repeated and may lead to erroneous results.")
+			 % m_lineage % m_lineage.size()).str());
 	}
 	size_t nCh = pop.numChrom();
 	vectoru chromIndex;
