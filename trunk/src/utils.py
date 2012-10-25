@@ -2119,6 +2119,257 @@ class PEDExporter:
             self._exportPedigree(pop, filename, subPops, gui)
 
 #
+# Format Phylip
+#
+class PhylipExporter:
+    '''An exporter to export sequence data in Phylip format'''
+    def __init__(self, alleleNames = None, seqNames = None, style='sequential'):
+        self.alleleNames = alleleNames
+        self.seqNames = seqNames
+        self.style = style
+        if self.style not in ['sequential', 'interleaved']:
+            raise ValueError('Style of phylip file has to be sequential or interleaved')
+
+    def export(self, pop, filename, subPops, infoFields, gui):
+        '''Export in Phylip format
+        '''
+        if self.style == 'sequential':
+            self._exportSequential(pop, filename, subPops, infoFields, gui)
+        else:
+            self._exportInterleaved(pop, filename, subPops, infoFields, gui)
+
+    def _exportSequential(pop, filename, subPops, infoFields, gui):
+        # count the number of sequences
+        ploidy = pop.ploidy()
+        nLoci = pop.totNumLoci()
+        nSeq = 0
+        for vsp in subPops:
+            nSeq += pop.subPopSize(vsp)
+        nSeq *= ploidy
+        locusSpecific = False
+        if self.alleleNames is not None:
+            alleleNames = self.alleleNames
+        else:
+            alleleNames = pop.alleleNames()
+            if len(alleleNames) > 1:
+                locusSpecific = True
+                if len(alleleNames) != nLoci:
+                    raise ValueError('If allele names are specified for each locus, it should be specified for all of them.')
+        #
+        if self.seqNames is not None:
+            if len(self.seqNames) != nSeq and len(self.seqNames) * ploidy != nSeq:
+                raise ValueError('If sequence names are specified, it should be specified for all individuals or sequences.')
+        #
+        with open(filename, 'w') as out:
+            out.write('%d %d\n' % (nSeq, nLoci))
+            # progress bar
+            prog = ProgressBar(filename, nSeq, gui=gui)
+            count = 0
+            for vsp in subPops:
+                for ind in pop.individuals(vsp):
+                    for p in range(ploidy):
+                        if self.seqNames is None:
+                            if ploidy == 1:
+                                name = 'S%d' % (count + 1)
+                            else:
+                                name = 'S%d_%d' % (count + 1, p + 1)
+                        else:
+                            if len(self.seqNames) == nSeq:
+                                name = self.seqNames[count * ploidy + p]
+                            else:
+                                name = '%s_%d' % (self.seqNames[count], p + 1)
+                        #
+                        # pick the first 10 ...
+                        out.write(('%-10s' % name)[:10])
+                        try:
+                            if locusSpecific:
+                                seq = ''.join([alleleNames[i][x] for i,x in enumerate(ind.genotype(p))])
+                            else:
+                                seq = ''.join([alleleNames[x] for x in ind.genotype(p)])
+                        except IndexError:
+                            for i,x in enumerate(ind.genotype(p)):
+                                if locusSpecific:
+                                    try:
+                                        alleleNames[i][x]
+                                    except IndexError:
+                                        raise ValueError('Allele %d at locus %d does not have a name. Please specify a name for each allele using parameter alleleName.' % (x, i))
+                                else:
+                                    try:
+                                        alleleNames[x]
+                                    except IndexError:
+                                        raise ValueError('Allele %d does not have a name. Please specify a name for each allele using parameter alleleName.' % x)
+                        # output sequence
+                        out.write(seq[:90] + '\n')
+                        # 0 - 89
+                        # 90 - 189
+                        # 190 - 289
+                        #
+                        # length = 100, 
+                        if nLoci > 90:
+                            for line in range(((nLoci-90) // 100) + 1):
+                                out.write(seq[(90 + line*100) : (190 + line*100)] + '\n')
+                    count += 1
+                    prog.update(count)
+            prog.done()
+
+    def _exportInterleaved(pop, filename, subPops, infoFields, gui):
+        # count the number of sequences
+        ploidy = pop.ploidy()
+        nLoci = pop.totNumLoci()
+        nSeq = 0
+        for vsp in subPops:
+            nSeq += pop.subPopSize(vsp)
+        nSeq *= ploidy
+        locusSpecific = False
+        if self.alleleNames is not None:
+            alleleNames = self.alleleNames
+        else:
+            alleleNames = pop.alleleNames()
+            if len(alleleNames) > 1:
+                locusSpecific = True
+                if len(alleleNames) != nLoci:
+                    raise ValueError('If allele names are specified for each locus, it should be specified for all of them.')
+        #
+        if self.seqNames is not None:
+            if len(self.seqNames) != nSeq and len(self.seqNames) * ploidy != nSeq:
+                raise ValueError('If sequence names are specified, it should be specified for all individuals or sequences.')
+        #
+        with open(filename, 'w') as out:
+            out.write('%d %d\n' % (nSeq, nLoci))
+            # progress bar
+            prog = ProgressBar(filename, nSeq * nLoci, gui=gui)
+            count = 0
+            # first block
+            for vsp in subPops:
+                for ind in pop.individuals(vsp):
+                    for p in range(ploidy):
+                        if self.seqNames is None:
+                            if ploidy == 1:
+                                name = 'S%d' % (count + 1)
+                            else:
+                                name = 'S%d_%d' % (count + 1, p + 1)
+                        else:
+                            if len(self.seqNames) == nSeq:
+                                name = self.seqNames[count * ploidy + p]
+                            else:
+                                name = '%s_%d' % (self.seqNames[count], p + 1)
+                        #
+                        # pick the first 10 ...
+                        out.write(('%-10s' % name)[:10])
+                        try:
+                            if locusSpecific:
+                                seq = ''.join([alleleNames[i][x] for i,x in enumerate(ind.genotype(p)[:90])])
+                            else:
+                                seq = ''.join([alleleNames[x] for x in ind.genotype(p)[:90]])
+                        except IndexError:
+                            for i,x in enumerate(ind.genotype(p)):
+                                if locusSpecific:
+                                    try:
+                                        alleleNames[i][x]
+                                    except IndexError:
+                                        raise ValueError('Allele %d at locus %d does not have a name. Please specify a name for each allele using parameter alleleName.' % (x, i))
+                                else:
+                                    try:
+                                        alleleNames[x]
+                                    except IndexError:
+                                        raise ValueError('Allele %d does not have a name. Please specify a name for each allele using parameter alleleName.' % x)
+                        # output sequence
+                        out.write(seq + '\n')
+                    count += len(seq)
+                    prog.update(count)
+            # other blocks
+            #
+            if nLoci > 90:
+                for line in range(((nLoci-90) // 100) + 1):
+                    out.write('\n')
+                    s = 90 + line*100
+                    e = 190 + line*100
+                    for vsp in subPops:
+                        for ind in pop.individuals(vsp):
+                            for p in range(ploidy):
+                                try:
+                                    if locusSpecific:
+                                        seq = ''.join([alleleNames[i][x] for i,x in enumerate(ind.genotype(p)[s:e])])
+                                    else:
+                                        seq = ''.join([alleleNames[x] for x in ind.genotype(p)[s:e]])
+                                except IndexError:
+                                    for i,x in enumerate(ind.genotype(p)):
+                                        if locusSpecific:
+                                            try:
+                                                alleleNames[i][x]
+                                            except IndexError:
+                                                raise ValueError('Allele %d at locus %d does not have a name. Please specify a name for each allele using parameter alleleName.' % (x, i))
+                                        else:
+                                            try:
+                                                alleleNames[x]
+                                            except IndexError:
+                                                raise ValueError('Allele %d does not have a name. Please specify a name for each allele using parameter alleleName.' % x)
+                                # output sequence
+                                out.write(seq + '\n')
+                            count += len(seq)
+                            prog.update(count)
+            prog.done()
+
+
+class PhylipImporter:
+    def __init__(self, alleleNames, ploidy=1):
+        self.alleleNames = alleleNames
+        self.ploidy = ploidy
+
+    def importFrom(self, filename):
+        with open(filename, 'r') as input:
+            # file is opened. get basic parameters
+            try:
+                [nSeq, nLoci] = map(int, input.readline().split())
+            except ValueError:
+                raise ValueError("The first line does not have 2 numbers for number of sequence and loci. Are you sure this is a Phylip file?")
+            # now, ignore nl lines, if loci is empty try to see if we have info here
+            # following lines with loci name.
+            lociNames = []
+            for al in range(nl):
+                lociNames.append(input.readline().strip())
+            #
+            # get all the genotypes
+            subPopIndex = []
+            genotypes = []
+            for line in input.readlines():
+                try:
+                    items = line.split()
+                    if len(items) != nl + 1:
+                        raise ValueError('Genotype line (%s) has incorrect number of items' % line)
+                    subPopIndex.append(int(items[0]))
+                    # 
+                    # split genotype into pieces
+                    geno = [x.strip() for x in items[1:]]
+                    # get alleles (adjusted with self.adjust)
+                    alleles = [(int(x[:nd]) + self.adjust, int(x[nd:]) + self.adjust) if x != '0' else (self.adjust, self.adjust) for x in geno]
+                    # append alleles in simuPOP order
+                    genotypes.extend([x[0] for x in alleles])
+                    genotypes.extend([x[1] for x in alleles])
+                    if len(geno) != nl:
+                        raise ValueError('Incorrect number of genotype (%d expected)' % len(loci_names))
+                except Exception as e:
+                    raise ValueError('Invalid input genotype line (%s). The file must not be in FSTAT format. %s' % (line, e))
+                    
+        # subpop size?
+        # count number of subpopulations
+        subPopSize = [0] * (max(subPopIndex) + 1)
+        for idx in subPopIndex:
+            subPopSize[idx] += 1
+        if len([x for x in subPopSize if x != 0]) != np:
+            raise ValueError("Number of subpop does not match")
+        # we have all the information, create a population
+        pop = Population(size=[x for x in subPopSize if x != 0],
+            subPopNames=[str(idx) for idx,x in enumerate(subPopSize) if x != 0],
+            loci=len(lociNames), lociNames=lociNames)
+        # set genotype
+        pop.setGenotype(genotypes)
+        return pop
+
+
+
+
+#
 # Format CSV
 #
 class CSVExporter:
@@ -2363,6 +2614,35 @@ class Exporter(PyOperator):
         this paremter to zero if you have already used alleles 1, 2, 3, 4 to model 
         A, C, T, and G alleles.
         
+    Phylip (Joseph Felsenstein's Phylip format). Phylip is generally used for nuclotide
+    sequences and protein sequences. This makes this format suitable for simulations
+    of haploid populations (ploidy=1) with nucleotide or protein sequences (number of
+    alleles = 4 or 24 with alleleNames as nucleotide or amino acid names). If your
+    population does satisfy these conditions, you can still export it, with homologous
+    chromosomes in a diploid population as two sequences, and with specified allele
+    names for allele 0, 1, 2, .... This function outputs sequence name as SXXX where
+    XXX is the 1-based index of individual and SXXX_Y (Y=1 or 2) for diploid individuals,
+    unless names of sequences are provided by parameter seqNames. This format supports
+    the following parameters:
+
+    alleleNames
+        Names of alleles 0, 1, 2, ... as a single string (e.g. 'ACTG') or a list of 
+        single-character strings (e.g. ['A', 'C', 'T', 'G']). If this parameter is
+        unspecified (default), this program will try to use names of alleles
+        specified in alleleNames parameter of a Population, and raise an error if no
+        name could be found.
+
+    seqNames
+        Names of each sequence outputted, for each individual, or for each sequences
+        for non-haploid population. If unspecified, default names such as SXXX or
+        SXXX_Y will be used.
+
+    style
+        Output style, can be 'sequential' (default) or 'interleaved'. For sequential
+        output, each sequence consists of for the first line a name and 90 symbols
+        starting from column 11, and subsequent lines of 100 symbols. The interleaved
+        style have subsequent lines as separate blocks.
+        
     CSV (comma separated values). This is a general format that output genotypes in
     comma (or tab etc) separated formats. The function form of this operator 
     ``export(format='csv')`` is similar to the now-deprecated ``saveCSV`` function,
@@ -2432,12 +2712,14 @@ class Exporter(PyOperator):
             self.exporter = GenePopExporter(*args, **kwargs)
         elif format.lower() == 'fstat':
             self.exporter = FStatExporter(*args, **kwargs)
-        elif format.lower() == 'csv':
-            self.exporter = CSVExporter(*args, **kwargs)
         elif format.lower() == 'map':
             self.exporter = MapExporter(*args, **kwargs)
         elif format.lower() == 'ped':
             self.exporter = PEDExporter(*args, **kwargs)
+        elif format.lower() == 'phylip':
+            self.exporter = PhylipExporter(*args, **kwargs)
+        elif format.lower() == 'csv':
+            self.exporter = CSVExporter(*args, **kwargs)
         else:
             raise ValueError('Unrecognized fileformat: {}.'.format(format))
         PyOperator.__init__(self, func=self._export, begin=begin, end=end,
@@ -2531,11 +2813,30 @@ def importPopulation(format, filename, *args, **kwargs):
         Adjust alleles by specified value (default to 0 for no adjustment). This
         parameter is mostly used to convert alleles 1 and 2 in a GenePop file to
         alleles 0 and 1 (with adjust=-1) in simuPOP.
+
+    Phylip (Joseph Felsenstein's Phylip format). This function ignores sequence
+    names and import sequences in a haploid (default) or diploid population (if
+    there are even number of sequences). An list of allele names are required to
+    translate symbols to allele names. This format accepts the following
+    parameters:
+
+    alleleNames
+        Names of alleles 0, 1, 2, ... as a single string (e.g. 'ACTG') or a list of 
+        single-character strings (e.g. ['A', 'C', 'T', 'G']). This will be used to
+        translate symbols into numeric alleles in simuPOP. Allele names will continue
+        to be used as allele names of the returned population.
+
+    ploidy
+        Ploidy of the returned population, default to 1 (haploid). There should be
+        even number of sequences if ploidy=2 (haploid) is specified.
+
     '''
     if format.lower() == 'genepop':
         importer = GenePopImporter(*args, **kwargs)
     elif format.lower() == 'fstat':
         importer = FStatImporter(*args, **kwargs)
+    elif format.lower() == 'phylip':
+        importer = PhylipImporter(*args, **kwargs)
     else:
         raise ValueError('Importing genotypes in format %s is currently not supported' % format)
     return importer.importFrom(filename)

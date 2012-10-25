@@ -1027,5 +1027,74 @@ class TestUtils(unittest.TestCase):
         # cleanup
         os.remove('pop.map')
 
+    def testExportPhylip(self):
+        'Testing export genotype in phylip format'''
+        pop = Population(size=[4,5], loci=[20, 90], ploidy=2)
+        self.assertRaises(ValueError, export, pop, format='phylip', output='pop.phy')
+        initGenotype(pop, freq=[0.25]*4)
+        export(pop, format='phylip', output='pop.phy', alleleNames='ACTG')
+        self.assertEqual(self.lineOfFile('pop.phy', 1), '18 110\n')
+        self.assertEqual(len(self.lineOfFile('pop.phy', 2).rstrip()), 100)
+        self.assertEqual(len(self.lineOfFile('pop.phy', 3).rstrip()), 20)
+        self.assertEqual(len(self.lineOfFile('pop.phy', 4).rstrip()), 100)
+        # no seqname, diploid
+        self.assertEqual(self.lineOfFile('pop.phy', 6)[:10], 'S2_1      ')
+        self.assertRaises(ValueError, export, pop, format='phylip', output='pop.phy', seqNames=['1', '2'])
+        # individual names
+        export(pop, format='phylip', output='pop.phy', alleleNames='ACTG', seqNames=['N%d' % x for x in range(9)])
+        self.assertEqual(self.lineOfFile('pop.phy', 6)[:10], 'N1_1      ')
+        # seq names
+        export(pop, format='phylip', output='pop.phy', alleleNames='ACTG', seqNames=['N%d' % x for x in range(18)])
+        self.assertEqual(self.lineOfFile('pop.phy', 6)[:10], 'N2        ')
+        # haploid
+        pop = Population(size=[4,5], loci=[20, 90], ploidy=1)
+        self.assertRaises(ValueError, export, pop, format='phylip', output='pop.phy')
+        initGenotype(pop, freq=[0.25]*4)
+        export(pop, format='phylip', output='pop.phy', alleleNames='ACTG')
+        self.assertEqual(self.lineOfFile('pop.phy', 1), '9 110\n')
+        self.assertEqual(len(self.lineOfFile('pop.phy', 2).rstrip()), 100)
+        self.assertEqual(len(self.lineOfFile('pop.phy', 3).rstrip()), 20)
+        self.assertEqual(len(self.lineOfFile('pop.phy', 4).rstrip()), 100)
+        # no seqname, diploid
+        self.assertEqual(self.lineOfFile('pop.phy', 6)[:10], 'S3        ')
+        # individual names
+        export(pop, format='phylip', output='pop.phy', alleleNames='ACTG', seqNames=['N%d' % x for x in range(9)])
+        self.assertEqual(self.lineOfFile('pop.phy', 6)[:10], 'N2        ')
+        # 
+        # another style (interleaved)
+        #
+        pop = Population(size=[4,5], loci=[20, 90], ploidy=2)
+        self.assertRaises(ValueError, export, pop, format='phylip', output='pop.phy', alleleNames='ACTG', style='asd')
+        initGenotype(pop, freq=[0.25]*4)
+        export(pop, format='phylip', output='pop.phy', alleleNames='ACTG')
+        self.assertEqual(self.lineOfFile('pop.phy', 1), '18 110\n')
+        self.assertEqual(len(self.lineOfFile('pop.phy', 2).rstrip()), 100)
+        self.assertEqual(len(self.lineOfFile('pop.phy', 3).rstrip()), 20)
+        self.assertEqual(len(self.lineOfFile('pop.phy', 4).rstrip()), 100)
+        # no seqname, diploid
+        self.assertEqual(self.lineOfFile('pop.phy', 6)[:10], 'S2_1      ')
+        self.assertRaises(ValueError, export, pop, format='phylip', output='pop.phy', seqNames=['1', '2'])
+        # individual names
+        export(pop, format='phylip', output='pop.phy', alleleNames='ACTG', seqNames=['N%d' % x for x in range(9)])
+        self.assertEqual(self.lineOfFile('pop.phy', 6)[:10], 'N1_1      ')
+        # seq names
+        export(pop, format='phylip', output='pop.phy', alleleNames='ACTG', seqNames=['N%d' % x for x in range(18)])
+        self.assertEqual(self.lineOfFile('pop.phy', 6)[:10], 'N2        ')
+        # haploid
+        pop = Population(size=[4,5], loci=[20, 90], ploidy=1)
+        self.assertRaises(ValueError, export, pop, format='phylip', output='pop.phy')
+        initGenotype(pop, freq=[0.25]*4)
+        export(pop, format='phylip', output='pop.phy', alleleNames='ACTG')
+        self.assertEqual(self.lineOfFile('pop.phy', 1), '9 110\n')
+        self.assertEqual(len(self.lineOfFile('pop.phy', 2).rstrip()), 100)
+        self.assertEqual(len(self.lineOfFile('pop.phy', 3).rstrip()), 20)
+        self.assertEqual(len(self.lineOfFile('pop.phy', 4).rstrip()), 100)
+        # no seqname, diploid
+        self.assertEqual(self.lineOfFile('pop.phy', 6)[:10], 'S3        ')
+        # individual names
+        export(pop, format='phylip', output='pop.phy', alleleNames='ACTG', seqNames=['N%d' % x for x in range(9)])
+        self.assertEqual(self.lineOfFile('pop.phy', 6)[:10], 'N2        ')
+
+
 if __name__ == '__main__':
     unittest.main()
