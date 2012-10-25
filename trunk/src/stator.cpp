@@ -319,20 +319,23 @@ bool InfoExec::applyDuringMating(Population & pop, Population & offPop, RawIndIt
 string subPopVar_String(vspID sp, const string & var, const string & suffix = "")
 {
 	if (sp.isVirtual())
-		return "subPop{(" + toStr(sp.subPop()) + "," + toStr(sp.virtualSubPop()) + ")}{\'" + var + suffix + "\'}";
+		return (boost::format("subPop{(%1%,%2%)}{\'%3%\'}") % sp.subPop() % sp.virtualSubPop() % (var + suffix)).str();
 	else
-		return "subPop{" + toStr(sp.subPop()) + "}{\'" + var + suffix + "\'}";
+		return (boost::format("subPop{%1%}{\'%2%\'}") % sp.subPop() % (var + suffix)).str();
 }
 
 
 string haploKey(const vectori & seq)
 {
-	string key = "{'" + toStr(seq[0]);
+	ostringstream os;
+
+	os << "{'" << seq[0];
 
 	for (size_t i = 1; i < seq.size(); ++i)
-		key += toStr("-") + toStr(seq[i]);
+		os << "-" << seq[i];
 
-	return key + "'}";
+	os << "'}";
+	return os.str();
 }
 
 
@@ -1007,7 +1010,7 @@ bool statAlleleFreq::apply(Population & pop) const
 #ifdef LONGALLELE
 			if (m_vars.contains(AlleleNum_sp_String)) {
 #  pragma omp critical
-				pop.getVars().setVar(subPopVar_String(*it, AlleleNum_String, m_suffix) + "{" + toStr(loc) + "}", alleles);
+				pop.getVars().setVar((boost::format("%1%{%2%}") % subPopVar_String(*it, AlleleNum_String, m_suffix) % loc).str(), alleles);
 			}
 			if (m_vars.contains(AlleleFreq_sp_String)) {
 				intDict::iterator cnt = alleles.begin();
@@ -1015,7 +1018,7 @@ bool statAlleleFreq::apply(Population & pop) const
 				for ( ; cnt != cntEnd; ++cnt)
 					cnt->second /= static_cast<double>(allAlleles);
 #  pragma omp critical
-				pop.getVars().setVar(subPopVar_String(*it, AlleleFreq_String, m_suffix) + "{" + toStr(loc) + "}", alleles);
+				pop.getVars().setVar((boost::format("%1%{%2%}") % subPopVar_String(*it, AlleleFreq_String, m_suffix) % loc).str(), alleles);
 			}
 #else
 			if (m_vars.contains(AlleleNum_sp_String)) {
@@ -1024,7 +1027,7 @@ bool statAlleleFreq::apply(Population & pop) const
 					if (alleles[i] != 0)
 						d[i] = static_cast<double>(alleles[i]);
 #  pragma omp critical
-				pop.getVars().setVar(subPopVar_String(*it, AlleleNum_String, m_suffix) + "{" + toStr(loc) + "}", d);
+				pop.getVars().setVar((boost::format("%1%{%2%}") % subPopVar_String(*it, AlleleNum_String, m_suffix) % loc).str(), d);
 			}
 			if (m_vars.contains(AlleleFreq_sp_String)) {
 				uintDict d;
@@ -1032,7 +1035,7 @@ bool statAlleleFreq::apply(Population & pop) const
 					if (alleles[i] != 0)
 						d[i] = alleles[i] / static_cast<double>(allAlleles);
 #  pragma omp critical
-				pop.getVars().setVar(subPopVar_String(*it, AlleleFreq_String, m_suffix) + "{" + toStr(loc) + "}", d);
+				pop.getVars().setVar((boost::format("%1%{%2%}") % subPopVar_String(*it, AlleleFreq_String, m_suffix) % loc).str(), d);
 			}
 #endif
 		}
@@ -1042,7 +1045,7 @@ bool statAlleleFreq::apply(Population & pop) const
 	if (m_vars.contains(AlleleNum_String)) {
 		pop.getVars().removeVar(AlleleNum_String + m_suffix);
 		for (size_t idx = 0; idx < loci.size(); ++idx)
-			pop.getVars().setVar(AlleleNum_String + m_suffix + "{" + toStr(loci[idx]) + "}",
+			pop.getVars().setVar(AlleleNum_String + m_suffix + (boost::format("{%1%}") % loci[idx]).str(),
 				alleleCnt[idx]);
 	}
 	if (m_vars.contains(AlleleFreq_String)) {
@@ -1054,7 +1057,7 @@ bool statAlleleFreq::apply(Population & pop) const
 				for ( ; cnt != cntEnd; ++cnt)
 					cnt->second /= static_cast<double>(allAllelesCnt[idx]);
 			}
-			pop.getVars().setVar(AlleleFreq_String + m_suffix + "{" + toStr(loci[idx]) + "}",
+			pop.getVars().setVar(AlleleFreq_String + m_suffix + (boost::format("{%1%}") % loci[idx]).str(),
 				alleleCnt[idx]);
 		}
 	}
@@ -1172,15 +1175,15 @@ bool statHeteroFreq::apply(Population & pop) const
 				// we set elements one by one because we do not want to overwrite
 				// previous results (perhaps at other loci). Also, we do not want to
 				// make this variable a default dict.
-				pop.getVars().setVar(subPopVar_String(*it, HeteroNum_String, m_suffix)
-					+ "{" + toStr(ct->first) + "}", ct->second);
+				pop.getVars().setVar((boost::format("%1%{%2%}") % subPopVar_String(*it, HeteroNum_String, m_suffix)
+					                  % ct->first).str(), ct->second);
 		}
 		if (m_vars.contains(HomoNum_sp_String)) {
 			uintDict::const_iterator ct = homoCnt.begin();
 			uintDict::const_iterator ct_end = homoCnt.end();
 			for (; ct != ct_end; ++ct)
-				pop.getVars().setVar(subPopVar_String(*it, HomoNum_String, m_suffix)
-					+ "{" + toStr(ct->first) + "}", ct->second);
+				pop.getVars().setVar((boost::format("%1%{%2%}") % subPopVar_String(*it, HomoNum_String, m_suffix)
+					                  % ct->first).str(), ct->second);
 		}
 		if (m_vars.contains(HeteroFreq_sp_String)) {
 			uintDict freq;
@@ -1192,8 +1195,8 @@ bool statHeteroFreq::apply(Population & pop) const
 			uintDict::const_iterator ct = freq.begin();
 			uintDict::const_iterator ct_end = freq.end();
 			for (; ct != ct_end; ++ct)
-				pop.getVars().setVar(subPopVar_String(*it, HeteroFreq_String, m_suffix)
-					+ "{" + toStr(ct->first) + "}", ct->second);
+				pop.getVars().setVar((boost::format("%1%{%2%}") % subPopVar_String(*it, HeteroFreq_String, m_suffix)
+					                  % ct->first).str(), ct->second);
 		}
 		if (m_vars.contains(HomoFreq_sp_String)) {
 			uintDict freq;
@@ -1205,8 +1208,8 @@ bool statHeteroFreq::apply(Population & pop) const
 			uintDict::const_iterator ct = freq.begin();
 			uintDict::const_iterator ct_end = freq.end();
 			for (; ct != ct_end; ++ct)
-				pop.getVars().setVar(subPopVar_String(*it, HomoFreq_String, m_suffix)
-					+ "{" + toStr(ct->first) + "}", ct->second);
+				pop.getVars().setVar((boost::format("%1%{%2%}") % subPopVar_String(*it, HomoFreq_String, m_suffix)
+					                  % ct->first).str(), ct->second);
 		}
 	}
 	// for whole population.
@@ -1214,14 +1217,14 @@ bool statHeteroFreq::apply(Population & pop) const
 		uintDict::const_iterator ct = allHeteroCnt.begin();
 		uintDict::const_iterator ct_end = allHeteroCnt.end();
 		for (; ct != ct_end; ++ct)
-			pop.getVars().setVar(HeteroNum_String + m_suffix + "{" + toStr(ct->first) + "}",
+			pop.getVars().setVar((boost::format("%1%{%2%}") % (HeteroNum_String + m_suffix) % ct->first).str(),
 				ct->second);
 	}
 	if (m_vars.contains(HomoNum_String)) {
 		uintDict::const_iterator ct = allHomoCnt.begin();
 		uintDict::const_iterator ct_end = allHomoCnt.end();
 		for (; ct != ct_end; ++ct)
-			pop.getVars().setVar(HomoNum_String + m_suffix + "{" + toStr(ct->first) + "}",
+			pop.getVars().setVar((boost::format("%1%{%2%}") % (HomoNum_String + m_suffix) % ct->first).str(),
 				ct->second);
 	}
 	if (m_vars.contains(HeteroFreq_String)) {
@@ -1234,7 +1237,7 @@ bool statHeteroFreq::apply(Population & pop) const
 		uintDict::const_iterator ct = freq.begin();
 		uintDict::const_iterator ct_end = freq.end();
 		for (; ct != ct_end; ++ct)
-			pop.getVars().setVar(HeteroFreq_String + m_suffix + "{" + toStr(ct->first) + "}",
+			pop.getVars().setVar((boost::format("%1%{%2%}") % (HeteroFreq_String + m_suffix) % ct->first).str(),
 				ct->second);
 	}
 	if (m_vars.contains(HomoFreq_String)) {
@@ -1247,7 +1250,7 @@ bool statHeteroFreq::apply(Population & pop) const
 		uintDict::const_iterator ct = freq.begin();
 		uintDict::const_iterator ct_end = freq.end();
 		for (; ct != ct_end; ++ct)
-			pop.getVars().setVar(HomoFreq_String + m_suffix + "{" + toStr(ct->first) + "}",
+			pop.getVars().setVar((boost::format("%1%{%2%}") % (HomoFreq_String + m_suffix) % ct->first).str(),
 				ct->second);
 	}
 
@@ -1354,8 +1357,8 @@ bool statGenoFreq::apply(Population & pop) const
 			// output variable.
 			if (m_vars.contains(GenotypeNum_sp_String)) {
 #pragma omp critical
-				pop.getVars().setVar(subPopVar_String(*it, GenotypeNum_String, m_suffix)
-					+ "{" + toStr(loc) + "}", genotypes);
+				pop.getVars().setVar((boost::format("%1%{%2%}") % subPopVar_String(*it, GenotypeNum_String, m_suffix)
+					                  % loc).str(), genotypes);
 			}
 			// note that genotyeps is changed in place.
 			if (m_vars.contains(GenotypeFreq_sp_String)) {
@@ -1366,8 +1369,8 @@ bool statGenoFreq::apply(Population & pop) const
 						dct->second /= allGenotypes;
 				}
 #pragma omp critical
-				pop.getVars().setVar(subPopVar_String(*it, GenotypeFreq_String, m_suffix)
-					+ "{" + toStr(loc) + "}", genotypes);
+				pop.getVars().setVar((boost::format("%1%{%2%}") % subPopVar_String(*it, GenotypeFreq_String, m_suffix)
+					                  % loc).str(), genotypes);
 			}
 		}
 		pop.deactivateVirtualSubPop(it->subPop());
@@ -1376,7 +1379,7 @@ bool statGenoFreq::apply(Population & pop) const
 	if (m_vars.contains(GenotypeNum_String)) {
 		pop.getVars().removeVar(GenotypeNum_String + m_suffix);
 		for (size_t idx = 0; idx < loci.size(); ++idx)
-			pop.getVars().setVar(GenotypeNum_String + m_suffix + "{" + toStr(loci[idx]) + "}",
+			pop.getVars().setVar((boost::format("%1%{%2%}") % (GenotypeNum_String + m_suffix) % loci[idx]).str(),
 				genotypeCnt[idx]);
 	}
 	// note that genotyeCnt[idx] is changed in place.
@@ -1390,7 +1393,7 @@ bool statGenoFreq::apply(Population & pop) const
 				for (; dct != dctEnd; ++dct)
 					dct->second /= allGenotypeCnt[idx];
 			}
-			pop.getVars().setVar(GenotypeFreq_String + m_suffix + "{" + toStr(loc) + "}",
+			pop.getVars().setVar((boost::format("%1%{%2%}") % (GenotypeFreq_String + m_suffix) % loc).str(),
 				genotypeCnt[idx]);
 		}
 	}
@@ -1426,15 +1429,17 @@ string statHaploFreq::describe(bool /* format */) const
 
 string statHaploFreq::dictKey(const vectori & loci) const
 {
-	string key = "(";
+	ostringstream os;
+
+	os << "(";
 
 	for (size_t i = 0; i < loci.size(); ++i) {
 		if (i != 0)
-			key += ",";
-		key += toStr(loci[i]);
+			os << ",";
+		os << loci[i];
 	}
-	key += ")";
-	return key;
+	os << ")";
+	return os.str();
 }
 
 
@@ -2119,15 +2124,15 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 				// LD and D' can be negative in this case
 				LD[idx] = D;
 				DBG_ASSERT(fcmp_ge(LD[idx], -0.25) && fcmp_le(LD[idx], 0.25), SystemError,
-					"Calculated LD value " + toStr(LD[idx]) + " out of range of [-1/4, 1/4]");
+					(boost::format("Calculated LD value %1% out of range of [-1/4, 1/4]") % LD[idx]).str());
 
 				D_prime[idx] = Dp;
 				DBG_ASSERT(fcmp_ge(D_prime[idx], -1) && fcmp_le(D_prime[idx], 1), SystemError,
-					"Calculated D' value " + toStr(D_prime[idx]) + " out of range of [-1, 1]");
+					(boost::format("Calculated D' value %1% out of range of [-1, 1]") % D_prime[idx]).str());
 
 				R2[idx] = r2;
 				DBG_ASSERT(fcmp_ge(R2[idx], 0) && fcmp_le(R2[idx], 1), SystemError,
-					"Calculated R2 value " + toStr(R2[idx]) + " out of range of [0, 1]");
+					(boost::format("Calculated R2 value %1% out of range of [0, 1]") % R2[idx]).str());
 			} else {
 				for (size_t i = 0; i < nAllele1; ++i) {
 					for (size_t j = 0; j < nAllele2; ++j) {
@@ -2158,29 +2163,29 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 							// for the monomorphic or diallelic case, there is no need to do an average.
 							LD[idx] = fabs(D);
 							DBG_ASSERT(fcmp_ge(LD[idx], 0) && fcmp_le(LD[idx], 0.25), SystemError,
-								"Calculated LD value " + toStr(LD[idx]) + " out of range of [0, 1/4]");
+								(boost::format("Calculated LD value %1% out of range of [0, 1/4]") % LD[idx]).str());
 
 							D_prime[idx] = fabs(Dp);
 							DBG_ASSERT(fcmp_ge(D_prime[idx], 0) && fcmp_le(D_prime[idx], 1), SystemError,
-								"Calculated D' value " + toStr(D_prime[idx]) + " out of range of [0, 1]");
+								(boost::format("Calculated D' value %1% out of range of [0, 1]") % D_prime[idx]).str());
 
 							R2[idx] = r2;
 							DBG_ASSERT(fcmp_ge(R2[idx], 0) && fcmp_le(R2[idx], 1), SystemError,
-								"Calculated R2 value " + toStr(R2[idx]) + " out of range of [0, 1]");
+								(boost::format("Calculated R2 value %1% out of range of [0, 1]") % R2[idx]).str());
 							break;
 						} else {
 							// for the monomorphic or diallelic case, there is no need to do an average.
 							LD[idx] += P_A * P_B * fabs(D);
 							DBG_ASSERT(fcmp_ge(LD[idx], 0) && fcmp_le(LD[idx], 0.25), SystemError,
-								"Calculated LD value " + toStr(LD[idx]) + " out of range of [0, 1/4]");
+								(boost::format("Calculated LD value %1% out of range of [0, 1/4]") % LD[idx]).str());
 
 							D_prime[idx] += P_A * P_B * fabs(Dp);
 							DBG_ASSERT(fcmp_ge(D_prime[idx], 0) && fcmp_le(D_prime[idx], 1), SystemError,
-								"Calculated D' value " + toStr(D_prime[idx]) + " out of range of [0, 1]");
+								(boost::format("Calculated D' value %1% out of range of [0, 1]") % D_prime[idx]).str());
 
 							R2[idx] += P_A * P_B * r2;
 							DBG_ASSERT(fcmp_ge(R2[idx], 0) && fcmp_le(R2[idx], 1), SystemError,
-								"Calculated R2 value " + toStr(R2[idx]) + " out of range of [0, 1]");
+								(boost::format("Calculated R2 value %1% out of range of [0, 1]") % R2[idx]).str());
 						}
 					}
 					if (nAllele1 <= 2 && nAllele2 <= 2)
@@ -2246,7 +2251,7 @@ void statLD::outputVar(Population & pop, const string & name, const vectorf & va
 	map<size_t, intDict>::const_iterator it = res.begin();
 	map<size_t, intDict>::const_iterator itEnd = res.end();
 	for (; it != itEnd; ++it)
-		pop.getVars().setVar(name + m_suffix + "{" + toStr(it->first) + "}", it->second);
+		pop.getVars().setVar((boost::format("%1%{%2%}") % (name + m_suffix) % it->first).str(), it->second);
 }
 
 
@@ -2263,7 +2268,7 @@ bool statLD::apply(Population & pop) const
 	for (size_t i = 0; i < nLD; ++i) {
 		for (size_t j = 0; j < 2; ++j) {
 			DBG_FAILIF(m_LD[i][j] < 0 || static_cast<size_t>(m_LD[i][j]) >= pop.totNumLoci(),
-				IndexError, "Locus index " + toStr(m_LD[i][j]) + " out of range.");
+				IndexError, (boost::format("Locus index %1% out of range.") % m_LD[i][j]).str());
 			if (find(loci.begin(), loci.end(), static_cast<size_t>(m_LD[i][j])) == loci.end()) {
 				loci.push_back(m_LD[i][j]);
 				lociMap[m_LD[i][j]] = loci.size() - 1;
@@ -3378,8 +3383,8 @@ bool statInbreeding::apply(Population & pop) const
 			uintDict::const_iterator ct = freq.begin();
 			uintDict::const_iterator ct_end = freq.end();
 			for (; ct != ct_end; ++ct)
-				pop.getVars().setVar(subPopVar_String(*it, IBD_freq_String, m_suffix)
-					+ "{" + toStr(ct->first) + "}", ct->second);
+				pop.getVars().setVar((boost::format("%1%{%2%}") % subPopVar_String(*it, IBD_freq_String, m_suffix)
+					                  % ct->first).str(), ct->second);
 		}
 		if (m_vars.contains(IBS_freq_sp_String)) {
 			uintDict freq;
@@ -3390,8 +3395,8 @@ bool statInbreeding::apply(Population & pop) const
 			uintDict::const_iterator ct = freq.begin();
 			uintDict::const_iterator ct_end = freq.end();
 			for (; ct != ct_end; ++ct)
-				pop.getVars().setVar(subPopVar_String(*it, IBS_freq_String, m_suffix)
-					+ "{" + toStr(ct->first) + "}", ct->second);
+				pop.getVars().setVar((boost::format("%1%{%2%}") % subPopVar_String(*it, IBS_freq_String, m_suffix)
+					                  % ct->first).str(), ct->second);
 		}
 	}
 	// for whole population.
@@ -3404,7 +3409,7 @@ bool statInbreeding::apply(Population & pop) const
 		uintDict::const_iterator ct = freq.begin();
 		uintDict::const_iterator ct_end = freq.end();
 		for (; ct != ct_end; ++ct)
-			pop.getVars().setVar(IBD_freq_String + m_suffix + "{" + toStr(ct->first) + "}",
+			pop.getVars().setVar((boost::format("%1%{%2%}") % (IBD_freq_String + m_suffix) % ct->first).str(),
 				ct->second);
 	}
 	if (m_vars.contains(IBS_freq_String)) {
@@ -3416,7 +3421,7 @@ bool statInbreeding::apply(Population & pop) const
 		uintDict::const_iterator ct = freq.begin();
 		uintDict::const_iterator ct_end = freq.end();
 		for (; ct != ct_end; ++ct)
-			pop.getVars().setVar(IBS_freq_String + m_suffix + "{" + toStr(ct->first) + "}",
+			pop.getVars().setVar((boost::format("%1%{%2%}") % (IBS_freq_String + m_suffix) % ct->first).str(),
 				ct->second);
 	}
 
@@ -3529,14 +3534,14 @@ void statEffectiveSize::Waples89(size_t S0, size_t St, size_t t,
 		double F_lower = n * F_all / gsl_cdf_chisq_Pinv(0.025, n);
 		res[1] = t / (2 * (F_lower - 0.5 / S0 - 0.5 / St));
 	} catch (SystemError) {
-		DBG_WARNIF(true, "2.5% CI for waples 89 is set to inf at df=" + toStr(n));
+		DBG_WARNIF(true, (boost::format("2.5% CI for waples 89 is set to inf at df=%1%") % n).str());
 		res[1] = -9999;
 	}
 	try {
 		double F_higher = n * F_all / gsl_cdf_chisq_Pinv(0.975, n);
 		res[2] = t / (2 * (F_higher - 0.5 / S0 - 0.5 / St));
 	} catch (SystemError) {
-		DBG_WARNIF(true, "97.5% CI for waples 89 is set to inf at df=" + toStr(n));
+		DBG_WARNIF(true, (boost::format("97.5% CI for waples 89 is set to inf at df=%1%") % n).str());
 		res[2] = -9999;
 	}
 	for (size_t i = 0; i < 3; ++i)
@@ -3779,7 +3784,7 @@ bool statEffectiveSize::demographicEffectiveSize(Population & pop) const
 				// k == 0 for the case of female population for y chromosome...
 				double Ne = k == 0 ? 0 : (k * N - 1) / (k - 1 + Vk / k);
 				DBG_DO(DBG_STATOR, cerr << "Loc " << loc << " N " << N << " k " << k << " Vk " << Vk << " Ne " << Ne << endl);
-				pop.getVars().setVar(Ne_demo_String + m_suffix + "{" + toStr(loc) + "}", Ne);
+				pop.getVars().setVar((boost::format("%1%{%2%}") % (Ne_demo_String + m_suffix) % loc).str(), Ne);
 			}
 		}
 		// for simplicity, repeat the code here, although the code could be combined with better performance
@@ -3826,7 +3831,7 @@ bool statEffectiveSize::demographicEffectiveSize(Population & pop) const
 					double Vk = xx / N - k * k;
 					double Ne = (k * N - 1) / (k - 1 + Vk / k);
 					DBG_DO(DBG_STATOR, cerr << "Loc " << loc << " N " << N << " k " << k << " Vk " << Vk << " Ne " << Ne << endl);
-					pop.getVars().setVar(subPopVar_String(*it, Ne_demo_String, m_suffix) + "{" + toStr(loc) + "}", Ne);
+					pop.getVars().setVar((boost::format("%1%{%2%}") % subPopVar_String(*it, Ne_demo_String, m_suffix) % loc).str(), Ne);
 				}
 			}
 		}
@@ -3835,14 +3840,14 @@ bool statEffectiveSize::demographicEffectiveSize(Population & pop) const
 		const vectoru & loci = m_loci.elems(&pop);
 		if (m_vars.contains(Ne_demo_String))
 			for (size_t l = 0; l < loci.size(); ++l)
-				pop.getVars().setVar(Ne_demo_String + m_suffix + "{" + toStr(loci[l]) + "}", 0.);
+				pop.getVars().setVar((boost::format("%1%{%2%}") % (Ne_demo_String + m_suffix) % loci[l]).str(), 0.);
 		if (m_vars.contains(Ne_demo_sp_String)) {
 			subPopList subPops = m_subPops.expandFrom(pop);
 			subPopList::const_iterator it = subPops.begin();
 			subPopList::const_iterator itEnd = subPops.end();
 			for (; it != itEnd; ++it)
 				for (size_t l = 0; l < loci.size(); ++l)
-					pop.getVars().setVar(subPopVar_String(*it, Ne_demo_String, m_suffix) + "{" + toStr(loci[l]) + "}", 0.);
+					pop.getVars().setVar((boost::format("%1%{%2%}") % subPopVar_String(*it, Ne_demo_String, m_suffix) % loci[l]).str(), 0.);
 		}
 #endif
 	} else
@@ -3909,10 +3914,10 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 						try {
 							// return by reference
 							uintDict res;
-							pop.getVars().getVarAsIntDict(subPopVar_String(*it, Ne_temporal_base_String, m_suffix) + "{'freq'}{" + toStr(loc) + "}", res);
+							pop.getVars().getVarAsIntDict((boost::format("%1%{'freq'}{%2%}") % subPopVar_String(*it, Ne_temporal_base_String, m_suffix) % loc).str(), res);
 							P0.push_back(res);
 						} catch (ValueError) {
-							throw ValueError("Failed to retrieve previous allele frequency at locus " + toStr(loc) + ". Did you manually modify population variables?");
+							throw ValueError((boost::format("Failed to retrieve previous allele frequency at locus %1%. Did you manually modify population variables?") % loc).str());
 						}
 					}   // loci
 				}       // t > 0
@@ -3975,7 +3980,7 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 			Pt.push_back(alleles);
 #  pragma omp critical
 			if (m_vars.contains(Ne_temporal_base_sp_String))
-				pop.getVars().setVar(subPopVar_String(*it, Ne_temporal_base_String, m_suffix) + "{'freq'}{" + toStr(loc) + "}", alleles);
+				pop.getVars().setVar((boost::format("%1%{'freq'}{%2%}") % subPopVar_String(*it, Ne_temporal_base_String, m_suffix) % loc).str(), alleles);
 #else
 			uintDict d;
 			for (size_t i = 0; i < alleles.size(); ++i)
@@ -3984,7 +3989,7 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 			Pt.push_back(d);
 #  pragma omp critical
 			if (m_vars.contains(Ne_temporal_base_sp_String))
-				pop.getVars().setVar(subPopVar_String(*it, Ne_temporal_base_String, m_suffix) + "{'freq'}{" + toStr(loc) + "}", d);
+				pop.getVars().setVar((boost::format("%1%{'freq'}{%2%}") % subPopVar_String(*it, Ne_temporal_base_String, m_suffix) % loc).str(), d);
 #endif
 		}
 		if (m_vars.contains(Ne_waples89_sp_String)) {
@@ -4048,10 +4053,10 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 					try {
 						// return by reference
 						uintDict res;
-						pop.getVars().getVarAsIntDict(Ne_temporal_base_String + m_suffix + "{'freq'}{" + toStr(loc) + "}", res);
+						pop.getVars().getVarAsIntDict((boost::format("%1%{'freq'}{%2%}") % (Ne_temporal_base_String + m_suffix) % loc).str(), res);
 						P0_all.push_back(res);
 					} catch (ValueError) {
-						throw ValueError("Failed to retrieve previous allele frequency at locus " + toStr(loc) + ". Did you manually modify population variables?");
+						throw ValueError((boost::format("Failed to retrieve previous allele frequency at locus %1%. Did you manually modify population variables?") % loc).str());
 					}
 				}   // loci
 			}       // t > 0
@@ -4078,7 +4083,7 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 		// save allele frequency
 		pop.getVars().removeVar(Ne_temporal_base_String + m_suffix + "{'freq'}");
 		for (size_t idx = 0; idx < loci.size(); ++idx)
-			pop.getVars().setVar(Ne_temporal_base_String + m_suffix + "{'freq'}{" + toStr(loci[idx]) + "}",
+			pop.getVars().setVar((boost::format("%1%{'freq'}{%2%}") % (Ne_temporal_base_String + m_suffix) % loci[idx]).str(),
 				alleleCnt[idx]);
 	}
 	return true;
@@ -4284,13 +4289,13 @@ void statEffectiveSize::LDNe(const LDLIST & ld, int cutoff, size_t S, vectorf & 
 	try {
 		res[1] = n_prime * r2 / gsl_cdf_chisq_Pinv(0.025, n_prime);
 	} catch (SystemError &) {
-		DBG_WARNIF(true, "2.5% CI for LDNe is set to inf at df=" + toStr(n_prime));
+		DBG_WARNIF(true, (boost::format("2.5% CI for LDNe is set to inf at df=%1%") % n_prime).str());
 		res[1] = -9999;
 	}
 	try {
 		res[2] = n_prime * r2 / gsl_cdf_chisq_Pinv(0.975, n_prime);
 	} catch (SystemError &) {
-		DBG_WARNIF(true, "97.5% CI for LDNe is set to inf at df=" + toStr(n_prime));
+		DBG_WARNIF(true, (boost::format("97.5% CI for LDNe is set to inf at df=%1%") % n_prime).str());
 		res[2] = -9999;
 	}
 	DBG_DO(DBG_STATOR, cerr << "cutoff=" << cutoff << " r2 (CI): " << res << " (weight=" << weight << " JackKnife n'=" << n_prime << ")" << endl);
