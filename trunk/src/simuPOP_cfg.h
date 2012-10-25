@@ -316,7 +316,7 @@ enum InheritanceType {
 
 // used by operator InitLineage
 enum InitMode {
-	PER_ALLELE = 111, 
+	PER_ALLELE = 111,
 	PER_LOCI =  111,  // this name is deprecated
 	PER_CHROMOSOME = 112,
 	PER_PLOIDY = 113,
@@ -571,7 +571,7 @@ namespace simuPOP {
 	(boost::format("Subpop index (%1%) out of range of 0  ~ %2%") % subPop % (numSubPop() - 1)).str())
 #define CHECKRANGEVIRTUALSUBPOP(subPop) DBG_FAILIF(subPop != InvalidValue && static_cast<UINT>(subPop) >= numVirtualSubPop(), IndexError, \
 	(boost::format("No virtual subpopulation is defined, or subpop index (%1%) out of range of 0  ~ %2%") % subPop % (numVirtualSubPop() - 1)).str())
-#define CHECKRANGECHROM(chrom)   DBG_FAILIF(chrom >= numChrom(), IndexError,\
+#define CHECKRANGECHROM(chrom)   DBG_FAILIF(chrom >= numChrom(), IndexError, \
 	(boost::format("chromosome index (%1%) out of range of 0 ~ %2%") % chrom % (numChrom() - 1)).str())
 #define CHECKRANGELOCUS(chrom, locus) DBG_FAILIF(locus >= numLoci(chrom), IndexError, \
 	(boost::format("locus index (%1%) out of range of 0 ~ %2%") % locus % (numLoci(chrom) - 1)).str())
@@ -583,10 +583,10 @@ namespace simuPOP {
 	(boost::format("individual index (%1%) out of range 0 ~ %2% in subpopulation %3%") % ind % (subPopSize(sp) - 1) % sp).str())
 #define CHECKRANGEIND(ind) DBG_FAILIF(ind >= popSize(), IndexError, \
 	(boost::format("individual index (%1%) %2%") % ind % \
-	(popSize() > 0 ? (boost::format(" out of range of 0 ~ %1%") % (popSize() - 1)).str() : string("invoked on a population without any individual."))).str())
+	 (popSize() > 0 ? (boost::format(" out of range of 0 ~ %1%") % (popSize() - 1)).str() : string("invoked on a population without any individual."))).str())
 #define CHECKRANGEINFO(ind) DBG_FAILIF(ind >= infoSize(), IndexError, \
 	(boost::format("info index (%1%) %2%") % ind % \
-	(infoSize() > 0 ? (boost::format(" out of range of 0 ~ %1%") % (infoSize() - 1)).str() : string("invoked on a population without any information field."))).str())
+	 (infoSize() > 0 ? (boost::format(" out of range of 0 ~ %1%") % (infoSize() - 1)).str() : string("invoked on a population without any information field."))).str())
 }
 
 // for mutant vector -- the class wrapper for compressed vector
