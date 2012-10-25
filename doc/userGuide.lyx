@@ -21809,7 +21809,7 @@ Using wxPython to display population variables
 \begin_layout Subsection
 Import simuPOP population from files in 
 \family typewriter
-GENEPOP
+GENEPOP, PHYLIP
 \family default
  and 
 \family typewriter
@@ -21829,7 +21829,7 @@ simuPOP.utils
 \family default
  module to import populations from files in 
 \family typewriter
-GENEPOP
+GENEPOP, PHYLIP
 \family default
  and 
 \family typewriter
@@ -21839,8 +21839,8 @@ FSTAT
  Because these formats do not support many of the features of a simuPOP
  population, this function can only import genotype and basic information
  of a population.
- Because these formats uses allele 0 to indicate missing value, true alleles
- in these formats start at value 1.
+ Because formats GENEPOP and FSTAT formats uses allele 0 to indicate missing
+ value, true alleles in these formats start at value 1.
  If you would like to import alleles with starting value 0, you can use
  parameter adjust=-1 to adjust imported values, if you data do not have
  any missing value.
@@ -21854,7 +21854,7 @@ STRUCTURE, GENEPOP
 \family default
 , 
 \family typewriter
-FSTAT, PED, MAP
+FSTAT, Phylip, PED, MAP
 \family default
  and 
 \family typewriter
@@ -21980,7 +21980,7 @@ Export simuPOP population in csv format (function
 \family typewriter
 saveCSV
 \family default
-)
+, deprecated)
 \end_layout
 
 \begin_layout Standard
