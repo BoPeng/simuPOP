@@ -656,9 +656,9 @@ void Recombinator::initialize(const Individual & ind) const
 
 				DBG_WARNIF(fcmp_gt(r, 0.5),
 					(boost::format("Recombination m_rates after marker %1% is out of range (%2%"
-								 " ) and it is set to 0.5. This may happen \n"
-					             "when you use recombination m_intensity instead of m_rates, and your loci \n"
-					             "distance is too high.)") % loc % r).str());
+						           " ) and it is set to 0.5. This may happen \n"
+						           "when you use recombination m_intensity instead of m_rates, and your loci \n"
+						           "distance is too high.)") % loc % r).str());
 				vecP.push_back(min(0.5, r));
 			}
 		} else {

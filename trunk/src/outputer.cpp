@@ -108,7 +108,7 @@ UINT Dumper::displayGenotype(const Population & pop, const subPopList & subPops,
 	for ( ; sp != spEnd; ++sp) {
 		size_t spSize = pop.subPopSize(*sp);
 		out << "SubPopulation " << *sp << " (" << pop.subPopName(*sp) << "), "
-		    << toStr(spSize) << " Individuals:" << endl;
+		    << spSize << " Individuals:" << endl;
 
 		const_cast<Population &>(pop).activateVirtualSubPop(*sp);
 		IndIterator ind = const_cast<Population &>(pop).indIterator(sp->subPop());

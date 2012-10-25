@@ -767,7 +767,7 @@ public:
 		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_rate(rate), m_ranges(ranges), m_model(model)
 	{
-		(void) lineageMode; // avoid a compiler warning
+		(void)lineageMode;  // avoid a compiler warning
 		const matrixi & rngs = m_ranges.elems();
 
 		for (size_t i = 0; i < rngs.size(); ++i) {

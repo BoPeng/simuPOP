@@ -449,9 +449,9 @@ public:
 	{
 		if (ancGen < 0 || ancGen == m_curAncestralGen)
 			return m_subPopSize;
-		DBG_FAILIF(ancGen > ancestralGens(), IndexError, 
+		DBG_FAILIF(ancGen > ancestralGens(), IndexError,
 			(boost::format("Ancestral generation %1% out of range of 0 ~ %2%") % ancGen %
-			ancestralGens()).str());
+			 ancestralGens()).str());
 		return m_ancestralPops[ancGen - 1].m_subPopSize;
 	}
 
@@ -472,7 +472,7 @@ public:
 			return m_popSize;
 		DBG_FAILIF(ancGen > ancestralGens(), IndexError,
 			(boost::format("Ancestral generation %1% out of range of 0 ~ %2%") % ancGen %
-			ancestralGens()).str());
+			 ancestralGens()).str());
 		const vectoru & sizes = m_ancestralPops[ancGen - 1].m_subPopSize;
 		return accumulate(sizes.begin(), sizes.end(), size_t(0));
 	}

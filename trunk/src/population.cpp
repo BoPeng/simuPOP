@@ -422,7 +422,7 @@ Individual & Population::indByID(double fid, const uintList & ancGens, const str
 		}
 	}
 	// if still cannot be found, raise an IndexError.
-	throw IndexError("No individual with ID " + toStr(id) + " could be found.");
+	throw IndexError((boost::format("No individual with ID %1% could be found.") % id).str());
 	// this is just to suppress a warning.
 	return m_inds[0];
 }
@@ -467,7 +467,7 @@ Individual & Population::ancestor(double fidx, ssize_t gen, vspID vsp)
 		"Function genotype currently does not support virtual subpopulation");
 
 	DBG_FAILIF(static_cast<size_t>(gen) > m_ancestralPops.size(), IndexError,
-		"Ancestray generation " + toStr(gen) + " does not exist");
+		(boost::format("Ancestray generation %1% does not exist") % gen).str());
 	if (!vsp.valid()) {
 		if (gen == m_curAncestralGen)
 			return m_inds[idx];
@@ -504,7 +504,7 @@ const Individual & Population::ancestor(double fidx, ssize_t gen, vspID vsp) con
 		"Function genotype currently does not support virtual subpopulation");
 
 	DBG_FAILIF(static_cast<size_t>(gen) > m_ancestralPops.size(), IndexError,
-		"Ancestray generation " + toStr(gen) + " does not exist");
+		(boost::format("Ancestray generation %1% does not exist") % gen).str());
 	if (!vsp.valid()) {
 		if (gen == m_curAncestralGen)
 			return m_inds[idx];
@@ -866,8 +866,7 @@ void Population::validate(const string & msg) const
 	if (infoSize() > 0) {
 		for (ConstIndIterator it = indIterator(); it.valid(); ++it) {
 			DBG_ASSERT(it->infoPtr() >= ib && it->infoPtr() < ie, SystemError,
-				msg + "Wrong information field pointer. (number of information fields: "
-				+ toStr(infoSize()) + ")");
+				(boost::format("%1% Wrong information field pointer. (number of information fields: %2%)") % msg % infoSize()).str());
 		}
 	}
 #endif
@@ -893,19 +892,19 @@ void Population::fitSubPopStru(const vectoru & newSubPopSizes,
 			m_info.resize(m_popSize * is);
 			m_inds.resize(m_popSize);
 		} catch (...) {
-			throw RuntimeError("Failed to create population (popSize=" + toStr(m_popSize)
-				+ ", totNumLoci*ploidy=" + toStr(step) + ", maximum population size for such a long genome=" +
-				toStr(MaxIndexSize / step) + ", requested memory="
+			throw RuntimeError((boost::format("Failed to create population (popSize=%1%"
+									          ", totNumLoci*ploidy=%2%, maximum population size for such a long genome=%3%, requested memory=%4%k bytes)")
+				                % m_popSize % step % (MaxIndexSize / step) %
 #ifdef BINARYALLELE
-				+ toStr((m_popSize * step / 8 + m_popSize * is * sizeof(double) + m_popSize * sizeof(Individual)) / 1024)
+				                ((m_popSize * step / 8 + m_popSize * is * sizeof(double) + m_popSize * sizeof(Individual)) / 1024)
 #else
 #  ifdef MUTANTALLELE
-				+ toStr((m_popSize * is * sizeof(double) + m_popSize * sizeof(Individual)) / 1024)
+				                ((m_popSize * is * sizeof(double) + m_popSize * sizeof(Individual)) / 1024)
 #  else
-				+ toStr((m_popSize * step * sizeof(Allele) + m_popSize * is * sizeof(double) + m_popSize * sizeof(Individual)) / 1024)
+				                ((m_popSize * step * sizeof(Allele) + m_popSize * is * sizeof(double) + m_popSize * sizeof(Individual)) / 1024)
 #  endif
 #endif
-				+ "k bytes)");
+				                ).str());
 		}
 		// reset individual pointers
 		InfoIterator infoPtr = m_info.begin();
@@ -1009,8 +1008,7 @@ size_t Population::subPopSize(vspID subPopID, int ancGen) const
 		return popSize(ancGen);
 
 	DBG_FAILIF(ancGen > ancestralGens(),
-		IndexError, "Ancestral generation " + toStr(ancGen) + " out of range of 0 ~ "
-		+ toStr(ancestralGens()));
+		IndexError, (boost::format("Ancestral generation %1% out of range of 0 ~ %2%") % ancGen % ancestralGens()).str());
 
 	if (ancGen < 0 || ancGen == m_curAncestralGen) {
 		CHECKRANGESUBPOP(subPop.subPop());
@@ -1030,8 +1028,8 @@ size_t Population::subPopSize(vspID subPopID, int ancGen) const
 	} else {
 		const vectoru & sizes = m_ancestralPops[ancGen - 1].m_subPopSize;
 		DBG_FAILIF(static_cast<size_t>(subPop.subPop()) >= sizes.size(), IndexError,
-			"Subpopulation index " + toStr(subPop.subPop()) + " out of range of 0 ~ "
-			+ toStr(sizes.size() - 1) + " at ancestral generation " + toStr(ancGen));
+			(boost::format("Subpopulation index %1% out of range of 0 ~ %2%"
+				           " at ancestral generation %3%") % subPop.subPop() % (sizes.size() - 1) % ancGen).str());
 		return sizes[subPop.subPop()];
 	}
 	// avoid a warning message.
@@ -1165,7 +1163,7 @@ vectoru Population::splitSubPop(size_t subPop, const vectorf & sizes, const vect
 		}
 	}
 	DBG_FAILIF(accumulate(count.begin(), count.end(), size_t(0)) != subPopSize(subPop), ValueError,
-		"Sum of parameter sizes should be 1 or the size of subpopulation " + toStr(subPop));
+		(boost::format("Sum of parameter sizes should be 1 or the size of subpopulation %1%") % subPop).str());
 
 	DBG_ASSERT(names.empty() || sizes.size() == names.size(), ValueError,
 		"Names should be given to none or all of the split subpopulations");
@@ -2381,7 +2379,7 @@ Population & Population::extractIndividuals(const uintList & indexList,
 		markIndividuals(vspID(), false);
 		for (size_t i = 0; i < indexes.size(); ++i) {
 			DBG_FAILIF(indexes[i] >= m_popSize, IndexError,
-				"individual index " + toStr(indexes[i]) + " out of range of 0 ~ " + toStr(m_popSize) + ".");
+				(boost::format("individual index %1% out of range of 0 ~ %1%.") % indexes[i] % m_popSize).str());
 			m_inds[indexes[i]].setMarked(true);
 		}
 		return extractMarkedIndividuals();
@@ -2507,7 +2505,7 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 			new_chromNames.push_back(chromName(last_ch));
 			for (; it != it_end; ++it) {
 				DBG_FAILIF(*it >= totNumLoci(), IndexError,
-					"Locus index " + toStr(*it) + " out of range.");
+					(boost::format("Locus index %1% out of range.") % (*it)).str());
 				// if new chromosome
 				size_t ch = chromLocusPair(*it).first;
 				if (ch != last_ch) {
@@ -2711,10 +2709,9 @@ Population & Population::extract(const lociList & extractedLoci, const stringLis
 		// the arrays are ready, are they?
 		DBG_ASSERT(new_inds.size() == size && (new_genotype.size() == size * step)
 			&& (new_info.size() == size * infoStep), SystemError,
-			"Failed to copy genotype:"
-			"\ninds: " + toStr(new_inds.size()) + ", " + toStr(size) +
-			"\ngenotype: " + toStr(new_genotype.size()) + ", " + toStr(size * step) +
-			"\ninfo: " + toStr(new_info.size()) + ", " + toStr(size * infoStep));
+			(boost::format("Failed to copy genotype:\ninds: %1%, %2%"
+				           "\ngenotype: %3%, %4%\ninfo: %5%, %6%") % new_inds.size() % size
+			 % new_genotype.size() % (size * step) % new_info.size() % (size * infoStep)).str());
 		// now put them to use
 		if (genIdx == 0) { // current generation
 			pop.m_inds.swap(new_inds);
@@ -2891,7 +2888,7 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 				for (; ptr != ptrEnd; ++ptr) {
 					size_t a = static_cast<size_t>(DEREF_ALLELE(ptr));
 					if (a >= map.size()) {
-						DBG_WARNIF(true, "Allele " + toStr(a) + " can not be recoded");
+						DBG_WARNIF(true, (boost::format("Allele %1% can not be recoded") % a).str());
 						continue;
 					}
 					REF_ASSIGN_ALLELE(ptr, TO_ALLELE(map[DEREF_ALLELE(ptr)]));
@@ -2905,7 +2902,7 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 						GenoIterator allele = ptr + loci[i];
 						size_t a = static_cast<size_t>(DEREF_ALLELE(allele));
 						DBG_FAILIF(a >= map.size(),
-							ValueError, "Allele " + toStr(a) + " can not be recoded");
+							ValueError, (boost::format("Allele %1% can not be recoded") % a).str());
 						REF_ASSIGN_ALLELE(allele, TO_ALLELE(map[DEREF_ALLELE(allele)]));
 					}
 				}
@@ -3360,7 +3357,7 @@ void Population::useAncestralGen(ssize_t idx)
 
 	// now m_curAncestralGen is zero.
 	DBG_ASSERT(static_cast<size_t>(idx) <= m_ancestralPops.size(),
-		ValueError, "Ancestry generation " + toStr(idx) + " does not exist.");
+		ValueError, (boost::format("Ancestry generation %1% does not exist.") % idx).str());
 
 	// now idx should be at least 1
 	m_curAncestralGen = static_cast<int>(idx);
@@ -3913,9 +3910,9 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 	varsFromString(vars);
 
 	setIndOrdered(true);
-	DBG_WARNIF(max_allele > ModuleMaxAllele, "Warning: the maximum allele of the loaded population is "
-		+ toStr(max_allele) + " which is larger than the maximum allowed allele of this module. "
-		                      "These alleles have been truncated.");
+	DBG_WARNIF(max_allele > ModuleMaxAllele, (boost::format("Warning: the maximum allele of the loaded population is %1%"
+												            " which is larger than the maximum allowed allele of this module. "
+												            "These alleles have been truncated.") % max_allele).str());
 }
 
 
@@ -3966,7 +3963,7 @@ PyObject * Population::vars(vspID vsp)
 		return m_vars.dict();
 	}
 	DBG_ASSERT(static_cast<size_t>(vsp.subPop()) < numSubPop(),
-		IndexError, "Subpop index out of range of 0 ~ " + toStr(numSubPop() - 1));
+		IndexError, (boost::format("Subpop index out of range of 0 ~ %1%") % (numSubPop() - 1)).str());
 
 	if (!m_vars.hasVar("subPop"))
 		throw ValueError("Population local namespace does not have key 'subPop'. "
@@ -3999,7 +3996,7 @@ PyObject * Population::dict(vspID vsp)
 		return m_vars.dict();
 
 	DBG_ASSERT(static_cast<size_t>(vsp.subPop()) < numSubPop(),
-		IndexError, "Subpop index out of range of 0 ~ " + toStr(numSubPop() - 1));
+		IndexError, (boost::format("Subpop index out of range of 0 ~ %1%") % (numSubPop() - 1)).str());
 
 	if (!m_vars.hasVar("subPop"))
 		throw ValueError("Population local namespace does not have key 'subPop'. "

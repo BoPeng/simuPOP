@@ -74,7 +74,7 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 	} else {                                                                            // check loci distance
 		// loci distance, if specified, chould have length of chromosome.
 		DBG_FAILIF(m_lociPos.size() != m_totNumLoci, ValueError,
-			(boost::format("You should specify loci distance for every locus (%1%)") %  m_totNumLoci).str());
+			(boost::format("You should specify loci distance for every locus (%1%)") % m_totNumLoci).str());
 
 		for (size_t ch = 0; ch < m_numLoci.size(); ++ch) {
 			if (m_numLoci[ch] <= 1)
@@ -356,9 +356,9 @@ void GenoStruTrait::setGenoStructure(const GenoStructure & rhs)
 	// Population type.
 	if (s_genoStruRepository.size() + 1 == MaxTraitIndex) {
 		throw SystemError((boost::format("This simuPOP library only allows %1%"
-			 " different genotype structures. \n"
-			"If you do need more structures, modify individual.h/TraitMaxType and "
-			"recompile simuPOP.") % (MaxTraitIndex - 1)).str());
+							             " different genotype structures. \n"
+							             "If you do need more structures, modify individual.h/TraitMaxType and "
+							             "recompile simuPOP.") % (MaxTraitIndex - 1)).str());
 	}
 
 	if (m_genoStruIdx != MaxTraitIndex)
@@ -842,6 +842,7 @@ pairu GenoStruTrait::chromLocusPair(size_t locus) const
 	}
 	return loc;
 }
+
 
 string GenoStruTrait::alleleName(const ULONG allele, const size_t locus) const
 {

@@ -29,6 +29,9 @@
 #  define PyInt_FromLong(x) PyLong_FromLong(x)
 #endif
 
+#include <sstream>
+using std::ostringstream;
+
 namespace simuPOP {
 
 bool BaseSelector::apply(Population & pop) const
@@ -148,14 +151,15 @@ double MapSelector::indFitness(Population & /* pop */, RawIndIterator ind) const
 		}
 	}
 	// no match
-	string allele_string = "(";
+	ostringstream allele_string;
+	allele_string << "(";
 	for (size_t i = 0; i < alleles.size(); ++i) {
 		if (i != 0)
-			allele_string += ", ";
-		allele_string += toStr(alleles[i]);
+			allele_string << ", ";
+		allele_string << alleles[i];
 	}
-	allele_string += ")";
-	throw ValueError("No fitness value for genotype " + allele_string);
+	allele_string << ")";
+	throw ValueError("No fitness value for genotype " + allele_string.str());
 	// this line should not be reached.
 	return 0;
 }

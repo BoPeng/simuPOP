@@ -154,7 +154,7 @@ bool Migrator::apply(Population & pop) const
 
 		// fromSubPops out of range....
 		DBG_FAILIF(spFrom >= pop.numSubPop(), IndexError,
-			"Subpopulation index " + toStr(spFrom) + " out of range");
+			(boost::format("Subpopulation index %1% out of range") % spFrom).str());
 
 		size_t spSize = pop.subPopSize(fromSubPops[from]);
 
@@ -347,8 +347,8 @@ bool ResizeSubPops::apply(Population & pop) const
 
 	for (size_t i = 0; i < subPops.size(); ++i) {
 		DBG_FAILIF(static_cast<size_t>(subPops[i].subPop()) >= pop.numSubPop(), IndexError,
-			"Subpopulation index " + toStr(subPops[i].subPop()) + " out of range of 0 ~ "
-			+ toStr(pop.numSubPop() - 1));
+			(boost::format("Subpopulation index %1% out of range of 0 ~ %2%") % subPops[i].subPop()
+			 % (pop.numSubPop() - 1)).str());
 		if (m_sizes.empty())
 			newSizes[subPops[i].subPop()] = static_cast<ULONG>(newSizes[subPops[i].subPop()] * m_proportions[i]);
 		else

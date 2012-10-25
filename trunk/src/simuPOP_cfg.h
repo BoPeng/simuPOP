@@ -484,13 +484,7 @@ public:
 #define UnnamedSubPop        ""
 }
 
-/// This is not the most effecient method, but it is convenient to use.
-// the pragma will suppress a lot of warnings when using toStr, generated
-// from -Wconversion
-// warning: conversion to char from int may alter its value
 #pragma GCC system_header
-#include "boost/lexical_cast.hpp"
-#define toStr(val) (boost::lexical_cast < string > (val))
 #include <boost/format.hpp>
 
 namespace simuPOP {

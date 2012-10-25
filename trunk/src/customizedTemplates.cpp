@@ -743,8 +743,6 @@ getarrayitem_template(PyObject * op, Py_ssize_t i)
 }
 
 
-
-
 /// CPPONLY
 template <typename T>
 int
@@ -930,7 +928,7 @@ array_richcompare_template(PyObject * v, PyObject * w, int op)
 		PyObject * wi = NULL;
 		int k = 1;
 		for (int i = 0; i < vs && i < ws; i++) {
-			vi = getarrayitem_template<T>((PyObject*)(va), i);
+			vi = getarrayitem_template<T>((PyObject *)(va), i);
 			wi = PySequence_GetItem(wa, i);
 			if (vi == NULL || wi == NULL) {
 				Py_XDECREF(vi);
@@ -1330,7 +1328,6 @@ array_ass_subscr_template(struct arrayobject_template<T> * self, PyObject * item
 }
 
 
-
 template <typename T>
 PyObject * array_new_template(PyTypeObject * type, PyObject * args, PyObject * kwds)
 {
@@ -1362,6 +1359,7 @@ bool is_carrayobject_template<LineageIterator>(PyObject * op)
 {
 	return PyObject_TypeCheck(op, &LineageArraytype);
 }
+
 
 template <>
 int
@@ -1457,11 +1455,11 @@ array_ass_subscr_template(struct arrayobject_template<GenoIterator> * self, PyOb
 	if (needed > 0) {
 		// copy sequence
 		if (is_carrayobject_template<GenoIterator>(value))
-#ifdef MUTANTALLELE			
+#  ifdef MUTANTALLELE
 			simuPOP::copyGenotype(other->ob_iter, other->ob_iter + stop - start, self->ob_iter + start);
-#else
+#  else
 			std::copy(other->ob_iter, other->ob_iter + stop - start, self->ob_iter + start);
-#endif		
+#  endif
 		else {
 			for (Py_ssize_t i = 0; start + i < stop; ++i)
 				setarrayitem_template<GenoIterator>(self, start + i, PySequence_GetItem(value, i));
@@ -1469,6 +1467,7 @@ array_ass_subscr_template(struct arrayobject_template<GenoIterator> * self, PyOb
 	}
 	return 0;
 }
+
 
 template <>
 PyObject *
@@ -1487,6 +1486,7 @@ getarrayitem_template<GenoIterator>(PyObject * op, Py_ssize_t i)
 	return PyInt_FromLong(*(ap->ob_iter + i) );
 #  endif
 }
+
 
 /// CPPONLY
 template <typename T>

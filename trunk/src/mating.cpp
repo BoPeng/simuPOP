@@ -405,11 +405,11 @@ void ControlledOffspringGenerator::getExpectedAlleles(const Population & pop,
 
 			// if there is no alleles
 			if (!hasAllele && expFreq[i] > 0.)
-				throw RuntimeError("No disease allele exists at generation "
-					+ toStr(pop.gen()) + ", but expected allele frequency at locus " + toStr(locus) + " is greater than 0.");
+				throw RuntimeError((boost::format("No disease allele exists at generation %1%"
+										          ", but expected allele frequency at locus %2% is greater than 0.") % pop.gen() % locus).str());
 
-			DBG_WARNIF(hasAllele && fcmp_eq(expFreq[i], 0.), "Disease allele exists at generation "
-				+ toStr(pop.gen()) + ", but expected allele frequency is zero.");
+			DBG_WARNIF(hasAllele && fcmp_eq(expFreq[i], 0.), (boost::format("Disease allele exists at generation %1%"
+																            ", but expected allele frequency is zero.") % pop.gen()).str());
 
 			// calculate exp number of affected offspring in the next generation.
 			//
@@ -439,9 +439,8 @@ void ControlledOffspringGenerator::getExpectedAlleles(const Population & pop,
 
 				// if there is no alleles
 				if (n == 0 && expFreq[sp * nLoci + i] > 0.)
-					throw RuntimeError("No disease allele exists at generation " +
-						toStr(pop.gen()) + " but exp allele frequency at locus " + toStr(locus) +
-						" in subpopulation " + toStr(sp) + " is greater than 0.");
+					throw RuntimeError((boost::format("No disease allele exists at generation %1% but exp allele frequency at locus %2%"
+											          " in subpopulation %3% is greater than 0.") % pop.gen() % locus % sp).str());
 #endif
 				m_expAlleles[numSP * i + sp] = static_cast<UINT>(pop.subPopSize(sp) * pop.ploidy() * expFreq[sp * nLoci + i]);
 				if (expFreq[sp * nLoci + i] > 0. && m_expAlleles[numSP * i + sp] == 0)
@@ -1170,8 +1169,7 @@ ParentChooser::IndividualPair PyParentsChooser::chooseParents(RawIndIterator)
 		PyObj_As_Int(item, parent);
 #ifndef OPTIMIZED
 		DBG_ASSERT(static_cast<unsigned>(parent) < m_size,
-			ValueError, "Returned index (" + toStr(parent) +
-			") is greater than subpopulation size " + toStr(m_size));
+			ValueError, (boost::format("Returned index (%1%) is greater than subpopulation size %2%") % parent % m_size).str());
 #endif
 		Py_DECREF(item);
 		return ParentChooser::IndividualPair(&*(m_begin + parent), NULL);
@@ -1184,8 +1182,7 @@ ParentChooser::IndividualPair PyParentsChooser::chooseParents(RawIndIterator)
 			PyObject * v = PySequence_GetItem(item, i);
 			if (PyInt_Check(v) || PyLong_Check(v)) {
 				ULONG idx = PyInt_AsLong(v);
-				DBG_ASSERT(idx < m_size, ValueError, "Returned parent index (" + toStr(idx) +
-					") is greater than subpopulation size " + toStr(m_size));
+				DBG_ASSERT(idx < m_size, ValueError, (boost::format("Returned parent index (%1%) is greater than subpopulation size %2%") % idx % m_size).str());
 				parents[i] = &*(m_begin + idx);
 			} else {
 				void * ind = pyIndPointer(v);
@@ -1274,8 +1271,7 @@ bool MatingScheme::prepareScratchPop(Population & pop, Population & scratch)
 	DBG_DO(DBG_SIMULATOR, cerr << "New subpop size " << scratch.subPopSizes() << endl);
 
 	DBG_FAILIF(scratch.numSubPop() != pop.numSubPop(),
-		ValueError, "number of subPopulaitons must agree.\n Pre: "
-		+ toStr(pop.numSubPop()) + " now: " + toStr(scratch.numSubPop()));
+		ValueError, (boost::format("number of subPopulaitons must agree.\n Pre: %1% now: %2%") % pop.numSubPop() % scratch.numSubPop()).str());
 	return true;
 }
 
@@ -1476,13 +1472,13 @@ bool PedigreeMating::mate(Population & pop, Population & scratch)
 			if (father_id) {
 				IdMap::iterator dad_it = idMap.find(father_id);
 				DBG_FAILIF(dad_it == idMap.end(), RuntimeError,
-					"Could not locate individual with ID " + toStr(father_id));
+					(boost::format("Could not locate individual with ID %1%") % father_id).str());
 				dad = &*(dad_it->second);
 			}
 			if (mother_id) {
 				IdMap::iterator mom_it = idMap.find(mother_id);
 				DBG_FAILIF(mom_it == idMap.end(), RuntimeError,
-					"Could not locate individual with ID " + toStr(mother_id));
+					(boost::format("Could not locate individual with ID %1%") % mother_id).str());
 				mom = &*(mom_it->second);
 			}
 			DBG_DO(DBG_MATING, cerr << "Choosing parents " << father_id << " and "
@@ -1553,8 +1549,7 @@ HeteroMating::HeteroMating(const vectormating & matingSchemes,
 
 string HeteroMating::describe(bool format) const
 {
-	string desc = "<simuPOP.HeteroMating> a heterogeneous mating scheme with " +
-	              toStr(m_matingSchemes.size()) + " homogeneous mating schemes:\n<ul>\n";
+	string desc = (boost::format("<simuPOP.HeteroMating> a heterogeneous mating scheme with %1% homogeneous mating schemes:\n<ul>\n") % m_matingSchemes.size()).str();
 	vectormating::const_iterator it = m_matingSchemes.begin();
 	vectormating::const_iterator it_end = m_matingSchemes.end();
 
@@ -1571,10 +1566,10 @@ string HeteroMating::describe(bool format) const
 				if (i != 0)
 					desc += ", ";
 				if (sp.isVirtual()) {
-					desc += "(" + (sp.allAvailSP() ? "ALL_AVAIL" : toStr(sp.subPop())) + ", " +
-					        (sp.allAvailVSP() ? "ALL_AVAIL" : toStr(sp.virtualSubPop())) + ")";
+					desc += (boost::format("(%1%, %2%)") % (sp.allAvailSP() ? "ALL_AVAIL" : (boost::format("%1%") % sp.subPop()).str()) %
+					         (sp.allAvailVSP() ? "ALL_AVAIL" : (boost::format("%1%") % sp.virtualSubPop()).str())).str();
 				} else
-					desc += toStr(sp.subPop());
+					desc += (boost::format("%1%") % sp.subPop()).str();
 			}
 			desc += ".\n";
 		}
@@ -1645,7 +1640,7 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 			}
 		}
 		DBG_FAILIF(m.empty(), ValueError,
-			"No mating scheme is available for subpopulation " + toStr(sp));
+			(boost::format("No mating scheme is available for subpopulation %1%") % sp).str());
 		// determine the weight
 		if (m.size() == 1) {
 			w_pos[0] = 1.;
@@ -1681,10 +1676,8 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 			if (fcmp_gt(w_neg[i], 0.)) {
 				vspSize[i] = static_cast<ULONG>(pop.subPopSize(sps[i]) * w_neg[i]);
 				DBG_ASSERT(all >= vspSize[i], ValueError,
-					"Mating scheme with a negative weight of " + toStr(w_neg[i]) +
-					" would like to produce " + toStr(vspSize[i]) +
-					" offspring, but there are only " + toStr(all) +
-					" unclaimed offspring left.")
+					(boost::format("Mating scheme with a negative weight of %1% would like to produce %2%"
+						           " offspring, but there are only %3% unclaimed offspring left.") % w_neg[i] % vspSize[i] % all).str());
 				all -= vspSize[i];
 			}
 		}
@@ -1694,10 +1687,8 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 			if (all > 0 && fcmp_gt(w_pos[i], 0.)) {
 				vspSize[i] = static_cast<ULONG>(all_pos * w_pos[i] / overall_pos);
 				DBG_ASSERT(all >= vspSize[i], ValueError,
-					"Mating scheme with a positive weight of " + toStr(w_pos[i]) +
-					" would like to produce " + toStr(vspSize[i]) +
-					" offspring, but there are only " + toStr(all) +
-					" unclaimed offspring left.")
+					(boost::format("Mating scheme with a positive weight of %1% would like to produce %2%"
+						           " offspring, but there are only %1% unclaimed offspring left.") % w_pos[i] % vspSize[i] % all).str());
 				all -= vspSize[i];
 			}
 		}
@@ -1722,7 +1713,7 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 		vectoru::iterator itSize = vspSize.begin();
 		RawIndIterator ind = scratch.rawIndBegin(sp);
 		DBG_FAILIF(pop.hasActivatedVirtualSubPop(sp), ValueError,
-			"SubPopulation " + toStr(sp) + " has activated virtual subpopulation.");
+			(boost::format("SubPopulation %1% has activated virtual subpopulation.") % sp).str());
 		for (UINT idx = 0; idx < m.size(); ++idx, ++itSize) {
 			DBG_WARNIF(*itSize == 0, "WARNING: One of the mating schemes has zero weight and produces no offspring. "
 				                     "Because the default weight of a mating scheme is 0, which is handled differently "
@@ -1744,8 +1735,8 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 				if (!m[idx]->mateSubPop(pop, scratch, sp, ind, ind + *itSize))
 					return false;
 			} catch (Exception &) {
-				cerr << "Mating scheme " + toStr(idx) + " in subpopulation " + toStr(sp) +
-                    " failed to produce " + toStr(*itSize) << " offspring." << endl;
+				cerr << "Mating scheme " << idx << " in subpopulation " << sp <<
+				" failed to produce " << (*itSize) << " offspring." << endl;
 				throw;
 			}
 			ind += *itSize;

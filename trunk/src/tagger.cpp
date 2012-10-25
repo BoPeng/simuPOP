@@ -26,6 +26,7 @@
 #include "tagger.h"
 #include "pedigree.h"
 
+#include <sstream>
 using std::ostringstream;
 
 namespace simuPOP {

@@ -51,6 +51,8 @@ using std::fstream;
 using std::ifstream;
 using std::ofstream;
 
+#include "boost/lexical_cast.hpp"
+
 // for data type lociList
 #include "genoStru.h"
 
@@ -1503,7 +1505,7 @@ next:
 		goto next;
 	} else if (name[i] == '{') {
 		//	keytype can be numeric 0: subPop{0}
-		//                 float   3: 
+		//                 float   3:
 		//                 tuple   1: subPop{(0,1)}
 		//                 string  2: subPop{0}{'alleleNum'}
 		int keyType;
@@ -1530,7 +1532,7 @@ next:
 		else if (keyType == 3) {
 			PyObject * key_str = PyString_FromString(const_cast<char *>(name.substr(s, i - s).c_str()));
 			childKey = PyFloat_FromString(key_str, NULL);
-		 }else if (keyType == 1) {
+		}else if (keyType == 1) {
 			vectori key;
 			for (size_t j = s + 1, k = j; j < i; j = k + 1) {
 				for (k = j + 1; k < i && name[k] != ',' && name[k] != ')'; ++k) ;
@@ -2109,7 +2111,7 @@ void saveObj(ostringstream & str, PyObject * args)
 		save_defdict(str, args);
 	else {
 		// some other unknown type
-		DBG_DO(DBG_UTILITY, cerr << boost::format("Warning: object of type '%1%' cannot be saved. Use none.")  % type->tp_name);
+		DBG_DO(DBG_UTILITY, cerr << boost::format("Warning: object of type '%1%' cannot be saved. Use none.") % type->tp_name);
 		save_none(str);
 	}
 }

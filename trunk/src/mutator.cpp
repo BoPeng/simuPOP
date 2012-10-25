@@ -45,7 +45,7 @@ double BaseMutator::mutRate(size_t loc) const
 	vectoru::const_iterator it = find(loci.begin(), loci.end(), loc);
 
 	DBG_ASSERT(it != loci.end(), RuntimeError,
-		"Failed to find mutation rate for locus " + toStr(loc));
+		(boost::format("Failed to find mutation rate for locus %1%") % loc).str());
 	DBG_ASSERT(m_rates.size() == loci.size(), SystemError,
 		"Incorrect rate and loci size");
 	return m_rates[it - loci.begin()];
@@ -99,7 +99,7 @@ bool BaseMutator::apply(Population & pop) const
 	bool assignLineage = infoSize() > 0 && pop.hasInfoField(infoField(0));
 	size_t lineageIdx = assignLineage ? pop.infoIdx(infoField(0)) : 0;
 	DBG_DO(DBG_MUTATOR, cerr << (assignLineage ? "Assign lineage using field " + infoField(0) :
-		                         "Not assigning lineage (number of info fields: " + toStr(infoSize()) + ")") << endl);
+		                         "Not assigning lineage (number of info fields: " + (boost::format("%1%") % infoSize()).str() + ")") << endl);
 #endif
 
 	// mapIn and mapOut
@@ -139,7 +139,7 @@ bool BaseMutator::apply(Population & pop) const
 
 		// fromSubPops out of range....
 		DBG_FAILIF(sp >= pop.numSubPop(), IndexError,
-			"Subpopulation index " + toStr(sp) + " out of range");
+			(boost::format("Subpopulation index %1% out of range") % sp).str());
 
 		size_t popSize = pop.subPopSize(subPops[idx]);
 		DBG_DO(DBG_MUTATOR, cerr << "SP " << subPops[idx] << " size: " << popSize << endl);
@@ -262,7 +262,7 @@ MatrixMutator::MatrixMutator(const floatMatrix & rate,
 			if (i == j)
 				continue;
 			DBG_FAILIF(rateMatrix[i][j] < 0 || rateMatrix[i][j] > 1, ValueError,
-				"Elements in a mutation matrix must be between 0 and 1. " + toStr(rateMatrix[i][j]) + " observed.");
+				(boost::format("Elements in a mutation matrix must be between 0 and 1. %1% observed.") % rateMatrix[i][j]).str());
 			sum += rateMatrix[i][j];
 		}
 		DBG_FAILIF(sum > 1, ValueError, "Sum of P_ij should not exceed 1");
@@ -293,9 +293,8 @@ MatrixMutator::MatrixMutator(const floatMatrix & rate,
 Allele MatrixMutator::mutate(Allele allele, size_t) const
 {
 	if (static_cast<size_t>(allele) >= m_sampler.size()) {
-		DBG_WARNIF(true, "Allele " + toStr(static_cast<size_t>(allele))
-			+ " will not be mutated because mutate rates are only defined for alleles 0 ... "
-			+ toStr(m_sampler.size() - 1));
+		DBG_WARNIF(true, (boost::format("Allele %1% will not be mutated because mutate rates are only defined for alleles 0 ... %2%")
+			              % static_cast<size_t>(allele) % (m_sampler.size() - 1)).str());
 		return allele;
 	}
 	return TO_ALLELE(m_sampler[allele].draw());
@@ -306,9 +305,8 @@ Allele MatrixMutator::mutate(Allele allele, size_t) const
 Allele KAlleleMutator::mutate(Allele allele, size_t) const
 {
 	if (static_cast<size_t>(allele) >= m_k) {
-		DBG_WARNIF(true, "Allele " + toStr(static_cast<size_t>(allele))
-			+ " will not be mutated because mutate rates are only defined for alleles 0 ... "
-			+ toStr(m_k - 1));
+		DBG_WARNIF(true, (boost::format("Allele %1% will not be mutated because mutate rates are only defined for alleles 0 ... %2%")
+			              % static_cast<size_t>(allele) % (m_k - 1)).str());
 		return allele;
 	}
 #ifdef BINARYALLELE
@@ -334,7 +332,7 @@ StepwiseMutator::StepwiseMutator(const floatList & rates, const lociList & loci,
 	DBG_WARNIF(true, "Symetric stepwise mutation does not work well on two state alleles.");
 #endif
 	DBG_ASSERT(fcmp_ge(m_incProb, 0.) && fcmp_le(m_incProb, 1.),
-		ValueError, "Inc probability should be between [0,1], given " + toStr(m_incProb));
+		ValueError, (boost::format("Inc probability should be between [0,1], given %1%") % m_incProb).str());
 
 	if (m_maxAllele == 0)
 		m_maxAllele = ModuleMaxAllele;
