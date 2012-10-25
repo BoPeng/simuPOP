@@ -2138,7 +2138,7 @@ class PhylipExporter:
         else:
             self._exportInterleaved(pop, filename, subPops, infoFields, gui)
 
-    def _exportSequential(pop, filename, subPops, infoFields, gui):
+    def _exportSequential(self, pop, filename, subPops, infoFields, gui):
         # count the number of sequences
         ploidy = pop.ploidy()
         nLoci = pop.totNumLoci()
@@ -2212,7 +2212,7 @@ class PhylipExporter:
                     prog.update(count)
             prog.done()
 
-    def _exportInterleaved(pop, filename, subPops, infoFields, gui):
+    def _exportInterleaved(self, pop, filename, subPops, infoFields, gui):
         # count the number of sequences
         ploidy = pop.ploidy()
         nLoci = pop.totNumLoci()
@@ -2275,8 +2275,10 @@ class PhylipExporter:
                                         raise ValueError('Allele %d does not have a name. Please specify a name for each allele using parameter alleleName.' % x)
                         # output sequence
                         out.write(seq + '\n')
-                    count += len(seq)
-                    prog.update(count)
+                    count += 1
+                    prog.update(count * len(seq))
+            #
+            count *= len(seq)
             # other blocks
             #
             if nLoci > 90:
@@ -2314,6 +2316,10 @@ class PhylipExporter:
 class PhylipImporter:
     def __init__(self, alleleNames, ploidy=1):
         self.alleleNames = alleleNames
+        self.nameMap = {}
+        for idx, name in enumerate(alleleNames):
+            self.nameMap[name] = idx
+        #
         self.ploidy = ploidy
 
     def importFrom(self, filename):
@@ -2323,47 +2329,121 @@ class PhylipImporter:
                 [nSeq, nLoci] = map(int, input.readline().split())
             except ValueError:
                 raise ValueError("The first line does not have 2 numbers for number of sequence and loci. Are you sure this is a Phylip file?")
-            # now, ignore nl lines, if loci is empty try to see if we have info here
-            # following lines with loci name.
-            lociNames = []
-            for al in range(nl):
-                lociNames.append(input.readline().strip())
-            #
-            # get all the genotypes
-            subPopIndex = []
-            genotypes = []
-            for line in input.readlines():
-                try:
-                    items = line.split()
-                    if len(items) != nl + 1:
-                        raise ValueError('Genotype line (%s) has incorrect number of items' % line)
-                    subPopIndex.append(int(items[0]))
-                    # 
-                    # split genotype into pieces
-                    geno = [x.strip() for x in items[1:]]
-                    # get alleles (adjusted with self.adjust)
-                    alleles = [(int(x[:nd]) + self.adjust, int(x[nd:]) + self.adjust) if x != '0' else (self.adjust, self.adjust) for x in geno]
-                    # append alleles in simuPOP order
-                    genotypes.extend([x[0] for x in alleles])
-                    genotypes.extend([x[1] for x in alleles])
-                    if len(geno) != nl:
-                        raise ValueError('Incorrect number of genotype (%d expected)' % len(loci_names))
-                except Exception as e:
-                    raise ValueError('Invalid input genotype line (%s). The file must not be in FSTAT format. %s' % (line, e))
-                    
-        # subpop size?
-        # count number of subpopulations
-        subPopSize = [0] * (max(subPopIndex) + 1)
-        for idx in subPopIndex:
-            subPopSize[idx] += 1
-        if len([x for x in subPopSize if x != 0]) != np:
-            raise ValueError("Number of subpop does not match")
-        # we have all the information, create a population
-        pop = Population(size=[x for x in subPopSize if x != 0],
-            subPopNames=[str(idx) for idx,x in enumerate(subPopSize) if x != 0],
-            loci=len(lociNames), lociNames=lociNames)
-        # set genotype
-        pop.setGenotype(genotypes)
+            if nSeq // self.ploidy * self.ploidy != nSeq:
+                raise ValueError('Inconsistent number of sequences %d for ploidy %d' % (nSeq, self.ploidy))
+            # determine the style of the input file, first read nSeq lines
+            for i in range(nSeq):
+                input.readline()
+            # if there is next line?
+            try:
+                line = input.readline()
+                if line.rstrip() == '':
+                    style = 'interleaved'
+                else:
+                    style = 'sequential'
+            except:
+                # no next line
+                style = 'sequential'
+        #
+        # create a population
+        pop = Population(size=nSeq // self.ploidy, ploidy=self.ploidy, loci=nLoci, alleleNames=self.alleleNames)
+        if style == 'sequential':
+            with open(filename, 'r') as input:
+                # skip the first line
+                input.readline()
+                # for each sequence
+                idx = 0
+                p = 0
+                for seq in range(nSeq):
+                    # first line, start from column 11, remove space
+                    alleles = input.readline()[10:].rstrip().replace(' ', '')
+                    while len(alleles) < nLoci:
+                        alleles += input.readline().rstrip().replace(' ', '')
+                    # ok?
+                    if len(alleles) != nLoci:
+                        raise ValueError('Could not read %d symbols for sequence %d. %s (length %d) obtained' % (nLoci, seq, alleles, len(alleles)))
+                    # translate to numbers
+                    try:
+                        geno = [self.nameMap[x] for x in alleles]
+                    except KeyError:
+                        for x in alleles:
+                            try:
+                                self.nameMap[x]
+                            except KeyError:
+                                raise ValueError('Could not locate allele %s in provided allele names.' % x)
+                    # set genotype
+                    pop.individual(idx).setGenotype(geno, p)
+                    if p + 1 < self.ploidy:
+                        p += 1
+                    else:
+                        p = 0
+                        idx += 1
+        else:
+            # interleaved
+            with open(filename, 'r') as input:
+                # skip the first line
+                input.readline()
+                # for each sequence
+                nAlleles = 0
+                idx = 0
+                p = 0
+                for seq in range(nSeq):
+                    # first line, start from column 11, remove space
+                    alleles = input.readline()[10:].rstrip().replace(' ', '')
+                    if nAlleles != 0 and nAlleles != len(alleles):
+                        raise ValueError('Inconsistent number of alleles between sequences are found. (previous: %d, current: %d)' % (nAlleles, len(alleles)))
+                    nAlleles = len(alleles)
+                    # translate to numbers
+                    try:
+                        geno = [self.nameMap[x] for x in alleles]
+                    except KeyError:
+                        for x in alleles:
+                            try:
+                                self.nameMap[x]
+                            except KeyError:
+                                raise ValueError('Could not locate allele %s in provided allele names.' % x)
+                    # set genotype, genotype will be repeated, but does not re
+                    pop.individual(idx).genotype(p)[:nAlleles] = geno
+                    if p + 1 < self.ploidy:
+                        p += 1
+                    else:
+                        p = 0
+                        idx += 1
+                # other lines
+                while nAlleles < nLoci:
+                    #
+                    line = input.readline().strip()
+                    if line != '':
+                        raise ValueError('An empty line between blocks is expected')
+                    blockAlleles = 0
+                    idx = 0
+                    p = 0
+                    for seq in range(nSeq):
+                        alleles = input.readline().rstrip().replace(' ', '')
+                        if blockAlleles != 0 and blockAlleles != len(alleles):
+                            raise ValueError('Inconsistent number of alleles between sequences are found. (previous: %d, current: %d)' % (blockAlleles, len(alleles)))
+                        blockAlleles = len(alleles)
+                        # translate to numbers
+                        try:
+                            geno = [self.nameMap[x] for x in alleles]
+                        except KeyError:
+                            for x in alleles:
+                                try:
+                                    self.nameMap[x]
+                                except KeyError:
+                                    raise ValueError('Could not locate allele %s in provided allele names.' % x)
+                        # set genotype, genotype will be repeated, but does not re
+                        pop.individual(idx).genotype(p)[nAlleles : (nAlleles + blockAlleles)] = geno
+                        if p + 1 < self.ploidy:
+                            p += 1
+                        else:
+                            p = 0
+                            idx += 1
+                    # total number of alleles read
+                    nAlleles += blockAlleles
+                # finally
+                if nAlleles != nLoci:
+                    raise ValueError('Inconsistent number of alleles are read. Expected %d, read %d.' % (nLoci, nAlleles))
         return pop
 
 
