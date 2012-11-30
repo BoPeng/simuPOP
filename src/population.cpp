@@ -2379,7 +2379,7 @@ Population & Population::extractIndividuals(const uintList & indexList,
 		markIndividuals(vspID(), false);
 		for (size_t i = 0; i < indexes.size(); ++i) {
 			DBG_FAILIF(indexes[i] >= m_popSize, IndexError,
-				(boost::format("individual index %1% out of range of 0 ~ %1%.") % indexes[i] % m_popSize).str());
+				(boost::format("individual index %1% out of range of 0 ~ %2%.") % indexes[i] % m_popSize).str());
 			m_inds[indexes[i]].setMarked(true);
 		}
 		return extractMarkedIndividuals();
