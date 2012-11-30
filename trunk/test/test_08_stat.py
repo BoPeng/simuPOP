@@ -700,7 +700,7 @@ class TestStat(unittest.TestCase):
 
     def testEffectiveSize(self):
         '''Testing the effective population size estimated from genotype data'''
-        getRNG().set(seed=1235)
+        setOptions(seed=1235)
         pop = Population(size=[500,100,1000], loci = 4)
         pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
             [0, 50], [50, 80], [80, 100],
@@ -770,19 +770,20 @@ class TestStat(unittest.TestCase):
         #turnOnDebug('DBG_STATOR')
         stat(pop, effectiveSize=[0,1], vars=['Ne_waples89', 'Ne_waples89_sp', 'Ne_tempoFS', 'Ne_tempoFS_sp'])
         self.assertAlmostEqual(self.Waples89(S0, S1, t, P0, Pt), pop.dvars().Ne_waples89)
-        for i in range(3):
-            self.assertAlmostEqual(self.Waples89(S00, S10, t, P00, Pt0)[i], pop.dvars(0).Ne_waples89[i])
-            self.assertAlmostEqual(self.Waples89(S01, S11, t, P01, Pt1)[i], pop.dvars(1).Ne_waples89[i])
-            self.assertAlmostEqual(self.Waples89(S02, S12, t, P02, Pt2)[i], pop.dvars(2).Ne_waples89[i])
-        #
-        self.assertAlmostEqual(pop.dvars().Ne_tempoFS[0], 3026, 0)
-        self.assertAlmostEqual(pop.dvars().Ne_tempoFS[1], 1494, 0)
-        self.assertAlmostEqual(pop.dvars(0).Ne_tempoFS[0], 1620, 0)
-        self.assertAlmostEqual(pop.dvars(0).Ne_tempoFS[1], 543, 0)
-        self.assertAlmostEqual(pop.dvars(1).Ne_tempoFS[0], 94, 0)
-        self.assertAlmostEqual(pop.dvars(1).Ne_tempoFS[1], 28, 0)
-        self.assertAlmostEqual(pop.dvars(2).Ne_tempoFS[0], 2276, 0)
-        self.assertAlmostEqual(pop.dvars(2).Ne_tempoFS[1], 689, 0)
+        if moduleInfo()['threads'] == 1:
+            for i in range(3):
+                self.assertAlmostEqual(self.Waples89(S00, S10, t, P00, Pt0)[i], pop.dvars(0).Ne_waples89[i])
+                self.assertAlmostEqual(self.Waples89(S01, S11, t, P01, Pt1)[i], pop.dvars(1).Ne_waples89[i])
+                self.assertAlmostEqual(self.Waples89(S02, S12, t, P02, Pt2)[i], pop.dvars(2).Ne_waples89[i])
+            #
+            self.assertAlmostEqual(pop.dvars().Ne_tempoFS[0], 3026, 0)
+            self.assertAlmostEqual(pop.dvars().Ne_tempoFS[1], 1494, 0)
+            self.assertAlmostEqual(pop.dvars(0).Ne_tempoFS[0], 1620, 0)
+            self.assertAlmostEqual(pop.dvars(0).Ne_tempoFS[1], 543, 0)
+            self.assertAlmostEqual(pop.dvars(1).Ne_tempoFS[0], 94, 0)
+            self.assertAlmostEqual(pop.dvars(1).Ne_tempoFS[1], 28, 0)
+            self.assertAlmostEqual(pop.dvars(2).Ne_tempoFS[0], 2276, 0)
+            self.assertAlmostEqual(pop.dvars(2).Ne_tempoFS[1], 689, 0)
         #
         # 
         pop.vars().clear()
@@ -810,7 +811,7 @@ class TestStat(unittest.TestCase):
     def testLDNe(self):
         # calculate LD Ne
         #turnOnDebug('DBG_STATOR')
-        getRNG().set(seed=12345)
+        setOptions(seed=12345)
         pop = Population(size=[100], loci = [1]*10)
         pop.evolve(
             preOps=[
@@ -823,7 +824,7 @@ class TestStat(unittest.TestCase):
         #turnOnDebug('DBG_STATOR')
         #turnOnDebug('DBG_DEVEL')
         stat(pop, effectiveSize=ALL_AVAIL, vars=['Ne_LD', 'Ne_LD_mono'])
-        if moduleInfo()['alleleType'] != 'binary':
+        if moduleInfo()['alleleType'] != 'binary' and moduleInfo()['threads'] == 1:
             self.assertAlmostEqual(pop.dvars().Ne_LD[0.01][0], 137.6, 1)
             # parametric estimates 
             #self.assertAlmostEqual(pop.dvars().Ne_LD[1], 74.8, 1)
@@ -860,7 +861,7 @@ class TestStat(unittest.TestCase):
         #turnOnDebug('DBG_WARNING')
         stat(pop, effectiveSize=range(10), vars=['Ne_LD', 'Ne_LD_mono'])
         #
-        if moduleInfo()['alleleType'] != 'binary':
+        if moduleInfo()['alleleType'] != 'binary' and moduleInfo()['threads'] == 1:
             self.assertAlmostEqual(pop.dvars().Ne_LD[0.05][0], 495.3, 1)
             self.assertAlmostEqual(pop.dvars().Ne_LD[0.05][1], 377.9, 0)
             self.assertAlmostEqual(pop.dvars().Ne_LD[0.05][2], 685.7, 0)
