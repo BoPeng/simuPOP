@@ -933,6 +933,7 @@ class TestUtils(unittest.TestCase):
 
     def testExportPED(self):
         '''Testing export population in PED format'''
+        IdTagger().reset(1)
         pop = Population(size=[4, 5], loci=[2, 4], ploidy=2, 
             lociNames=['a', 'b', 'c', 'd', 'e', 'f'])
         initGenotype(pop, haplotypes=[0,1])
