@@ -473,7 +473,8 @@ void setOptions(const int numThreads, const char * name, unsigned long seed)
 	}
 #  if THREADPRIVATE_SUPPORT == 0
 	g_RNGs.resize(g_numThreads);
-	seed = g_RNGs[0] == NULL ? RNG::generateRandomSeed() : g_RNGs[0]->seed();
+	if (seed == 0)
+		seed = g_RNGs[0] == NULL ? RNG::generateRandomSeed() : g_RNGs[0]->seed();
 	for (unsigned long i = 0; i < g_RNGs.size(); i++) {
 		if (g_RNGs[i] == NULL) {
 			g_RNGs[i] = new RNG(name, seed + i);
@@ -482,7 +483,8 @@ void setOptions(const int numThreads, const char * name, unsigned long seed)
 		}
 	}
 #  else
-	seed = g_RNG == NULL ? RNG::generateRandomSeed() : g_RNG->seed();
+	if (seed == 0)
+		seed = g_RNG == NULL ? RNG::generateRandomSeed() : g_RNG->seed();
 #    pragma omp parallel
 	{
 		if (g_RNG == NULL) {

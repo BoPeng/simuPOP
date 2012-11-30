@@ -3932,7 +3932,7 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 		}
 		pop.activateVirtualSubPop(*it);
 
-#pragma omp parallel for if(numThreads() > 1)
+		// do not run in parallel because Pt is pushed in order
 		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
 			size_t loc = loci[idx];
 
@@ -3978,7 +3978,6 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 			for ( ; cnt != cntEnd; ++cnt)
 				cnt->second /= static_cast<double>(allAlleles);
 			Pt.push_back(alleles);
-#  pragma omp critical
 			if (m_vars.contains(Ne_temporal_base_sp_String))
 				pop.getVars().setVar((boost::format("%1%{'freq'}{%2%}") % subPopVar_String(*it, Ne_temporal_base_String, m_suffix) % loc).str(), alleles);
 #else
@@ -3987,7 +3986,6 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 				if (alleles[i] != 0)
 					d[i] = alleles[i] / static_cast<double>(allAlleles);
 			Pt.push_back(d);
-#  pragma omp critical
 			if (m_vars.contains(Ne_temporal_base_sp_String))
 				pop.getVars().setVar((boost::format("%1%{'freq'}{%2%}") % subPopVar_String(*it, Ne_temporal_base_String, m_suffix) % loc).str(), d);
 #endif
