@@ -267,15 +267,8 @@ bool InitGenotype::apply(Population & pop) const
 				}
 			} else {
 				ws.set(m_prop.begin(), m_prop.end(), sz * ploidy.size());
-#ifndef MUTANTALLELE
-#  pragma omp parallel if(numThreads() > 1)
-#endif
 				{
-#if defined(_OPENMP) && !(defined(MUTANTALLELE))
-					IndIterator it = pop.indIterator(sp->subPop(), omp_get_thread_num());
-#else
 					IndIterator it = pop.indIterator(sp->subPop());
-#endif
 					for (; it.valid(); ++it)
 						for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) {
 							const vectori & haplotype = m_haplotypes[ws.draw()];
@@ -287,17 +280,11 @@ bool InitGenotype::apply(Population & pop) const
 				}
 			}
 		} else {
-			// m_freq can be empty if ....
-			WeightedSampler ws(m_freq.empty() ? vectorf(m_haplotypes.size(), 1. / m_haplotypes.size()) : m_freq);
-#ifndef MUTANTALLELE
-#  pragma omp parallel if(numThreads() > 1)
-#endif
+			// openMP is disabled here because of unknown cause of initialization error for binary module 
 			{
-#if defined(_OPENMP) && !(defined(MUTANTALLELE))
-				IndIterator it = pop.indIterator(sp->subPop(), omp_get_thread_num());
-#else
 				IndIterator it = pop.indIterator(sp->subPop());
-#endif
+				// m_freq can be empty if ....
+				WeightedSampler ws(m_freq.empty() ? vectorf(m_haplotypes.size(), 1. / m_haplotypes.size()) : m_freq);
 				for (; it.valid(); ++it)
 					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) {
 						if (m_haplotypes.empty()) {

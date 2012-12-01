@@ -21,6 +21,7 @@ BUG:
   - Fix a HWE test crash when one of the homozygote count is zero.
   - Result of homoFreq should be a dictionary. A list is returned
 	in the current version.
+  - Fix InitGenotype(haplotypes) in multi-thread mode of the binary module 
 
 version 1.0.8 - Rev 4645 (Sep 5, 2012)
 

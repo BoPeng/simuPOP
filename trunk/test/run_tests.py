@@ -66,6 +66,7 @@ if __name__ == '__main__':
             for numThreads in [1, 4]:
                 print('%s %s %s -j%d' % (sys.executable, sys.argv[0], allele, numThreads))
                 os.system('%s %s %s -j%d' % (sys.executable, sys.argv[0], allele, numThreads))
+		raw_input('Press any key to continue...')
     else:
         from simuPOP import moduleInfo
         print('\n\n===== Testing %s module (%d threads) =====\n\n' % (moduleInfo()['alleleType'],
