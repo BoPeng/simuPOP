@@ -233,26 +233,14 @@ bool InitGenotype::apply(Population & pop) const
 		pop.activateVirtualSubPop(*sp);
 		if (!m_genotype.empty()) {
 			// multi-thread write to compressed mutant is not allowed.
-#ifndef MUTANTALLELE
-#  pragma omp parallel firstprivate(idx) if(numThreads() > 1)
-#endif
 			{
-#if defined(_OPENMP) && !(defined(MUTANTALLELE))
-				size_t id = omp_get_thread_num();
-				IndIterator it = pop.indIterator(sp->subPop(), id);
-				idx = idx + id * (pop.subPopSize(sp->subPop()) / numThreads()) * (ploidy.end() - ploidy.begin()) * (loci.end() - loci.begin());
-#else
 				IndIterator it = pop.indIterator(sp->subPop());
-#endif
 				for (size_t ii = 0; it.valid(); ++it, ++ii)
 					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
 						for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++idx)
 							it->setAllele(TO_ALLELE(m_genotype[idx % sz]), *loc, static_cast<int>(*p));
 
 			}
-#if defined(_OPENMP) && !(defined(MUTANTALLELE))
-			idx = idx + pop.subPopSize(sp->subPop()) * (ploidy.end() - ploidy.begin()) * (loci.end() - loci.begin());
-#endif
 		} else if (!m_prop.empty()) {
 			WeightedSampler ws;
 			size_t sz = pop.subPopSize(*sp);
