@@ -4,7 +4,9 @@ Known Bugs:
   - BUG: simuPOP does not respond well to Ctrl-C under windows.
   - BUG: Textbox in Tkinter help dialog does not resize.
 
-version 1.0.9 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 1.1.0 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+version 1.0.9 - Rev 4720 (Dec 6, 2012)
 
 Major New Features:
   - Add parameter effectiveSize to operator Stat to calculate effective population size.
