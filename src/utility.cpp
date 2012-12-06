@@ -83,7 +83,7 @@ using std::ofstream;
 #  define PyNumber_Int(x) PyNumber_Long(x)
 #  define PyInt_FromString PyLong_FromString
 #  define PyInt_Type PyLong_Type
-#  define PyFloat_FromString(x, y)  PyFloat_FromString(x
+#  define PyFloat_FromString(x, y)  PyFloat_FromString(x)
 #  define PyString_Type PyUnicode_Type
 
 #endif
