@@ -103,7 +103,7 @@ class TestUtils(unittest.TestCase):
         old_rng = getRNG().name()
         for rg in moduleInfo()['availableRNGs']:
             getRNG().set(rg)
-        setOptions(name=old_rng)
+        setRNG(name=old_rng)
 
     def testDefaultRNG(self):
         'Testing default RNG'
@@ -208,7 +208,7 @@ class TestUtils(unittest.TestCase):
         getRNG().set(name, sd)
         seq1 = [getRNG().randBit() for x in range(100)]
         self.assertEqual(seq, seq1)
-        setOptions(name=old_rng)
+        setRNG(name=old_rng)
 
     def testWeightedSampler(self):
         'Testing weighted sampler'
