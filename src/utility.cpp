@@ -77,11 +77,13 @@ using std::ofstream;
 
 #  define PyInt_Check(x) PyLong_Check(x)
 #  define PyInt_AsLong(x) PyLong_AsLong(x)
+#  define PyInt_AS_LONG(x) PyLong_AsLong(x)
 #  define PyInt_FromLong(x) PyLong_FromLong(x)
 #  define PyInt_FromSize_t(x) PyLong_FromSize_t(x)
 #  define PyNumber_Int(x) PyNumber_Long(x)
 #  define PyInt_FromString PyLong_FromString
 #  define PyInt_Type PyLong_Type
+#  define PyFloat_FromString(x, y)  PyFloat_FromString(x
 #  define PyString_Type PyUnicode_Type
 
 #endif
