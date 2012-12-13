@@ -379,6 +379,9 @@ bool MendelianGenoTransmitter::applyDuringMating(Population & /* pop */,
 	DBG_FAILIF(mom == NULL || dad == NULL, ValueError,
 		"Mendelian offspring generator requires two valid parents");
 
+	DBG_FAILIF(offPop.ploidy() != 2, ValueError,
+		"Mendelian genotype transmitter only works for diploid individuals.");
+
 	initializeIfNeeded(*offspring);
 	// the next two functions.
 	transmitGenotype(*mom, *offspring, 0);
