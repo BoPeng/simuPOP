@@ -374,6 +374,17 @@ class TestMutator(unittest.TestCase):
             # 10000 x 2 x 0.01 = 200
             cnt += pop.dvars().alleleNum[0][1]
         self.assertEqual( abs(cnt/50. - 200) < 5, True)
+        # test low mutation rate
+        cnt = 0
+        for i in range(5000):
+            pop = Population(size=1000, loci=[1])
+            # Mutate autosome
+            snpMutate(pop, u=0.00001, loci=0)
+            stat(pop, alleleFreq=[0])
+            # 1000 x 2 x 0.00001 = 0.0200
+            cnt += pop.dvars().alleleNum[0][1]
+        self.assertGreater( cnt/5000., 0.017)
+        self.assertLess( cnt/5000., 0.023)
 
     def testMutationSexChromosomes(self):
         'Testing mutation on chromosome X'

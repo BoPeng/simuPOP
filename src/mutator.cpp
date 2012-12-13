@@ -162,7 +162,7 @@ bool BaseMutator::apply(Population & pop) const
 			size_t pos = 0;
 			if (rare) {
 				size_t step = getRNG().randGeometric(rates[i]);
-				pos = step == 0 ? Bernullitrials::npos : (step - 1);
+				pos = (step == 0 || step > max_pos) ? Bernullitrials::npos : (step - 1);
 			} else
 				pos = bt.trialFirstSucc(i);
 			size_t lastPos = 0;
