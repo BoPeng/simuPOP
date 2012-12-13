@@ -6,7 +6,7 @@ Known Bugs:
 
 version 1.1.0 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 
-version 1.0.9 - Rev 4720 (Dec 6, 2012)
+version 1.0.9a - Rev 4727 (Dec 13, 2012)
 
 Major New Features:
   - Add parameter effectiveSize to operator Stat to calculate effective population size.
@@ -23,7 +23,8 @@ BUG:
   - Fix a HWE test crash when one of the homozygote count is zero.
   - Result of homoFreq should be a dictionary. A list is returned
 	in the current version.
-  - Fix InitGenotype(haplotypes) in multi-thread mode of the binary module 
+  - Fix InitGenotype(haplotypes) in multi-thread mode of the binary module.
+  - Fix a bug in mutator that crashes with low mutation rate.
 
 version 1.0.8 - Rev 4645 (Sep 5, 2012)
 
