@@ -397,6 +397,9 @@ bool SelfingGenoTransmitter::applyDuringMating(Population & /* pop */, Populatio
 	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
 		"Selfing genotype transmitter requires at least one valid parents");
 
+	DBG_FAILIF(offPop.ploidy() != 2, ValueError,
+		"Selfing genotype transmitter only works for diploid individuals.");
+
 	// call MendelianGenoTransmitter::initialize if needed.
 	Individual * parent = mom != NULL ? mom : dad;
 
