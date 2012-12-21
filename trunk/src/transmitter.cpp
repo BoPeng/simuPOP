@@ -696,7 +696,7 @@ void Recombinator::initialize(const Individual & ind) const
 		m_recBeforeLoci.push_back(chEnd);
 		vecP.push_back(0.5);
 	}
-	//DBG_DO(DBG_TRANSMITTER, cerr	<< "Specify after Loci. With m_ratess "
+	//DBG_DO(DBG_TRANSMITTER, cerr	<< "Specify after Loci. With m_rates "
 	//	                            << vecP << " before " << m_recBeforeLoci << endl);
 
 	DBG_FAILIF(vecP.empty(), ValueError, "No non-empty chromosome.");
@@ -716,7 +716,7 @@ void Recombinator::initialize(const Individual & ind) const
 	bool uniform_rare = true;
 	double uniform_rate = vecP[0];
 	for (size_t i = 0; i < static_cast<size_t>(vecP.size() - 1); ++i) {
-		if (vecP[i] > 1e-2 || vecP[i] != uniform_rate) {
+		if (vecP[i] > 1e-2 || fcmp_ne(vecP[i], uniform_rate)) {
 			uniform_rare = false;
 			break;
 		}
@@ -726,15 +726,6 @@ void Recombinator::initialize(const Individual & ind) const
 			break;
 		}
 	}
-	if (!uniform_rare) {
-#ifdef _OPENMP
-		for (size_t i = 0; i < numThreads(); i++)
-			m_bt[i].setParameter(vecP, 0 /* obsolete m_intendedSize */);
-#else
-
-		m_bt.setParameter(vecP, 0 /* obsolete m_intendedSize */);
-#endif
-	}
 	// choose an algorithm
 	// if recombinations are dense. use the first algorithm
 	// For example 10 chromoes, regular 0.5*10=5
@@ -743,15 +734,28 @@ void Recombinator::initialize(const Individual & ind) const
 	// In addition, the second algorithm is really difficult in the
 	// handling of sex chromosomes etc.
 	//
-	// average recombination rate > 0.01
-	if ( (std::accumulate(vecP.begin(), vecP.end(), 0.) - 0.5 * ind.numChrom()) > 0.01 * vecP.size()
+	// average recombination rate > 0.01, or with sex chromosomes
+	if ( fabs(std::accumulate(vecP.begin(), vecP.end(), 0.) - 0.5 * ind.numChrom()) > 0.01 * vecP.size()
 	    || m_chromX > 0 || m_customizedBegin > 0)
 		m_algorithm = 0;
-	else if (!uniform_rare)
-		m_algorithm = 1;
-	else
+	else if (uniform_rare) {
+		// uniform rare
 		// do not use a bernulli generator because recombination rate is uniform
+		if (useLociDist)
+			const_cast<vectorf&>(m_rates).push_back(vecP[0]);
 		m_algorithm = 2;
+	} else 
+		m_algorithm = 1;
+
+	if (m_algorithm != 2) {
+#ifdef _OPENMP
+		for (size_t i = 0; i < numThreads(); i++)
+			m_bt[i].setParameter(vecP, 0 /* obsolete m_intendedSize */);
+#else
+
+		m_bt.setParameter(vecP, 0 /* obsolete m_intendedSize */);
+#endif
+	}
 
 	DBG_DO(DBG_TRANSMITTER, cerr << "Algorithm " << m_algorithm << " is being used " << endl);
 }
@@ -882,7 +886,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 				convCount = -1;
 			}
 			if (gt + 1 == m_recBeforeLoci[bl]) {
-				DBG_DO(DBG_TRANSMITTER, cerr << gt << " " << m_recBeforeLoci[bl] << ", ");
+				//DBG_DO(DBG_TRANSMITTER, cerr << gt << " " << m_recBeforeLoci[bl] << ", ");
 				if (forceFirstBegin >= 0 && gt + 1 >= static_cast<size_t>(forceFirstBegin)
 				    && gt + 1 < static_cast<size_t>(forceFirstEnd)) {
 					if (curCp != 0 && m_debugOutput)
