@@ -12,7 +12,8 @@
 import random
 import unittest, os, sys
 from simuOpt import setOptions
-setOptions(quiet=True, gui=False)
+# this line also tests the use of parameter version in setOptions
+setOptions(quiet=True, gui=False, version='1.0.1b')
 new_argv = []
 for arg in sys.argv:
     if arg in ['short', 'long', 'binary', 'mutant', 'lineage']:
@@ -96,7 +97,6 @@ class TestUtils(unittest.TestCase):
         print("Please check the existence of variable tmpPop\n\n")
         simu.evolve(
             postOps=[ Pause(at=[20], popName='tmpPop') ], end=25)
-
 
     def testsetRNG(self):
         'Testing all RNG types'

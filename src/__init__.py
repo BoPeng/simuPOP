@@ -293,7 +293,7 @@ __all__ = [
 
 # get options
 from simuOpt import simuOptions
-import os, sys
+import os, sys, re
 
 if simuOptions['Optimized']:
     if simuOptions['AlleleType'] == 'short':
@@ -324,8 +324,8 @@ else:
 
 
 if simuOptions['Version'] is not None:
-    expMajor, expMinor, expRelease = [int(x) for x in simuOptions['Version'].rstrip('svn').split('.')]
-    myMajor, myMinor, myRelease = [int(x) for x in moduleInfo()['version'].rstrip('svn').split('.')]
+    expMajor, expMinor, expRelease = [int(x) for x in re.match(r'^(\d+)\.(\d+)\.(\d+)', simuOptions['Version']).groups()]
+    myMajor, myMinor, myRelease = [int(x) for x in re.match(r'^(\d+)\.(\d+)\.(\d+)', moduleInfo()['version']).groups()]
     if (expMajor > myMajor) or (expMajor == myMajor and expMinor > myMinor) or \
         (expMajor == myMajor and expMinor == myMinor and expRelease > myRelease):
         raise ImportError('simuPOP version %s is installed but version >= %s is required. ' % \
