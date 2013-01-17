@@ -85,7 +85,7 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 
 			bool ordered = true;
 			for (size_t j = begin + 1; j < end; ++j) {
-				if (fcmp_le(m_lociPos[j], m_lociPos[j - 1])) {
+				if (m_lociPos[j] <= m_lociPos[j - 1]) {
 					ordered = false;
 					break;
 				}
@@ -109,7 +109,7 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 				m_lociPos[begin + i] = lociPos[rank[i]];
 			// check again for loci duplication etc
 			for (size_t j = begin + 1; j < end; ++j) {
-				DBG_FAILIF(fcmp_le(m_lociPos[j], m_lociPos[j - 1]), ValueError,
+				DBG_FAILIF(m_lociPos[j] <= m_lociPos[j - 1], ValueError,
 					"Loci on the same chromosome should have different positions.");
 			}
 			// lociNames?

@@ -125,6 +125,11 @@ class TestPopulation(unittest.TestCase):
         pop.useAncestralGen(0)
         self.assertEqual(pop.subPopSize((1,0), ancGen=2), pop.dvars().numOfMales)
 
+    def testLociPos(self):
+        'Testing lociPos parameter of Population::Population'
+        # test for a bug that condier the following two numbers are the same.
+        Population(loci=2, lociPos=[29.114998502, 29.114998525])
+
     def testSubPopName(self):
         'Testing Population::setSubPopName(name, subPop), subPopByName(subPop)'
         pop = self.getPop(size=[80, 20, 30, 50], ancGen=5)
