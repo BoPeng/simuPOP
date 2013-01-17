@@ -8,6 +8,7 @@ version 1.1.0 - Not released, available at https://simupop.svn.sourceforge.net/s
 
 BUG:
   - Fix setOption(version) for minor simuPOP releases with version string ending with a, b, etc.
+  - Fix lociPos for positions that are very close to each other.
 
 version 1.0.9b - Rev 4727 (Dec 13, 2012)
 
