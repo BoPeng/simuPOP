@@ -934,12 +934,12 @@ private:
 
 
 	// calculate moment based estimate of Ne based on Waples 89
-	void Waples89(size_t S0, size_t St, size_t t,
+	void Waples89(size_t N, size_t S0, size_t St, size_t t,
 		const ALLELECNTLIST & P0,
 		const ALLELECNTLIST & Pt, vectorf & res) const;
 
 	// calculate moment based estimate of Ne based on Jorde & Ryman's (2007)
-	void TempoFS(size_t S0, size_t St, size_t t,
+	void TempoFS(size_t N, size_t S0, size_t St, size_t t,
 		const ALLELECNTLIST & P0,
 		const ALLELECNTLIST & Pt, vectorf & res) const;
 
@@ -1437,32 +1437,35 @@ public:
 	 *  \li \c Ne_temporal_base_sp Set baseline information for each (virtual)
 	 *       subpopulation specified.
 	 *  \li \c Ne_tempoFS Effective population size, 2.5% and 97.5%
-	 *       confidence interval as a list of size three, estimated using a
+	 *       confidence interval for sampling plan 1 (first 3 elements), and
+	 *       plan 2 (last 3 elements) as a list of size 6, estimated using a
 	 *       temporal method as described in Jorde & Ryman (2007), and as
 	 *       implemented by software tempoFS (http://www.zoologi.su.se/~ryman/).
 	 *       This variable is set to census population size no baseline has
 	 *       been set, and to the temporal effective size between the present
-	 *       and the baseline generation otherwise. This method does not make
-	 *       use of more than two samples, and assumes unknown census population
-	 *       size (sampling plan 2).
+	 *       and the baseline generation otherwise. This method uses population
+	 *       size or sum of subpopulation sizes of specified (virtual) 
+	 *       subpopulations as census population size for the calculation
+	 *       based on plan 1.
 	 *  \li \c Ne_tempoFS_sp Estimate effective size of each (virtual)
-	 *       subpopulation using method Jorde & Ryman 2007.
+	 *       subpopulation using method Jorde & Ryman 2007. The census population
+	 *       sizes for sampling plan 1 are the sizes for each subpopulation that
+	 *       contain the specified (virtual) subpopulations.
 	 *  \li \c Ne_waples89 Effective population size, 2.5% and 97.5%
-	 *       confidence interval as a list of size three, estimated using
+	 *       confidence interval for sampling plan 1 (first 3 elements), and
+	 *       plan 2 (last 3 elements) as a list of size 6, estimated using a
 	 *       a temporal method as described in Waples 1989, Genetics. Because
 	 *       this is a temporal method, Ne_waples89 estimates effective size
 	 *       between the present and the baseline generation set by variable
 	 *       \c Ne_temporal_base. Census population size will be returned
-	 *       if no baseline has been set. Because this implementation uses
-	 *       census population size as \e s_0 and \e s_t, it is recommended that
-	 *       you apply this statistics to a random sample that retains population
-	 *       variables from the population from which the sample is drawn, or
-	 *       to a virtual subpopulation (e.g. using a \c rangeSplitter), to
-	 *       estimate \e Ne from samples. simuPOP assumes the samples are from
-	 *       a population with unknown size and only returns Ne under sampling
-	 *       plan 2.
+	 *       if no baseline has been set. This method uses population
+	 *       size or sum of subpopulation sizes of specified (virtual) 
+	 *       subpopulations as census population size for the calculation
+	 *       based on plan 1.
 	 *  \li \c Ne_waples89_sp Estimate effective size for each (virtual)
-	 *       subpopulation using method Waples 89.
+	 *       subpopulation using method Waples 89. The census population sizes
+	 *       are the sizes for each subpopulation that contain the specified
+	 *       (virtual) subpopulation.
 	 *  \li \c Ne_LD Lists of length three for effective population size, 2.5%
 	 *       and 97.% confidence interval for cutoff allele frequency 0., 0.01,
 	 *       0.02 and 0.05 (as dictionary keys), using a parametric method,

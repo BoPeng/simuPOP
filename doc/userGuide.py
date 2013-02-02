@@ -3630,7 +3630,7 @@ pop.evolve(
             vars=['Ne_waples89', 'Ne_tempoFS'], step=20),
         sim.PyEval(r'"Waples Ne: %.1f (%.1f - %.1f), TempoFS: '
             r'%.1f (%.1f - %.1f), at generation %d\n" % '
-            'tuple(Ne_waples89 + Ne_tempoFS + [gen])', step=20)
+            'tuple(Ne_waples89[:3] + Ne_tempoFS[:3] + [gen])', step=20)
     ],
     matingScheme=sim.RandomMating(),
     gen = 101
@@ -3662,7 +3662,7 @@ pop.evolve(
             suffix='_i', vars=['Ne_temporal_base', 'Ne_waples89']),
         sim.PyEval(r'"Waples Ne (till %d): %.1f (%.1f - %.1f), '
             r'(interval) %.1f (%.1f - %.1f)\n" % '
-            'tuple([gen] + Ne_waples89 + Ne_waples89_i)',
+            'tuple([gen] + Ne_waples89[:3] + Ne_waples89_i[:3])',
             step=20)
     ],
     matingScheme=sim.RandomMating(),

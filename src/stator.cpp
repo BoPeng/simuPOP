@@ -3472,7 +3472,7 @@ string statEffectiveSize::describe(bool /* format */) const
 }
 
 
-void statEffectiveSize::Waples89(size_t S0, size_t St, size_t t,
+void statEffectiveSize::Waples89(size_t N, size_t S0, size_t St, size_t t,
                                  const ALLELECNTLIST & P0,
                                  const ALLELECNTLIST & Pt,
                                  vectorf & res) const
@@ -3481,7 +3481,7 @@ void statEffectiveSize::Waples89(size_t S0, size_t St, size_t t,
 	DBG_DO(DBG_STATOR, cerr << "P0=" << P0 << endl);
 	DBG_DO(DBG_STATOR, cerr << "Pt=" << Pt << endl);
 
-	res.resize(3);
+	res.resize(6);
 	size_t K_all = 0;
 	double F_all = 0.;
 
@@ -3524,33 +3524,41 @@ void statEffectiveSize::Waples89(size_t S0, size_t St, size_t t,
 		F_all += Fk * K;
 		K_all += K;
 	}
-	// plan 2, formula 11 (or plan 1 assuming large N)
 	F_all /= K_all;
 	// estimate of Ne
-	res[0] = t / (2 * (F_all - 0.5 / S0 - 0.5 / St));
+	// plan 1, formula 12
+	res[0] = t / (2 * (F_all - 0.5 / S0 - 0.5 / St + 1. / N));
+	// plan 2, formula 11 
+	res[3] = t / (2 * (F_all - 0.5 / S0 - 0.5 / St));
+	//
+	// confidence intervals for two estimates are the same
 	// lower
 	size_t n = K_all - P0.size();  // total number of independent alleles
 	try {
 		double F_lower = n * F_all / gsl_cdf_chisq_Pinv(0.025, n);
 		res[1] = t / (2 * (F_lower - 0.5 / S0 - 0.5 / St));
+		res[4] = res[1];
 	} catch (SystemError) {
 		DBG_WARNIF(true, (boost::format("2.5% CI for waples 89 is set to inf at df=%1%") % n).str());
 		res[1] = -9999;
+		res[4] = -9999;
 	}
 	try {
 		double F_higher = n * F_all / gsl_cdf_chisq_Pinv(0.975, n);
 		res[2] = t / (2 * (F_higher - 0.5 / S0 - 0.5 / St));
+		res[5] = res[2];
 	} catch (SystemError) {
 		DBG_WARNIF(true, (boost::format("97.5% CI for waples 89 is set to inf at df=%1%") % n).str());
 		res[2] = -9999;
+		res[5] = -9999;
 	}
-	for (size_t i = 0; i < 3; ++i)
+	for (size_t i = 0; i < 6; ++i)
 		if (res[i] < 0)
 			res[i] = std::numeric_limits<float>::infinity();
 }
 
 
-void statEffectiveSize::TempoFS(size_t S0, size_t St, size_t t,
+void statEffectiveSize::TempoFS(size_t N, size_t S0, size_t St, size_t t,
                                 const ALLELECNTLIST & P0,
                                 const ALLELECNTLIST & Pt,
                                 vectorf & res) const
@@ -3605,42 +3613,54 @@ void statEffectiveSize::TempoFS(size_t S0, size_t St, size_t t,
 	double sum_numerator = accumulate(numerator.begin(), numerator.end(), 0.);
 	double sum_denominator = accumulate(denominator.begin(), denominator.end(), 0.);
 	double Fs = sum_numerator / sum_denominator;
-	double Fsprim = (Fs * (1.0 - 1.0 / (4.0 * n_harmonic)) - 1.0 / n_harmonic) /
+	double Fsprim[2] = {0., 0.};
+	Fsprim[0] = (Fs * (1.0 - 1.0 / ((4.0 * n_harmonic)) + 1.0 / (4.0 * N)) - 1.0 / n_harmonic + 1.0 / N) /
 	                ((1.0 + Fs / 4.0) * (1 - 1.0 / (2.0 * St)));
-	double Ne = Fsprim < 0.000000001 ? -1 : 0.5 * t / Fsprim;
+	Fsprim[1] = (Fs * (1.0 - 1.0 / (4.0 * n_harmonic)) - 1.0 / n_harmonic) /
+	                ((1.0 + Fs / 4.0) * (1 - 1.0 / (2.0 * St)));
+	double Ne[2] = {0., 0.};
+	for (size_t plan = 0; plan < 2; ++plan)
+		Ne[plan] = Fsprim[plan] < 0.000000001 ? -1 : 0.5 * t / Fsprim[plan];
 
-	DBG_DO(DBG_STATOR, cerr << "Fs=" << Fs << " Fs'=" << Fsprim << " Ne=" << Ne << endl);
+	DBG_DO(DBG_STATOR, cerr << "Fs=" << Fs << " Fs1'=" << Fsprim[0] << " Ne1=" << Ne[0] 
+		<< " Fs2'=" << Fsprim[1] << " Ne2=" << Ne[1] << endl);
 
 	/* Jackknive over loci; that is, calculate a new estimate of Fs based on all
 	   alleles, except for one locus, and repeat by omitting a different locus
 	   each time.
 	 */
-	double JackFs = 0;
-	double JackFsprim = 0;
-	double JackFsSE = 0;
-	double JackFsprimSE = 0.0;
+	double JackFs[2] = {0., 0.};
+	double JackFsprim[2] = {0., 0.};
+	double JackFsSE[2] = {0., 0.};
+	double JackFsprimSE[2] = {0., 0.};
 	size_t nLoci = P0.size();
-	for (size_t j = 0; j < nLoci; ++j) {
-		/* Calculate average Fs over all loci, eliminating the j'th locus each time  */
-		double temp = (sum_numerator - numerator[j]) / (sum_denominator - denominator[j]);
-		JackFs += temp;
-		JackFsSE += temp * temp;
-		temp = (temp * (1.0 - 1.0 / (4.0 * n_harmonic)) - 1.0 / n_harmonic) /
-		       ((1.0 + temp / 4.0) * (1 - 1.0 / (2.0 * St)));
-		JackFsprim += temp;
-		JackFsprimSE += temp * temp;
-	}
+	for (size_t plan = 0; plan < 2; ++plan) {
+		for (size_t j = 0; j < nLoci; ++j) {
+			/* Calculate average Fs over all loci, eliminating the j'th locus each time  */
+			double temp = (sum_numerator - numerator[j]) / (sum_denominator - denominator[j]);
+			JackFs[plan] += temp;
+			JackFsSE[plan] += temp * temp;
+			if (plan == 0)  // plan 1
+				temp = (temp * (1.0 - 1.0 / (4.0 * n_harmonic) + 1.0/(4.0*N)) - 1.0 / n_harmonic + 1.0/N) /
+				   ((1.0 + temp / 4.0) * (1 - 1.0 / (2.0 * St)));
+			else
+				temp = (temp * (1.0 - 1.0 / (4.0 * n_harmonic)) - 1.0 / n_harmonic) /
+				   ((1.0 + temp / 4.0) * (1 - 1.0 / (2.0 * St)));
+			JackFsprim[plan] += temp;
+			JackFsprimSE[plan] += temp * temp;
+		}
 
-	JackFsSE -= (JackFs * JackFs) / nLoci;
-	JackFsSE = sqrt(JackFsSE * ((nLoci - 1.0) / nLoci));
-	JackFs /= nLoci;
-	JackFsprimSE -= (JackFsprim * JackFsprim) / nLoci;
-	JackFsprimSE = sqrt(JackFsprimSE * ((nLoci - 1.0) / nLoci));
-	JackFsprim /= nLoci;
-	// return results
-	res[0] = Ne;
-	res[1] = 0.5 * t / (JackFsprim + 1.96 * JackFsprimSE);
-	res[2] = 0.5 * t / (JackFsprim - 1.96 * JackFsprimSE);
+		JackFsSE[plan] -= (JackFs[plan] * JackFs[plan]) / nLoci;
+		JackFsSE[plan] = sqrt(JackFsSE[plan] * ((nLoci - 1.0) / nLoci));
+		JackFs[plan] /= nLoci;
+		JackFsprimSE[plan] -= (JackFsprim[plan] * JackFsprim[plan]) / nLoci;
+		JackFsprimSE[plan] = sqrt(JackFsprimSE[plan] * ((nLoci - 1.0) / nLoci));
+		JackFsprim[plan] /= nLoci;
+		// return results
+		res[0 + 3 * plan] = Ne[plan];
+		res[1 + 3 * plan] = 0.5 * t / (JackFsprim[plan] + 1.96 * JackFsprimSE[plan]);
+		res[2 + 3 * plan] = 0.5 * t / (JackFsprim[plan] - 1.96 * JackFsprimSE[plan]);
+	}
 	for (size_t i = 0; i < 3; ++i)
 		if (res[i] < 0)
 			res[i] = std::numeric_limits<float>::infinity();
@@ -3865,6 +3885,7 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 	ALLELECNTLIST alleleCnt(loci.size());
 	vectoru allAllelesCnt(loci.size(), 0);
 	size_t total_size = 0;
+	size_t N_all = 0;
 	// selected (virtual) subpopulatons.
 	subPopList subPops = m_subPops.expandFrom(pop);
 	subPopList::const_iterator it = subPops.begin();
@@ -3875,7 +3896,9 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 	for (; it != itEnd; ++it) {
 		size_t S0 = 0;
 		size_t St = pop.subPopSize(*it);
+		size_t Nt = pop.subPopSize(it->subPop());
 		total_size += St;
+		N_all += Nt;
 		ALLELECNTLIST P0;
 		ALLELECNTLIST Pt;
 		if (m_vars.contains(Ne_waples89_sp_String) || m_vars.contains(Ne_tempoFS_sp_String)) {
@@ -3992,16 +4015,16 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 		}
 		if (m_vars.contains(Ne_waples89_sp_String)) {
 			// calculate ne
-			vectorf res(3, St);
+			vectorf res(6, St);
 			if (gen_since_last_call > 0)
-				Waples89(S0, St, gen_since_last_call, P0, Pt, res);
+				Waples89(Nt, S0, St, gen_since_last_call, P0, Pt, res);
 			pop.getVars().setVar(subPopVar_String(*it, Ne_waples89_String, m_suffix), res);
 		}
 		if (m_vars.contains(Ne_tempoFS_sp_String)) {
 			// calculate ne
-			vectorf res(3, St);
+			vectorf res(6, St);
 			if (gen_since_last_call > 0)
-				TempoFS(S0, St, gen_since_last_call, P0, Pt, res);
+				TempoFS(Nt, S0, St, gen_since_last_call, P0, Pt, res);
 			pop.getVars().setVar(subPopVar_String(*it, Ne_tempoFS_String, m_suffix), res);
 		}
 		pop.deactivateVirtualSubPop(it->subPop());
@@ -4061,15 +4084,15 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 		}
 		// calculate ne
 		if (m_vars.contains(Ne_waples89_String)) {
-			vectorf res(3, total_size);
+			vectorf res(6, total_size);
 			if (gen_since_last_call > 0)
-				Waples89(S0_all, total_size, gen_since_last_call, P0_all, alleleCnt, res);
+				Waples89(N_all, S0_all, total_size, gen_since_last_call, P0_all, alleleCnt, res);
 			pop.getVars().setVar(Ne_waples89_String + m_suffix, res);
 		}
 		if (m_vars.contains(Ne_tempoFS_String)) {
-			vectorf res(3, total_size);
+			vectorf res(6, total_size);
 			if (gen_since_last_call > 0)
-				TempoFS(S0_all, total_size, gen_since_last_call, P0_all, alleleCnt, res);
+				TempoFS(N_all, S0_all, total_size, gen_since_last_call, P0_all, alleleCnt, res);
 			pop.getVars().setVar(Ne_tempoFS_String + m_suffix, res);
 		}
 	}
