@@ -18987,7 +18987,7 @@ Effective population size is an important, yet complicated concept in population
  genetics.
  Simply put, the effective population size is determined by a mating scheme,
  namely how parents are selected and how offsprings are generated.
- In the context of forward-time simulation, if we population an offspring
+ In the context of forward-time simulation, if we populate an offspring
  population from a parental population, a true effective population size
  can be calculated, under certain assumptions, as 
 \begin_inset Formula 
@@ -19005,8 +19005,8 @@ where
 \begin_inset Formula $V_{k}$
 \end_inset
 
- are the mean and variance of the number of gametes each parent that are
- transmitted to the offspring generation.
+ are the mean and variance of the number of gametes each parent  transmits
+ to the offspring generation.
  Naturally, the number of sex chromosomes transmitted will be different
  for males and females.
  This effective size is independent of genotypes and is called the demographic
@@ -19116,8 +19116,34 @@ TempoFS
 ) as the census population size at generation 0, estimated effective population
  sizes between generation 0 and 20 at generation 20, and estimates between
  0 and 40 at generation 40.
- The variables are lists of three elements: the estimated Ne, and lower
- and upper boundaries of the 95% confidence interval.
+ The variables are lists of six elements: the estimated Ne under sampling
+ plan 1, lower and upper boundaries of the 95% confidence interval, followed
+ by the estimate and confidence interval for plan 2.
+ 
+\end_layout
+
+\begin_layout Standard
+Sampling plan 1 assumes that samples are drawn with replacement at the first
+ time point so that some of the individuals sampled in the first time period
+ could have contributed genes to subsequent generations (see Nei and Tajima,
+ 1981 Genetics and other papers).
+ simuPOP uses census population (or subpopulation if the statistics are
+ calcuated for each subpopulations) size as 
+\begin_inset Formula $N$
+\end_inset
+
+ and consider the sample being a subset of the population (or subpopulation),
+ it should be applied to a virtual subpopulation (e.g.
+ a subset of individuals defined by a 
+\family typewriter
+RangeSplitter
+\family default
+) of the whole population.
+ Sample plan 2 treats the sample as a sample from an infinitely-sized population
+, and should be applied to a population (sample) that is actually extracted
+ from a larger population.
+ Results under both assumptions are calculated and provided so you should
+ choose the ones that match your sampling plan.
 \end_layout
 
 \begin_layout Standard
@@ -19249,31 +19275,12 @@ simuPOP allows you to estimate effective population size using genotypes
  It is up to you, however, to decide when to apply the operator (pre- or
  post-mating), how to draw samples, and select the right method for your
  data.
- For example,
-\end_layout
-
-\begin_layout Itemize
-Assumptions underlying temporal methods include discrete generations and
- no (or slight) selection, migration, and mutation.
- In particular, the above example uses samples (the first 500 individuals)
- with replacement so some of the individuals sampled in the first time period
- could have contributed genes to subsequent generations.
- Sampling in this example is therefore Plan I as described in Nei and Tajima
- (1981 Genetics) and other papers.
- The implementation of the statistics, however, assumes Plan 2 which is
- suitable for the cases when N is large compared to Ne so the covariance
- introduced by sampling plan 1 can be ignored.
- 
-\end_layout
-
-\begin_layout Itemize
-LDNe: Markers are selectively neutral and independent; population has discrete
- generations and is closed to immigration; sampling is random.
- 
-\end_layout
-
-\begin_layout Standard
-In addition, to keep the interface simple, simuPOP does not provide many
+ For example, the temporal methods assume discrete generations and no (or
+ slight) selection, migration, and mutation.
+ The LD method assumes that markers are selectively neutral and independent;
+ population has discrete generations and is closed to immigration; and sampling
+ is random.
+ In addition, to keep the interface simple, simuPOP does not provide many
  options as dedicated programs do (e.g.
  TempoFS).
  Please export your samples in other formats (e.g.

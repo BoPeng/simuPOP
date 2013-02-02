@@ -6,9 +6,16 @@ Known Bugs:
 
 version 1.1.0 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 
+NEW FEATURE:
+  - Implement temporal estimates of effective population size for sampling plan 1. 
+	
 BUG:
   - Fix setOption(version) for minor simuPOP releases with version string ending with a, b, etc.
   - Fix lociPos for positions that are very close to each other.
+
+REGRESSION:
+ - Results from temporal methods in Stat(effectiveSize) are now arrays of size 6 instead of 3, with
+	results for plan 1 and plan 2. The previous results are just for plan 2.
 
 version 1.0.9b - Rev 4727 (Dec 13, 2012)
 
