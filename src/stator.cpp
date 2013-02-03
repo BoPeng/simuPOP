@@ -3439,6 +3439,10 @@ statEffectiveSize::statEffectiveSize(const lociList & loci,  const subPopList & 
 		Ne_temporal_base_String, Ne_temporal_base_sp_String,
 		Ne_waples89_String,		 Ne_waples89_sp_String,
 		Ne_tempoFS_String,		 Ne_tempoFS_sp_String,
+		Ne_waples89_P1_String,	 Ne_waples89_P1_sp_String,
+		Ne_tempoFS_P1_String,	 Ne_tempoFS_P1_sp_String,
+		Ne_waples89_P2_String,	 Ne_waples89_P2_sp_String,
+		Ne_tempoFS_P2_String,	 Ne_tempoFS_P2_sp_String,
 		Ne_LD_String,			 Ne_LD_sp_String,
 		Ne_LD_mono_String,		 Ne_LD_mono_sp_String,
 		""
@@ -3458,9 +3462,13 @@ string statEffectiveSize::describe(bool /* format */) const
 			desc += "Store information of the parental population.";
 		if (m_vars.contains(Ne_demo_String) || m_vars.contains(Ne_demo_sp_String))
 			desc += "Calculate demographic effective population size.";
-		if (m_vars.contains(Ne_waples89_String) || m_vars.contains(Ne_waples89_sp_String))
+		if (m_vars.contains(Ne_waples89_String) || m_vars.contains(Ne_waples89_sp_String) ||
+			m_vars.contains(Ne_waples89_P1_String) || m_vars.contains(Ne_waples89_P1_sp_String) ||
+			m_vars.contains(Ne_waples89_P2_String) || m_vars.contains(Ne_waples89_P2_sp_String))
 			desc += "Estimate effective population size using temporal method as described in Waples 1989. ";
-		if (m_vars.contains(Ne_tempoFS_String) || m_vars.contains(Ne_tempoFS_sp_String))
+		if (m_vars.contains(Ne_tempoFS_String) || m_vars.contains(Ne_tempoFS_sp_String) ||
+			m_vars.contains(Ne_tempoFS_P1_String) || m_vars.contains(Ne_tempoFS_P1_sp_String) ||
+			m_vars.contains(Ne_tempoFS_P2_String) || m_vars.contains(Ne_tempoFS_P2_sp_String))
 			desc += "Estimate effective population size using temporal method as described in  Jorde & Ryman, 2007.";
 		if (m_vars.contains(Ne_temporal_base_String) || m_vars.contains(Ne_temporal_base_sp_String))
 			desc += "Setting temporal base.";
@@ -3475,13 +3483,14 @@ string statEffectiveSize::describe(bool /* format */) const
 void statEffectiveSize::Waples89(size_t N, size_t S0, size_t St, size_t t,
                                  const ALLELECNTLIST & P0,
                                  const ALLELECNTLIST & Pt,
-                                 vectorf & res) const
+                                 vectorf & res1, vectorf & res2) const
 {
 	DBG_DO(DBG_STATOR, cerr << "t=" << t << " S0=" << S0 << " St=" << St << endl);
 	DBG_DO(DBG_STATOR, cerr << "P0=" << P0 << endl);
 	DBG_DO(DBG_STATOR, cerr << "Pt=" << Pt << endl);
 
-	res.resize(6);
+	res1.resize(3);
+	res2.resize(3);
 	size_t K_all = 0;
 	double F_all = 0.;
 
@@ -3527,41 +3536,44 @@ void statEffectiveSize::Waples89(size_t N, size_t S0, size_t St, size_t t,
 	F_all /= K_all;
 	// estimate of Ne
 	// plan 1, formula 12
-	res[0] = t / (2 * (F_all - 0.5 / S0 - 0.5 / St + 1. / N));
+	res1[0] = t / (2 * (F_all - 0.5 / S0 - 0.5 / St + 1. / N));
 	// plan 2, formula 11 
-	res[3] = t / (2 * (F_all - 0.5 / S0 - 0.5 / St));
+	res2[0] = t / (2 * (F_all - 0.5 / S0 - 0.5 / St));
 	//
 	// confidence intervals for two estimates are the same
 	// lower
 	size_t n = K_all - P0.size();  // total number of independent alleles
 	try {
 		double F_lower = n * F_all / gsl_cdf_chisq_Pinv(0.025, n);
-		res[1] = t / (2 * (F_lower - 0.5 / S0 - 0.5 / St));
-		res[4] = res[1];
+		res1[1] = t / (2 * (F_lower - 0.5 / S0 - 0.5 / St));
+		res2[1] = res1[1];
 	} catch (SystemError) {
 		DBG_WARNIF(true, (boost::format("2.5% CI for waples 89 is set to inf at df=%1%") % n).str());
-		res[1] = -9999;
-		res[4] = -9999;
+		res1[1] = -9999;
+		res2[1] = -9999;
 	}
 	try {
 		double F_higher = n * F_all / gsl_cdf_chisq_Pinv(0.975, n);
-		res[2] = t / (2 * (F_higher - 0.5 / S0 - 0.5 / St));
-		res[5] = res[2];
+		res1[2] = t / (2 * (F_higher - 0.5 / S0 - 0.5 / St));
+		res2[2] = res1[2];
 	} catch (SystemError) {
 		DBG_WARNIF(true, (boost::format("97.5% CI for waples 89 is set to inf at df=%1%") % n).str());
-		res[2] = -9999;
-		res[5] = -9999;
+		res1[2] = -9999;
+		res2[2] = -9999;
 	}
-	for (size_t i = 0; i < 6; ++i)
-		if (res[i] < 0)
-			res[i] = std::numeric_limits<float>::infinity();
+	for (size_t i = 0; i < 3; ++i) {
+		if (res1[i] < 0)
+			res1[i] = std::numeric_limits<float>::infinity();
+		if (res2[i] < 0)
+			res2[i] = std::numeric_limits<float>::infinity();
+	}
 }
 
 
 void statEffectiveSize::TempoFS(size_t N, size_t S0, size_t St, size_t t,
                                 const ALLELECNTLIST & P0,
                                 const ALLELECNTLIST & Pt,
-                                vectorf & res) const
+                                vectorf & res1, vectorf & res2) const
 {
 	DBG_DO(DBG_STATOR, cerr << "t=" << t << " S0=" << S0 << " St=" << St << endl);
 	DBG_DO(DBG_STATOR, cerr << "P0=" << P0 << endl);
@@ -3657,13 +3669,22 @@ void statEffectiveSize::TempoFS(size_t N, size_t S0, size_t St, size_t t,
 		JackFsprimSE[plan] = sqrt(JackFsprimSE[plan] * ((nLoci - 1.0) / nLoci));
 		JackFsprim[plan] /= nLoci;
 		// return results
-		res[0 + 3 * plan] = Ne[plan];
-		res[1 + 3 * plan] = 0.5 * t / (JackFsprim[plan] + 1.96 * JackFsprimSE[plan]);
-		res[2 + 3 * plan] = 0.5 * t / (JackFsprim[plan] - 1.96 * JackFsprimSE[plan]);
+		if (plan == 0) {
+			res1[0] = Ne[plan];
+			res1[1] = 0.5 * t / (JackFsprim[plan] + 1.96 * JackFsprimSE[plan]);
+			res1[2] = 0.5 * t / (JackFsprim[plan] - 1.96 * JackFsprimSE[plan]);
+		} else {
+			res2[0] = Ne[plan];
+			res2[1] = 0.5 * t / (JackFsprim[plan] + 1.96 * JackFsprimSE[plan]);
+			res2[2] = 0.5 * t / (JackFsprim[plan] - 1.96 * JackFsprimSE[plan]);
+		}
 	}
-	for (size_t i = 0; i < 3; ++i)
-		if (res[i] < 0)
-			res[i] = std::numeric_limits<float>::infinity();
+	for (size_t i = 0; i < 3; ++i) {
+		if (res1[i] < 0)
+			res1[i] = std::numeric_limits<float>::infinity();
+		if (res2[i] < 0)
+			res2[i] = std::numeric_limits<float>::infinity();
+	}
 }
 
 
@@ -3678,7 +3699,11 @@ bool statEffectiveSize::apply(Population & pop) const
 
 	if (m_vars.contains(Ne_temporal_base_String) || m_vars.contains(Ne_temporal_base_sp_String)
 	    || m_vars.contains(Ne_waples89_String) || m_vars.contains(Ne_waples89_sp_String)
-	    || m_vars.contains(Ne_tempoFS_String) || m_vars.contains(Ne_tempoFS_sp_String))
+	    || m_vars.contains(Ne_tempoFS_String) || m_vars.contains(Ne_tempoFS_sp_String)
+	    || m_vars.contains(Ne_waples89_P1_String) || m_vars.contains(Ne_waples89_P1_sp_String)
+	    || m_vars.contains(Ne_tempoFS_P1_String) || m_vars.contains(Ne_tempoFS_P1_sp_String)
+	    || m_vars.contains(Ne_waples89_P2_String) || m_vars.contains(Ne_waples89_P2_sp_String)
+	    || m_vars.contains(Ne_tempoFS_P2_String) || m_vars.contains(Ne_tempoFS_P2_sp_String))
 		temporalEffectiveSize(pop);
 
 	if (m_vars.contains(Ne_LD_String) || m_vars.contains(Ne_LD_sp_String) ||
@@ -3901,7 +3926,10 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 		N_all += Nt;
 		ALLELECNTLIST P0;
 		ALLELECNTLIST Pt;
-		if (m_vars.contains(Ne_waples89_sp_String) || m_vars.contains(Ne_tempoFS_sp_String)) {
+		if (m_vars.contains(Ne_waples89_sp_String) || m_vars.contains(Ne_tempoFS_sp_String) ||
+			m_vars.contains(Ne_waples89_P1_sp_String) || m_vars.contains(Ne_tempoFS_P1_sp_String) ||
+			m_vars.contains(Ne_waples89_P2_sp_String) || m_vars.contains(Ne_tempoFS_P2_sp_String)
+		) {
 			// get previous allele frequency and population size, if available
 			long gen = 0;
 			bool has_base = true;
@@ -4013,19 +4041,31 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 				pop.getVars().setVar((boost::format("%1%{'freq'}{%2%}") % subPopVar_String(*it, Ne_temporal_base_String, m_suffix) % loc).str(), d);
 #endif
 		}
-		if (m_vars.contains(Ne_waples89_sp_String)) {
+		if (m_vars.contains(Ne_waples89_sp_String) || m_vars.contains(Ne_waples89_P1_sp_String) || m_vars.contains(Ne_waples89_P2_sp_String)) {
 			// calculate ne
-			vectorf res(6, St);
+			vectorf res1(3, St);
+			vectorf res2(3, St);
 			if (gen_since_last_call > 0)
-				Waples89(Nt, S0, St, gen_since_last_call, P0, Pt, res);
-			pop.getVars().setVar(subPopVar_String(*it, Ne_waples89_String, m_suffix), res);
+				Waples89(Nt, S0, St, gen_since_last_call, P0, Pt, res1, res2);
+			if (m_vars.contains(Ne_waples89_sp_String))
+				pop.getVars().setVar(subPopVar_String(*it, Ne_waples89_String, m_suffix), res2);
+			if (m_vars.contains(Ne_waples89_P1_sp_String))
+				pop.getVars().setVar(subPopVar_String(*it, Ne_waples89_P1_String, m_suffix), res1);
+			if (m_vars.contains(Ne_waples89_P2_sp_String))
+				pop.getVars().setVar(subPopVar_String(*it, Ne_waples89_P2_String, m_suffix), res2);
 		}
-		if (m_vars.contains(Ne_tempoFS_sp_String)) {
+		if (m_vars.contains(Ne_tempoFS_sp_String) || m_vars.contains(Ne_tempoFS_P1_sp_String) || m_vars.contains(Ne_tempoFS_P2_sp_String)) {
 			// calculate ne
-			vectorf res(6, St);
+			vectorf res1(3, St);
+			vectorf res2(3, St);
 			if (gen_since_last_call > 0)
-				TempoFS(Nt, S0, St, gen_since_last_call, P0, Pt, res);
-			pop.getVars().setVar(subPopVar_String(*it, Ne_tempoFS_String, m_suffix), res);
+				TempoFS(Nt, S0, St, gen_since_last_call, P0, Pt, res1, res2);
+			if (m_vars.contains(Ne_tempoFS_sp_String))
+				pop.getVars().setVar(subPopVar_String(*it, Ne_tempoFS_String, m_suffix), res2);
+			if (m_vars.contains(Ne_tempoFS_P1_sp_String))
+				pop.getVars().setVar(subPopVar_String(*it, Ne_tempoFS_P1_String, m_suffix), res1);
+			if (m_vars.contains(Ne_tempoFS_P2_sp_String))
+				pop.getVars().setVar(subPopVar_String(*it, Ne_tempoFS_P2_String, m_suffix), res2);
 		}
 		pop.deactivateVirtualSubPop(it->subPop());
 	}
@@ -4040,7 +4080,9 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 	}
 	//
 	// get previous ...
-	if (m_vars.contains(Ne_waples89_String) || m_vars.contains(Ne_tempoFS_String)) {
+	if (m_vars.contains(Ne_waples89_String) || m_vars.contains(Ne_tempoFS_String) ||
+		m_vars.contains(Ne_waples89_P1_String) || m_vars.contains(Ne_tempoFS_P1_String) ||
+		m_vars.contains(Ne_waples89_P2_String) || m_vars.contains(Ne_tempoFS_P2_String)) {
 		size_t S0_all = 0;
 		ALLELECNTLIST P0_all;
 		long gen = 0;
@@ -4083,17 +4125,29 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 			}       // t > 0
 		}
 		// calculate ne
-		if (m_vars.contains(Ne_waples89_String)) {
-			vectorf res(6, total_size);
+		if (m_vars.contains(Ne_waples89_String) || m_vars.contains(Ne_waples89_P1_String) || m_vars.contains(Ne_waples89_P2_String)) {
+			vectorf res1(3, total_size);
+			vectorf res2(3, total_size);
 			if (gen_since_last_call > 0)
-				Waples89(N_all, S0_all, total_size, gen_since_last_call, P0_all, alleleCnt, res);
-			pop.getVars().setVar(Ne_waples89_String + m_suffix, res);
+				Waples89(N_all, S0_all, total_size, gen_since_last_call, P0_all, alleleCnt, res1, res2);
+			if (m_vars.contains(Ne_waples89_String))
+				pop.getVars().setVar(Ne_waples89_String + m_suffix, res2);
+			if (m_vars.contains(Ne_waples89_P1_String))
+				pop.getVars().setVar(Ne_waples89_P1_String + m_suffix, res1);
+			if (m_vars.contains(Ne_waples89_P2_String))
+				pop.getVars().setVar(Ne_waples89_P2_String + m_suffix, res2);
 		}
-		if (m_vars.contains(Ne_tempoFS_String)) {
-			vectorf res(6, total_size);
+		if (m_vars.contains(Ne_tempoFS_String) || m_vars.contains(Ne_tempoFS_P1_String) || m_vars.contains(Ne_tempoFS_P2_String)) {
+			vectorf res1(3, total_size);
+			vectorf res2(3, total_size);
 			if (gen_since_last_call > 0)
-				TempoFS(N_all, S0_all, total_size, gen_since_last_call, P0_all, alleleCnt, res);
-			pop.getVars().setVar(Ne_tempoFS_String + m_suffix, res);
+				TempoFS(N_all, S0_all, total_size, gen_since_last_call, P0_all, alleleCnt, res1, res2);
+			if (m_vars.contains(Ne_tempoFS_String))
+				pop.getVars().setVar(Ne_tempoFS_String + m_suffix, res2);
+			if (m_vars.contains(Ne_tempoFS_P1_String))
+				pop.getVars().setVar(Ne_tempoFS_P1_String + m_suffix, res1);
+			if (m_vars.contains(Ne_tempoFS_P2_String))
+				pop.getVars().setVar(Ne_tempoFS_P2_String + m_suffix, res2);
 		}
 	}
 	if (m_vars.contains(Ne_temporal_base_String)) {

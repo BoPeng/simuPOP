@@ -19200,7 +19200,7 @@ Ne_temporal_base
 \family default
  with 
 \family typewriter
-Ne_waples89
+Ne_waples89_P1
 \family default
  whenever the Stat operator is applied.
  This effectively resets the baseline generation to the present generation
