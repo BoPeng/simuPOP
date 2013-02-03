@@ -3627,10 +3627,10 @@ pop.evolve(
     ],
     preOps=[
         sim.Stat(effectiveSize=range(50), subPops=[(0,0)],
-            vars=['Ne_waples89', 'Ne_tempoFS'], step=20),
+            vars=['Ne_waples89_P1', 'Ne_tempoFS_P1'], step=20),
         sim.PyEval(r'"Waples Ne: %.1f (%.1f - %.1f), TempoFS: '
             r'%.1f (%.1f - %.1f), at generation %d\n" % '
-            'tuple(Ne_waples89[:3] + Ne_tempoFS[:3] + [gen])', step=20)
+            'tuple(Ne_waples89_P1 + Ne_tempoFS_P1 + [gen])', step=20)
     ],
     matingScheme=sim.RandomMating(),
     gen = 101
@@ -3657,12 +3657,12 @@ pop.evolve(
     ],
     preOps=[
         sim.Stat(effectiveSize=range(50), subPops=[(0,0)], 
-            vars='Ne_waples89', step=20),
+            vars='Ne_waples89_P1', step=20),
         sim.Stat(effectiveSize=range(50), subPops=[(0,0)], step=20,
-            suffix='_i', vars=['Ne_temporal_base', 'Ne_waples89']),
+            suffix='_i', vars=['Ne_temporal_base', 'Ne_waples89_P1']),
         sim.PyEval(r'"Waples Ne (till %d): %.1f (%.1f - %.1f), '
             r'(interval) %.1f (%.1f - %.1f)\n" % '
-            'tuple([gen] + Ne_waples89[:3] + Ne_waples89_i[:3])',
+            'tuple([gen] + Ne_waples89_P1 + Ne_waples89_P1_i)',
             step=20)
     ],
     matingScheme=sim.RandomMating(),
