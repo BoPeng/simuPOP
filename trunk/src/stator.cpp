@@ -3626,7 +3626,7 @@ void statEffectiveSize::TempoFS(size_t N, size_t S0, size_t St, size_t t,
 	double sum_denominator = accumulate(denominator.begin(), denominator.end(), 0.);
 	double Fs = sum_numerator / sum_denominator;
 	double Fsprim[2] = {0., 0.};
-	Fsprim[0] = (Fs * (1.0 - 1.0 / ((4.0 * n_harmonic)) + 1.0 / (4.0 * N)) - 1.0 / n_harmonic + 1.0 / N) /
+	Fsprim[0] = (Fs * (1.0 - 1.0 / (4.0 * n_harmonic) + 1.0 / (4.0 * N)) - 1.0 / n_harmonic + 1.0 / N) /
 	                ((1.0 + Fs / 4.0) * (1 - 1.0 / (2.0 * St)));
 	Fsprim[1] = (Fs * (1.0 - 1.0 / (4.0 * n_harmonic)) - 1.0 / n_harmonic) /
 	                ((1.0 + Fs / 4.0) * (1 - 1.0 / (2.0 * St)));
@@ -3653,7 +3653,7 @@ void statEffectiveSize::TempoFS(size_t N, size_t S0, size_t St, size_t t,
 			JackFs[plan] += temp;
 			JackFsSE[plan] += temp * temp;
 			if (plan == 0)  // plan 1
-				temp = (temp * (1.0 - 1.0 / (4.0 * n_harmonic) + 1.0/(4.0*N)) - 1.0 / n_harmonic + 1.0/N) /
+				temp = (temp * (1.0 - 1.0 / (4.0 * n_harmonic) + 1.0 / (4.0 * N)) - 1.0 / n_harmonic + 1.0 / N) /
 				   ((1.0 + temp / 4.0) * (1 - 1.0 / (2.0 * St)));
 			else
 				temp = (temp * (1.0 - 1.0 / (4.0 * n_harmonic)) - 1.0 / n_harmonic) /
@@ -3668,17 +3668,15 @@ void statEffectiveSize::TempoFS(size_t N, size_t S0, size_t St, size_t t,
 		JackFsprimSE[plan] -= (JackFsprim[plan] * JackFsprim[plan]) / nLoci;
 		JackFsprimSE[plan] = sqrt(JackFsprimSE[plan] * ((nLoci - 1.0) / nLoci));
 		JackFsprim[plan] /= nLoci;
-		// return results
-		if (plan == 0) {
-			res1[0] = Ne[plan];
-			res1[1] = 0.5 * t / (JackFsprim[plan] + 1.96 * JackFsprimSE[plan]);
-			res1[2] = 0.5 * t / (JackFsprim[plan] - 1.96 * JackFsprimSE[plan]);
-		} else {
-			res2[0] = Ne[plan];
-			res2[1] = 0.5 * t / (JackFsprim[plan] + 1.96 * JackFsprimSE[plan]);
-			res2[2] = 0.5 * t / (JackFsprim[plan] - 1.96 * JackFsprimSE[plan]);
-		}
 	}
+	// return results
+	res1[0] = Ne[0];
+	res1[1] = 0.5 * t / (JackFsprim[0] + 1.96 * JackFsprimSE[0]);
+	res1[2] = 0.5 * t / (JackFsprim[0] - 1.96 * JackFsprimSE[0]);
+	//
+	res2[0] = Ne[1];
+	res2[1] = 0.5 * t / (JackFsprim[1] + 1.96 * JackFsprimSE[1]);
+	res2[2] = 0.5 * t / (JackFsprim[1] - 1.96 * JackFsprimSE[1]);
 	for (size_t i = 0; i < 3; ++i) {
 		if (res1[i] < 0)
 			res1[i] = std::numeric_limits<float>::infinity();
