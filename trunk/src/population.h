@@ -1764,7 +1764,8 @@ Population & loadPopulation(const string & file);
 #  ifndef _NO_SERIALIZATION_
 // version 0: base (reset for version 1.0)
 // version 1: with lineage information for lineage-aware modules
-BOOST_CLASS_VERSION(simuPOP::Population, 1)
+// version 2: for memory-efficient save/load
+BOOST_CLASS_VERSION(simuPOP::Population, 2)
 #  endif
 #endif
 #endif

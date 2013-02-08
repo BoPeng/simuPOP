@@ -3388,46 +3388,80 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 	size_t size = m_genotype.size();
 	ar & size;
 
-	vectoru mutLoc;
-	vectoru mutVal;
 	bool singleMut = true;
+#ifdef BINARYALLELE	
+	size_t singleMutVal = 1;
+#else
 	size_t singleMutVal = 0;
+#endif
 	size_t lastPos = 0;
+	size_t numMutants = 0;
+	size_t shift = 0;
 #ifdef MUTANTALLELE
+	numMutants = m_genotype.data().size();
+	// first round: check number of mutants and if they are all the same
 	vectorm::const_val_iterator ptr = m_genotype.begin().get_val_iterator();
 	vectorm::const_val_iterator end = m_genotype.end().get_val_iterator();
 	for (; ptr != end; ++ptr) {
-		DBG_ASSERT(ptr->second != 0, RuntimeError, "Mutant with zero value is detected");
-		mutLoc.push_back(ptr->first - lastPos);
-		lastPos = ptr->first;
-		mutVal.push_back(ptr->second);
 		if (singleMutVal == 0)
 			singleMutVal = ptr->second;
-		else if (ptr->second != singleMutVal)
+		else if (ptr->second != singleMutVal) {
 			singleMut = false;
+			break;
+		}
+	}
+	// second round, save data
+	ar & numMutants;
+	// single value?
+	ar & singleMut;
+	if (singleMut)
+		ar & singleMutVal;
+	// save genotypes
+	ptr = m_genotype.begin().get_val_iterator();
+	for (; ptr != end; ++ptr) {
+		DBG_ASSERT(ptr->second != 0, RuntimeError, "Mutant with zero value is detected");
+		shift = ptr->first - lastPos;
+		ar & shift;
+		lastPos = ptr->first;
+		if (!singleMut)
+			ar & ptr->second;
 	}
 #else
+	// round one: check number of mutatns and if they are all the same
 	ConstGenoIterator ptr = m_genotype.begin();
 	ConstGenoIterator end = m_genotype.end();
-	size_t idx = 0;
-	for (; ptr != end; ++ptr, ++idx) {
+	for (; ptr != end; ++ptr) {
 		if (*ptr != 0) {
-			mutLoc.push_back(idx - lastPos);
-			lastPos = idx;
-			mutVal.push_back(*ptr);
+			++ numMutants;
+#ifndef BINARYALLELE
 			if (singleMutVal == 0)
 				singleMutVal = *ptr;
 			else if (static_cast<size_t>(*ptr) != singleMutVal)
 				singleMut = false;
+#endif
 		}
 	}
-#endif
-	ar & mutLoc;
+	// round two: save stuff
+	ar & numMutants;
+	// single value?
 	ar & singleMut;
 	if (singleMut)
 		ar & singleMutVal;
-	else
-		ar & mutVal;
+	ptr = m_genotype.begin();
+	size_t idx = 0;
+	size_t value = 0;
+	for (; ptr != end; ++ptr, ++idx) {
+		if (*ptr != 0) {
+			shift = idx - lastPos;
+			ar & shift;
+			lastPos = idx;
+			if (!singleMut) {
+				value = *ptr;
+				ar & value;
+			}
+		}
+	}
+#endif
 
 #ifdef LINEAGE
 	DBG_DO(DBG_POPULATION, cerr << "Handling lineage" << endl);
@@ -3470,46 +3504,80 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 		size_t size = m_genotype.size();
 		ar & size;
 
-		vectoru mutLoc;
-		vectoru mutVal;
 		bool singleMut = true;
+#ifdef BINARYALLELE	
+		size_t singleMutVal = 1;
+#else
 		size_t singleMutVal = 0;
+#endif
+		size_t numMutants = 0;
+		size_t shift = 0;
 		size_t lastPos = 0;
 #ifdef MUTANTALLELE
+		numMutants = m_genotype.data().size();
+		// first round: check number of mutants and if they are all the same
 		vectorm::const_val_iterator ptr = m_genotype.begin().get_val_iterator();
 		vectorm::const_val_iterator end = m_genotype.end().get_val_iterator();
 		for (; ptr != end; ++ptr) {
-			DBG_ASSERT(ptr->second != 0, RuntimeError, "Mutant with zero value is detected");
-			mutLoc.push_back(ptr->first - lastPos);
-			lastPos = ptr->first;
-			mutVal.push_back(ptr->second);
 			if (singleMutVal == 0)
 				singleMutVal = ptr->second;
-			else if (ptr->second != singleMutVal)
+			else if (ptr->second != singleMutVal) {
 				singleMut = false;
+				break;
+			}
+		}
+		// second round, save data
+		ar & numMutants;
+		// single value?
+		ar & singleMut;
+		if (singleMut)
+			ar & singleMutVal;
+		// save genotypes
+		ptr = m_genotype.begin().get_val_iterator();
+		for (; ptr != end; ++ptr) {
+			DBG_ASSERT(ptr->second != 0, RuntimeError, "Mutant with zero value is detected");
+			shift = ptr->first - lastPos;
+			ar & shift;
+			lastPos = ptr->first;
+			if (!singleMut)
+				ar & (ptr->second);
 		}
 #else
+		// round one: check number of mutatns and if they are all the same
 		ConstGenoIterator ptr = m_genotype.begin();
 		ConstGenoIterator end = m_genotype.end();
-		size_t idx = 0;
-		for (; ptr != end; ++ptr, ++idx) {
+		for (; ptr != end; ++ptr) {
 			if (*ptr != 0) {
-				mutLoc.push_back(idx - lastPos);
-				lastPos = idx;
-				mutVal.push_back(*ptr);
+				++ numMutants;
+#ifndef BINARYALLELE
 				if (singleMutVal == 0)
 					singleMutVal = *ptr;
 				else if (static_cast<size_t>(*ptr) != singleMutVal)
 					singleMut = false;
+#endif
 			}
 		}
-#endif
-		ar & mutLoc;
+		// round two: save stuff
+		ar & numMutants;
+		// single value?
 		ar & singleMut;
 		if (singleMut)
 			ar & singleMutVal;
-		else
-			ar & mutVal;
+		ptr = m_genotype.begin();
+		size_t idx = 0;
+		size_t value = 0;
+		for (; ptr != end; ++ptr, ++idx) {
+			if (*ptr != 0) {
+				shift = idx - lastPos;
+				ar & shift;
+				lastPos = idx;
+				if (!singleMut) {
+					value = *ptr;
+					ar & value;
+				}
+			}
+		}
+#endif
 
 #ifdef LINEAGE
 		if (!m_lineage.empty()) {
@@ -3565,7 +3633,40 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 	DBG_DO(DBG_POPULATION, cerr << "Handling genotype" << endl);
 
 	// newer version unfied importer
-	if (version == 1) {
+	if (version == 2) {
+		// a newer version
+		size_t size;
+		ar & size;
+		m_genotype.resize(size);
+		// number of mutants
+		size_t numMut = 0;
+		bool singleMut = true;
+		size_t singleMutVal = 0;
+
+		ar & numMut;
+		ar & singleMut;
+		if (singleMut) {
+			ar & singleMutVal;
+			max_allele = max(max_allele, singleMutVal);
+		}
+		//
+		size_t pos = 0;
+		size_t shift = 0;
+		size_t value = singleMutVal;
+		for (size_t i = 0; i < numMut; ++i) {
+			ar & shift;
+			if (!singleMut) {
+				ar & value;
+				max_allele = max(max_allele, value);
+			}
+			pos += shift;
+#ifdef MUTANTALLELE
+			m_genotype.push_back(pos, value);
+#else
+			m_genotype[pos] = value;
+#endif
+		}
+	} else if (version == 1) {
 		// a newer version
 		size_t size;
 		ar & size;
@@ -3752,8 +3853,41 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 		ar & pd.m_subPopSize;
 		ar & pd.m_subPopNames;
 
-		if (version == 1) {
+		if (version == 2) {
 			// a newer version
+			size_t size;
+			ar & size;
+			pd.m_genotype.resize(size);
+
+			// number of mutants
+			size_t numMut = 0;
+			bool singleMut = true;
+			size_t singleMutVal = 0;
+
+			ar & numMut;
+			ar & singleMut;
+			if (singleMut) {
+				ar & singleMutVal;
+				max_allele = max(max_allele, singleMutVal);
+			}
+			//
+			size_t pos = 0;
+			size_t shift = 0;
+			size_t value = singleMutVal;
+			for (size_t i = 0; i < numMut; ++i) {
+				ar & shift;
+				if (!singleMut) {
+					ar & value;
+					max_allele = max(max_allele, value);
+				}
+				pos += shift;
+#ifdef MUTANTALLELE
+				pd.m_genotype.push_back(pos, value);
+#else
+				pd.m_genotype[pos] = value;
+#endif
+			}
+		} else if (version == 1) {
 			size_t size;
 			ar & size;
 			pd.m_genotype.resize(size);
