@@ -23,6 +23,7 @@ Major New Features:
 	Currently based on the moment method of Waples 1989, TempoFS method of Jorde
 	 & Ryman 2007, a LD-based method from Waples 2006, and an esimate of the
 	 demographic effectize size.
+  - A new file format to improve efficiency and reduce memory footprint of save/load of simuPOP populations.
  
 New Feature:
   - Rename PER_LOCI to PER_ALLELE in InitLineage. PER_LOCI can still be used for backward compatibility.

@@ -1140,7 +1140,7 @@ class TestPopulation(unittest.TestCase):
 
     def testCrossPlatformLoad(self):
         'Testing loading populations created from other platform and allele types'
-        localFile = 'sample_%d_%s_v1.pop' % ( \
+        localFile = 'sample_%d_%s_v2.pop' % ( \
             moduleInfo()['wordsize'],
             {'short': 'std', 
              'binary': 'ba',
@@ -1155,7 +1155,7 @@ class TestPopulation(unittest.TestCase):
             initInfo(pop, values=[1, 2, 3, 4, 5], infoFields='a')
             pop.save(localFile)
                 
-        for version in [0, 1]:
+        for version in [0, 1, 2]:
             for plat in [32, 64]:
                 for mod in ['std', 'la', 'ba', 'mu', 'lin']:
                     if version == 0 and mod in ['lin', 'mu']:
