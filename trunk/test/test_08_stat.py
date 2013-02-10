@@ -768,22 +768,22 @@ class TestStat(unittest.TestCase):
         # for overall population and each subpopulation
         #
         #turnOnDebug('DBG_STATOR')
-        stat(pop, effectiveSize=[0,1], vars=['Ne_waples89', 'Ne_waples89_sp', 'Ne_tempoFS', 'Ne_tempoFS_sp'])
-        self.assertAlmostEqual(self.Waples89(S0, S1, t, P0, Pt), pop.dvars().Ne_waples89[3:])
+        stat(pop, effectiveSize=[0,1], vars=['Ne_waples89_P2', 'Ne_waples89_P2_sp', 'Ne_tempoFS_P2', 'Ne_tempoFS_P2_sp'])
+        self.assertAlmostEqual(self.Waples89(S0, S1, t, P0, Pt), pop.dvars().Ne_waples89_P2)
         if moduleInfo()['threads'] == 1:
             for i in range(3):
-                self.assertAlmostEqual(self.Waples89(S00, S10, t, P00, Pt0)[i], pop.dvars(0).Ne_waples89[i+3])
-                self.assertAlmostEqual(self.Waples89(S01, S11, t, P01, Pt1)[i], pop.dvars(1).Ne_waples89[i+3])
-                self.assertAlmostEqual(self.Waples89(S02, S12, t, P02, Pt2)[i], pop.dvars(2).Ne_waples89[i+3])
+                self.assertAlmostEqual(self.Waples89(S00, S10, t, P00, Pt0)[i], pop.dvars(0).Ne_waples89_P2[i])
+                self.assertAlmostEqual(self.Waples89(S01, S11, t, P01, Pt1)[i], pop.dvars(1).Ne_waples89_P2[i])
+                self.assertAlmostEqual(self.Waples89(S02, S12, t, P02, Pt2)[i], pop.dvars(2).Ne_waples89_P2[i])
             #
-            self.assertAlmostEqual(pop.dvars().Ne_tempoFS[0], 3026, 0)
-            self.assertAlmostEqual(pop.dvars().Ne_tempoFS[1], 1494, 0)
-            self.assertAlmostEqual(pop.dvars(0).Ne_tempoFS[0], 1620, 0)
-            self.assertAlmostEqual(pop.dvars(0).Ne_tempoFS[1], 543, 0)
-            self.assertAlmostEqual(pop.dvars(1).Ne_tempoFS[0], 94, 0)
-            self.assertAlmostEqual(pop.dvars(1).Ne_tempoFS[1], 28, 0)
-            self.assertAlmostEqual(pop.dvars(2).Ne_tempoFS[0], 2276, 0)
-            self.assertAlmostEqual(pop.dvars(2).Ne_tempoFS[1], 689, 0)
+            self.assertAlmostEqual(pop.dvars().Ne_tempoFS_P2[0], 3026, 0)
+            self.assertAlmostEqual(pop.dvars().Ne_tempoFS_P2[1], 1494, 0)
+            self.assertAlmostEqual(pop.dvars(0).Ne_tempoFS_P2[0], 1620, 0)
+            self.assertAlmostEqual(pop.dvars(0).Ne_tempoFS_P2[1], 543, 0)
+            self.assertAlmostEqual(pop.dvars(1).Ne_tempoFS_P2[0], 94, 0)
+            self.assertAlmostEqual(pop.dvars(1).Ne_tempoFS_P2[1], 28, 0)
+            self.assertAlmostEqual(pop.dvars(2).Ne_tempoFS_P2[0], 2276, 0)
+            self.assertAlmostEqual(pop.dvars(2).Ne_tempoFS_P2[1], 689, 0)
         #
         # 
         pop.vars().clear()
