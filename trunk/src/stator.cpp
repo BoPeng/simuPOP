@@ -4331,8 +4331,10 @@ void statEffectiveSize::LDNe(const LDLIST & ld, int cutoff, size_t S, vectorf & 
 	size_t weight = 0;
 	size_t J = ld.size();
 	for (size_t i = 0; i < J; ++i) {
-		r2 += ld[i].first[cutoff] * ld[i].second[cutoff];
-		weight += ld[i].second[cutoff];
+		if (ld[i].second[cutoff] > 0) {
+			r2 += ld[i].first[cutoff] * ld[i].second[cutoff];
+			weight += ld[i].second[cutoff];
+		}
 	}
 	if (weight == 0.) {
 		DBG_WARNIF(true, (boost::format("No valid estimate could be found at cutoff=%1%") % cutoff).str());
@@ -4352,7 +4354,7 @@ void statEffectiveSize::LDNe(const LDLIST & ld, int cutoff, size_t S, vectorf & 
 		double r2_jn = 0;
 		double weight_jn = 0;
 		for (size_t j = 0; j < J; ++j) {
-			if (i == j)
+			if (i == j || ld[j].second[cutoff] <= 0)
 				continue;
 			r2_jn += ld[j].first[cutoff] * ld[j].second[cutoff];
 			weight_jn += ld[j].second[cutoff];
@@ -4454,10 +4456,10 @@ bool statEffectiveSize::LDEffectiveSize(Population & pop) const
 				size_t N = 0;
 				IndIterator ind = pop.indIterator(sp->subPop());
 				for (; ind.valid(); ++ind, ++N) {
-					Allele a1 = ind->allele(loc1, 0);
-					Allele a2 = ind->allele(loc1, 1);
-					Allele b1 = ind->allele(loc2, 0);
-					Allele b2 = ind->allele(loc2, 1);
+					Allele a1 = TO_ALLELE(ind->allele(loc1, 0));
+					Allele a2 = TO_ALLELE(ind->allele(loc1, 1));
+					Allele b1 = TO_ALLELE(ind->allele(loc2, 0));
+					Allele b2 = TO_ALLELE(ind->allele(loc2, 1));
 					//
 					if (a1 == a2)
 						++homo_cnt_i[a1];
