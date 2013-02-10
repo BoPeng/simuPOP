@@ -3547,7 +3547,7 @@ void statEffectiveSize::Waples89(size_t N, size_t S0, size_t St, size_t t,
 		double F_lower = n * F_all / gsl_cdf_chisq_Pinv(0.025, n);
 		res1[1] = t / (2 * (F_lower - 0.5 / S0 - 0.5 / St));
 		res2[1] = res1[1];
-	} catch (SystemError) {
+	} catch (SystemError &) {
 		DBG_WARNIF(true, (boost::format("2.5% CI for waples 89 is set to inf at df=%1%") % n).str());
 		res1[1] = -9999;
 		res2[1] = -9999;
@@ -3556,7 +3556,7 @@ void statEffectiveSize::Waples89(size_t N, size_t S0, size_t St, size_t t,
 		double F_higher = n * F_all / gsl_cdf_chisq_Pinv(0.975, n);
 		res1[2] = t / (2 * (F_higher - 0.5 / S0 - 0.5 / St));
 		res2[2] = res1[2];
-	} catch (SystemError) {
+	} catch (SystemError &) {
 		DBG_WARNIF(true, (boost::format("97.5% CI for waples 89 is set to inf at df=%1%") % n).str());
 		res1[2] = -9999;
 		res2[2] = -9999;
@@ -4333,6 +4333,14 @@ void statEffectiveSize::LDNe(const LDLIST & ld, int cutoff, size_t S, vectorf & 
 	for (size_t i = 0; i < J; ++i) {
 		r2 += ld[i].first[cutoff] * ld[i].second[cutoff];
 		weight += ld[i].second[cutoff];
+	}
+	if (weight == 0.) {
+		DBG_WARNIF(true, (boost::format("No valid estimate could be found at cutoff=%1%") % cutoff).str());
+		for (size_t i = 0; i < 3; ++i) {
+			res[i] = std::numeric_limits<double>::infinity();
+			res_mono[i] = std::numeric_limits<double>::infinity();
+			return;
+		}
 	}
 	r2 /= weight;
 	DBG_DO(DBG_STATOR, cerr << "r2=" << r2 << " wegith=" << weight << endl);
