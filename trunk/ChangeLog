@@ -10,20 +10,20 @@ NEW FEATURE:
   - Implement temporal estimates of effective population size for sampling plan 1. Add variables
 	Ne_tempoFS_P1, Ne_tempoFS_P2, Ne_waples97_P1 and Ne_waples97_P2. Variables Ne_tempoFS and
 	Ne_waples97 are now deprecated.
+  - A new file format to improve efficiency and reduce memory footprint of save/load of simuPOP populations.
 	
 BUG:
   - Fix setOption(version) for minor simuPOP releases with version string ending with a, b, etc.
   - Fix lociPos for positions that are very close to each other.
-
-
-version 1.0.9b - Rev 4727 (Dec 13, 2012)
+  - Fix a bug in mutator that crashes with low mutation rate.
+  - Fix a bug in recombinator that crashes with low recombination intensity.
+version 1.0.9 - Rev 4727 (Dec 6, 2012)
 
 Major New Features:
   - Add parameter effectiveSize to operator Stat to calculate effective population size.
 	Currently based on the moment method of Waples 1989, TempoFS method of Jorde
 	 & Ryman 2007, a LD-based method from Waples 2006, and an esimate of the
 	 demographic effectize size.
-  - A new file format to improve efficiency and reduce memory footprint of save/load of simuPOP populations.
  
 New Feature:
   - Rename PER_LOCI to PER_ALLELE in InitLineage. PER_LOCI can still be used for backward compatibility.
@@ -35,8 +35,6 @@ BUG:
   - Result of homoFreq should be a dictionary. A list is returned
 	in the current version.
   - Fix InitGenotype(haplotypes) in multi-thread mode of the binary module.
-  - Fix a bug in mutator that crashes with low mutation rate.
-  - Fix a bug in recombinator that crashes with low recombination intensity.
 
 version 1.0.8 - Rev 4645 (Sep 5, 2012)
 
