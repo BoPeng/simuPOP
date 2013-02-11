@@ -4,7 +4,9 @@ Known Bugs:
   - BUG: simuPOP does not respond well to Ctrl-C under windows.
   - BUG: Textbox in Tkinter help dialog does not resize.
 
-version 1.1.0 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 1.1.1 - Not released, available at  svn://svn.code.sf.net/p/simupop/code/trunk
+
+version 1.1.0 - Rev 4744 (Feb 11, 2013)
 
 NEW FEATURE:
   - Implement temporal estimates of effective population size for sampling plan 1. Add variables
@@ -17,6 +19,7 @@ BUG:
   - Fix lociPos for positions that are very close to each other.
   - Fix a bug in mutator that crashes with low mutation rate.
   - Fix a bug in recombinator that crashes with low recombination intensity.
+
 version 1.0.9 - Rev 4727 (Dec 6, 2012)
 
 Major New Features:
