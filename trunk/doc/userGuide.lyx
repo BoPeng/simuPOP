@@ -14067,7 +14067,7 @@ preOps
 Simulator.evolve
 \family default
  to assign initial ID to a population.
- For example, three 
+ For example, two 
 \family typewriter
 IdTagger
 \family default
@@ -14078,7 +14078,7 @@ reference "IdTagger"
 
 \end_inset
 
- to assign IDs to individuals before, during and after evolution.
+ to assign IDs to all individuals.
  Although different operators are used, different IDs are assigned to individual
 s.
  
