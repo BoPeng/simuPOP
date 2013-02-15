@@ -440,10 +440,16 @@ individuals
 \series bold
 genotype structure
 \series default
-, which include properties such as number of homologous sets of chromosomes
+, which includes properties such as number of homologous sets of chromosomes
  (ploidy), number of chromosomes, and names and locations of markers on
  each chromosome.
- individuals can be divided into 
+ In addition to basic information such as genotypes and sex, individuals
+ can have arbitray auxillary values as 
+\series bold
+information fields
+\series default
+.
+ Individuals in a population can be divided into 
 \series bold
 subpopulations
 \series default
@@ -453,6 +459,11 @@ virtual subpopulations
 \series default
  according to individual properties such as sex, affection status, or arbitrary
  auxiliary information such as age.
+ Whereas subpopulations define boundaries of individuals that restrict the
+ flow of individuals and their genotypes (mating happens within subpopulations),
+ virtual subpopulations are groups of individuals who share the same properties,
+ with membership of individuals change easily with change of individual
+ properties.
 \end_layout
 
 \begin_layout Standard
@@ -578,6 +589,12 @@ operators
  next evolutionary cycle.
  Many simuPOP operators can be applied in different stages so the type of
  an operator is determined by the stage at which it is applied.
+ Several populations, or replicates of a single population, could form a
+ 
+\series bold
+simulator
+\series default
+ and evolve together.
 \end_layout
 
 \begin_layout Standard
@@ -592,7 +609,7 @@ lstparams "caption={A simple example},label={simple-example}"
 \end_layout
 
 \begin_layout Standard
-These concepts are demonstrated in Example 
+Some of these concepts are demonstrated in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "simple-example"
@@ -6097,8 +6114,8 @@ at
 at
 \family default
  is specified.
- It is worth noting that, if the simulator.has an ending generation, negative
- generations numbers are allowed.
+ It is worth noting that, if an evolutionary process has a pre-sepcified
+ ending generation, negative generations numbers are allowed.
  They are counted backward from the ending generation.
 \end_layout
 
@@ -13770,15 +13787,12 @@ In simuPOP, tagging refers to the action of setting various information
  the production of offspring.
  simuPOP provides a number of tagging operators (called taggers) for various
  purposes.
- Because tagging operators are during-mating operators, they do not support
- parameter 
+ Because tagging operators are during-mating operators, you can use parameter
+ 
 \family typewriter
 subPops
 \family default
-.
- If you would like to apply different  taggers to different (virtual) subpopulat
-ions, you can use them in the homogeneous mating schemes of a heterogeneous
- mating scheme.
+ to tag only offspring that belong to specified virtual subpopulation.
 \end_layout
 
 \begin_layout Subsection
@@ -13902,7 +13916,7 @@ MINIMUM
 \family typewriter
 MAXIMUM
 \family default
-,
+, 
 \family typewriter
  SUMMATION
 \family default
@@ -20344,800 +20358,6 @@ lstparams "caption={describe an evolutionary process},label={describe}"
 \end_layout
 
 \begin_layout Section
-Pedigrees
-\end_layout
-
-\begin_layout Subsection
-Create a pedigree object
-\end_layout
-
-\begin_layout Standard
-A 
-\family typewriter
-Pedigree
-\family default
- object is basically a static population object that is used to track relationsh
-ip between individuals.
- An unique ID is required for all individuals so that individuals could
- be identified easily using their IDs.
- Individuals in a pedigree usually have one or two information fields to
- record the IDs of their parents.
- Operators 
-\family typewriter
-IdTagger
-\family default
- and 
-\family typewriter
-PedigreeTagger
-\family default
- are usually used to maintain these information fields which are, although
- customizable, almost always 
-\family typewriter
-ind_id
-\family default
-, 
-\family typewriter
-father_id
-\family default
- and 
-\family typewriter
-mother_id
-\family default
-.
- After pedigrees are identified, population operations could be applied,
- for example, to extracted identified pedigrees from an existing population.
- This is basically how module 
-\family typewriter
-simuPOP.sampling
-\family default
- works.
-\end_layout
-
-\begin_layout Standard
-A new pedigree can be created from a population object with an ID field
- (default to 
-\family typewriter
-ind_id
-\family default
-), and two optional parental ID fields (default to 
-\family typewriter
-father_id
-\family default
- and 
-\family typewriter
-mother_id
-\family default
-).
- For example, 
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-ped = Pedigree(pop, infoFields=ALL_AVAIL)
-\end_layout
-
-\end_inset
-
-will create a pedigree object from population 
-\family typewriter
-pop
-\family default
- with information fields 
-\family typewriter
-ind_id
-\family default
-, 
-\family typewriter
-father_id
-\family default
- and 
-\family typewriter
-mother_id
-\family default
-, copying all available information fields.
- The ID field should have an unique ID for each individual and the parental
- ID fields should record the ID of his or her parents.
- Genotype information and additional information fields can be copied to
- a pedigree object if needed.
- The population object is unchanged.
-\end_layout
-
-\begin_layout Standard
-Another method is to directly convert a population object to a pedigree
- object, using member function 
-\family typewriter
-asPedigree
-\family default
- of a population class.
- For example,
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-pop.asPedigree()
-\end_layout
-
-\end_inset
-
-will convert the existing population to a pedigree object.
- Object pop can then be able to call all pedigree member functions.
- Once your task is done, you can convert the object back to a population
- using the 
-\family typewriter
-Pedigree.asPopulation()
-\family default
- member function of the object.
-\end_layout
-
-\begin_layout Standard
-A pedigree object can also be created from a file saved by function 
-\family typewriter
-Pedigree.save()
-\family default
- or operator 
-\family typewriter
-PedigreeTagger
-\family default
- using function 
-\family typewriter
-loadPedigree
-\family default
-.
- Please refer to section 
-\emph on
-save and load pedigrees
-\emph default
- in details.
-\end_layout
-
-\begin_layout Subsection
-Locate close and remote relatives of each individual
-\end_layout
-
-\begin_layout Standard
-A pedigree object provides several functions for you to identify spouse,
- sibling and more distant relatives of each individual.
- The results are stored to additional information fields of each individual.
- For example, if you would like to know the offspring of all individuals,
- you can call function 
-\family typewriter
-Pedigree.locateRelatives
-\family default
- as follows:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-offFields = ['off1', 'off2', 'off3']
-\end_layout
-
-\begin_layout Plain Layout
-
-ped.addInfoFields(offFields)
-\end_layout
-
-\begin_layout Plain Layout
-
-ped.locateRelatives(OFFSPRING, resultFields=offFields)
-\end_layout
-
-\end_inset
-
-This function will locate up to 3 (determined by the length of 
-\family typewriter
-resultFields
-\family default
-) offspring of each individual and put their IDs in specified informaton
- fields.
- This function allows you to identify spouses (it is common to have multiple
- spouses when random mating is used), outbred spouse (exclude spouses who
- share at least one of the parents), offspring (all offspring) and common
- offspring with a specified spouse, siblings (share at least one parent)
- and full siblings (share two parents).
- It also allows you to limit the result by sex and affection status (e.g.
- find only affected female offspring).
-\end_layout
-
-\begin_layout Standard
-More distant relationship can be derived from these relationship using function
- 
-\family typewriter
-Pedigree.traceRelatives
-\family default
-.
- This function accepts a path of information fields and follows the path
- to identify relatives.
- For example 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-sibFields = ['sib1', 'sib2']
-\end_layout
-
-\begin_layout Plain Layout
-
-offFields = ['off1', 'off2', 'off3']
-\end_layout
-
-\begin_layout Plain Layout
-
-cousinFields = ['cousin1', 'cousin2', 'cousin3']
-\end_layout
-
-\begin_layout Plain Layout
-
-ped.addInfoFields(sibFields + offFields + cousinFields)
-\end_layout
-
-\begin_layout Plain Layout
-
-ped.locateRelatives(FULLSIBLING, resultFields=sibFields)
-\end_layout
-
-\begin_layout Plain Layout
-
-ped.locateRelatives(OFFSPRING, resultFields=offFields)
-\end_layout
-
-\begin_layout Plain Layout
-
-ped.traceRelatives([['father_id', 'mother_id'], sibFields, offFields],
-\end_layout
-
-\begin_layout Plain Layout
-
-    sex=[ANY_SEX, MALE_ONLY, FEMALE_ONLY],
-\end_layout
-
-\begin_layout Plain Layout
-
-    resultField=cousinFields)
-\end_layout
-
-\end_inset
-
-would first identify full siblings and offspring of all individuals and
- then locate father or mother's male sibling's daughters.
- As you can imagine, this function can be used to track very complicated
- relationships.
-\end_layout
-
-\begin_layout Standard
-This function also provides a function for you to identify individuals with
- specified relatives.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "locateRelative"
-
-\end_inset
-
- gives an example how to locate a grandfather with at least five grandchildren.
- With such information, functions such as 
-\family typewriter
-Population.extractIndividuals()
-\family default
- could be used to extract Pedigrees from a population.
- This is basically how 
-\family typewriter
-simuPOP.sampling
-\family default
- module works.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/locateRelative.log"
-lstparams "caption={Locate close and distant relatives of individuals},label={locateRelative}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Identify pedigrees (related individuals)
-\end_layout
-
-\begin_layout Standard
-The 
-\family typewriter
-Pedigree
-\family default
- class provides some other functions that allows you to identify related
- individuals.
- For example,
-\end_layout
-
-\begin_layout Itemize
-Function 
-\family typewriter
-Pedigree.identifyAncestors
-\family default
- identifies all ancestors of specified individuals or all individuals at
- the present generation.
- In a diaploid population when there is only one parent, you can see that
- only a small portion of ancestors have offspring in the last generation.
-\end_layout
-
-\begin_layout Itemize
-Function 
-\family typewriter
-Pedigree.identifyOffspring
-\family default
- identifies all offspring of specified individuals across multiple generations.
- 
-\end_layout
-
-\begin_layout Itemize
-Function 
-\family typewriter
-Pedigree.identifyFamilies
-\family default
- groups all related individuals into families and assign a family ID to
- all family members.
- You might be surprised by how large this kind of family can be when parents
- are allowed to have multiple spouses.
- 
-\end_layout
-
-\begin_layout Standard
-All these functions support parameters 
-\family typewriter
-subPops
-\family default
- and 
-\family typewriter
-ancGens
-\family default
- so that you can limit your search in specific subpopulations and ancestral
- generations.
- For example, you can limit your search to all male individuals to find
- out someone's male offspring.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "locateFamilies"
-
-\end_inset
-
- demonstrates how to use these functions to analyze the structure of a complete
- pedigree.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/locateFamilies.log"
-lstparams "caption={Identify all ancestors, offspring or all related individuals},label={locateFamilies}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Save and load pedigrees
-\end_layout
-
-\begin_layout Standard
-A complete pedigree, including ID, sex and affection status of each individual,
- IDs of their parents, and optionally values of some information fields
- and genotypes at some loci could be saved to a file, and be loaded using
- function 
-\family typewriter
-loadPedigree
-\family default
-.
- The loaded pedigree could be analyzed using pedigree functions, or be used
- to direct the evolution of another evolutionary process using a pedigree
- mating scheme.
-\end_layout
-
-\begin_layout Standard
-A pedigree could be saved in two ways.
- In the first method, a pedigree could be created using the methods described
- above and be saved using function 
-\family typewriter
-Pedigree.save()
-\family default
-.
- However, if the population is large, recording all ancestral generations
- may not be feasible.
- If this is the case, you can use a 
-\family typewriter
-PedigreeTagger
-\family default
- operator to save individual information during the evolution.
- If you do not care about details of the top-most ancestral generation,
- a PedigreeTagger used in a mating scheme should be enough to record pedigree
- information of all offspring.
- Individual in the top-most generation who have offspring in the next generation
- will be constructed in 
-\family typewriter
-loadPedigree
-\family default
-.
- If you would like to include detailed information about all individuals
- in the top-most ancestral generation, you can use a 
-\family typewriter
-PedigreeTagger
-\family default
- in the 
-\family typewriter
-initOps
-\family default
- parameter of the 
-\family typewriter
-Simulator.evolve()
-\family default
- or 
-\family typewriter
-Population.evolve()
-\family default
- function.
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "saveLoadPedigree"
-
-\end_inset
-
- demonstrates how to use these functions to analyze the structure of a complete
- pedigree.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/saveLoadPedigree.log"
-lstparams "caption={Save and load a complete pedigree},label={saveLoadPedigree}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Simulation of mitochondrial DNAs (mtDNAs) *
-\end_layout
-
-\begin_layout Standard
-Mitochondrial DNAs resides in human mitochondrion.
- A zygote inherits its organelles from the cytoplasm of the egg, and thus
- organelle inheritance is generally maternal.
- Whereas there is only one copy of a nuclear chromosome per gamete, there
- are man copies of an organellar chromosome, forming a population of identical
- organelle chromosomes that is transmitted to the offspring through the
- egg.
- Because these organellar chromosomes are identical, they are modelled in
- simuPOP as a single chromosome with type 
-\family typewriter
-MITOCHONDRIAL
-\family default
-.
- In order to simulate mitochondrial DNAs, it is important to remember:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MendelianGenoTransmitter
-\family default
- and 
-\family typewriter
-Recombinator
-\family default
- do not handle mitochondrial DNAs so you will have to explicitly use 
-\family typewriter
-MitochondrialGenoTransmitter
-\family default
- to transmit the mitochondrial DNAs from mother to offspring.
- Note that 
-\family typewriter
-CloneGenoTransmitter
-\family default
- is a special transmitter that will copy everything including sex, information
- fields to offspring.
-\end_layout
-
-\begin_layout Itemize
-The 
-\family typewriter
-Stat
-\family default
- operator recognizes this chromosome type and will report allele, haplotype,
- and genotype counts, and other statistics correctly, although some diploid-spec
-ific statistics are not applicable.
-\end_layout
-
-\begin_layout Itemize
-Natural selections on mtDNAs is usually performed using operator 
-\family typewriter
-MapSelector
-\family default
- where single alleles are assigned a fitness value.
- Operator 
-\family typewriter
-MaSelector
-\family default
- assumes two alleles and is not applicable.
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "mitochondrial"
-
-\end_inset
-
- demonstrates the use of a 
-\family typewriter
-Recombinator
-\family default
- to recombine an autosome and two sex chromosomes, and a 
-\family typewriter
-MitochondrialGenoTransmitter
-\family default
- to transmit mitochondrial chromosomes.
- Natural selection is applied to allele 3 at the 3rd locus on the mitochondrial
- DNA, whose frequency in the population decreases as a result.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/mitochondrial.log"
-lstparams "caption={Transmission of mitochondrial chromosomes},label={mitochondrial}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-You might wonder how a mutation can change the allele of all organelles
- in the mitochondrion.
- This is generally believed to be done through natural drift during cytoplasmic
- segreagation, which is not a mitotic process because it takes place in
- dividing asexual cells.
- Because only one mitochondrial chromosome is allowed in simuPOP, you will
- have to use customized chromosome types if you would like to simulate this
- process.
- Fortunately, operator 
-\family typewriter
-MitochondrialGenoTransmitter
-\family default
- can select random organelles from multiple customized chromosomes, if no
- chromosome of type 
-\family typewriter
-MITOCHONDRIAL
-\family default
- is present.
- 
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "mtDNA_evolve"
-
-\end_inset
-
- demonstrates the fixation of mutant in cells with multiple organelles.
- Althogh mutations are introduced to only one of the organelles, after a
- number of cell divisions, the majority of the cells now have only one type
- of allele.
- This example uses a 
-\family typewriter
-RandomSelection
-\family default
- mating scheme to select cells randomly from the parental population.
- Because no sexual reproduction is involved, 
-\family typewriter
-MitochondrialGenoTransmitter
-\family default
- passes the parental genotype to offspring regardless of sex of parent.
- This example also demonstrates a disadvantage of using customized chromosomes
- in that you will have to calculate statistics by yourself because only
- you know the meaning of these chromosomes.
- In this example, a function is written to count the number of mutants in
- each cell (individual), and summarize the number of cells with 0, 1, 2,
- 3, 4, and 5 copies of the mutant.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/mtDNA_evolve.log"
-lstparams "caption={Evolution of multiple organelles in mitochondrion},label={mtDNA_evolve}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Tracing allelic lineage *
-\end_layout
-
-\begin_layout Standard
-Lineage of alleles consists of information such as the distribution of alleles
- (how many people carry this allele, and the relationship between carriers)
- and age of alleles (when the alleles were introduced to the population).
- These information are important for the study of evolutionary history of
- mutants.
- They are not readily available for normal simulations, and even if you
- can track the generations when mutants are introduced, alleles in the present
- generation that are of the same type (Identity by Stat, IBS) do not necessarily
- have the same ancestral origin (Identity by Decent, IBD).
-\end_layout
-
-\begin_layout Standard
-The lineage modules of simuPOP provides facilities to track allelic lineage.
- More specific,
-\end_layout
-
-\begin_layout Itemize
-Each allele is associated with an integer number (an allelic lineage) that
- identifies the origian, or the source of the allele.
-\end_layout
-
-\begin_layout Itemize
-The lineage of each allele is transmitted along with the allele during evolution.
- New alleles will be introduced with their own lineage, even if they share
- the same states with existing alleles.
-\end_layout
-
-\begin_layout Itemize
-Origin of alleles can be accessed using member functions of the 
-\family typewriter
-Individual
-\family default
- and 
-\family typewriter
-Population
-\family default
- classes.
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "geneticContribution"
-
-\end_inset
-
- demonstrates how to determine the contribution of genetic information from
- each ancestor.
- For this simulation, the alleles of each ancestor are associated with individua
-l-specific numbers.
- During evolution, some alleles might get lost, some are copied, and pieces
- of chromosomes are mixed due to genetic recombination.
- At the end of simulation, the average number of 'contributors' of genetic
- information to each individual is calculated, as well as the percent of
- genetic information from each ancestor.
- Although this particular simulation can be mimicked using pure-genotype
- simulations by using special alleles for each ancestor, the combined informatio
-n regarding the state and origin of each allele will be very useful for
- genetic studies that involve IBD and IBS.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/geneticContribution.log"
-lstparams "caption={Contribution of genetic information from ancestors },label={geneticContribution}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "geneticContribution"
-
-\end_inset
-
- uses operator 
-\family typewriter
-InitLineage
-\family default
- to explictly assign lineage to alleles of each individual.
- You can also track the fate of finer genetic pieces by assigning different
- lineage values to chromosomes, or each loci using different 
-\family typewriter
-mode
-\family default
-.
- This operator can also assign lineage of alleles to an ID stored in an
- information field, which is usually 
-\family typewriter
-ind_id
-\family default
-, a field used by operators such as 
-\family typewriter
-IdTagger
-\family default
- and 
-\family typewriter
-PedigreeTagger
-\family default
- to assign and trace the pedigree (parentship) information during evolution.
- More interesting, when such a field is present, mutation operators will
- assign the IDs of recipients of mutants as the lineage of these mutants.
- This makes it possible to track the origin of mutants.
- Moreover, when a mode 
-\family typewriter
-FROM_INFO_SIGNED
-\family default
- is used, additional ploidy information will be tagged to lineage values
- (negative values for mutants on the second homologous copy of chromosomes)
- so that you can track the inheritance of haplotypes.
-\end_layout
-
-\begin_layout Standard
-To make use of these features, it is important to assign IDs to individuals
- before these operators are applied.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "ageOfMutants"
-
-\end_inset
-
- demonstrates how to use the lineage information to determine the age of
- mutants.
- This example evolves a constant population of size 10,000.
- An 
-\family typewriter
-IdTagger
-\family default
- is used before 
-\family typewriter
-InitGenotype
-\family default
- so individual IDs will be assigned as allelic lineages.
- Because all offspring get their own IDs during evolution, the IDs of individual
-s are assigned to mutants as their lineages, and can be used to determine
- the age of these mutants.
- This is pretty easy to do in this example because of constant population
- size.
- For more complex demographic models, you might have to record the minimal
- and maximum IDs of each generation in order to determine the age of mutants.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/ageOfMutants.log"
-lstparams "caption={Distribution of age of mutants},label={ageOfMutants}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
 Non-random and customized mating schemes *
 \end_layout
 
@@ -22182,6 +21402,639 @@ lstparams "caption={Example of the evolution of age-structured population.},labe
 \end_layout
 
 \begin_layout Section
+Tracing allelic lineage *
+\end_layout
+
+\begin_layout Standard
+Lineage of alleles consists of information such as the distribution of alleles
+ (how many people carry this allele, and the relationship between carriers)
+ and age of alleles (when the alleles were introduced to the population).
+ These information are important for the study of evolutionary history of
+ mutants.
+ They are not readily available for normal simulations, and even if you
+ can track the generations when mutants are introduced, alleles in the present
+ generation that are of the same type (Identity by Stat, IBS) do not necessarily
+ have the same ancestral origin (Identity by Decent, IBD).
+\end_layout
+
+\begin_layout Standard
+The lineage modules of simuPOP provides facilities to track allelic lineage.
+ More specific,
+\end_layout
+
+\begin_layout Itemize
+Each allele is associated with an integer number (an allelic lineage) that
+ identifies the origian, or the source of the allele.
+\end_layout
+
+\begin_layout Itemize
+The lineage of each allele is transmitted along with the allele during evolution.
+ New alleles will be introduced with their own lineage, even if they share
+ the same states with existing alleles.
+\end_layout
+
+\begin_layout Itemize
+Origin of alleles can be accessed using member functions of the 
+\family typewriter
+Individual
+\family default
+ and 
+\family typewriter
+Population
+\family default
+ classes.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "geneticContribution"
+
+\end_inset
+
+ demonstrates how to determine the contribution of genetic information from
+ each ancestor.
+ For this simulation, the alleles of each ancestor are associated with individua
+l-specific numbers.
+ During evolution, some alleles might get lost, some are copied, and pieces
+ of chromosomes are mixed due to genetic recombination.
+ At the end of simulation, the average number of 'contributors' of genetic
+ information to each individual is calculated, as well as the percent of
+ genetic information from each ancestor.
+ Although this particular simulation can be mimicked using pure-genotype
+ simulations by using special alleles for each ancestor, the combined informatio
+n regarding the state and origin of each allele will be very useful for
+ genetic studies that involve IBD and IBS.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/geneticContribution.log"
+lstparams "caption={Contribution of genetic information from ancestors },label={geneticContribution}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "geneticContribution"
+
+\end_inset
+
+ uses operator 
+\family typewriter
+InitLineage
+\family default
+ to explictly assign lineage to alleles of each individual.
+ You can also track the fate of finer genetic pieces by assigning different
+ lineage values to chromosomes, or each loci using different 
+\family typewriter
+mode
+\family default
+.
+ This operator can also assign lineage of alleles to an ID stored in an
+ information field, which is usually 
+\family typewriter
+ind_id
+\family default
+, a field used by operators such as 
+\family typewriter
+IdTagger
+\family default
+ and 
+\family typewriter
+PedigreeTagger
+\family default
+ to assign and trace the pedigree (parentship) information during evolution.
+ More interesting, when such a field is present, mutation operators will
+ assign the IDs of recipients of mutants as the lineage of these mutants.
+ This makes it possible to track the origin of mutants.
+ Moreover, when a mode 
+\family typewriter
+FROM_INFO_SIGNED
+\family default
+ is used, additional ploidy information will be tagged to lineage values
+ (negative values for mutants on the second homologous copy of chromosomes)
+ so that you can track the inheritance of haplotypes.
+\end_layout
+
+\begin_layout Standard
+To make use of these features, it is important to assign IDs to individuals
+ before these operators are applied.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ageOfMutants"
+
+\end_inset
+
+ demonstrates how to use the lineage information to determine the age of
+ mutants.
+ This example evolves a constant population of size 10,000.
+ An 
+\family typewriter
+IdTagger
+\family default
+ is used before 
+\family typewriter
+InitGenotype
+\family default
+ so individual IDs will be assigned as allelic lineages.
+ Because all offspring get their own IDs during evolution, the IDs of individual
+s are assigned to mutants as their lineages, and can be used to determine
+ the age of these mutants.
+ This is pretty easy to do in this example because of constant population
+ size.
+ For more complex demographic models, you might have to record the minimal
+ and maximum IDs of each generation in order to determine the age of mutants.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/ageOfMutants.log"
+lstparams "caption={Distribution of age of mutants},label={ageOfMutants}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Pedigrees
+\end_layout
+
+\begin_layout Subsection
+Create a pedigree object
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+Pedigree
+\family default
+ object is basically a static population object that is used to track relationsh
+ip between individuals.
+ An unique ID is required for all individuals so that individuals could
+ be identified easily using their IDs.
+ Individuals in a pedigree usually have one or two information fields to
+ record the IDs of their parents.
+ Operators 
+\family typewriter
+IdTagger
+\family default
+ and 
+\family typewriter
+PedigreeTagger
+\family default
+ are usually used to maintain these information fields which are, although
+ customizable, almost always 
+\family typewriter
+ind_id
+\family default
+, 
+\family typewriter
+father_id
+\family default
+ and 
+\family typewriter
+mother_id
+\family default
+.
+ After pedigrees are identified, population operations could be applied,
+ for example, to extracted identified pedigrees from an existing population.
+ This is basically how module 
+\family typewriter
+simuPOP.sampling
+\family default
+ works.
+\end_layout
+
+\begin_layout Standard
+A new pedigree can be created from a population object with an ID field
+ (default to 
+\family typewriter
+ind_id
+\family default
+), and two optional parental ID fields (default to 
+\family typewriter
+father_id
+\family default
+ and 
+\family typewriter
+mother_id
+\family default
+).
+ For example, 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ped = Pedigree(pop, infoFields=ALL_AVAIL)
+\end_layout
+
+\end_inset
+
+will create a pedigree object from population 
+\family typewriter
+pop
+\family default
+ with information fields 
+\family typewriter
+ind_id
+\family default
+, 
+\family typewriter
+father_id
+\family default
+ and 
+\family typewriter
+mother_id
+\family default
+, copying all available information fields.
+ The ID field should have an unique ID for each individual and the parental
+ ID fields should record the ID of his or her parents.
+ Genotype information and additional information fields can be copied to
+ a pedigree object if needed.
+ The population object is unchanged.
+\end_layout
+
+\begin_layout Standard
+Another method is to directly convert a population object to a pedigree
+ object, using member function 
+\family typewriter
+asPedigree
+\family default
+ of a population class.
+ For example,
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pop.asPedigree()
+\end_layout
+
+\end_inset
+
+will convert the existing population to a pedigree object.
+ Object pop can then be able to call all pedigree member functions.
+ Once your task is done, you can convert the object back to a population
+ using the 
+\family typewriter
+Pedigree.asPopulation()
+\family default
+ member function of the object.
+\end_layout
+
+\begin_layout Standard
+A pedigree object can also be created from a file saved by function 
+\family typewriter
+Pedigree.save()
+\family default
+ or operator 
+\family typewriter
+PedigreeTagger
+\family default
+ using function 
+\family typewriter
+loadPedigree
+\family default
+.
+ Please refer to section 
+\emph on
+save and load pedigrees
+\emph default
+ in details.
+\end_layout
+
+\begin_layout Subsection
+Locate close and remote relatives of each individual
+\end_layout
+
+\begin_layout Standard
+A pedigree object provides several functions for you to identify spouse,
+ sibling and more distant relatives of each individual.
+ The results are stored to additional information fields of each individual.
+ For example, if you would like to know the offspring of all individuals,
+ you can call function 
+\family typewriter
+Pedigree.locateRelatives
+\family default
+ as follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+offFields = ['off1', 'off2', 'off3']
+\end_layout
+
+\begin_layout Plain Layout
+
+ped.addInfoFields(offFields)
+\end_layout
+
+\begin_layout Plain Layout
+
+ped.locateRelatives(OFFSPRING, resultFields=offFields)
+\end_layout
+
+\end_inset
+
+This function will locate up to 3 (determined by the length of 
+\family typewriter
+resultFields
+\family default
+) offspring of each individual and put their IDs in specified informaton
+ fields.
+ This function allows you to identify spouses (it is common to have multiple
+ spouses when random mating is used), outbred spouse (exclude spouses who
+ share at least one of the parents), offspring (all offspring) and common
+ offspring with a specified spouse, siblings (share at least one parent)
+ and full siblings (share two parents).
+ It also allows you to limit the result by sex and affection status (e.g.
+ find only affected female offspring).
+\end_layout
+
+\begin_layout Standard
+More distant relationship can be derived from these relationship using function
+ 
+\family typewriter
+Pedigree.traceRelatives
+\family default
+.
+ This function accepts a path of information fields and follows the path
+ to identify relatives.
+ For example 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+sibFields = ['sib1', 'sib2']
+\end_layout
+
+\begin_layout Plain Layout
+
+offFields = ['off1', 'off2', 'off3']
+\end_layout
+
+\begin_layout Plain Layout
+
+cousinFields = ['cousin1', 'cousin2', 'cousin3']
+\end_layout
+
+\begin_layout Plain Layout
+
+ped.addInfoFields(sibFields + offFields + cousinFields)
+\end_layout
+
+\begin_layout Plain Layout
+
+ped.locateRelatives(FULLSIBLING, resultFields=sibFields)
+\end_layout
+
+\begin_layout Plain Layout
+
+ped.locateRelatives(OFFSPRING, resultFields=offFields)
+\end_layout
+
+\begin_layout Plain Layout
+
+ped.traceRelatives([['father_id', 'mother_id'], sibFields, offFields],
+\end_layout
+
+\begin_layout Plain Layout
+
+    sex=[ANY_SEX, MALE_ONLY, FEMALE_ONLY],
+\end_layout
+
+\begin_layout Plain Layout
+
+    resultField=cousinFields)
+\end_layout
+
+\end_inset
+
+would first identify full siblings and offspring of all individuals and
+ then locate father or mother's male sibling's daughters.
+ As you can imagine, this function can be used to track very complicated
+ relationships.
+\end_layout
+
+\begin_layout Standard
+This function also provides a function for you to identify individuals with
+ specified relatives.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "locateRelative"
+
+\end_inset
+
+ gives an example how to locate a grandfather with at least five grandchildren.
+ With such information, functions such as 
+\family typewriter
+Population.extractIndividuals()
+\family default
+ could be used to extract Pedigrees from a population.
+ This is basically how 
+\family typewriter
+simuPOP.sampling
+\family default
+ module works.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/locateRelative.log"
+lstparams "caption={Locate close and distant relatives of individuals},label={locateRelative}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Identify pedigrees (related individuals)
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+Pedigree
+\family default
+ class provides some other functions that allows you to identify related
+ individuals.
+ For example,
+\end_layout
+
+\begin_layout Itemize
+Function 
+\family typewriter
+Pedigree.identifyAncestors
+\family default
+ identifies all ancestors of specified individuals or all individuals at
+ the present generation.
+ In a diaploid population when there is only one parent, you can see that
+ only a small portion of ancestors have offspring in the last generation.
+\end_layout
+
+\begin_layout Itemize
+Function 
+\family typewriter
+Pedigree.identifyOffspring
+\family default
+ identifies all offspring of specified individuals across multiple generations.
+ 
+\end_layout
+
+\begin_layout Itemize
+Function 
+\family typewriter
+Pedigree.identifyFamilies
+\family default
+ groups all related individuals into families and assign a family ID to
+ all family members.
+ You might be surprised by how large this kind of family can be when parents
+ are allowed to have multiple spouses.
+ 
+\end_layout
+
+\begin_layout Standard
+All these functions support parameters 
+\family typewriter
+subPops
+\family default
+ and 
+\family typewriter
+ancGens
+\family default
+ so that you can limit your search in specific subpopulations and ancestral
+ generations.
+ For example, you can limit your search to all male individuals to find
+ out someone's male offspring.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "locateFamilies"
+
+\end_inset
+
+ demonstrates how to use these functions to analyze the structure of a complete
+ pedigree.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/locateFamilies.log"
+lstparams "caption={Identify all ancestors, offspring or all related individuals},label={locateFamilies}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Save and load pedigrees
+\end_layout
+
+\begin_layout Standard
+A complete pedigree, including ID, sex and affection status of each individual,
+ IDs of their parents, and optionally values of some information fields
+ and genotypes at some loci could be saved to a file, and be loaded using
+ function 
+\family typewriter
+loadPedigree
+\family default
+.
+ The loaded pedigree could be analyzed using pedigree functions, or be used
+ to direct the evolution of another evolutionary process using a pedigree
+ mating scheme.
+\end_layout
+
+\begin_layout Standard
+A pedigree could be saved in two ways.
+ In the first method, a pedigree could be created using the methods described
+ above and be saved using function 
+\family typewriter
+Pedigree.save()
+\family default
+.
+ However, if the population is large, recording all ancestral generations
+ may not be feasible.
+ If this is the case, you can use a 
+\family typewriter
+PedigreeTagger
+\family default
+ operator to save individual information during the evolution.
+ If you do not care about details of the top-most ancestral generation,
+ a PedigreeTagger used in a mating scheme should be enough to record pedigree
+ information of all offspring.
+ Individual in the top-most generation who have offspring in the next generation
+ will be constructed in 
+\family typewriter
+loadPedigree
+\family default
+.
+ If you would like to include detailed information about all individuals
+ in the top-most ancestral generation, you can use a 
+\family typewriter
+PedigreeTagger
+\family default
+ in the 
+\family typewriter
+initOps
+\family default
+ parameter of the 
+\family typewriter
+Simulator.evolve()
+\family default
+ or 
+\family typewriter
+Population.evolve()
+\family default
+ function.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "saveLoadPedigree"
+
+\end_inset
+
+ demonstrates how to use these functions to analyze the structure of a complete
+ pedigree.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/saveLoadPedigree.log"
+lstparams "caption={Save and load a complete pedigree},label={saveLoadPedigree}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 Evolve a population following a specified pedigree structure **
 \end_layout
 
@@ -22440,6 +22293,167 @@ None
 LatexCommand bibtex
 bibfiles "simuPOP"
 options "plainnat"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Simulation of mitochondrial DNAs (mtDNAs) *
+\end_layout
+
+\begin_layout Standard
+Mitochondrial DNAs resides in human mitochondrion.
+ A zygote inherits its organelles from the cytoplasm of the egg, and thus
+ organelle inheritance is generally maternal.
+ Whereas there is only one copy of a nuclear chromosome per gamete, there
+ are man copies of an organellar chromosome, forming a population of identical
+ organelle chromosomes that is transmitted to the offspring through the
+ egg.
+ Because these organellar chromosomes are identical, they are modelled in
+ simuPOP as a single chromosome with type 
+\family typewriter
+MITOCHONDRIAL
+\family default
+.
+ In order to simulate mitochondrial DNAs, it is important to remember:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MendelianGenoTransmitter
+\family default
+ and 
+\family typewriter
+Recombinator
+\family default
+ do not handle mitochondrial DNAs so you will have to explicitly use 
+\family typewriter
+MitochondrialGenoTransmitter
+\family default
+ to transmit the mitochondrial DNAs from mother to offspring.
+ Note that 
+\family typewriter
+CloneGenoTransmitter
+\family default
+ is a special transmitter that will copy everything including sex, information
+ fields to offspring.
+\end_layout
+
+\begin_layout Itemize
+The 
+\family typewriter
+Stat
+\family default
+ operator recognizes this chromosome type and will report allele, haplotype,
+ and genotype counts, and other statistics correctly, although some diploid-spec
+ific statistics are not applicable.
+\end_layout
+
+\begin_layout Itemize
+Natural selections on mtDNAs is usually performed using operator 
+\family typewriter
+MapSelector
+\family default
+ where single alleles are assigned a fitness value.
+ Operator 
+\family typewriter
+MaSelector
+\family default
+ assumes two alleles and is not applicable.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "mitochondrial"
+
+\end_inset
+
+ demonstrates the use of a 
+\family typewriter
+Recombinator
+\family default
+ to recombine an autosome and two sex chromosomes, and a 
+\family typewriter
+MitochondrialGenoTransmitter
+\family default
+ to transmit mitochondrial chromosomes.
+ Natural selection is applied to allele 3 at the 3rd locus on the mitochondrial
+ DNA, whose frequency in the population decreases as a result.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mitochondrial.log"
+lstparams "caption={Transmission of mitochondrial chromosomes},label={mitochondrial}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You might wonder how a mutation can change the allele of all organelles
+ in the mitochondrion.
+ This is generally believed to be done through natural drift during cytoplasmic
+ segreagation, which is not a mitotic process because it takes place in
+ dividing asexual cells.
+ Because only one mitochondrial chromosome is allowed in simuPOP, you will
+ have to use customized chromosome types if you would like to simulate this
+ process.
+ Fortunately, operator 
+\family typewriter
+MitochondrialGenoTransmitter
+\family default
+ can select random organelles from multiple customized chromosomes, if no
+ chromosome of type 
+\family typewriter
+MITOCHONDRIAL
+\family default
+ is present.
+ 
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "mtDNA_evolve"
+
+\end_inset
+
+ demonstrates the fixation of mutant in cells with multiple organelles.
+ Althogh mutations are introduced to only one of the organelles, after a
+ number of cell divisions, the majority of the cells now have only one type
+ of allele.
+ This example uses a 
+\family typewriter
+RandomSelection
+\family default
+ mating scheme to select cells randomly from the parental population.
+ Because no sexual reproduction is involved, 
+\family typewriter
+MitochondrialGenoTransmitter
+\family default
+ passes the parental genotype to offspring regardless of sex of parent.
+ This example also demonstrates a disadvantage of using customized chromosomes
+ in that you will have to calculate statistics by yourself because only
+ you know the meaning of these chromosomes.
+ In this example, a function is written to count the number of mutants in
+ each cell (individual), and summarize the number of cells with 0, 1, 2,
+ 3, 4, and 5 copies of the mutant.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mtDNA_evolve.log"
+lstparams "caption={Evolution of multiple organelles in mitochondrion},label={mtDNA_evolve}"
 
 \end_inset
 
