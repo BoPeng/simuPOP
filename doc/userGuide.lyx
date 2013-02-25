@@ -1390,612 +1390,6 @@ Loading and running simuPOP
 \end_layout
 
 \begin_layout Section
-Loading simuPOP modules
-\end_layout
-
-\begin_layout Subsection
-Short, long, binary, mutant and lineage modules and their optimized versions
-\end_layout
-
-\begin_layout Standard
-There are ten flavors of the core simuPOP module: short, long, binary, mutant,
- and lineage allele modules, and their optimized versions.
- 
-\end_layout
-
-\begin_layout Itemize
-The short allele modules use 
-\emph on
-8 bits
-\emph default
- to store each allele which limits the possible allele states to 256.
- This is enough most of the times so this is the default module of simuPOP.
-\end_layout
-
-\begin_layout Itemize
-If you need to a large number of allele states to simulate, for example
- the infinite allele model, you should use the long allele version of the
- modules, which use 
-\emph on
-32 or 64 bits
-\emph default
- for each allele and can have 
-\begin_inset Formula $2^{32}$
-\end_inset
-
- or 
-\begin_inset Formula $2^{64}$
-\end_inset
-
- possible allele states depending on your platform.
-\end_layout
-
-\begin_layout Itemize
-If you would like to simulate a large number of binary (SNP) markers, binary
- libraries can save you a lot of RAM because they use 
-\emph on
-1 bit
-\emph default
- for each allele.
-\end_layout
-
-\begin_layout Itemize
-If you are simulating long sequence regions with rare variants, you can
- use the mutant module.
- This module uses compression technology that ignores wildtype alleles and
- is not efficient if you need to traverse all alleles frequently.
- The maximum allele state is 255 for this module.
- Because this module stores location and value of each allele, it uses at
- least 64 + 8 bits for each allele on a 64 bit system.
- The complexity of the storage also prevents simultaneous write access to
- genotypes so this module does not benefit much from running in multi-thread
- mode.
-\end_layout
-
-\begin_layout Itemize
-If you are interested in tracing the lineage of each allele (e.g.
- the ID of individuals to whom the allele was introduced), you can use the
- lineage module for which each allele is attached with information about
- its origin.
- The maximum allele state is 255 for this module, and the cost of storing
- each allele is 8 (value) + 32 (lineage) bits.
-\end_layout
-
-\begin_layout Standard
-Despite of differences in internal memory layout, all these modules have
- the same interface, although some functions behave differently in terms
- of functionality and performance.
- 
-\end_layout
-
-\begin_layout Standard
-Standard libraries have detailed debug and run-time validation mechanism
- to make sure a simulation executes correctly.
- Whenever something unusual is detected, simuPOP would terminate with detailed
- error messages.
- The cost of such run-time validation varies from case to case but can be
- high under some extreme circumstances.
- Because of this, optimized versions for all modules are provided.
- They bypass most parameter checking and run-time validations and will simply
- crash if things go wrong.
- It is recommended that you use standard libraries whenever possible and
- only use the optimized version when performance is needed and you are confident
- that your simulation is running as expected.
-\end_layout
-
-\begin_layout Standard
-Examples 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "lst:Use-of-standard-module"
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "lst:Use-of-optimized-module"
-
-\end_inset
-
- demonstrate the differences between standard and optimized modules, by
- executing two invalid commands.
- A standard module checks all input values and raises exceptions when invalid
- inputs are detected.
- An interactive Python session would catch these exceptions and print proper
- error messages.
- In constrast, an optimized module returns erroneous results and or simply
- crashes when such inputs are given.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/standard.log"
-lstparams "caption={Use of standard simuPOP modules},keywords={from,import},label={lst:Use-of-standard-module}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "lst:Use-of-optimized-module"
-
-\end_inset
-
- also demonstrates how to use the 
-\family typewriter
-setOptions
-\family default
- function in the 
-\family typewriter
-simuOpt
-\family default
- module to control the choice of one of the six simuPOP modules.
- By specifying one of the values 
-\family typewriter
-short, long
-\family default
- or 
-\family typewriter
-binary 
-\family default
-for option 
-\family typewriter
-alleleType
-\family default
-, and setting
-\family typewriter
- optimized
-\family default
- to 
-\family typewriter
-True
-\family default
- or 
-\family typewriter
-False
-\family default
-, the right flavor of module will be chosen when simuPOP is loaded.
- In addition, option 
-\family typewriter
-quiet
-\family default
- can be used suppress the banner message when simuPOP is loaded.
- An alternative method is to set environmental variable 
-\family typewriter
-SIMUALLELETYPE
-\family default
-
-\begin_inset Index idx
-status collapsed
-
-\begin_layout Plain Layout
-r
-\end_layout
-
-\end_inset
-
- to 
-\family typewriter
-short
-\family default
-, 
-\family typewriter
-long
-\family default
- or 
-\family typewriter
-binary
-\family default
- to use the standard short, long or binary module, and variable 
-\family typewriter
-SIMUOPTIMIZED
-\family default
- to use the optimized modules.
- Command line options 
-\family typewriter
---optimized
-\family default
- can also be used.
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "lst:Use-of-optimized-module"
-
-\end_inset
-
-Use of optimized simuPOP modules
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-% python
-\end_layout
-
-\begin_layout Plain Layout
-
->>> from simuOpt import setOptions
-\end_layout
-
-\begin_layout Plain Layout
-
->>> setOptions(optimized=True, alleleType='long', quiet=True)
-\end_layout
-
-\begin_layout Plain Layout
-
->>> import simuPOP as sim
-\end_layout
-
-\begin_layout Plain Layout
-
->>> pop = sim.Population(10, loci=[2])
-\end_layout
-
-\begin_layout Plain Layout
-
->>> pop.locusPos(10)
-\end_layout
-
-\begin_layout Plain Layout
-
-1.2731974748756028e-313
-\end_layout
-
-\begin_layout Plain Layout
-
->>> pop.individual(20).setAllele(1, 0)
-\end_layout
-
-\begin_layout Plain Layout
-
-Segmentation fault
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Execution in multiple threads
-\end_layout
-
-\begin_layout Standard
-simuPOP is capable of executing in multiple threads but it by default only
- makes use of one thread.
- If you have a multi-core CPU, it is often beneficial to set the number
- of threads to 2 or more to take advantage of this feature.
- The recommended number of threads is usually the number of cores of your
- CPU but you might want to set it to a lower number to leave room for the
- execution of other applications.
- The number of threads used in simuPOP can be controlled in the following
- ways:
-\end_layout
-
-\begin_layout Itemize
-If an environmental variable 
-\family typewriter
-OMP_NUM_THREADS
-\family default
- is set to a positive number, simuPOP will be started with specified number
- of threads.
-\end_layout
-
-\begin_layout Itemize
-Before simuPOP is imported, you can set the number of threads using function
- 
-\family typewriter
-simuOpt.setOptions(numThreads=x)
-\family default
- where 
-\family typewriter
-x
-\family default
- can be a positive number (number of threads) or 
-\family typewriter
-0
-\family default
-, which is intepreted as the number of cores available for your computer.
-\end_layout
-
-\begin_layout Standard
-The number of threads a simuPOP session is used will be displayed in the
- banner message when simuPOP is imported, and can be retrieved through 
-\family typewriter
-moduleInfo()['threads']
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-Although simuPOP can usually benefit from the use of multiple cores, certain
- features of your script might prevent the execution of simuPOP in multiple
- threads.
- For example, if your script uses a sex mode of 
-\family typewriter
-GLOBAL_SEX_SEQUENCE
-\family default
- to set the sex of offspring according to the global sequence of sexes (e.g.
- male, male, female), simuPOP will only use on thread to generate offspring
- because it is not feasible to assign individual sex from a single source
- of list across multiple threads.
- 
-\end_layout
-
-\begin_layout Subsection
-Graphical user interface
-\end_layout
-
-\begin_layout Standard
-A complete graphical user interface (GUI) for users to interactively construct
- evolutionary processes is still in the planning stage.
- However, some simuPOP classes and functions can make use of a GUI to improve
- user interaction.
- For example, a parameter input dialog can be constructed automatically
- from a parameter specification list, and be used to accept user input if
- class 
-\family typewriter
-simuOpt.Params
-\family default
- is used to handle parameters.
- Other examples include a progress bar 
-\family typewriter
-simuPOP.utils.ProgressBar
-\family default
- and a dialog used by function 
-\family typewriter
-simuPOP.utils.viewVars
-\family default
- to display a large number of variables.
- The most notable feature of the use of GUI in simuPOP is that 
-\series bold
-all functionalities can be achieved without a GUI
-\series default
-.
- For examples, 
-\family typewriter
-simuOpt.getParam()
-\family default
- will use a terminal to accept user input interactively and 
-\family typewriter
-simuPOP.utils.ProgressBar
-\family default
- will turn to a text-based progress bar in the non-GUI mode.
-\end_layout
-
-\begin_layout Standard
-The use of GUI can be controlled either globally or Individually.
- First, a global GUI parameter could be set by environmental variable 
-\family typewriter
-SIMUGUI
-\family default
-, function 
-\family typewriter
-simuOpt.setOptions(gui)
-\family default
- or a command line option 
-\family typewriter
---gui
-\family default
- of a simuPOP scripts.
- Allowed values include
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-True
-\family default
-: This is the system default value.
- A GUI is used whenever possible.
- All GUI-capable functions support 
-\family typewriter
-wxPython
-\family default
- so a 
-\family typewriter
-wxPython
-\family default
- dialog will be used if 
-\family typewriter
-wxPython
-\family default
- is available.
- Otherwise, 
-\family typewriter
-tkInter
-\family default
- based dialogs or text-mode will be used.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-False
-\family default
-: no GUI will be used.
- All functions will use text-based implementation.
- Note that 
-\family typewriter
---gui=False
-\family default
- is commonly used to run scripts in batch mode.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-wxPython
-\family default
-: Force the use of 
-\family typewriter
-wxPython
-\family default
- GUI toolkit.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-Tkinter
-\family default
-: Force the use of 
-\family typewriter
-Tkinter
-\family default
- GUI toolkit.
-\end_layout
-
-\begin_layout Standard
-Individual classes and functions that could make use a GUI usually have
- their own 
-\family typewriter
-gui
-\family default
- parameters, which can be set to override global GUI settings.
- For example, you could force the use of a text-based progress bar by using
- 
-\family typewriter
-ProgressBar(gui=False)
-\family default
-.
-\end_layout
-
-\begin_layout Subsection
-Online help system
-\end_layout
-
-\begin_layout Standard
-Most of the help information contained in this document and 
-\emph on
-the simuPOP reference manual
-\emph default
- is available from command line.
- For example, after you install and import the simuPOP module, you can use
- 
-\family typewriter
-help(Population.addInfoField) 
-\family default
-to view the help information of member function 
-\family typewriter
-addInfoField
-\family default
- of class 
-\family typewriter
-Population
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/help.log"
-lstparams "caption={Getting help using the \\texttt{help()} function},keywordstyle={\\ttfamily}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-It is important that you understand that
-\end_layout
-
-\begin_layout Itemize
-The constructor of a class is named 
-\family typewriter
-__init__
-\family default
- in Python.
- That is to say, you should use the following command to display the help
- information of the constructor of class 
-\family typewriter
-Population
-\family default
-: 
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
->>> help(Population.__init__)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-Some classes are derived from other classes and have access to member functions
- of their base classes.
- For example, class 
-\family typewriter
-Population
-\family default
- and 
-\family typewriter
-Individual
-\family default
- are both derived from class 
-\family typewriter
-GenoStruTrait
-\family default
-.
- Therefore, you can use all 
-\family typewriter
-GenoStruTrait
-\family default
- member functions from these classes.
- 
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-In addition, the constructor of a derived class also calls the constructor
- of its base class so you may have to refer to the base class for some parameter
- definitions.
- For example, parameters 
-\family typewriter
-begin, end, step, at 
-\family default
-etc are shared by all operators, and are explained in details only in class
- 
-\family typewriter
-BaseOperator.
-\end_layout
-
-\end_deeper
-\begin_layout Section
 Pythonic issues
 \end_layout
 
@@ -2638,151 +2032,6 @@ lstparams "caption={Ranges and iterators},label={iterator}"
 \end_layout
 
 \begin_layout Subsection
-User-defined functions and class 
-\family typewriter
-WithArgs
-\family default
- *
-\end_layout
-
-\begin_layout Standard
-Some simuPOP objects call user-defined functions to perform customized operation
-s.
- For example, a penetrance operator can call a user-defined function with
- genotype at specified loci and use its return value to determine the affection
- status of an individual.
-\end_layout
-
-\begin_layout Standard
-simuPOP uses parameter names to determine which information should be passed
- to such a function.
- For example, a 
-\family typewriter
-PyOperator
-\family default
- will pass a reference to each offspring to a function defined with parameter
- 
-\family typewriter
-off
-\family default
- (e.g.
- 
-\family typewriter
-func(off)
-\family default
-) and references to offspring and his/her parents to a function defined
- with parameters 
-\family typewriter
-off
-\family default
-, 
-\family typewriter
-dad
-\family default
-, and 
-\family typewriter
-mom
-\family default
- (e.g.
- 
-\family typewriter
-func(off, dad, mom)
-\family default
-).
- For example, Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "userFunc"
-
-\end_inset
-
- defines a function 
-\family typewriter
-func(geno, smoking)
-\family default
- using parameters 
-\family typewriter
-geno
-\family default
- and 
-\family typewriter
-smoking
-\family default
- so operator 
-\family typewriter
-PyPenetrance
-\family default
- will pass genotype at specified loci and value at information field 
-\family typewriter
-smoking
-\family default
- to this function.
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/userFunc.log"
-lstparams "caption={Use of user-defined Python function in simuPOP},label={userFunc}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-However, there are circumstances that you do not know the number or names
- of parameters in advance so it is difficult to define such a function.
- For example, your function may use an information field with programmed
- name '
-\family typewriter
-off
-\family default
-'
-\family typewriter
-+str(numOffspring)
-\family default
- where 
-\family typewriter
-numOffspring
-\family default
- is a parameter.
- In this case, you can create a wrapper function object using 
-\family typewriter
-WithArgs(func, args)
-\family default
- and list passed arguments in 
-\family typewriter
-args
-\family default
- (e.g.
- 
-\family typewriter
-WithArgs(func, args=['geno', 'off' + str(numOffspring)]
-\family default
-).
- As long as simuPOP knows which arguments to pass, your function can be
- defined in any format you want (e.g.
- use *args parameters).
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "WithArgs"
-
-\end_inset
-
- provides such an example.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/WithArgs.log"
-lstparams "caption={Specify arguments of user-provided function using function WithArgs},label={WithArgs}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
 Empty, 
 \family typewriter
 ALL_AVAIL
@@ -2972,6 +2221,151 @@ ls in a population, regardless of number of subpopulations.
 \end_layout
 
 \begin_layout Subsection
+User-defined functions and class 
+\family typewriter
+WithArgs
+\family default
+ *
+\end_layout
+
+\begin_layout Standard
+Some simuPOP objects call user-defined functions to perform customized operation
+s.
+ For example, a penetrance operator can call a user-defined function with
+ genotype at specified loci and use its return value to determine the affection
+ status of an individual.
+\end_layout
+
+\begin_layout Standard
+simuPOP uses parameter names to determine which information should be passed
+ to such a function.
+ For example, a 
+\family typewriter
+PyOperator
+\family default
+ will pass a reference to each offspring to a function defined with parameter
+ 
+\family typewriter
+off
+\family default
+ (e.g.
+ 
+\family typewriter
+func(off)
+\family default
+) and references to offspring and his/her parents to a function defined
+ with parameters 
+\family typewriter
+off
+\family default
+, 
+\family typewriter
+dad
+\family default
+, and 
+\family typewriter
+mom
+\family default
+ (e.g.
+ 
+\family typewriter
+func(off, dad, mom)
+\family default
+).
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "userFunc"
+
+\end_inset
+
+ defines a function 
+\family typewriter
+func(geno, smoking)
+\family default
+ using parameters 
+\family typewriter
+geno
+\family default
+ and 
+\family typewriter
+smoking
+\family default
+ so operator 
+\family typewriter
+PyPenetrance
+\family default
+ will pass genotype at specified loci and value at information field 
+\family typewriter
+smoking
+\family default
+ to this function.
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/userFunc.log"
+lstparams "caption={Use of user-defined Python function in simuPOP},label={userFunc}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+However, there are circumstances that you do not know the number or names
+ of parameters in advance so it is difficult to define such a function.
+ For example, your function may use an information field with programmed
+ name '
+\family typewriter
+off
+\family default
+'
+\family typewriter
++str(numOffspring)
+\family default
+ where 
+\family typewriter
+numOffspring
+\family default
+ is a parameter.
+ In this case, you can create a wrapper function object using 
+\family typewriter
+WithArgs(func, args)
+\family default
+ and list passed arguments in 
+\family typewriter
+args
+\family default
+ (e.g.
+ 
+\family typewriter
+WithArgs(func, args=['geno', 'off' + str(numOffspring)]
+\family default
+).
+ As long as simuPOP knows which arguments to pass, your function can be
+ defined in any format you want (e.g.
+ use *args parameters).
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "WithArgs"
+
+\end_inset
+
+ provides such an example.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/WithArgs.log"
+lstparams "caption={Specify arguments of user-provided function using function WithArgs},label={WithArgs}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Exception handling * 
 \end_layout
 
@@ -3024,7 +2418,613 @@ try ...
  and see whether or not an exception will be raised in optimized modules.
 \end_layout
 
+\begin_layout Section
+Loading simuPOP modules
+\end_layout
+
 \begin_layout Subsection
+Short, long, binary, mutant and lineage modules and their optimized versions
+\end_layout
+
+\begin_layout Standard
+There are ten flavors of the core simuPOP module: short, long, binary, mutant,
+ and lineage allele modules, and their optimized versions.
+ 
+\end_layout
+
+\begin_layout Itemize
+The short allele modules use 
+\emph on
+8 bits
+\emph default
+ to store each allele which limits the possible allele states to 256.
+ This is enough most of the times so this is the default module of simuPOP.
+\end_layout
+
+\begin_layout Itemize
+If you need to a large number of allele states to simulate, for example
+ the infinite allele model, you should use the long allele version of the
+ modules, which use 
+\emph on
+32 or 64 bits
+\emph default
+ for each allele and can have 
+\begin_inset Formula $2^{32}$
+\end_inset
+
+ or 
+\begin_inset Formula $2^{64}$
+\end_inset
+
+ possible allele states depending on your platform.
+\end_layout
+
+\begin_layout Itemize
+If you would like to simulate a large number of binary (SNP) markers, binary
+ libraries can save you a lot of RAM because they use 
+\emph on
+1 bit
+\emph default
+ for each allele.
+\end_layout
+
+\begin_layout Itemize
+If you are simulating long sequence regions with rare variants, you can
+ use the mutant module.
+ This module uses compression technology that ignores wildtype alleles and
+ is not efficient if you need to traverse all alleles frequently.
+ The maximum allele state is 255 for this module.
+ Because this module stores location and value of each allele, it uses at
+ least 64 + 8 bits for each allele on a 64 bit system.
+ The complexity of the storage also prevents simultaneous write access to
+ genotypes so this module does not benefit much from running in multi-thread
+ mode.
+\end_layout
+
+\begin_layout Itemize
+If you are interested in tracing the lineage of each allele (e.g.
+ the ID of individuals to whom the allele was introduced), you can use the
+ lineage module for which each allele is attached with information about
+ its origin.
+ The maximum allele state is 255 for this module, and the cost of storing
+ each allele is 8 (value) + 32 (lineage) bits.
+\end_layout
+
+\begin_layout Standard
+Despite of differences in internal memory layout, all these modules have
+ the same interface, although some functions behave differently in terms
+ of functionality and performance.
+ 
+\end_layout
+
+\begin_layout Standard
+Standard libraries have detailed debug and run-time validation mechanism
+ to make sure a simulation executes correctly.
+ Whenever something unusual is detected, simuPOP would terminate with detailed
+ error messages.
+ The cost of such run-time validation varies from case to case but can be
+ high under some extreme circumstances.
+ Because of this, optimized versions for all modules are provided.
+ They bypass most parameter checking and run-time validations and will simply
+ crash if things go wrong.
+ It is recommended that you use standard libraries whenever possible and
+ only use the optimized version when performance is needed and you are confident
+ that your simulation is running as expected.
+\end_layout
+
+\begin_layout Standard
+Examples 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lst:Use-of-standard-module"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lst:Use-of-optimized-module"
+
+\end_inset
+
+ demonstrate the differences between standard and optimized modules, by
+ executing two invalid commands.
+ A standard module checks all input values and raises exceptions when invalid
+ inputs are detected.
+ An interactive Python session would catch these exceptions and print proper
+ error messages.
+ In constrast, an optimized module returns erroneous results and or simply
+ crashes when such inputs are given.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/standard.log"
+lstparams "caption={Use of standard simuPOP modules},keywords={from,import},label={lst:Use-of-standard-module}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lst:Use-of-optimized-module"
+
+\end_inset
+
+ also demonstrates how to use the 
+\family typewriter
+setOptions
+\family default
+ function in the 
+\family typewriter
+simuOpt
+\family default
+ module to control the choice of one of the six simuPOP modules.
+ By specifying one of the values 
+\family typewriter
+short, long
+\family default
+ or 
+\family typewriter
+binary 
+\family default
+for option 
+\family typewriter
+alleleType
+\family default
+, and setting
+\family typewriter
+ optimized
+\family default
+ to 
+\family typewriter
+True
+\family default
+ or 
+\family typewriter
+False
+\family default
+, the right flavor of module will be chosen when simuPOP is loaded.
+ In addition, option 
+\family typewriter
+quiet
+\family default
+ can be used suppress the banner message when simuPOP is loaded.
+ An alternative method is to set environmental variable 
+\family typewriter
+SIMUALLELETYPE
+\family default
+
+\begin_inset Index idx
+status collapsed
+
+\begin_layout Plain Layout
+r
+\end_layout
+
+\end_inset
+
+ to 
+\family typewriter
+short
+\family default
+, 
+\family typewriter
+long
+\family default
+ or 
+\family typewriter
+binary
+\family default
+ to use the standard short, long or binary module, and variable 
+\family typewriter
+SIMUOPTIMIZED
+\family default
+ to use the optimized modules.
+ Command line options 
+\family typewriter
+--optimized
+\family default
+ can also be used.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "lst:Use-of-optimized-module"
+
+\end_inset
+
+Use of optimized simuPOP modules
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+% python
+\end_layout
+
+\begin_layout Plain Layout
+
+>>> from simuOpt import setOptions
+\end_layout
+
+\begin_layout Plain Layout
+
+>>> setOptions(optimized=True, alleleType='long', quiet=True)
+\end_layout
+
+\begin_layout Plain Layout
+
+>>> import simuPOP as sim
+\end_layout
+
+\begin_layout Plain Layout
+
+>>> pop = sim.Population(10, loci=[2])
+\end_layout
+
+\begin_layout Plain Layout
+
+>>> pop.locusPos(10)
+\end_layout
+
+\begin_layout Plain Layout
+
+1.2731974748756028e-313
+\end_layout
+
+\begin_layout Plain Layout
+
+>>> pop.individual(20).setAllele(1, 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+Segmentation fault
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Execution in multiple threads
+\end_layout
+
+\begin_layout Standard
+simuPOP is capable of executing in multiple threads but it by default only
+ makes use of one thread.
+ If you have a multi-core CPU, it is often beneficial to set the number
+ of threads to 2 or more to take advantage of this feature.
+ The recommended number of threads is usually the number of cores of your
+ CPU but you might want to set it to a lower number to leave room for the
+ execution of other applications.
+ The number of threads used in simuPOP can be controlled in the following
+ ways:
+\end_layout
+
+\begin_layout Itemize
+If an environmental variable 
+\family typewriter
+OMP_NUM_THREADS
+\family default
+ is set to a positive number, simuPOP will be started with specified number
+ of threads.
+\end_layout
+
+\begin_layout Itemize
+Before simuPOP is imported, you can set the number of threads using function
+ 
+\family typewriter
+simuOpt.setOptions(numThreads=x)
+\family default
+ where 
+\family typewriter
+x
+\family default
+ can be a positive number (number of threads) or 
+\family typewriter
+0
+\family default
+, which is intepreted as the number of cores available for your computer.
+\end_layout
+
+\begin_layout Standard
+The number of threads a simuPOP session is used will be displayed in the
+ banner message when simuPOP is imported, and can be retrieved through 
+\family typewriter
+moduleInfo()['threads']
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Although simuPOP can usually benefit from the use of multiple cores, certain
+ features of your script might prevent the execution of simuPOP in multiple
+ threads.
+ For example, if your script uses a sex mode of 
+\family typewriter
+GLOBAL_SEX_SEQUENCE
+\family default
+ to set the sex of offspring according to the global sequence of sexes (e.g.
+ male, male, female), simuPOP will only use on thread to generate offspring
+ because it is not feasible to assign individual sex from a single source
+ of list across multiple threads.
+ 
+\end_layout
+
+\begin_layout Subsection
+Graphical user interface
+\end_layout
+
+\begin_layout Standard
+A complete graphical user interface (GUI) for users to interactively construct
+ evolutionary processes is still in the planning stage.
+ However, some simuPOP classes and functions can make use of a GUI to improve
+ user interaction.
+ For example, a parameter input dialog can be constructed automatically
+ from a parameter specification list, and be used to accept user input if
+ class 
+\family typewriter
+simuOpt.Params
+\family default
+ is used to handle parameters.
+ Other examples include a progress bar 
+\family typewriter
+simuPOP.utils.ProgressBar
+\family default
+ and a dialog used by function 
+\family typewriter
+simuPOP.utils.viewVars
+\family default
+ to display a large number of variables.
+ The most notable feature of the use of GUI in simuPOP is that 
+\series bold
+all functionalities can be achieved without a GUI
+\series default
+.
+ For examples, 
+\family typewriter
+simuOpt.getParam()
+\family default
+ will use a terminal to accept user input interactively and 
+\family typewriter
+simuPOP.utils.ProgressBar
+\family default
+ will turn to a text-based progress bar in the non-GUI mode.
+\end_layout
+
+\begin_layout Standard
+The use of GUI can be controlled either globally or Individually.
+ First, a global GUI parameter could be set by environmental variable 
+\family typewriter
+SIMUGUI
+\family default
+, function 
+\family typewriter
+simuOpt.setOptions(gui)
+\family default
+ or a command line option 
+\family typewriter
+--gui
+\family default
+ of a simuPOP scripts.
+ Allowed values include
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+True
+\family default
+: This is the system default value.
+ A GUI is used whenever possible.
+ All GUI-capable functions support 
+\family typewriter
+wxPython
+\family default
+ so a 
+\family typewriter
+wxPython
+\family default
+ dialog will be used if 
+\family typewriter
+wxPython
+\family default
+ is available.
+ Otherwise, 
+\family typewriter
+tkInter
+\family default
+ based dialogs or text-mode will be used.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+False
+\family default
+: no GUI will be used.
+ All functions will use text-based implementation.
+ Note that 
+\family typewriter
+--gui=False
+\family default
+ is commonly used to run scripts in batch mode.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+wxPython
+\family default
+: Force the use of 
+\family typewriter
+wxPython
+\family default
+ GUI toolkit.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+Tkinter
+\family default
+: Force the use of 
+\family typewriter
+Tkinter
+\family default
+ GUI toolkit.
+\end_layout
+
+\begin_layout Standard
+Individual classes and functions that could make use a GUI usually have
+ their own 
+\family typewriter
+gui
+\family default
+ parameters, which can be set to override global GUI settings.
+ For example, you could force the use of a text-based progress bar by using
+ 
+\family typewriter
+ProgressBar(gui=False)
+\family default
+.
+\end_layout
+
+\begin_layout Section
+Online help system
+\end_layout
+
+\begin_layout Standard
+Most of the help information contained in this document and 
+\emph on
+the simuPOP reference manual
+\emph default
+ is available from command line.
+ For example, after you install and import the simuPOP module, you can use
+ 
+\family typewriter
+help(Population.addInfoField) 
+\family default
+to view the help information of member function 
+\family typewriter
+addInfoField
+\family default
+ of class 
+\family typewriter
+Population
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/help.log"
+lstparams "caption={Getting help using the \\texttt{help()} function},keywordstyle={\\ttfamily}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is important that you understand that
+\end_layout
+
+\begin_layout Itemize
+The constructor of a class is named 
+\family typewriter
+__init__
+\family default
+ in Python.
+ That is to say, you should use the following command to display the help
+ information of the constructor of class 
+\family typewriter
+Population
+\family default
+: 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+>>> help(Population.__init__)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Some classes are derived from other classes and have access to member functions
+ of their base classes.
+ For example, class 
+\family typewriter
+Population
+\family default
+ and 
+\family typewriter
+Individual
+\family default
+ are both derived from class 
+\family typewriter
+GenoStruTrait
+\family default
+.
+ Therefore, you can use all 
+\family typewriter
+GenoStruTrait
+\family default
+ member functions from these classes.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+In addition, the constructor of a derived class also calls the constructor
+ of its base class so you may have to refer to the base class for some parameter
+ definitions.
+ For example, parameters 
+\family typewriter
+begin, end, step, at 
+\family default
+etc are shared by all operators, and are explained in details only in class
+ 
+\family typewriter
+BaseOperator.
+\end_layout
+
+\end_deeper
+\begin_layout Section
 Debug-related functions and operators *
 \end_layout
 
@@ -4175,11 +4175,7 @@ individuals are building blocks of a population.
 \end_layout
 
 \begin_layout Subsection
-Access individual genotype (the 
-\family typewriter
-carray
-\family default
- datatype)
+Access individual genotype 
 \end_layout
 
 \begin_layout Standard
@@ -4549,7 +4545,7 @@ lstparams "caption={Use of subpopulation names},label={subPopName}"
 \end_layout
 
 \begin_layout Subsection
-Virtual subpopulations *
+Virtual subpopulations and virtual splitters *
 \end_layout
 
 \begin_layout Standard
@@ -5053,7 +5049,7 @@ lstparams "caption={Access Individual properties in batch mode},label={batchAcce
 \end_layout
 
 \begin_layout Subsection
-Information fields
+Attach arbitrary auxillary information using information fields
 \begin_inset CommandInset label
 LatexCommand label
 name "sec:Information-fields"
@@ -5117,7 +5113,7 @@ name "sub:Ancestral-populations"
 
 \end_inset
 
-Ancestral populations
+Keep track of ancestral generations
 \end_layout
 
 \begin_layout Standard
@@ -5363,7 +5359,7 @@ lstparams "caption={Ancestral populations},label={ancestralPop}"
 \end_layout
 
 \begin_layout Subsection
-Add and remove loci
+Change genotypic structure of a population 
 \end_layout
 
 \begin_layout Standard
@@ -5391,7 +5387,7 @@ lstparams "caption={Add and remove loci and chromosomes},keywordstyle={\\ttfamil
 \end_layout
 
 \begin_layout Subsection
-Remove or extract individuals and subpopulations
+Remove or extract individuals and subpopulations from a population
 \end_layout
 
 \begin_layout Standard
@@ -5527,7 +5523,7 @@ name "sub:Population-Variables"
 
 \end_inset
 
-Population Variables
+Store arbitrary population information as population variables
 \end_layout
 
 \begin_layout Standard
@@ -5962,7 +5958,7 @@ k
 \end_layout
 
 \begin_layout Section
-Introduction
+Introduction to operators
 \end_layout
 
 \begin_layout Standard
@@ -6068,7 +6064,8 @@ The following sections will introduce common features of all operators.
 \end_layout
 
 \begin_layout Subsection
-Applicable generations
+Apply operators to selected replicates and (virtual) subpopulations at selected
+ generations
 \end_layout
 
 \begin_layout Standard
@@ -6393,7 +6390,7 @@ the simuPOP reference manual
 \end_layout
 
 \begin_layout Subsection
-Operator output *
+Write output of operators to one or more files
 \end_layout
 
 \begin_layout Standard
