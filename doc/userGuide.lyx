@@ -16493,13 +16493,21 @@ Stat
 \family default
  is applied at generations 0, 20, and 40, it will set variable 
 \family typewriter
-Ne_waples89
+Ne_waples89_P1
 \family default
- (for Waples 1989) and 
+, 
 \family typewriter
-Ne_tempoFS
+Ne_waples89_P2 
 \family default
- (for Jorde & Ryman 2007, as implemented in a package 
+(for Waples 1989) and 
+\family typewriter
+Ne_tempoFS_P1
+\family default
+, 
+\family typewriter
+Ne_tempoFS_P
+\family default
+2 (for Jorde & Ryman 2007, as implemented in a package 
 \family typewriter
 TempoFS
 \family default
