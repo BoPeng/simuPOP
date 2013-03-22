@@ -21424,12 +21424,12 @@ Lineage of alleles consists of information such as the distribution of alleles
 
 \begin_layout Standard
 The lineage modules of simuPOP provides facilities to track allelic lineage.
- More specific,
+ More specifically,
 \end_layout
 
 \begin_layout Itemize
 Each allele is associated with an integer number (an allelic lineage) that
- identifies the origian, or the source of the allele.
+ identifies the origin, or the source of the allele.
 \end_layout
 
 \begin_layout Itemize
