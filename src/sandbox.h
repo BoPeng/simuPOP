@@ -175,16 +175,16 @@ private:
 	SelCoef getFitnessValue(size_t mutant) const;
 
 
-	double randomSelAddFitness(GenoIterator it, GenoIterator it_end) const;
+	double randomSelAddFitness(GenoIterator it, GenoIterator it_end, bool maleChrX) const;
 
-	double randomSelExpFitness(GenoIterator it, GenoIterator it_end) const;
+	double randomSelExpFitness(GenoIterator it, GenoIterator it_end, bool maleChrX) const;
 
 	// extended models does not assume additivity (h != 0.5)
-	double randomSelMulFitnessExt(GenoIterator it, GenoIterator it_end) const;
+	double randomSelMulFitnessExt(GenoIterator it, GenoIterator it_end, bool maleChrX) const;
 
-	double randomSelAddFitnessExt(GenoIterator it, GenoIterator it_end) const;
+	double randomSelAddFitnessExt(GenoIterator it, GenoIterator it_end, bool maleChrX) const;
 
-	double randomSelExpFitnessExt(GenoIterator it, GenoIterator it_end) const;
+	double randomSelExpFitnessExt(GenoIterator it, GenoIterator it_end, bool maleChrX) const;
 
 private:
 	///

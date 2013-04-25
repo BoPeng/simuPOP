@@ -36,6 +36,8 @@ bool RevertFixedSites::apply(Population & pop) const
 	if (pop.popSize() == 0 || pop.totNumLoci() == 0)
 		return true;
 
+	bool chX = pop.chromType(0) == CHROMOSOME_X;
+
 	RawIndIterator it = pop.rawIndBegin();
 	RawIndIterator it_end = pop.rawIndEnd();
 	std::set<Allele> commonAlleles(it->genoBegin(0), it->genoEnd(0));
@@ -51,11 +53,16 @@ bool RevertFixedSites::apply(Population & pop) const
 			commonAlleles.end(), alleles1.begin(), alleles1.end(),
 			std::inserter(common, common.begin()));
 		// commonAlleles = common & geno1
-		commonAlleles.clear();
-		std::set<Allele> alleles2(it->genoBegin(1), it->genoEnd(1));
-		set_intersection(common.begin(),
-			common.end(), alleles2.begin(), alleles2.end(),
-			std::inserter(commonAlleles, commonAlleles.begin()));
+		if (chX && it->sex() == MALE) {
+			// commonAlleles = common
+			commonAlleles.swap(common);
+		} else {
+			commonAlleles.clear();
+			std::set<Allele> alleles2(it->genoBegin(1), it->genoEnd(1));
+			set_intersection(common.begin(),
+				common.end(), alleles2.begin(), alleles2.end(),
+				std::inserter(commonAlleles, commonAlleles.begin()));
+		}
 		if (commonAlleles.size() == 0)
 			return true;
 	}
@@ -72,6 +79,8 @@ bool RevertFixedSites::apply(Population & pop) const
 	vectora new_alleles(pop.totNumLoci());
 	for (; it != it_end; ++it) {
 		for (size_t p = 0; p < 2; ++p) {
+			if (p == 1 && chX && it->sex() == MALE)
+				continue;
 			std::set<Allele> old_alleles(it->genoBegin(p), it->genoEnd(p));
 			old_alleles.erase(0);
 			std::fill(new_alleles.begin(), new_alleles.end(), Allele(0));
@@ -87,18 +96,34 @@ bool RevertFixedSites::apply(Population & pop) const
 
 double MutSpaceSelector::indFitness(Population & /* pop */, RawIndIterator ind) const
 {
-	if (m_mode == MULTIPLICATIVE) {
-		return randomSelMulFitnessExt(ind->genoBegin(), ind->genoEnd());
-	} else if (m_mode == ADDITIVE) {
-		if (m_additive)
-			return randomSelAddFitness(ind->genoBegin(), ind->genoEnd());
-		else
-			return randomSelAddFitnessExt(ind->genoBegin(), ind->genoEnd());
-	} else if (m_mode == EXPONENTIAL) {
-		if (m_additive)
-			return randomSelExpFitness(ind->genoBegin(), ind->genoEnd());
-		else
-			return randomSelExpFitnessExt(ind->genoBegin(), ind->genoEnd());
+	if (ind->sex() == MALE && ind->chromType(0) == CHROMOSOME_X) {
+		if (m_mode == MULTIPLICATIVE) {
+			return randomSelMulFitnessExt(ind->genoBegin(0), ind->genoEnd(0), true);
+		} else if (m_mode == ADDITIVE) {
+			if (m_additive)
+				return randomSelAddFitness(ind->genoBegin(0), ind->genoEnd(0), true);
+			else
+				return randomSelAddFitnessExt(ind->genoBegin(0), ind->genoEnd(0), true);
+		} else if (m_mode == EXPONENTIAL) {
+			if (m_additive)
+				return randomSelExpFitness(ind->genoBegin(0), ind->genoEnd(0), true);
+			else
+				return randomSelExpFitnessExt(ind->genoBegin(0), ind->genoEnd(0), true);
+		}
+	} else {
+		if (m_mode == MULTIPLICATIVE) {
+			return randomSelMulFitnessExt(ind->genoBegin(), ind->genoEnd(), false);
+		} else if (m_mode == ADDITIVE) {
+			if (m_additive)
+				return randomSelAddFitness(ind->genoBegin(), ind->genoEnd(), false);
+			else
+				return randomSelAddFitnessExt(ind->genoBegin(), ind->genoEnd(), false);
+		} else if (m_mode == EXPONENTIAL) {
+			if (m_additive)
+				return randomSelExpFitness(ind->genoBegin(), ind->genoEnd(), false);
+			else
+				return randomSelExpFitnessExt(ind->genoBegin(), ind->genoEnd(), false);
+		}
 	}
 	return 0;
 }
@@ -178,7 +203,7 @@ MutSpaceSelector::SelCoef MutSpaceSelector::getFitnessValue(size_t mutant) const
 }
 
 
-double MutSpaceSelector::randomSelAddFitness(GenoIterator it, GenoIterator it_end) const
+double MutSpaceSelector::randomSelAddFitness(GenoIterator it, GenoIterator it_end, bool chrX) const
 {
 	double s = 0;
 
@@ -191,11 +216,14 @@ double MutSpaceSelector::randomSelAddFitness(GenoIterator it, GenoIterator it_en
 		else
 			s += sit->second.first / 2;
 	}
+	if (chrX)
+		// fitness of variant on chromosome X is as if it is homogeneous
+		s += s;
 	return 1 - s > 0 ? 1 - s : 0;
 }
 
 
-double MutSpaceSelector::randomSelExpFitness(GenoIterator it, GenoIterator it_end) const
+double MutSpaceSelector::randomSelExpFitness(GenoIterator it, GenoIterator it_end, bool chrX) const
 {
 	double s = 0;
 
@@ -208,11 +236,14 @@ double MutSpaceSelector::randomSelExpFitness(GenoIterator it, GenoIterator it_en
 		else
 			s += sit->second.first / 2;
 	}
+	if (chrX)
+		// fitness of variant on chromosome X is as if it is homogeneous
+		s += s;
 	return exp(-s);
 }
 
 
-double MutSpaceSelector::randomSelMulFitnessExt(GenoIterator it, GenoIterator it_end) const
+double MutSpaceSelector::randomSelMulFitnessExt(GenoIterator it, GenoIterator it_end, bool chrX) const
 {
 	MutCounter cnt;
 
@@ -233,12 +264,12 @@ double MutSpaceSelector::randomSelMulFitnessExt(GenoIterator it, GenoIterator it
 		SelMap::iterator sit = m_selFactory.find(mit->first);
 		if (sit == m_selFactory.end()) {
 			SelCoef sf = getFitnessValue(mit->first);
-			if (mit->second == 1)
+			if (mit->second == 1 && ! chrX)
 				s *= 1 - sf.first * sf.second;
 			else
 				s *= 1 - sf.first;
 		} else {
-			if (mit->second == 1)
+			if (mit->second == 1 && ! chrX)
 				s *= 1 - sit->second.first * sit->second.second;
 			else
 				s *= 1 - sit->second.first;
@@ -248,7 +279,7 @@ double MutSpaceSelector::randomSelMulFitnessExt(GenoIterator it, GenoIterator it
 }
 
 
-double MutSpaceSelector::randomSelAddFitnessExt(GenoIterator it, GenoIterator it_end) const
+double MutSpaceSelector::randomSelAddFitnessExt(GenoIterator it, GenoIterator it_end, bool chrX) const
 {
 	MutCounter cnt;
 
@@ -269,12 +300,12 @@ double MutSpaceSelector::randomSelAddFitnessExt(GenoIterator it, GenoIterator it
 		SelMap::iterator sit = m_selFactory.find(mit->first);
 		if (sit == m_selFactory.end()) {
 			SelCoef sf = getFitnessValue(mit->first);
-			if (mit->second == 1)
+			if (mit->second == 1 && ! chrX)
 				s += sf.first * sf.second;
 			else
 				s += sf.first;
 		} else {
-			if (mit->second == 1)
+			if (mit->second == 1 && ! chrX)
 				s += sit->second.first * sit->second.second;
 			else
 				s += sit->second.first;
@@ -284,7 +315,7 @@ double MutSpaceSelector::randomSelAddFitnessExt(GenoIterator it, GenoIterator it
 }
 
 
-double MutSpaceSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it_end) const
+double MutSpaceSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it_end, bool chrX) const
 {
 	MutCounter cnt;
 
@@ -305,12 +336,12 @@ double MutSpaceSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it
 		SelMap::iterator sit = m_selFactory.find(mit->first);
 		if (sit == m_selFactory.end()) {
 			SelCoef sf = getFitnessValue(mit->first);
-			if (mit->second == 1)
+			if (mit->second == 1 && ! chrX)
 				s += sf.first * sf.second;
 			else
 				s += sf.first;
 		} else {
-			if (mit->second == 1)
+			if (mit->second == 1 && ! chrX)
 				s += sit->second.first * sit->second.second;
 			else
 				s += sit->second.first;
@@ -325,6 +356,7 @@ size_t MutSpaceMutator::locateVacantLocus(Population & /* pop */, size_t beg, si
 	size_t loc = getRNG().randInt(static_cast<ULONG>(end - beg)) + beg;
 
 	std::set<size_t>::iterator it = std::find(mutants.begin(), mutants.end(), loc);
+
 	if (it == mutants.end())
 		return loc;
 	// look forward and backward
@@ -370,6 +402,7 @@ bool MutSpaceMutator::apply(Population & pop) const
 	subPopList subPops = applicableSubPops(pop);
 	subPopList::const_iterator sp = subPops.begin();
 	subPopList::const_iterator spEnd = subPops.end();
+	bool chrX = pop.chromType(0) == CHROMOSOME_X;
 	for (; sp != spEnd; ++sp) {
 		DBG_FAILIF(sp->isVirtual(), ValueError, "This operator does not support virtual subpopulation.");
 		for (size_t indIndex = 0; indIndex < pop.subPopSize(sp->subPop()); ++indIndex) {
@@ -383,6 +416,12 @@ bool MutSpaceMutator::apply(Population & pop) const
 				size_t p = (loc - 1) / ploidyWidth;
 				// chromosome and position on chromosome?
 				size_t mutLoc = (loc - 1) - p * ploidyWidth;
+				// handle chromosome X
+				if (p == 1 && chrX && ind.sex() == MALE) {
+					if (out)
+						(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t4\n";
+					continue;
+				}
 				size_t ch = 0;
 				for (size_t reg = 0; reg < width.size(); ++reg) {
 					if (mutLoc < width[reg]) {
@@ -490,6 +529,8 @@ void MutSpaceRecombinator::transmitGenotype0(Population & pop, Population & offP
 {
 	size_t nCh = parent.numChrom();
 
+	// chromosome X is not passed to male offspring
+
 	// count duplicates...
 	for (size_t ch = 0; ch < parent.numChrom(); ++ch) {
 		MutCounter cnt;
@@ -549,7 +590,7 @@ void MutSpaceRecombinator::transmitGenotype0(Population & pop, Population & offP
 		// not enough size
 		if (alleles.size() + 1 > offPop.numLoci(ch)) {
 			DBG_DO(DBG_TRANSMITTER, cerr << "Extending size of chromosome " << ch <<
-				" to " << alleles.size() + 2 << endl);
+				    " to " << alleles.size() + 2 << endl);
 			size_t sz = alleles.size() - offPop.numLoci(ch) + 2;
 			vectorf added(sz);
 			for (size_t j = 0; j < sz; ++j)
@@ -656,7 +697,7 @@ void MutSpaceRecombinator::transmitGenotype1(Population & pop, Population & offP
 		// not enough size
 		if (alleles.size() + 1 > offPop.numLoci(ch)) {
 			DBG_DO(DBG_TRANSMITTER, cerr << "Extending size of chromosome " << ch <<
-				" to " << alleles.size() + 2 << endl);
+				    " to " << alleles.size() + 2 << endl);
 			size_t sz = alleles.size() - offPop.numLoci(ch) + 2;
 			vectorf added(sz);
 			for (size_t j = 0; j < sz; ++j)
@@ -685,6 +726,23 @@ bool MutSpaceRecombinator::applyDuringMating(Population & pop, Population & offP
 		return true;
 
 	initializeIfNeeded(*offspring);
+
+	if (pop.chromType(0) == CHROMOSOME_X) {
+		// for mom
+		if (m_rate == 0)
+			copyChromosome(*mom, getRNG().randBit(), *offspring, 0, 0);
+		else if (m_rate == 0.5)
+			transmitGenotype0(pop, offPop, *mom, offspring - offPop.rawIndBegin(), 0);
+		else
+			transmitGenotype1(pop, offPop, *mom, offspring - offPop.rawIndBegin(), 0);
+
+		// for dad, pass X to daughter
+		if (offspring->sex() == MALE)
+			return true;
+		else
+			copyChromosome(*dad, 0, *offspring, 1, 0);
+		return true;
+	}
 
 	// standard genotype transmitter
 	if (m_rate == 0) {
