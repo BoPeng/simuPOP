@@ -13784,12 +13784,12 @@ In simuPOP, tagging refers to the action of setting various information
  the production of offspring.
  simuPOP provides a number of tagging operators (called taggers) for various
  purposes.
- Because tagging operators are during-mating operators, you can use parameter
+ Because tagging operators are during-mating operators, parameter
  
 \family typewriter
 subPops
 \family default
- to tag only offspring that belong to specified virtual subpopulation.
+ can be used to tag only offspring that belong to specified virtual subpopulation. (e.g. all male offspring)
 \end_layout
 
 \begin_layout Subsection
@@ -18989,7 +18989,25 @@ reference "numOff"
 
 \end_inset
 
- where offspring with certain genotypes have lower probabilities to survive.
+ where offspring with certain genotypes have lower probabilities to survive. If you would like to control size of families in the presence of natural selection, you could set a larger 
+\family typewriter
+numOffspring
+\family default
+ use a 
+\family typewriter
+OffspringTagger
+\family default
+ to mark the index of offspring, and discard offspring conditionally using operator 
+\family typewriter
+DiscardIf
+\family default
+ . Please refer to example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "OffspringTagger"
+
+\end_inset
+ for details.
 \end_layout
 
 \begin_layout Subsection
