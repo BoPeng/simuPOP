@@ -14001,6 +14001,76 @@ As long as parental generations do not change after the offspring generation
 \end_layout
 
 \begin_layout Subsection
+Tracking index of offspring within families (operator 
+\family typewriter
+OffspringTagger
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+An offspring tagger is used to record the index of offspring within each
+ family in an information field (default to 
+\family typewriter
+offspring_idx
+\family default
+) of offspring.
+ Because the index is reset for each mating event, the index will be reset
+ even if two adjacent families share the same parents.
+ In addition, this operator records the relative index of an offspring so
+ the index will not change if an offspring is re-generated when the previous
+ offspring is discarded for any reason.
+\end_layout
+
+\begin_layout Standard
+Because during-mating selection operator discards offspring according their
+ genotypes, a mating scheme can produce families with varying sizes even
+ if 
+\family typewriter
+numOffspring
+\family default
+ is set to a constant number.
+ On the other hand, if we would like to ensure equal family size 
+\emph on
+N
+\emph default
+ in the presence of natural selection, we will have to produce more offspring
+ so that there can be at least 
+\emph on
+N
+\emph default
+ offspring in each family after selection.
+ Once 
+\emph on
+N
+\emph default
+ offspring have been generated, excessive offspring can be discarded according
+ to 
+\family typewriter
+offspring_idx
+\family default
+.
+ The following example demonstrates such a simulation scenario: 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/OffspringTagger.log"
+lstparams "caption={Keeping constant family size in the presence of natural selection against offspring},label={OffspringTagger}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Because families with lethal alleles produce the same number of offspring
+ as families without such alleles, natural selection happens within each
+ families and is weaker than the case when natural selection is used to
+ all offspring.
+ This phenomena is generally referred to as reproductive compensation.
+ 
+\end_layout
+
+\begin_layout Subsection
 Assign unique IDs to individuals (operator 
 \family typewriter
 IdTagger

@@ -281,6 +281,29 @@ bool ParentsTagger::applyDuringMating(Population & pop, Population & offPop, Raw
 }
 
 
+string OffspringTagger::describe(bool /* format */) const
+{
+	return "<simuPOP.OffspringTagger> records indexes of offspring within family in the offspring population "
+		       " to information fields " + infoField(0) + " of each offspring.";
+}
+
+
+bool OffspringTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
+                                      Individual * dad, Individual * mom) const
+{
+	// if offspring does not belong to subPops, do nothing, but does not fail.
+	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
+		return true;
+
+	// record to one or two information fields
+	if (offspring->firstOffspring())
+		offspring->setInfo(0, infoField(0));
+	else
+		offspring->setInfo((*(offspring-1)).intInfo(infoField(0)) + 1, infoField(0));
+	return true;
+}
+
+
 string PedigreeTagger::describe(bool /* format */) const
 {
 	return "<simuPOP.PedigreeTagger> record parental IDs (" + infoField(0) + " and "

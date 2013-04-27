@@ -3795,6 +3795,38 @@ pop.evolve(
 #end_file
 
 
+#begin_file log/OffspringTagger.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.setRNG(seed=12345)
+sim.IdTagger().reset(1)
+#end_ignore
+pop = sim.Population(1000, loci=1, infoFields='offspring_idx')
+pop.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.InitGenotype(freq=[0.5, 0.5]),
+    ],
+    matingScheme=sim.RandomMating(ops=[
+        sim.MendelianGenoTransmitter(),
+        # lethal recessive alleles
+        sim.MaSelector(loci=0, wildtype=0, fitness=[1, 0.90, 0.5]),
+        sim.OffspringTagger(),
+        sim.DiscardIf('offspring_idx > 4'),
+    ], numOffspring=10),
+    postOps=[
+        sim.Stat(alleleFreq=0, step=10),
+        sim.PyEval(r"'gen %d: allele freq: %.3f\n' % "
+            "(gen, alleleFreq[0][1])", step=10)
+    ],
+    gen = 50,
+)
+#end_file
+
 #begin_file log/IdTagger.py
 #begin_ignore
 import simuOpt

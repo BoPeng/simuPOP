@@ -303,6 +303,8 @@ UINT OffspringGenerator::generateOffspring(Population & pop, Population & offPop
 		// set sex, during mating operator will try to
 		// follow the offspring sex (e.g. pass X or Y chromosome)
 		it->setSex(getSex(count));
+		// set first offspring
+		it->setFirstOffspring(count == 0);
 		//
 		accept = true;
 		opList::const_iterator iop = m_transmitters.begin();

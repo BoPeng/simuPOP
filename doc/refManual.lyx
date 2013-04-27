@@ -1340,6 +1340,13 @@ ParentsTaggerRef
 
 
 \backslash
+OffspringTaggerRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 PedigreeTaggerRef
 \end_layout
 

@@ -204,6 +204,7 @@ __all__ = [
     'IdTagger',
     'InheritTagger',
     'ParentsTagger',
+    'OffspringTagger',
     'PedigreeTagger',
     'PyTagger',
     'SummaryTagger',

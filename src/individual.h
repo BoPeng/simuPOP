@@ -180,6 +180,10 @@ protected:
 	/// or extraction.
 	static const unsigned char m_flagMarked = 8;
 
+	/// a temporary mark to mark individuals as the first
+	/// offspring in the family
+	static const unsigned char m_flagFirstOffspring = 16;
+
 public:
 	///  @name constructor, destructor etc
 	//@{
@@ -413,6 +417,20 @@ public:
 			SETFLAG(m_flags, m_flagFemale);
 	}
 
+	/// CPPONLY
+	bool firstOffspring() const
+	{
+		return ISSETFLAG(m_flags, m_flagFirstOffspring);
+	}
+
+	/// CPPONLY
+	void setFirstOffspring(bool first) const
+	{
+		if (first)
+			SETFLAG(m_flags, m_flagFirstOffspring);
+		else
+			RESETFLAG(m_flags, m_flagFirstOffspring);
+	}
 
 	/** Return \c True if this individual is affected.
 	 * <group>4-affection</group>
