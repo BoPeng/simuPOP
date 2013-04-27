@@ -45,6 +45,41 @@ class TestTagger(unittest.TestCase):
                     pop.individual(i*2+1,sp).info(1) )
             # note that the last one may be left alone
 
+    def testOffspringTagger(self):
+        'Testing offspring tagger.'
+        simu = Simulator(
+            Population(size=[50,150], ploidy=2, loci=[2,4],
+                    infoFields='offspring_idx'))
+        simu.evolve(
+            initOps = [InitSex()],
+            matingScheme = RandomMating(numOffspring=3, ops=[MendelianGenoTransmitter(), OffspringTagger()]),
+            gen = 1
+        )
+        pop = simu.population(0)
+        self.assertEqual(pop.indInfo('offspring_idx', subPop=0), tuple([0., 1., 2.]*16 + [0., 1.]))
+        # varying family size?
+        pop = Population(size=[500,1000], ploidy=2, loci=[2,4],
+                    infoFields=['offspring_idx', 'father_id', 'ind_id', 'mother_id'])
+        pop.evolve(
+            initOps = [InitSex(), IdTagger(), ],
+            matingScheme = RandomMating(numOffspring=(UNIFORM_DISTRIBUTION, 2, 5),
+                ops=[MendelianGenoTransmitter(), IdTagger(),
+                PedigreeTagger(), OffspringTagger()]),
+            gen = 1
+        )
+        lf = 0
+        lm = 0
+        li = 0
+        for ind in pop.individuals():
+            if ind.father_id == lf and ind.mother_id == lm:
+                li += 1
+            else:
+                lf = ind.father_id
+                lm = ind.mother_id
+                li = 0
+            self.assertEqual(ind.offspring_idx, li)
+
+
     def testInheritTagger(self):
         'Testing inherit tagger (pass info from parents to offspring'
         # this operator pass tag from one or both parents to offspring

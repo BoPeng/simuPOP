@@ -259,7 +259,7 @@ public:
 	 *  assigned if any of the parent is missing. If only one information field
 	 *  is given, it will be used to record the index of the first valid parent
 	 *  (father if both parents are valid). This operator ignores parameters
-	 *  \e stage, \e output, and \e subPops.
+	 *  \e output and \e subPops.
 	 */
 	ParentsTagger(int begin = 0, int end = -1,
 		int step = 1, const intList & at = vectori(),
@@ -268,7 +268,7 @@ public:
 		const stringList & infoFields = stringList("father_idx", "mother_idx")) :
 		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields)
 	{
-	};
+	}
 
 	virtual ~ParentsTagger()
 	{
@@ -300,6 +300,63 @@ public:
 
 
 };
+
+
+/** This tagging operator records the indexes of offspring within a family
+ *  (sharing the same parent or parents) in specified information field
+ *  (default to \c offspring_idx). This tagger can be used to control the
+ *  number of offspring during mating.
+ */
+class OffspringTagger : public BaseOperator
+{
+public:
+	/** Create an offspring tagger that records the indexes of offspring within
+	 *  a family. The index is determined by successful production of offspring
+	 *  during a mating events so the it does not increase the index if a
+	 *  previous offspring is discarded, and it resets index even if adjacent
+	 *  families share the same parents. This operator ignores parameters
+	 *  \e stage, \e output, and \e subPops.
+	 */
+	OffspringTagger(int begin = 0, int end = -1,
+		int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const stringFunc & output = "",
+		const stringList & infoFields = stringList("offspring_idx")) :
+		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields)
+	{
+		DBG_ASSERT(infoSize() == 1, ValueError,
+			"A single field to record offspring index is required for operator OffspringTagger.");
+	}
+
+	virtual ~OffspringTagger()
+	{
+	}
+
+
+	/// HIDDEN Deep copy of a \c OffspringTagger
+	virtual BaseOperator * clone() const
+	{
+		return new OffspringTagger(*this);
+	}
+
+
+	/// HIDDEN
+	string describe(bool format = true) const;
+
+
+	/** CPPONLY
+	 * apply the \c OffspringTagger
+	 */
+	bool applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
+		Individual * dad = NULL, Individual * mom = NULL) const;
+
+	/// CPPONLY
+	bool parallelizable() const
+	{
+		return true;
+	}
+};
+
 
 
 /** This tagging operator records the ID of parents of each offspring in
