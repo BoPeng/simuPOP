@@ -2992,6 +2992,10 @@ Details:
 
 "; 
 
+%ignore simuPOP::Individual::firstOffspring() const;
+
+%ignore simuPOP::Individual::setFirstOffspring(bool first) const;
+
 %feature("docstring") simuPOP::Individual::affected "
 
 Usage:
@@ -4789,6 +4793,51 @@ Usage:
 
 %ignore simuPOP::OffspringGenerator::parallelizable() const;
 
+%feature("docstring") simuPOP::OffspringTagger "
+
+Details:
+
+    This tagging operator records the indexes of offspring within a
+    family (sharing the same parent or parents) in specified
+    information field (default to offspring_idx). This tagger can be
+    used to control the number of offspring during mating.
+
+"; 
+
+%feature("docstring") simuPOP::OffspringTagger::OffspringTagger "
+
+Usage:
+
+    OffspringTagger(begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      subPops=ALL_AVAIL, output=\"\", infoFields=ALL_AVAIL)
+
+Details:
+
+    Create an offspring tagger that records the indexes of offspring
+    within a family. The index is determined by successful production
+    of offspring during a mating events so the it does not increase
+    the index if a previous offspring is discarded, and it resets
+    index even if adjacent families share the same parents. This
+    operator ignores parameters stage, output, and subPops.
+
+"; 
+
+%feature("docstring") simuPOP::OffspringTagger::~OffspringTagger "
+
+Usage:
+
+    x.~OffspringTagger()
+
+"; 
+
+%feature("docstring") simuPOP::OffspringTagger::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::OffspringTagger::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::OffspringTagger::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+
+%ignore simuPOP::OffspringTagger::parallelizable() const;
+
 %feature("docstring") simuPOP::opList "
 
 "; 
@@ -4922,7 +4971,7 @@ Details:
     -1 will be assigned if any of the parent is missing. If only one
     information field is given, it will be used to record the index of
     the first valid parent (father if both parents are valid). This
-    operator ignores parameters stage, output, and subPops.
+    operator ignores parameters output and subPops.
 
 "; 
 
