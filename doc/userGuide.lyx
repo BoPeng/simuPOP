@@ -11721,8 +11721,11 @@ output='>>mutants.txt'
  string and counts the number of mutants at each locus using a global dictionary
  variable.
  As we can see from the output, because the KAlleleMutator uses a higher
- mutation rate (0.01) at loci 3 and 4 than mutation rate (0.001) at loci 0,
- 1, and 2, there are 10 times more mutants at the last two loci.
+ mutation rate (0.01) at locus 1 than mutation rate (0.001) at locus 0, there
+ are 10 times more mutants at the second locus.
+ There are about 3/4 mutations on the locus on chromosome X and 1/4 mutations
+ on the locus on chromosome Y, for obvious reasons.
+ 
 \end_layout
 
 \begin_layout Standard
