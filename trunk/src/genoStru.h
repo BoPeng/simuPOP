@@ -852,7 +852,7 @@ private:
 	friend class boost::serialization::access;
 
 	template<class Archive>
-	void serialize(Archive & ar, const UINT version)
+	void serialize(Archive & , const UINT )
 	{
 		// do not archive index.
 	}
