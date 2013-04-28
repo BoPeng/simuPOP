@@ -73,7 +73,7 @@ Details:
 Usage:
 
     BaseMutator(rates=[], loci=ALL_AVAIL, mapIn=[], mapOut=[],
-      context=0, output=\">\", begin=0, end=-1, step=1, at=[],
+      context=0, output=\"\", begin=0, end=-1, step=1, at=[],
       reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=\"ind_id\",
       lineageMode=FROM_INFO)
 
@@ -124,15 +124,20 @@ Details:
     sign depending on the ploidy the mutation happens (1 for ploidy 0,
     -1 for ploidy 1, etc). The lineage information will be transmitted
     along with the alleles so this feature allows you to track the
-    source of mutants during evolution.A  Some mutation models are
-    context dependent. Namely, how an allele mutates will depend on
-    its adjecent alleles. Whereas most simuPOP mutators are context
-    independent, some of them accept a parameter context which is the
-    number of alleles to the left and right of the mutated allele. For
-    example context=1 will make the alleles to the immediate left and
-    right to a mutated allele available to a mutator. These alleles
-    will be mapped in if parameter mapIn is defined. How exactly a
-    mutator makes use of these information is mutator dependent.
+    source of mutants during evolution.A  A mutator by default does
+    not produce any output. However, if an non-empty output is
+    specified, the operator will output generation number, locus,
+    ploidy, original allele, mutant, and values of all information
+    field specified by parameter infoFields (e.g. individual ID if
+    ind_id is specified).  Some mutation models are context dependent.
+    Namely, how an allele mutates will depend on its adjecent alleles.
+    Whereas most simuPOP mutators are context independent, some of
+    them accept a parameter context which is the number of alleles to
+    the left and right of the mutated allele. For example context=1
+    will make the alleles to the immediate left and right to a mutated
+    allele available to a mutator. These alleles will be mapped in if
+    parameter mapIn is defined. How exactly a mutator makes use of
+    these information is mutator dependent.
 
 "; 
 
@@ -974,6 +979,22 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::CombinedAlleleIterator::currentPloidy "
+
+Usage:
+
+    x.currentPloidy()
+
+"; 
+
+%feature("docstring") simuPOP::CombinedAlleleIterator::individual "
+
+Usage:
+
+    x.individual()
+
+"; 
+
 %feature("docstring") simuPOP::CombinedAlleleIterator::assignIfDiffer "
 
 Usage:
@@ -1192,7 +1213,7 @@ Details:
 Usage:
 
     ContextMutator(rates=[], loci=ALL_AVAIL, mutators=[],
-      contexts=[], mapIn=[], mapOut=[], output=\">\", begin=0, end=-1,
+      contexts=[], mapIn=[], mapOut=[], output=\"\", begin=0, end=-1,
       step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
       infoFields=\"ind_id\", lineageMode=FROM_INFO)
 
@@ -3665,7 +3686,7 @@ Details:
 Usage:
 
     KAlleleMutator(k, rates=[], loci=ALL_AVAIL, mapIn=[], mapOut=[],
-      output=\">\", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      output=\"\", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
       subPops=ALL_AVAIL, infoFields=\"ind_id\", lineageMode=FROM_INFO)
 
 Details:
@@ -4040,7 +4061,7 @@ Details:
 Usage:
 
     MatrixMutator(rate, loci=ALL_AVAIL, mapIn=[], mapOut=[],
-      output=\">\", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+      output=\"\", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
       subPops=ALL_AVAIL, infoFields=\"ind_id\", lineageMode=FROM_INFO)
 
 Details:
@@ -4345,7 +4366,7 @@ Details:
 Usage:
 
     MixedMutator(rates=[], loci=ALL_AVAIL, mutators=[], prob=[],
-      mapIn=[], mapOut=[], context=0, output=\">\", begin=0, end=-1,
+      mapIn=[], mapOut=[], context=0, output=\"\", begin=0, end=-1,
       step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
       infoFields=\"ind_id\", lineageMode=FROM_INFO)
 
@@ -5509,7 +5530,7 @@ Details:
 
 Usage:
 
-    PointMutator(loci, allele, ploidy=[], 0, inds=[], output=\">\",
+    PointMutator(loci, allele, ploidy=[], 0, inds=[], output=\"\",
       begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=0,
       infoFields=\"ind_id\", lineageMode=FROM_INFO)
 
@@ -7390,7 +7411,7 @@ Details:
 Usage:
 
     PyMutator(rates=[], loci=ALL_AVAIL, func=None, context=0,
-      mapIn=[], mapOut=[], output=\">\", begin=0, end=-1, step=1, at=[],
+      mapIn=[], mapOut=[], output=\"\", begin=0, end=-1, step=1, at=[],
       reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=\"ind_id\",
       lineageMode=FROM_INFO)
 
@@ -10290,7 +10311,7 @@ Details:
 Usage:
 
     StepwiseMutator(rates=[], loci=ALL_AVAIL, incProb=0.5,
-      maxAllele=0, mutStep=[], mapIn=[], mapOut=[], output=\">\",
+      maxAllele=0, mutStep=[], mapIn=[], mapOut=[], output=\"\",
       begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
       subPops=ALL_AVAIL, infoFields=\"ind_id\", lineageMode=FROM_INFO)
 
