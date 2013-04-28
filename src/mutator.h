@@ -97,6 +97,12 @@ public:
 	 *  alleles so this feature allows you to track the source of mutants
 	 *  during evolution.A
 	 *
+	 *  A mutator by default does not produce any output. However, if
+	 *  an non-empty output is specified, the operator will output generation
+	 *  number, locus, ploidy, original allele, mutant, and values of all
+	 *  information field specified by parameter \c infoFields (e.g. individual
+	 *  ID if \c ind_id is specified).
+	 *
 	 *  Some mutation models are context dependent. Namely, how an allele
 	 *  mutates will depend on its adjecent alleles. Whereas most simuPOP
 	 *  mutators are context independent, some of them accept a parameter
@@ -109,7 +115,7 @@ public:
 	 */
 	BaseMutator(const floatList & rates = vectorf(), const lociList & loci = lociList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
-		int context = 0, const stringFunc & output = ">",
+		int context = 0, const stringFunc & output = "",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr(1, "ind_id"), int lineageMode = FROM_INFO)
@@ -230,7 +236,7 @@ public:
 	 */
 	MatrixMutator(const floatMatrix & rate, const lociList & loci = lociList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
-		const stringFunc & output = ">",
+		const stringFunc & output = "",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr(1, "ind_id"), int lineageMode = FROM_INFO);
@@ -284,7 +290,7 @@ public:
 	 */
 	KAlleleMutator(UINT k, const floatList & rates = vectorf(), const lociList & loci = lociList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
-		const stringFunc & output = ">",
+		const stringFunc & output = "",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr(1, "ind_id"), int lineageMode = FROM_INFO)
@@ -364,7 +370,8 @@ public:
 	 */
 	StepwiseMutator(const floatList & rates = vectorf(), const lociList & loci = lociList(),
 		double incProb = 0.5, UINT maxAllele = 0, const floatListFunc & mutStep = floatListFunc(1.0),
-		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
+		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
+		const stringFunc & output = "",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr(1, "ind_id"), int lineageMode = FROM_INFO);
@@ -426,7 +433,7 @@ public:
 	 */
 	PyMutator(const floatList & rates = vectorf(), const lociList & loci = lociList(),
 		PyObject * func = NULL, int context = 0, const uintListFunc & mapIn = uintListFunc(),
-		const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
+		const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = "",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr(1, "ind_id"), int lineageMode = FROM_INFO)
@@ -482,7 +489,7 @@ public:
 	MixedMutator(const floatList & rates = vectorf(), const lociList & loci = lociList(),
 		const opList & mutators = opList(), const vectorf & prob = vectorf(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
-		int context = 0, const stringFunc & output = ">",
+		int context = 0, const stringFunc & output = "",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr(1, "ind_id"), int lineageMode = FROM_INFO)
@@ -554,7 +561,7 @@ public:
 	ContextMutator(const floatList & rates = vectorf(), const lociList & loci = lociList(),
 		const opList & mutators = opList(), const intMatrix & contexts = intMatrix(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
-		const stringFunc & output = ">",
+		const stringFunc & output = "",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = vectorstr(1, "ind_id"), int lineageMode = FROM_INFO)
@@ -621,7 +628,7 @@ public:
 	 *  descriptions of other parameters.
 	 */
 	PointMutator(const lociList & loci, Allele allele, const uintList & ploidy = vectoru(1, 0),
-		const uintList & inds = vectoru(), const stringFunc & output = ">",
+		const uintList & inds = vectoru(), const stringFunc & output = "",
 		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
 		const intList & reps = intList(), const subPopList & subPops = 0,
 		const stringList & infoFields = vectorstr(1, "ind_id"), int lineageMode = FROM_INFO)

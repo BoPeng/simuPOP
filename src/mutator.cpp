@@ -101,6 +101,20 @@ bool BaseMutator::apply(Population & pop) const
 	DBG_DO(DBG_MUTATOR, cerr << (assignLineage ? "Assign lineage using field " + infoField(0) :
 		                         "Not assigning lineage (number of info fields: " + (boost::format("%1%") % infoSize()).str() + ")") << endl);
 #endif
+	// if output = "", cnull will be returned
+	bool hasOutput = !noOutput();
+	vectoru fieldIdx;
+	if (hasOutput) {
+		for (size_t s = 0; s < infoSize(); ++s) {
+			if (pop.hasInfoField(infoField(s)))
+				fieldIdx.push_back(pop.infoIdx(infoField(s)));
+			else {
+				DBG_WARNIF(true,
+					"Specified information field " + infoField(s) + " does not exist.");
+			}
+		}
+	}
+	ostream & out = getOstream(pop.dict());
 
 	// mapIn and mapOut
 	bool mapIn = !m_mapIn.empty() || m_mapIn.func().isValid();
@@ -188,20 +202,20 @@ bool BaseMutator::apply(Population & pop) const
 					Allele oldAllele = *ptr;
 #endif
 					(void)oldAllele;  // suppress a warning for unused variable
-					DBG_DO(DBG_MUTATOR, cerr << "Allele " << int(oldAllele) << " at locus " << locus);
+					Allele mappedAllele = oldAllele;
 					if (mapIn) {
 						if (numMapInAllele > 0) {
 							if (static_cast<size_t>(oldAllele) < numMapInAllele)
-								oldAllele = TO_ALLELE(mapInList[oldAllele]);
+								mappedAllele = TO_ALLELE(mapInList[oldAllele]);
 						} else {
-							oldAllele = TO_ALLELE(mapInFunc(PyObj_As_Int, "(i)",
+							mappedAllele = TO_ALLELE(mapInFunc(PyObj_As_Int, "(i)",
 									static_cast<int>(oldAllele)));
 						}
 					}
 					if (!m_context.empty())
 						fillContext(pop, ptr, locus);
 					// The virtual mutate functions in derived operators will be called.
-					Allele newAllele = mutate(oldAllele, locus);
+					Allele newAllele = mutate(mappedAllele, locus);
 					if (mapOut) {
 						if (numMapOutAllele > 0) {
 							if (static_cast<size_t>(newAllele) < numMapOutAllele)
@@ -211,11 +225,17 @@ bool BaseMutator::apply(Population & pop) const
 									static_cast<int>(newAllele)));
 						}
 					}
-					if (oldAllele != newAllele)
+					if (oldAllele != newAllele) {
 						REF_ASSIGN_ALLELE(ptr, newAllele);
+						if (hasOutput) {
+							out << pop.gen() << '\t' << locus << '\t' << ptr.currentPloidy() << '\t' << int(oldAllele)
+							    << '\t' << int(newAllele);
+							for (size_t s = 0; s < fieldIdx.size(); ++s)
+								out << '\t' << ptr.individual()->info(fieldIdx[s]);
+							out << '\n';
+						}
+					}
 
-					DBG_DO(DBG_MUTATOR, cerr << " is mutated from ");
-					DBG_DO(DBG_MUTATOR, cerr << int(oldAllele) << " to " << int(newAllele) << endl);
 #ifdef LINEAGE
 					if (assignLineage && oldAllele != newAllele) {
 						DBG_DO(DBG_MUTATOR, cerr << "Lineage updated from " << *lineagePtr);
@@ -235,6 +255,8 @@ bool BaseMutator::apply(Population & pop) const
 		if (subPops[idx].isVirtual())
 			pop.deactivateVirtualSubPop(sp);
 	}   // each subpopulation
+	if (!noOutput())
+		closeOstream();
 	return true;
 }
 
@@ -610,6 +632,7 @@ size_t FiniteSitesMutator::locateVacantLocus(Population & /* pop */, size_t beg,
 
 	// see if it exists in existing mutants.
 	std::set<size_t>::iterator it = std::find(mutants.begin(), mutants.end(), loc);
+
 	if (it == mutants.end())
 		return loc;
 	//

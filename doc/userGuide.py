@@ -1722,45 +1722,6 @@ sample = drawAffectedSibpairSample(pop, families=5)
 [int(ind.father_id) for ind in sample.individuals()]
 #end_file
 
-#begin_file log/changeStru.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.setRNG(seed=12345)
-#end_ignore
-import random
-def mutator(pop, param):
-    'Parameter has a length of region and a mutation rate at each basepair'
-    region, rate = param
-    # there are certainly more efficient algorithm, but this 
-    # example just mutate each basepair one by one....
-    for i in range(region):
-        if random.random() < rate:
-            try:
-                idx = pop.addLoci(chrom=0, pos=i)[0]
-            except:
-                # position might duplicate
-                continue
-            # choose someone to mutate
-            ind = pop.individual(random.randint(0, pop.popSize() - 1))
-            ind.setAllele(1, idx)
-    return True
-
-# The sim.populations start with no loci at all.
-simu = sim.Simulator(sim.Population(1000, loci=[]), rep=3)
-simu.evolve(
-    initOps=sim.InitSex(),
-    matingScheme=sim.RandomMating(),
-    postOps=sim.PyOperator(func=mutator, param=(10000, 2e-6)),
-    gen = 200
-)
-for pop in simu.populations():
-    print(pop.totNumLoci(), pop.lociPos())
-
-#end_file
 
 #begin_file log/locateRelative.py
 #begin_ignore
@@ -3192,6 +3153,50 @@ for allele in pop.genotype():
 # highest allele frequency?
 print(max(cnt.values()) *0.5 / pop.popSize())
 #end_file
+
+
+#begin_file log/countMutants.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+from collections import defaultdict
+# count number of mutants at each locus
+counter = defaultdict(int)
+def countMutants(mutants):
+    global counter
+    for line in mutants.split('\n'):
+        # a trailing \n will lead to an empty string
+        if not line:  
+            continue
+        (gen, loc, ploidy, a1, a2, id) = line.split('\t')
+        counter[int(loc)] += 1
+
+pop = sim.Population([5000]*3, loci=5, infoFields='ind_id')
+pop.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.InitGenotype(freq=[0.5, 0.5]),
+        sim.IdTagger(),
+    ],
+    preOps=[
+        sim.KAlleleMutator(rates=[0.001]*3 + [0.01]*2,
+            loci=range(5), k=100, output=countMutants),
+    ],
+    matingScheme=sim.RandomMating(
+        ops=[
+            sim.IdTagger(),
+            sim.MendelianGenoTransmitter()
+        ]),
+    gen = 10
+)
+print(counter.items())
+#end_file
+
 
 
 #begin_file log/statSuffix.py

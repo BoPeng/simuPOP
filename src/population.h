@@ -281,6 +281,7 @@ public:
 	{
 		GenoStruTrait::swap(rhs);
 		std::swap(m_popSize, rhs.m_popSize);
+
 		m_subPopSize.swap(rhs.m_subPopSize);
 		m_subPopNames.swap(rhs.m_subPopNames);
 		m_subPopIndex.swap(rhs.m_subPopIndex);

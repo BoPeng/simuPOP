@@ -546,7 +546,7 @@ IndAlleleIterator Population::alleleIterator(size_t locus)
 		return IndAlleleIterator(locus, indIterator());
 	else
 		// a simplere case with straightforward iterator
-		return IndAlleleIterator(locus, m_genotype.begin(), m_genotype.end(),
+		return IndAlleleIterator(locus, indIterator(), m_genotype.begin(), m_genotype.end(),
 			totNumLoci());
 }
 
@@ -565,7 +565,7 @@ IndAlleleIterator Population::alleleIterator(size_t locus, size_t subPop)
 		return IndAlleleIterator(locus, indIterator(subPop));
 	else
 		// this is a complex case
-		return IndAlleleIterator(locus,
+		return IndAlleleIterator(locus, indIterator(subPop),
 			m_genotype.begin() + m_subPopIndex[subPop] * genoSize(),
 			m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize(),
 			totNumLoci());
@@ -587,7 +587,7 @@ ConstIndAlleleIterator Population::alleleIterator(size_t locus) const
 		return ConstIndAlleleIterator(locus, indIterator());
 	else
 		// a simplere case with straightforward iterator
-		return ConstIndAlleleIterator(locus, m_genotype.begin(), m_genotype.end(),
+		return ConstIndAlleleIterator(locus, indIterator(), m_genotype.begin(), m_genotype.end(),
 			totNumLoci());
 }
 
@@ -606,7 +606,7 @@ ConstIndAlleleIterator Population::alleleIterator(size_t locus, size_t subPop) c
 		return ConstIndAlleleIterator(locus, indIterator(subPop));
 	else
 		// this is a complex case
-		return ConstIndAlleleIterator(locus,
+		return ConstIndAlleleIterator(locus, indIterator(subPop),
 			m_genotype.begin() + m_subPopIndex[subPop] * genoSize(),
 			m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize(),
 			totNumLoci());
@@ -3344,7 +3344,7 @@ void Population::useAncestralGen(ssize_t idx)
 		return;
 
 	DBG_DO(DBG_POPULATION, cerr << "Use ancestral generation: " << idx <<
-		" Current ancestral index: " << m_curAncestralGen << endl);
+		    " Current ancestral index: " << m_curAncestralGen << endl);
 
 	if (idx == 0 || m_curAncestralGen != 0) {         // recover pop.
 		popData & pd = m_ancestralPops[ m_curAncestralGen - 1];
@@ -3389,7 +3389,7 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 	ar & size;
 
 	bool singleMut = true;
-#ifdef BINARYALLELE	
+#ifdef BINARYALLELE
 	size_t singleMutVal = 1;
 #else
 	size_t singleMutVal = 0;
@@ -3432,13 +3432,13 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 	ConstGenoIterator end = m_genotype.end();
 	for (; ptr != end; ++ptr) {
 		if (*ptr != 0) {
-			++ numMutants;
-#ifndef BINARYALLELE
+			++numMutants;
+#  ifndef BINARYALLELE
 			if (singleMutVal == 0)
 				singleMutVal = *ptr;
 			else if (static_cast<size_t>(*ptr) != singleMutVal)
 				singleMut = false;
-#endif
+#  endif
 		}
 	}
 	// round two: save stuff
@@ -3505,7 +3505,7 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 		ar & size;
 
 		bool singleMut = true;
-#ifdef BINARYALLELE	
+#ifdef BINARYALLELE
 		size_t singleMutVal = 1;
 #else
 		size_t singleMutVal = 0;
@@ -3548,13 +3548,13 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 		ConstGenoIterator end = m_genotype.end();
 		for (; ptr != end; ++ptr) {
 			if (*ptr != 0) {
-				++ numMutants;
-#ifndef BINARYALLELE
+				++numMutants;
+#  ifndef BINARYALLELE
 				if (singleMutVal == 0)
 					singleMutVal = *ptr;
 				else if (static_cast<size_t>(*ptr) != singleMutVal)
 					singleMut = false;
-#endif
+#  endif
 			}
 		}
 		// round two: save stuff

@@ -417,11 +417,13 @@ public:
 			SETFLAG(m_flags, m_flagFemale);
 	}
 
+
 	/// CPPONLY
 	bool firstOffspring() const
 	{
 		return ISSETFLAG(m_flags, m_flagFirstOffspring);
 	}
+
 
 	/// CPPONLY
 	void setFirstOffspring(bool first) const
@@ -431,6 +433,7 @@ public:
 		else
 			RESETFLAG(m_flags, m_flagFirstOffspring);
 	}
+
 
 	/** Return \c True if this individual is affected.
 	 * <group>4-affection</group>
@@ -1181,20 +1184,21 @@ public:
 	}
 
 
-	CombinedAlleleIterator(size_t shift, ITER ptr, ITER ptrEnd, size_t size)
+	CombinedAlleleIterator(size_t shift, IndividualIterator<T, typename T::pointer, typename T::reference> it, ITER ptr, ITER ptrEnd, size_t size)
 		: m_useGappedIterator(true), m_valid(true), m_shift(shift),
-		m_ptr(ptr), m_ptrEnd(ptrEnd), m_size(size),
+		m_ptr(ptr), m_ptrBegin(ptr), m_ptrEnd(ptrEnd), m_size(size),
 		// ignored
-		m_it(), m_index(0), m_ploidy(0), m_chromType(0),
+		m_it(it), m_index(0), m_ploidy(0), m_chromType(0),
 		m_haplodiploid(false), m_p(0)
 	{
 		m_valid = m_ptr != m_ptrEnd;
+		m_ploidy = it->ploidy();
 	}
 
 
 	CombinedAlleleIterator(size_t idx, IndividualIterator<T, typename T::pointer, typename T::reference> it)
 		: m_useGappedIterator(false), m_valid(true), m_shift(),
-		m_ptr(), m_ptrEnd(), m_size(0), // belong to a previous one
+		m_ptr(), m_ptrBegin(), m_ptrEnd(), m_size(0), // belong to a previous one
 		m_it(it), m_index(idx), m_ploidy(0), m_chromType(0),
 		m_haplodiploid(false), m_p(0)
 	{
@@ -1227,6 +1231,40 @@ public:
 	bool valid()
 	{
 		return m_valid;
+	}
+
+
+	size_t currentPloidy()
+	{
+		if (m_useGappedIterator) {
+			// NOTE: this iterator is used only when indOrdered() is set to true for
+			// the whole population (see Population.lineageIterator()). It is therefore
+			// possible to get the index of individual from index of m_ptr.
+			//
+			// There is a conversion from size_t to long (difference_type), a possible
+			// loss of data
+			difference_type offset = static_cast<difference_type>((m_ptr - m_ptrBegin) / m_size);
+			return static_cast<size_t>(offset % m_ploidy);
+		} else {
+			return m_p;
+		}
+	}
+
+
+	IndividualIterator<T, typename T::pointer, typename T::reference> individual()
+	{
+		if (m_useGappedIterator) {
+			// NOTE: this iterator is used only when indOrdered() is set to true for
+			// the whole population (see Population.lineageIterator()). It is therefore
+			// possible to get the index of individual from index of m_ptr.
+			//
+			// There is a conversion from size_t to long (difference_type), a possible
+			// loss of data
+			difference_type offset = static_cast<difference_type>((m_ptr - m_ptrBegin) / (m_size * m_ploidy));
+			return(m_it + offset);
+		} else {
+			return(m_it);
+		}
 	}
 
 
@@ -1435,6 +1473,8 @@ private:
 	size_t m_shift;
 	//
 	ITER m_ptr;
+	//
+	ITER m_ptrBegin;
 	//
 	ITER m_ptrEnd;
 	// genosize
