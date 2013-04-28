@@ -3176,7 +3176,8 @@ def countMutants(mutants):
         (gen, loc, ploidy, a1, a2, id) = line.split('\t')
         counter[int(loc)] += 1
 
-pop = sim.Population([5000]*3, loci=5, infoFields='ind_id')
+pop = sim.Population([5000]*3, loci=[2,1,1], infoFields='ind_id',
+    chromTypes=[sim.AUTOSOME, sim.CHROMOSOME_X, sim.CHROMOSOME_Y])
 pop.evolve(
     initOps=[
         sim.InitSex(),
@@ -3184,8 +3185,8 @@ pop.evolve(
         sim.IdTagger(),
     ],
     preOps=[
-        sim.KAlleleMutator(rates=[0.001]*3 + [0.01]*2,
-            loci=range(5), k=100, output=countMutants),
+        sim.KAlleleMutator(rates=[0.001] + [0.01]*3,
+            loci=range(4), k=100, output=countMutants),
     ],
     matingScheme=sim.RandomMating(
         ops=[
