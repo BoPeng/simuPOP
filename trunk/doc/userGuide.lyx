@@ -11580,54 +11580,6 @@ That is to say, we would mutate at a mutation rate
 \end_layout
 
 \begin_layout Subsection
-Mutations that introduce new loci **
-\end_layout
-
-\begin_layout Standard
-Mutations operators only mutate alleles at existing loci.
- If you have a mutation model that can mutate alleles at many possible loci
- across a region, you will have to either create a population with all such
- loci on that region, or adding a locus when a mutation happens on that
- locus.
- Because it is not practical to create populations with a huge number of
- loci, the second option can be used, at a cost of lower performance.
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "changeStru"
-
-\end_inset
-
- gives an example of a dynamic mutator.
- This mutator assumes a chromosome region that originally has no polymorphic
- markers.
- When a mutation happens, a monomorphic marker that is not simulated becomes
- polymorphic and is inserted to the chromosome.
- If the region is long enough, this example effectively simulates an infinite
- allele mode.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/changeStru.log"
-lstparams "caption={A Python mutator that adds new loci to populations.},label={changeStru}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Because adding loci to an exising population is an expensive operation,
- this method is suitable for evolutionary processes with small populations
- and low mutation rate.
- If the region is wide, it becomes necessary to simulate mutations in a
- new way, as demonstrated in the following section.
-\end_layout
-
-\begin_layout Subsection
 Infinite-sites model and other simulation techniques **
 \end_layout
 
@@ -11724,6 +11676,64 @@ reference "newOperator"
  to the correct loci because loci indexes will be changed with the insertion
  of new loci.
  This technique could also be used to simulate mutations over long sequences.
+\end_layout
+
+\begin_layout Subsection
+Recording and tracing individual mutants **
+\end_layout
+
+\begin_layout Standard
+Mutation operators mutate alleles in place and by default do not generate
+ any output.
+ If you are interested in knowing the source of each mutant, you can specify
+ an output stream and let the mutation operators dump details of each mutation
+ event, which consists of generation number, locus index, ploidy, original
+ allele, and mutated allele.
+ If a list of information fields are specified through parameter 
+\family typewriter
+infoFields
+\family default
+, values at these information fields will also be outputted (if they exist
+ in the population.
+ The default information field is 
+\family typewriter
+ind_id
+\family default
+, which allow you to record the ID of individuals harboring the mutants.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "countMutants"
+
+\end_inset
+
+ demonstrates how to use this feature to count the number of mutants at
+ each locus.
+ Instead of sending the output to a file (e.g.
+ 
+\family typewriter
+output='>>mutants.txt'
+\family default
+), this example sends the output to a Python function, which parses input
+ string and counts the number of mutants at each locus using a global dictionary
+ variable.
+ As we can see from the output, because the KAlleleMutator uses a higher
+ mutation rate (0.01) at loci 3 and 4 than mutation rate (0.001) at loci 0,
+ 1, and 2, there are 10 times more mutants at the last two loci.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/countMutants.log"
+lstparams "caption={Count number of mutants from mutator outputs},label={countMutants}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -13784,12 +13794,14 @@ In simuPOP, tagging refers to the action of setting various information
  the production of offspring.
  simuPOP provides a number of tagging operators (called taggers) for various
  purposes.
- Because tagging operators are during-mating operators, parameter
- 
+ Because tagging operators are during-mating operators, parameter 
 \family typewriter
 subPops
 \family default
- can be used to tag only offspring that belong to specified virtual subpopulation. (e.g. all male offspring)
+ can be used to tag only offspring that belong to specified virtual subpopulatio
+n.
+ (e.g.
+ all male offspring)
 \end_layout
 
 \begin_layout Subsection
@@ -18989,7 +19001,9 @@ reference "numOff"
 
 \end_inset
 
- where offspring with certain genotypes have lower probabilities to survive. If you would like to control size of families in the presence of natural selection, you could set a larger 
+ where offspring with certain genotypes have lower probabilities to survive.
+ If you would like to control size of families in the presence of natural
+ selection, you could set a larger 
 \family typewriter
 numOffspring
 \family default
@@ -18997,16 +19011,19 @@ numOffspring
 \family typewriter
 OffspringTagger
 \family default
- to mark the index of offspring, and discard offspring conditionally using operator 
+ to mark the index of offspring, and discard offspring conditionally using
+ operator 
 \family typewriter
 DiscardIf
 \family default
- . Please refer to example 
+ .
+ Please refer to example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "OffspringTagger"
 
 \end_inset
+
  for details.
 \end_layout
 
