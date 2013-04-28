@@ -288,8 +288,8 @@ string OffspringTagger::describe(bool /* format */) const
 }
 
 
-bool OffspringTagger::applyDuringMating(Population & pop, Population & offPop, RawIndIterator offspring,
-                                      Individual * dad, Individual * mom) const
+bool OffspringTagger::applyDuringMating(Population &, Population & offPop, RawIndIterator offspring,
+                                      Individual *, Individual *) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
 	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
