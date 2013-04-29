@@ -8,7 +8,7 @@
 # Bo Peng (bpeng@mdanderson.org)
 #
 
-import os, sys, time, shutil, platform
+import os, sys, time, shutil, platform, glob
 
 release_file = 'simuPOP_version.py'
 user_guide = 'doc/userGuide.lyx'
@@ -66,19 +66,17 @@ def commitModification():
 
 def writeReleaseFile(release, revision):
     ' write release file only in release mode '
-    try:
-        import simuPOP_version
-        SIMUPOP_VER = simuPOP_version.SIMUPOP_VER
-        SIMUPOP_REV = simuPOP_version.SIMUPOP_REV
-    except:
-        SIMUPOP_VER = 'snapshot'
-        SIMUPOP_REV = '9999'
+    ver = {}
+    execfile('simuPOP_version.py', globals(), ver)
+    #
+    if release is None:
+        release = ver['SIMUPOP_VER']
     file = open(release_file, 'w')
     file.write('''SIMUPOP_VER = "%s"
 SIMUPOP_REV = "%s"
 ''' % (release, revision))
     file.close()
-    return (SIMUPOP_VER, SIMUPOP_REV)
+    return (release, revision, ver['SIMUPOP_VER'], ver['SIMUPOP_REV'])
 
 
 def setVersionRevision(release):
@@ -86,17 +84,14 @@ def setVersionRevision(release):
         by returning current ver and rev numbers
         otherwise, update simuPOP.release
     '''
-    if release != 'snapshot':
-        rev = cmdOutput('svnversion .')
-        if ':' in rev:
-            rev = rev.split(':')[0]
-        if rev.endswith('M'):
-            rev = rev[:-1]
-            print 'Warning: Please commit all changes before releasing a source package'
-    else:
-        rev = '9999'
+    rev = cmdOutput('svnversion .')
+    if ':' in rev:
+        rev = rev.split(':')[0]
+    if rev.endswith('M'):
+        rev = rev[:-1]
+        print 'Warning: Please commit all changes before releasing a source package'
     # replace simuPOP.release
-    (old_ver, old_rev) = writeReleaseFile(release, rev)
+    (release, rev, old_ver, old_rev) = writeReleaseFile(release, rev)
     setReleaseInManual(user_guide, release, rev)
     setReleaseInManual(ref_manual, release, rev)
     return (release, rev, old_ver, old_rev)
@@ -225,45 +220,100 @@ def build_remote(ver, remote_machine):
     run('ssh -X %s "cd temp && %s && cd simuPOP-%s && %s"' % (remote_machine, unpack, ver, build))
     run('scp %s:temp/simuPOP-%s/dist/* %s' % (remote_machine, ver, download_directory))
 
-def build_mac(ver):
+def build_mac(ver, pyver):
+    #
     if not platform.platform().startswith('Darwin'):
         sys.exit('Can only build darwin binary from a mac')
     #
+    source = os.path.realpath('%s/simuPOP-%s-src.tar.gz' % (download_directory, ver))
+    if not os.path.isfile(source):
+        print 'Source package %s does not exist. Please run "build.py src" first' % source
+        build_src(ver)
+    #
+    # copy to a directory
+    temp_dir = os.path.expanduser('~/Temp/bdist/')
+    if not os.path.isdir(temp_dir):
+        os.mkdir(temp_dir)
+    # 
+    src_dir = os.path.join(temp_dir, 'simuPOP-%s' % ver)
+    if os.path.isdir(src_dir):
+        shutil.rmtree(src_dir)
+    #
+    # copy files
+    shutil.copy(source, temp_dir)
+    #
+    old_dir = os.getcwd()
+    os.chdir(temp_dir)
+    # decompress
+    run('tar -zxf simuPOP-%s-src.tar.gz' % ver)
+    # 
+    os.chdir(src_dir)
+    if pyver.startswith('2'):
+        run('python setup.py bdist')
+    else:
+        run('python3 setup.py bdist')
+    # 
+    # copy results back
+    shutil.move(glob.glob(os.path.join(src_dir, 'dist', 'simuPOP-{}*.tar.gz'.format(ver)))[0],
+        os.path.join(download_directory, 'simuPOP-{}-py{}.tar.gz'.format(ver, pyver)))
+
+
+def build_mpkg(ver, pyver):
+    #
+    if not platform.platform().startswith('Darwin'):
+        sys.exit('Can only build darwin binary from a mac')
+    #
+    source = os.path.realpath('%s/simuPOP-%s-src.tar.gz' % (download_directory, ver))
+    if not os.path.isfile(source):
+        print 'Source package %s does not exist. Please run "build.py src" first' % source
+        build_src(ver)
+    #
+    # copy to a directory
+    temp_dir = os.path.expanduser('~/Temp/mpkg')
+    if not os.path.isdir(temp_dir):
+        os.mkdir(temp_dir)
+    # 
+    src_dir = os.path.join(temp_dir, 'simuPOP-%s' % ver)
+    if os.path.isdir(src_dir):
+        shutil.rmtree(src_dir)
+    #
+    # copy files
+    shutil.copy(source, temp_dir)
+    #
+    old_dir = os.getcwd()
+    os.chdir(temp_dir)
+    # decompress
+    run('tar -zxf simuPOP-%s-src.tar.gz' % ver)
+    # 
+    os.chdir(src_dir)
+    if pyver.startswith('2'):
+        run('python setup.py bdist_mpkg')
+    else:
+        run('python3 setup.py bdist_mpkg')
+    # 
+    # copy results back
+    shutil.move(glob.glob(os.path.join(src_dir, 'dist', 'simuPOP-{}*.mpkg'.format(ver)))[0],
+        os.path.join(download_directory, 'simuPOP-{}-py{}.mpkg'.format(ver, pyver)))
+
+def build_dmg(ver, pyver):
+    #
+    mpkg = os.path.join(download_directory, 'simuPOP-{}-py{}.mpkg'.format(ver, pyver))
+    if not os.path.isdir(mpkg):
+        print('mpkg is not available, building a mpkg package')
+        build_mac(ver, pyver)
+    #
     # create a dmg file for the package
-    dest = os.path.join('dist', 'simuPOP-{}'.format(ver))
+    temp_dir = os.path.expanduser('~/Temp')
+    dest = os.path.join(temp_dir, 'simuPOP-{}-py{}'.format(ver, pyver))
     if os.path.isdir(dest):
         shutil.rmtree(dest)
-    os.makedirs(dest)
-    # create a directory variant_tools and put everything inside it
-    pkg = os.path.join(dest, 'variant_tools-{}.pkg'.format(ver))
-    # running packagemaker
-    try:
-        print('Building MacOSX package variant_tools-{}.pkg ...'.format(ver))
-        with open(os.devnull, 'w') as fnull:
-            ret = subprocess.call('python setup.py bdist_mpkg'
-                shell=True, stdout=fnull)
-            if ret != 0:
-                sys.exit('Failed to create MacOSX package simuPOP-{}.pkg'
-                    .format(ver))
-    except Exception as e:
-        sys.exit('Failed to create MacOSX package simuPOP-{}.pkg: {}'
-            .format(ver, e))
     #
-    # copy things into dmg
-    dmg = os.path.join('dist', 'simuPOP-{}.dmg'.format(ver))
+    shutil.copytree(mpkg, dest)
+    #
+    dmg = os.path.join(download_directory, 'simuPOP-{}-py{}.dmg'.format(ver, pyver))
     if os.path.isfile(dmg):
         os.remove(dmg)
-    try:
-        print('Building disk image simuPOP-{}.dmg ...'.format(ver))
-        with open(os.devnull, 'w') as fnull:
-            ret = subprocess.call(
-                'hdiutil create {} -volname simuPOP-{} -fs HFS+ -srcfolder {}'
-                .format(dmg, ver, dest), shell=True, stdout=fnull)
-            if ret != 0:
-                sys.exit('Failed to create MacOSX disk image simuPOP-{}.dmg'.format(ver))
-    except Exception as e:
-        sys.exit('Failed to create MacOSX disk image simuPOP-{}.dmg: {}'.format(ver, e))
-    
+    run('hdiutil create {} -volname simuPOP-{} -fs HFS+ -srcfolder {}'.format(dmg, ver, dest))
 
 
 def build_solaris(ver):
@@ -297,10 +347,10 @@ actions:
 '''
 
 if __name__ == '__main__':
-    release = 'snapshot'
+    release = None
     actions = []
     dryrun = False
-    all_actions = ['all', 'svn', 'src', 'doc', 'src_doc', 'x86_64', 'rhel4', 'mac', 'win', 'mdk', 'suse', 'sol', 'fedora5']
+    all_actions = ['all', 'svn', 'src', 'doc', 'src_doc', 'x86_64', 'rhel4', 'mac', 'dmg', 'win', 'mdk', 'suse', 'sol', 'fedora5']
 
     if len(sys.argv) == 1:
         print Usage
@@ -313,7 +363,7 @@ if __name__ == '__main__':
         elif '--release' in op:
             release = op[10:]
         elif op == 'all':
-            actions.extend(['src', 'doc', 'svn', 'x86_64', 'rhel4', 'mac', 'win', 'fedora5', 'suse'])
+            actions.extend(['src', 'doc', 'svn', 'x86_64', 'rhel4', 'mac', 'dmg', 'win', 'fedora5', 'suse'])
         elif op in all_actions and op not in actions:
             actions.append(op)
         elif op == '--dryrun':
@@ -330,9 +380,9 @@ if __name__ == '__main__':
     if 'svn' in actions:
         commitModification()
         if release != 'snapshot':
-            makeReleaseTag(release)
+            makeReleaseTag(ver)
     if 'src' in actions:
-        build_src(release)
+        build_src(ver)
     if 'doc' in actions:
         build_doc(ver, rev)
     if 'src_doc' in actions:
@@ -348,12 +398,9 @@ if __name__ == '__main__':
     if 'suse' in actions:
         build_suse(ver)
     if 'mac' in actions:
-        build_mac(ver)
+        build_mac(ver, pyver='3.3')
+    if 'dmg' in actions:
+        build_mpkg(ver, pyver='2.7')
+        build_dmg(ver, pyver='2.7')
     if 'sol' in actions:
         build_solaris(ver)
-    # 
-    # restore simuPOP.release
-    if release == 'snapshot':
-        writeReleaseFile(old_ver, old_rev)
-
-    
