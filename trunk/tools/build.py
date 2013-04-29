@@ -8,7 +8,7 @@
 # Bo Peng (bpeng@mdanderson.org)
 #
 
-import os, sys, time, shutil
+import os, sys, time, shutil, platform
 
 release_file = 'simuPOP_version.py'
 user_guide = 'doc/userGuide.lyx'
@@ -226,7 +226,45 @@ def build_remote(ver, remote_machine):
     run('scp %s:temp/simuPOP-%s/dist/* %s' % (remote_machine, ver, download_directory))
 
 def build_mac(ver):
-    build_remote(ver, mac_name)
+    if not platform.platform().startswith('Darwin'):
+        sys.exit('Can only build darwin binary from a mac')
+    #
+    # create a dmg file for the package
+    dest = os.path.join('dist', 'simuPOP-{}'.format(ver))
+    if os.path.isdir(dest):
+        shutil.rmtree(dest)
+    os.makedirs(dest)
+    # create a directory variant_tools and put everything inside it
+    pkg = os.path.join(dest, 'variant_tools-{}.pkg'.format(ver))
+    # running packagemaker
+    try:
+        print('Building MacOSX package variant_tools-{}.pkg ...'.format(ver))
+        with open(os.devnull, 'w') as fnull:
+            ret = subprocess.call('python setup.py bdist_mpkg'
+                shell=True, stdout=fnull)
+            if ret != 0:
+                sys.exit('Failed to create MacOSX package simuPOP-{}.pkg'
+                    .format(ver))
+    except Exception as e:
+        sys.exit('Failed to create MacOSX package simuPOP-{}.pkg: {}'
+            .format(ver, e))
+    #
+    # copy things into dmg
+    dmg = os.path.join('dist', 'simuPOP-{}.dmg'.format(ver))
+    if os.path.isfile(dmg):
+        os.remove(dmg)
+    try:
+        print('Building disk image simuPOP-{}.dmg ...'.format(ver))
+        with open(os.devnull, 'w') as fnull:
+            ret = subprocess.call(
+                'hdiutil create {} -volname simuPOP-{} -fs HFS+ -srcfolder {}'
+                .format(dmg, ver, dest), shell=True, stdout=fnull)
+            if ret != 0:
+                sys.exit('Failed to create MacOSX disk image simuPOP-{}.dmg'.format(ver))
+    except Exception as e:
+        sys.exit('Failed to create MacOSX disk image simuPOP-{}.dmg: {}'.format(ver, e))
+    
+
 
 def build_solaris(ver):
     build_remote(ver, sol_name)
