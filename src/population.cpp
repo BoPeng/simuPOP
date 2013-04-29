@@ -2900,11 +2900,9 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 					for (size_t i = 0; i < iEnd; ++i) {
 						DBG_FAILIF(loci[i] >= numLoci, IndexError, "Loci index out of range");
 						GenoIterator allele = ptr + loci[i];
-#ifdef OPTIMIZED
-						size_t a = static_cast<size_t>(DEREF_ALLELE(allele));
-						DBG_FAILIF(a >= map.size(),
-							ValueError, (boost::format("Allele %1% can not be recoded") % a).str());
-#endif
+						DBG_FAILIF(static_cast<size_t>(DEREF_ALLELE(allele)) >= map.size(),
+							ValueError, (boost::format("Allele %1% can not be recoded") % 
+								static_cast<size_t>(DEREF_ALLELE(allele))).str());
 						REF_ASSIGN_ALLELE(allele, TO_ALLELE(map[DEREF_ALLELE(allele)]));
 					}
 				}
