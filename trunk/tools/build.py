@@ -233,7 +233,7 @@ def build_mac(ver, pyver):
     # copy to a directory
     temp_dir = os.path.expanduser('~/Temp/bdist/')
     if not os.path.isdir(temp_dir):
-        os.mkdir(temp_dir)
+        os.makedirs(temp_dir)
     # 
     src_dir = os.path.join(temp_dir, 'simuPOP-%s' % ver)
     if os.path.isdir(src_dir):
@@ -253,9 +253,10 @@ def build_mac(ver, pyver):
     else:
         run('python3 setup.py bdist')
     # 
+    os.chdir(old_dir)
     # copy results back
     shutil.move(glob.glob(os.path.join(src_dir, 'dist', 'simuPOP-{}*.tar.gz'.format(ver)))[0],
-        os.path.join(download_directory, 'simuPOP-{}-py{}.tar.gz'.format(ver, pyver)))
+        download_directory)
 
 
 def build_mpkg(ver, pyver):
