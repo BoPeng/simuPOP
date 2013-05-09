@@ -449,6 +449,64 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.alleleNames(4), ('A',))
         self.assertEqual(pop.alleleNames(5), ('E',))
 
+    def testAddLociFromByName(self):
+        'Testing Population::addLociFrom(pop, byName=True)'
+        pop = self.getPop(chromNames=["c1", "c2"], ancGen=5, lociPos=[1, 2, 5],
+            lociNames = ['l1', 'l2', 'l3'])
+        pop1 = pop.clone()
+        pop2 = self.getPop(chromNames=["c2", "c4"], ancGen=5, lociPos=[4, 3, 6],
+            lociNames = ['l4', 'l5', 'l6'])
+        for gen in range(pop.ancestralGens(), -1, -1):
+            pop.useAncestralGen(gen)
+            pop1.useAncestralGen(gen)
+            pop2.useAncestralGen(gen)
+            pop.setLineage(1)
+            pop1.setLineage(2)
+            pop2.setLineage(3)
+        pop.addLociFrom(pop2, byName=True);
+        self.assertEqual(pop.numLoci(), (1, 3, 2))
+        self.assertEqual(pop.lociPos(), (1, 2, 4, 5, 3, 6))
+        self.assertEqual(pop.chromNames(), ('c1', 'c2', 'c4'))
+        for gen in range(pop.ancestralGens(), -1, -1):
+            pop.useAncestralGen(gen)
+            pop1.useAncestralGen(gen)
+            pop2.useAncestralGen(gen)
+            for idx in range(pop.popSize()):
+                ind = pop.individual(idx)
+                inds = [pop1.individual(idx), pop2.individual(idx)]
+                # i: index in population
+                # src: the source Population
+                # j: index in source Population
+                for i, src, j in [(0, 0, 0), (1, 0, 1), (2, 1, 0), (3, 0, 2), (4, 1, 1), (5, 1, 2)]:
+                    for p in range(pop.ploidy()):
+                        self.assertEqual(ind.allele(i, p), inds[src].allele(j, p))
+                for i in range(0, 2, 4):
+                    for p in range(pop.ploidy()):
+                        if moduleInfo()['alleleType'] == 'lineage':
+                            self.assertEqual(ind.alleleLineage(i, p), 1)
+                        else:
+                            self.assertEqual(ind.alleleLineage(i, p), 0)
+                for i in range(1, 3, 5):
+                    for p in range(pop.ploidy()):
+                        if moduleInfo()['alleleType'] == 'lineage':
+                            self.assertEqual(ind.alleleLineage(i, p), 3)
+                        else:
+                            self.assertEqual(ind.alleleLineage(i, p), 0)
+        # allele names
+        pop = self.getPop(chromNames=["c1", "c2"], ancGen=5, lociPos=[1, 2, 5],
+            lociNames = ['l1', 'l2', 'l3'], alleleNames=['A'])
+        pop2 = self.getPop(chromNames=["c3", "c2"], ancGen=5, lociPos=[4, 3, 6],
+            lociNames = ['l4', 'l5', 'l6'], alleleNames=[['B'], ['C', 'D'], ['E']])
+        pop.addLociFrom(pop2, True);
+        self.assertEqual(pop.alleleNames(0), ('A',))
+        self.assertEqual(pop.alleleNames(1), ('A',))
+        self.assertEqual(pop.alleleNames(2), ('C', 'D'))
+        self.assertEqual(pop.alleleNames(3), ('A',))
+        self.assertEqual(pop.alleleNames(4), ('E',))
+        self.assertEqual(pop.alleleNames(5), ('B',))
+
+
+
     def testAddLoci(self):
         'Testing Population::addLoci(chrom, pos, names=[])'
         pop = self.getPop(size = 100, chromNames=["c1", "c2"], ancGen=5, lociPos=[1, 3, 5], lociNames = ['l1', 'l2', 'l3'])

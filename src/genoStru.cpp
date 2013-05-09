@@ -480,6 +480,8 @@ const GenoStructure GenoStruTrait::gsAddLociFromStru(size_t idx, vectoru & index
 				"Chromosome '" + gs2.m_chromNames[ch] + "' is merged to chromosome '" +
 				gs1.m_chromNames[ch] + "'.");
 			chromTypes.push_back(gs1.m_chromTypes[ch]);
+			DBG_FAILIF(gs1.m_chromTypes[ch] != gs2.m_chromTypes[ch], ValueError,
+				"Cannot merge chromosome due to conflicting chromosome type.")
 			lociPos.insert(lociPos.end(), gs1.m_lociPos.begin() + gs1.m_chromIndex[ch],
 				gs1.m_lociPos.begin() + gs1.m_chromIndex[ch + 1]);
 			lociPos.insert(lociPos.end(), gs2.m_lociPos.begin() + gs2.m_chromIndex[ch],
@@ -515,7 +517,7 @@ const GenoStructure GenoStruTrait::gsAddLociFromStru(size_t idx, vectoru & index
 			else
 				alleleNames.insert(alleleNames.end(), gs2.m_alleleNames.begin() + gs2.m_chromIndex[ch],
 					gs2.m_alleleNames.begin() + gs2.m_chromIndex[ch + 1]);
-		} else if (ch < gs1.m_numLoci.size() && ch >= gs2.m_numLoci.size()) { // gs1 > gs2
+		} else if (ch < gs1.m_numLoci.size() && ch >= gs2.m_numLoci.size()) {     // gs1 > gs2
 			loci[ch] = gs1.m_numLoci[ch];
 			chromNames.push_back(gs1.m_chromNames[ch]);
 			chromTypes.push_back(gs1.m_chromTypes[ch]);
@@ -537,7 +539,7 @@ const GenoStructure GenoStruTrait::gsAddLociFromStru(size_t idx, vectoru & index
 				alleleNames.insert(alleleNames.end(), gs1.m_alleleNames.begin() + gs1.m_chromIndex[ch],
 					gs1.m_alleleNames.begin() + gs1.m_chromIndex[ch + 1]);
 
-		} else { // gs2 > gs1
+		} else {     // gs2 > gs1
 			loci[ch] = gs2.m_numLoci[ch];
 			chromNames.push_back(gs2.m_chromNames[ch]);
 			chromTypes.push_back(gs2.m_chromTypes[ch]);
@@ -576,6 +578,169 @@ const GenoStructure GenoStruTrait::gsAddLociFromStru(size_t idx, vectoru & index
 	locIdx = 0;
 	for (size_t ch = 0; ch < gs2.m_numLoci.size(); ++ch) {
 		for (size_t loc = 0; loc < gs2.m_numLoci[ch]; ++loc, ++locIdx) {
+			double pos = gs2.m_lociPos[locIdx];
+			index2.push_back(find(ret.m_lociPos.begin() + ret.m_chromIndex[ch],
+					ret.m_lociPos.begin() + ret.m_chromIndex[ch + 1], pos) - ret.m_lociPos.begin());
+		}
+	}
+	return ret;
+}
+
+
+const GenoStructure GenoStruTrait::gsAddLociByNameFromStru(size_t idx, vectoru & index1, vectoru & index2) const
+{
+	GenoStructure & gs1 = s_genoStruRepository[m_genoStruIdx];
+	GenoStructure & gs2 = s_genoStruRepository[idx];
+
+	// identify another
+	DBG_FAILIF(gs1.m_ploidy != gs2.m_ploidy || gs1.m_haplodiploid != gs2.m_haplodiploid,
+		ValueError, "Merged population should have the same ploidy");
+
+	// which pop has more chromosomes?
+	vectoru loci(gs1.m_numLoci.size());
+	vectorstr chromNames;
+	vectoru chromTypes;
+	vectorf lociPos;
+	vectorstr lociNames;
+	matrixstr alleleNames;
+
+	// fail if there are multiple unnamed chromosomes in gs2 and gs1.
+	int nUnnamed2 = 0;
+	for (size_t ch2 = 0; ch2 < gs2.m_numLoci.size(); ++ch2)
+		if (gs2.m_chromNames[ch2] == "")
+			++nUnnamed2;
+	if (nUnnamed2 > 1)
+		throw ValueError("Cannot merge chromosomes by name because there are multiple ununamed chromosomes.");
+	else if (nUnnamed2 == 1) {
+		int nUnnamed1 = 0;
+		for (size_t ch1 = 0; ch1 < gs1.m_numLoci.size(); ++ch1)
+			if (gs1.m_chromNames[ch1] == "")
+				++nUnnamed1;
+		if (nUnnamed1 > 1)
+			throw ValueError("Cannot merge chromosomes by name because an unnamed chromosome can be merged to multiple ununamed chromosomes.");
+	}
+	// look at chromosomes in gs1
+	for (size_t ch1 = 0; ch1 < loci.size(); ++ch1) {
+		// is there a matching chromosome?
+		vectorstr::iterator pch2 = find(gs2.m_chromNames.begin(), gs2.m_chromNames.end(), gs1.m_chromNames[ch1]);
+		// if there is no matching chromosome, use chromosome in gs1
+		if (pch2 == gs2.m_chromNames.end()) {
+			loci[ch1] = gs1.m_numLoci[ch1];
+			chromNames.push_back(gs1.m_chromNames[ch1]);
+			chromTypes.push_back(gs1.m_chromTypes[ch1]);
+			lociPos.insert(lociPos.end(), gs1.m_lociPos.begin() + gs1.m_chromIndex[ch1],
+				gs1.m_lociPos.begin() + gs1.m_chromIndex[ch1 + 1]);
+			if (gs1.m_lociNames.empty()) {
+				if (!lociNames.empty())
+					lociNames.resize(lociNames.size() + gs1.m_numLoci[ch1], string());
+			} else {
+				lociNames.insert(lociNames.end(), gs1.m_lociNames.begin() + gs1.m_chromIndex[ch1],
+					gs1.m_lociNames.begin() + gs1.m_chromIndex[ch1 + 1]);
+			}
+			// allele names
+			if (gs1.m_alleleNames.empty())
+				alleleNames.resize(alleleNames.size() + gs1.m_numLoci[ch1], vectorstr());
+			else if (gs1.m_alleleNames.size() == 1)
+				alleleNames.resize(alleleNames.size() + gs1.m_numLoci[ch1], gs1.m_alleleNames[0]);
+			else
+				alleleNames.insert(alleleNames.end(), gs1.m_alleleNames.begin() + gs1.m_chromIndex[ch1],
+					gs1.m_alleleNames.begin() + gs1.m_chromIndex[ch1 + 1]);
+		} else {
+			// if there is matching chromosome, merge chromosomes
+			size_t ch2 = pch2 - gs2.m_chromNames.begin();
+			loci[ch1] = gs1.m_numLoci[ch1] + gs2.m_numLoci[ch2];
+			chromNames.push_back(gs1.m_chromNames[ch1]);
+			DBG_FAILIF(gs1.m_chromTypes[ch1] != gs2.m_chromTypes[ch2], ValueError,
+				"Cannot merge chromosome '" + gs2.m_chromNames[ch2] + "' due to conflicting chromosome type.");
+			chromTypes.push_back(gs1.m_chromTypes[ch1]);
+			lociPos.insert(lociPos.end(), gs1.m_lociPos.begin() + gs1.m_chromIndex[ch1],
+				gs1.m_lociPos.begin() + gs1.m_chromIndex[ch1 + 1]);
+			lociPos.insert(lociPos.end(), gs2.m_lociPos.begin() + gs2.m_chromIndex[ch2],
+				gs2.m_lociPos.begin() + gs2.m_chromIndex[ch2 + 1]);
+			if (gs1.m_lociNames.empty()) {
+				if (!gs2.m_lociNames.empty()) {
+					lociNames.resize(lociNames.size() + gs1.m_numLoci[ch1], string());
+					lociNames.insert(lociNames.end(), gs2.m_lociNames.begin() + gs2.m_chromIndex[ch2],
+						gs2.m_lociNames.begin() + gs2.m_chromIndex[ch2 + 1]);
+				}
+			} else {
+				lociNames.insert(lociNames.end(), gs1.m_lociNames.begin() + gs1.m_chromIndex[ch1],
+					gs1.m_lociNames.begin() + gs1.m_chromIndex[ch1 + 1]);
+				if (gs2.m_lociNames.empty())
+					lociNames.resize(lociNames.size() + gs2.m_numLoci[ch2], string());
+				else
+					lociNames.insert(lociNames.end(), gs2.m_lociNames.begin() + gs2.m_chromIndex[ch2],
+						gs2.m_lociNames.begin() + gs2.m_chromIndex[ch2 + 1]);
+			}
+			// allele names
+			if (gs1.m_alleleNames.empty())
+				alleleNames.resize(alleleNames.size() + gs1.m_numLoci[ch1], vectorstr());
+			else if (gs1.m_alleleNames.size() == 1)
+				alleleNames.resize(alleleNames.size() + gs1.m_numLoci[ch1], gs1.m_alleleNames[0]);
+			else
+				alleleNames.insert(alleleNames.end(), gs1.m_alleleNames.begin() + gs1.m_chromIndex[ch1],
+					gs1.m_alleleNames.begin() + gs1.m_chromIndex[ch1 + 1]);
+			// add from gs2
+			if (gs2.m_alleleNames.empty())
+				alleleNames.resize(alleleNames.size() + gs2.m_numLoci[ch2], vectorstr());
+			else if (gs2.m_alleleNames.size() == 1)
+				alleleNames.resize(alleleNames.size() + gs2.m_numLoci[ch2], gs2.m_alleleNames[0]);
+			else
+				alleleNames.insert(alleleNames.end(), gs2.m_alleleNames.begin() + gs2.m_chromIndex[ch2],
+					gs2.m_alleleNames.begin() + gs2.m_chromIndex[ch2 + 1]);
+		}
+	}
+	// now for unmapped chromosomes
+	for (size_t ch2 = 0; ch2 < gs2.m_numLoci.size(); ++ch2) {
+		// is there a matching chromosome?
+		vectorstr::iterator pch1 = find(gs1.m_chromNames.begin(), gs1.m_chromNames.end(), gs2.m_chromNames[ch2]);
+		// if there is no matching chromosome, add the chromosome from gs2
+		if (pch1 == gs1.m_chromNames.end()) {
+			size_t ch1 = pch1 - gs1.m_chromNames.begin();
+			loci.push_back(gs2.m_numLoci[ch2]);
+			chromNames.push_back(gs2.m_chromNames[ch2]);
+			chromTypes.push_back(gs2.m_chromTypes[ch2]);
+			lociPos.insert(lociPos.end(), gs2.m_lociPos.begin() + gs2.m_chromIndex[ch2],
+				gs2.m_lociPos.begin() + gs2.m_chromIndex[ch2 + 1]);
+			if (gs2.m_lociNames.empty()) {
+				if (!lociNames.empty())
+					lociNames.resize(lociNames.size() + gs2.m_numLoci[ch2], string());
+			} else {
+				lociNames.insert(lociNames.end(), gs2.m_lociNames.begin() + gs2.m_chromIndex[ch2],
+					gs2.m_lociNames.begin() + gs2.m_chromIndex[ch2 + 1]);
+			}
+			if (gs2.m_alleleNames.empty())
+				alleleNames.resize(alleleNames.size() + gs2.m_numLoci[ch2], vectorstr());
+			else if (gs2.m_alleleNames.size() == 1)
+				alleleNames.resize(alleleNames.size() + gs2.m_numLoci[ch2], gs2.m_alleleNames[0]);
+			else
+				alleleNames.insert(alleleNames.end(), gs2.m_alleleNames.begin() + gs2.m_chromIndex[ch2],
+					gs2.m_alleleNames.begin() + gs2.m_chromIndex[ch2 + 1]);
+		}
+	}
+
+	//
+	GenoStructure ret = GenoStructure(gs1.m_ploidy, loci, chromTypes, gs1.m_haplodiploid, lociPos,
+		chromNames, alleleNames, lociNames, gs1.m_infoFields);
+	//
+	// for index 1, chromosomes have kept their original order
+	index1.clear();
+	UINT locIdx = 0;
+	for (size_t ch = 0; ch < gs1.m_numLoci.size(); ++ch) {
+		for (size_t loc = 0; loc < gs1.m_numLoci[ch]; ++loc, ++locIdx) {
+			double pos = gs1.m_lociPos[locIdx];
+			index1.push_back(find(ret.m_lociPos.begin() + ret.m_chromIndex[ch],
+					ret.m_lociPos.begin() + ret.m_chromIndex[ch + 1], pos) - ret.m_lociPos.begin());
+		}
+	}
+	//
+	// for index 2, mapped chromosome has to be found by name
+	index2.clear();
+	locIdx = 0;
+	for (size_t ch2 = 0; ch2 < gs2.m_numLoci.size(); ++ch2) {
+		size_t ch = find(ret.m_chromNames.begin(), ret.m_chromNames.end(), gs2.m_chromNames[ch2]) -
+		            ret.m_chromNames.begin();
+		for (size_t loc = 0; loc < gs2.m_numLoci[ch2]; ++loc, ++locIdx) {
 			double pos = gs2.m_lociPos[locIdx];
 			index2.push_back(find(ret.m_lociPos.begin() + ret.m_chromIndex[ch],
 					ret.m_lociPos.begin() + ret.m_chromIndex[ch + 1], pos) - ret.m_lociPos.begin());
