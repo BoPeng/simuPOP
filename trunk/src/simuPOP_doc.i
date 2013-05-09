@@ -1805,6 +1805,8 @@ Details:
 
 %ignore simuPOP::GenoStruTrait::gsAddLociFromStru(size_t idx, vectoru &index1, vectoru &index2) const;
 
+%ignore simuPOP::GenoStruTrait::gsAddLociByNameFromStru(size_t idx, vectoru &index1, vectoru &index2) const;
+
 %ignore simuPOP::GenoStruTrait::gsRemoveLoci(const vectoru &kept);
 
 %ignore simuPOP::GenoStruTrait::gsAddChrom(const vectorf &lociPos, const vectorstr &lociNames, const string &chromName, const matrixstr &alleleNames, size_t chromType) const;
@@ -6384,8 +6386,9 @@ Details:
     Add chromosomes in population pop to the current population.
     population pop should have the same number of individuals as the
     current population in the current and all ancestral generations.
-    This function merges genotypes on the new chromosomes from
-    population pop individual by individual.
+    Chromosomes of pop, if named, should not conflict with names of
+    existing chromosome. This function merges genotypes on the new
+    chromosomes from population pop individual by individual.
 
 "; 
 
@@ -6393,13 +6396,17 @@ Details:
 
 Usage:
 
-    x.addLociFrom(pop)
+    x.addLociFrom(pop, byName=False)
 
 Details:
 
-    Add loci from population pop, chromosome by chromosome. Added loci
-    will be inserted according to their position. Their position and
-    names should not overlap with any locus in the current population.
+    Add loci from population pop. By default, chromosomes are merged
+    by index and names of merged chromosomes of population pop will be
+    ignored (merge of two chromosomes with different names will yield
+    a warning). If byName is set to True, chromosomes in pop will be
+    merged to chromosomes with identical names. Added loci will be
+    inserted according to their position. Their position and names
+    should not overlap with any locus in the current population.
     population pop should have the same number of individuals as the
     current population in the current and all ancestral generations.
     Allele lineages are also copied from pop in modules with lineage
