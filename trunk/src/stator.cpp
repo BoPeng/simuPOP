@@ -3297,8 +3297,8 @@ statInbreeding::statInbreeding(const lociList & loci,  const subPopList & subPop
 	m_vars.obtainFrom(vars, allowedVars, defaultVars);
 
 #ifndef LINEAGE
-	DBG_WARNIF((m_vars.contains(IBD_freq_String) || m_vars.contains(IBD_freq_sp_String)),
-		"Warning: IBD statistics will be set to zero in non-lineage modules");
+	DBG_WARNIF((!m_loci.empty()) && (m_vars.contains(IBD_freq_String) || m_vars.contains(IBD_freq_sp_String)),
+		"IBD statistics will be set to zero in non-lineage modules");
 #endif
 }
 
