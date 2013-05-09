@@ -1206,8 +1206,10 @@ public:
 	 *  and names should not overlap with any locus in the current population.
 	 *  population \e pop should have the same number of individuals as the
 	 *  current population in the current and all ancestral generations.
-	 *  Allele lineages are also copied from \e pop in modules with lineage
-	 *  information.
+	 *  Names of merged chromosomes of population \e pop will be ignored,
+	 *  but merge of two chromosomes with different names will yield a
+	 *  warning. Allele lineages are also copied from \e pop in modules with
+	 *  lineage information.
 	 *  <group>7-manipulate</group>
 	 */
 	void addLociFrom(const Population & pop);
