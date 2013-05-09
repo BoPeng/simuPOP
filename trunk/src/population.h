@@ -1201,18 +1201,20 @@ public:
 	 */
 	void addChromFrom(const Population & pop);
 
-	/** Add loci from population \e pop, chromosome by chromosome. Added
-	 *  loci will be inserted according to their position. Their position
-	 *  and names should not overlap with any locus in the current population.
+	/** Add loci from population \e pop. By default, chromosomes are merged
+	 *  by index and names of merged chromosomes of population \e pop will
+	 *  be ignored (merge of two chromosomes with different names will yield
+	 *  a warning). If \e byName is set to \c True, chromosomes in \e pop
+	 *  will be merged to chromosomes with identical names. Added loci
+	 *  will be inserted according to their position. Their position and
+	 *  names should not overlap with any locus in the current population.
 	 *  population \e pop should have the same number of individuals as the
 	 *  current population in the current and all ancestral generations.
-	 *  Names of merged chromosomes of population \e pop will be ignored,
-	 *  but merge of two chromosomes with different names will yield a
-	 *  warning. Allele lineages are also copied from \e pop in modules with
+	   Allele lineages are also copied from \e pop in modules with
 	 *  lineage information.
 	 *  <group>7-manipulate</group>
 	 */
-	void addLociFrom(const Population & pop);
+	void addLociFrom(const Population & pop, bool byName = false);
 
 	/** Add chromosome \e chromName with given type \e chromType to a
 	 *  population, with loci \e lociNames inserted at position \e lociPos.

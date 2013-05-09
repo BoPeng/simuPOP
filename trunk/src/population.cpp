@@ -1774,7 +1774,7 @@ void Population::addIndFrom(const Population & pop)
 }
 
 
-void Population::addLociFrom(const Population & pop)
+void Population::addLociFrom(const Population & pop, bool byName)
 {
 	DBG_FAILIF(ancestralGens() != pop.ancestralGens(), ValueError,
 		"Can not add chromosomes from a population with different number of ancestral generations");
@@ -1784,8 +1784,12 @@ void Population::addLociFrom(const Population & pop)
 	// obtain new genotype structure and set it
 	vectoru indexes1;
 	vectoru indexes2;
-	setGenoStructure(gsAddLociFromStru(pop.genoStruIdx(),
-			indexes1, indexes2));
+	if (byName)
+		setGenoStructure(gsAddLociByNameFromStru(pop.genoStruIdx(),
+				indexes1, indexes2));
+	else
+		setGenoStructure(gsAddLociFromStru(pop.genoStruIdx(),
+				indexes1, indexes2));
 
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);

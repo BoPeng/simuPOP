@@ -357,6 +357,14 @@ public:
 	const GenoStructure gsAddLociFromStru(size_t idx, vectoru & index1, vectoru & index2) const;
 
 	/** CPPONLY
+	 *  Add loci (merge loci on the same chromsoomes with identical name) from another genotypic
+	 *  structure and create a new structure. index1 and index2 are used
+	 *  to return the indexes of old loci in the new structure.
+	 */
+	const GenoStructure gsAddLociByNameFromStru(size_t idx, vectoru & index1, vectoru & index2) const;
+
+
+	/** CPPONLY
 	 *  Remove a list of loci from the current genotypic structure
 	 *  and create a new structure.
 	 */
@@ -852,7 +860,7 @@ private:
 	friend class boost::serialization::access;
 
 	template<class Archive>
-	void serialize(Archive & , const UINT )
+	void serialize(Archive &, const UINT)
 	{
 		// do not archive index.
 	}
