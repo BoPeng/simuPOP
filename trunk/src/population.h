@@ -1194,7 +1194,8 @@ public:
 	/** Add chromosomes in population \e pop to the current population.
 	 *  population \e pop should have the same number of individuals as the
 	 *  current population in the current and all ancestral generations.
-	 *  This function merges genotypes on the
+	 *  Chromosomes of \e pop, if named, should not conflict with names of
+	 *  existing chromosome. This function merges genotypes on the
 	 *  new chromosomes from population \c pop individual by individual.
 	 *  <group>7-manipulate</group>
 	 */

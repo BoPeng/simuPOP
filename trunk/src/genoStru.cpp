@@ -476,6 +476,9 @@ const GenoStructure GenoStruTrait::gsAddLociFromStru(size_t idx, vectoru & index
 		if (ch < gs1.m_numLoci.size() && ch < gs2.m_numLoci.size()) {
 			loci[ch] = gs1.m_numLoci[ch] + gs2.m_numLoci[ch];
 			chromNames.push_back(gs1.m_chromNames[ch]);
+			DBG_WARNIF(gs1.m_chromNames[ch] != gs2.m_chromNames[ch],
+				"Chromosome '" + gs2.m_chromNames[ch] + "' is merged to chromosome '" +
+				gs1.m_chromNames[ch] + "'.");
 			chromTypes.push_back(gs1.m_chromTypes[ch]);
 			lociPos.insert(lociPos.end(), gs1.m_lociPos.begin() + gs1.m_chromIndex[ch],
 				gs1.m_lociPos.begin() + gs1.m_chromIndex[ch + 1]);
@@ -871,6 +874,7 @@ vectoru GenoStruTrait::lociByNames(const vectorstr & names) const
 
 	vectorstr::const_iterator name = names.begin();
 	vectorstr::const_iterator nameEnd = names.end();
+
 	for (size_t i = 0; name != nameEnd; ++name, ++i) {
 		map<string, size_t>::const_iterator it = nameMap.find(*name);
 
