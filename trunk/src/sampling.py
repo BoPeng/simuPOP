@@ -134,7 +134,7 @@ def indexToID(pop, idField='ind_id', fatherField='father_id', motherField='mothe
 def plotPedigree(ped, filename=None, idField='ind_id', fatherField='father_id',
     motherField='mother_id', *args, **kwargs):
     '''A wrapper function that calls R to draw pedigree by outputting the
-    pedigree to a format that is recognizable by R's ``'kinship'`` library.
+    pedigree to a format that is recognizable by R's ``'kinship2'`` library.
     *ped* can be a population or a pedigree object, as long as there are
     valid *idField*, *fatherField* and *motherField* fields in the population.
     Aliased arguments could be used to pass parameters to functions
@@ -156,7 +156,12 @@ def plotPedigree(ped, filename=None, idField='ind_id', fatherField='father_id',
     # device
     plotter.newDevice()
     #
-    plotter.r.library('kinship')
+    try:
+        # try to use the kinship2 library
+        plotter.r.library('kinship2')
+    except:
+        # if not found, try the older version
+        plotter.r.library('kinship')
     id = []
     dadid = []
     momid = []

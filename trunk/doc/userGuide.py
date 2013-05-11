@@ -604,10 +604,11 @@ pop.useAncestralGen(0)
 #end_file
 
 #begin_file log/addRemoveLoci.py
-#begin_ignore
 import simuOpt
+#begin_ignore
 simuOpt.setOptions(quiet=True)
 #end_ignore
+simuOpt.setOptions(debug='DBG_WARNING')
 import simuPOP as sim
 #begin_ignore
 sim.setRNG(seed=12345)
@@ -631,6 +632,11 @@ pop.removeLoci(8)
 # loci names can also be used.
 pop.removeLoci(['rs1', 'rs7'])
 sim.dump(pop)
+# add loci from another population 
+pop2 = sim.Population(10, loci=2, lociPos=[0.1, 2.2], chromNames='chr3')
+pop.addLociFrom(pop2)
+pop.addLociFrom(pop2, byName=2)
+sim.dump(pop, genotype=False)
 #end_file
 
 #begin_file log/recode.py

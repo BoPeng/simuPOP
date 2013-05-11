@@ -5375,6 +5375,22 @@ reference "extract"
 \end_inset
 
  demonstrates how to use these populations.
+ Note that function 
+\family typewriter
+Population.addLociFrom
+\family default
+ by default merges chromosomes one by one according to chromosome index.
+ If 
+\family typewriter
+byName
+\family default
+ is set to True, it will try to match chromosomes by name and merge them.
+ This example also demonstrates the use of 
+\family typewriter
+DBG_WARNING
+\family default
+ flag, which will trigger a warning message when chromosomes with different
+ names are merged.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
