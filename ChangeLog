@@ -10,6 +10,7 @@ NEW FEATURE:
   - Add an operator OffspringTagger to track the index of offspring in their familes.
   - Allow mutators to output details of each mutant.
   - Add parameter byName to function Population.addLociFrom.
+  - Use R package kinship2 instead of kinship in simuPOP.sampling because the kinship package is now deprecated.
 
 version 1.1.0 - Rev 4744 (Feb 11, 2013)
 
