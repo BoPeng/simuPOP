@@ -8,7 +8,14 @@
 # Bo Peng (bpeng@mdanderson.org)
 #
 
-import os, sys, time, shutil, platform, glob
+import os
+import sys
+import time
+import shutil
+import platform
+import subprocess
+import glob
+import platform
 
 release_file = 'simuPOP_version.py'
 user_guide = 'doc/userGuide.lyx'
@@ -39,8 +46,7 @@ def cmdOutput(cmd):
 
 def run(cmd):
     print cmd
-    if not dryrun:
-        os.system(cmd)
+    os.system(cmd)
 
 def removeTempFiles():
     ''' remove unnecessary files '''
@@ -317,89 +323,41 @@ def build_dmg(ver, pyver):
     run('hdiutil create {} -volname simuPOP-{} -fs HFS+ -srcfolder {}'.format(dmg, ver, dest))
 
 
-def build_solaris(ver):
-    build_remote(ver, sol_name)
 
-
-Usage = '''Usage: build.py [options] action1 action2 
-Options:
-    --help                  show this help lines
-    --release=version       release simupop with version number, default to snapshot
-    --dryrun                show command, do not run
-    --config=file           configuration file
-        This configuration file should define:
-        release_file: the release file or simuPOP distribution
-        download_directory: where to put resulting packages
-        doc_directory: doc directory of simuPOP source
-        user_tmp_directory: temp directory to build simuPOP locally.
-        mac_name: name of the mac machine
-actions:    
-    svn:    submit changes
-    src:    build source package .tar.gz and .zip
-    doc:    process simuPOP document
-    x86_64: build x86_64 rpm package, including -src.rpm
-    rhel4:  build rpm and .tar.gz packages for rhel4/i386
-    mac:    package for macintosh
-    win:    packages for windows
-    mdk:    packages for madravia
-    sol:    packages for solaris
-    fedora: packages for fedora
-    all:    src + x86_64 + rhel4 + mac + win
-'''
 
 if __name__ == '__main__':
-    release = None
-    actions = []
-    dryrun = False
-    all_actions = ['all', 'svn', 'src', 'doc', 'src_doc', 'x86_64', 'rhel4', 'mac', 'dmg', 'win', 'mdk', 'suse', 'sol', 'fedora5']
-
-    if len(sys.argv) == 1:
-        print Usage
-        sys.exit(0)
-    ## Parse the command line
-    for op in sys.argv[1:]:   # default shell/for list is $*, the options
-        if op in [ '-help', '--help', '-h' ]:
-            print Usage
-            sys.exit(0)
-        elif '--release' in op:
-            release = op[10:]
-        elif op == 'all':
-            actions.extend(['src', 'doc', 'svn', 'x86_64', 'rhel4', 'mac', 'dmg', 'win', 'fedora5', 'suse'])
-        elif op in all_actions and op not in actions:
-            actions.append(op)
-        elif op == '--dryrun':
-            dryrun = True
-        else:
-            print "Unknown option", op
-            sys.exit(1)
-    # 
+    parser = argparse.ArgumentParser(description='''Create source distribution 
+        and binary installers for a simuPOP release. In addition to optional
+        parameters version and tag, extra parameters would be specified and 
+        will be passed directly to the 'python setup.py install' process. ''')
+    parser.add_argument('--version',
+        help='''Modify simuPOP_version.py to the specified version string and
+            make the release.''')
+    parser.add_argument('--tag', action='store_true',
+        help='If specified, tag this release.')
+    parser.add_argument('--doc', action='store_true',
+        help='If specified, build documentation.')
+    # go to the top source directory        
     os.chdir('..')
+    #
+    args, argv = parser.parse_known_args()
+    #
     # get revision number and update last_revision_file
-    (ver, rev, old_ver, old_rev) = setVersionRevision(release)
+    (ver, rev, old_ver, old_rev) = setVersionRevision(args.version)
     print 'New version: %s, revision: %s ' % (ver, rev)
     removeTempFiles()
-    if 'svn' in actions:
+    #
+    generateSWIGWrappers()
+    buildsimuPOP()
+    buildSourcePackage()
+    if platform.platform().startswith('Darwin'):
+        createMacPackage(ver)
+    if args.tag:
         commitModification()
-        if release != 'snapshot':
-            makeReleaseTag(ver)
-    if 'src' in actions:
-        build_src(ver)
     if 'doc' in actions:
         build_doc(ver, rev)
     if 'src_doc' in actions:
         build_src_doc(ver, rev)
-    if 'x86_64' in actions:
-        build_x86_64(ver)
-    if 'mdk' in actions:
-        build_mdk(ver)
-    if 'fedora5' in actions:
-        build_fedora5(ver)
-    if 'rhel4' in actions:
-        build_rhel4(ver)
-    if 'suse' in actions:
-        build_suse(ver)
-    if 'mac' in actions:
-        build_mac(ver, pyver='3.3')
     if 'dmg' in actions:
         build_mpkg(ver, pyver='2.7')
         build_dmg(ver, pyver='2.7')
