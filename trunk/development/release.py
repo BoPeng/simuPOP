@@ -328,8 +328,8 @@ def tagRelease(release):
         cmd = 'svn ci -m "automatic checkin on %s"' % time.asctime()
         run_command(cmd)
     run_command('svn update')
-    cmd = 'svn copy https://simupop.svn.sourceforge.net/svnroot/simupop/trunk ' + \
-        'https://simupop.svn.sourceforge.net/svnroot/simupop/tag/v%s' % release + \
+    cmd = 'svn copy https://sourceforge.net/p/simupop/code/HEAD/tree/trunk ' \
+        'https://sourceforge.net/p/simupop/code/HEAD/tree/trunk/tag/v%s' % release + \
         ' -m "Version %s released at %s"' % (release, time.asctime())
     print cmd
     run_command(cmd)
