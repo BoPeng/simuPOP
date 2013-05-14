@@ -5,7 +5,7 @@
 \textclass manual
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
-\setreleaseinfo{Release 1.1.0 (\mbox{Rev: 4744})}
+\setreleaseinfo{Release 1.1.1 (\mbox{Rev: 4773})}
 % file revision $Rev: 3372$
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
@@ -2233,6 +2233,13 @@ simuPOPsamplingdrawCombinedSampleRef
 
 \backslash
 simuPOPsamplingdrawCombinedSamplesRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsamplingplotPedigreeRef
 \end_layout
 
 \end_inset
