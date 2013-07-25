@@ -319,7 +319,8 @@ def createMacImage(ver, pyver):
     dmg = os.path.join(download_directory, 'simuPOP-{}-py{}.dmg'.format(ver, pyver))
     if os.path.isfile(dmg):
         os.remove(dmg)
-    run_command('hdiutil create {} -volname simuPOP-{} -fs HFS+ -srcfolder {}'.format(dmg, ver, dest))
+    run_command('hdiutil create {0} -volname simuPOP-{1} -fs HFS+ -srcfolder {2}/simuPOP-{1}-py{3}.mpkg'
+        .format(dmg, ver, dest, pyver))
 
 
 def tagRelease(release):
