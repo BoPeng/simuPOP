@@ -925,7 +925,7 @@ const GenoStructure GenoStruTrait::gsAddLoci(const vectoru & chrom, const vector
 			                                        "Please use addChrom function if a new chromosome is added");
 		//
 		// append to the last
-		if (newLociPos.empty() || (pos > newLociPos.back() && ch == numChrom() - 1)) {
+		if (newLociPos.empty() || ((newLoci[ch] == 0 || pos > newLociPos.back()) && ch == numChrom() - 1)) {
 			newLociPos.push_back(pos);
 			if (!lociNames.empty())
 				newLociNames.push_back(name);
@@ -937,17 +937,19 @@ const GenoStructure GenoStruTrait::gsAddLoci(const vectoru & chrom, const vector
 		// find beginning and end of chromosome
 		size_t chBegin = 0;
 		size_t chEnd = newLoci[0];
-		for (size_t i = 1; i <= ch; ++i) {
-			chBegin += newLoci[i - 1];
-			chEnd += newLoci[i];
+		for (size_t j = 1; j <= ch; ++j) {
+			chBegin += newLoci[j - 1];
+			chEnd += newLoci[j];
 		}
 		size_t insertPos = 0;
-		if (pos > newLociPos[chEnd - 1])
+		// the second condition assumes that there is at least one locus on the chromosome so
+		// newLociPos[chEnd-1] points to the last locus on that chromosome.
+		if (newLoci[ch] == 0 || pos > newLociPos[chEnd - 1])
 			insertPos = chEnd;
 		else {
-			for (size_t i = chBegin; i < chEnd; ++i) {
-				if (pos < newLociPos[i]) {
-					insertPos = i;
+			for (size_t j = chBegin; j < chEnd; ++j) {
+				if (pos < newLociPos[j]) {
+					insertPos = j;
 					break;
 				}
 			}

@@ -509,6 +509,61 @@ class TestPopulation(unittest.TestCase):
 
     def testAddLoci(self):
         'Testing Population::addLoci(chrom, pos, names=[])'
+        # special cases where the destination chromosome is empty
+        # empty chromosome is the last
+        pop = Population(size=5, ploidy = 2, loci = [1,0], lociPos = [0.4],
+            chromNames = ['One', 'Two'], lociNames = ['selSite'])
+        initGenotype(pop, freq=[0.5, 0.5])
+        g1 = [x.allele(0, 0) for x in pop.individuals()] + [x.allele(0, 1) for x in pop.individuals()]
+        pop.addLoci(chrom = 1, pos = 0.1, lociNames = '')
+        self.assertEqual(pop.numChrom(), 2)
+        self.assertEqual(pop.numLoci(0), 1)
+        self.assertEqual(pop.numLoci(1), 1)
+        self.assertEqual(pop.locusName(0), 'selSite')
+        self.assertEqual(pop.locusName(1), '')
+        g1_after = [x.allele(0, 0) for x in pop.individuals()] + [x.allele(0, 1) for x in pop.individuals()]
+        self.assertEqual(g1, g1_after)
+        g2 = [x.allele(1, 0) for x in pop.individuals()] + [x.allele(1, 1) for x in pop.individuals()]
+        self.assertEqual(g2, [0]*10)
+        #
+        # empty chromosome is the first
+        pop = Population(size=5, ploidy = 2, loci = [0,1], lociPos = [0.4],
+            chromNames = ['One', 'Two'], lociNames = ['selSite'])
+        initGenotype(pop, freq=[0.5, 0.5])
+        g1 = [x.allele(0, 0) for x in pop.individuals()] + [x.allele(0, 1) for x in pop.individuals()]
+        pop.addLoci(chrom = 0, pos = 0.1, lociNames = '')
+        self.assertEqual(pop.numChrom(), 2)
+        self.assertEqual(pop.numLoci(0), 1)
+        self.assertEqual(pop.numLoci(1), 1)
+        self.assertEqual(pop.locusName(0), '')
+        self.assertEqual(pop.locusName(1), 'selSite')
+        g1_after = [x.allele(1, 0) for x in pop.individuals()] + [x.allele(1, 1) for x in pop.individuals()]
+        self.assertEqual(g1, g1_after)
+        g2 = [x.allele(0, 0) for x in pop.individuals()] + [x.allele(0, 1) for x in pop.individuals()]
+        self.assertEqual(g2, [0]*10)
+        #
+        # empty chromosome is in the middle
+        pop = Population(size=5, ploidy = 2, loci = [1,0,0,1], lociPos = [0.4, 0.4],
+            chromNames = ['One', 'Two', 'Three', 'Four'], lociNames = ['on_ch1', 'on_ch4'])
+        initGenotype(pop, freq=[0.5, 0.5])
+        g1 = [x.allele(0, 0) for x in pop.individuals()] + [x.allele(0, 1) for x in pop.individuals()]
+        g2 = [x.allele(1, 0) for x in pop.individuals()] + [x.allele(1, 1) for x in pop.individuals()]
+        pop.addLoci(chrom = 2, pos = 0.1, lociNames = 'new')
+        self.assertEqual(pop.numChrom(), 4)
+        self.assertEqual(pop.numLoci(0), 1)
+        self.assertEqual(pop.numLoci(1), 0)
+        self.assertEqual(pop.numLoci(2), 1)
+        self.assertEqual(pop.numLoci(3), 1)
+        self.assertEqual(pop.locusName(0), 'on_ch1')
+        self.assertEqual(pop.locusName(1), 'new')
+        self.assertEqual(pop.locusName(2), 'on_ch4')
+        g1_after = [x.allele(0, 0) for x in pop.individuals()] + [x.allele(0, 1) for x in pop.individuals()]
+        g2_after = [x.allele(2, 0) for x in pop.individuals()] + [x.allele(2, 1) for x in pop.individuals()]
+        self.assertEqual(g1, g1_after)
+        self.assertEqual(g2, g2_after)
+        g3_after = [x.allele(1, 0) for x in pop.individuals()] + [x.allele(1, 1) for x in pop.individuals()]
+        self.assertEqual(g3_after, [0]*10)
+        #
         pop = self.getPop(size = 100, chromNames=["c1", "c2"], ancGen=5, lociPos=[1, 3, 5], lociNames = ['l1', 'l2', 'l3'])
         pop1 = pop.clone()
         newpos = pop.addLoci([0, 1, 1], [2, 6, 7], ['l4', 'l5', 'l6'])
@@ -528,6 +583,7 @@ class TestPopulation(unittest.TestCase):
                 for k in newpos:
                     self.assertEqual(ind.allele(k), 0)
         self.assertRaises(ValueError, pop.addLoci, [2], [8], ['l7'])
+        #
 
     def testDeepcopy(self):
         'Testing deepcopy of population'
