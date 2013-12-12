@@ -6,7 +6,7 @@
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 1.1.1 (\mbox{Rev: 4774})}
+\setreleaseinfo{Release 1.1.1 (\mbox{Rev: 4775})}
 % file revision $Rev: 3372$
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
@@ -13266,7 +13266,7 @@ status open
 
 \begin_layout Plain Layout
 
-def fitness_func(genotype):
+def fitness_func(geno):
 \end_layout
 
 \begin_layout Plain Layout
@@ -13297,7 +13297,7 @@ status open
 
 \begin_layout Plain Layout
 
-def fitness_func(genotype, fields):
+def fitness_func(geno, field1, field2):
 \end_layout
 
 \begin_layout Plain Layout
@@ -13317,16 +13317,29 @@ def fitness_func(genotype, fields):
 
 \end_inset
 
-and use this function in an operator 
+where 
 \family typewriter
-PySelector(func=fitness_func, loci=loci, paramFields=fields)
+field1
 \family default
-.
- It is also possible to use a third parameter 
+, 
+\family typewriter
+field2
+\family default
+ are names of information fields.
+ Other parameters such as 
 \family typewriter
 gen
 \family default
- to return generation-dependent fitness values.
+, 
+\family typewriter
+ind
+\family default
+, and 
+\family typewriter
+pop
+\family default
+ are also allowed.
+ Please check the reference manual for details.
 \end_layout
 
 \begin_layout Standard
@@ -13336,29 +13349,13 @@ PySelector
 \family default
  is used to calculate fitness for an individual (parents if applied pre-mating,
  offspring if applied during-mating), it will collect his or her genotype
- at specified loci, optional values at specified information fields, and
- the generation number to a user-specified Python function, and take its
+ at specified loci, optional values at specified information fields, generation
+ number, or individual to a user-specified Python function, and take its
  return value as fitness.
  As you can imagine, the incorporation of information fields and generation
  number allow the implementation of very complex selection scenarios such
  as gene environment interaction and varying selection pressures.
- Note that this operator does not pass sex and affection status to the user-defi
-ned function.
- If your selection model is sex-dependent, you can define an information
- field 
-\family typewriter
-sex
-\family default
-, synchronize its value with individual sex (e.g.
- using operator 
-\family typewriter
-InfoExec('sex=ind.sex()', exposeInd='ind'
-\family default
-) and pass this information to the user-defined function (
-\family typewriter
-PySelector(func=func, paramFields='sex')
-\family default
-).
+ 
 \end_layout
 
 \begin_layout Standard
