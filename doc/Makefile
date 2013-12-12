@@ -27,7 +27,8 @@ help:
 	@echo "  changes   to make an overview over all changed/added/deprecated items"
 	@echo "  linkcheck to check all external links for integrity"
 	@echo "  coverage  to check documentation coverage for library and C API"
-	@echo "  dist      to create a \"dist\" directory with archived docs for download"
+	@echo "  dist_svn  to distribute documentation for development version"
+	@echo "  dist_release to distribute documentation for formal releases"
 
 checkout:
 	@if [ ! -d tools/sphinx ]; then \
