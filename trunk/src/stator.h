@@ -192,10 +192,6 @@ public:
 	 *  evaluation of this statement may change the value of information
 	 *  fields.
 	 *
-	 *  This operator is by default applied post-mating. If it stage is set to
-	 *  \c DuringMating, it will be applied to all offspring, regardless of
-	 *  \c subPops settings.
-	 *
 	 *  Parameter \e usePopVars is obsolete because population variables are
 	 *  always usable in such expressions.
 	 */
@@ -272,10 +268,6 @@ public:
 	 *  but a population variable, and <tt>a=ind.sex()</tt> will set
 	 *  information field \e a of all individuals to its sex (needs
 	 *  <tt>exposeInd='ind'</tt>.
-	 *
-	 *  This operator is by default applied post-mating. If it stage is set to
-	 *  \c DuringMating, it will be applied to all offspring, regardless of
-	 *  \c subPops settings.
 	 *
 	 *  Parameter \e usePopVars is obsolete because population variables will
 	 *  always be usable.
@@ -1002,16 +994,15 @@ class Stat : public BaseOperator
 {
 public:
 	/** Create a \c Stat operator that calculates specified statistics of a
-	 *  population when it is applied to this population. This operator is
-	 *  by default applied after mating (parameter \e stage) and can be applied
-	 *  to specified replicates (parameter \e rep) at specified generations
-	 *  (parameter \e begin, \e end, \e step, and \e at). This operator does
-	 *  not produce any output (ignore parameter \e output) after statistics
-	 *  are calculated. Instead, it stores results in the local namespace of
-	 *  the population being applied. Other operators can retrieve these
-	 *  variables or evalulate expression directly in this local namespace.
-	 *  Please refer to operator \c BaseOperator for a detailed explanation of
-	 *  these common operator parameters.
+	 *  population when it is applied to this population. This operator can 
+	 *  be applied to specified replicates (parameter \e rep) at specified 
+	 *  generations (parameter \e begin, \e end, \e step, and \e at). This 
+	 *  operator does not produce any output (ignore parameter \e output) 
+	 *  after statistics are calculated. Instead, it stores results in the
+	 *  local namespace of the population being applied. Other operators can
+	 *  retrieve these variables or evalulate expression directly in this
+	 *  local namespace. Please refer to operator \c BaseOperator for a 
+	 *  detailed explanation of these common operator parameters.
 	 *
 	 *  \c Stat supports parameter \e subPops. It usually calculate the same
 	 *  set of statistics for all subpopulations (<tt>subPops=subPopList()</tt>).
