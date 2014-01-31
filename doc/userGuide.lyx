@@ -16502,7 +16502,7 @@ where
 \end_layout
 
 \begin_layout Standard
-Because the calculation of demographic effective size need to track which
+Because the calculation of demographic effective size needs to track which
  alleles are transmitted from parental to offspring population, it has to
  collect information from both parental and offspring populations, and can
  only be calculated using the lineage modules of simuPOP.
@@ -16552,18 +16552,23 @@ lstparams "caption={Demographic effective population size},label={statNeDemograp
 Effective population sizes could also be estimated from genotypes because
  changes of genotypes reflects properties of the mating scheme.
  However, it is important to realize that 
+\series bold
 \emph on
 evolving a population for one generation is only one realization of many
  possible realizations of the same mating scheme
+\series default
 \emph default
  (effective size).
- If we consider the demographic effective size the average effective size
- of all realizations, estimating effective size from genotypes will be inaccurat
-e unless a large number of unlinked loci are used.
+ If we consider the demographic effective size as the average effective
+ size of all realizations, estimating effective size from genotypes will
+ be inaccurate unless a large number of unlinked loci are used.
+ The temporal methods essentially try to get better estimate by averaging
+ such realizations across multiple generations, although the demographic
+ effective size might vary due to change of population size.
 \end_layout
 
 \begin_layout Standard
-simuPOP currently provides two temporal methods proposed by Waples, 1989,
+simuPOP currently provides two temporal methods proposed by Waples (1989)
  and Jorde & Ryman's (2007).
  Because these methods estimate effective population size using changes
  of allele frequencies of samples at two generations, it is necessary to
@@ -16612,10 +16617,8 @@ TempoFS
 ) as the census population size at generation 0, estimated effective population
  sizes between generation 0 and 20 at generation 20, and estimates between
  0 and 40 at generation 40.
- The variables are lists of six elements: the estimated Ne under sampling
- plan 1, lower and upper boundaries of the 95% confidence interval, followed
- by the estimate and confidence interval for plan 2.
- 
+ The variables are lists of three elements: the estimated Ne and lower and
+ upper boundaries of the 95% confidence interval.
 \end_layout
 
 \begin_layout Standard
