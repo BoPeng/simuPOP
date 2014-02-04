@@ -42,7 +42,7 @@ checkout:
 	@if [ ! -d tools/extras ]; then \
 	  echo "Checking out extras..."; \
 	  svn checkout $(SVNROOT)/external/docutils-0.5/extras tools/extras; \
-	  cp -f tools/extras/roman.py tools
+	  cp -f tools/extras/roman.py tools; \
 	fi
 	@if [ ! -d tools/jinja2 ]; then \
 	  echo "Checking out Jinja2..."; \
