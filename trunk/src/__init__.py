@@ -283,9 +283,7 @@ __all__ = [
     'Bernullitrials',
     'WeightedSampler',
     # 
-    # modules are not loaded by default because importing plotter will fail if
-    # rpy is not installed, and loading R is slow and perhaps unnecessary if
-    # rpy is installed.
+    # modules are not loaded by default because they require rpy or matplotlib
     #
     #'utils',
     #'plotter',
