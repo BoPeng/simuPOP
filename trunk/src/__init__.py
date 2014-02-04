@@ -899,7 +899,7 @@ class ControlledRandomMating(HomoMating):
 class SNPMutator(MatrixMutator):
     '''A mutator model that assumes two alleles 0 and 1 and accepts mutation
     rate from 0 to 1, and from 1 to 0 alleles. '''
-    def __init__(self, u=0, v=0, loci=ALL_AVAIL, mapIn=[], mapOut=[], output='>',
+    def __init__(self, u=0, v=0, loci=ALL_AVAIL, mapIn=[], mapOut=[], output='',
         begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
         infoFields=['ind_id'], lineageMode=FROM_INFO):
         '''Return a ``MatrixMutator`` with proper mutate matrix for a two-allele
@@ -915,7 +915,7 @@ class AcgtMutator(MatrixMutator):
     Although a general model needs 12 parameters, less parameters are needed
     for specific nucleotide mutation models (parameter ``model``). The length
     and meaning of parameter ``rate`` is model dependent.'''
-    def __init__(self, rate=[], model='general', loci=ALL_AVAIL, mapIn=[], mapOut=[], output='>',
+    def __init__(self, rate=[], model='general', loci=ALL_AVAIL, mapIn=[], mapOut=[], output='',
         begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
         infoFields=['ind_id'], lineageMode=FROM_INFO):
         '''Create a mutation model that mutates between nucleotides ``A``,
@@ -1026,7 +1026,7 @@ class AminoAcidMutator(MatrixMutator):
     This operator has not been implemented.
     '''
     def __init__(self, rate=[], model='general', loci=ALL_AVAIL, mapIn=[], mapOut=[], 
-        output='>', begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
+        output='', begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
         infoFields=['ind_id'], lineageMode=FROM_INFO):
         MatrixMutator.__init__(self, rate, loci, mapIn, mapOut,
             output, begin, end, step, at, reps, subPops, infoFields, lineageMode)
