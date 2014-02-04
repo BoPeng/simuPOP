@@ -3184,11 +3184,8 @@ Details:
     output. Optionally, a statement (or several statements separated
     by newline) can be executed before expr is evaluated. The
     evaluation of this statement may change the value of information
-    fields.  This operator is by default applied post-mating. If it
-    stage is set to DuringMating, it will be applied to all offspring,
-    regardless of subPops settings.  Parameter usePopVars is obsolete
-    because population variables are always usable in such
-    expressions.
+    fields.  Parameter usePopVars is obsolete because population
+    variables are always usable in such expressions.
 
 "; 
 
@@ -3242,11 +3239,8 @@ Details:
     individuals to information field b or a population variable b if b
     is not an information field but a population variable, and
     a=ind.sex() will set information field a of all individuals to its
-    sex (needs exposeInd='ind'.  This operator is by default applied
-    post-mating. If it stage is set to DuringMating, it will be
-    applied to all offspring, regardless of subPops settings.
-    Parameter usePopVars is obsolete because population variables will
-    always be usable.
+    sex (needs exposeInd='ind'.  Parameter usePopVars is obsolete
+    because population variables will always be usable.
 
 "; 
 
@@ -9269,15 +9263,14 @@ Usage:
 Details:
 
     Create a Stat operator that calculates specified statistics of a
-    population when it is applied to this population. This operator is
-    by default applied after mating (parameter stage) and can be
-    applied to specified replicates (parameter rep) at specified
-    generations (parameter begin, end, step, and at). This operator
-    does not produce any output (ignore parameter output) after
-    statistics are calculated. Instead, it stores results in the local
-    namespace of the population being applied. Other operators can
-    retrieve these variables or evalulate expression directly in this
-    local namespace. Please refer to operator BaseOperator for a
+    population when it is applied to this population. This operator
+    can be applied to specified replicates (parameter rep) at
+    specified generations (parameter begin, end, step, and at). This
+    operator does not produce any output (ignore parameter output)
+    after statistics are calculated. Instead, it stores results in the
+    local namespace of the population being applied. Other operators
+    can retrieve these variables or evalulate expression directly in
+    this local namespace. Please refer to operator BaseOperator for a
     detailed explanation of these common operator parameters.   Stat
     supports parameter subPops. It usually calculate the same set of
     statistics for all subpopulations (subPops=subPopList()). If a
