@@ -39,6 +39,11 @@ checkout:
 	  echo "Checking out Docutils..."; \
 	  svn checkout $(SVNROOT)/external/docutils-0.5/docutils tools/docutils; \
 	fi
+	@if [ ! -d tools/extras ]; then \
+	  echo "Checking out extras..."; \
+	  svn checkout $(SVNROOT)/external/docutils-0.5/extras tools/extras; \
+	  cp -f tools/extras/roman.py tools
+	fi
 	@if [ ! -d tools/jinja2 ]; then \
 	  echo "Checking out Jinja2..."; \
 	  git clone http://github.com/mitsuhiko/jinja2.git tools/jinja2; \
@@ -55,6 +60,7 @@ checkout:
 update: checkout
 	svn update tools/sphinx
 	svn update tools/docutils
+	svn update tools/extras
 	cd tools/jinja2; git pull; cd ../..
 	svn update tools/pygments
 	svn update tools/converter
