@@ -831,9 +831,9 @@ class Trajectory:
             self.traj[gen].append([x for x in spFreq])
 
     def plot(self, filename=None, **kwargs):
-        '''Plot simulated Trajectory using ``R`` through a Python module ``rpy``.
-        The function will return silently if module ``plotter`` cannot be
-        imported.
+        '''Plot simulated Trajectory using ``R`` through a Python module ``rpy``,
+        or ``matplotlib`` if ``rpy`` is not available. The function will return
+        silently if module ``rpy`` and ``matplotlib`` cannot be imported.
 
         This function will use different colors to plot trajectories at
         different loci. The trajectories are plotted from generation 0 to
@@ -842,18 +842,25 @@ class Trajectory:
         given, the figure will be saved to *filename* in a format specified by
         file extension. Currently supported formats/extensions are eps, jpg,
         bmp, tif, png and pdf. The availability of formats may be limited by
-        your version of R.
+        your version of R or functions of matplotlib.
 
         This function makes use of the derived keyword parameter feature of
-        module ``plotter``. Allowed prefixes are ``par``, ``plot``, ``lines``
-        and ``dev_print``. Allowed repeating suffix are ``loc`` and ``sp``.
+        module ``plotter``. The ``rpy`` version allows prefixes ``par``, 
+        ``plot``, ``lines`` and ``dev_print``, and suffixes ``loc`` and ``sp``.
         For example, you could use parameter ``plot_ylim`` to reset the default
         value of ``ylim`` in R function ``plot``.
         '''
         try:
             import plotter
+            self._rpy_plot(filename, **kwargs)
         except ImportError:
-            return
+            try:
+                import matplotlib
+                self._mat_plot(filename, **kwargs)
+            except ImportError:
+                sys.stderr.write('Failed to draw figure: rpy or matplotlib is not available.')
+
+    def _rpy_plot(self, filename, **kwargs):
         #
         args = plotter.DerivedArgs(
             defaultFuncs=['plot', 'lines'],
@@ -912,6 +919,67 @@ class Trajectory:
         plotter.saveFigure(**args.getArgs('dev_print', None, file=filename))
         plotter.r.dev_off()
         
+    def _mat_plot(self, filename, **kwargs):
+        import matplotlib.pylab as plt
+        #
+        #args = plotter.DerivedArgs(
+        #    defaultFuncs=['plot', 'lines'],
+        #    allFuncs = ['par', 'plot', 'lines', 'dev_print'],
+        #    suffixes = ['loc', 'sp'],
+        #    defaultParams = {
+        #        'plot_ylim': [0, 1],
+        #        'plot_ylab': 'Allele frequency',
+        #        'plot_xlab': 'Generation'
+        #    },
+        #    **kwargs
+        #)
+        # device
+        #plotter.newDevice()
+        #
+        gens = self.traj.keys()
+        gens.sort()
+        #plotter.r.par(**args.getArgs('par', None))
+        #plotter.r.plot(gens[0], 0,
+        #    **args.getArgs('plot', None, xlim=(min(gens), max(gens)), type='n'))
+        plt.figure()
+        allLines = []
+        for gen in gens:
+            for sp in range(len(self.traj[gen])):
+                if len(allLines) <= sp:
+                    allLines.append([])
+                lines = allLines[sp]
+                if len(lines) != len(self.traj[gen][0]):
+                    if len(lines) != 0:
+                        for loc, line in enumerate(lines):
+                            # remove leading zero's
+                            for start in range(len(line)):
+                                if line[start] != 0:
+                                    break
+                            if start == len(line) - 1:
+                                continue
+                            plt.plot(range(beginGen - len(line) + start, gen), line[start:])
+                            # **args.getArgs('lines', None, sp=sp, loc=loc))
+                    # the first point
+                    allLines[sp] = [[x] for x in self.traj[gen][sp]]
+                else:
+                    for loc, x in enumerate(self.traj[gen][sp]):
+                        lines[loc].append(x)
+        # plot the lines again
+        for sp, lines in enumerate(allLines):
+            for loc, line in enumerate(lines):
+                # remove leading zero's
+                for start in range(len(line)):
+                    if line[start] != 0:
+                        break
+                if start == len(line) - 1:
+                    continue
+                beginGen = gen - len(line) + start
+                plt.plot(range(beginGen, gen), line[start:])
+                #        **args.getArgs('lines', None, sp=sp, loc=loc))
+        #
+        plt.savefig(filename)
+        plt.close()
+
 
 class TrajectorySimulator:
     '''A Trajectory Simulator takes basic demographic and genetic (natural
