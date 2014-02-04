@@ -24173,7 +24173,7 @@ STRUCTURE, GENEPOP
 \family default
 , 
 \family typewriter
-FSTAT, Phylip, PED, MAP
+FSTAT, Phylip, PED, MAP, MS,
 \family default
  and 
 \family typewriter
@@ -24219,8 +24219,8 @@ output='!
 \end_layout
 
 \begin_layout Standard
-Commonly used population genetics file formats such as GENEPOP, FSTAT and
- STRUCTURE are supported.
+Commonly used population genetics file formats such as GENEPOP, FSTAT, Phylip,
+ MS, and STRUCTURE are supported.
  Because these formats cannot store all information in a simuPOP population,
  export and import operations can lose information.
  Also, because the processing application have different assumptions, some
@@ -24280,6 +24280,35 @@ importPopulation
 LatexCommand lstinputlisting
 filename "log/importExport.log"
 lstparams "caption={Save and load a population},label={importExport}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Because coalescent simulations are increasingly used to generate initial
+ populations in equilibrium stats, importing data in MS format is very useful.
+ Because MS only simulates haploid sequences with genotype only at segregating
+ sites, you might have to simulate an even number of sequences and use option
+ ploidy=2 to import the simulated data as a haploid population.
+ In addition, a parameter mergeBy is provided to import multiple replicates
+ as multiple subpopulations or chromosomes.
+ This corresponds to the splitBy parameter when you export your data in
+ MS format.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "importMS"
+
+\end_inset
+
+ demonstrates how to use these parameters.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/importMS.log"
+lstparams "caption={Export and import in MS format},label={importMS}"
 
 \end_inset
 

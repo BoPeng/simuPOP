@@ -793,7 +793,48 @@ os.remove('stru.txt')
 #end_ignore
 #end_file
 
-
+#begin_file log/importMS.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True, gui=False)
+#end_ignore
+import simuPOP as sim
+from simuPOP.utils import importPopulation, export
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+pop = sim.Population([20,20], loci=[10, 10])
+# simulate a population but mutate only a subset of loci
+pop.evolve(
+    preOps=[
+        sim.InitSex(),
+        sim.SNPMutator(u=0.1, v=0.01, loci=range(5, 17))
+    ],
+    matingScheme=sim.RandomMating(),
+    gen=100
+)
+# export first chromosome, all individuals
+export(pop, format='ms', output='ms.txt')
+# export first chromosome, subpops as replicates
+export(pop, format='ms', output='ms_subPop.txt', splitBy='subPop')
+# export all chromosomes, but limit to all males in subPop 1
+pop.setVirtualSplitter(sim.SexSplitter())
+export(pop, format='ms', output='ms_chrom.txt', splitBy='chrom', subPops=[(1,0)])
+# 
+print(open('ms_chrom.txt').read())
+# import as haploid sequence
+pop = importPopulation(format='ms', filename='ms.txt')
+# import as diploid 
+pop = importPopulation(format='ms', filename='ms.txt', ploidy=2)
+# import as a single chromosome
+pop = importPopulation(format='ms', filename='ms_subPop.txt', mergeBy='subPop')
+#begin_ignore
+import os
+os.remove('ms.txt')
+os.remove('ms_subPop.txt')
+os.remove('ms_chrom.txt')
+#end_ignore
+#end_file
 
 #begin_file log/applicableGen.py
 #begin_ignore
