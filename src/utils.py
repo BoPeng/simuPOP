@@ -55,7 +55,8 @@ import time
 
 from simuOpt import simuOptions
 
-from simuPOP import moduleInfo, MALE, FEMALE, Population, PointMutator, getRNG, ALL_AVAIL, PyOperator
+from simuPOP import moduleInfo, MALE, FEMALE, Population, PointMutator, getRNG,\
+    ALL_AVAIL, PyOperator, stat
 
 def viewVars(var, gui=None):
     '''
@@ -319,7 +320,7 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
     if not isinstance(pop, Population):
         raise ValueError("Passed population should either be a population object")
     # parameter loci
-    if loci == ALL_AVAIL:
+    if loci is ALL_AVAIL:
         loci = range(0, pop.totNumLoci())
     elif type(loci) == type(1):
         loci = [loci]
@@ -342,7 +343,7 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
     except IOError:
         raise IOError, "Can not open file " + filename +" to write."
     # parameter subPops
-    if subPops == ALL_AVAIL:
+    if subPops is ALL_AVAIL:
         subPops = range(pop.numSubPop())
     #
     # figure out columns per genotype
@@ -2544,15 +2545,193 @@ class CSVExporter:
                     prog.update(count)
             prog.done()
 
+#
+#
+# Format MS
+#
+class MSExporter:
+    '''An exporter to export given population in MS format'''
+    def __init__(self, splitBy=None):
+        self.splitBy = splitBy
+    
+    def export(self, pop, filename, subPops, infoFields, gui):
+        '''Export in MS format
+        '''
+        # all ...
+        if self.splitBy is None:
+            with open(filename, 'w') as out:
+                #
+                # first line: command, nseq, nblocks
+                #
+                stat(pop, popSize=True, alleleFreq=range(pop.numLoci(0)), vars=['alleleNum'], 
+                    subPops=subPops)
+                out.write('simuPOP_export %d 1\n' % (pop.dvars().popSize * pop.ploidy()))
+                # some random random number seeds
+                out.write('30164 48394 29292\n')
+                #
+                prog = ProgressBar(filename, pop.dvars().popSize, gui=gui)
+                count = 0
+                # find segregating sites
+                seg_sites = [x for x in range(pop.numLoci(0)) if len(pop.dvars().alleleNum[x]) != 1]
+                out.write('\n//\nsegsites: %d\n' % len(seg_sites))
+                out.write('positions: %s\n' % ' '.join(['%.4f' % pop.locusPos(x) for x in seg_sites]))
+                #
+                #  genotype
+                for vsp in subPops:
+                    for ind in pop.individuals(vsp):
+                        for p in range(pop.ploidy()):
+                            geno = ind.genotype(p, 0)
+                            out.write(''.join([str(0 if geno[x] == 0 else 1) for x in seg_sites]) + '\n')
+                        count += 1
+                        prog.update(count)
+                prog.done()
+        elif self.splitBy == 'subPop':
+            with open(filename, 'w') as out:
+                #
+                # first line: command, nseq, nblocks
+                #
+                stat(pop, popSize=True, subPops=subPops)
+                sz = pop.dvars().subPopSize
+                if False in [sz[i] == sz[i-1] for i in range(1, len(sz))]:
+                    raise ValueError('Subpopulations should have the same size if splitBy="subPop" is specified.')
+                out.write('simuPOP_export %d %d\n' % (sz[0] * pop.ploidy(), len(sz)))
+                # some random random number seeds
+                out.write('30164 48394 29292\n')
+                #
+                prog = ProgressBar(filename, sum(sz), gui=gui)
+                count = 0
+                # find segregating sites
+                stat(pop, alleleFreq=range(pop.numLoci(0)), subPops=subPops, vars='alleleNum_sp')
+                for vsp in subPops:
+                    seg_sites = [x for x in range(pop.numLoci(0)) if len(pop.dvars(vsp).alleleNum[x]) != 1]
+                    out.write('\n//\nsegsites: %d\n' % len(seg_sites))
+                    out.write('positions: %s\n' % ' '.join(['%.4f' % pop.locusPos(x) for x in seg_sites]))
+                    #
+                    #  genotype
+                    for ind in pop.individuals(vsp):
+                        for p in range(pop.ploidy()):
+                            geno = ind.genotype(p, 0)
+                            out.write(''.join([str(0 if geno[x] == 0 else 1) for x in seg_sites]) + '\n')
+                        count += 1
+                        prog.update(count)
+                prog.done()
+        elif self.splitBy == 'chrom':
+            with open(filename, 'w') as out:
+                #
+                # first line: command, nseq, nblocks
+                #
+                stat(pop, popSize=True, alleleFreq=ALL_AVAIL, vars=['alleleNum'], 
+                    subPops=subPops)
+                out.write('simuPOP_export %d %d\n' % (pop.dvars().popSize * pop.ploidy(), pop.numChrom()))
+                # some random random number seeds
+                out.write('30164 48394 29292\n')
+                #
+                prog = ProgressBar(filename, pop.dvars().popSize, gui=gui)
+                count = 0
+                for ch in range(pop.numChrom()):
+                    b = pop.chromBegin(ch)
+                    # find segregating sites
+                    seg_sites = [x for x in range(pop.chromBegin(ch), pop.chromEnd(ch)) \
+                        if len(pop.dvars().alleleNum[x]) != 1]
+                    out.write('\n//\nsegsites: %d\n' % len(seg_sites))
+                    out.write('positions: %s\n' % ' '.join(['%.4f' % pop.locusPos(x) for x in seg_sites]))
+                    #
+                    #  genotype
+                    for vsp in subPops:
+                        for ind in pop.individuals(vsp):
+                            for p in range(pop.ploidy()):
+                                geno = ind.genotype(p, ch)
+                                out.write(''.join([str(0 if geno[x - b] == 0 else 1) for x in seg_sites]) + '\n')
+                            count += 1
+                            prog.update(count)
+                prog.done()
+        else:
+            raise ValueError('Parameter splitBy can only take values None (default), '
+                'subPop, and chrom')
 
-#
-# Wrapper of the importer and expoters.
-#
-# Class Exporter
-# function export
-# function importPopulation
-#
 
+class MSImporter:
+    def __init__(self, ploidy=1, mergeBy='subPop'):
+        self.ploidy = ploidy
+        self.mergeBy = mergeBy
+
+    def importFrom(self, filename):
+        with open(filename, 'r') as input:
+            # parse the first line to get popualtion size and sample info
+            cmd = input.readline().split()
+            # the first items hould be ms, ./ms, ms.exe etc
+            try:
+                numChrom = int(cmd[1])
+            except ValueError as e:
+                raise ValueError('Failed to get number of chromosomes from command line: %s' \
+                    %  (' '.join(cmd)))
+            #
+            if numChrom // self.ploidy * self.ploidy != numChrom:
+                raise ValueError('Failed to pair %d haploid chromsomes for ploidy %d' \
+                    % (numChrom, self.ploidy))
+            #
+            sz = numChrom // self.ploidy
+            #
+            try:
+                numSP = int(cmd[2])
+            except ValueError as e:
+                raise ValueError('Failed to get number of populations from command line: %s' \
+                    %  (' '.join(cmd)))
+            #
+            # now, we need to know the loci positions and import genotype
+            idx = 0
+            pops = []
+            for line in input:
+                if idx == 0:
+                    # waiting
+                    if line.startswith('//'):
+                        idx = 1
+                elif idx == 1:
+                    # segsites:
+                    if not line.startswith('segsites:'):
+                        raise ValueError('Incorrect input file: No segsites line after //')
+                    idx = 2
+                elif idx == 2:
+                    # segsites:
+                    if not line.startswith('positions:'):
+                        raise ValueError('Incorrect input file: No positionss line after segsites')
+                    try:
+                        pos = [float(x) for x in line[10:].split()]
+                    except Exception as e:
+                        raise ValueError('Failed to import loci positions from %s' \
+                            % line)
+
+                    pop = Population(size=sz, loci=len(pos), lociPos=pos, ploidy=self.ploidy)
+                    idx = 3
+                elif idx >= 3:
+                    iidx = (idx - 3) // self.ploidy
+                    pidx = idx -3 - self.ploidy * iidx
+                    geno = [int(x) for x in line.strip()]
+                    pop.individual(iidx).setGenotype(geno, pidx)
+                    if idx == numChrom + 2:
+                        idx = 0
+                        pops.append(pop.clone())
+                    else:
+                        idx += 1
+        # merge populations
+        if len(pops) == 1:
+            return pops[0]
+        elif self.mergeBy == 'chrom':
+            pop = pops[0]
+            for p in pops[1:]:
+                pop.addChromFrom(p)
+        elif self.mergeBy == 'subPop':
+            for i in range(len(pops)):
+                for j in range(len(pops)):
+                    if i == j:
+                        continue
+                    newPos = [x for x in pops[j].lociPos() if x not in pops[i].lociPos()]
+                    pops[i].addLoci([0]*len(newPos), newPos)
+            # every population should have the same structure now
+            pop = pops[0]
+            for p in pops[1:]:
+                pop.addIndFrom(p)
+        return pop
 
 class Exporter(PyOperator):
     '''An operator to export the current population in specified format.
@@ -2723,6 +2902,22 @@ class Exporter(PyOperator):
         starting from column 11, and subsequent lines of 100 symbols. The interleaved
         style have subsequent lines as separate blocks.
         
+    MS (output from Richard R. Hudson's MS or msHOT program). This format records
+    genotypes of SNP markers at segregating site so all non-zero genotypes are
+    recorded as 1. simuPOP by default outputs a single block of genotypes at
+    all loci on the first chromosome, and for all individuals, unless parameter
+    ``splitBy`` is specified to separate genotypes by chromosome or subpopulations.
+    
+    splitBy:
+        simuPOP by default output segregating sites at all loci on the first 
+        chromosome for all individuals. If ``splitBy`` is set to ``'subPop'``,
+        genotypes for individuals in all or specified (parameter ``subPops``) 
+        subpopulations are outputted in separate blocks. The subpopulations should
+        have the same number of individuals to produce blocks of the same number
+        of sequences. Alternatively, ``splitBy`` can be set to ``chrom``, for
+        which genotypes on different chromosomes will be outputted separately.
+
+
     CSV (comma separated values). This is a general format that output genotypes in
     comma (or tab etc) separated formats. The function form of this operator 
     ``export(format='csv')`` is similar to the now-deprecated ``saveCSV`` function,
@@ -2800,6 +2995,8 @@ class Exporter(PyOperator):
             self.exporter = PhylipExporter(*args, **kwargs)
         elif format.lower() == 'csv':
             self.exporter = CSVExporter(*args, **kwargs)
+        elif format.lower() == 'ms':
+            self.exporter = MSExporter(*args, **kwargs)
         else:
             raise ValueError('Unrecognized fileformat: {}.'.format(format))
         PyOperator.__init__(self, func=self._export, begin=begin, end=end,
@@ -2817,7 +3014,7 @@ class Exporter(PyOperator):
             
     def _determineSubPops(self, pop):
         # this is basically subPopList::expandFrom(pop)
-        if self.subPops == ALL_AVAIL:
+        if self.subPops is ALL_AVAIL:
             return range(pop.numSubPop())
         elif type(self.subPops) == type(0):
             return [self.subPops]
@@ -2835,6 +3032,7 @@ class Exporter(PyOperator):
             elif type(vsp) == type(''):
                 subPops.append(pop.subPopNames().index(vsp))
             else:
+                # vsp is a tuple
                 if type(vsp[0]) == type(''):
                     try:
                         vsp[0] = pop.subPopNames().index(vsp[0])
@@ -2845,15 +3043,15 @@ class Exporter(PyOperator):
                         vsp[1] = pop.virtualSplitter().vspByName(vsp[1])
                     except:
                         raise ValueError('Population does not have any virtual subpopulation %s' % vsp[1])
-                if vsp[0] == ALL_AVAIL:
+                if vsp[0] is ALL_AVAIL:
                     for u in range(pop.numSubPop()):
-                        if vsp[1] == ALL_AVAIL:
+                        if vsp[1] is ALL_AVAIL:
                             for v in range(pop.numVirtualSubPops()):
                                 subPops.append([u, v])
                         else:
                             subPops.append([u, vsp[1]])
                 else:
-                    if vsp[1] == ALL_AVAIL:
+                    if vsp[1] is ALL_AVAIL:
                         for v in range(pop.numVirtualSubPops()):
                             subPops.append([vsp[0], v])
                     else:
@@ -2910,6 +3108,24 @@ def importPopulation(format, filename, *args, **kwargs):
         Ploidy of the returned population, default to 1 (haploid). There should be
         even number of sequences if ploidy=2 (haploid) is specified.
 
+    MS (output from Richard R. Hudson's MS or msHOT program). The ms program generates
+    npop blocks of nseq haploid chromosomes for command starting with 
+    ``ms nsample nrepeat``. By default, the result is imported as a haploid
+    population of size nsample. The population will have nrepeat subpopulations
+    each with the same number of loci but different number of segregating sites.
+    This behavior could be changed by the following parameters:
+    
+    ploidy
+        If ``ploidy`` is set to 2, the sequenences will be paired so the population
+        will have ``nseq/2`` individuals. An error will be raised if an odd number
+        of sequences are simulated.
+        
+    mergeBy
+        By default, replicate samples will be presented as subpopulations. All
+        individuals have the same number of loci but individuals in different
+        subpopulations have different segregating sites. If ``mergeBy`` is set
+        to ``"chrom"``, the replicates will be presented as separate chromosomes,
+        each with a different set of loci determined by segregating sites.
     '''
     if format.lower() == 'genepop':
         importer = GenePopImporter(*args, **kwargs)
@@ -2917,6 +3133,8 @@ def importPopulation(format, filename, *args, **kwargs):
         importer = FStatImporter(*args, **kwargs)
     elif format.lower() == 'phylip':
         importer = PhylipImporter(*args, **kwargs)
+    elif format.lower() == 'ms':
+        importer = MSImporter(*args, **kwargs)
     else:
         raise ValueError('Importing genotypes in format %s is currently not supported' % format)
     return importer.importFrom(filename)
