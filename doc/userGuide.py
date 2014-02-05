@@ -4594,7 +4594,7 @@ pop.evolve(
 #begin_file log/forwardTrajectory.py
 #begin_ignore
 import simuOpt
-simuOpt.setOptions(quiet=True)
+simuOpt.setOptions(quiet=True, plotter='matplotlib')
 #end_ignore
 import simuPOP as sim
 #begin_ignore
@@ -4635,7 +4635,7 @@ pop.evolve(
 #begin_file log/backTrajectory.py
 #begin_ignore
 import simuOpt
-simuOpt.setOptions(quiet=True)
+simuOpt.setOptions(quiet=True, plotter='matplotlib')
 #end_ignore
 import simuPOP as sim
 #begin_ignore
@@ -4758,16 +4758,10 @@ os.remove('pop.csv')
 #begin_file log/VarPlotter.py
 #begin_ignore
 import simuOpt
-simuOpt.setOptions(quiet=True)
+simuOpt.setOptions(quiet=True, plotter='matplotlib')
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-try:
-    import rpy
-except:
-    import sys
-    sys.exit(1)
-
 sim.setRNG(seed=12345)
 #end_ignore
 from simuPOP.plotter import VarPlotter
@@ -4781,29 +4775,32 @@ simu.evolve(
     matingScheme=sim.RandomMating(ops=sim.Recombinator(rates=0.01)),
     postOps=[
         sim.Stat(LD=[0, 1]),
-        VarPlotter('LD[0][1]', step=5, update=40, saveAs='log/rpy.png',
+        # rpy syntax
+        #VarPlotter('LD[0][1]', step=5, update=40, saveAs='log/rpy.png',
+        #    legend=['Replicate %d' % x for x in range(3)],
+        #    ylab='LD between marker 1 and 2',
+        #    ylim=[0, 0.25], main='LD decay', lty_rep=[1, 2, 3],
+        #),
+        # matplotlib syntax
+        VarPlotter('LD[0][1]', step=5, update=40, saveAs='log/varplot.png',
             legend=['Replicate %d' % x for x in range(3)],
-            ylab='LD between marker 1 and 2',
-            ylim=[0, 0.25], main='LD decay', lty_rep=[1, 2, 3],
+            set_ylabel_ylabel='LD between marker 1 and 2',
+            set_title_label='LD decay',
+            set_ylim_bottom=0, set_ylim_top=0.25,
+            plot_linestyle_rep=['-', ':', '-.'],
         ),
     ],
     gen=100
 )
 #end_file
 
-#begin_file log/rpyByRep.py
+#begin_file log/varPlotByRep.py
 #begin_ignore
 import simuOpt
-simuOpt.setOptions(quiet=True)
+simuOpt.setOptions(quiet=True, plotter='matplotlib')
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-try:
-    import rpy
-except:
-    import sys
-    sys.exit(1)
-
 sim.setRNG(seed=12345)
 #end_ignore
 import simuPOP as sim
@@ -4816,38 +4813,42 @@ simu.evolve(
     matingScheme=sim.RandomMating(),
     postOps=[
         sim.Stat(alleleFreq=range(4)),
+        # rpy syntax
+        #VarPlotter('[alleleFreq[x][0] for x in range(4)]', byRep=True,
+        #    update=10, saveAs='log/rpy_byRep.png',
+        #    legend=['Locus %d' % x for x in range(4)],
+        #    ylab='Allele frequency',
+        #    ylim=[0, 1],
+        #    main_rep=['Genetic drift, replicate %d' % x for x in range(3)],
+        #),
+        # matplotlib syntax
         VarPlotter('[alleleFreq[x][0] for x in range(4)]', byRep=True,
-            update=10, saveAs='log/rpy_byRep.png',
+            update=10, saveAs='log/varplot_byRep.png',
+            figure_figsize=(10, 8),
             legend=['Locus %d' % x for x in range(4)],
-            ylab='Allele frequency',
-            ylim=[0, 1],
-            main_rep=['Genetic drift, replicate %d' % x for x in range(3)],
+            set_ylabel_ylabel='Allele frequency',
+            set_ylim_bottom=0, set_ylim_top=1,
+            set_title_label_rep=['Genetic drift, replicate %d' % x for x in range(3)],
         ),
     ],
     gen=100
 )
 #end_file
 
-#begin_file log/rpyByDim.py
+#begin_file log/varPlotByDim.py
 #begin_ignore
 import simuOpt
-simuOpt.setOptions(quiet=True)
+simuOpt.setOptions(quiet=True, plotter='matplotlib')
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-try:
-    import rpy
-except:
-    import sys
-    sys.exit(1)
-
 sim.setRNG(seed=12345)
 #end_ignore
 import simuPOP as sim
 from simuPOP.plotter import VarPlotter
 pop = sim.Population(size=1000, loci=1*4)
 simu = sim.Simulator(pop, rep=3)
-def drawFrame(r, dim=None, **kwargs):
+def rpy_drawFrame(r, dim=None, **kwargs):
     '''Draw a frame around subplot dim. Parameter r is defined in the rpy
     module and is used for calling R functions. Parameter dim is the dimension
     index. Other parameters are ignored.
@@ -4857,26 +4858,48 @@ def drawFrame(r, dim=None, **kwargs):
     r.grid()
     r.mtext({0:'A', 1:'B', 2:'C', 3:'D'}[dim], adj=1)
 
+def mat_drawFrame(ax, dim=None, **kwargs):
+    '''Draw a frame around subplot dim. Parameter r is defined in the rpy
+    module and is used for calling R functions. Parameter dim is the dimension
+    index. Other parameters are ignored.
+    '''
+    ax.grid()
+    ax.text(0.5, 0.8, {0:'A', 1:'B', 2:'C', 3:'D'}[dim])
+
 simu.evolve(
     initOps=[sim.InitSex()]+
         [sim.InitGenotype(freq=[0.1*(x+1), 1-0.1*(x+1)], loci=x) for x in range(4)],
     matingScheme=sim.RandomMating(),
     postOps=[
         sim.Stat(alleleFreq=range(4)),
+        # rpy syntax
+        #VarPlotter('[alleleFreq[x][0] for x in range(4)]', byDim=True,
+        #    update=10, saveAs='log/rpy_byDim.png',
+        #    legend=['Replicate %d' % x for x in range(3)],
+        #    ylab='Allele frequency',
+        #    ylim=[0, 1],
+        #    main_dim=['Genetic drift, freq=%.1f' % ((x+1)*0.10) for x in range(4)],
+        #    col_rep=['red', 'blue', 'black'],
+        #    lty_rep=[1, 2, 3],
+        #    # the default png dimension is 800x600
+        #    dev_print_width=600, dev_print_height=500,
+        #    # do not draw axes in r.plot, leaving the job to drawFrame
+        #    plot_axes=False,
+        #    # plot frame, grid etc after each r.plot call
+        #    plotHook = rpy_drawFrame,
+        #),
+        # matplot lib syntax
         VarPlotter('[alleleFreq[x][0] for x in range(4)]', byDim=True,
-            update=10, saveAs='log/rpy_byDim.png',
+            update=10, saveAs='log/varplot_byDim.png',
             legend=['Replicate %d' % x for x in range(3)],
-            ylab='Allele frequency',
-            ylim=[0, 1],
-            main_dim=['Genetic drift, freq=%.1f' % ((x+1)*0.10) for x in range(4)],
-            col_rep=['red', 'blue', 'black'],
-            lty_rep=[1, 2, 3],
-            # the default png dimension is 800x600
-            dev_print_width=600, dev_print_height=500,
-            # do not draw axes in r.plot, leaving the job to drawFrame
-            plot_axes=False,
+            set_ylabel_ylabel='Allele frequency',
+            set_ylim_bottom=0, set_ylim_top=1,
+            set_title_label_dim=['Genetic drift, freq=%.1f' % ((x+1)*0.10) for x in range(4)],
+            plot_c_rep=['red', 'blue', 'black'],
+            plot_linestyle_rep=['-', '-.', ':'],
+            figure_figsize=(10,8),
             # plot frame, grid etc after each r.plot call
-            plotHook = drawFrame,
+            plotHook = mat_drawFrame,
         ),
     ],
     gen=100
@@ -4886,16 +4909,10 @@ simu.evolve(
 #begin_file log/ScatterPlotter.py
 #begin_ignore
 import simuOpt
-simuOpt.setOptions(quiet=True)
+simuOpt.setOptions(quiet=True, plotter='matplotlib')
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-try:
-    import rpy
-except:
-    import sys
-    sys.exit(1)
-
 sim.setRNG(seed=12345)
 #end_ignore
 import simuPOP as sim
@@ -4924,16 +4941,27 @@ pop.evolve(
         sim.MendelianGenoTransmitter(),
         sim.PyTagger(passInfo)]),
     postOps=[
+        # rpy syntax
+        #ScatterPlotter(['x', 'y'], 
+        #    saveAs = 'log/ScatterPlotter.png',
+        #    subPops = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4)],
+        #    ylim = [0, 1.2],
+        #    main = "!'Ancestry distribution of individuals at generation %d' % gen",
+        #    legend = ['anc < 0.2', '0.2 <= anc < 0.4', '0.4 <= anc < 0.6',
+        #        '0.6 <= anc < 0.8', '0.8 <= anc'],
+        #    plot_axes = False,
+        #    par_mar = [0, 0, 2, 0],
+        #),
+        # matplotlib syntax
         ScatterPlotter(['x', 'y'], 
             saveAs = 'log/ScatterPlotter.png',
             subPops = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4)],
-            ylim = [0, 1.2],
-            main = "!'Ancestry distribution of individuals at generation %d' % gen",
+            set_ylim_bottom = 0, set_ylim_top=1.2,
+            set_title_label = "!'Ancestry distribution of individuals at generation %d' % gen",
             legend = ['anc < 0.2', '0.2 <= anc < 0.4', '0.4 <= anc < 0.6',
                 '0.6 <= anc < 0.8', '0.8 <= anc'],
-            plot_axes = False,
-            par_mar = [0, 0, 2, 0],
         ),
+
     ],
     gen = 5,
 )
@@ -4942,16 +4970,10 @@ pop.evolve(
 #begin_file log/HistPlotter.py
 #begin_ignore
 import simuOpt
-simuOpt.setOptions(quiet=True)
+simuOpt.setOptions(quiet=True, plotter='rpy')
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-try:
-    import rpy
-except:
-    import sys
-    sys.exit(1)
-
 sim.setRNG(seed=12345)
 #end_ignore
 import simuPOP as sim

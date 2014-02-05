@@ -111,6 +111,7 @@ simuOptions = {
     'Version': None,
     'Revision': None,
     'GUI': True,
+    'Plotter': None,
     'NumThreads': 1,
 }
 
@@ -157,7 +158,7 @@ elif _gui is not None:
     print "Invalid value '%s' for environmental variable SIMUGUI or commandline option --gui." % _gui
 
 def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
-        debug=None, version=None, revision=None, numThreads=None):
+        debug=None, version=None, revision=None, numThreads=None, plotter=None):
     '''Set options before simuPOP is loaded to control which simuPOP module to
     load, and how the module should be loaded.
 
@@ -193,6 +194,12 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
         --config will be processed. This option is usually left to ``None`` so
         that the same script can be run in both GUI and batch mode using
         commandline option ``--gui``.
+
+    plotter
+        The plotting library used to draw figures. simuPOP will by default
+        use ``rpy`` (NOT ``rpy2``), and ``matplotlib`` if ``rpy`` is not
+        available. You can set this parameter to one of them to force the
+        use a particular library.
 
     quiet
         If set to ``True``, suppress the banner message when a simuPOP module
@@ -266,6 +273,10 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
         simuOptions['NumThreads'] = numThreads
     elif numThreads is not None:
         raise TypeError('An integer number is expected for parameter numThreads.')
+    if plotter in ['rpy', 'matplotlib']:
+        simuOptions['Plotter'] = plotter
+    elif plotter is not None:
+        raise TypeError('Only rpy and matplotlib are allowed for parameter plotter.')
 
 #
 # define some validataion functions
