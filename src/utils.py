@@ -848,10 +848,11 @@ class Trajectory:
         module ``plotter``. The ``rpy`` version allows prefixes ``par``, 
         ``plot``, ``lines`` and ``dev_print``, and suffixes ``loc`` and ``sp``.
         For example, you could use parameter ``plot_ylim`` to reset the default
-        value of ``ylim`` in R function ``plot``.
+        value of ``ylim`` in R function ``plot``. The ``matplotlib`` version allows
+        prefix ``figure`` and ``plot``, and suffixes ``loc`` and ``sp``.
         '''
         try:
-            import plotter
+            import rpy
             self._rpy_plot(filename, **kwargs)
         except ImportError:
             try:
@@ -861,6 +862,7 @@ class Trajectory:
                 sys.stderr.write('Failed to draw figure: rpy or matplotlib is not available.')
 
     def _rpy_plot(self, filename, **kwargs):
+        import plotter
         #
         args = plotter.DerivedArgs(
             defaultFuncs=['plot', 'lines'],
@@ -921,27 +923,34 @@ class Trajectory:
         
     def _mat_plot(self, filename, **kwargs):
         import matplotlib.pylab as plt
+        import plotter
         #
-        #args = plotter.DerivedArgs(
-        #    defaultFuncs=['plot', 'lines'],
-        #    allFuncs = ['par', 'plot', 'lines', 'dev_print'],
-        #    suffixes = ['loc', 'sp'],
-        #    defaultParams = {
-        #        'plot_ylim': [0, 1],
-        #        'plot_ylab': 'Allele frequency',
-        #        'plot_xlab': 'Generation'
-        #    },
-        #    **kwargs
-        #)
+        args = plotter.DerivedArgs(
+            defaultFuncs=['plot'],
+            allFuncs = ['figure', 'plot', 'set_xlabel', 'set_ylabel', 'set_ylim', 'set_title'],
+            suffixes = ['loc', 'sp'],
+            defaultParams = {
+                'set_title_label': 'allele frequency trajectory',
+                'set_ylim_top': 1,
+                'set_ylim_bottom': 0,
+                'set_ylabel_ylabel': 'Allele frequency',
+                'set_xlabel_xlabel': 'Generation'
+            },
+            **kwargs
+        )
         # device
-        #plotter.newDevice()
+        fig = plt.figure(**args.getArgs('figure', None))
+        ax = fig.add_subplot(111)
         #
         gens = self.traj.keys()
         gens.sort()
         #plotter.r.par(**args.getArgs('par', None))
         #plotter.r.plot(gens[0], 0,
         #    **args.getArgs('plot', None, xlim=(min(gens), max(gens)), type='n'))
-        plt.figure()
+        ax.set_xlabel(**args.getArgs('set_xlabel', None))
+        ax.set_ylabel(**args.getArgs('set_ylabel', None))
+        ax.set_ylim(**args.getArgs('set_ylim', None))
+        ax.set_title(**args.getArgs('set_title', None))
         allLines = []
         for gen in gens:
             for sp in range(len(self.traj[gen])):
@@ -957,8 +966,8 @@ class Trajectory:
                                     break
                             if start == len(line) - 1:
                                 continue
-                            plt.plot(range(beginGen - len(line) + start, gen), line[start:])
-                            # **args.getArgs('lines', None, sp=sp, loc=loc))
+                            ax.plot(range(beginGen - len(line) + start, gen), line[start:],
+                                **args.getArgs('plot', None, sp=sp, loc=loc))
                     # the first point
                     allLines[sp] = [[x] for x in self.traj[gen][sp]]
                 else:
@@ -974,11 +983,11 @@ class Trajectory:
                 if start == len(line) - 1:
                     continue
                 beginGen = gen - len(line) + start
-                plt.plot(range(beginGen, gen), line[start:])
-                #        **args.getArgs('lines', None, sp=sp, loc=loc))
+                print(args.getArgs('plot', None, sp=sp, loc=loc))
+                ax.plot(range(beginGen, gen), line[start:],
+                        **args.getArgs('plot', None, sp=sp, loc=loc))
         #
-        plt.savefig(filename)
-        plt.close()
+        fig.savefig(filename)
 
 
 class TrajectorySimulator:
