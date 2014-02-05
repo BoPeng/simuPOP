@@ -852,15 +852,21 @@ class Trajectory:
         prefix ``figure``, ``plot``, ``set_title``, ``set_ylim``, ``set_xlabel``,
         and ``set_ylabel``, and suffixes ``loc`` and ``sp``.
         '''
-        try:
-            import rpy
-            self._rpy_plot(filename, **kwargs)
-        except ImportError:
+        plotter = simuOptions['Plotter']
+        if plotter is None:
             try:
-                import matplotlib
-                self._mat_plot(filename, **kwargs)
+                import rpy
+                self._rpy_plot(filename, **kwargs)
             except ImportError:
-                sys.stderr.write('Failed to draw figure: rpy or matplotlib is not available.')
+                try:
+                    import matplotlib
+                    self._mat_plot(filename, **kwargs)
+                except ImportError:
+                    sys.stderr.write('Failed to draw figure: rpy or matplotlib is not available.')
+        elif plotter == 'rpy':                    
+            self._rpy_plot(filename, **kwargs)
+        else:
+            self._mat_plot(filename, **kwargs)
 
     def _rpy_plot(self, filename, **kwargs):
         import plotter

@@ -23818,6 +23818,8 @@ reference "fig:forwardTrajectory"
 \end_inset
 
  plots simulated trajectories of one locus in two subpopulations.
+ The plot function uses either rpy or matplotlib as the underlying plotting
+ library.
 \end_layout
 
 \begin_layout Standard
@@ -24643,6 +24645,34 @@ win
 \end_layout
 
 \begin_layout Standard
+This module uses either rpy or matplotlib as the underlying plotting library.
+ rpy is used by defaut because it is easier to use and support more plotting
+ options (
+\family typewriter
+InfoPlotter
+\family default
+, 
+\family typewriter
+BoxPlotter
+\family default
+, 
+\family typewriter
+HistPlotter
+\family default
+ and 
+\family typewriter
+QQPlotter
+\family default
+ are only available for rpy).
+ matplotlib will be used if rpy is not available, or if matplotlib is set
+ to be the system plotter (
+\family typewriter
+simuOpt.setOptions(plotter='matplotlib')
+\family default
+).
+\end_layout
+
+\begin_layout Standard
 Except for the first generation where no line could be drawn, a figure will
  be drawn after this operator is applied to the last specified replicate
  (parameter 
@@ -24662,7 +24692,7 @@ update=40
 ) in Exampe 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "rpy"
+reference "varplotter"
 
 \end_inset
 
@@ -24699,7 +24729,7 @@ rpy_80.png
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/VarPlotter.log"
-lstparams "caption={Use rpy to plot an expression},label={rpy}"
+lstparams "caption={Use rpy or matplotlib to plot an expression},label={varplotter}"
 
 \end_inset
 
@@ -24781,7 +24811,7 @@ lty_rep=[1, 2, 3]
  is used in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "rpy"
+reference "varplotter"
 
 \end_inset
 
@@ -24836,7 +24866,7 @@ name "fig:rpy"
 rpy_80.png saved at generation 80 for Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "rpy"
+reference "varplotter"
 
 \end_inset
 
@@ -24851,7 +24881,7 @@ reference "rpy"
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename log/rpy_80.png
+	filename log/varplot_80.png
 	lyxscale 40
 	width 60text%
 
@@ -24882,14 +24912,14 @@ byDim
  For example, Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "rpyByRep"
+reference "varPlotByRep"
 
 \end_inset
 
  and 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "rpyByDim"
+reference "varPlotByDim"
 
 \end_inset
 
@@ -24899,7 +24929,7 @@ reference "rpyByDim"
  In Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "rpyByRep"
+reference "varPlotByRep"
 
 \end_inset
 
@@ -24930,7 +24960,7 @@ reference "fig:rpyByRep"
  In Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "rpyByDim"
+reference "varPlotByDim"
 
 \end_inset
 
@@ -24967,8 +24997,8 @@ reference "fig:rpyByDim"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/rpyByRep.log"
-lstparams "caption={Separate figures by replicate},label={rpyByRep}"
+filename "log/varPlotByRep.log"
+lstparams "caption={Separate figures by replicate},label={varPlotByRep}"
 
 \end_inset
 
@@ -25002,7 +25032,7 @@ Allele frequency trajectories separated by replicates
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename log/rpy_byRep_90.png
+	filename log/varplot_byRep_90.png
 	lyxscale 40
 	width 80text%
 
@@ -25020,7 +25050,7 @@ Allele frequency trajectories separated by replicates
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "rpyByDim"
+reference "varPlotByDim"
 
 \end_inset
 
@@ -25073,7 +25103,7 @@ r.plot
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "rpyByDim"
+reference "varPlotByDim"
 
 \end_inset
 
@@ -25091,8 +25121,8 @@ mtext
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/rpyByDim.log"
-lstparams "caption={Separate figures by Dimension},label={rpyByDim}"
+filename "log/varPlotByDim.log"
+lstparams "caption={Separate figures by Dimension},label={varPlotByDim}"
 
 \end_inset
 
@@ -25126,7 +25156,7 @@ Allele frequency trajectories separated by loci
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename log/rpy_byDim_90.png
+	filename log/varplot_byDim_90.png
 	lyxscale 40
 	width 80text%
 
