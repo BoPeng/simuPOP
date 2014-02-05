@@ -4605,8 +4605,12 @@ from simuPOP.utils import Trajectory, simulateForwardTrajectory
 traj = simulateForwardTrajectory(N=[2000, 4000], fitness=[1, 0.99, 0.98],
     beginGen=0, endGen=100, beginFreq=[0.2, 0.3],
     endFreq=[[0.1, 0.11], [0.2, 0.21]])
-traj.plot('log/forwardTrajectory.png', plot_ylim=[0, 0.5], col_sp=['red', 'blue'],
-    plot_main='Simulated Trajectory (forward-time)')
+# rpy syntax
+#traj.plot('log/forwardTrajectory.png', plot_ylim=[0, 0.5], col_sp=['red', 'blue'],
+#    plot_main='Simulated Trajectory (forward-time)')
+# matplotlib syntax
+traj.plot('log/forwardTrajectory.png', set_ylim_top=0.5,
+    plot_c_sp=['r', 'b'], set_title_label='Simulated Trajectory (forward-time)')
 pop = sim.Population(size=[2000, 4000], loci=10, infoFields='fitness')
 pop.evolve(
     initOps=[
@@ -4650,8 +4654,13 @@ def fitness(gen, sp):
 # simulate a trajectory backward in time, from generation 1000
 traj = simulateBackwardTrajectory(N=Nt, fitness=fitness, nLoci=2,
      endGen=1000, endFreq=[0.1, 0.2])
-traj.plot('log/backTrajectory.png', plot_ylim=[0, 0.3], plot_xlim=[0, 1000],
-    col_loc=['red', 'blue'], plot_main='Simulated Trajectory (backward-time)')
+# matplotlib syntax
+traj.plot('log/backTrajectory.png', set_ylim_top=0.3, set_ylim_bottom=0,
+        plot_c_loc=['r', 'b'], set_title_label='Simulated Trajectory (backward-time)')
+# rpy syntax
+#    traj.plot('log/backTrajectory.png', plot_ylim=[0, 0.3], plot_xlim=[0, 1000],
+#        col_loc=['red', 'blue'], plot_main='Simulated Trajectory (backward-time)')
+
 print('Trajectory simulated with length %s ' % len(traj.traj))
 pop = sim.Population(size=Nt(0), loci=[1]*2)
 # save Trajectory function in the sim.population's local namespace
