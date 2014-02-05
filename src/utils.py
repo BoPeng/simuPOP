@@ -849,7 +849,8 @@ class Trajectory:
         ``plot``, ``lines`` and ``dev_print``, and suffixes ``loc`` and ``sp``.
         For example, you could use parameter ``plot_ylim`` to reset the default
         value of ``ylim`` in R function ``plot``. The ``matplotlib`` version allows
-        prefix ``figure`` and ``plot``, and suffixes ``loc`` and ``sp``.
+        prefix ``figure``, ``plot``, ``set_title``, ``set_ylim``, ``set_xlabel``,
+        and ``set_ylabel``, and suffixes ``loc`` and ``sp``.
         '''
         try:
             import rpy
