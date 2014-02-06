@@ -38,6 +38,7 @@ __all__ = [
     'migrIslandRates',
     'migrHierarchicalIslandRates',
     'migrSteppingStoneRates',
+    'migr2DSteppingStoneRates',
 ]
 
 import sys

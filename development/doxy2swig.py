@@ -1413,6 +1413,7 @@ if __name__ == '__main__':
     p.scan_module('simuPOP')
     p.scan_module('simuOpt')
     p.scan_module('simuPOP.utils')
+    p.scan_module('simuPOP.demography')
     p.scan_module('simuPOP.plotter')
     p.scan_module('simuPOP.sampling')
     p.scan_module('simuPOP.sandbox')
