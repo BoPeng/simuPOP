@@ -106,6 +106,7 @@ include src/gsl.i
 include simuOpt.py
 include src/__init__.py
 include src/utils.py
+include src/demography.py
 include src/plotter.py
 include src/sampling.py
 include src/sandbox.py
