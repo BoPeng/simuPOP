@@ -191,7 +191,7 @@ def migrHierarchicalIslandRates(r1, r2, n):
 
 
 def migrSteppingStoneRates(r, n, circular=False):
-    '''migration rate matrix, circular stepping stone model (X=1-m)
+    '''migration rate matrix for circular stepping stone model (X=1-m)
 
 ::
 

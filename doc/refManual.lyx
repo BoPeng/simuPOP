@@ -1936,27 +1936,6 @@ simuPOPutilssimulateBackwardTrajectoryRef
 
 
 \backslash
-simuPOPutilsmigrIslandRatesRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPutilsmigrHierarchicalIslandRatesRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPutilsmigrSteppingStoneRatesRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
 simuPOPutilsProgressBarRef
 \end_layout
 
@@ -1993,6 +1972,56 @@ simuPOPutilsimportPopulationRef
 
 \backslash
 simuPOPutilsexportRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Module 
+\family typewriter
+simuPOP.demography
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPdemographyRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPutilsmigrIslandRatesRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPutilsmigrHierarchicalIslandRatesRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPutilsmigrSteppingStoneRatesRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPutilsmigr2DSteppingStoneRatesRef
 \end_layout
 
 \end_inset

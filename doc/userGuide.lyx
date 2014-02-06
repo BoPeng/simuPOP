@@ -8038,9 +8038,23 @@ Mating happens strictly within each subpopulation.
 \end_layout
 
 \begin_layout Standard
-This section will introduce several operators that allow you to move Individuals
+This section will introduce several operators that allow you to move dndividuals
  across the boundary of subpopulations (migration), and change the number
  of subpopulations during evolution (split and merge).
+ Please refer to 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:offspring-size"
+
+\end_inset
+
+ (control the size of the offspring generation section of chapter mating
+ scheme) for more details.
+ For more advanced demographic models, please refer to the 
+\family typewriter
+simuPOP.demography
+\family default
+ module.
 \end_layout
 
 \begin_layout Subsection
@@ -8317,163 +8331,22 @@ Theoretical migration models
 To facilitate the use of widely used theoretical migration models, a few
  functions are defined in module 
 \family typewriter
-simuUtil.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-migrIslandRates(r, n)
+simuPOP.demography
 \family default
- returns a 
-\begin_inset Formula $n\times n$
-\end_inset
-
- migration matrix
-\begin_inset Formula 
-\[
-\left(\begin{array}{ccccc}
-1-r & \frac{r}{n-1} & ... & ... & \frac{r}{n-1}\\
-\frac{r}{n-1} & 1-r & ... & ... & \frac{r}{n-1}\\
- &  & ...\\
-\frac{r}{n-1} & ... & ... & 1-r & \frac{r}{n-1}\\
-\frac{r}{n-1} & ... & ... & \frac{r}{n-1} & 1-r
-\end{array}\right)
-\]
-
-\end_inset
-
-for a traditional island model where individuals have equal probability
- of migrating to any other subpopulations.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-migrHierarchicalIslandRates(r1, r2, n)
-\family default
- models a hierarchical island model in which local populations are grouped
- into neighborhoods within which there is considerable gene flow and between
- which there is less gene flow.
  
-\begin_inset Formula $n$
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Predefined-migration-models"
+
 \end_inset
 
- should be a list of group size.
+.
+ These functions generate migration matrixes that can be plugged in to the
  
-\begin_inset Formula $r_{1}$
-\end_inset
-
- is the within-group migration rate and 
-\begin_inset Formula $r_{2}$
-\end_inset
-
- is the cross-group migration rate.
- That is to say, an individual in an island has probability 
-\begin_inset Formula $1-r_{1}-r_{2}$
-\end_inset
-
- to say, 
-\begin_inset Formula $r_{1}$
-\end_inset
-
- to be a migratant to other islands in the group (migration rate depending
- on the size of group), and 
-\begin_inset Formula $r_{2}$
-\end_inset
-
- to be a migrant to other islands in another group (migration rate depending
- on the number of islands in other groups).
- Both 
-\begin_inset Formula $r_{1}$
-\end_inset
-
- and 
-\begin_inset Formula $r_{2}$
-\end_inset
-
- can vary across groups of islands.
- For example, 
 \family typewriter
-migrHierarchicalIslandRates([r11, r12], r2, [3, 2])
+Migrator
 \family default
- returns a 
-\begin_inset Formula $5\times5$
-\end_inset
-
- migration matrix
-\begin_inset Formula 
-\[
-\left(\begin{array}{ccccc}
-1-r_{11}-r_{2} & \frac{r_{11}}{2} & \frac{r_{11}}{2} & \frac{r_{2}}{2} & \frac{r_{2}}{2}\\
-\frac{r_{11}}{2} & 1-r_{11}-r_{2} & \frac{r_{11}}{2} & \frac{r_{2}}{2} & \frac{r_{2}}{2}\\
-\frac{r_{11}}{2} & \frac{r_{11}}{2} & 1-r_{11}-r_{2} & \frac{r_{2}}{2} & \frac{r_{2}}{2}\\
-\frac{r_{2}}{3} & \frac{r_{2}}{3} & \frac{r_{2}}{3} & 1-r_{12}-r_{2} & r_{12}\\
-\frac{r_{2}}{3} & \frac{r_{2}}{3} & \frac{r_{2}}{3} & r_{12} & 1-r_{12}-r_{2}
-\end{array}\right)
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-migrSteppingStoneRates(r, n, circular=False)
-\family default
- returns a 
-\begin_inset Formula $n\times n$
-\end_inset
-
- migration matrix
-\begin_inset Formula 
-\[
-\left(\begin{array}{ccccc}
-1-r & r\\
-r/2 & 1-r & r/2\\
- &  & ...\\
- &  & r/2 & 1-r & r/2\\
- &  &  & r & 1-r
-\end{array}\right)
-\]
-
-\end_inset
-
-and if 
-\family typewriter
-circular=True
-\family default
-, returns
-\begin_inset Formula 
-\[
-\left(\begin{array}{ccccc}
-1-r & r/2 &  &  & r/2\\
-r/2 & 1-r & r/2\\
- &  & ...\\
- &  & r/2 & 1-r & r/2\\
-r/2 &  &  & r/2 & 1-r
-\end{array}\right)
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Many more migration models have been proposed and studied, sometimes under
- different names with slightly different definitions.
- Please refer to the 
-\emph on
-operators
-\emph default
- section of the simuPOP online cookbook for the implementation of more migration
- models.
- If you cannot find your model there, it should not be too dificult to construct
- a migration rate matrix for it and please consider adding your model to
- the cookbook.
+ operator.
 \end_layout
 
 \begin_layout Subsubsection
@@ -18532,6 +18405,16 @@ pop
  is the parental population just before mating.
  This function should return an array of new subpopulation sizes.
  A single number can be returned if there is only one subpopulation.
+ The 
+\family typewriter
+simuPOP.demography
+\family default
+ module provides a number of demography-related functions for complex evolutiona
+ry secenarios.
+ 
+\series bold
+Please consider contributing to this module if you have implemented demographic
+ models for particular populations.
 \end_layout
 
 \begin_layout Standard
@@ -22776,7 +22659,11 @@ Using
 \end_layout
 
 \begin_layout Standard
-NOTE: 
+
+\series bold
+NOTE:
+\series default
+ 
 \family typewriter
 simuOpt.Params
 \family default
@@ -22795,8 +22682,10 @@ argparse
 argparse
 \family default
 .
- This class is therefore deprecated although it will be kept in simuPOP
- for backward-compatibility reasons.
+ 
+\series bold
+This class is therefore deprecated although it will be kept in simuPOP for
+ backward-compatibility reasons.
 \end_layout
 
 \begin_layout Standard
@@ -24397,6 +24286,318 @@ export
 Exporter
 \family default
 .
+\end_layout
+
+\begin_layout Section
+Module 
+\family typewriter
+simuPOP.demography
+\end_layout
+
+\begin_layout Subsection
+Predefined migration models 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Predefined-migration-models"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The following functions are defined to generate migration matrixes for popular
+ migration models.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+migrIslandRates(r, n)
+\family default
+ returns a 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ migration matrix
+\begin_inset Formula 
+\[
+\left(\begin{array}{ccccc}
+1-r & \frac{r}{n-1} & ... & ... & \frac{r}{n-1}\\
+\frac{r}{n-1} & 1-r & ... & ... & \frac{r}{n-1}\\
+ &  & ...\\
+\frac{r}{n-1} & ... & ... & 1-r & \frac{r}{n-1}\\
+\frac{r}{n-1} & ... & ... & \frac{r}{n-1} & 1-r
+\end{array}\right)
+\]
+
+\end_inset
+
+for a traditional 
+\series bold
+island model
+\series default
+ where individuals have equal probability of migrating to any other subpopulatio
+ns.
+ This model is also called a 
+\series bold
+migrant-pool island model
+\series default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+migrHierarchicalIslandRates(r1, r2, n)
+\family default
+ models a 
+\series bold
+hierarchical island model
+\series default
+ in which local populations are grouped into neighborhoods within which
+ there is considerable gene flow and between which there is less gene flow.
+ 
+\begin_inset Formula $n$
+\end_inset
+
+ should be a list of group size.
+ 
+\begin_inset Formula $r_{1}$
+\end_inset
+
+ is the within-group migration rate and 
+\begin_inset Formula $r_{2}$
+\end_inset
+
+ is the cross-group migration rate.
+ That is to say, an individual in an island has probability 
+\begin_inset Formula $1-r_{1}-r_{2}$
+\end_inset
+
+ to stay, 
+\begin_inset Formula $r_{1}$
+\end_inset
+
+ to be a migratant to other islands in the group (migration rate depending
+ on the size of group), and 
+\begin_inset Formula $r_{2}$
+\end_inset
+
+ to be a migrant to other islands in another group (migration rate depending
+ on the number of islands in other groups).
+ Both 
+\begin_inset Formula $r_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $r_{2}$
+\end_inset
+
+ can vary across groups of islands.
+ For example, 
+\family typewriter
+migrHierarchicalIslandRates([r11, r12], r2, [3, 2])
+\family default
+ returns a 
+\begin_inset Formula $5\times5$
+\end_inset
+
+ migration matrix
+\begin_inset Formula 
+\[
+\left(\begin{array}{ccccc}
+1-r_{11}-r_{2} & \frac{r_{11}}{2} & \frac{r_{11}}{2} & \frac{r_{2}}{2} & \frac{r_{2}}{2}\\
+\frac{r_{11}}{2} & 1-r_{11}-r_{2} & \frac{r_{11}}{2} & \frac{r_{2}}{2} & \frac{r_{2}}{2}\\
+\frac{r_{11}}{2} & \frac{r_{11}}{2} & 1-r_{11}-r_{2} & \frac{r_{2}}{2} & \frac{r_{2}}{2}\\
+\frac{r_{2}}{3} & \frac{r_{2}}{3} & \frac{r_{2}}{3} & 1-r_{12}-r_{2} & r_{12}\\
+\frac{r_{2}}{3} & \frac{r_{2}}{3} & \frac{r_{2}}{3} & r_{12} & 1-r_{12}-r_{2}
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+migrSteppingStoneRates(r, n, circular=False)
+\family default
+ returns a 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ migration matrix
+\begin_inset Formula 
+\[
+\left(\begin{array}{ccccc}
+1-r & r\\
+r/2 & 1-r & r/2\\
+ &  & ...\\
+ &  & r/2 & 1-r & r/2\\
+ &  &  & r & 1-r
+\end{array}\right)
+\]
+
+\end_inset
+
+and if 
+\family typewriter
+circular=True
+\family default
+, returns
+\begin_inset Formula 
+\[
+\left(\begin{array}{ccccc}
+1-r & r/2 &  &  & r/2\\
+r/2 & 1-r & r/2\\
+ &  & ...\\
+ &  & r/2 & 1-r & r/2\\
+r/2 &  &  & r/2 & 1-r
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+migr2DSteppingStoneRates(r, m, n, range=4, circular=False) 
+\family default
+models a 2D stepping stone model in which local populations are arranged
+ into a lattice of 
+\begin_inset Formula $m\times n$
+\end_inset
+
+ (
+\begin_inset Formula $m$
+\end_inset
+
+ rows, 
+\begin_inset Formula $n$
+\end_inset
+
+ columns) patches.
+ The population thus needs to have 
+\begin_inset Formula $m\times n$
+\end_inset
+
+ subpopulations with subpopulation indexes counted by row.
+ In this model, an individual in a center patch has a probability of 
+\begin_inset Formula $1-r$
+\end_inset
+
+ to stay, and 
+\begin_inset Formula $r/4$
+\end_inset
+
+ to migrate to its neighbor patches if 
+\family typewriter
+range
+\family default
+ is set to 4, or 
+\begin_inset Formula $r/8$
+\end_inset
+
+ to migrate to 8 neighbors (including diagnal ones) if 
+\family typewriter
+range
+\family default
+ is set to 8.
+ If 
+\family typewriter
+circular
+\family default
+ is set to 
+\family typewriter
+False
+\family default
+, the corner patch has a probability of 
+\begin_inset Formula $r/2$
+\end_inset
+
+ or 
+\begin_inset Formula $r/3$
+\end_inset
+
+ (if range=8) to migrate, and a side patch has a probability 
+\begin_inset Formula $r/3$
+\end_inset
+
+ or 
+\begin_inset Formula $r/5$
+\end_inset
+
+ to migrate.
+ If 
+\family typewriter
+circular
+\family default
+ is set to 
+\family typewriter
+True
+\family default
+, the lattice will be conceptually connected to a ball so that there is
+ no boundary effect.
+ For example, for a 3 by 2 lattice 
+\begin_inset Formula 
+\[
+\left(\begin{array}{cc}
+0 & 1\\
+2 & 3\\
+4 & 5
+\end{array}\right)
+\]
+
+\end_inset
+
+with 
+\family typewriter
+range=4
+\family default
+ and 
+\family typewriter
+circular=False
+\family default
+, the migration matrix will be 
+\begin_inset Formula 
+\[
+\left(\begin{array}{cccccc}
+1-r & \frac{r}{2} & \frac{r}{2}\\
+\frac{r}{2} & 1-r &  & \frac{r}{2}\\
+\frac{r}{3} &  & 1-r & \frac{r}{3} & \frac{r}{3}\\
+ & \frac{r}{3} & \frac{r}{3} & 1-r &  & \frac{r}{3}\\
+ &  & \frac{r_{2}}{2} &  & 1-r & \frac{r}{2}\\
+ &  &  & \frac{r}{2} & \frac{r}{2} & 1-r
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Many more migration models have been proposed and studied, sometimes under
+ different names with slightly different definitions.
+ If you cannot find your model there, it should not be too dificult to construct
+ a migration rate matrix for it.
+ I will be glad to add such functions to this module if you could provide
+ a reference and your implementation of the model.
+\end_layout
+
+\begin_layout Subsection
+Demographic models of the human population
+\end_layout
+
+\begin_layout Subsection
+Demographic models for heterogeneous habitat
 \end_layout
 
 \begin_layout Section
