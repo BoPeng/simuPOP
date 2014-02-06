@@ -24468,7 +24468,7 @@ r/2 &  &  & r/2 & 1-r
 \begin_layout Itemize
 
 \family typewriter
-migr2DSteppingStoneRates(r, m, n, range=4, circular=False) 
+migr2DSteppingStoneRates(r, m, n, diagonal=False, circular=False) 
 \family default
 models a 2D stepping stone model in which local populations are arranged
  into a lattice of 
@@ -24499,9 +24499,9 @@ models a 2D stepping stone model in which local populations are arranged
 
  to migrate to its neighbor patches if 
 \family typewriter
-range
+diagonal
 \family default
- is set to 4, or 
+ is set to False, or 
 \begin_inset Formula $r/8$
 \end_inset
 
@@ -24559,7 +24559,7 @@ True
 
 with 
 \family typewriter
-range=4
+diagonal=False
 \family default
  and 
 \family typewriter
