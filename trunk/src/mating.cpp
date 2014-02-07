@@ -1251,6 +1251,10 @@ bool MatingScheme::prepareScratchPop(Population & pop, Population & scratch)
 		vectori res = func(PyObj_As_IntArray, args);
 		Py_XDECREF(args);
 
+		if (res.empty()) {
+			DBG_DO(DBG_SIMULATOR, cerr << "Stop iteration due to empty offspring population size." << endl);
+			return false;
+		}
 		vectoru sz(res.size());
 		for (size_t i = 0; i < res.size(); i++)
 			sz[i] = static_cast<ULONG>(res[i]);
