@@ -48,8 +48,8 @@ import math
 
 from simuOpt import simuOptions
 
-from simuPOP import moduleInfo, MALE, FEMALE, StopEvolution, Population, \
-    ALL_AVAIL, Stat, stat, PyEval, RandomMating, migrate, InitSex, PyOperator
+from simuPOP import Population, PyEval, RandomMating, \
+    ALL_AVAIL, Stat, stat, migrate, InitSex, PyOperator
 
 from simuPOP.utils import migrIslandRates, migrHierarchicalIslandRates, \
     migrSteppingStoneRates
@@ -90,6 +90,8 @@ def migr2DSteppingStoneRates(r, m, n, diagonal=False, circular=False):
     return rates
 
 class MexicanAmerican_Model:
+    '''This is a model for Mexican American 
+    '''
     def __init__(self, T0=8000, N_A=7300, T_AF=220000//25, N_AF=12300,
         T_B=140000//25, N_B=2100, 
         T_EU_AS=26400//25, 
@@ -99,7 +101,15 @@ class MexicanAmerican_Model:
         m_EU_AS=0.000135,
         m_AF_EU=0.00003,
         m_AF_AS=0.000019):
+        '''Starting from ``T0`` generations ago, this demographic model evolves
+        from an ancient population with size ``N_A`` (pop A). Pop A expand at
+        ``T_AF`` generations from now, to pop AF with size ``N_AF`` individuals.
+        Pop B split from pop 
+        '''
         self.N_A = N_A
+        if T0 < T_AF:
+            raise ValueError('The starting generation %s is shorter than T_AF=%s' 
+                % (T0, T_AF))
         self.T_AF = T0 - T_AF
         self.N_AF = N_AF
         self.T_B = T0 - T_B
@@ -167,7 +177,6 @@ class MexicanAmerican_Model:
             # step last_gen - 1  ==> evolves last_gen generations
             # step last_gen <- stop at the beginning of this generation.
             return []
-            #raise StopIteration('Ending at the beginning of generation %d' % gen)
 
 def runDemo(model):
     def reportPopSize(pop):
