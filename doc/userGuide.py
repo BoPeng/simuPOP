@@ -4816,7 +4816,7 @@ pop.evolve(
 # print out population size and frequency
 for idx, name in enumerate(pop.subPopNames()):
     print('%s (%d): %.4f' % (name, pop.subPopSize(name), 
-        pop.dvars(idx).alleleFreq[0]))
+        pop.dvars(idx).alleleFreq[0][0]))
 
 # get a visual presentation of the demographic model
 plotDemographicModel(model, 'log/demoModel.png')
