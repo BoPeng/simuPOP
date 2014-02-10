@@ -252,8 +252,8 @@ vectoru Simulator::evolve(
 			ssize_t end = -1;
 			if (gens > 0)
 				end = curGen + gens - 1;
-			PARAM_FAILIF(end < 0 && preOps.empty() && postOps.empty(), ValueError,
-				"Evolve with unspecified ending generation should have at least one terminator (operator)");
+			//PARAM_FAILIF(end < 0 && preOps.empty() && postOps.empty(), ValueError,
+			//	"Evolve with unspecified ending generation should have at least one terminator (operator)");
 
 			DBG_ASSERT(curRep == curPop.rep(), SystemError,
 				"Replicate number does not match");

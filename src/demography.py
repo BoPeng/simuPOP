@@ -27,10 +27,9 @@
 
 
 """
-simuPOP utilities.
+simuPOP demographic models
 
-This module provides some commonly used operators
-and format conversion utilities.
+This module provides some commonly used  demographic models
 
 """
 
@@ -39,7 +38,9 @@ __all__ = [
     'migrHierarchicalIslandRates',
     'migrSteppingStoneRates',
     'migr2DSteppingStoneRates',
-    'MexicanAmerican_Model',
+    'Gutenkunst2009_Model',
+    'printDemographicModel',
+    'plotDemographicModel',
 ]
 
 import sys
@@ -53,6 +54,15 @@ from simuPOP import Population, PyEval, RandomMating, \
 
 from simuPOP.utils import migrIslandRates, migrHierarchicalIslandRates, \
     migrSteppingStoneRates
+
+from collections import OrderedDict
+
+try:
+    import numpy as np
+    import matplotlib.pylab as plt
+    has_plotter = True
+except ImportError:
+    has_plotter = False
 
 def migr2DSteppingStoneRates(r, m, n, diagonal=False, circular=False):
     '''migration rate matrix for 2D stepping stone model, with or without
@@ -243,8 +253,13 @@ class Gutenkunst2009_Model:
             # step last_gen <- stop at the beginning of this generation.
             return []
 
-def runDemographicModel(model):
-    def reportPopSize(pop):
+
+
+class DemographicModelPlotter:
+    def __init__(self):
+        pass
+    
+    def _reportPopSize(self, pop):
         stat(pop, popSize=True)
         if 'last_size' not in pop.vars() or pop.dvars().last_size != pop.dvars().subPopSize:
             print('%d: %s' % (pop.dvars().gen, 
@@ -253,50 +268,68 @@ def runDemographicModel(model):
                 ))
             pop.dvars().last_size = pop.dvars().subPopSize
         return True
-    #
-    pop = Population(model(0), infoFields='migrate_to')
-    return pop.evolve(
-        preOps=[
-            InitSex()
-        ],
-        matingScheme=RandomMating(subPopSize=model),
-        postOps=PyOperator(reportPopSize)
-    )
-
-
-class DemographicModelPlotter:
-    def __init__(self):
-        try:
-            import numpy as np
-            import matplotlib.pylab as plt
-            self.fig = plt.figure()
-            self.pop_regions = {}
-        except ImportError:
-            raise ImportError('Failed to import matplotlib to plot a demographic model.')
-    
-    def plotPopSize(self, pop, fig):
-        stat(pop, popSize=True)
-        sz = 0
-        for s, n in zip(pop.dvars().subPopSize, pop.subPopNames()):
-            if n in self.pop_regions:
-                self.pop_regions[n].append(
-                    np.array([[gen, sz, gen, sz+s]]))
-            else:
-                self.pop_colors[n] = array([gen, sz, gen, sz+s], 
-                    dtype=np.uint64).reshape([1,4])
-            pop.dvars().last_size = pop.dvars().subPopSize
-        return True
-    #
-    def plot(self, model, filename):
+ 
+    def outputPopSize(self, model):
         pop = Population(model(0), infoFields='migrate_to')
         pop.evolve(
             preOps=[
                 InitSex()
             ],
             matingScheme=RandomMating(subPopSize=model),
-            postOps=PyOperator(self.reportPopSize)
+            postOps=PyOperator(self._reportPopSize)
+        )
+
+    def _recordPopSize(self, pop):
+        stat(pop, popSize=True)
+        gen = pop.dvars().gen
+        sz = 0
+        for s, n in zip(pop.dvars().subPopSize, pop.subPopNames()):
+            if n in self.pop_regions:
+                self.pop_regions[n] = np.append(self.pop_regions[n],
+                    np.array([[gen, sz, gen, sz+s]]))
+            else:
+                self.pop_regions[n] = np.array([gen, sz, gen, sz+s], 
+                    dtype=np.uint64)
+            sz += s
+            pop.dvars().last_size = pop.dvars().subPopSize
+        return True
+    #
+    def plot(self, model, filename):
+        if not has_plotter:
+            raise RuntimeError('This function requires module numpy and matplotlib')
+        self.pop_regions = OrderedDict()
+        pop = Population(model(0), infoFields='migrate_to')
+        pop.evolve(
+            preOps=[
+                InitSex()
+            ],
+            matingScheme=RandomMating(subPopSize=model),
+            postOps=PyOperator(self._recordPopSize)
         )
         # 
+        fig = plt.figure()
+
+        for name, region in self.pop_regions.items():
+            region = region.reshape(region.size / 4, 4)
+            points = np.append(region[:, 0:2],
+                region[::-1, 2:4], axis=0)
+            plt.fill(points[:,0], points[:,1], label=name)
+        plt.legend(loc=2)
+        plt.savefig(filename)
+        plt.close()
+
+
+def plotDemographicModel(model, filename):
+    '''Plot the specified demographic ``model`` and save figure to 
+    ``filename``. This function requires python modules ``numpy`` and
+    ``matplotlib``'''
+    return DemographicModelPlotter().plot(model, filename)
+
+def printDemographicModel(model):
+    '''Print the population size of specified demographic ``model``'''
+    return DemographicModelPlotter().outputPopSize(model)
 
 if __name__ == '__main__':
-    print runDemo(Gutenkunst2009_Model())
+    printDemographicModel(Gutenkunst2009_Model())
+    plotDemographicModel(Gutenkunst2009_Model(), 'Gutenkunst2009.png')
+     

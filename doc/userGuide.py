@@ -4755,43 +4755,71 @@ os.remove('pop.csv')
 #end_ignore
 #end_file
 
-#begin_file log/VarPlotter.py
+#begin_file log/saveCSV.py
 #begin_ignore
 import simuOpt
-simuOpt.setOptions(quiet=True, plotter='matplotlib')
+simuOpt.setOptions(quiet=True, gui=False)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
 sim.setRNG(seed=12345)
 #end_ignore
-from simuPOP.plotter import VarPlotter
-pop = sim.Population(size=1000, loci=2)
-simu = sim.Simulator(pop, rep=3)
-simu.evolve(
+from simuPOP.utils import saveCSV
+pop = sim.Population(size=[10], loci=[2, 3],
+    lociNames=['r11', 'r12', 'r21', 'r22', 'r23'],
+    alleleNames=['A', 'B'], infoFields='age')
+sim.initSex(pop)
+sim.initInfo(pop, [2, 3, 4], infoFields='age')
+sim.initGenotype(pop, freq=[0.4, 0.6])
+sim.maPenetrance(pop, loci=0, penetrance=(0.2, 0.2, 0.4))
+# no filename so output to standard output
+saveCSV(pop, infoFields='age')
+# change affection code and how to output genotype
+saveCSV(pop, infoFields='age', affectionFormatter={True: 1, False: 2},
+    genoFormatter={(0,0):'AA', (0,1):'AB', (1,0):'AB', (1,1):'BB'})
+# save to a file
+saveCSV(pop, filename='pop.csv', infoFields='age', affectionFormatter={True: 1, False: 2},
+    genoFormatter=lambda geno: (geno[0] + 1, geno[1] + 1), sep=' ')
+print(open('pop.csv').read())
+#begin_ignore
+import os
+os.remove('pop.csv')
+#end_ignore
+#end_file
+
+
+
+#begin_file log/demoModel.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True, plotter='matplotlib')
+#end_ignore
+import simuPOP as sim
+from simuPOP.demography import Gutenkunst2009_Model, plotDemographicModel
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+model = Gutenkunst2009_Model()
+#
+# model(0) returns the initial population size
+# migrate_to is required for migration
+pop = sim.Population(size=model(0), loci=1, infoFields='migrate_to')
+pop.evolve(
     initOps=[
         sim.InitSex(),
-        sim.InitGenotype(genotype=[1, 2, 2, 1])
+        sim.InitGenotype(freq=[0.5, 0.5])
     ],
-    matingScheme=sim.RandomMating(ops=sim.Recombinator(rates=0.01)),
-    postOps=[
-        sim.Stat(LD=[0, 1]),
-        # rpy syntax
-        #VarPlotter('LD[0][1]', step=5, update=40, saveAs='log/rpy.png',
-        #    legend=['Replicate %d' % x for x in range(3)],
-        #    ylab='LD between marker 1 and 2',
-        #    ylim=[0, 0.25], main='LD decay', lty_rep=[1, 2, 3],
-        #),
-        # matplotlib syntax
-        VarPlotter('LD[0][1]', step=5, update=40, saveAs='log/varplot.png',
-            legend=['Replicate %d' % x for x in range(3)],
-            set_ylabel_ylabel='LD between marker 1 and 2',
-            set_title_label='LD decay',
-            set_ylim_bottom=0, set_ylim_top=0.25,
-            plot_linestyle_rep=['-', ':', '-.'],
-        ),
-    ],
-    gen=100
+    matingScheme=sim.RandomMating(subPopSize=model),
+    finalOps=
+        sim.Stat(alleleFreq=0, vars=['alleleFreq_sp'])
 )
+# print out population size and frequency
+for idx, name in enumerate(pop.subPopNames()):
+    print('%s (%d): %.4f' % (name, pop.subPopSize(name), 
+        pop.dvars(idx).alleleFreq[0]))
+
+# get a visual presentation of the demographic model
+plotDemographicModel(model, 'log/demoModel.png')
 #end_file
 
 #begin_file log/varPlotByRep.py

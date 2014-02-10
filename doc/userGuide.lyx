@@ -24586,14 +24586,104 @@ circular=False
 \begin_layout Standard
 Many more migration models have been proposed and studied, sometimes under
  different names with slightly different definitions.
- If you cannot find your model there, it should not be too dificult to construct
- a migration rate matrix for it.
+ If you cannot find your model there, it should not be too difficult to
+ construct a migration rate matrix for it.
  I will be glad to add such functions to this module if you could provide
  a reference and your implementation of the model.
 \end_layout
 
 \begin_layout Subsection
-Demographic models of the human population
+Demographic models of the human populations
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+simuPOP.demography
+\family default
+ module defines a demographic models defined in Gutenkunst, 2009 where an
+ ancestral population is split into African, European and Asian, and Mexican
+ populations.
+ An Ameican-Mexican population can be created by mixing the generated European
+ and Mexican populations.
+ To use this demographic model, you should create an instance of 
+\family typewriter
+Gutenkunst2009_Model
+\family default
+, use it to create an population, and pass it to the 
+\family typewriter
+subPopSize
+\family default
+ parameter of a mating scheme.
+ The 
+\family typewriter
+gen
+\family default
+ parameter of the 
+\family typewriter
+evolve
+\family default
+ function does not need to be specified because the demographic model will
+ terminate the evolutionary process automatically.
+ This is demonstrated in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "saveCSV"
+
+\end_inset
+
+ creates a small population and demonstrates how to save it in different
+ formats.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/demoModel.log"
+lstparams "caption={A demographic model for human population},label={demoModel}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:demoModel"
+
+\end_inset
+
+Demographic model of Gutenkunst, 2009
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename log/demoModel.png
+	lyxscale 40
+	width 60text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
