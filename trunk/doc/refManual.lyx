@@ -2000,28 +2000,49 @@ simuPOPdemographyRef
 
 
 \backslash
-simuPOPutilsmigrIslandRatesRef
+simuPOPdemographymigrIslandRatesRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPutilsmigrHierarchicalIslandRatesRef
+simuPOPdemographymigrHierarchicalIslandRatesRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPutilsmigrSteppingStoneRatesRef
+simuPOPdemographymigrSteppingStoneRatesRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPutilsmigr2DSteppingStoneRatesRef
+simuPOPdemographymigr2DSteppingStoneRatesRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPdemographyGutenkunst2009_ModelRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPdemographyprintDemographicModelRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPdemographyplotDemographicModelRef
 \end_layout
 
 \end_inset

@@ -309,7 +309,7 @@ for mod in exe_targets:
 
 env.Install(pylib_dir, 'simuOpt.py')
 Alias('install', pylib_dir)
-for pyfile in ['__init__.py', 'utils.py', 'plotter.py', 'sampling.py', 'sandbox.py']:
+for pyfile in ['__init__.py', 'utils.py', 'plotter.py', 'sampling.py', 'sandbox.py', 'demography.py']:
     env.Install(dest_dir, 'src/%s' % pyfile)
     Alias('install', dest_dir)
 
