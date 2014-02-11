@@ -201,7 +201,7 @@ public:
 	 *  generation number. You could reset a population's generation number
 	 *  by changing this variable.
 	 *
-	 *  Parameter \e gen can be set to a positive number, which is the number
+	 *  Parameter \e gen can be set to a non-negative number, which is the number
 	 *  of generations to evolve. If a simulator starts at the beginning of a
 	 *  generation \c g (for example 0), a simulator will stop at the beginning
 	 *  (instead of the end) of generation <tt>g + gen</tt> (for example gen).
