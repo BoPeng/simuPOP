@@ -24597,6 +24597,138 @@ Demographic models of the human populations
 \end_layout
 
 \begin_layout Standard
+A realistic demographic models can be very complex that involves population
+ growth, population bottlenec, subdivided populations, migration, population
+ split and admixture for a typical demographic model for human populations,
+ and carrying capacity, fecunity, sex distribution and many more factors
+ for more complex models.
+ The goal of this module is to implement some of the most commonly used
+ demographic models under a common interface.
+ More complex models will be added gradually upon request.
+\end_layout
+
+\begin_layout Standard
+A demographic model usually consists of the following items:
+\end_layout
+
+\begin_layout Itemize
+An initial population size that is used to initialize a population (the
+ 
+\family typewriter
+size
+\family default
+ parameter of 
+\family typewriter
+sim.Population
+\family default
+)
+\end_layout
+
+\begin_layout Itemize
+One or more operators to split and merge populations (e.g.
+ Operators 
+\family typewriter
+SplitSubPops
+\family default
+)
+\end_layout
+
+\begin_layout Itemize
+One or more operators to migrate individuals across subpopulations (e.g.
+ operator 
+\family typewriter
+Migrator
+\family default
+)
+\end_layout
+
+\begin_layout Itemize
+Determine sizes of subpopulations before mating (parameter 
+\family typewriter
+subPopSize
+\family default
+ of a mating scheme)
+\end_layout
+
+\begin_layout Itemize
+Conditions to terminate the evolution (e.g.
+ operator 
+\family typewriter
+TerminateIf
+\family default
+)
+\end_layout
+
+\begin_layout Itemize
+Number of generations to evolve (parameter 
+\family typewriter
+gen
+\family default
+ of the 
+\family typewriter
+evolve
+\family default
+ function)
+\end_layout
+
+\begin_layout Standard
+Using an object-oriented approach, a demographic model defined in this module
+ encapsulates all these in a single object.
+ More specifically, a demographic object 
+\family typewriter
+model
+\family default
+ is a callable Python object that 
+\end_layout
+
+\begin_layout Itemize
+has attribute 
+\family typewriter
+model.init_size
+\family default
+ and 
+\family typewriter
+model.info_fields
+\family default
+ to determine the initial population size and required information fields
+ to construct an initial population (
+\family typewriter
+sim.Population(size=model.init_size, infoFields=model.info_fields + ['my_fields'])
+\family default
+)
+\end_layout
+
+\begin_layout Itemize
+handles population split, merge, migration internally before mating when
+ it is passed to parameter 
+\family typewriter
+subPopSize
+\family default
+ of a mating scheme.
+ (e.g.
+ 
+\family typewriter
+RandomMating(subPopSize=model)
+\family default
+)
+\end_layout
+
+\begin_layout Itemize
+has attribute 
+\family typewriter
+model.duration
+\family default
+ to determine the number of generations to evolve.
+ The model can optionally terminate the evolution by returnning an empty
+ offspring population size before mating.
+\end_layout
+
+\begin_layout Standard
+Note that a demographic model determines initial generation as the generation
+ when it is first called so multiple demographic models could be stacked.
+\end_layout
+
+\begin_layout Standard
 The 
 \family typewriter
 simuPOP.demography

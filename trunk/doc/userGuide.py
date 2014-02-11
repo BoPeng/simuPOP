@@ -4803,7 +4803,8 @@ model = Gutenkunst2009_Model()
 #
 # model(0) returns the initial population size
 # migrate_to is required for migration
-pop = sim.Population(size=model(0), loci=1, infoFields='migrate_to')
+pop = sim.Population(size=model.init_size, loci=1,
+    infoFields=model.info_fields)
 pop.evolve(
     initOps=[
         sim.InitSex(),
@@ -4811,7 +4812,9 @@ pop.evolve(
     ],
     matingScheme=sim.RandomMating(subPopSize=model),
     finalOps=
-        sim.Stat(alleleFreq=0, vars=['alleleFreq_sp'])
+        sim.Stat(alleleFreq=0, vars=['alleleFreq_sp']),
+    gen=model.num_gens
+
 )
 # print out population size and frequency
 for idx, name in enumerate(pop.subPopNames()):
