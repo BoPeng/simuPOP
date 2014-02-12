@@ -9114,10 +9114,10 @@ Details:
     populations in a simulator does not have to have the same
     generation number. You could reset a population's generation
     number by changing this variable.  Parameter gen can be set to a
-    positive number, which is the number of generations to evolve. If
-    a simulator starts at the beginning of a generation g (for example
-    0), a simulator will stop at the beginning (instead of the end) of
-    generation g + gen (for example gen). If gen is negative
+    non-negative number, which is the number of generations to evolve.
+    If a simulator starts at the beginning of a generation g (for
+    example 0), a simulator will stop at the beginning (instead of the
+    end) of generation g + gen (for example gen). If gen is negative
     (default), the evolution will continue indefinitely, until all
     replicates are stopped by operators that return False at some
     point (these operators are called terminators). At the end of the
