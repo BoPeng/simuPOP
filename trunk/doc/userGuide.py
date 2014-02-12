@@ -4795,13 +4795,27 @@ import simuOpt
 simuOpt.setOptions(quiet=True, plotter='matplotlib')
 #end_ignore
 import simuPOP as sim
-from simuPOP.demography import Gutenkunst2009_Model, plotDemographicModel
+from simuPOP.demography import *
 #begin_ignore
 sim.setRNG(seed=12345)
 #end_ignore
-model = Gutenkunst2009_Model()
+model = MultiStage_Model([
+    InstantChange_Model(T=200, 
+        # start with an ancestral population of size 1000
+        N0=(1000, 'Ancestral'),
+        # change population size at 50 and 60
+        G=[50, 60], 
+        # change to population size 200 and back to 1000
+        N=[(200, 'bottleneck'), (1000, 'Post-Bottleneck')]),
+    ExponentialGrowth_Model(
+        T=200, 
+        # split the population into two subpopulations
+        N0=[(400, 'P1'), (600, 'P2')],
+        # expand to size 4000 and 5000 respectively
+        NT=[4000, 5000])]
+    )
 #
-# model(0) returns the initial population size
+# model.init_size returns the initial population size
 # migrate_to is required for migration
 pop = sim.Population(size=model.init_size, loci=1,
     infoFields=model.info_fields)
@@ -4814,7 +4828,6 @@ pop.evolve(
     finalOps=
         sim.Stat(alleleFreq=0, vars=['alleleFreq_sp']),
     gen=model.num_gens
-
 )
 # print out population size and frequency
 for idx, name in enumerate(pop.subPopNames()):
