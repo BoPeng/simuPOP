@@ -122,7 +122,7 @@ class BaseDemographic_Model:
         acceptable, which assigns name to the corresponding subpopulation.'''
         #
         self._raw_init_size = init_size
-        self.init_size = self.extractSize(init_size)
+        self.init_size = self._extractSize(init_size)
         #
         if isinstance(info_fields, (list, tuple)):
             self.info_fields = info_fields
@@ -130,14 +130,14 @@ class BaseDemographic_Model:
             self.info_fields = [info_fields]
         self.num_gens = num_gens
 
-    def reset(self):
+    def _reset(self):
         if hasattr(self, '_start_gen'):
             del self._start_gen
 
     def _isNamedSize(self, x):
         return isinstance(x, tuple) and len(x) == 2 and isinstance(x[1], str) and isinstance(x[0], int)
 
-    def extractSize(self, sz):
+    def _extractSize(self, sz):
         # sz = 100
         if isinstance(sz, int):
             return [sz]
@@ -167,7 +167,7 @@ class BaseDemographic_Model:
                 raise ValueError('Unacceptable population size: %s' % sz)
         return res
 
-    def convertToNamedSize(self, sz):
+    def _convertToNamedSize(self, sz):
         # sz = 100
         if isinstance(sz, int):
             return [(sz, '')]
@@ -198,11 +198,11 @@ class BaseDemographic_Model:
                 raise ValueError('Unacceptable population size: %s' % sz)
         return res
 
-    def fitToSize(self, pop, size):
+    def _fitToSize(self, pop, size):
         '''
         Fit a population to new size, split and merge population if needed
         '''
-        named_size = self.convertToNamedSize(size)
+        named_size = self._convertToNamedSize(size)
         if pop.numSubPop() > 1:
             if len(named_size) == 1:
                 pop.mergeSubPops()
@@ -245,7 +245,7 @@ class BaseDemographic_Model:
                     if n != '':
                         pop.setSubPopName(n, idx)
 
-    def expIntepolate(self, N0, NT, T, x, T0=0):
+    def _expIntepolate(self, N0, NT, T, x, T0=0):
         '''x=0, ... T-1
         '''
         if x == T-1:
@@ -256,7 +256,7 @@ class BaseDemographic_Model:
         else:
             return int(math.exp(((x+1-T0)*math.log(NT) + (T-x-1)*math.log(N0))/(T-T0)))        
 
-    def linearIntepolate(self, N0, NT, T, x, T0=0):
+    def _linearIntepolate(self, N0, NT, T, x, T0=0):
         '''x=0, ... T-1
         '''
         if x == T-1:
@@ -270,16 +270,16 @@ class BaseDemographic_Model:
     def __call__(self, pop):
         # the first time this function is called
         if (not hasattr(self, '_start_gen')) or self._start_gen > pop.dvars().gen:
-            self.reset()
+            self._reset()
             self._start_gen = pop.dvars().gen
             # resize populations if necessary
-            self.fitToSize(pop, self._raw_init_size)
+            self._fitToSize(pop, self._raw_init_size)
         #
         self._gen = pop.dvars().gen - self._start_gen
         #
-        # reset the demographic model when it reaches the last gen
+        # _reset the demographic model when it reaches the last gen
         if self._gen + 1 == self.num_gens:
-            self.reset()
+            self._reset()
         
 
 class BaseGrowth_Model(BaseDemographic_Model):
@@ -320,7 +320,7 @@ class ExponentialGrowth_Model(BaseGrowth_Model):
         if r is None:
             if NT is None:
                 raise ValueError('Please specify ending population size NT (or growth rate r)''')
-            self.NT = self.extractSize(NT)
+            self.NT = self._extractSize(NT)
             if len(self.NT) != len(self.init_size):
                     raise ValueError('Number of subpopulations for initial and ending generation must agree')
         elif isinstance(r, (int, float)):
@@ -339,7 +339,7 @@ class ExponentialGrowth_Model(BaseGrowth_Model):
         if self._gen == self.num_gens:
             return []
         else:
-            return [self.expIntepolate(n0, nt, self.num_gens, self._gen)
+            return [self._expIntepolate(n0, nt, self.num_gens, self._gen)
                 for (n0, nt) in zip(self.init_size, self.NT)]
 
 
@@ -361,7 +361,7 @@ class LinearGrowth_Model(BaseGrowth_Model):
         if r is None:
             if NT is None:
                 raise ValueError('Please specify ending population size NT (or growth rate r)''')
-            self.NT = self.extractSize(NT)
+            self.NT = self._extractSize(NT)
         elif isinstance(r, (int, float)):
             self.NT = [int(x*(1+r*T)) for x in self.init_size]
         elif isinstance(r, (list, tuple)):
@@ -378,7 +378,7 @@ class LinearGrowth_Model(BaseGrowth_Model):
         if self._gen == self.num_gens:
             return []
         else:
-            return [self.linearIntepolate(n0, nt, self.num_gens, self._gen)
+            return [self._linearIntepolate(n0, nt, self.num_gens, self._gen)
                 for (n0, nt) in zip(self.init_size, self.NT)]    
 
 class InstantChange_Model(BaseGrowth_Model):
@@ -408,7 +408,7 @@ class InstantChange_Model(BaseGrowth_Model):
         BaseGrowth_Model.__call__(self, pop)
         if self._gen in self.G:
             sz = self.N[self.G.index(self._gen)]
-            self.fitToSize(pop, sz)
+            self._fitToSize(pop, sz)
         return pop.subPopSizes()
 
 
@@ -433,7 +433,7 @@ class MultiStage_Model(BaseDemographic_Model):
         self.models = models
         self._model_idx = 0
 
-    def reset(self):
+    def _reset(self):
         self._model_idx = 0
         if hasattr(self, '_start_gen'):
             del self._start_gen
@@ -445,7 +445,7 @@ class MultiStage_Model(BaseDemographic_Model):
         # determines generation number internally as self.gen
         BaseDemographic_Model.__call__(self, pop)
         if self._model_idx == len(self.models):
-            self.reset()
+            self._reset()
             return []
         # at the end?
         if self.models[self._model_idx].num_gens == self._gen:

@@ -554,7 +554,7 @@ class Doxy2SWIG:
         #
         for entry in self.content:
             # latex names cannot have _ or number (for all_ind, getInfo2 etc)
-            entry['Name'] = entry['Name'].replace('_', '').replace('2','two').replace('3', 'three')
+            entry['Name'] = entry['Name'].replace('_', '').replace('2','two').replace('3', 'three').replace('0', 'zero').replace('9', 'nine')
             if (entry.has_key('Details') and '<group>' in entry['Details']):
                 piece1 = entry['Details'].split('<group>')
                 try:

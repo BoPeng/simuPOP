@@ -2028,35 +2028,35 @@ simuPOPdemographymigrtwoDSteppingStoneRatesRef
 
 
 \backslash
-simuPOPdemographyExponentialGrowth_ModelRef
+simuPOPdemographyExponentialGrowthModelRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPdemographyLinearGrowth_ModelRef
+simuPOPdemographyLinearGrowthModelRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPdemographyInstantChange_ModelRef
+simuPOPdemographyInstantChangeModelRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPdemographyMultiStage_ModelRef
+simuPOPdemographyMultiStageModelRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuPOPdemographyGutenkunsttwo009ModelRef
+simuPOPdemographyGutenkunsttwozerozeronineModelRef
 \end_layout
 
 \begin_layout Plain Layout
