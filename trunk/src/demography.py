@@ -130,6 +130,10 @@ class BaseDemographic_Model:
             self.info_fields = [info_fields]
         self.num_gens = num_gens
 
+    def reset(self):
+        if hasattr(self, '_start_gen'):
+            del self._start_gen
+
     def _isNamedSize(self, x):
         return isinstance(x, tuple) and len(x) == 2 and isinstance(x[1], str) and isinstance(x[0], int)
 
@@ -230,13 +234,16 @@ class BaseDemographic_Model:
                 if named_size[0][1] != '':
                     pop.setSubPopName(named_size[0][1], 0)
             else:
+                if not all([self._isNamedSize(x) for x in named_size]):
+                    # cannot have nested population size in this case.
+                    raise ValueError('Cannot fit population with size %s to size %s' %
+                        (pop.subPopSizes(), named_size))
                 # split subpopulations
                 pop.resize(sum([x[0] for x in named_size]), propagate=True)
                 pop.splitSubPop(0, [x[0] for x in named_size])
                 for idx, (s,n) in enumerate(named_size):
                     if n != '':
                         pop.setSubPopName(n, idx)
-
 
     def expIntepolate(self, N0, NT, T, x, T0=0):
         '''x=0, ... T-1
@@ -262,12 +269,17 @@ class BaseDemographic_Model:
 
     def __call__(self, pop):
         # the first time this function is called
-        if not hasattr(self, '_start_gen'):
+        if (not hasattr(self, '_start_gen')) or self._start_gen > pop.dvars().gen:
+            self.reset()
             self._start_gen = pop.dvars().gen
             # resize populations if necessary
             self.fitToSize(pop, self._raw_init_size)
         #
         self._gen = pop.dvars().gen - self._start_gen
+        #
+        # reset the demographic model when it reaches the last gen
+        if self._gen + 1 == self.num_gens:
+            self.reset()
         
 
 class BaseGrowth_Model(BaseDemographic_Model):
@@ -289,7 +301,6 @@ class BaseGrowth_Model(BaseDemographic_Model):
         #
         if self.migrModel is not None:
             self.migrModel.apply(pop)
-        return True
         
 
 class ExponentialGrowth_Model(BaseGrowth_Model):
@@ -430,11 +441,20 @@ class MultiStage_Model(BaseDemographic_Model):
         self.models = models
         self._model_idx = 0
 
+    def reset(self):
+        self._model_idx = 0
+        if hasattr(self, '_start_gen'):
+            del self._start_gen
+        for m in self.models:
+            if hasattr(m, '_start_gen'):
+                del m._start_gen
+  
     def __call__(self, pop):
         # determines generation number internally as self.gen
-        if self._model_idx == len(self.models):
-            return []
         BaseDemographic_Model.__call__(self, pop)
+        if self._model_idx == len(self.models):
+            self.reset()
+            return []
         # at the end?
         if self.models[self._model_idx].num_gens == self._gen:
             self._model_idx += 1
@@ -447,9 +467,6 @@ class MultiStage_Model(BaseDemographic_Model):
             self._start_gen = pop.dvars().gen
             self.__call__(pop)
         return sz
-
-
-
 
 def Gutenkunst2009_Model(T0=10000, N_A=7300, T_AF=220000//25, N_AF=12300,
         T_B=140000//25, N_B=2100, 
