@@ -24598,7 +24598,7 @@ Demographic models of the human populations
 
 \begin_layout Standard
 A realistic demographic models can be very complex that involves population
- growth, population bottlenec, subdivided populations, migration, population
+ growth, population bottleneck, subdivided populations, migration, population
  split and admixture for a typical demographic model for human populations,
  and carrying capacity, fecunity, sex distribution and many more factors
  for more complex models.
@@ -24716,7 +24716,7 @@ RandomMating(subPopSize=model)
 \begin_layout Itemize
 has attribute 
 \family typewriter
-model.duration
+model.num_gens
 \family default
  to determine the number of generations to evolve.
  The model can optionally terminate the evolution by returnning an empty
@@ -24724,48 +24724,138 @@ model.duration
 \end_layout
 
 \begin_layout Standard
-Note that a demographic model determines initial generation as the generation
- when it is first called so multiple demographic models could be stacked.
-\end_layout
-
-\begin_layout Standard
 The 
 \family typewriter
 simuPOP.demography
 \family default
- module defines a demographic models defined in Gutenkunst, 2009 where an
- ancestral population is split into African, European and Asian, and Mexican
- populations.
- An Ameican-Mexican population can be created by mixing the generated European
- and Mexican populations.
- To use this demographic model, you should create an instance of 
-\family typewriter
-Gutenkunst2009_Model
-\family default
-, use it to create an population, and pass it to the 
-\family typewriter
-subPopSize
-\family default
- parameter of a mating scheme.
- The 
-\family typewriter
-gen
-\family default
- parameter of the 
-\family typewriter
-evolve
-\family default
- function does not need to be specified because the demographic model will
- terminate the evolutionary process automatically.
- This is demonstrated in Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "saveCSV"
+ module defines a number of demographic models that can be used to implement
+ many popular demographic models, including population growth, shrink, split
+ and merge, and bottleneck.
+ For example,
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+InstantChange_Model(T=1000, N0=1000, G=500, N=2000)
+\end_layout
 
 \end_inset
 
- creates a small population and demonstrates how to save it in different
- formats.
+defines an instant population growth model that expands a population of
+ size 1000 to 2000 at generation 500;
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+InstantChange_Model(T=1000, N0=1000, G=[500, 600], N=[100, 1000])
+\end_layout
+
+\end_inset
+
+defines a bottleneck model that introduces a bottleneck of size 1000 between
+ generation 500 and 600 to a population of size 1000;
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ExponentialGrowth_Model(T=100, N0=1000, NT=10000)
+\end_layout
+
+\end_inset
+
+expands a population of size 1000 to 10000 in 100 generations; 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ExponentialGrowth_Model(T=100, N0=[200, 800], r=[0.02, 0.01],
+\end_layout
+
+\begin_layout Plain Layout
+
+    migr=Migrator(rate=[[0, 0.1], [0.1, 0]])
+\end_layout
+
+\end_inset
+
+expands a population of two subpopulation sizes at rate 0.02 and 0.01 for
+ 100 generations, with migration between these two subpopulations.
+\end_layout
+
+\begin_layout Standard
+More interestingly, these simple model could be stacked to form more complex
+ demographic models.
+ For example,
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+MultiStage_Model([
+\end_layout
+
+\begin_layout Plain Layout
+
+    InstantChange_Model(T=1000, N0=1000, G=[500, 600], N=[100, 1000]), 
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+    ExponentialGrowth_Model(T=100, N0=[100, 1000], NT=[1000, 10000])
+\end_layout
+
+\begin_layout Plain Layout
+
+])
+\end_layout
+
+\end_inset
+
+defines a demographic model with a bottleneck followed by exponential population
+ growth.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "demoModel"
+
+\end_inset
+
+ defines a demographic model and use it to evolve a population.
+ An interesting feature of this example is that it uses a 
+\family typewriter
+(size, name)
+\family default
+ pair when a size is needed.
+ These names will be assigned to populations during evolution, and be displayed
+ when 
+\family typewriter
+plotDemographicModel
+\family default
+ is used to plot the model.
+ More demographic models are defined in this module using this method.
+ Please check the reference manual for a list of such models.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
