@@ -320,14 +320,9 @@ class ExponentialGrowth_Model(BaseGrowth_Model):
         if r is None:
             if NT is None:
                 raise ValueError('Please specify ending population size NT (or growth rate r)''')
-            elif isinstance(NT, (list, tuple)):
-                if len(NT) != len(self.init_size):
+            self.NT = self.extractSize(NT)
+            if len(self.NT) != len(self.init_size):
                     raise ValueError('Number of subpopulations for initial and ending generation must agree')
-                self.NT = list(NT)
-            else:
-                if len(self.init_size) != 1:
-                    raise ValueError('Number of subpopulations for initial and ending generation must agree')
-                self.NT = [NT]
         elif isinstance(r, (int, float)):
             self.NT = [int(x*((1.+r)**T)) for x in self.init_size]
         elif isinstance(r, (list, tuple)):
@@ -366,17 +361,14 @@ class LinearGrowth_Model(BaseGrowth_Model):
         if r is None:
             if NT is None:
                 raise ValueError('Please specify ending population size NT (or growth rate r)''')
-            elif isinstance(NT, (list, tuple)):
-                self.NT = list(NT)
-            else:
-                self.NT = [NT]
+            self.NT = self.extractSize(NT)
         elif isinstance(r, (int, float)):
-            self.NT = [x*(1+r*T) for x in self.init_size]
+            self.NT = [int(x*(1+r*T)) for x in self.init_size]
         elif isinstance(r, (list, tuple)):
             if len(r) != len(self.init_size):
                 raise ValueError('Please specify growth rate for each subpopulation '
                     'if multiple growth rates are specified.')
-            self.NT = [x*(1+y*T) for x,y in zip(self.init_size, r)]
+            self.NT = [int(x*(1+y*T)) for x,y in zip(self.init_size, r)]
         else:
             raise ValueError('Unacceptable growth rate (a number or a list of numbers '
                 'is expected')
@@ -391,7 +383,7 @@ class LinearGrowth_Model(BaseGrowth_Model):
 
 class InstantChange_Model(BaseGrowth_Model):
     '''A model for instant population growth model.'''
-    def __init__(self, T, N0, G, NT, migr=None):
+    def __init__(self, T, N0, G=[], N=[], migr=None):
         '''An instant population growth model that evolves a population
         from size ``N0`` to ``NT`` for ``T`` generations with population
         size changes at generation ``G`` to ``NT``. If ``G`` is a list,
@@ -403,19 +395,19 @@ class InstantChange_Model(BaseGrowth_Model):
         BaseGrowth_Model.__init__(self, T, N0, migr)
         if isinstance(G, int):
             self.G = [G]
-            self.NT = [NT]
+            self.N = [N]
         else:
-            if not isinstance(NT, (tuple, list)):
-                raise ValueError('Multiple NT sizes should be specified if multiple G is provided.')
-            if len(G) != len(NT):
+            if not isinstance(N, (tuple, list)):
+                raise ValueError('Multiple sizes should be specified if multiple G is provided.')
+            if len(G) != len(N):
                 raise ValueError('Please provide population size for each growth generation.')
             self.G = G
-            self.NT = NT
+            self.N = N
 
     def __call__(self, pop):
         BaseGrowth_Model.__call__(self, pop)
         if self._gen in self.G:
-            sz = self.NT[self.G.index(self._gen)]
+            sz = self.N[self.G.index(self._gen)]
             self.fitToSize(pop, sz)
         return pop.subPopSizes()
 
