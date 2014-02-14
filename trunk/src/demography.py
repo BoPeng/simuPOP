@@ -38,11 +38,12 @@ __all__ = [
     'migrHierarchicalIslandRates',
     'migrSteppingStoneRates',
     'migr2DSteppingStoneRates',
-    'ExponentialGrowth_Model',
-    'LinearGrowth_Model',
-    'InstantChange_Model',
-    'MultiStage_Model',
-    'Gutenkunst2009_Model',
+    'ExponentialGrowthModel',
+    'LinearGrowthModel',
+    'InstantChangeModel',
+    'MultiStageModel',
+    'OutOfAfricaModel',
+    'SettlementOfNewWorldModel',
     'printDemographicModel',
     'plotDemographicModel',
 ]
@@ -108,7 +109,7 @@ def migr2DSteppingStoneRates(r, m, n, diagonal=False, circular=False):
     return rates
 
 
-class BaseDemographic_Model:
+class BaseDemographicModel:
     '''This class is the base class for all demographic models and 
     provides common interface and utility functions for derived classes.'''
     def __init__(self, init_size=[], info_fields=[], num_gens=-1):
@@ -210,7 +211,7 @@ class BaseDemographic_Model:
                     pop.setSubPopName(named_size[0][1], 0)
             elif len(size) != pop.numSubPop():
                 raise ValueError('Number of subpopulations mismatch: %d in population '
-                    '%d required for ExponentialGrowth_Model.' % (pop.numSubPop(), len(size)))
+                    '%d required for ExponentialGrowthModel.' % (pop.numSubPop(), len(size)))
             elif all([self._isNamedSize(x) for x in size]):
                 pop.resize([x[0] for x in named_size], propagate=True)
                 for idx, (s,n) in enumerate(named_size):
@@ -282,7 +283,7 @@ class BaseDemographic_Model:
             self._reset()
         
 
-class BaseGrowth_Model(BaseDemographic_Model):
+class BaseGrowthModel(BaseDemographicModel):
     '''A base model for population growth.'''
     def __init__(self, T, N0, migr=None):
         '''An population growth model that evolves a population from size ``N0``
@@ -290,20 +291,20 @@ class BaseGrowth_Model(BaseDemographic_Model):
         linear or instant population growth model. '''
         if not isinstance(T, int):
             raise ValueError('Number of generations must be an integer')
-        BaseDemographic_Model.__init__(self, init_size=N0,
+        BaseDemographicModel.__init__(self, init_size=N0,
             info_fields=[] if migr is None else 'migrate_to', num_gens=T)
         # migration
         self.migrModel = migr
 
     def __call__(self, pop):
         # determines generation number internally as self.gen
-        BaseDemographic_Model.__call__(self, pop)
+        BaseDemographicModel.__call__(self, pop)
         #
         if self.migrModel is not None:
             self.migrModel.apply(pop)
         
 
-class ExponentialGrowth_Model(BaseGrowth_Model):
+class ExponentialGrowthModel(BaseGrowthModel):
     '''A model for exponential population growth. Four parameters
     N0, T, NT, and r are allowed but only three are needed.'''
     def __init__(self, T, N0, NT=None, r=None, migr=None):
@@ -316,7 +317,7 @@ class ExponentialGrowth_Model(BaseGrowth_Model):
         a migrator ``m`` can be provided to migrate individuals among
         subpopulations.
         '''
-        BaseGrowth_Model.__init__(self, T, N0, migr)
+        BaseGrowthModel.__init__(self, T, N0, migr)
         if r is None:
             if NT is None:
                 raise ValueError('Please specify ending population size NT (or growth rate r)''')
@@ -335,7 +336,7 @@ class ExponentialGrowth_Model(BaseGrowth_Model):
                 'is expected')
 
     def __call__(self, pop):
-        BaseGrowth_Model.__call__(self, pop)
+        BaseGrowthModel.__call__(self, pop)
         if self._gen == self.num_gens:
             return []
         else:
@@ -343,7 +344,7 @@ class ExponentialGrowth_Model(BaseGrowth_Model):
                 for (n0, nt) in zip(self.init_size, self.NT)]
 
 
-class LinearGrowth_Model(BaseGrowth_Model):
+class LinearGrowthModel(BaseGrowthModel):
     '''A model for linear population growth. Four parameters
     N0, T, NT, and r are allowed but only three are needed.'''
     def __init__(self, T, N0, NT=None, r=None, migr=None):
@@ -357,7 +358,7 @@ class LinearGrowth_Model(BaseGrowth_Model):
         a migrator ``m`` can be provided to migrate individuals among
         subpopulations.
         '''
-        BaseGrowth_Model.__init__(self, T, N0, migr)
+        BaseGrowthModel.__init__(self, T, N0, migr)
         if r is None:
             if NT is None:
                 raise ValueError('Please specify ending population size NT (or growth rate r)''')
@@ -374,16 +375,16 @@ class LinearGrowth_Model(BaseGrowth_Model):
                 'is expected')
 
     def __call__(self, pop):
-        BaseGrowth_Model.__call__(self, pop)
+        BaseGrowthModel.__call__(self, pop)
         if self._gen == self.num_gens:
             return []
         else:
             return [self._linearIntepolate(n0, nt, self.num_gens, self._gen)
                 for (n0, nt) in zip(self.init_size, self.NT)]    
 
-class InstantChange_Model(BaseGrowth_Model):
+class InstantChangeModel(BaseGrowthModel):
     '''A model for instant population growth model.'''
-    def __init__(self, T, N0, G=[], N=[], migr=None):
+    def __init__(self, T, N0, G=[], NG=[], migr=None):
         '''An instant population growth model that evolves a population
         from size ``N0`` to ``NT`` for ``T`` generations with population
         size changes at generation ``G`` to ``NT``. If ``G`` is a list,
@@ -392,27 +393,33 @@ class InstantChange_Model(BaseGrowth_Model):
         ``NT``. This model supports population merge to and split from a single
         population.
         '''
-        BaseGrowth_Model.__init__(self, T, N0, migr)
+        BaseGrowthModel.__init__(self, T, N0, migr)
         if isinstance(G, int):
             self.G = [G]
-            self.N = [N]
+            self.NG = [NG]
         else:
-            if not isinstance(N, (tuple, list)):
+            if not isinstance(NG, (tuple, list)):
                 raise ValueError('Multiple sizes should be specified if multiple G is provided.')
-            if len(G) != len(N):
+            if len(G) != len(NG):
                 raise ValueError('Please provide population size for each growth generation.')
             self.G = G
-            self.N = N
+            self.NG = NG
+        #
+        for g in self.G:
+            if g < 0 or g >= self.num_gens:
+                raise ValueError('Population change generation %d exceeds total number of generations %d' \
+                    % (g, self.num_gens))
+                    
 
     def __call__(self, pop):
-        BaseGrowth_Model.__call__(self, pop)
+        BaseGrowthModel.__call__(self, pop)
         if self._gen in self.G:
-            sz = self.N[self.G.index(self._gen)]
+            sz = self.NG[self.G.index(self._gen)]
             self._fitToSize(pop, sz)
         return pop.subPopSizes()
 
 
-class MultiStage_Model(BaseDemographic_Model):
+class MultiStageModel(BaseDemographicModel):
     '''A multi-stage demographic model connects a few demographic models 
     '''
     def __init__(self, models):
@@ -427,7 +434,7 @@ class MultiStage_Model(BaseDemographic_Model):
             total_gens = sum(gens)
         else:
             total_gens = -1
-        BaseDemographic_Model.__init__(self, init_size=models[0].init_size,
+        BaseDemographicModel.__init__(self, init_size=models[0].init_size,
             info_fields=list(set(flds)), num_gens=total_gens)
         #
         self.models = models
@@ -443,7 +450,7 @@ class MultiStage_Model(BaseDemographic_Model):
   
     def __call__(self, pop):
         # determines generation number internally as self.gen
-        BaseDemographic_Model.__call__(self, pop)
+        BaseDemographicModel.__call__(self, pop)
         if self._model_idx == len(self.models):
             self._reset()
             return []
@@ -460,16 +467,95 @@ class MultiStage_Model(BaseDemographic_Model):
             self.__call__(pop)
         return sz
 
-def Gutenkunst2009_Model(T0=10000, N_A=7300, T_AF=220000//25, N_AF=12300,
-        T_B=140000//25, N_B=2100, 
-        T_EU_AS=26400//25, 
-        N_EU0=1500, N_AS0=590, 
-        N_EU=16970, N_AS=29147,
-        T_MX=21600//25, N_MX0=800, N_MX=59506,
+class OutOfAfricaModel(MultiStageModel):
+    '''A dempgrahic model for the CHB, CEU, and YRI populations, as defined in
+    Gutenkunst 2009, Plos Genetics. The model is depicted in Figure 2, and the 
+    default parameters are listed in Table 1 of this paper. '''
+    def __init__(self, 
+        T0,
+        N_A=7300,
+        N_AF=12300,
+        N_B=2100,
+        N_EU0=1000,
+        r_EU=0.004,
+        N_AS0=510,
+        r_AS=0.0055,
         m_AF_B=0.00025,
-        m_EU_AS=0.000135,
         m_AF_EU=0.00003,
-        m_AF_AS=0.000019):
+        m_AF_AS=0.000019,
+        m_EU_AS=0.000096,
+        T_AF=220000//25, 
+        T_B=140000//25, 
+        T_EU_AS=21200//25, 
+        ):
+        '''Counting **backward in time**, this model evolves a population for ``T0``
+        generations (required parameter). The ancient population ``A`` started at
+        size ``N_A`` and expanded at ``T_AF`` generations from now, to pop ``AF``
+        with size ``N_AF``. Pop ``B`` split from pop ``AF`` at ``T_B`` generations
+        from now, with size ``N_B``; Pop ``AF`` remains as ``N_AF`` individuals. 
+        Pop ``EU`` and  ``AS`` split from pop ``B`` at ``T_EU_AS`` generations
+        from now; with size ``N_EU0`` individuals and ``N_ASO`` individuals,
+        respectively. Pop ``EU`` grew exponentially with rate ``r_EU``; Pop
+        ``AS`` grew exponentially with rate ``r_AS``. The ``YRI``, ``CEU`` and
+        ``CHB`` samples are drawn from ``AF``, ``EU`` and ``AS`` populations
+        respectively.
+
+        This model merges all subpopulations if it is applied to a population with
+        multiple subpopulation.
+        '''
+        #
+        if T0 < T_AF:
+            raise ValueError('Length of evolution T0=%d should be more than T_AF=%d' % (T0, T_AF))
+        MultiStageModel.__init__(self, [
+            InstantChangeModel(
+                T=T0-T_EU_AS,
+                N0=(N_A, 'Ancestral'),
+                # change population size twice, one at T_AF, one at T_B
+                G=[T0-T_AF, T0-T_B],
+                NG=[
+                    (N_AF, 'AF'), 
+                    # at T_B, split to population B from subpopulation 1
+                    [(N_AF, 'AF'), (N_B, 'B')]]),
+            ExponentialGrowthModel(
+                T=T_EU_AS,
+                N0=[(N_AF, 'AF'), 
+                    # split B into EU and AS at the beginning of this
+                    # exponential growth stage
+                    [(N_EU0, 'EU'), (N_AS0, 'AS')]],
+                r=[0, r_EU, r_AS],
+                migr=Migrator(rate=[
+                    [0, m_AF_EU, m_AF_AS],
+                    [m_EU_AS, 0, m_AF_EU],
+                    [m_AF_AS, m_AF_EU, 0]
+                    ])
+                ),
+            ]
+        )
+
+class SettlementOfNewWorldModel(MultiStageModel):
+    '''A dempgrahic model for settlement of the new world of Americans, as defined
+    in Gutenkunst 2009, Plos Genetics. The model is depicted in Figure 3, and the 
+    default parameters are listed in Table 2 of this paper. '''
+    def __init__(self,
+        T0,
+        N_A=7300,
+        N_AF=12300,
+        N_B=2100,
+        N_EU0=1500,
+        r_EU=0.0023,
+        N_AS0=590,
+        r_AS=0.0037,
+        N_MX0=800,
+        r_MX=0.005,
+        m_AF_B=0.00025,
+        m_AF_EU=0.00003,
+        m_AF_AS=0.000019,
+        m_EU_AS=0.0000135,
+        T_AF=220000//25, 
+        T_B=140000//25, 
+        T_EU_AS=26400//25, 
+        T_MX=21600//25,
+        f_MX=0.48):
         '''Counting **backward in time**, this model evolves a population for ``T0``
         generations. The ancient population ``A`` started at size ``N_A`` and
         expanded at ``T_AF`` generations from now, to pop ``AF`` with size ``N_AF``.
@@ -482,25 +568,38 @@ def Gutenkunst2009_Model(T0=10000, N_A=7300, T_AF=220000//25, N_AF=12300,
         split from pop ``AS`` at ``T_MX`` generations from now with size ``N_MX0``,
         grew exponentially to final size ``N_MX``. Migrations are allowed between
         populations with migration rates ``m_AF_B``, ``m_EU_AS``, ``m_AF_EU``,
-        and ``m_AF_AS``.
+        and ``m_AF_AS``. At the end of the evolution, the ``AF`` and ``CHB``
+        populations are removed, and the ``EU`` and ``MX`` populations are merged
+        with ``f_MX`` proportion for ``MX``. The Mexican American sample could
+        be sampled from the last single population.
 
         This model merges all subpopulations if it is applied to a population with
         multiple subpopulation.
         '''
         #
-        r_EU = (math.log(N_EU) - math.log(N_EU0))/T_EU_AS
-        r_AS = (math.log(N_AS) - math.log(N_AS0))/T_EU_AS
-        return MultiStage_Model([
-            InstantChange_Model(
-                T=T0-T_EU_AS,
+        if T0 < T_AF:
+            raise ValueError('Length of evolution T0=%d should be more than T_AF=%d' % (T0, T_AF))
+        N_EU=int(N_EU0*math.exp(r_EU*T_EU_AS))
+        N_MX=int(N_MX0*math.exp(r_MX*T_MX))
+        if int(N_EU/(1.-f_MX)*f_MX) <= N_MX:
+            N_EU1 = N_EU
+            N_MX1 = int(N_EU/(1.-f_MX)*f_MX)
+        else:
+            N_EU1 = int(N_MX/f_MX*(1.-f_MX))
+            N_MX1 = N_MX
+        #
+        MultiStageModel.__init__(self, [
+            InstantChangeModel(
+                # leave one generation for last admixture step
+                T=T0-T_EU_AS-1,
                 N0=(N_A, 'Ancestral'),
                 # change population size twice, one at T_AF, one at T_B
                 G=[T0-T_AF, T0-T_B],
-                NT=[
+                NG=[
                     (N_AF, 'AF'), 
                     # at T_B, split to population B from subpopulation 1
                     [(N_AF, 'AF'), (N_B, 'B')]]),
-            ExponentialGrowth_Model(
+            ExponentialGrowthModel(
                 T=T_EU_AS - T_MX,
                 N0=[(N_AF, 'AF'), 
                     # split B into EU and AS at the beginning of this
@@ -513,7 +612,7 @@ def Gutenkunst2009_Model(T0=10000, N_A=7300, T_AF=220000//25, N_AF=12300,
                     [m_AF_AS, m_AF_EU, 0]
                     ])
                 ),
-            ExponentialGrowth_Model(T=T_MX,
+            ExponentialGrowthModel(T=T_MX,
                 N0=[(N_AF, 'AF'),
                     # initial population size has to be calculated
                     # because we only know the final population size of
@@ -522,7 +621,7 @@ def Gutenkunst2009_Model(T0=10000, N_A=7300, T_AF=220000//25, N_AF=12300,
                     # split MX from AS
                     [(int(N_AS0*((1.+r_AS)**(T_EU_AS-T_MX))), 'AS'),
                         (N_MX0, 'MX')]],
-                NT=[N_AF, N_EU, N_AS, N_MX],
+                r=[0, r_EU, r_AS, r_MX],
                 migr=Migrator(rate=[
                     [0, m_AF_EU, m_AF_AS],
                     [m_EU_AS, 0, m_AF_EU],
@@ -533,7 +632,13 @@ def Gutenkunst2009_Model(T0=10000, N_A=7300, T_AF=220000//25, N_AF=12300,
                     subPops=[0, 1, 2],
                     toSubPops=[0, 1, 2])
                 ),
-        ])
+            InstantChangeModel(
+                T=1,
+                N0=[0, N_EU1, 0, N_MX1],
+                G=[0],
+                NG=[(N_EU1 + N_MX1, 'MXL')]
+            )]
+        )
 
 
 class DemographicModelReporter:
@@ -616,38 +721,44 @@ def printDemographicModel(model):
 if __name__ == '__main__':
     # exponential
     print('Exponential')
-    printDemographicModel(ExponentialGrowth_Model(10, 100, 1000))
-    printDemographicModel(ExponentialGrowth_Model(10, (100, 200), (1000, 2000)))
-    printDemographicModel(ExponentialGrowth_Model(10, (100, 200), r=0.01))
-    printDemographicModel(ExponentialGrowth_Model(10, (100, 200), r=(0.01, 0.2)))
-    plotDemographicModel(ExponentialGrowth_Model(10, (100, 200), r=(0.01, 0.2)), 'ExpDemo.png')
+    printDemographicModel(ExponentialGrowthModel(10, 100, 1000))
+    printDemographicModel(ExponentialGrowthModel(10, (100, 200), (1000, 2000)))
+    printDemographicModel(ExponentialGrowthModel(10, (100, 200), r=0.01))
+    printDemographicModel(ExponentialGrowthModel(10, (100, 200), r=(0.01, 0.2)))
+    plotDemographicModel(ExponentialGrowthModel(10, (100, 200), r=(0.01, 0.2)), 'ExpDemo.png')
     # linear
     print('Linear')
-    printDemographicModel(LinearGrowth_Model(10, 100, 1000))
-    printDemographicModel(LinearGrowth_Model(10, (100, 200), (1000, 2000)))
-    printDemographicModel(LinearGrowth_Model(10, (100, 200), r=0.01))
-    printDemographicModel(LinearGrowth_Model(10, (100, 200), r=(0.1, 0.2)))
-    plotDemographicModel(LinearGrowth_Model(10, (100, 200), r=(0.1, 0.2)), 'LinearDemo.png')
+    printDemographicModel(LinearGrowthModel(10, 100, 1000))
+    printDemographicModel(LinearGrowthModel(10, (100, 200), (1000, 2000)))
+    printDemographicModel(LinearGrowthModel(10, (100, 200), r=0.01))
+    printDemographicModel(LinearGrowthModel(10, (100, 200), r=(0.1, 0.2)))
+    plotDemographicModel(LinearGrowthModel(10, (100, 200), r=(0.1, 0.2)), 'LinearDemo.png')
     # instant
     print('Instat')
-    printDemographicModel(InstantChange_Model(10, 100, 5, 1000))
-    printDemographicModel(InstantChange_Model(10, (100, 200), 5, (1000, 2000)))
-    printDemographicModel(InstantChange_Model(10, 100, [5, 8], [500, 100]))
-    plotDemographicModel(InstantChange_Model(50, 100, [5, 8, 20], [[500, 200], [100, 100], [1000, 2000]]), 'InstantDemo.png')
+    printDemographicModel(InstantChangeModel(10, 100, 5, 1000))
+    printDemographicModel(InstantChangeModel(10, (100, 200), 5, (1000, 2000)))
+    printDemographicModel(InstantChangeModel(10, 100, [5, 8], [500, 100]))
+    plotDemographicModel(InstantChangeModel(50, 100, [5, 8, 20], [[500, 200], [100, 100], [1000, 2000]]), 'InstantDemo.png')
     #
     # multi-stage model
     print('Muti-stage')
-    printDemographicModel(MultiStage_Model([
-        InstantChange_Model(10, 100, 5, 1000),
-        ExponentialGrowth_Model(20, 1000, 2000)
+    printDemographicModel(MultiStageModel([
+        InstantChangeModel(10, 100, 5, 1000),
+        ExponentialGrowthModel(20, 1000, 2000)
         ]))
-    plotDemographicModel(MultiStage_Model([
-        InstantChange_Model(10, 100, 5, 1000),
-        ExponentialGrowth_Model(20, 1000, 2000)
+    plotDemographicModel(MultiStageModel([
+        InstantChangeModel(10, 100, 5, 1000),
+        ExponentialGrowthModel(20, 1000, 2000)
         ]), 'MultiStageDemo.png')
 
-    # Gutenkunst2009
-    printDemographicModel(Gutenkunst2009_Model())
-    plotDemographicModel(Gutenkunst2009_Model(), 'Gutenkunst2009.png')
+    # Out Of Africa Model
+    print('Out of Africa')
+    printDemographicModel(OutOfAfricaModel(10000))
+    plotDemographicModel(OutOfAfricaModel(10000), 'OutOfAfrica.png')
+    # Settlement of New World
+    #
+    print('Settlement of New world')
+    printDemographicModel(SettlementOfNewWorldModel(10000))
+    plotDemographicModel(SettlementOfNewWorldModel(10000), 'SettlementOfNewWorld.png')
      
 
