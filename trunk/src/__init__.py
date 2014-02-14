@@ -821,8 +821,7 @@ class SelfMating(HomoMating):
         parameter *replacement* and  *selectionField*, to class
         ``OffspringGenerator`` for parameters *ops*, *sexMode* and
         *numOffspring*, and to class ``HomoMating`` for parameters
-        *subPopSize*, *subPops* and *weight*.
-    '''
+        *subPopSize*, *subPops* and *weight*. '''
         HomoMating.__init__(self,
             chooser = RandomParentChooser(replacement, selectionField),
             generator = OffspringGenerator(ops, numOffspring, sexMode),

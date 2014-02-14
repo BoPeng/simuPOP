@@ -24741,7 +24741,7 @@ status open
 
 \begin_layout Plain Layout
 
-InstantChange_Model(T=1000, N0=1000, G=500, N=2000)
+InstantChangeModel(T=1000, N0=1000, G=500, N=2000)
 \end_layout
 
 \end_inset
@@ -24757,7 +24757,7 @@ status open
 
 \begin_layout Plain Layout
 
-InstantChange_Model(T=1000, N0=1000, G=[500, 600], N=[100, 1000])
+InstantChangeModel(T=1000, N0=1000, G=[500, 600], N=[100, 1000])
 \end_layout
 
 \end_inset
@@ -24773,7 +24773,7 @@ status open
 
 \begin_layout Plain Layout
 
-ExponentialGrowth_Model(T=100, N0=1000, NT=10000)
+ExponentialGrowthModel(T=100, N0=1000, NT=10000)
 \end_layout
 
 \end_inset
@@ -24785,7 +24785,7 @@ status open
 
 \begin_layout Plain Layout
 
-ExponentialGrowth_Model(T=100, N0=[200, 800], r=[0.02, 0.01],
+ExponentialGrowthModel(T=100, N0=[200, 800], r=[0.02, 0.01],
 \end_layout
 
 \begin_layout Plain Layout
@@ -24809,18 +24809,17 @@ status open
 
 \begin_layout Plain Layout
 
-MultiStage_Model([
+MultiStageModel([
 \end_layout
 
 \begin_layout Plain Layout
 
-    InstantChange_Model(T=1000, N0=1000, G=[500, 600], N=[100, 1000]), 
- 
+    InstantChangeModel(T=1000, N0=1000, G=[500, 600], N=[100, 1000]),  
 \end_layout
 
 \begin_layout Plain Layout
 
-    ExponentialGrowth_Model(T=100, N0=[100, 1000], NT=[1000, 10000])
+    ExponentialGrowthModel(T=100, N0=[100, 1000], NT=[1000, 10000])
 \end_layout
 
 \begin_layout Plain Layout
@@ -24854,8 +24853,6 @@ reference "demoModel"
 plotDemographicModel
 \family default
  is used to plot the model.
- More demographic models are defined in this module using this method.
- Please check the reference manual for a list of such models.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
@@ -24877,13 +24874,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:demoModel"
-
-\end_inset
-
-Demographic model of Gutenkunst, 2009
+A exponential population growth followed by bottleneck demographic model
 \end_layout
 
 \end_inset
@@ -24895,6 +24886,83 @@ Demographic model of Gutenkunst, 2009
 \align center
 \begin_inset Graphics
 	filename log/demoModel.png
+	lyxscale 40
+	width 60text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+More demographic models are defined in this module using this method, including
+ the Out of Africa model for YRI, CEU and CHB populations, and the settlement
+ of new world model for Mexican American.
+ For the second model, the simulated CHB and MX populations are mixed to
+ produce an admixed population.
+ These two models follow definition and parameters defined in Gutenkunst,
+ 2009, PLoS Genetics.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Out of Africa model for YRI, CEU, and CHB populations
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename log/OutOfAfrica.png
+	lyxscale 40
+	width 60text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Settlement of New World model for Mexican America population
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename log/SettlementOfNewWorld.png
 	lyxscale 40
 	width 60text%
 

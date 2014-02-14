@@ -4799,15 +4799,15 @@ from simuPOP.demography import *
 #begin_ignore
 sim.setRNG(seed=12345)
 #end_ignore
-model = MultiStage_Model([
-    InstantChange_Model(T=200, 
+model = MultiStageModel([
+    InstantChangeModel(T=200, 
         # start with an ancestral population of size 1000
         N0=(1000, 'Ancestral'),
         # change population size at 50 and 60
         G=[50, 60], 
         # change to population size 200 and back to 1000
-        N=[(200, 'bottleneck'), (1000, 'Post-Bottleneck')]),
-    ExponentialGrowth_Model(
+        NG=[(200, 'bottleneck'), (1000, 'Post-Bottleneck')]),
+    ExponentialGrowthModel(
         T=200, 
         # split the population into two subpopulations
         N0=[(400, 'P1'), (600, 'P2')],
@@ -4836,7 +4836,12 @@ for idx, name in enumerate(pop.subPopNames()):
 
 # get a visual presentation of the demographic model
 plotDemographicModel(model, 'log/demoModel.png')
+#begin_ignore
+plotDemographicModel(OutOfAfricaModel(10000), 'log/OutOfAfrica.png')
+plotDemographicModel(SettlementOfNewWorldModel(10000), 'log/SettlementOfNewWorld.png')
+#end_ignore
 #end_file
+
 
 #begin_file log/varPlotByRep.py
 #begin_ignore
