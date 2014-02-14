@@ -38,14 +38,15 @@ __all__ = [
     'migrHierarchicalIslandRates',
     'migrSteppingStoneRates',
     'migr2DSteppingStoneRates',
+    'printDemographicModel',
+    'plotDemographicModel',
     'ExponentialGrowthModel',
     'LinearGrowthModel',
     'InstantChangeModel',
     'MultiStageModel',
     'OutOfAfricaModel',
     'SettlementOfNewWorldModel',
-    'printDemographicModel',
-    'plotDemographicModel',
+    'CosiModel',
 ]
 
 import sys
@@ -107,6 +108,91 @@ def migr2DSteppingStoneRates(r, m, n, diagonal=False, circular=False):
             for x in neighbors:
                 rates[-1][x[0] * n + x[1]] = r * 1.0 / len(neighbors)
     return rates
+
+class DemographicModelReporter:
+    def __init__(self):
+        pass
+    
+    def _reportPopSize(self, pop):
+        stat(pop, popSize=True)
+        if 'last_size' not in pop.vars() or pop.dvars().last_size != pop.dvars().subPopSize:
+            print('%d: %s' % (pop.dvars().gen, 
+                ', '.join(
+                    ['%d%s' % (x, ' (%s)' % y if y else '') for x, y in zip(pop.dvars().subPopSize, pop.subPopNames())])
+                ))
+            pop.dvars().last_size = pop.dvars().subPopSize
+        return True
+ 
+    def outputPopSize(self, model):
+        pop = Population(model.init_size, infoFields=model.info_fields)
+        pop.evolve(
+            preOps=[
+                InitSex()
+            ],
+            matingScheme=RandomMating(subPopSize=model),
+            postOps=PyOperator(self._reportPopSize),
+            gen=model.num_gens
+        )
+        del pop.vars()['last_size']
+        self._reportPopSize(pop)
+
+    def _recordPopSize(self, pop):
+        stat(pop, popSize=True)
+        gen = pop.dvars().gen
+        sz = 0
+        for idx, (s, n) in enumerate(zip(pop.dvars().subPopSize, pop.subPopNames())):
+            if n == '':
+                n = str(idx)
+            if n in self.pop_regions:
+                self.pop_regions[n] = np.append(self.pop_regions[n],
+                    np.array([[gen, sz, gen, sz+s]]))
+            else:
+                self.pop_regions[n] = np.array([gen, sz, gen, sz+s], 
+                    dtype=np.uint64)
+            sz += s
+            pop.dvars().last_size = pop.dvars().subPopSize
+        return True
+    #
+    def plot(self, model, filename):
+        if not has_plotter:
+            raise RuntimeError('This function requires module numpy and matplotlib')
+        self.pop_regions = OrderedDict()
+        pop = Population(model.init_size, infoFields=model.info_fields)
+        pop.evolve(
+            preOps=[
+                InitSex()
+            ],
+            matingScheme=RandomMating(subPopSize=model),
+            postOps=PyOperator(self._recordPopSize),
+            gen=model.num_gens
+        )
+        # 
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.spines['right'].set_visible(False)
+        ax.spines['top'].set_visible(False)
+        ax.xaxis.set_ticks_position('bottom')
+        ax.yaxis.set_ticks_position('left')
+        for name, region in self.pop_regions.items():
+            region = region.reshape(region.size / 4, 4)
+            points = np.append(region[:, 0:2],
+                region[::-1, 2:4], axis=0)
+            plt.fill(points[:,0], points[:,1], label=name, linewidth=0, edgecolor='w')
+        leg = plt.legend(loc=2)
+        leg.draw_frame(False)
+        plt.savefig(filename)
+        plt.close()
+
+
+def plotDemographicModel(model, filename):
+    '''Plot the specified demographic ``model`` and save figure to 
+    ``filename``. This function requires python modules ``numpy`` and
+    ``matplotlib``'''
+    return DemographicModelReporter().plot(model, filename)
+
+def printDemographicModel(model):
+    '''Print the population size of specified demographic ``model``'''
+    return DemographicModelReporter().outputPopSize(model)
 
 
 class BaseDemographicModel:
@@ -219,6 +305,7 @@ class BaseDemographicModel:
                 pop.mergeSubPops()
                 if named_size[0][1] != '':
                     pop.setSubPopName(named_size[0][1], 0)
+                pop.resize(named_size[0][0])
             elif len(size) != pop.numSubPop():
                 raise ValueError('Number of subpopulations mismatch: %d in population '
                     '%d required for ExponentialGrowthModel.' % (pop.numSubPop(), len(size)))
@@ -287,10 +374,6 @@ class BaseDemographicModel:
             self._fitToSize(pop, self._raw_init_size)
         #
         self._gen = pop.dvars().gen - self._start_gen
-        #
-        # _reset the demographic model when it reaches the last gen
-        if self._gen + 1 == self.num_gens:
-            self._reset()
         #
         for op in self.ops:
             if not op.apply(pop):
@@ -460,13 +543,13 @@ class MultiStageModel(BaseDemographicModel):
         # determines generation number internally as self.gen
         if not BaseDemographicModel.__call__(self, pop):
             return []
-        if self._model_idx == len(self.models):
-            self._reset()
-            return []
         # at the end?
         if self.models[self._model_idx].num_gens == self._gen:
             self._model_idx += 1
             self._start_gen = pop.dvars().gen
+        if self._model_idx == len(self.models):
+            self._reset()
+            return []
         # not at the end
         sz = self.models[self._model_idx].__call__(pop)
         if sz == []:
@@ -660,83 +743,133 @@ class SettlementOfNewWorldModel(MultiStageModel):
             )], ops=ops, infoFields=infoFields
         )
 
+class CosiModel(MultiStageModel):
+    '''A dempgrahic model for Africa, Asia and Europe, as described in 
+    Schaffner et al, Genome Research, 2005, and implemented in the coalescent
+    simulator cosi.'''
+    def __init__(self,
+        T0,
+        N_A=12500,
+        N_AF=24000,
+        N_OoA=7700,
+        N_AF1=100000,
+        N_AS1=100000,
+        N_EU1=100000,
+        T_AF=17000,
+        T_OoA=3500,
+        T_EU_AS=2000,
+        T_AS_exp=400,
+        T_EU_exp=350,
+        T_AF_exp=200,
+        F_OoA=0.085,
+        F_AS=0.067,
+        F_EU=0.020,
+        F_AF=0.020,
+        m_AF_EU=0.000032,
+        m_AF_AS=0.000008,
+        ops=[],
+        infoFields=[]
+        ):
+        '''Counting **backward in time**, this model evolves a population for a
+        total of ``T0`` generations. The ancient population ``Ancestral`` started
+        at size ``N_Ancestral`` and expanded at ``T_AF`` generations from now,
+        to pop ``AF`` with size ``N_AF``. The Out of Africa population split from
+        the ``AF`` population at ``T_OoA`` generations ago. The ``OoA`` population
+        split into two subpopulations ``AS`` and ``EU`` but keep the same size.
+        At the generations of ``T_EU_exp``, ``T_AS_exp``, and ``T_AF_exp`` ago,
+        three populations expanded to modern population sizes of ``N_AF1``, 
+        ``N_AS1`` and ``N_EU1`` exponentially, respectively. Migrations are
+        allowed between ``AF`` and ``EU`` populations
+        with rate ``m_AF_EU``, and between ``AF`` and ``AS`` with rate ``m_AF_AS``.
 
-class DemographicModelReporter:
-    def __init__(self):
-        pass
-    
-    def _reportPopSize(self, pop):
-        stat(pop, popSize=True)
-        if 'last_size' not in pop.vars() or pop.dvars().last_size != pop.dvars().subPopSize:
-            print('%d: %s' % (pop.dvars().gen, 
-                ', '.join(
-                    ['%d%s' % (x, ' (%s)' % y if y else '') for x, y in zip(pop.dvars().subPopSize, pop.subPopNames())])
-                ))
-            pop.dvars().last_size = pop.dvars().subPopSize
-        return True
- 
-    def outputPopSize(self, model):
-        pop = Population(model.init_size, infoFields=model.info_fields)
-        pop.evolve(
-            preOps=[
-                InitSex()
-            ],
-            matingScheme=RandomMating(subPopSize=model),
-            postOps=PyOperator(self._reportPopSize),
-            gen=model.num_gens
+        Four bottlenecks happens in the ``AF``, ``OoA``, ``EU`` and ``AS`` populations.
+        They are supposed to happen 100 generations after population split and last
+        for 100 generations. The intensity is parameterized in F, which is number
+        of generations devided by twice the effective size during bottleneck.
+        So the bottleneck size is 50/F.
+
+        This model merges all subpopulations if it is applied to a population with
+        multiple subpopulation. Although parameters are configurable, we assume
+        the order of events so dramatically changes of parameters might need
+        to errors. '''
+        #
+        if T0 < T_AF:
+            raise ValueError('Length of evolution T0=%d should be more than T_AF=%d' % (T0, T_AF))
+        #
+        if T_AF < T_OoA or T_OoA < T_EU_AS or T_EU_AS < T_AS_exp or T_AS_exp < T_EU_exp or T_EU_exp < T_AF_exp:
+            raise ValueError('Specified parameters change the order of events to the model.')
+        # by model
+        N_AS = N_OoA
+        N_EU = N_OoA
+        r_AS = math.log(1.0*N_AS1/N_AS)/T_AS_exp
+        r_EU = math.log(1.0*N_EU1/N_EU)/T_EU_exp
+        r_AF = math.log(1.0*N_AF1/N_AF)/T_AF_exp
+        MultiStageModel.__init__(self, [
+            InstantChangeModel(
+                # constant population size before the first one to expand
+                T=T0-T_AS_exp,
+                N0=(N_A, 'Ancestral'),
+                # change population size twice, one at T_AF, one at T_B
+                G=[ T0-T_AF, 
+                    T0-T_OoA,
+                    T0-T_OoA+100,
+                    T0-T_OoA+200,
+                    T0-T_EU_AS,
+                    T0-T_EU_AS+100,
+                    T0-T_EU_AS+200],
+                NG=[
+                    # population size incrase to N_AF
+                    (N_AF, 'Africa'),
+                    # at T_B, split to population B from subpopulation 1
+                    [(N_AF, 'Africa'), (N_OoA, 'Out Of Africa')],
+                    [int(50./F_AF), int(50./F_OoA)], # bottleneck
+                    [N_AF, N_OoA],  # recover
+                    [N_AF, [(N_OoA, 'Asian'), (N_OoA, 'Europe')]], # split
+                    [N_AF, int(50./F_AS), int(50./F_EU)],
+                    [N_AF, N_OoA, N_OoA] # recover
+                    ]
+                ),
+            # AS expend 
+            ExponentialGrowthModel(
+                T=T_AS_exp-T_EU_exp,
+                N0=[N_AF, (N_OoA, 'Modern Asian'), N_OoA],
+                r=[0, r_AS, 0],
+                infoFields='migrate_to',
+                ops=Migrator(rate=[
+                    [0, m_AF_AS, m_AF_EU],
+                    [m_AF_AS, 0, 0],
+                    [m_AF_EU, 0, 0]
+                    ])
+                ),
+            # EU expand
+            ExponentialGrowthModel(T=T_EU_exp-T_AF_exp,
+                N0=[N_AF,
+                    int(N_AS*((1.+r_AS)**(T_AS_exp-T_EU_exp))),
+                    (N_OoA, 'Modern Europe')],
+                r=[0, r_AS, r_EU],
+                infoFields='migrate_to',
+                ops=Migrator(rate=[
+                    [0, m_AF_AS, m_AF_EU],
+                    [m_AF_AS, 0, 0],
+                    [m_AF_EU, 0, 0]
+                    ])
+                ),
+            # AF expand
+            ExponentialGrowthModel(T=T_AF_exp,
+                N0=[(N_AF, 'Modern Africa'),
+                    int(N_AS*((1.+r_AS)**(T_AS_exp-T_AF_exp))),
+                    int(N_EU*((1.+r_EU)**(T_EU_exp-T_AF_exp)))],
+                r=[r_AF, r_AS, r_EU],
+                infoFields='migrate_to',
+                ops=Migrator(rate=[
+                    [0, m_AF_AS, m_AF_EU],
+                    [m_AF_AS, 0, 0],
+                    [m_AF_EU, 0, 0]
+                    ])
+                ),
+            ]
         )
 
-    def _recordPopSize(self, pop):
-        stat(pop, popSize=True)
-        gen = pop.dvars().gen
-        sz = 0
-        for idx, (s, n) in enumerate(zip(pop.dvars().subPopSize, pop.subPopNames())):
-            if n == '':
-                n = str(idx)
-            if n in self.pop_regions:
-                self.pop_regions[n] = np.append(self.pop_regions[n],
-                    np.array([[gen, sz, gen, sz+s]]))
-            else:
-                self.pop_regions[n] = np.array([gen, sz, gen, sz+s], 
-                    dtype=np.uint64)
-            sz += s
-            pop.dvars().last_size = pop.dvars().subPopSize
-        return True
-    #
-    def plot(self, model, filename):
-        if not has_plotter:
-            raise RuntimeError('This function requires module numpy and matplotlib')
-        self.pop_regions = OrderedDict()
-        pop = Population(model.init_size, infoFields=model.info_fields)
-        pop.evolve(
-            preOps=[
-                InitSex()
-            ],
-            matingScheme=RandomMating(subPopSize=model),
-            postOps=PyOperator(self._recordPopSize),
-            gen=model.num_gens
-        )
-        # 
-        fig = plt.figure()
-        for name, region in self.pop_regions.items():
-            region = region.reshape(region.size / 4, 4)
-            points = np.append(region[:, 0:2],
-                region[::-1, 2:4], axis=0)
-            plt.fill(points[:,0], points[:,1], label=name)
-        plt.legend(loc=2)
-        plt.savefig(filename)
-        plt.close()
-
-
-def plotDemographicModel(model, filename):
-    '''Plot the specified demographic ``model`` and save figure to 
-    ``filename``. This function requires python modules ``numpy`` and
-    ``matplotlib``'''
-    return DemographicModelReporter().plot(model, filename)
-
-def printDemographicModel(model):
-    '''Print the population size of specified demographic ``model``'''
-    return DemographicModelReporter().outputPopSize(model)
 
 if __name__ == '__main__':
     # exponential
@@ -780,5 +913,8 @@ if __name__ == '__main__':
     print('Settlement of New world')
     printDemographicModel(SettlementOfNewWorldModel(10000))
     plotDemographicModel(SettlementOfNewWorldModel(10000), 'SettlementOfNewWorld.png')
-     
+    # 
+    print('Cosi Model')
+    printDemographicModel(CosiModel(20000))
+    plotDemographicModel(CosiModel(20000), 'Cosi.png')
 
