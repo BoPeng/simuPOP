@@ -29,6 +29,9 @@
 
 using namespace boost::lambda;
 
+#include <set>
+using std::set;
+
 namespace simuPOP {
 
 GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & chromTypes, bool haplodiploid,
@@ -155,17 +158,22 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 		}
 	}
 
-	// check duplicated and empty information field names
-	map<string, int> infoMap;
-	for (size_t i = 0; i < m_infoFields.size(); ++i) {
-		if (m_infoFields[i].empty())
-			throw ValueError("Empty information field name is not allowed");
-		else if (infoMap.find(m_infoFields[i]) != infoMap.end())
-			throw ValueError("Given information field names should be unique");
-		else
-			infoMap[m_infoFields[i]] = 0;
-	}
 #endif
+	// remove duplicated and empty information field names
+	set<string> infoMap;
+	for (size_t i = 0; i < m_infoFields.size(); ++i) {
+		DBG_WARNIF(m_infoFields[i].empty(),
+			"Empty information field name is removed.");
+		DBG_WARNIF(infoMap.find(m_infoFields[i]) != infoMap.end(),
+			"Duplicated information field name will be removed.");
+		if ((!m_infoFields[i].empty()) && infoMap.find(m_infoFields[i]) == infoMap.end())
+			infoMap.insert(m_infoFields[i]);
+	}
+	// if there are empty or duplicated info fields, re-create m_infoFields
+	if (m_infoFields.size() != infoMap.size()) {
+		m_infoFields.clear();
+		std::copy(infoMap.begin(), infoMap.end(), std::back_inserter(m_infoFields));
+	}
 	// shrink allele names
 	for (size_t i = 0; i < m_alleleNames.size(); ++i)
 		if (!m_alleleNames[i].empty() && static_cast<UINT>(m_alleleNames[i].size() - 1) > ModuleMaxAllele)
