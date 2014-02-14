@@ -112,7 +112,7 @@ def migr2DSteppingStoneRates(r, m, n, diagonal=False, circular=False):
 class BaseDemographicModel:
     '''This class is the base class for all demographic models and 
     provides common interface and utility functions for derived classes.'''
-    def __init__(self, init_size=[], info_fields=[], num_gens=-1):
+    def __init__(self, initSize=[], numGens=-1, ops=[], infoFields=[]):
         '''Set attributes ``init_size``, ``info_fields``, and ``num_gens``
         to a demographic model. If size for a subpopulation for
         initial population is a list, the initial subpopulation will be split to
@@ -120,16 +120,26 @@ class BaseDemographicModel:
         model where the last two subpopulation will be split (and resize if needed)
         from the second subpopulation of the initial subpopulation. In addition,
         whenever a population size is allowed, a tuple of ``(size, name)`` is
-        acceptable, which assigns name to the corresponding subpopulation.'''
+        acceptable, which assigns name to the corresponding subpopulation.
+        One or more operators (e.g. a migration operator or a terminator) could
+        be passed (parameter ``ops``) and will be applied to the population.
+        The demographic model will return ``[]`` (which will effectively terminate
+        the evolutioonary process) if any of the operator returns ``False``.
+        Information fields required by these operators should be passed to
+        ``infoFields``. '''
         #
-        self._raw_init_size = init_size
-        self.init_size = self._extractSize(init_size)
+        self._raw_init_size = initSize
+        self.init_size = self._extractSize(initSize)
         #
-        if isinstance(info_fields, (list, tuple)):
-            self.info_fields = info_fields
+        if isinstance(infoFields, (list, tuple)):
+            self.info_fields = infoFields
         else:
-            self.info_fields = [info_fields]
-        self.num_gens = num_gens
+            self.info_fields = [infoFields]
+        self.num_gens = numGens
+        if isinstance(ops, (tuple, list)):
+            self.ops = list(ops)
+        else:
+            self.ops = [ops]
 
     def _reset(self):
         if hasattr(self, '_start_gen'):
@@ -281,43 +291,39 @@ class BaseDemographicModel:
         # _reset the demographic model when it reaches the last gen
         if self._gen + 1 == self.num_gens:
             self._reset()
+        #
+        for op in self.ops:
+            if not op.apply(pop):
+                self._reset()
+                return []
+        return pop.subPopSizes()
         
 
 class BaseGrowthModel(BaseDemographicModel):
     '''A base model for population growth.'''
-    def __init__(self, T, N0, migr=None):
+    def __init__(self, T, N0, ops=[], infoFields=[]):
         '''An population growth model that evolves a population from size ``N0``
         to ``NT`` for ``T`` generations with rate ``r``, under either an exponential,
         linear or instant population growth model. '''
         if not isinstance(T, int):
             raise ValueError('Number of generations must be an integer')
-        BaseDemographicModel.__init__(self, init_size=N0,
-            info_fields=[] if migr is None else 'migrate_to', num_gens=T)
-        # migration
-        self.migrModel = migr
-
-    def __call__(self, pop):
-        # determines generation number internally as self.gen
-        BaseDemographicModel.__call__(self, pop)
-        #
-        if self.migrModel is not None:
-            self.migrModel.apply(pop)
+        BaseDemographicModel.__init__(self, initSize=N0,
+            numGens=T, ops=ops, infoFields=infoFields)
         
 
 class ExponentialGrowthModel(BaseGrowthModel):
     '''A model for exponential population growth. Four parameters
     N0, T, NT, and r are allowed but only three are needed.'''
-    def __init__(self, T, N0, NT=None, r=None, migr=None):
+    def __init__(self, T, N0, NT=None, r=None, ops=[], infoFields=[]):
         '''An exponential population growth model that evolves a population
         from size ``N0`` to ``NT`` for ``T`` generations with rate ``r``.
         ``N0``, ``NT`` and ``r`` can be a list of population sizes or growth
         rates for multiple subpopulations. The initial population will be
         resized to ``N0`` (split if necessary). The model will automatically 
         determine ``r`` or ``NT`` if one of them is unspecified. Optionally,
-        a migrator ``m`` can be provided to migrate individuals among
-        subpopulations.
-        '''
-        BaseGrowthModel.__init__(self, T, N0, migr)
+        one or more operators (e.g. a migrator) ``ops`` can be applied to 
+        population. '''
+        BaseGrowthModel.__init__(self, T, N0, ops, infoFields)
         if r is None:
             if NT is None:
                 raise ValueError('Please specify ending population size NT (or growth rate r)''')
@@ -336,7 +342,8 @@ class ExponentialGrowthModel(BaseGrowthModel):
                 'is expected')
 
     def __call__(self, pop):
-        BaseGrowthModel.__call__(self, pop)
+        if not BaseGrowthModel.__call__(self, pop):
+            return []
         if self._gen == self.num_gens:
             return []
         else:
@@ -347,7 +354,7 @@ class ExponentialGrowthModel(BaseGrowthModel):
 class LinearGrowthModel(BaseGrowthModel):
     '''A model for linear population growth. Four parameters
     N0, T, NT, and r are allowed but only three are needed.'''
-    def __init__(self, T, N0, NT=None, r=None, migr=None):
+    def __init__(self, T, N0, NT=None, r=None, ops=[], infoFields=[]):
         '''An linear population growth model that evolves a population
         from size ``N0`` to ``NT`` for ``T`` generations with ``r*N0`` 
         individuals added at each generation. ``N0``, ``NT`` and ``r``
@@ -355,10 +362,9 @@ class LinearGrowthModel(BaseGrowthModel):
         subpopulations. The initial population will be
         resized to ``N0`` (split if necessary). The model will automatically 
         determine ``r`` or ``NT`` if one of them is unspecified. Optionally,
-        a migrator ``m`` can be provided to migrate individuals among
-        subpopulations.
-        '''
-        BaseGrowthModel.__init__(self, T, N0, migr)
+        one or more operators (e.g. a migrator) ``ops`` can be applied to 
+        population. '''
+        BaseGrowthModel.__init__(self, T, N0, ops, infoFields)
         if r is None:
             if NT is None:
                 raise ValueError('Please specify ending population size NT (or growth rate r)''')
@@ -375,7 +381,8 @@ class LinearGrowthModel(BaseGrowthModel):
                 'is expected')
 
     def __call__(self, pop):
-        BaseGrowthModel.__call__(self, pop)
+        if not BaseGrowthModel.__call__(self, pop):
+            return []
         if self._gen == self.num_gens:
             return []
         else:
@@ -384,16 +391,17 @@ class LinearGrowthModel(BaseGrowthModel):
 
 class InstantChangeModel(BaseGrowthModel):
     '''A model for instant population growth model.'''
-    def __init__(self, T, N0, G=[], NG=[], migr=None):
+    def __init__(self, T, N0, G=[], NG=[], ops=[], infoFields=[]):
         '''An instant population growth model that evolves a population
         from size ``N0`` to ``NT`` for ``T`` generations with population
         size changes at generation ``G`` to ``NT``. If ``G`` is a list,
         multiple population size changes are allowed. In that case, a list
         (or a nested list) of population size should be provided to parameter
         ``NT``. This model supports population merge to and split from a single
-        population.
-        '''
-        BaseGrowthModel.__init__(self, T, N0, migr)
+        population. Optionally, one or more operators (e.g. a migrator) ``ops``
+        can be applied to population. Required information fields by these
+        operators should be passed to parameter ``infoFields``.'''
+        BaseGrowthModel.__init__(self, T, N0, ops, infoFields)
         if isinstance(G, int):
             self.G = [G]
             self.NG = [NG]
@@ -409,10 +417,10 @@ class InstantChangeModel(BaseGrowthModel):
             if g < 0 or g >= self.num_gens:
                 raise ValueError('Population change generation %d exceeds total number of generations %d' \
                     % (g, self.num_gens))
-                    
 
     def __call__(self, pop):
-        BaseGrowthModel.__call__(self, pop)
+        if not BaseGrowthModel.__call__(self, pop):
+            return []
         if self._gen in self.G:
             sz = self.NG[self.G.index(self._gen)]
             self._fitToSize(pop, sz)
@@ -422,7 +430,7 @@ class InstantChangeModel(BaseGrowthModel):
 class MultiStageModel(BaseDemographicModel):
     '''A multi-stage demographic model connects a few demographic models 
     '''
-    def __init__(self, models):
+    def __init__(self, models, ops=[], infoFields=[]):
         '''An multi-stage demographic model that connects specified
         demographic models.'''
         flds = []
@@ -434,8 +442,8 @@ class MultiStageModel(BaseDemographicModel):
             total_gens = sum(gens)
         else:
             total_gens = -1
-        BaseDemographicModel.__init__(self, init_size=models[0].init_size,
-            info_fields=list(set(flds)), num_gens=total_gens)
+        BaseDemographicModel.__init__(self, initSize=models[0].init_size,
+            numGens=total_gens, ops=ops, infoFields=flds+infoFields)
         #
         self.models = models
         self._model_idx = 0
@@ -450,7 +458,8 @@ class MultiStageModel(BaseDemographicModel):
   
     def __call__(self, pop):
         # determines generation number internally as self.gen
-        BaseDemographicModel.__call__(self, pop)
+        if not BaseDemographicModel.__call__(self, pop):
+            return []
         if self._model_idx == len(self.models):
             self._reset()
             return []
@@ -487,6 +496,8 @@ class OutOfAfricaModel(MultiStageModel):
         T_AF=220000//25, 
         T_B=140000//25, 
         T_EU_AS=21200//25, 
+        ops=[],
+        infoFields=[]
         ):
         '''Counting **backward in time**, this model evolves a population for ``T0``
         generations (required parameter). The ancient population ``A`` started at
@@ -498,7 +509,8 @@ class OutOfAfricaModel(MultiStageModel):
         respectively. Pop ``EU`` grew exponentially with rate ``r_EU``; Pop
         ``AS`` grew exponentially with rate ``r_AS``. The ``YRI``, ``CEU`` and
         ``CHB`` samples are drawn from ``AF``, ``EU`` and ``AS`` populations
-        respectively.
+        respectively. Additional operators could be added to ``ops``. Information
+        fields required by these operators should be passed to ``infoFields``.
 
         This model merges all subpopulations if it is applied to a population with
         multiple subpopulation.
@@ -523,13 +535,14 @@ class OutOfAfricaModel(MultiStageModel):
                     # exponential growth stage
                     [(N_EU0, 'EU'), (N_AS0, 'AS')]],
                 r=[0, r_EU, r_AS],
-                migr=Migrator(rate=[
+                infoFields='migrate_to',
+                ops=Migrator(rate=[
                     [0, m_AF_EU, m_AF_AS],
                     [m_EU_AS, 0, m_AF_EU],
                     [m_AF_AS, m_AF_EU, 0]
                     ])
                 ),
-            ]
+            ], ops=ops, infoFields=infoFields
         )
 
 class SettlementOfNewWorldModel(MultiStageModel):
@@ -555,7 +568,10 @@ class SettlementOfNewWorldModel(MultiStageModel):
         T_B=140000//25, 
         T_EU_AS=26400//25, 
         T_MX=21600//25,
-        f_MX=0.48):
+        f_MX=0.48,
+        ops=[],
+        infoFields=[]
+        ):
         '''Counting **backward in time**, this model evolves a population for ``T0``
         generations. The ancient population ``A`` started at size ``N_A`` and
         expanded at ``T_AF`` generations from now, to pop ``AF`` with size ``N_AF``.
@@ -571,7 +587,9 @@ class SettlementOfNewWorldModel(MultiStageModel):
         and ``m_AF_AS``. At the end of the evolution, the ``AF`` and ``CHB``
         populations are removed, and the ``EU`` and ``MX`` populations are merged
         with ``f_MX`` proportion for ``MX``. The Mexican American sample could
-        be sampled from the last single population.
+        be sampled from the last single population. Additional operators could
+        be added to ``ops``. Information fields required by these operators 
+        should be passed to ``infoFields``.
 
         This model merges all subpopulations if it is applied to a population with
         multiple subpopulation.
@@ -606,7 +624,8 @@ class SettlementOfNewWorldModel(MultiStageModel):
                     # exponential growth stage
                     [(N_EU0, 'EU'), (N_AS0, 'AS')]],
                 r=[0, r_EU, r_AS],
-                migr=Migrator(rate=[
+                infoFields='migrate_to',
+                ops=Migrator(rate=[
                     [0, m_AF_EU, m_AF_AS],
                     [m_EU_AS, 0, m_AF_EU],
                     [m_AF_AS, m_AF_EU, 0]
@@ -622,7 +641,8 @@ class SettlementOfNewWorldModel(MultiStageModel):
                     [(int(N_AS0*((1.+r_AS)**(T_EU_AS-T_MX))), 'AS'),
                         (N_MX0, 'MX')]],
                 r=[0, r_EU, r_AS, r_MX],
-                migr=Migrator(rate=[
+                infoFields='migrate_to',
+                ops=Migrator(rate=[
                     [0, m_AF_EU, m_AF_AS],
                     [m_EU_AS, 0, m_AF_EU],
                     [m_AF_AS, m_AF_EU, 0]
@@ -637,7 +657,7 @@ class SettlementOfNewWorldModel(MultiStageModel):
                 N0=[0, N_EU1, 0, N_MX1],
                 G=[0],
                 NG=[(N_EU1 + N_MX1, 'MXL')]
-            )]
+            )], ops=ops, infoFields=infoFields
         )
 
 
