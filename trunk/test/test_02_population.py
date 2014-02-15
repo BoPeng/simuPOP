@@ -1160,12 +1160,16 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.indInfo('fitness'), tuple([5.0]*pop.popSize()))
         self.assertEqual(pop.indInfo('misc'), tuple([6.0]*pop.popSize()))
         pop = self.getPop()
-        pop1 = pop.addInfoFields(['x', 'fitness', 'misc'],  2.0)
+        pop.addInfoFields(['x', 'fitness', 'misc'],  2.0)
         self.assertEqual(pop.infoSize(), 3)
         self.assertEqual(pop.indInfo('fitness'), tuple([2.0]*pop.popSize()))
         self.assertEqual(pop.indInfo('misc'), tuple([2.0]*pop.popSize()))
         # info field x is re-initialized
         self.assertEqual(pop.indInfo('x'), tuple([2.0]*pop.popSize()))
+        # add again, but reinitialize ...
+        pop.addInfoFields(['x', 'x', 'misc'], 5)
+        self.assertEqual(pop.infoSize(), 3)
+        self.assertEqual(pop.indInfo('misc'), tuple([5.0]*pop.popSize()))
 
 
     def testIndInfo(self):
@@ -1221,6 +1225,9 @@ class TestPopulation(unittest.TestCase):
         # info field x is removed
         self.assertEqual(pop.indInfo('fitness'), tuple([3]*pop.popSize()))
         self.assertEqual(pop.indInfo('misc'), tuple([3]*pop.popSize()))
+        # allow set duplicated info fields
+        pop1 = pop.setInfoFields(['fitness', 'fitness'],  1)
+        self.assertEqual(pop.infoSize(), 1)
 
     def testClone(self):
         'Testing Population::clone()'
