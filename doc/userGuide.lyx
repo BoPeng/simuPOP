@@ -6,7 +6,7 @@
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 1.1.2svn (\mbox{Rev: 4809})}
+\setreleaseinfo{Release 1.1.2 (\mbox{Rev: 4809})}
 % file revision $Rev: 3372$
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
@@ -24601,10 +24601,12 @@ A realistic demographic models can be very complex that involves population
  growth, population bottleneck, subdivided populations, migration, population
  split and admixture for a typical demographic model for human populations,
  and carrying capacity, fecunity, sex distribution and many more factors
- for more complex models.
- The goal of this module is to implement some of the most commonly used
- demographic models under a common interface.
- More complex models will be added gradually upon request.
+ for more complex ones (e.g.
+ models for animal populations under continuous habitat).
+ The goal of this module is to provide a common interface for demographic
+ models, classes for frequently used demographic models, and several pre-defined
+ demographic models for some human populations.
+ More complex demographic models will be added upon request.
 \end_layout
 
 \begin_layout Standard
@@ -24669,6 +24671,11 @@ gen
 evolve
 \family default
  function)
+\end_layout
+
+\begin_layout Standard
+Before the introduction of this model, these components are handled separately
+ which makes it difficult to abstract a demographic model .
 \end_layout
 
 \begin_layout Standard
@@ -24741,7 +24748,7 @@ status open
 
 \begin_layout Plain Layout
 
-InstantChangeModel(T=1000, N0=1000, G=500, N=2000)
+InstantChangeModel(T=1000, N0=1000, G=500, NG=2000)
 \end_layout
 
 \end_inset
@@ -24757,7 +24764,7 @@ status open
 
 \begin_layout Plain Layout
 
-InstantChangeModel(T=1000, N0=1000, G=[500, 600], N=[100, 1000])
+InstantChangeModel(T=1000, N0=1000, G=[500, 600], NG=[100, 1000])
 \end_layout
 
 \end_inset
@@ -24790,7 +24797,7 @@ ExponentialGrowthModel(T=100, N0=[200, 800], r=[0.02, 0.01],
 
 \begin_layout Plain Layout
 
-    migr=Migrator(rate=[[0, 0.1], [0.1, 0]])
+    ops=Migrator(rate=[[0, 0.1], [0.1, 0]])
 \end_layout
 
 \end_inset
@@ -24814,7 +24821,8 @@ MultiStageModel([
 
 \begin_layout Plain Layout
 
-    InstantChangeModel(T=1000, N0=1000, G=[500, 600], N=[100, 1000]),  
+    InstantChangeModel(T=1000, N0=1000, G=[500, 600], NG=[100, 1000]), 
+ 
 \end_layout
 
 \begin_layout Plain Layout

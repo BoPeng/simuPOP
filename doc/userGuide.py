@@ -4835,10 +4835,12 @@ for idx, name in enumerate(pop.subPopNames()):
         pop.dvars(idx).alleleFreq[0][0]))
 
 # get a visual presentation of the demographic model
-plotDemographicModel(model, 'log/demoModel.png')
+plotDemographicModel(model, 'log/demoModel.png',
+    title='A bottleneck + exponential growth demographic model')
 #begin_ignore
 plotDemographicModel(OutOfAfricaModel(10000), 'log/OutOfAfrica.png')
 plotDemographicModel(SettlementOfNewWorldModel(10000), 'log/SettlementOfNewWorld.png')
+plotDemographicModel(CosiModel(20000), 'log/Cosi.png')
 #end_ignore
 #end_file
 
