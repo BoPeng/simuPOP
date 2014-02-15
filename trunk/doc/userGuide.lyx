@@ -6,7 +6,7 @@
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 1.1.1 (\mbox{Rev: 4775})}
+\setreleaseinfo{Release 1.1.2svn (\mbox{Rev: 4809})}
 % file revision $Rev: 3372$
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
@@ -24900,13 +24900,35 @@ A exponential population growth followed by bottleneck demographic model
 \end_layout
 
 \begin_layout Standard
-More demographic models are defined in this module using this method, including
- the Out of Africa model for YRI, CEU and CHB populations, and the settlement
- of new world model for Mexican American.
- For the second model, the simulated CHB and MX populations are mixed to
- produce an admixed population.
- These two models follow definition and parameters defined in Gutenkunst,
- 2009, PLoS Genetics.
+More demographic models are defined in this module using this method.
+ The simuPOP.demography module currently defines the following models
+\end_layout
+
+\begin_layout Itemize
+Out of Africa model for YRI, CEU and CHB populations (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Out-of-Africa"
+
+\end_inset
+
+), 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+plotDemographicModel(OutOfAfricaModel(10000), 'OutOfAfrica.png')
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -24919,6 +24941,12 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Out-of-Africa"
+
+\end_inset
+
 Out of Africa model for YRI, CEU, and CHB populations
 \end_layout
 
@@ -24942,6 +24970,40 @@ Out of Africa model for YRI, CEU, and CHB populations
 \end_inset
 
 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+The settlement of new world model for Mexican American (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Settlement-of-New"
+
+\end_inset
+
+) ( Gutenkunst, 2009, PLoS Genetics).
+ In this model, the simulated CHB and MX populations are mixed to produce
+ an admixed population at the last generation.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+plotDemographicModel(SettlementOfNewWorldModel(10000), 'SettlementOfNewWorld.png'
+)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
@@ -24951,6 +25013,12 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Settlement-of-New"
+
+\end_inset
+
 Settlement of New World model for Mexican America population
 \end_layout
 
@@ -24976,10 +25044,69 @@ Settlement of New World model for Mexican America population
 
 \end_layout
 
-\begin_layout Subsection
-Demographic models for heterogeneous habitat
+\end_deeper
+\begin_layout Itemize
+The demographic model developed by cosi (Schaffner, 2005, genome research).
 \end_layout
 
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+plotDemographicModel(CosiModel(20000), 'Cosi.png')
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:cosi"
+
+\end_inset
+
+Demographic models for African, Asian and European populations (cosi)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename log/Cosi.png
+	lyxscale 40
+	width 60text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
 \begin_layout Section
 Module 
 \family typewriter
