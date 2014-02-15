@@ -480,15 +480,16 @@ class TestPopulation(unittest.TestCase):
                 for i, src, j in [(0, 0, 0), (1, 0, 1), (2, 1, 0), (3, 0, 2), (4, 1, 1), (5, 1, 2)]:
                     for p in range(pop.ploidy()):
                         self.assertEqual(ind.allele(i, p), inds[src].allele(j, p))
-                for i in range(0, 2, 4):
+                for i in range(0, 1, 3):
                     for p in range(pop.ploidy()):
                         if moduleInfo()['alleleType'] == 'lineage':
                             self.assertEqual(ind.alleleLineage(i, p), 1)
                         else:
                             self.assertEqual(ind.alleleLineage(i, p), 0)
-                for i in range(1, 3, 5):
+                for i in range(2, 4, 5):
                     for p in range(pop.ploidy()):
                         if moduleInfo()['alleleType'] == 'lineage':
+                            #???
                             self.assertEqual(ind.alleleLineage(i, p), 3)
                         else:
                             self.assertEqual(ind.alleleLineage(i, p), 0)

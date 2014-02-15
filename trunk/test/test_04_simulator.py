@@ -54,7 +54,8 @@ class TestSimulator(unittest.TestCase):
         pop = Population(size=1, loci=[1])
         simu = Simulator(pop, rep=3)
         # no terminator, no ending generation is specified
-        self.assertRaises(ValueError, simu.evolve)
+        # but a mating scheme can also terminate evolution
+        #self.assertRaises(ValueError, simu.evolve)
         # sample
         pop = Population(size=[200, 80], loci=[3])
         pop.evolve(
