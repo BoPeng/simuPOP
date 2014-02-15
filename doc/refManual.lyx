@@ -2028,6 +2028,20 @@ simuPOPdemographymigrtwoDSteppingStoneRatesRef
 
 
 \backslash
+simuPOPdemographyBaseDemographicModelRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPdemographyInstantChangeModelRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 simuPOPdemographyExponentialGrowthModelRef
 \end_layout
 
@@ -2036,13 +2050,6 @@ simuPOPdemographyExponentialGrowthModelRef
 
 \backslash
 simuPOPdemographyLinearGrowthModelRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPdemographyInstantChangeModelRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -2071,20 +2078,6 @@ simuPOPdemographySettlementOfNewWorldModelRef
 
 \backslash
 simuPOPdemographyCosiModelRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPdemographyprintDemographicModelRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPdemographyplotDemographicModelRef
 \end_layout
 
 \end_inset
