@@ -24610,7 +24610,7 @@ A realistic demographic models can be very complex that involves population
 \end_layout
 
 \begin_layout Standard
-A demographic model usually consists of the following items:
+A demographic model usually consists of the following components:
 \end_layout
 
 \begin_layout Itemize
@@ -24653,15 +24653,6 @@ subPopSize
 \end_layout
 
 \begin_layout Itemize
-Conditions to terminate the evolution (e.g.
- operator 
-\family typewriter
-TerminateIf
-\family default
-)
-\end_layout
-
-\begin_layout Itemize
 Number of generations to evolve (parameter 
 \family typewriter
 gen
@@ -24670,12 +24661,12 @@ gen
 \family typewriter
 evolve
 \family default
- function)
-\end_layout
-
-\begin_layout Standard
-Before the introduction of this model, these components are handled separately
- which makes it difficult to abstract a demographic model .
+ function) or operators to terminate the evolution conditionally (e.g.
+ operator 
+\family typewriter
+TerminateIf
+\family default
+)
 \end_layout
 
 \begin_layout Standard
@@ -24698,7 +24689,7 @@ model.init_size
 model.info_fields
 \family default
  to determine the initial population size and required information fields
- to construct an initial population (
+ to construct an initial population (e.g., 
 \family typewriter
 sim.Population(size=model.init_size, infoFields=model.info_fields + ['my_fields'])
 \family default
@@ -24706,8 +24697,8 @@ sim.Population(size=model.init_size, infoFields=model.info_fields + ['my_fields'
 \end_layout
 
 \begin_layout Itemize
-handles population split, merge, migration internally before mating when
- it is passed to parameter 
+handles population split, merge, migration etc internally before mating
+ when it is passed to parameter 
 \family typewriter
 subPopSize
 \family default
@@ -24725,9 +24716,44 @@ has attribute
 \family typewriter
 model.num_gens
 \family default
- to determine the number of generations to evolve.
+ to determine the number of generations to evolve (e.g.
+ 
+\family typewriter
+pop.evolve(..., gen=model.num_gens)
+\family default
+).
  The model can optionally terminate the evolution by returnning an empty
  offspring population size before mating.
+\end_layout
+
+\begin_layout Itemize
+provides a function 
+\family typewriter
+model.plot(filename='', title='')
+\family default
+ to plot the demographic function.
+ It by default prints out population sizes whenever population size changes.
+ If a 
+\family typewriter
+filename
+\family default
+ is specified and if module 
+\family typewriter
+matplotlib
+\family default
+ is available, it will plot the demographic model and save it to filename.
+ A 
+\family typewriter
+title
+\family default
+ can be specified for the figure.
+ This function actually use the demographic model to evolve a haploid population
+ using 
+\family typewriter
+RandomSelection
+\family default
+ mating scheme, which is a good way to test if your demographic model works
+ properly.
 \end_layout
 
 \begin_layout Standard
@@ -24741,7 +24767,7 @@ simuPOP.demography
  For example,
 \end_layout
 
-\begin_layout Standard
+\begin_layout Itemize
 \begin_inset listings
 inline false
 status open
@@ -24754,10 +24780,10 @@ InstantChangeModel(T=1000, N0=1000, G=500, NG=2000)
 \end_inset
 
 defines an instant population growth model that expands a population of
- size 1000 to 2000 at generation 500;
+ size 1000 to 2000 instantly at generation 500
 \end_layout
 
-\begin_layout Standard
+\begin_layout Itemize
 \begin_inset listings
 inline false
 status open
@@ -24769,11 +24795,27 @@ InstantChangeModel(T=1000, N0=1000, G=[500, 600], NG=[100, 1000])
 
 \end_inset
 
-defines a bottleneck model that introduces a bottleneck of size 1000 between
- generation 500 and 600 to a population of size 1000;
+defines a bottleneck model that introduces a bottleneck of size 100 between
+ generation 500 and 600 to a population of size 1000
 \end_layout
 
-\begin_layout Standard
+\begin_layout Itemize
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+InstantChangeModel(T=1000, N0=1000, G=500, NG=[[400, 600]])
+\end_layout
+
+\end_inset
+
+defines a bottleneck model that split a population of size into two subpopulatio
+ns of sizes 400 and 600 at generation 500 
+\end_layout
+
+\begin_layout Itemize
 \begin_inset listings
 inline false
 status open
@@ -24785,7 +24827,10 @@ ExponentialGrowthModel(T=100, N0=1000, NT=10000)
 
 \end_inset
 
-expands a population of size 1000 to 10000 in 100 generations; 
+expands a population of size 1000 to 10000 in 100 generations
+\end_layout
+
+\begin_layout Itemize
 \begin_inset listings
 inline false
 status open
@@ -24802,14 +24847,109 @@ ExponentialGrowthModel(T=100, N0=[200, 800], r=[0.02, 0.01],
 
 \end_inset
 
-expands a population of two subpopulation sizes at rate 0.02 and 0.01 for
- 100 generations, with migration between these two subpopulations.
+expands a population of two subpopulation sizes at rate 
+\family typewriter
+0.02
+\family default
+ and 
+\family typewriter
+0.01
+\family default
+ for 
+\family typewriter
+100
+\family default
+ generations, with migration between these two subpopulations.
+ The initial population will be resized (split if necessary) to two populations
+ of sizes 200 and 800.
 \end_layout
 
 \begin_layout Standard
-More interestingly, these simple model could be stacked to form more complex
- demographic models.
+A demographic model does not have to have a fixed initial population size.
+ If an initial population size is not provided, its size will be determined
+ from the population when it is first applied to.
+ For example 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ExponentialGrowthModel(T=100, NT=[10000, 20000])
+\end_layout
+
+\end_inset
+
+expands a population of two subpopulations to sizes 
+\family typewriter
+10000
+\family default
+ and 
+\family typewriter
+20000
+\family default
+ in 
+\family typewriter
+100
+\family default
+ generations.
+ An error will be raised if the population does not have two subpopulations.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ExponentialGrowthModel(T=100, N0=[1., 400], NT=[10000, 20000], 
+\end_layout
+
+\begin_layout Plain Layout
+
+    ops=Migrator(rate=[[0, 0.1], [0.1, 0]])
+\end_layout
+
+\end_inset
+
+split a population into two subpopulations.
+ The first one keeps all individuals (100%), the second one with 400 individuals
+, and then expands them, with migration, to sizes 
+\family typewriter
+10000
+\family default
+ and 
+\family typewriter
+20000
+\family default
+ in 
+\family typewriter
+100
+\family default
+ generations.
+ 
+\end_layout
+
+\begin_layout Standard
+As you can imagine, these models do not provide a valid 
+\family typewriter
+init_size
+\family default
+ to initialize a population.
+ As a matter of fact, they are mostly stacked to other demographic models
+ to form more complex demographic models, in model 
+\family typewriter
+MultiStageModel
+\family default
+.
  For example,
+\end_layout
+
+\begin_layout Itemize
 \begin_inset listings
 inline false
 status open
@@ -24827,7 +24967,7 @@ MultiStageModel([
 
 \begin_layout Plain Layout
 
-    ExponentialGrowthModel(T=100, N0=[100, 1000], NT=[1000, 10000])
+    ExponentialGrowthModel(T=100, NT=[1000, 10000])
 \end_layout
 
 \begin_layout Plain Layout
@@ -24839,6 +24979,54 @@ MultiStageModel([
 
 defines a demographic model with a bottleneck followed by exponential population
  growth.
+ 
+\family typewriter
+N0
+\family default
+ of the second stage is not specified because it is determined from its
+ previous stage.
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+MultiStageModel([
+\end_layout
+
+\begin_layout Plain Layout
+
+    LinearGrowthModel(T=100, N0=1000, r=0.1),  
+\end_layout
+
+\begin_layout Plain Layout
+
+    ExponentialGrowthModel(T=100, N0=[0.4, 0.6], r=0.001),
+\end_layout
+
+\begin_layout Plain Layout
+
+    ExponentialGrowthModel(r=0.01, NT=[5000, 10000])
+\end_layout
+
+\begin_layout Plain Layout
+
+])
+\end_layout
+
+\end_inset
+
+defines a demographic model that expands a single population linearly for
+ 100 generations, split into two subpopulations and grow exponentially at
+ a rate of 0.001, and growth at a higher rate of 0.01 until they reaches sizes
+ 5000 and 10000 respectively.
+ The last stage is tricky because one of the subpopulations will reach the
+ final population size sooner and keep a contant population size afterwards.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -24931,7 +25119,7 @@ status open
 
 \begin_layout Plain Layout
 
-plotDemographicModel(OutOfAfricaModel(10000), 'OutOfAfrica.png')
+OutOfAfricaModel(10000).plot('OutOfAfrica.png')
 \end_layout
 
 \end_inset
@@ -25002,8 +25190,7 @@ status open
 
 \begin_layout Plain Layout
 
-plotDemographicModel(SettlementOfNewWorldModel(10000), 'SettlementOfNewWorld.png'
-)
+SettlementOfNewWorldModel(10000).plot('SettlementOfNewWorld.png')
 \end_layout
 
 \end_inset
@@ -25065,7 +25252,7 @@ status open
 
 \begin_layout Plain Layout
 
-plotDemographicModel(CosiModel(20000), 'Cosi.png')
+CosiModel(20000).plot('Cosi.png')
 \end_layout
 
 \end_inset

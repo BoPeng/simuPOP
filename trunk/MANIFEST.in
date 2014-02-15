@@ -260,6 +260,7 @@ include test/test_15_penetrance.py
 include test/test_16_sampling.py
 include test/test_17_utils.py
 include test/test_18_plotter.py
+include test/test_18_demography.py
 include test/sample_32_ba.pop
 include test/sample_32_la.pop
 include test/sample_32_std.pop

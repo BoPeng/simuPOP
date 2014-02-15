@@ -38,8 +38,6 @@ __all__ = [
     'migrHierarchicalIslandRates',
     'migrSteppingStoneRates',
     'migr2DSteppingStoneRates',
-    'printDemographicModel',
-    'plotDemographicModel',
     'ExponentialGrowthModel',
     'LinearGrowthModel',
     'InstantChangeModel',
@@ -55,13 +53,14 @@ import math
 
 from simuOpt import simuOptions
 
-from simuPOP import Population, PyEval, RandomMating, \
+from simuPOP import Population, PyEval, RandomSelection, \
     ALL_AVAIL, Stat, stat, Migrator, InitSex, PyOperator
 
 from simuPOP.utils import migrIslandRates, migrHierarchicalIslandRates, \
     migrSteppingStoneRates
 
 from collections import OrderedDict
+from types import NoneType
 
 # the following lecture provides a good review of demographic models
 #
@@ -109,98 +108,6 @@ def migr2DSteppingStoneRates(r, m, n, diagonal=False, circular=False):
                 rates[-1][x[0] * n + x[1]] = r * 1.0 / len(neighbors)
     return rates
 
-class DemographicModelReporter:
-    def __init__(self, title=''):
-        self.title = title
-    
-    def _reportPopSize(self, pop):
-        stat(pop, popSize=True)
-        if 'last_size' not in pop.vars() or pop.dvars().last_size != pop.dvars().subPopSize:
-            print('%d: %s' % (pop.dvars().gen, 
-                ', '.join(
-                    ['%d%s' % (x, ' (%s)' % y if y else '') for x, y in zip(pop.dvars().subPopSize, pop.subPopNames())])
-                ))
-            pop.dvars().last_size = pop.dvars().subPopSize
-        return True
- 
-    def outputPopSize(self, model):
-        pop = Population(model.init_size, infoFields=model.info_fields)
-        pop.evolve(
-            preOps=[
-                InitSex()
-            ],
-            matingScheme=RandomMating(subPopSize=model),
-            postOps=PyOperator(self._reportPopSize),
-            gen=model.num_gens
-        )
-        del pop.vars()['last_size']
-        self._reportPopSize(pop)
-
-    def _recordPopSize(self, pop):
-        stat(pop, popSize=True)
-        gen = pop.dvars().gen
-        sz = 0
-        for idx, (s, n) in enumerate(zip(pop.dvars().subPopSize, pop.subPopNames())):
-            if n == '':
-                n = str(idx)
-            if n in self.pop_base:
-                sz = max(sz, self.pop_base[n])
-            self.pop_base[n] = sz
-            if n in self.pop_regions:
-                self.pop_regions[n] = np.append(self.pop_regions[n],
-                    np.array([[gen, sz, gen, sz+s]]))
-            else:
-                self.pop_regions[n] = np.array([gen, sz, gen, sz+s], 
-                    dtype=np.uint64)
-            sz += s
-            pop.dvars().last_size = pop.dvars().subPopSize
-        return True
-    #
-    def plot(self, model, filename):
-        if not has_plotter:
-            raise RuntimeError('This function requires module numpy and matplotlib')
-        self.pop_regions = OrderedDict()
-        self.pop_base = OrderedDict()
-        pop = Population(model.init_size, infoFields=model.info_fields)
-        pop.evolve(
-            preOps=[
-                InitSex()
-            ],
-            matingScheme=RandomMating(subPopSize=model),
-            postOps=PyOperator(self._recordPopSize),
-            gen=model.num_gens
-        )
-        # 
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        ax.spines['right'].set_visible(False)
-        ax.spines['top'].set_visible(False)
-        ax.xaxis.set_ticks_position('bottom')
-        ax.yaxis.set_ticks_position('left')
-        for name, region in self.pop_regions.items():
-            region = region.reshape(region.size / 4, 4)
-            points = np.append(region[:, 0:2],
-                region[::-1, 2:4], axis=0)
-            plt.fill(points[:,0], points[:,1], label=name, linewidth=0, edgecolor='w')
-        leg = plt.legend(loc=2)
-        leg.draw_frame(False)
-        if self.title:
-            plt.title(self.title)
-        plt.savefig(filename)
-        plt.close()
-
-
-def plotDemographicModel(model, filename, *args, **kwargs):
-    '''Plot the specified demographic ``model`` and save figure to 
-    ``filename``. A title can be specified using parameter ``title``.
-    This function requires python modules ``numpy`` and ``matplotlib``'''
-    return DemographicModelReporter(*args, **kwargs).plot(model, filename)
-
-def printDemographicModel(model, *args, **kwargs):
-    '''Print the population size of specified demographic ``model``'''
-    return DemographicModelReporter(*args, **kwargs).outputPopSize(model)
-
-
 class BaseDemographicModel:
     '''This class is the base class for all demographic models and 
     provides common interface and utility functions for derived classes.'''
@@ -210,8 +117,14 @@ class BaseDemographicModel:
         initial population is a list, the initial subpopulation will be split to
         multiple subpopulations. For example, ``N0=[A, [B,C]]`` is a 3-subpop
         model where the last two subpopulation will be split (and resize if needed)
-        from the second subpopulation of the initial subpopulation. In addition,
-        whenever a population size is allowed, a tuple of ``(size, name)`` is
+        from the second subpopulation of the initial subpopulation (which should
+        have two subpopulations). The population size can be an integer for
+        fixed population size, None for the size of the population when the 
+        demographic model is first applied to, and a float number representing
+        the proportion of individuals for the whole or corresponding subpopulation.
+        A ``None`` value will be assigned to attribute ``init_size`` in such a 
+        case because the initial population size is determined dynamically. In
+        addition, whenever a population size is allowed, a tuple of ``(size, name)`` is
         acceptable, which assigns name to the corresponding subpopulation.
         One or more operators (e.g. a migration operator or a terminator) could
         be passed (parameter ``ops``) and will be applied to the population.
@@ -222,6 +135,12 @@ class BaseDemographicModel:
         #
         self._raw_init_size = initSize
         self.init_size = self._extractSize(initSize)
+        # for demographic model without fixed initial population size, set init_size to []
+        if isinstance(self.init_size, int):
+            self.init_size = [self.init_size]
+        elif self.init_size is None or None in self.init_size or \
+            any([isinstance(x, float) for x in self.init_size]):
+            self.init_size = []
         #
         if isinstance(infoFields, (list, tuple)):
             self.info_fields = infoFields
@@ -238,18 +157,22 @@ class BaseDemographicModel:
             del self._start_gen
 
     def _isNamedSize(self, x):
-        return isinstance(x, tuple) and len(x) == 2 and isinstance(x[1], str) and isinstance(x[0], int)
+        return isinstance(x, tuple) and len(x) == 2 and \
+            isinstance(x[1], str) and self._isSize(x[0])
+
+    def _isSize(self, x):
+        return isinstance(x, (int, float, NoneType))
 
     def _extractSize(self, sz):
         # sz = 100
-        if isinstance(sz, int):
+        if self._isSize(sz):
             return [sz]
         elif self._isNamedSize(sz):
             return sz[0]
         res = []
         for x in sz:
             # sz = [100, 200]
-            if isinstance(x, int):
+            if self._isSize(x):
                 res.append(x)
             # sz = [(100, 'name')]
             elif self._isNamedSize(x):
@@ -260,7 +183,7 @@ class BaseDemographicModel:
             elif isinstance(x, (tuple, list)):
                 # sz = [(100, 'AS'), (200, 'ZX')]
                 for y in x:
-                    if isinstance(y, int):
+                    if self._isSize(y):
                         res.append(y)
                     elif self._isNamedSize(y):
                         res.append(y[0])
@@ -272,14 +195,14 @@ class BaseDemographicModel:
 
     def _convertToNamedSize(self, sz):
         # sz = 100
-        if isinstance(sz, int):
+        if self._isSize(sz):
             return [(sz, '')]
         elif self._isNamedSize(sz):
             return [sz]
         res = []
         for x in sz:
             # sz = [100, 200]
-            if isinstance(x, int):
+            if self._isSize(x):
                 res.append((x, ''))
             # sz = [(100, 'name')]
             elif self._isNamedSize(x):
@@ -291,7 +214,7 @@ class BaseDemographicModel:
                 res.append([])
                 # sz = [(100, 'AS'), (200, 'ZX')]
                 for y in x:
-                    if isinstance(y, int):
+                    if self._isSize(y):
                         res[-1].append((y, ''))
                     elif self._isNamedSize(y):
                         res[-1].append(y)
@@ -305,49 +228,184 @@ class BaseDemographicModel:
         '''
         Fit a population to new size, split and merge population if needed
         '''
+        # if size is None or size is [], return unchanged
+        if not size:
+            return 
         named_size = self._convertToNamedSize(size)
         if pop.numSubPop() > 1:
+            # merge subpopualtions
             if len(named_size) == 1:
                 pop.mergeSubPops()
                 if named_size[0][1] != '':
                     pop.setSubPopName(named_size[0][1], 0)
-                pop.resize(named_size[0][0])
+                # resize if the type is int or float (proportion)
+                if isinstance(named_size[0][0], int):
+                    pop.resize(named_size[0][0])
+                elif isinstance(named_size[0][0], float):
+                    pop.resize(int(named_size[0][0] * pop.popSize()), propagate=True)
             elif len(size) != pop.numSubPop():
                 raise ValueError('Number of subpopulations mismatch: %d in population '
                     '%d required for ExponentialGrowthModel.' % (pop.numSubPop(), len(size)))
             elif all([self._isNamedSize(x) for x in size]):
-                pop.resize([x[0] for x in named_size], propagate=True)
+                # matching number of subpopulations, ...
+                new_size = [x[0] for x in named_size]
+                # replace None with exsiting size
+                new_size = [y if x is None else x for x,y in zip(new_size, pop.subPopSizes())]
+                # convert float to int
+                new_size = [int(x*y) if isinstance(x, float) else x for x,y in zip(new_size, pop.subPopSizes())]
+                # now resize
+                pop.resize(new_size, propagate=True)
                 for idx, (s,n) in enumerate(named_size):
                     if n != '':
                         pop.setSubPopName(n, idx)
             else:
                 # this is a more complex resize method because it can resize and split
                 # if a nested list is passed
-                new_size = [x[0] if self._isNamedSize(x) else sum([y[0] for y in x]) for x in named_size]
+                new_size = []
+                new_names = []
+                for x, y in zip(named_size, pop.subPopSizes()):
+                    if isinstance(x[0], int):
+                        new_size.append(x[0])
+                        new_names.append(x[1])
+                    elif isinstance(x[0], float):
+                        new_size.append(int(x[0]*y))
+                        new_names.append(x[1])
+                    elif x[0] is None:
+                        new_size.append(y)
+                        new_names.append(x[1])
+                    else:  # a list
+                        total = 0
+                        for z in x:
+                            if isinstance(z[0], int):
+                                total += z[0]
+                            elif isinstance(z[0], float):
+                                total += int(z[0]*y)
+                            elif z[0] is None:
+                                total += y
+                            else:
+                                raise ValueError('Invalid size %s' % named_size)
+                        new_size.append(total)
+                        new_names.append('')
+                # resize and rename
                 pop.resize(new_size, propagate=True)
-                #
+                for idx, name in enumerate(new_names):
+                    if name != '':
+                        pop.setSubPopName(name, idx)
+                # handle split
                 indexes = [i for i, x in enumerate(named_size) if not self._isNamedSize(x)]
                 indexes.reverse()
                 for idx in indexes:
                     names = [x[1] for x in named_size[idx]]
-                    pop.splitSubPop(idx, [x[0] for x in named_size[idx]],
-                        names if any([x != '' for x in names]) else [])
+                    # new sizes, handle None and float
+                    new_size = [x[0] for x in named_size[idx]]
+                    # convert None to size
+                    new_size = [pop.subPopSize(idx) if x is None else x for x in new_size]
+                    # convert float to int
+                    new_size = [int(x*pop.subPopSize(idx)) if isinstance(x, float) else x for x in new_size]
+                    pop.splitSubPop(idx, new_size, names if any([x != '' for x in names]) else [])
         else:
+            # now, if the passed population does not have any subpopulation, 
+            # we can merge or split ...
             if len(named_size) == 1:
-                pop.resize(named_size[0][0], propagate=True)
+                # integer is size
+                if isinstance(named_size[0][0], int):
+                    pop.resize(named_size[0][0], propagate=True)
+                # float is proportion
+                elif isinstance(named_size[0][0], float):
+                    pop.resize(int(named_size[0][0] * pop.popSize()), propagate=True)
+                # None is unchanged
                 if named_size[0][1] != '':
                     pop.setSubPopName(named_size[0][1], 0)
             else:
+                # we need to split ...
                 if not all([self._isNamedSize(x) for x in named_size]):
                     # cannot have nested population size in this case.
                     raise ValueError('Cannot fit population with size %s to size %s' %
                         (pop.subPopSizes(), named_size))
                 # split subpopulations
-                pop.resize(sum([x[0] for x in named_size]), propagate=True)
-                pop.splitSubPop(0, [x[0] for x in named_size])
+                new_size = [x[0] for x in named_size]
+                # convert None to size
+                new_size = [pop.popSize() if x is None else x for x in new_size]
+                # convert float to int
+                new_size = [int(x*pop.popSize()) if isinstance(x, float) else x for x in new_size]
+                #
+                pop.resize(sum(new_size), propagate=True)
+                pop.splitSubPop(0, new_size)
                 for idx, (s,n) in enumerate(named_size):
                     if n != '':
                         pop.setSubPopName(n, idx)
+
+    def _recordPopSize(self, pop):
+        stat(pop, popSize=True)
+        gen = pop.dvars().gen
+        if 'last_size' not in pop.vars() or pop.dvars().last_size != pop.dvars().subPopSize:
+            print('%d: %s' % (gen, 
+                ', '.join(
+                    ['%d%s' % (x, ' (%s)' % y if y else '') for x, y in \
+                        zip(pop.dvars().subPopSize, pop.subPopNames())])
+                ))
+            pop.dvars().last_size = pop.dvars().subPopSize
+        #
+        if self.draw_figure:
+            sz = 0
+            for idx, (s, n) in enumerate(zip(pop.dvars().subPopSize, pop.subPopNames())):
+                if n == '':
+                    n = str(idx)
+                if n in self.pop_base:
+                    sz = max(sz, self.pop_base[n])
+                self.pop_base[n] = sz
+                if n in self.pop_regions:
+                    self.pop_regions[n] = np.append(self.pop_regions[n],
+                        np.array([[gen, sz, gen, sz+s]]))
+                else:
+                    self.pop_regions[n] = np.array([gen, sz, gen, sz+s], 
+                        dtype=np.uint64)
+                sz += s
+                pop.dvars().last_size = pop.dvars().subPopSize
+        return True
+
+    def plot(self, filename='', title=''):
+        '''Evolve a population using this demographic model. Print population
+        size changes duringe evution. If a filename is specified and if matplotlib
+        is available, draw a figure to depict the demographic model. An optional
+        title could be specified to the figure.
+        '''
+        if not self.init_size:
+            raise ValueError('Specific self does not have a valid initial population size')
+        if filename and not has_plotter:
+            raise RuntimeError('This function requires module numpy and matplotlib')
+        self.draw_figure = filename and has_plotter
+        self.pop_regions = OrderedDict()
+        self.pop_base = OrderedDict()
+        #
+        self._reset()
+        pop = Population(self.init_size, infoFields=self.info_fields, ploidy=1)
+        pop.evolve(
+            matingScheme=RandomSelection(subPopSize=self),
+            postOps=PyOperator(self._recordPopSize),
+            gen=self.num_gens
+        )
+        del pop.vars()['last_size']
+        self._recordPopSize(pop)
+        # 
+        if self.draw_figure:
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            ax.spines['right'].set_visible(False)
+            ax.spines['top'].set_visible(False)
+            ax.xaxis.set_ticks_position('bottom')
+            ax.yaxis.set_ticks_position('left')
+            for name, region in self.pop_regions.items():
+                region = region.reshape(region.size / 4, 4)
+                points = np.append(region[:, 0:2],
+                    region[::-1, 2:4], axis=0)
+                plt.fill(points[:,0], points[:,1], label=name, linewidth=0, edgecolor='w')
+            leg = plt.legend(loc=2)
+            leg.draw_frame(False)
+            if title:
+                plt.title(title)
+            plt.savefig(filename)
+            plt.close()
 
     def _expIntepolate(self, N0, NT, T, x, T0=0):
         '''x=0, ... T-1
@@ -443,7 +501,7 @@ class ExponentialGrowthModel(BaseGrowthModel):
 class LinearGrowthModel(BaseGrowthModel):
     '''A model for linear population growth. Four parameters
     N0, T, NT, and r are allowed but only three are needed.'''
-    def __init__(self, T, N0, NT=None, r=None, ops=[], infoFields=[]):
+    def __init__(self, T, N0=[], NT=None, r=None, ops=[], infoFields=[]):
         '''An linear population growth model that evolves a population
         from size ``N0`` to ``NT`` for ``T`` generations with ``r*N0`` 
         individuals added at each generation. ``N0``, ``NT`` and ``r``
@@ -879,49 +937,42 @@ class CosiModel(MultiStageModel):
 
 if __name__ == '__main__':
     # exponential
-    print('Exponential')
-    printDemographicModel(ExponentialGrowthModel(10, 100, 1000))
-    printDemographicModel(ExponentialGrowthModel(10, (100, 200), (1000, 2000)))
-    printDemographicModel(ExponentialGrowthModel(10, (100, 200), r=0.01))
-    printDemographicModel(ExponentialGrowthModel(10, (100, 200), r=(0.01, 0.2)))
-    plotDemographicModel(ExponentialGrowthModel(10, (100, 200), r=(0.01, 0.2)), 'ExpDemo.png',
+    ExponentialGrowthModel(10, 100, 1000).plot()
+    ExponentialGrowthModel(10, (100, 200), (1000, 2000)).plot()
+    ExponentialGrowthModel(10, (100, 200), r=0.01).plot()
+    ExponentialGrowthModel(10, (100, 200), r=(0.01, 0.2)).plot()
+    ExponentialGrowthModel(10, (100, 200), r=(0.01, 0.2)).plot('ExpDemo.png',
         title='Exponential population growth model')
     # linear
-    print('Linear')
-    printDemographicModel(LinearGrowthModel(10, 100, 1000))
-    printDemographicModel(LinearGrowthModel(10, (100, 200), (1000, 2000)))
-    printDemographicModel(LinearGrowthModel(10, (100, 200), r=0.01))
-    printDemographicModel(LinearGrowthModel(10, (100, 200), r=(0.1, 0.2)))
-    plotDemographicModel(LinearGrowthModel(10, (100, 200), r=(0.1, 0.2)), 'LinearDemo.png')
+    LinearGrowthModel(10, 100, 1000).plot()
+    LinearGrowthModel(10, (100, 200), (1000, 2000)).plot()
+    LinearGrowthModel(10, (100, 200), r=0.01).plot()
+    LinearGrowthModel(10, (100, 200), r=(0.1, 0.2)).plot()
+    LinearGrowthModel(10, (100, 200), r=(0.1, 0.2)).plot('LinearDemo.png')
     # instant
-    print('Instat')
-    printDemographicModel(InstantChangeModel(10, 100, 5, 1000))
-    printDemographicModel(InstantChangeModel(10, (100, 200), 5, (1000, 2000)))
-    printDemographicModel(InstantChangeModel(10, 100, [5, 8], [500, 100]))
-    plotDemographicModel(InstantChangeModel(50, 100, [5, 8, 20], [[500, 200], [100, 100], [1000, 2000]]), 'InstantDemo.png')
+    InstantChangeModel(10, 100, 5, 1000).plot()
+    InstantChangeModel(10, (100, 200), 5, (1000, 2000)).plot()
+    InstantChangeModel(10, 100, [5, 8], [500, 100]).plot()
+    InstantChangeModel(50, 100, [5, 8, 20], [[500, 200], [100, 100], [1000, 2000]]).plot('InstantDemo.png')
     #
     # multi-stage model
-    print('Muti-stage')
-    printDemographicModel(MultiStageModel([
+    MultiStageModel([
         InstantChangeModel(10, 100, 5, 1000),
         ExponentialGrowthModel(20, 1000, 2000)
-        ]))
-    plotDemographicModel(MultiStageModel([
+        ]).plot()
+    MultiStageModel([
         InstantChangeModel(10, 100, 5, 1000),
         ExponentialGrowthModel(20, 1000, 2000)
-        ]), 'MultiStageDemo.png')
+        ]).plot('MultiStageDemo.png')
 
     # Out Of Africa Model
-    print('Out of Africa')
-    printDemographicModel(OutOfAfricaModel(10000))
-    plotDemographicModel(OutOfAfricaModel(10000), 'OutOfAfrica.png')
+    OutOfAfricaModel(10000).plot()
+    OutOfAfricaModel(10000).plot('OutOfAfrica.png')
     # Settlement of New World
     #
-    print('Settlement of New world')
-    printDemographicModel(SettlementOfNewWorldModel(10000))
-    plotDemographicModel(SettlementOfNewWorldModel(10000), 'SettlementOfNewWorld.png')
+    SettlementOfNewWorldModel(10000).plot()
+    SettlementOfNewWorldModel(10000).plot('SettlementOfNewWorld.png')
     # 
-    print('Cosi Model')
-    printDemographicModel(CosiModel(20000))
-    plotDemographicModel(CosiModel(20000), 'Cosi.png')
+    CosiModel(20000).plot()
+    CosiModel(20000).plot('Cosi.png')
 
