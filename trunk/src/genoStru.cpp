@@ -1092,7 +1092,12 @@ const GenoStructure GenoStruTrait::gsAddInfoFields(const vectorstr & fields)
 {
 	GenoStructure gs = GenoStructure(s_genoStruRepository[m_genoStruIdx]);
 
-	gs.m_infoFields.insert(gs.m_infoFields.end(), fields.begin(), fields.end());
+	vectorstr::const_iterator it = fields.begin();
+	vectorstr::const_iterator it_end = fields.end();
+	for (; it != it_end; ++it) {
+		if (std::find(gs.m_infoFields.begin(), gs.m_infoFields.end(), *it) == gs.m_infoFields.end())
+			gs.m_infoFields.push_back(*it);
+	}
 	gs.m_refCount = 0;
 	return gs;
 }
@@ -1101,8 +1106,13 @@ const GenoStructure GenoStruTrait::gsAddInfoFields(const vectorstr & fields)
 const GenoStructure GenoStruTrait::gsSetInfoFields(const vectorstr & fields)
 {
 	GenoStructure gs = GenoStructure(s_genoStruRepository[m_genoStruIdx]);
-
-	gs.m_infoFields = fields;
+	gs.m_infoFields.clear();
+	vectorstr::const_iterator it = fields.begin();
+	vectorstr::const_iterator it_end = fields.end();
+	for (; it != it_end; ++it) {
+		if (std::find(gs.m_infoFields.begin(), gs.m_infoFields.end(), *it) == gs.m_infoFields.end())
+			gs.m_infoFields.push_back(*it);
+	}
 	gs.m_refCount = 0;
 	return gs;
 }
