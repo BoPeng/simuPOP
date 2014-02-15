@@ -110,8 +110,8 @@ def migr2DSteppingStoneRates(r, m, n, diagonal=False, circular=False):
     return rates
 
 class DemographicModelReporter:
-    def __init__(self):
-        pass
+    def __init__(self, title=''):
+        self.title = title
     
     def _reportPopSize(self, pop):
         stat(pop, popSize=True)
@@ -184,14 +184,16 @@ class DemographicModelReporter:
             plt.fill(points[:,0], points[:,1], label=name, linewidth=0, edgecolor='w')
         leg = plt.legend(loc=2)
         leg.draw_frame(False)
+        if self.title:
+            plt.title(self.title)
         plt.savefig(filename)
         plt.close()
 
 
 def plotDemographicModel(model, filename, *args, **kwargs):
     '''Plot the specified demographic ``model`` and save figure to 
-    ``filename``. This function requires python modules ``numpy`` and
-    ``matplotlib``'''
+    ``filename``. A title can be specified using parameter ``title``.
+    This function requires python modules ``numpy`` and ``matplotlib``'''
     return DemographicModelReporter(*args, **kwargs).plot(model, filename)
 
 def printDemographicModel(model, *args, **kwargs):
@@ -882,7 +884,8 @@ if __name__ == '__main__':
     printDemographicModel(ExponentialGrowthModel(10, (100, 200), (1000, 2000)))
     printDemographicModel(ExponentialGrowthModel(10, (100, 200), r=0.01))
     printDemographicModel(ExponentialGrowthModel(10, (100, 200), r=(0.01, 0.2)))
-    plotDemographicModel(ExponentialGrowthModel(10, (100, 200), r=(0.01, 0.2)), 'ExpDemo.png')
+    plotDemographicModel(ExponentialGrowthModel(10, (100, 200), r=(0.01, 0.2)), 'ExpDemo.png',
+        title='Exponential population growth model')
     # linear
     print('Linear')
     printDemographicModel(LinearGrowthModel(10, 100, 1000))
