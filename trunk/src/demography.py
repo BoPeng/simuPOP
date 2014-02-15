@@ -46,7 +46,7 @@ __all__ = [
     'MultiStageModel',
     'OutOfAfricaModel',
     'SettlementOfNewWorldModel',
-    'CosiModel',
+    'CosiModel'
 ]
 
 import sys
@@ -143,6 +143,9 @@ class DemographicModelReporter:
         for idx, (s, n) in enumerate(zip(pop.dvars().subPopSize, pop.subPopNames())):
             if n == '':
                 n = str(idx)
+            if n in self.pop_base:
+                sz = max(sz, self.pop_base[n])
+            self.pop_base[n] = sz
             if n in self.pop_regions:
                 self.pop_regions[n] = np.append(self.pop_regions[n],
                     np.array([[gen, sz, gen, sz+s]]))
@@ -157,6 +160,7 @@ class DemographicModelReporter:
         if not has_plotter:
             raise RuntimeError('This function requires module numpy and matplotlib')
         self.pop_regions = OrderedDict()
+        self.pop_base = OrderedDict()
         pop = Population(model.init_size, infoFields=model.info_fields)
         pop.evolve(
             preOps=[
@@ -184,15 +188,15 @@ class DemographicModelReporter:
         plt.close()
 
 
-def plotDemographicModel(model, filename):
+def plotDemographicModel(model, filename, *args, **kwargs):
     '''Plot the specified demographic ``model`` and save figure to 
     ``filename``. This function requires python modules ``numpy`` and
     ``matplotlib``'''
-    return DemographicModelReporter().plot(model, filename)
+    return DemographicModelReporter(*args, **kwargs).plot(model, filename)
 
-def printDemographicModel(model):
+def printDemographicModel(model, *args, **kwargs):
     '''Print the population size of specified demographic ``model``'''
-    return DemographicModelReporter().outputPopSize(model)
+    return DemographicModelReporter(*args, **kwargs).outputPopSize(model)
 
 
 class BaseDemographicModel:
@@ -783,10 +787,10 @@ class CosiModel(MultiStageModel):
         with rate ``m_AF_EU``, and between ``AF`` and ``AS`` with rate ``m_AF_AS``.
 
         Four bottlenecks happens in the ``AF``, ``OoA``, ``EU`` and ``AS`` populations.
-        They are supposed to happen 100 generations after population split and last
-        for 100 generations. The intensity is parameterized in F, which is number
+        They are supposed to happen 200 generations after population split and last
+        for 200 generations. The intensity is parameterized in F, which is number
         of generations devided by twice the effective size during bottleneck.
-        So the bottleneck size is 50/F.
+        So the bottleneck size is 100/F.
 
         This model merges all subpopulations if it is applied to a population with
         multiple subpopulation. Although parameters are configurable, we assume
@@ -812,20 +816,20 @@ class CosiModel(MultiStageModel):
                 # change population size twice, one at T_AF, one at T_B
                 G=[ T0-T_AF, 
                     T0-T_OoA,
-                    T0-T_OoA+100,
                     T0-T_OoA+200,
+                    T0-T_OoA+400,
                     T0-T_EU_AS,
-                    T0-T_EU_AS+100,
-                    T0-T_EU_AS+200],
+                    T0-T_EU_AS+200,
+                    T0-T_EU_AS+400],
                 NG=[
                     # population size incrase to N_AF
                     (N_AF, 'Africa'),
                     # at T_B, split to population B from subpopulation 1
                     [(N_AF, 'Africa'), (N_OoA, 'Out Of Africa')],
-                    [int(50./F_AF), int(50./F_OoA)], # bottleneck
+                    [int(100./F_AF), int(100./F_OoA)], # bottleneck
                     [N_AF, N_OoA],  # recover
                     [N_AF, [(N_OoA, 'Asian'), (N_OoA, 'Europe')]], # split
-                    [N_AF, int(50./F_AS), int(50./F_EU)],
+                    [N_AF, int(100./F_AS), int(100./F_EU)],
                     [N_AF, N_OoA, N_OoA] # recover
                     ]
                 ),
