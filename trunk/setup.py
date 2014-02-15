@@ -709,6 +709,7 @@ if __name__ == '__main__':
             'simuPOP.__init__',
             'simuPOP.gsl',
             'simuPOP.utils', 
+            'simuPOP.demography', 
             'simuPOP.plotter', 
             'simuPOP.sampling', 
             'simuPOP.sandbox',
