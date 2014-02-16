@@ -110,28 +110,37 @@ def migr2DSteppingStoneRates(r, m, n, diagonal=False, circular=False):
 
 class BaseDemographicModel:
     '''This class is the base class for all demographic models and 
-    provides common interface and utility functions for derived classes.'''
-    def __init__(self, initSize=[], numGens=-1, ops=[], infoFields=[]):
+    provides common interface and utility functions for derived classes. A
+    demographic model is essentially a callable Python object that encapsulates
+    required functions of a demographic model, to determine initial population
+    size (``Population(size=model.init_size, infoFields=model.info_fields)``, 
+    to determine size of offspring population during evolution (``subPopSize=model``
+    of a mating scheme), and number of generations to evolve (``gen=model.num_gens``),
+    although the first and last utility could be relaxed to for models that
+    could be applied to populations with different sizes, and models that evolve
+    indefinitely. '''
+    def __init__(self, numGens=-1, initSize=[], ops=[], infoFields=[]):
         '''Set attributes ``init_size``, ``info_fields``, and ``num_gens``
-        to a demographic model. If size for a subpopulation for
-        initial population is a list, the initial subpopulation will be split to
-        multiple subpopulations. For example, ``N0=[A, [B,C]]`` is a 3-subpop
+        to a demographic model. The initial population will be merged or
+        split to match ``initSize``. For example, ``N0=[A, [B,C]]`` is a 3-subpop
         model where the last two subpopulation will be split (and resize if needed)
         from the second subpopulation of the initial subpopulation (which should
-        have two subpopulations). The population size can be an integer for
-        fixed population size, None for the size of the population when the 
-        demographic model is first applied to, and a float number representing
-        the proportion of individuals for the whole or corresponding subpopulation.
-        A ``None`` value will be assigned to attribute ``init_size`` in such a 
-        case because the initial population size is determined dynamically. In
-        addition, whenever a population size is allowed, a tuple of ``(size, name)`` is
-        acceptable, which assigns name to the corresponding subpopulation.
-        One or more operators (e.g. a migration operator or a terminator) could
-        be passed (parameter ``ops``) and will be applied to the population.
-        The demographic model will return ``[]`` (which will effectively terminate
-        the evolutioonary process) if any of the operator returns ``False``.
-        Information fields required by these operators should be passed to
-        ``infoFields``. '''
+        have two subpopulations). The population size can be an integer for fixed
+        population size, None for the size of the population or subpopulation when
+        the demographic model is first applied to, or a float number representing
+        the proportion (can be larger than 1) of individuals for the whole or
+        corresponding subpopulation. A ``None`` value will be assigned to
+        attribute ``init_size`` in such a case because the initial population 
+        size is determined dynamically. In addition, whenever a population size
+        is allowed, a tuple of ``(size, name)`` is acceptable, which assigns 
+        ``name`` to the corresponding subpopulation. ``numGens`` can be a
+        non-negative number or ``-1``, which allows the demographic model to 
+        be determinated by a terminator. One or more operators (e.g. a migration
+        operator or a terminator) could be passed (parameter ``ops``) and will
+        be applied to the population. The demographic model will return ``[]``
+        (which will effectively terminate the evolutioonary process) if any of the
+        operator returns ``False``. Information fields required by these operators
+        should be passed to ``infoFields``. '''
         #
         self._raw_init_size = initSize
         self.init_size = self._extractSize(initSize)
@@ -363,13 +372,15 @@ class BaseDemographicModel:
         return True
 
     def plot(self, filename='', title='', initSize=[]):
-        '''Evolve a haploid population using this demographic model. Print
-        population size changes duringe evolution. An initial population size 
-        could be specified using parameter ``initSize`` if a demographic model
-        with dynamic initial population size. If a filename is specified and if
-        matplotlib is available, draw a figure to depict the demographic model.
-        An optional title could be specified to the figure.
-        '''
+        '''Evolve a haploid population using a ``RandomSelection`` mating scheme
+        using the demographic model. Print population size changes duringe evolution.
+        An initial population size could be specified using parameter ``initSize``
+        for a demographic model with dynamic initial population size. If a filename
+        is specified and if matplotlib is available, this function draws a figure
+        to depict the demographic model and save it to ``filename``. An optional
+        ``title`` could be specified to the figure. Note that this function can
+        not be plot demographic models that works for particular mating schemes
+        (e.g. genotype dependent).'''
         if not self.init_size:
             if initSize:
                 self.init_size = initSize
@@ -484,32 +495,24 @@ class BaseDemographicModel:
         return pop.subPopSizes()
         
 
-class BaseGrowthModel(BaseDemographicModel):
-    '''A base model for population growth.'''
-    def __init__(self, T, N0, ops=[], infoFields=[]):
-        '''An population growth model that evolves a population from size ``N0``
-        to ``NT`` for ``T`` generations with rate ``r``, under either an exponential,
-        linear or instant population growth model. '''
-        BaseDemographicModel.__init__(self, initSize=N0,
-            numGens=T, ops=ops, infoFields=infoFields)
-        
-
-class ExponentialGrowthModel(BaseGrowthModel):
-    '''A model for exponential population growth. Four parameters
-    N0, T, NT, and r are allowed but only three are needed.'''
+class ExponentialGrowthModel(BaseDemographicModel):
+    '''A model for exponential population growth with carry capacity'''
     def __init__(self, T=None, N0=[], NT=None, r=None, ops=[], infoFields=[]):
-        '''An exponential population growth model that evolves a population
-        from size ``N0`` to ``NT`` for ``T`` generations with rate ``r``.
-        ``N0``, ``NT`` and ``r`` can be a list of population sizes or growth
-        rates for multiple subpopulations. The initial population will be
-        resized to ``N0`` (split if necessary). The model will automatically 
-        determine ``r`` or ``NT`` if one of them is unspecified. Optionally,
+        '''An exponential population growth model that evolves a population from size
+        ``N0`` to ``NT`` for ``T`` generations with ``r*N(t)`` individuals added
+        at each generation. ``N0``, ``NT`` and ``r`` can be a list of population
+        sizes or growth rates for multiple subpopulations. The initial population
+        will be resized to ``N0`` (split if necessary). Zero or negative growth
+        rates are allowed. The model will automatically determine ``T``, ``r``
+        or ``NT`` if one of them is unspecified. If all of them are specified,
+        ``NT`` is intepretted as carrying capacity of the model, namely the 
+        population will keep contant after it reaches size ``NT``. Optionally,
         one or more operators (e.g. a migrator) ``ops`` can be applied to 
         population. '''
-        BaseGrowthModel.__init__(self, T, N0, ops, infoFields)
+        BaseDemographicModel.__init__(self, T, N0, ops, infoFields)
         #
-        if [x is None or x == [] for x in [T, NT, r]].count(True) != 1:
-            raise ValueError('Please specify exactly two parameters of T, NT and r')
+        if [x is None or x == [] for x in [T, NT, r]].count(True) > 1:
+            raise ValueError('Please specify at least two parameters of T, NT and r')
         self.T = T
         self.N0 = N0
         self.NT = NT
@@ -544,21 +547,30 @@ class ExponentialGrowthModel(BaseGrowthModel):
                     raise ValueError('Cannot reach destination size in this configuraiton.')
                 self.num_gens = max(T + [1])
                 #
-            else:
+            elif self.NT is None:
                 # get final population size from T and r
                 self.NT = [int(x*((1.+self.r)**self.num_gens)) for x in self.init_size]
+            elif None in self.NT or \
+                any([isinstance(x, float) for x in self.NT]):
+                raise ValueError('Relative ending population size is not allowed'
+                    'for ExponentialGrowthModel')
             self.r = [self.r] * len(self.NT)
         elif isinstance(self.r, (list, tuple)):
             if len(self.r) != len(self.init_size):
                 raise ValueError('Please specify growth rate for each subpopulation '
                     'if multiple growth rates are specified.')
-            self.NT = [int(x*math.exp(y*self.num_gens)) for x,y in zip(self.init_size, self.r)]
+            if self.NT is None:
+                self.NT = [int(x*math.exp(y*self.num_gens)) for x,y in zip(self.init_size, self.r)]
+            elif None in self.NT or \
+                any([isinstance(x, float) for x in self.NT]):
+                raise ValueError('Relative ending population size is not allowed'
+                    'for ExponentialGrowthModel')
         else:
             raise ValueError('Unacceptable growth rate (a number or a list of numbers '
                 'is expected')
 
     def __call__(self, pop):
-        if not BaseGrowthModel.__call__(self, pop):
+        if not BaseDemographicModel.__call__(self, pop):
             return []
         if self._gen == self.num_gens:
             return []
@@ -571,23 +583,24 @@ class ExponentialGrowthModel(BaseGrowthModel):
                 for (n0, nt, r) in zip(self.init_size, self.NT, self.r)]
 
 
-class LinearGrowthModel(BaseGrowthModel):
-    '''A model for linear population growth. Four parameters
-    N0, T, NT, and r are allowed but only three are needed.'''
+class LinearGrowthModel(BaseDemographicModel):
+    '''A model for linear population growth with carry capacity.'''
     def __init__(self, T=None, N0=[], NT=None, r=None, ops=[], infoFields=[]):
-        '''An linear population growth model that evolves a population
-        from size ``N0`` to ``NT`` for ``T`` generations with ``r*N0`` 
-        individuals added at each generation. ``N0``, ``NT`` and ``r``
-        can be a list of population sizes or growth rates for multiple 
-        subpopulations. The initial population will be
-        resized to ``N0`` (split if necessary). The model will automatically 
-        determine ``r`` or ``NT`` if one of them is unspecified. Optionally,
+        '''An linear population growth model that evolves a population from size
+        ``N0`` to ``NT`` for ``T`` generations with ``r*N0`` individuals added
+        at each generation. ``N0``, ``NT`` and ``r`` can be a list of population
+        sizes or growth rates for multiple subpopulations. The initial population
+        will be resized to ``N0`` (split if necessary). Zero or negative growth
+        rates are allowed. The model will automatically determine ``T``, ``r``
+        or ``NT`` if one of them is unspecified. If all of them are specified,
+        ``NT`` is intepretted as carrying capacity of the model, namely the 
+        population will keep contant after it reaches size ``NT``. Optionally,
         one or more operators (e.g. a migrator) ``ops`` can be applied to 
         population. '''
-        BaseGrowthModel.__init__(self, T, N0, ops, infoFields)
+        BaseDemographicModel.__init__(self, T, N0, ops, infoFields)
         #
-        if [x is None or x == [] for x in [T, NT, r]].count(True) != 1:
-            raise ValueError('Please specify exactly two parameters of T, NT and r')
+        if [x is None or x == [] for x in [T, NT, r]].count(True) > 1:
+            raise ValueError('Please specify at least two parameters of T, NT and r')
         self.T = T
         self.N0 = N0
         self.NT = NT
@@ -618,21 +631,30 @@ class LinearGrowthModel(BaseGrowthModel):
                 T = [int((y - x) / (x * self.r)) for (x,y) in zip(self.init_size, self.NT)]
                 self.num_gens = max(T + [1])
                 #
-            else:
+            elif self.NT is None:
                 # get final population size from T and r
                 self.NT = [int(x*(1+self.r*self.num_gens)) for x in self.init_size]
+            elif None in self.NT or \
+                any([isinstance(x, float) for x in self.NT]):
+                raise ValueError('Relative ending population size is not allowed'
+                    'for LinearGrowthModel')
             self.r = [self.r] * len(self.NT)
         elif isinstance(self.r, (list, tuple)):
             if len(self.r) != len(self.init_size):
                 raise ValueError('Please specify growth rate for each subpopulation '
                     'if multiple growth rates are specified.')
-            self.NT = [int(x*(1+y*self.num_gens)) for x,y in zip(self.init_size, self.r)]
+            if self.NT is None:
+                self.NT = [int(x*(1+y*self.num_gens)) for x,y in zip(self.init_size, self.r)]
+            elif None in self.NT or \
+                any([isinstance(x, float) for x in self.NT]):
+                raise ValueError('Relative ending population size is not allowed'
+                    'for LinearGrowthModel')
         else:
             raise ValueError('Unacceptable growth rate (a number or a list of numbers '
                 'is expected')
 
     def __call__(self, pop):
-        if not BaseGrowthModel.__call__(self, pop):
+        if not BaseDemographicModel.__call__(self, pop):
             return []
         if self._gen == self.num_gens:
             return []
@@ -646,19 +668,20 @@ class LinearGrowthModel(BaseGrowthModel):
                 for (n0, nt, r) in zip(self.init_size, self.NT, self.r)]
 
 
-class InstantChangeModel(BaseGrowthModel):
-    '''A model for instant population growth model.'''
+class InstantChangeModel(BaseDemographicModel):
+    '''A model for instant population change (growth, resize, merge, split).'''
     def __init__(self, T=None, N0=[], G=[], NG=[], ops=[], infoFields=[]):
         '''An instant population growth model that evolves a population
         from size ``N0`` to ``NT`` for ``T`` generations with population
         size changes at generation ``G`` to ``NT``. If ``G`` is a list,
         multiple population size changes are allowed. In that case, a list
         (or a nested list) of population size should be provided to parameter
-        ``NT``. This model supports population merge to and split from a single
-        population. Optionally, one or more operators (e.g. a migrator) ``ops``
+        ``NT``. Both ``N0`` and ``NT`` supports fixed (an integer), dynamic
+        (keep passed poulation size) and proportional (an float number) population
+        size. Optionally, one or more operators (e.g. a migrator) ``ops``
         can be applied to population. Required information fields by these
         operators should be passed to parameter ``infoFields``.'''
-        BaseGrowthModel.__init__(self, T, N0, ops, infoFields)
+        BaseDemographicModel.__init__(self, T, N0, ops, infoFields)
         if isinstance(G, int):
             self.G = [G]
             if isinstance(NG, int) :
@@ -677,11 +700,11 @@ class InstantChangeModel(BaseGrowthModel):
         #
         for g in self.G:
             if g < 0 or g >= self.num_gens:
-                raise ValueError('Population change generation %d exceeds total number of generations %d' \
-                    % (g, self.num_gens))
+                raise ValueError('Population change generation %d exceeds '
+                    'total number of generations %d' % (g, self.num_gens))
 
     def __call__(self, pop):
-        if not BaseGrowthModel.__call__(self, pop):
+        if not BaseDemographicModel.__call__(self, pop):
             return []
         if self._gen in self.G:
             sz = self.NG[self.G.index(self._gen)]
@@ -690,11 +713,14 @@ class InstantChangeModel(BaseGrowthModel):
 
 
 class MultiStageModel(BaseDemographicModel):
-    '''A multi-stage demographic model connects a few demographic models 
-    '''
+    '''A multi-stage demographic model that connects a number of demographic
+    models. '''
     def __init__(self, models, ops=[], infoFields=[]):
         '''An multi-stage demographic model that connects specified
-        demographic models.'''
+        demographic models ``models``. It applies a model to the population
+        until it reaches ``num_gens`` of the model, or if the model returns
+        ``[]``. One or more operators could be specified, which will be applied
+        before a demographic model is applied. '''
         flds = []
         gens = []
         for x in models:
@@ -704,8 +730,8 @@ class MultiStageModel(BaseDemographicModel):
             total_gens = sum(gens)
         else:
             total_gens = -1
-        BaseDemographicModel.__init__(self, initSize=models[0].init_size,
-            numGens=total_gens, ops=ops, infoFields=flds+infoFields)
+        BaseDemographicModel.__init__(self, numGens=total_gens,
+            initSize=models[0].init_size, ops=ops, infoFields=flds+infoFields)
         #
         self.models = models
         self._model_idx = 0

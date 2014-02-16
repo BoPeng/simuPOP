@@ -6,7 +6,7 @@
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 1.1.2 (\mbox{Rev: 4809})}
+\setreleaseinfo{Release 1.1.2 (\mbox{Rev: 4822})}
 % file revision $Rev: 3372$
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
@@ -24766,8 +24766,8 @@ The
 simuPOP.demography
 \family default
  module defines a number of demographic models that can be used to implement
- many popular demographic models, including population growth, shrink, split
- and merge, and bottleneck.
+ many popular demographic models, including linear and exponential population
+ growth with carrying capacity, shrink, split and merge, and bottleneck.
  
 \end_layout
 
@@ -24904,6 +24904,15 @@ A
 \family default
  to the initial population.
  Such named size is acceptable for all places where population size is needed.
+\end_layout
+
+\begin_layout Standard
+Here we specify only two of the three parameters for linear and exponential
+ growth models and allow simuPOP to figure out the rest.
+ If all three parameters are specified, the ending population size will
+ be interpretted as carraying capacity, namely population growth (or decline
+ of negative rates are specified) will stop after it reaches the specified
+ size.
 \end_layout
 
 \begin_layout Standard
@@ -25114,8 +25123,8 @@ defines a demographic model that expands a single population linearly for
  100 generations, split into two subpopulations and grow exponentially at
  a rate of 0.001, and growth at a higher rate of 0.01 until they reaches sizes
  5000 and 10000 respectively.
- The last stage is tricky because one of the subpopulations will reach the
- final population size sooner and keep a contant population size afterwards.
+ The last stage is tricky because one of the subpopulations will reach its
+ carrying capacity sooner and keep a contant population size afterwards.
  The model is depicted in figure 
 \begin_inset CommandInset ref
 LatexCommand ref
