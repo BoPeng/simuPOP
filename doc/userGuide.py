@@ -4835,14 +4835,62 @@ for idx, name in enumerate(pop.subPopNames()):
         pop.dvars(idx).alleleFreq[0][0]))
 
 # get a visual presentation of the demographic model
-plotDemographicModel(model, 'log/demoModel.png',
+model.plot('log/demoModel.png',
     title='A bottleneck + exponential growth demographic model')
 #begin_ignore
-plotDemographicModel(OutOfAfricaModel(10000), 'log/OutOfAfrica.png')
-plotDemographicModel(SettlementOfNewWorldModel(10000), 'log/SettlementOfNewWorld.png')
-plotDemographicModel(CosiModel(20000), 'log/Cosi.png')
+MultiStageModel([
+    LinearGrowthModel(T=100, N0=1000, r=0.01),  
+    ExponentialGrowthModel(T=100, N0=[0.4, 0.6], r=0.001),
+    ExponentialGrowthModel(r=0.01, NT=[2000, 4000])
+]).plot('log/MultiStage.png')
+OutOfAfricaModel(10000).plot('log/OutOfAfrica.png')
+SettlementOfNewWorldModel(10000).plot('log/SettlementOfNewWorld.png')
+CosiModel(20000).plot('log/Cosi.png')
 #end_ignore
 #end_file
+
+
+
+#begin_file log/demoTerminate.py
+#begin_ignore
+import simuOpt
+#end_ignore
+import simuPOP as sim
+import simuPOP.demography as demo
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+
+model = demo.MultiStageModel([
+    demo.InstantChangeModel(N0=1000, 
+        ops=[
+            sim.Stat(alleleFreq=sim.ALL_AVAIL, numOfSegSites=sim.ALL_AVAIL),
+            # terminate if the average allele frequency of segregating sites
+            # are more than 0.1 
+            sim.TerminateIf('sum([x[1] for x in alleleFreq.values() if '
+                'x[1] != 0])/(1 if numOfSegSites==0 else numOfSegSites) > 0.1')
+        ]
+    ),
+    demo.ExponentialGrowthModel(N0=[0.5, 0.5], r=0.01, NT=[2000, 5000])
+    ]
+)
+
+pop = sim.Population(size=model.init_size, loci=100)
+pop.evolve(
+    initOps=sim.InitSex(),
+    preOps=sim.SNPMutator(u=0.001, v=0.001),
+    matingScheme=sim.RandomMating(subPopSize=model),
+    postOps=[
+        sim.Stat(alleleFreq=sim.ALL_AVAIL, numOfSegSites=sim.ALL_AVAIL,
+            popSize=True, step=50),
+        sim.PyEval(r'"%d: %s, %.3f\n" % (gen, subPopSize, sum([x[1] for x '
+            'in alleleFreq.values() if x[1] != 0])/(1 if numOfSegSites == 0 '
+            'else numOfSegSites))', step=50)
+    ],
+)
+
+#end_file
+
 
 
 #begin_file log/varPlotByRep.py

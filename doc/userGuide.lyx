@@ -24593,7 +24593,7 @@ Many more migration models have been proposed and studied, sometimes under
 \end_layout
 
 \begin_layout Subsection
-Demographic models of the human populations
+Uniform interface of demographic models
 \end_layout
 
 \begin_layout Standard
@@ -24756,6 +24756,10 @@ RandomSelection
  properly.
 \end_layout
 
+\begin_layout Subsection
+Simple demographic models
+\end_layout
+
 \begin_layout Standard
 The 
 \family typewriter
@@ -24764,7 +24768,11 @@ simuPOP.demography
  module defines a number of demographic models that can be used to implement
  many popular demographic models, including population growth, shrink, split
  and merge, and bottleneck.
- For example,
+ 
+\end_layout
+
+\begin_layout Standard
+For example,
 \end_layout
 
 \begin_layout Itemize
@@ -24864,11 +24872,93 @@ expands a population of two subpopulation sizes at rate
  of sizes 200 and 800.
 \end_layout
 
+\begin_layout Itemize
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+LinearGrowthModel(N0=(200, 'A'), r=0.02, NT=1000)
+\end_layout
+
+\end_inset
+
+expands a population of size 
+\family typewriter
+200
+\family default
+ at a rate 0f 
+\family typewriter
+0.02
+\family default
+ (add 4 individuals at each generation) until it reaches size 
+\family typewriter
+1000
+\family default
+.
+ Here the initial size is expressed as a size name tuple, which directs
+ the demographic model to assign the name 
+\family typewriter
+A
+\family default
+ to the initial population.
+ Such named size is acceptable for all places where population size is needed.
+\end_layout
+
 \begin_layout Standard
 A demographic model does not have to have a fixed initial population size.
  If an initial population size is not provided, its size will be determined
  from the population when it is first applied to.
  For example 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+InstantChangeModel(T=100, G=50, NT=[0.5, 0.5])
+\end_layout
+
+\end_inset
+
+split a population into two equally sized subpopulations at generation 50.
+ The ending population size is set to 
+\family typewriter
+[0.5, 0.5]
+\family default
+, which means 50% of the size at time 
+\family typewriter
+G
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+InstantChangeModel(T=100, G=50, NT=[None, 100])
+\end_layout
+
+\end_inset
+
+forks a population of size 100 from the main population at generation 50.
+ 
+\family typewriter
+NT=[None, 100]
+\family default
+ is equivalent to 
+\family typewriter
+NT=[1.0, 100]
+\family default
+ in this case.
 \end_layout
 
 \begin_layout Itemize
@@ -24967,7 +25057,7 @@ MultiStageModel([
 
 \begin_layout Plain Layout
 
-    ExponentialGrowthModel(T=100, NT=[1000, 10000])
+    ExponentialGrowthModel(T=100, NT=10000)
 \end_layout
 
 \begin_layout Plain Layout
@@ -25000,7 +25090,7 @@ MultiStageModel([
 
 \begin_layout Plain Layout
 
-    LinearGrowthModel(T=100, N0=1000, r=0.1),  
+    LinearGrowthModel(T=100, N0=1000, r=0.01),  
 \end_layout
 
 \begin_layout Plain Layout
@@ -25010,7 +25100,7 @@ MultiStageModel([
 
 \begin_layout Plain Layout
 
-    ExponentialGrowthModel(r=0.01, NT=[5000, 10000])
+    ExponentialGrowthModel(r=0.01, NT=[2000, 4000])
 \end_layout
 
 \begin_layout Plain Layout
@@ -25026,9 +25116,59 @@ defines a demographic model that expands a single population linearly for
  5000 and 10000 respectively.
  The last stage is tricky because one of the subpopulations will reach the
  final population size sooner and keep a contant population size afterwards.
- 
+ The model is depicted in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:multi-stage"
+
+\end_inset
+
+
 \end_layout
 
+\begin_deeper
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:multi-stage"
+
+\end_inset
+
+A linear and two stage exponential population growth model
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename log/MultiStage.png
+	lyxscale 40
+	width 60text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
 \begin_layout Standard
 Example 
 \begin_inset CommandInset ref
@@ -25037,18 +25177,15 @@ reference "demoModel"
 
 \end_inset
 
- defines a demographic model and use it to evolve a population.
- An interesting feature of this example is that it uses a 
-\family typewriter
-(size, name)
-\family default
- pair when a size is needed.
- These names will be assigned to populations during evolution, and be displayed
- when 
-\family typewriter
-plotDemographicModel
-\family default
- is used to plot the model.
+ defines a demographic model use it to evolve a population.
+ The demographic model is depicted in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:demoModel_example"
+
+\end_inset
+
+.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
@@ -25070,6 +25207,12 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:demoModel_example"
+
+\end_inset
+
 A exponential population growth followed by bottleneck demographic model
 \end_layout
 
@@ -25095,9 +25238,50 @@ A exponential population growth followed by bottleneck demographic model
 
 \end_layout
 
+\begin_layout Subsection
+Demographic model without predefined generations to evolve
+\end_layout
+
+\begin_layout Standard
+All migration models accept one or more operators that will be applied to
+ the population before population population changes are applied.
+ The most frequently application of this operator is to pass a migrator
+ to the model, but we can also pass an operator to terminate a demographic
+ model under certain conditions.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "demoTerminate"
+
+\end_inset
+
+ defines a demographic model that starts with a burn-in stage with indefinite
+ size and will stop if the average allele frequency at segregating sites
+ exceeds 0.1.
+ It splits to two equally sized subpopulations and expand rate a rate of
+ 0.01 to size 2000 and 5000 respectively.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/demoTerminate.log"
+lstparams "caption={A demographic model with a terminator},label={demoTerminate}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Predefined demographic models for human populations
+\end_layout
+
 \begin_layout Standard
 More demographic models are defined in this module using this method.
- The simuPOP.demography module currently defines the following models
+ The 
+\family typewriter
+simuPOP.demography
+\family default
+ module currently defines the following models
 \end_layout
 
 \begin_layout Itemize

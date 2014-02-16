@@ -146,7 +146,10 @@ class BaseDemographicModel:
             self.info_fields = infoFields
         else:
             self.info_fields = [infoFields]
-        self.num_gens = numGens
+        if numGens is None:
+            self.num_gens = -1
+        else:
+            self.num_gens = numGens
         if isinstance(ops, (tuple, list)):
             self.ops = list(ops)
         else:
@@ -263,7 +266,8 @@ class BaseDemographicModel:
                 # if a nested list is passed
                 new_size = []
                 new_names = []
-                for x, y in zip(named_size, pop.subPopSizes()):
+                split_sizes = []
+                for idx, (x, y) in enumerate(zip(named_size, pop.subPopSizes())):
                     if isinstance(x[0], int):
                         new_size.append(x[0])
                         new_names.append(x[1])
@@ -274,17 +278,17 @@ class BaseDemographicModel:
                         new_size.append(y)
                         new_names.append(x[1])
                     else:  # a list
-                        total = 0
+                        split_sizes.insert(0, [idx])
                         for z in x:
                             if isinstance(z[0], int):
-                                total += z[0]
+                                split_sizes[0].append(z[0])
                             elif isinstance(z[0], float):
-                                total += int(z[0]*y)
+                                split_sizes[0].append(int(z[0]*y))
                             elif z[0] is None:
-                                total += y
+                                split_sizes[0].append(y)
                             else:
                                 raise ValueError('Invalid size %s' % named_size)
-                        new_size.append(total)
+                        new_size.append(sum(split_sizes[0][1:]))
                         new_names.append('')
                 # resize and rename
                 pop.resize(new_size, propagate=True)
@@ -294,14 +298,10 @@ class BaseDemographicModel:
                 # handle split
                 indexes = [i for i, x in enumerate(named_size) if not self._isNamedSize(x)]
                 indexes.reverse()
-                for idx in indexes:
+                for item in split_sizes:
+                    idx = item[0]
+                    new_size = item[1:]
                     names = [x[1] for x in named_size[idx]]
-                    # new sizes, handle None and float
-                    new_size = [x[0] for x in named_size[idx]]
-                    # convert None to size
-                    new_size = [pop.subPopSize(idx) if x is None else x for x in new_size]
-                    # convert float to int
-                    new_size = [int(x*pop.subPopSize(idx)) if isinstance(x, float) else x for x in new_size]
                     pop.splitSubPop(idx, new_size, names if any([x != '' for x in names]) else [])
         else:
             # now, if the passed population does not have any subpopulation, 
@@ -336,19 +336,18 @@ class BaseDemographicModel:
                         pop.setSubPopName(n, idx)
 
     def _recordPopSize(self, pop):
-        stat(pop, popSize=True)
         gen = pop.dvars().gen
-        if 'last_size' not in pop.vars() or pop.dvars().last_size != pop.dvars().subPopSize:
+        if (not hasattr(self, '_last_size')) or self._last_size != pop.subPopSizes():
             print('%d: %s' % (gen, 
                 ', '.join(
                     ['%d%s' % (x, ' (%s)' % y if y else '') for x, y in \
-                        zip(pop.dvars().subPopSize, pop.subPopNames())])
+                        zip(pop.subPopSizes(), pop.subPopNames())])
                 ))
-            pop.dvars().last_size = pop.dvars().subPopSize
+            self._last_size = pop.subPopSizes()
         #
         if self.draw_figure:
             sz = 0
-            for idx, (s, n) in enumerate(zip(pop.dvars().subPopSize, pop.subPopNames())):
+            for idx, (s, n) in enumerate(zip(pop.subPopSizes(), pop.subPopNames())):
                 if n == '':
                     n = str(idx)
                 if n in self.pop_base:
@@ -361,17 +360,21 @@ class BaseDemographicModel:
                     self.pop_regions[n] = np.array([gen, sz, gen, sz+s], 
                         dtype=np.uint64)
                 sz += s
-                pop.dvars().last_size = pop.dvars().subPopSize
         return True
 
-    def plot(self, filename='', title=''):
-        '''Evolve a population using this demographic model. Print population
-        size changes duringe evution. If a filename is specified and if matplotlib
-        is available, draw a figure to depict the demographic model. An optional
-        title could be specified to the figure.
+    def plot(self, filename='', title='', initSize=[]):
+        '''Evolve a haploid population using this demographic model. Print
+        population size changes duringe evolution. An initial population size 
+        could be specified using parameter ``initSize`` if a demographic model
+        with dynamic initial population size. If a filename is specified and if
+        matplotlib is available, draw a figure to depict the demographic model.
+        An optional title could be specified to the figure.
         '''
         if not self.init_size:
-            raise ValueError('Specific self does not have a valid initial population size')
+            if initSize:
+                self.init_size = initSize
+            else:
+                raise ValueError('Specific self does not have a valid initial population size')
         if filename and not has_plotter:
             raise RuntimeError('This function requires module numpy and matplotlib')
         self.draw_figure = filename and has_plotter
@@ -379,13 +382,14 @@ class BaseDemographicModel:
         self.pop_base = OrderedDict()
         #
         self._reset()
+        if title:
+            print(title)
         pop = Population(self.init_size, infoFields=self.info_fields, ploidy=1)
         pop.evolve(
             matingScheme=RandomSelection(subPopSize=self),
             postOps=PyOperator(self._recordPopSize),
             gen=self.num_gens
         )
-        del pop.vars()['last_size']
         self._recordPopSize(pop)
         # 
         if self.draw_figure:
@@ -406,6 +410,32 @@ class BaseDemographicModel:
                 plt.title(title)
             plt.savefig(filename)
             plt.close()
+
+    def _checkSize(self, pop):
+        gen = pop.dvars().gen
+        if gen in self.intended_size:
+            sz = self.intended_size[gen]
+            if isinstance(sz, int):
+                sz = (sz,)
+            else:
+                sz = tuple(sz)
+            if sz != pop.subPopSizes():
+                raise ValueError('Mismatch population size at generation %s: observed=%s, intended=%s' % \
+                    (gen, pop.subPopSizes(), sz))
+        return True
+        
+    def _assertSize(self, sizes, initSize=[]):
+        '''This function is provided for testing purpose.
+        '''
+        self.intended_size = sizes
+        pop = Population(size=initSize if initSize else self.init_size,
+            infoFields=self.info_fields)
+        pop.evolve(
+            matingScheme=RandomSelection(subPopSize=self),
+            postOps=PyOperator(self._checkSize),
+            finalOps=PyOperator(self._checkSize),
+            gen=self.num_gens
+        )
 
     def _expIntepolate(self, N0, NT, T, x, T0=0):
         '''x=0, ... T-1
@@ -429,6 +459,9 @@ class BaseDemographicModel:
         else:
             return int(((x+1-T0)*NT + (T-x-1)*N0)/(T-T0))
 
+    def _setup(self, pop):
+        return True
+
     def __call__(self, pop):
         # the first time this function is called
         if (not hasattr(self, '_start_gen')) or self._start_gen > pop.dvars().gen:
@@ -436,6 +469,11 @@ class BaseDemographicModel:
             self._start_gen = pop.dvars().gen
             # resize populations if necessary
             self._fitToSize(pop, self._raw_init_size)
+            # by this time, we should know the initial population size
+            self.init_size = pop.subPopSizes()
+            # then we can set up model if the model depends on initial
+            # population size
+            self._setup(pop)
         #
         self._gen = pop.dvars().gen - self._start_gen
         #
@@ -452,8 +490,6 @@ class BaseGrowthModel(BaseDemographicModel):
         '''An population growth model that evolves a population from size ``N0``
         to ``NT`` for ``T`` generations with rate ``r``, under either an exponential,
         linear or instant population growth model. '''
-        if not isinstance(T, int):
-            raise ValueError('Number of generations must be an integer')
         BaseDemographicModel.__init__(self, initSize=N0,
             numGens=T, ops=ops, infoFields=infoFields)
         
@@ -461,7 +497,7 @@ class BaseGrowthModel(BaseDemographicModel):
 class ExponentialGrowthModel(BaseGrowthModel):
     '''A model for exponential population growth. Four parameters
     N0, T, NT, and r are allowed but only three are needed.'''
-    def __init__(self, T, N0, NT=None, r=None, ops=[], infoFields=[]):
+    def __init__(self, T=None, N0=[], NT=None, r=None, ops=[], infoFields=[]):
         '''An exponential population growth model that evolves a population
         from size ``N0`` to ``NT`` for ``T`` generations with rate ``r``.
         ``N0``, ``NT`` and ``r`` can be a list of population sizes or growth
@@ -471,19 +507,52 @@ class ExponentialGrowthModel(BaseGrowthModel):
         one or more operators (e.g. a migrator) ``ops`` can be applied to 
         population. '''
         BaseGrowthModel.__init__(self, T, N0, ops, infoFields)
-        if r is None:
-            if NT is None:
-                raise ValueError('Please specify ending population size NT (or growth rate r)''')
-            self.NT = self._extractSize(NT)
-            if len(self.NT) != len(self.init_size):
-                    raise ValueError('Number of subpopulations for initial and ending generation must agree')
-        elif isinstance(r, (int, float)):
-            self.NT = [int(x*((1.+r)**T)) for x in self.init_size]
-        elif isinstance(r, (list, tuple)):
-            if len(r) != len(self.init_size):
+        #
+        if [x is None or x == [] for x in [T, NT, r]].count(True) != 1:
+            raise ValueError('Please specify exactly two parameters of T, NT and r')
+        self.T = T
+        self.N0 = N0
+        self.NT = NT
+        self.r = r
+
+    def _setup(self, pop):
+        if self.r is None:
+            # self.T must be known, which is num_gens
+            # self.NT must also be known
+            self.NT = self._extractSize(self.NT)
+            if self.NT is None or None in self.NT or \
+                any([isinstance(x, float) for x in self.NT]):
+                raise ValueError('Relative ending population size is not allowed '
+                    'for LinearGrowthModel')
+        elif isinstance(self.r, (int, float)):
+            # if we do not know generation number, we are in some trouble
+            if self.num_gens < 0:
+                # get number of generations from NT and r
+                self.NT = self._extractSize(self.NT)
+                if self.NT is None or None in self.NT or \
+                    any([isinstance(x, float) for x in self.NT]):
+                    raise ValueError('Relative ending population size is not allowed '
+                        'for LinearGrowthModel')
+                if len(self.NT) != len(self.init_size):
+                    raise ValueError('Starting and ending population should have the '
+                        'same number of subpopulations')
+                # what is the number of generations
+                if self.r == 0:
+                    raise ValueError('Cannot reach destination size with r=0')
+                T = [int((math.log(y) - math.log(x)) / self.r) + 1 for (x,y) in zip(self.init_size, self.NT)]
+                if max(T) < 0:
+                    raise ValueError('Cannot reach destination size in this configuraiton.')
+                self.num_gens = max(T + [1])
+                #
+            else:
+                # get final population size from T and r
+                self.NT = [int(x*((1.+self.r)**self.num_gens)) for x in self.init_size]
+            self.r = [self.r] * len(self.NT)
+        elif isinstance(self.r, (list, tuple)):
+            if len(self.r) != len(self.init_size):
                 raise ValueError('Please specify growth rate for each subpopulation '
                     'if multiple growth rates are specified.')
-            self.NT = [int(x*((1+y)**T)) for x,y in zip(self.init_size, r)]
+            self.NT = [int(x*math.exp(y*self.num_gens)) for x,y in zip(self.init_size, self.r)]
         else:
             raise ValueError('Unacceptable growth rate (a number or a list of numbers '
                 'is expected')
@@ -493,15 +562,19 @@ class ExponentialGrowthModel(BaseGrowthModel):
             return []
         if self._gen == self.num_gens:
             return []
-        else:
+        elif self.r is None:
             return [self._expIntepolate(n0, nt, self.num_gens, self._gen)
                 for (n0, nt) in zip(self.init_size, self.NT)]
+        else:
+            # with r ...
+            return [min(nt, int(n0 * math.exp(r * (self._gen + 1))))
+                for (n0, nt, r) in zip(self.init_size, self.NT, self.r)]
 
 
 class LinearGrowthModel(BaseGrowthModel):
     '''A model for linear population growth. Four parameters
     N0, T, NT, and r are allowed but only three are needed.'''
-    def __init__(self, T, N0=[], NT=None, r=None, ops=[], infoFields=[]):
+    def __init__(self, T=None, N0=[], NT=None, r=None, ops=[], infoFields=[]):
         '''An linear population growth model that evolves a population
         from size ``N0`` to ``NT`` for ``T`` generations with ``r*N0`` 
         individuals added at each generation. ``N0``, ``NT`` and ``r``
@@ -512,17 +585,48 @@ class LinearGrowthModel(BaseGrowthModel):
         one or more operators (e.g. a migrator) ``ops`` can be applied to 
         population. '''
         BaseGrowthModel.__init__(self, T, N0, ops, infoFields)
-        if r is None:
-            if NT is None:
-                raise ValueError('Please specify ending population size NT (or growth rate r)''')
-            self.NT = self._extractSize(NT)
-        elif isinstance(r, (int, float)):
-            self.NT = [int(x*(1+r*T)) for x in self.init_size]
-        elif isinstance(r, (list, tuple)):
-            if len(r) != len(self.init_size):
+        #
+        if [x is None or x == [] for x in [T, NT, r]].count(True) != 1:
+            raise ValueError('Please specify exactly two parameters of T, NT and r')
+        self.T = T
+        self.N0 = N0
+        self.NT = NT
+        self.r = r
+
+    def _setup(self, pop):
+        if self.r is None:
+            # self.T must be known, which is num_gens
+            # self.NT must also be known
+            self.NT = self._extractSize(self.NT)
+            if self.NT is None or None in self.NT or \
+                any([isinstance(x, float) for x in self.NT]):
+                raise ValueError('Relative ending population size is not allowed '
+                    'for LinearGrowthModel')
+        elif isinstance(self.r, (int, float)):
+            # if we do not know generation number, we are in some trouble
+            if self.num_gens < 0:
+                # get number of generations from NT and r
+                self.NT = self._extractSize(self.NT)
+                if self.NT is None or None in self.NT or \
+                    any([isinstance(x, float) for x in self.NT]):
+                    raise ValueError('Relative ending population size is not allowed '
+                        'for LinearGrowthModel')
+                if len(self.NT) != len(self.init_size):
+                    raise ValueError('Starting and ending population should have the '
+                        'same number of subpopulations')
+                # what is the number of generations
+                T = [int((y - x) / (x * self.r)) for (x,y) in zip(self.init_size, self.NT)]
+                self.num_gens = max(T + [1])
+                #
+            else:
+                # get final population size from T and r
+                self.NT = [int(x*(1+self.r*self.num_gens)) for x in self.init_size]
+            self.r = [self.r] * len(self.NT)
+        elif isinstance(self.r, (list, tuple)):
+            if len(self.r) != len(self.init_size):
                 raise ValueError('Please specify growth rate for each subpopulation '
                     'if multiple growth rates are specified.')
-            self.NT = [int(x*(1+y*T)) for x,y in zip(self.init_size, r)]
+            self.NT = [int(x*(1+y*self.num_gens)) for x,y in zip(self.init_size, self.r)]
         else:
             raise ValueError('Unacceptable growth rate (a number or a list of numbers '
                 'is expected')
@@ -532,13 +636,19 @@ class LinearGrowthModel(BaseGrowthModel):
             return []
         if self._gen == self.num_gens:
             return []
-        else:
+        elif self.r is None:
+            # no r use intepolation
             return [self._linearIntepolate(n0, nt, self.num_gens, self._gen)
                 for (n0, nt) in zip(self.init_size, self.NT)]    
+        else:
+            # with r ...
+            return [min(nt, int(n0 + n0 * (self._gen + 1.) * r))
+                for (n0, nt, r) in zip(self.init_size, self.NT, self.r)]
+
 
 class InstantChangeModel(BaseGrowthModel):
     '''A model for instant population growth model.'''
-    def __init__(self, T, N0, G=[], NG=[], ops=[], infoFields=[]):
+    def __init__(self, T=None, N0=[], G=[], NG=[], ops=[], infoFields=[]):
         '''An instant population growth model that evolves a population
         from size ``N0`` to ``NT`` for ``T`` generations with population
         size changes at generation ``G`` to ``NT``. If ``G`` is a list,
@@ -551,7 +661,12 @@ class InstantChangeModel(BaseGrowthModel):
         BaseGrowthModel.__init__(self, T, N0, ops, infoFields)
         if isinstance(G, int):
             self.G = [G]
-            self.NG = [NG]
+            if isinstance(NG, int) :
+                self.NG = [NG]
+            elif isinstance(NG[0], int):
+                self.NG = [NG]
+            else:
+                self.NG = NG
         else:
             if not isinstance(NG, (tuple, list)):
                 raise ValueError('Multiple sizes should be specified if multiple G is provided.')
@@ -617,10 +732,21 @@ class MultiStageModel(BaseDemographicModel):
         # not at the end
         sz = self.models[self._model_idx].__call__(pop)
         if sz == []:
-            # this is the end, 
-            self._model_idx += 1
+            # find the next one that works
             self._start_gen = pop.dvars().gen
-            self.__call__(pop)
+            while True:
+                # this is the end, 
+                self._model_idx += 1
+                if self._model_idx == len(self.models):
+                    self._reset()
+                    return []
+                if self.models[self._model_idx].num_gens == self._gen:
+                    continue
+                sz = self.models[self._model_idx].__call__(pop)
+                if sz == []:
+                    continue
+                else:
+                    return sz
         return sz
 
 class OutOfAfricaModel(MultiStageModel):
@@ -674,10 +800,10 @@ class OutOfAfricaModel(MultiStageModel):
                 NG=[
                     (N_AF, 'AF'), 
                     # at T_B, split to population B from subpopulation 1
-                    [(N_AF, 'AF'), (N_B, 'B')]]),
+                    [None, (N_B, 'B')]]),
             ExponentialGrowthModel(
                 T=T_EU_AS,
-                N0=[(N_AF, 'AF'), 
+                N0=[None, 
                     # split B into EU and AS at the beginning of this
                     # exponential growth stage
                     [(N_EU0, 'EU'), (N_AS0, 'AS')]],
@@ -744,6 +870,7 @@ class SettlementOfNewWorldModel(MultiStageModel):
         #
         if T0 < T_AF:
             raise ValueError('Length of evolution T0=%d should be more than T_AF=%d' % (T0, T_AF))
+        # try to figure out how to mix two populations
         N_EU=int(N_EU0*math.exp(r_EU*T_EU_AS))
         N_MX=int(N_MX0*math.exp(r_MX*T_MX))
         if int(N_EU/(1.-f_MX)*f_MX) <= N_MX:
@@ -763,10 +890,10 @@ class SettlementOfNewWorldModel(MultiStageModel):
                 NG=[
                     (N_AF, 'AF'), 
                     # at T_B, split to population B from subpopulation 1
-                    [(N_AF, 'AF'), (N_B, 'B')]]),
+                    [None, (N_B, 'B')]]),
             ExponentialGrowthModel(
                 T=T_EU_AS - T_MX,
-                N0=[(N_AF, 'AF'), 
+                N0=[None,
                     # split B into EU and AS at the beginning of this
                     # exponential growth stage
                     [(N_EU0, 'EU'), (N_AS0, 'AS')]],
@@ -779,14 +906,13 @@ class SettlementOfNewWorldModel(MultiStageModel):
                     ])
                 ),
             ExponentialGrowthModel(T=T_MX,
-                N0=[(N_AF, 'AF'),
+                N0=[None,
                     # initial population size has to be calculated
                     # because we only know the final population size of
                     # EU and AS
-                    (int(N_EU0*((1.+r_EU)**(T_EU_AS-T_MX))), 'EU'),
+                    None,
                     # split MX from AS
-                    [(int(N_AS0*((1.+r_AS)**(T_EU_AS-T_MX))), 'AS'),
-                        (N_MX0, 'MX')]],
+                    [(None, 'AS'), (N_MX0, 'MX')]],
                 r=[0, r_EU, r_AS, r_MX],
                 infoFields='migrate_to',
                 ops=Migrator(rate=[
@@ -868,19 +994,20 @@ class CosiModel(MultiStageModel):
         r_AS = math.log(1.0*N_AS1/N_AS)/T_AS_exp
         r_EU = math.log(1.0*N_EU1/N_EU)/T_EU_exp
         r_AF = math.log(1.0*N_AF1/N_AF)/T_AF_exp
+        migr = Migrator(rate=[
+                    [0, m_AF_AS, m_AF_EU],
+                    [m_AF_AS, 0, 0],
+                    [m_AF_EU, 0, 0]
+                    ])
         MultiStageModel.__init__(self, [
             InstantChangeModel(
                 # constant population size before the first one to expand
-                T=T0-T_AS_exp,
+                T=T0 - T_EU_AS,
                 N0=(N_A, 'Ancestral'),
-                # change population size twice, one at T_AF, one at T_B
                 G=[ T0-T_AF, 
                     T0-T_OoA,
                     T0-T_OoA+200,
-                    T0-T_OoA+400,
-                    T0-T_EU_AS,
-                    T0-T_EU_AS+200,
-                    T0-T_EU_AS+400],
+                    T0-T_OoA+400],
                 NG=[
                     # population size incrase to N_AF
                     (N_AF, 'Africa'),
@@ -888,67 +1015,55 @@ class CosiModel(MultiStageModel):
                     [(N_AF, 'Africa'), (N_OoA, 'Out Of Africa')],
                     [int(100./F_AF), int(100./F_OoA)], # bottleneck
                     [N_AF, N_OoA],  # recover
-                    [N_AF, [(N_OoA, 'Asian'), (N_OoA, 'Europe')]], # split
+                    ]
+                ),
+            InstantChangeModel(
+                # constant population size before the first one to expand
+                T=T_EU_AS - T_AS_exp,
+                N0=[N_AF, [(N_OoA, 'Asian'), (N_OoA, 'Europe')]], # split
+                G=[ 200, 400],
+                NG=[
                     [N_AF, int(100./F_AS), int(100./F_EU)],
                     [N_AF, N_OoA, N_OoA] # recover
-                    ]
+                    ],
+                ops=migr,
                 ),
             # AS expend 
             ExponentialGrowthModel(
                 T=T_AS_exp-T_EU_exp,
-                N0=[N_AF, (N_OoA, 'Modern Asian'), N_OoA],
+                N0=[None, (None, 'Modern Asian'), None],
                 r=[0, r_AS, 0],
                 infoFields='migrate_to',
-                ops=Migrator(rate=[
-                    [0, m_AF_AS, m_AF_EU],
-                    [m_AF_AS, 0, 0],
-                    [m_AF_EU, 0, 0]
-                    ])
-                ),
+                ops=migr),
             # EU expand
             ExponentialGrowthModel(T=T_EU_exp-T_AF_exp,
-                N0=[N_AF,
-                    int(N_AS*((1.+r_AS)**(T_AS_exp-T_EU_exp))),
-                    (N_OoA, 'Modern Europe')],
+                N0=[None, None, (None, 'Modern Europe')],
                 r=[0, r_AS, r_EU],
                 infoFields='migrate_to',
-                ops=Migrator(rate=[
-                    [0, m_AF_AS, m_AF_EU],
-                    [m_AF_AS, 0, 0],
-                    [m_AF_EU, 0, 0]
-                    ])
-                ),
+                ops=migr),
             # AF expand
             ExponentialGrowthModel(T=T_AF_exp,
-                N0=[(N_AF, 'Modern Africa'),
-                    int(N_AS*((1.+r_AS)**(T_AS_exp-T_AF_exp))),
-                    int(N_EU*((1.+r_EU)**(T_EU_exp-T_AF_exp)))],
-                r=[r_AF, r_AS, r_EU],
+                N0=[(None, 'Modern Africa'), None, None],
+                NT=[N_AF1, N_AS1, N_EU1],
                 infoFields='migrate_to',
-                ops=Migrator(rate=[
-                    [0, m_AF_AS, m_AF_EU],
-                    [m_AF_AS, 0, 0],
-                    [m_AF_EU, 0, 0]
-                    ])
-                ),
+                ops=migr),
             ]
         )
 
 
 if __name__ == '__main__':
     # exponential
-    ExponentialGrowthModel(10, 100, 1000).plot()
-    ExponentialGrowthModel(10, (100, 200), (1000, 2000)).plot()
-    ExponentialGrowthModel(10, (100, 200), r=0.01).plot()
-    ExponentialGrowthModel(10, (100, 200), r=(0.01, 0.2)).plot()
+    ExponentialGrowthModel(10, 100, 1000).plot(title='Basic exponential growth')
+    ExponentialGrowthModel(10, (100, 200), (1000, 2000)).plot(title='Subpop exp growth')
+    ExponentialGrowthModel(10, (100, 200), r=0.01).plot(title='No NT exp growth')
     ExponentialGrowthModel(10, (100, 200), r=(0.01, 0.2)).plot('ExpDemo.png',
         title='Exponential population growth model')
     # linear
-    LinearGrowthModel(10, 100, 1000).plot()
-    LinearGrowthModel(10, (100, 200), (1000, 2000)).plot()
-    LinearGrowthModel(10, (100, 200), r=0.01).plot()
-    LinearGrowthModel(10, (100, 200), r=(0.1, 0.2)).plot()
-    LinearGrowthModel(10, (100, 200), r=(0.1, 0.2)).plot('LinearDemo.png')
+    LinearGrowthModel(10, 100, 1000).plot(title='Basic linear growth')
+    LinearGrowthModel(10, (100, 200), (1000, 2000)).plot(title='Subpop linear growth')
+    LinearGrowthModel(10, (100, 200), r=0.01).plot(title='No NT linear growth')
+    LinearGrowthModel(10, (100, 200), r=(0.1, 0.2)).plot('LinearDemo.png',
+        title='Linear population growth model')
     # instant
     InstantChangeModel(10, 100, 5, 1000).plot()
     InstantChangeModel(10, (100, 200), 5, (1000, 2000)).plot()
@@ -959,20 +1074,11 @@ if __name__ == '__main__':
     MultiStageModel([
         InstantChangeModel(10, 100, 5, 1000),
         ExponentialGrowthModel(20, 1000, 2000)
-        ]).plot()
-    MultiStageModel([
-        InstantChangeModel(10, 100, 5, 1000),
-        ExponentialGrowthModel(20, 1000, 2000)
         ]).plot('MultiStageDemo.png')
-
     # Out Of Africa Model
-    OutOfAfricaModel(10000).plot()
     OutOfAfricaModel(10000).plot('OutOfAfrica.png')
     # Settlement of New World
-    #
-    SettlementOfNewWorldModel(10000).plot()
     SettlementOfNewWorldModel(10000).plot('SettlementOfNewWorld.png')
-    # 
-    CosiModel(20000).plot()
+    # Cosi model 
     CosiModel(20000).plot('Cosi.png')
 
