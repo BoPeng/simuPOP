@@ -200,6 +200,14 @@ class TestDemography(unittest.TestCase):
         self.assertRaises(LinearGrowthModel, N0=[1., 1.], r=0.01, NT=[2, 3.])
         self.assertRaises(LinearGrowthModel, N0=[1., 1.], r=0.01, NT=[2000])
         self.assertRaises(LinearGrowthModel, N0=[1., 1.], r=[0.01], NT=[2000, 3000])
+        # carrying capacity
+        LinearGrowthModel(T=100, N0=[200, 200], r=0.01, NT=[300, 350])._assertSize(
+            {
+                0: [202, 202],
+                2: [206, 206],
+                50: [300, 302],
+                99: [300, 350],
+            }, initSize=500)
 
     def testExponentialGrowthModel(self):
         self.assertRaises(ExponentialGrowthModel)
@@ -266,6 +274,14 @@ class TestDemography(unittest.TestCase):
         self.assertRaises(ExponentialGrowthModel, N0=[1., 1.], r=0.01, NT=[2, 3.])
         self.assertRaises(ExponentialGrowthModel, N0=[1., 1.], r=0.01, NT=[2000])
         self.assertRaises(ExponentialGrowthModel, N0=[1., 1.], r=[0.01], NT=[2000, 3000])
+        # carrying capacity
+        ExponentialGrowthModel(T=100, N0=[200, 200], r=0.01, NT=[300, 350])._assertSize(
+            {
+                0: [202, 202],
+                2: [206, 206],
+                50: [300, 333],
+                99: [300, 350],
+            }, initSize=500)
 
     def testMultiStageModel(self):
         MultiStageModel([
