@@ -3571,7 +3571,7 @@ Bernullitrials::Bernullitrials(RNG & /* rng */, const vectorf & prob, ULONG tria
 		DBG_FAILIF(m_prob[i] < 0 || m_prob[i] > 1, ValueError,
 			(boost::format("Probability for a Bernulli trail should be between 0 and 1 (value %1% at index %2%)") % m_prob[i] % i).str());
 		m_table[i].resize(m_N);
-		m_pointer[i] = const_cast<unsigned int *>(BITPTR(m_table[i].begin()));
+		m_pointer[i] = const_cast<WORDTYPE*>(BITPTR(m_table[i].begin()));
 	}
 }
 
@@ -3603,7 +3603,7 @@ void Bernullitrials::setParameter(const vectorf & prob, size_t trials)
 		DBG_FAILIF(m_prob[i] < 0 || m_prob[i] > 1, ValueError,
 			(boost::format("Probability for a Bernulli trail should be between 0 and 1 (value %1% at index %2%)") % m_prob[i] % i).str());
 		m_table[i].resize(m_N);
-		m_pointer[i] = const_cast<unsigned int *>(BITPTR(m_table[i].begin()));
+		m_pointer[i] = const_cast<WORDTYPE*>(BITPTR(m_table[i].begin()));
 	}
 }
 
