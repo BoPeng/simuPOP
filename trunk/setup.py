@@ -55,13 +55,20 @@ if sys.version_info[0] <= 2 and sys.version_info[1] <= 4:
     print("simuPOP supports Python version 2.5 or higher, including Python 3.x. Please upgrade your Python installation and try again.")
     sys.exit(1)
 
+PY3 = sys.version_info[0] == 3
+
 # Change this to False if you would like to compile simuPOP without openMP support
 USE_OPENMP = True
 
 if os.name == 'nt':
-    VS9PATH =  os.environ.get('VS90COMNTOOLS')
-    if VS9PATH is None or not os.path.isfile(VS9PATH.replace('Common7\\Tools\\','VC\\lib\\vcomp.lib')):
-        USE_OPENMP = False
+    if PY3:
+        VS10PATH =  os.environ.get('VS100COMNTOOLS')
+        if VS10PATH is None or not os.path.isfile(VS10PATH.replace('Common7\\Tools\\','VC\\lib\\vcomp.lib')):
+            USE_OPENMP = False
+    else:
+        VS9PATH =  os.environ.get('VS90COMNTOOLS')
+        if VS9PATH is None or not os.path.isfile(VS9PATH.replace('Common7\\Tools\\','VC\\lib\\vcomp.lib')):
+            USE_OPENMP = False
 else:
     p = subprocess.Popen('gcc -v', shell=True,
         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -113,7 +120,10 @@ if boost_dir == '':
             sys.stdout.write('.' * (perc - downloadProgress.counter))
             downloadProgress.counter = perc
         sys.stdout.flush()
-    import urllib
+    if PY3:
+        from urllib.request import urlretrieve
+    else:
+        from urllib import urlretrieve
     import tarfile
     downloadProgress.counter = 0
     try:
@@ -121,7 +131,7 @@ if boost_dir == '':
         sys.stdout.write('Downloading boost C++ library 1.49.0 ')
         sys.stdout.flush()
         if not os.path.isfile('boost_1_49_0.tar.gz'):
-            urllib.urlretrieve(BOOST_URL, 'boost_1_49_0.tar.gz', downloadProgress)
+            urlretrieve(BOOST_URL, 'boost_1_49_0.tar.gz', downloadProgress)
         sys.stdout.write('\n')
         # extract needed files
         with tarfile.open('boost_1_49_0.tar.gz', 'r:gz') as tar:
@@ -543,7 +553,11 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     if os.name == 'nt':
         # I have a portable stdint.h for msvc, to avoid distributing
         # zdll1.dll, I also build zlib from source
-        res['include_dirs'].extend(['win32', 'win32/zlib-1.2.3'])
+        if PY3:
+            # Python3 uses VC 2010, which has stdint
+            res['include_dirs'].extend(['win32/zlib-1.2.3'])
+        else:
+            res['include_dirs'].extend(['win32', 'win32/zlib-1.2.3'])
         # zdll.lib is under win32
         res['library_dirs'].append('win32')
     if os.name == 'nt':

@@ -828,7 +828,8 @@ public:
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	virtual IndividualPair chooseParents(RawIndIterator /* basePtr */)
 	{
-		return IndividualPair(NULL, NULL);
+		// do not use NULL because VC2010 uses nullptr and who knows what gcc uses
+		return IndividualPair((Individual*)(0), (Individual*)(0));
 	}
 
 
