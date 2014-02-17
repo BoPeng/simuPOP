@@ -4144,8 +4144,8 @@ void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
 	DBG_ASSERT(BITOFF(fr) < WORDBIT, SystemError,
 		"Your vector<bool> implementation is different...");
 
-	WORDTYPE * fr_p = BITPTR(fr);
-	WORDTYPE * to_p = BITPTR(to);
+	WORDTYPE * fr_p = const_cast<WORDTYPE*>(BITPTR(fr));
+	WORDTYPE * to_p = const_cast<WORDTYPE*>(BITPTR(to));
 	size_t fr_off = BITOFF(fr);
 	size_t to_off = BITOFF(to);
 
@@ -4344,7 +4344,7 @@ void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
 
 void clearGenotype(GenoIterator to, size_t n)
 {
-	WORDTYPE * to_p = BITPTR(to);
+	WORDTYPE * to_p = const_cast<WORDTYPE*>(BITPTR(to));
 	size_t to_off = BITOFF(to);
 
 	// This can be made more efficient.
