@@ -3571,7 +3571,7 @@ Bernullitrials::Bernullitrials(RNG & /* rng */, const vectorf & prob, ULONG tria
 		DBG_FAILIF(m_prob[i] < 0 || m_prob[i] > 1, ValueError,
 			(boost::format("Probability for a Bernulli trail should be between 0 and 1 (value %1% at index %2%)") % m_prob[i] % i).str());
 		m_table[i].resize(m_N);
-		m_pointer[i] = BITPTR(m_table[i].begin());
+		m_pointer[i] = const_cast<unsigned int *>(BITPTR(m_table[i].begin()));
 	}
 }
 
@@ -3603,7 +3603,7 @@ void Bernullitrials::setParameter(const vectorf & prob, size_t trials)
 		DBG_FAILIF(m_prob[i] < 0 || m_prob[i] > 1, ValueError,
 			(boost::format("Probability for a Bernulli trail should be between 0 and 1 (value %1% at index %2%)") % m_prob[i] % i).str());
 		m_table[i].resize(m_N);
-		m_pointer[i] = BITPTR(m_table[i].begin());
+		m_pointer[i] = const_cast<unsigned int *>(BITPTR(m_table[i].begin()));
 	}
 }
 
@@ -3814,9 +3814,9 @@ size_t Bernullitrials::trialNextSucc(size_t idx, size_t pos) const
 
 	// first block
 	BitSet::const_iterator it = bs.begin() + pos;
-	WORDTYPE * ptr = BITPTR(it);
+	WORDTYPE * ptr = const_cast<WORDTYPE*>(BITPTR(it));
 	size_t offset = BITOFF(it);
-	size_t i = ptr - BITPTR(bs.begin());
+	size_t i = ptr - const_cast<WORDTYPE*>(BITPTR(bs.begin()));
 
 	// mask out bits before pos
 	WORDTYPE tmp = *ptr & ~g_bitMask[offset];

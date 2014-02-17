@@ -633,12 +633,12 @@ ParentChooser::IndividualPair SequentialParentChooser::chooseParents(RawIndItera
 			m_ind = m_begin;
 			DBG_ASSERT(m_ind.valid(), RuntimeError, "No valid individual if found.")
 		}
-		return ParentChooser::IndividualPair(&*m_ind++, NULL);
+		return ParentChooser::IndividualPair(&*m_ind++, (Individual*)(0));
 	} else {
 		if (m_curInd == m_index.size())
 			m_curInd = 0;
 
-		return std::make_pair(&*m_index[m_curInd++], static_cast<Individual *>(NULL));
+		return std::make_pair(&*m_index[m_curInd++], static_cast<Individual *>(0));
 	}
 }
 
@@ -705,7 +705,7 @@ ParentChooser::IndividualPair RandomParentChooser::chooseParents(RawIndIterator 
 			throw RuntimeError("All parents have been chosen.");
 		Individual * ind = &*m_index.back();
 		m_index.pop_back();
-		return IndividualPair(ind, NULL);
+		return IndividualPair(ind, (Individual*)(0));
 	}
 	Individual * ind = NULL;
 	if (m_index.empty()) {
@@ -720,7 +720,7 @@ ParentChooser::IndividualPair RandomParentChooser::chooseParents(RawIndIterator 
 		else
 			ind = &*(m_index[getRNG().randInt(static_cast<ULONG>(m_size))]);
 	}
-	return IndividualPair(ind, NULL);
+	return IndividualPair(ind, (Individual*)(0));
 }
 
 
@@ -1174,7 +1174,7 @@ ParentChooser::IndividualPair PyParentsChooser::chooseParents(RawIndIterator)
 			ValueError, (boost::format("Returned index (%1%) is greater than subpopulation size %2%") % parent % m_size).str());
 #endif
 		Py_DECREF(item);
-		return ParentChooser::IndividualPair(&*(m_begin + parent), NULL);
+		return ParentChooser::IndividualPair(&*(m_begin + parent), (Individual*)(0));
 	} else if (PySequence_Check(item)) {
 		DBG_ASSERT(PySequence_Size(item) == 2, RuntimeError,
 			"Parents should be returned in the form of a sequence of two elements");
@@ -1199,10 +1199,10 @@ ParentChooser::IndividualPair PyParentsChooser::chooseParents(RawIndIterator)
 		// is an individual object is returned?
 		void * ind = pyIndPointer(item);
 		DBG_ASSERT(ind, ValueError, "Invalid type of returned parent.");
-		return ParentChooser::IndividualPair(reinterpret_cast<Individual *>(ind), NULL);
+		return ParentChooser::IndividualPair(reinterpret_cast<Individual *>(ind), (Individual*)(0));
 	}
 	// this should not be reached
-	return ParentChooser::IndividualPair(NULL, NULL);
+	return ParentChooser::IndividualPair((Individual*)(0), (Individual*)(0));
 }
 
 
