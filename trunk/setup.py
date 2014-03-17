@@ -569,13 +569,19 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
         res['extra_compile_args'] = ['/O2', '/GR', '/EHsc', '/wd4819', '/wd4996', '/wd4068'] 
         # Enable openMP if USE_OPENMP = True
         if USE_OPENMP:
-            res['extra_compile_args'].append('/Qopenmp' if USE_ICC else '/openmp')   
+            if USE_ICC:
+                res['extra_compile_args'].append('/Qopenmp')   
+            else:
+                res['extra_compile_args'].append('/openmp') 
     else:
         res['extra_compile_args'] = ['-O3', '-Wall', '-Wno-unknown-pragmas', '-Wno-unused-parameter']
         if not USE_ICC:   # for gcc, turn on extra warning message
             res['extra_compile_args'].append('-Wextra')
         if USE_OPENMP:
-            res['extra_compile_args'].append('-openmp' if USE_ICC else '-fopenmp')
+            if USE_ICC:
+                res['extra_compile_args'].append('-openmp')
+            else:
+                res['extra_compile_args'].append('-fopenmp')
     # if Intel ICC is used, turn off remark 981
     if USE_ICC:
         res['extra_compile_args'].extend(['-wd981', '-wd191'])
