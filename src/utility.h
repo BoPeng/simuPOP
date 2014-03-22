@@ -1888,7 +1888,7 @@ private:
 
 	/// used by RNG::rand_bit(). I was using static but this make it difficult
 	/// to reset a RNG when a new seed is set.
-	WORDTYPE m_bitByte;
+	uint16_t m_bitByte;
 	UINT m_bitIndex;
 };
 
