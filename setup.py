@@ -660,8 +660,12 @@ if __name__ == '__main__':
         if sys.version_info[0] >= 3 and sys.version_info[1] >= 2 and (v1, v2, v3) < (2, 0, 4):
             print('Swig >= 2.0.4 is required for Python 3.2 or higher')
             sys.exit(1)
+        if v1 >= 3:
+            SWIG_CC_FLAGS += ' -DSWIG_PYTHON_LEGACY_BOOL'
+            SWIG_CPP_FLAGS += ' -DSWIG_PYTHON_LEGACY_BOOL'
         # generate header file 
         print("Generating external runtime header file src/swigpyrun.h...")
+        print('%s %s src/swigpyrun.h' % (SWIG, SWIG_RUNTIME_FLAGS))
         os.system('%s %s src/swigpyrun.h' % (SWIG, SWIG_RUNTIME_FLAGS))
         # try the first option set with the first library
         for lib in MODULES:
