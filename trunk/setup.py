@@ -524,6 +524,29 @@ population genetics models to generating datasets under complex
 evolutionary scenarios.
 """
             
+def is_maverick():
+    try:
+        ver = [int(x) for x in platform.mac_ver()[0].split('.')]
+        return ver >= [10, 9, 0]
+    except:
+        return False
+        
+#
+# starting from mac osx 10.9 (Maverick), the clang compiler uses libc++ as its default
+# standard c++ library. This caused many problems, the most significant one is that 
+# the iterator class of vector<bool> hides its pointer and offset so that I cannot 
+# access the underlying array directly. This makes it impossible to implement function
+# copyGenotype for binary modules. Fortunately, the compiler provides options to 
+# continue to use libstdc++. Hopefully this quick fix can work a little bit longer.
+#
+if is_maverick():
+    common_extra_link_args = ['-stdlib=libstdc++']
+    common_extra_include_dirs = ['/usr/include/c++/4.2.1']
+    common_extra_compile_args = ['-Wno-error=unused-command-line-argument-hard-error-in-future']
+else:
+    common_extra_link_args = []
+    common_extra_include_dirs = []
+    common_extra_compile_args = []
 
 #
 def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
@@ -548,7 +571,7 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
             else:
                 res['libraries'].append('gomp')
     res['libraries'].extend(boost_lib_names)
-    res['include_dirs'] = ['.', 'gsl', boost_inc_path]
+    res['include_dirs'] = ['.', 'gsl', boost_inc_path] + common_extra_include_dirs
     res['library_dirs'] = ['build']
     if os.name == 'nt':
         # I have a portable stdint.h for msvc, to avoid distributing
@@ -566,7 +589,7 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
         # /wd4819 disables warning messages for non-unicode character in boost/uitlity/enable_if.hpp
         # /wd4996 disables warning messages for unsafe function call in boost/serialization
         # /wd4068 disables warning messages for unknown pragma set by gcc 
-        res['extra_compile_args'] = ['/O2', '/GR', '/EHsc', '/wd4819', '/wd4996', '/wd4068'] 
+        res['extra_compile_args'] = ['/O2', '/GR', '/EHsc', '/wd4819', '/wd4996', '/wd4068'] + common_extra_compile_args
         # Enable openMP if USE_OPENMP = True
         if USE_OPENMP:
             if USE_ICC:
@@ -574,7 +597,7 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
             else:
                 res['extra_compile_args'].append('/openmp') 
     else:
-        res['extra_compile_args'] = ['-O3', '-Wall', '-Wno-unknown-pragmas', '-Wno-unused-parameter']
+        res['extra_compile_args'] = ['-O3', '-Wall', '-Wno-unknown-pragmas', '-Wno-unused-parameter'] + common_extra_compile_args
         if not USE_ICC:   # for gcc, turn on extra warning message
             res['extra_compile_args'].append('-Wextra')
         if USE_OPENMP:
@@ -672,7 +695,9 @@ if __name__ == '__main__':
     EXT_MODULES = [
         Extension('simuPOP._gsl',
             sources = GSL_FILES + ['src/gsl_wrap.c'],
-            include_dirs = ['gsl', 'gsl/specfunc', 'build', '.'],
+            include_dirs = ['gsl', 'gsl/specfunc', 'build', '.'] + common_extra_include_dirs,
+            extra_compile_args = common_extra_compile_args,
+            extra_link_args = common_extra_link_args,
         )
     ]
     for modu in MODULES:
@@ -687,6 +712,7 @@ if __name__ == '__main__':
                 libraries = info['libraries'],
                 define_macros = info['define_macros'],
                 undef_macros = info['undef_macros'],
+                extra_link_args = common_extra_link_args,
             )
         )
     if  USE_DISTRIBUTE :
