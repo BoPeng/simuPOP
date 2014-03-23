@@ -287,13 +287,10 @@ def createMacPackage(ver, pyver):
     run_command('tar -zxf simuPOP-%s-src.tar.gz' % ver)
     # 
     os.chdir(src_dir)
-    if pyver.startswith('2'):
-        run_command('python setup.py bdist_mpkg')
-    else:
-        run_command('python3 setup.py bdist')
+    run_command('python3 setup.py bdist')
+    os.chdir(old_dir)
     # 
     # Move results to download directory
-    os.chdir(old_dir)
     dest_targz = os.path.join(download_directory, 'simuPOP-{}-py{}.tar.gz'.format(ver, pyver))
     if os.path.isdir(dest_targz):
         shutil.rmtree(dest_targz)
@@ -302,6 +299,9 @@ def createMacPackage(ver, pyver):
         dest_targz)
     # for python 2, also build mpkg
     if pyver.startswith('2'):
+        os.chdir(src_dir)
+        run_command('python setup.py bdist_mpkg')
+        os.chdir(old_dir)
         dest_mpkg = os.path.join(download_directory, 'simuPOP-{}-py{}.mpkg'.format(ver, pyver))
         if os.path.isdir(dest_mpkg):
             shutil.rmtree(dest_mpkg)
