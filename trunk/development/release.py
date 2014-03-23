@@ -294,6 +294,13 @@ def createMacPackage(ver, pyver):
     # 
     # Move results to download directory
     os.chdir(old_dir)
+    dest_targz = os.path.join(download_directory, 'simuPOP-{}-py{}.tar.gz'.format(ver, pyver))
+    if os.path.isdir(dest_targz):
+        shutil.rmtree(dest_targz)
+    print('Moving tar.gz package from %s/dist to %s' % (src_dir, dest_targz))
+    shutil.move(glob.glob(os.path.join(src_dir, 'dist', 'simuPOP-{}*.tar.gz'.format(ver)))[0],
+        dest_targz)
+    # for python 2, also build mpkg
     if pyver.startswith('2'):
         dest_mpkg = os.path.join(download_directory, 'simuPOP-{}-py{}.mpkg'.format(ver, pyver))
         if os.path.isdir(dest_mpkg):
@@ -301,13 +308,6 @@ def createMacPackage(ver, pyver):
         print('Moving mpkg package from %s/dist to %s' % (src_dir, dest_mpkg))
         shutil.move(glob.glob(os.path.join(src_dir, 'dist', 'simuPOP-{}*.mpkg'.format(ver)))[0],
             dest_mpkg)
-    else:
-        dest_targz = os.path.join(download_directory, 'simuPOP-{}-py{}.tar.gz'.format(ver, pyver))
-        if os.path.isdir(dest_targz):
-            shutil.rmtree(dest_targz)
-        print('Moving tar.gz package from %s/dist to %s' % (src_dir, dest_targz))
-        shutil.move(glob.glob(os.path.join(src_dir, 'dist', 'simuPOP-{}*.tar.gz'.format(ver)))[0],
-            dest_targz)
 
 def createMacImage(ver, pyver):
     #
