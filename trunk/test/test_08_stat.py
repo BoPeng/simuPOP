@@ -13,7 +13,7 @@ import unittest, os, sys
 from simuOpt import setOptions
 from random import randint
 
-#setOptions(quiet=True) 
+setOptions(quiet=True) 
 new_argv = []
 for arg in sys.argv:
     if arg in ['short', 'long', 'binary', 'mutant', 'lineage']:
