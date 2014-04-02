@@ -273,7 +273,10 @@ except ImportError:
 def swig_version():
     ''' get the version of swig '''
     fout = subprocess.Popen(SWIG + ' -version', shell=True, stdout=subprocess.PIPE).stdout
-    output = fout.readlines()[1].decode('utf8')
+    try:
+        output = fout.readlines()[1].decode('utf8')
+    except:
+        sys.exit('SWIG is not installed')
     #
     try:
         version = re.match('SWIG Version\s*(\d+).(\d+).(\d+).*', output).groups()
