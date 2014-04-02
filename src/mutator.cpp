@@ -411,7 +411,7 @@ Allele StepwiseMutator::mutate(Allele allele, size_t) const
 }
 
 
-Allele PyMutator::mutate(Allele allele, size_t) const
+Allele PyMutator::mutate(Allele allele, size_t locus) const
 {
 	int resInt = 0;
 
@@ -421,6 +421,8 @@ Allele PyMutator::mutate(Allele allele, size_t) const
 		const string & arg = m_func.arg(i);
 		if (arg == "allele")
 			PyTuple_SET_ITEM(args, i, PyInt_FromLong(static_cast<int>(allele)));
+		else if (arg == "locus")
+			PyTuple_SET_ITEM(args, i, PyInt_FromLong(static_cast<int>(locus)));
 		else if (arg == "context") {
 			const vectoru & cnt = context();
 			PyObject * c = PyTuple_New(cnt.size());
@@ -429,7 +431,7 @@ Allele PyMutator::mutate(Allele allele, size_t) const
 			PyTuple_SET_ITEM(args, i, c);
 		} else {
 			DBG_FAILIF(true, ValueError,
-				"Only parameters 'allele' and 'context' are acceptable in a user-provided mutation function.");
+				"Only parameters 'allele', 'locus', and 'context' are acceptable in a user-provided mutation function.");
 		}
 	}
 	resInt = m_func(PyObj_As_Int, args);
