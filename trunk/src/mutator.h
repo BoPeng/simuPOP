@@ -417,19 +417,19 @@ class PyMutator : public BaseMutator
 public:
 	/** Create a hybrid mutator that uses a user-provided function to mutate an
 	 *  allele when a mutation event happens. This function (parameter \e func)
-	 *  accepts the allele to be mutated as parameter \c allele and optional
-	 *  array of alleles as parameter \c context, which are \e context alleles
-	 *  the left and right of the mutated allele. Invalid context alleles (e.g.
-	 *  left allele to the first locus of a chromosome) will be marked by -1.
-	 *  The return value of this function will be used to mutate the passed
-	 *  allele. The passed, returned and context alleles might be altered if
-	 *  parameter \e mapIn and \e mapOut are used. This mutator by default
-	 *  applies to all loci unless parameter \e loci is specified. A single
-	 *  mutation rate will be used for all loci if a single value of
-	 *  parameter \e rates is given. Otherwise, a list of mutation rates can
-	 *  be specified for each locus in parameter \e loci. Please refer to
-	 *  classes \c mutator and \c BaseOperator for descriptions of other
-	 *  parameters.
+	 *  accepts the allele to be mutated as parameter \c allele, locus index 
+	 *  \c locus, and optional array of alleles as parameter \c context, which
+	 *  are \e context alleles the left and right of the mutated allele. Invalid
+	 *  context alleles (e.g. left allele to the first locus of a chromosome)
+	 *  will be marked by -1. The return value of this function will be used
+	 *  to mutate the passed allele. The passed, returned and context alleles
+	 *  might be altered if parameter \e mapIn and \e mapOut are used. This
+	 *  mutator by default applies to all loci unless parameter \e loci is
+	 *  specified. A single mutation rate will be used for all loci if a
+	 *  single value of parameter \e rates is given. Otherwise, a list of
+	 *  mutation rates can be specified for each locus in parameter \e loci.
+	 *  Please refer to classes \c mutator and \c BaseOperator for descriptions
+	 *  of other parameters.
 	 */
 	PyMutator(const floatList & rates = vectorf(), const lociList & loci = lociList(),
 		PyObject * func = NULL, int context = 0, const uintListFunc & mapIn = uintListFunc(),
