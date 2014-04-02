@@ -350,7 +350,7 @@ class TestMutator(unittest.TestCase):
         'Testing SNP mutator'
         cnt0 = 0
         cnt1 = 0
-        for i in range(50):
+        for i in range(100):
             pop = Population(size=10000, loci=[1])
             initGenotype(pop, freq=[0.6, 0.4])
             snpMutate(pop, u=0.2, v=0.1, loci=0)
@@ -358,22 +358,22 @@ class TestMutator(unittest.TestCase):
             # u = 10000*2*(0.6-0.12+0.04), v = 10000*2*(0.4-0.04+0.12)
             cnt0 += pop.dvars().alleleNum[0][0]
             cnt1 += pop.dvars().alleleNum[0][1]
-        self.assertTrue(abs(cnt0/50. - 20000*(0.6-0.12+0.04)) < 20,
+        self.assertTrue(abs(cnt0/100. - 20000*(0.6-0.12+0.04)) < 20,
             "This test may occasionally fail due to the randomness of outcome.")
-        self.assertTrue(abs(cnt1/50. - 20000*(0.4-0.04+0.12)) < 20,
+        self.assertTrue(abs(cnt1/100. - 20000*(0.4-0.04+0.12)) < 20,
             "This test may occasionally fail due to the randomness of outcome.")
 
     def testMutationRate(self):
         'Testing mutation rate'
         cnt = 0
-        for i in range(50):
+        for i in range(100):
             pop = Population(size=10000, loci=[1])
             # Mutate autosome
             snpMutate(pop, u=0.01, loci=0)
             stat(pop, alleleFreq=[0])
             # 10000 x 2 x 0.01 = 200
             cnt += pop.dvars().alleleNum[0][1]
-        self.assertEqual( abs(cnt/50. - 200) < 5, True)
+        self.assertEqual( abs(cnt/100. - 200) < 5, True)
         # test low mutation rate
         cnt = 0
         for i in range(5000):
@@ -389,7 +389,7 @@ class TestMutator(unittest.TestCase):
     def testMutationSexChromosomes(self):
         'Testing mutation on chromosome X'
         cnt = 0
-        for i in range(50):
+        for i in range(100):
             pop = Population(size=10000, loci=[1, 1], chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
             initSex(pop, sex=[MALE, FEMALE])
             # Mutate X chromosomes
@@ -397,18 +397,18 @@ class TestMutator(unittest.TestCase):
             stat(pop, alleleFreq=[0])
             # MALE: 5000 x 0.01, FEMALE: 5000 x 2 x 0.01 = 50 + 100
             cnt += pop.dvars().alleleNum[0][1]
-        self.assertEqual( abs(cnt/50. - (5000*0.01*2 + 5000*0.01)) < 5, True)
+        self.assertEqual( abs(cnt/100. - (5000*0.01*2 + 5000*0.01)) < 5, True)
         #
         # Mutate Y chromosomes
         cnt = 0
-        for i in range(50):
+        for i in range(100):
             pop = Population(size=10000, loci=[1, 1], chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
             initSex(pop, sex=[MALE, FEMALE])
             snpMutate(pop, u=0.01, loci=1)
             stat(pop, alleleFreq=[1])
             # MALE: 5000 x 0.01 = 50
             cnt += pop.dvars().alleleNum[1][1]
-        self.assertEqual( abs(cnt/50. - 5000*0.01) < 2, True)
+        self.assertEqual( abs(cnt/100. - 5000*0.01) < 2, True)
 
     def testLineage(self):
         'Testing assigning of lineage of mutants'
