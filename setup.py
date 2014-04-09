@@ -44,12 +44,11 @@ import distutils.sysconfig
 from distutils.errors import CompileError
 from distutils.errors import DistutilsExecError
 
-USE_DISTRIBUTE = False
+
+USE_SETUPTOOLS = False
 try:
-    from distribute_setup import use_setuptools
-    use_setuptools()
     from setuptools import setup, find_packages, Extension
-    USE_DISTRIBUTE = True
+    USE_SETUPTOOLS = True
 except ImportError:
     from distutils.core import setup, Extension
     print("fail to import distribute/setuptools, build the program with distutils")
@@ -136,7 +135,7 @@ def windows_compile_parallel(
                 + [input_opt, output_opt]
                 + extra_postargs)
 
-        except DistutilsExecError, msg:
+        except DistutilsExecError as msg:
             raise CompileError(msg)
 
     # convert to list, imap is evaluated on-demand
@@ -818,7 +817,7 @@ if __name__ == '__main__':
                 extra_link_args = common_extra_link_args,
             )
         )
-    if  USE_DISTRIBUTE :
+    if  USE_SETUPTOOLS :
         setup_params = dict(packages = find_packages(), include_package_data = True,
                         exclude_package_data = {'':['README.txt']}, zip_safe = False,
                         install_requires = ['distribute'])
