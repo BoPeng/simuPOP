@@ -631,8 +631,8 @@ void Recombinator::initialize(const Individual & ind) const
 		" explicitly specified.");
 
 	DBG_FAILIF(m_rates.size() > 1 && m_rates.size() != loci.size(),
-		ValueError, "If both rates and loci are specified, "
-		            "they should have the same length.");
+		ValueError, "If both rates and loci are specified (or for all loci using value "
+			"ALL_AVAIL), they should have the same length.");
 
 	bool useLociDist = m_rates.empty();
 
@@ -654,7 +654,7 @@ void Recombinator::initialize(const Individual & ind) const
 			break;
 		}
 
-		if (m_loci.allAvail()) {
+		if (m_loci.allAvail() && m_rates.size() == 1) {
 			// get loci distance * m_rates and then recombinant points
 			for (size_t loc = chBegin; loc < chEnd - 1; ++loc) {
 				m_recBeforeLoci.push_back(loc + 1);

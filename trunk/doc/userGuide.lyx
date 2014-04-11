@@ -9044,7 +9044,9 @@ If parameter
 \family typewriter
 loci
 \family default
- is given, different recombination rate can be given to each of them.
+ is given with a list of loci, different recombination rate can be given
+ to each of them.
+ The two lists should have the same length.
  For example
 \begin_inset listings
 inline false
@@ -9058,6 +9060,38 @@ Recombinator(rates=[0.1, 0.05], loci=[2, 5])
 \end_inset
 
 uses two different recombination rates after loci 2 and 5.
+\end_layout
+
+\begin_layout Enumerate
+If parameter 
+\family typewriter
+loci
+\family default
+ is not given (default to 
+\family typewriter
+loci=ALL_AVAIL
+\family default
+) but a list of recombination rates is assigned, the rates will be assigned
+ to each locus.
+ The length of prameter 
+\family typewriter
+rates
+\family default
+ should equal to total number of loci but the recombiantion rates for the
+ locus at the end of each chromosome will be ignored (assumed to be 0.5).
+ For example
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Recombinator(rates=[0.1]*5 + [0.2]*5)
+\end_layout
+
+\end_inset
+
+uses two different recombination rates for two chromosomes with 5 loci.
 \end_layout
 
 \begin_layout Enumerate
