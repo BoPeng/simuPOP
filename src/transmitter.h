@@ -503,10 +503,15 @@ public:
 	 *  will used for all loci (all loci or loci specified by parameter
 	 *  \e loci), regardless of physical distances between adjacent loci.
 	 *
-	 *  If a list of recombination rates are specified in \e rates, a parameter
-	 *  \e loci with the same length should also be specified. Different
-	 *  recombination rates can then be used after these loci (between
-	 *  specified loci and their immediate neighbor to the right).
+	 *  If a list of recombination rates are specified in \e rates, different
+	 *  recombination rates could be applied after a list of specified loci
+	 *  (between loci and their immediate neighbor to the right). The loci
+	 *  should be specified by parameter \e loci as a list with the same
+	 *  length as \e rates, or \e ALL_AVAIL (default) in which case the length
+	 *  of \e rates should equal to the total number of loci. Note that
+	 *  recombination rates specified for the last locus on each chromosome
+	 *  are ignored because simuPOP assumes free recombination between
+	 *  chromosomes.
 	 *
 	 *  A recombination intensity (\e intensity) can be used to specify
 	 *  recombination rates that are proportional to physical distances between

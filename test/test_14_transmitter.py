@@ -776,18 +776,71 @@ class TestTransmitters(unittest.TestCase):
             gen=1 )
         # the supposed proportions are 1-1: 0.5-r/2, 1-2: r/2, 2-1: r/2, 2-2: 0.5-r/2
         #print simu.dvars(0).haploFreq
-        self.assertTrue((simu.dvars(0).haploFreq[(0,1)][(a1,a2)] - 0.05) < 0.01, 
+        self.assertTrue(abs(simu.dvars(0).haploFreq[(0,1)][(a1,a2)] - 0.05) < 0.01, 
             "Expression (simu.dvars(0).haploFreq[(0,1)][(a1,a2)] - 0.05) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(0,1)][(a1,a2)] - 0.05)))
-        self.assertTrue((simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.075) < 0.01, 
+        self.assertTrue(abs(simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.075) < 0.01, 
             "Expression (simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.075) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.075)))
         try:    # do not have this haplotype
             simu.dvars(0).haploFreq[(3,4)][(a1,a2)]
         except KeyError:
             pass
-        self.assertTrue((simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) < 0.01, 
+        self.assertTrue(abs(simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) < 0.01, 
             "Expression (simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25)))
-        self.assertTrue((simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.15) < 0.01, 
+        self.assertTrue(abs(simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.15) < 0.01, 
             "Expression (simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.15) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.15)))
+        #
+        # test the case with loci= ALL_AVAIL
+        pop = Population(10000, loci=[2,2])
+        initSex(pop)
+        initGenotype(pop, genotype=[a1]*4+[a2]*4)
+        # for ALL_AVAIL, rates should have a length of totNumLoci
+        self.assertRaises(Recombinator, rates=[0.1, 0.2])
+        self.assertRaises(Recombinator, rates=[0.1, 0.2, 0.1])
+        pop.evolve(
+            postOps = Stat( haploFreq = [[0,1], [2,3]]),
+            matingScheme = RandomMating(ops=Recombinator(rates = [0, 0.8, 0.5, 0.8])),
+            gen=1 )
+        # the first two no recombine, the second two free recombine
+        self.assertEqual(pop.dvars().haploFreq[(0,1)][(a1,a2)], 0)
+        self.assertEqual(pop.dvars().haploFreq[(0,1)][(a2,a1)], 0)
+        self.assertTrue(abs(pop.dvars().haploFreq[(2,3)][(a1,a2)] - 0.25) < 0.01)
+        self.assertTrue(abs(pop.dvars().haploFreq[(2,3)][(a2,a1)] - 0.25) < 0.01)
+        #
+        # another test, using another order of rates
+        initGenotype(pop, genotype=[a1]*4+[a2]*4)
+        # for ALL_AVAIL, rates should have a length of totNumLoci
+        pop.evolve(
+            postOps = Stat( haploFreq = [[0,1], [2,3]]),
+            matingScheme = RandomMating(ops=Recombinator(rates = [0.5, 0.8, 0, 0.8])),
+            gen=1 )
+        # the first two no recombine, the second two free recombine
+        self.assertTrue(abs(pop.dvars().haploFreq[(0,1)][(a1,a2)] - 0.25) < 0.01)
+        self.assertTrue(abs(pop.dvars().haploFreq[(0,1)][(a2,a1)] - 0.25) < 0.01)
+        self.assertEqual(pop.dvars().haploFreq[(2,3)][(a1,a2)], 0)
+        self.assertEqual(pop.dvars().haploFreq[(2,3)][(a2,a1)], 0)
+        # a little bit more complicated
+        pop = Population(10000, loci=[5,10])
+        initSex(pop)
+        initGenotype(pop, genotype=[a1]*15+[a2]*15)
+        # for ALL_AVAIL, rates should have a length of totNumLoci
+        self.assertRaises(Recombinator, rates=[0.1, 0.2])
+        self.assertRaises(Recombinator, rates=[0.1, 0.2, 0.1])
+        pop.evolve(
+            postOps = Stat( haploFreq = [[1,2], [3,4], [8,9], [13, 14]]),
+            matingScheme = RandomMating(ops=Recombinator(
+                rates = [0]*2 + [0.5]*3 + [0]*5 + [0.5]* 5)),
+            gen=1 )
+        self.assertEqual(pop.dvars().haploFreq[(1,2)][(a1,a2)], 0)
+        self.assertEqual(pop.dvars().haploFreq[(1,2)][(a2,a1)], 0)
+        self.assertEqual(pop.dvars().haploFreq[(8,9)][(a1,a2)], 0)
+        self.assertEqual(pop.dvars().haploFreq[(8,9)][(a2,a1)], 0)
+        self.assertTrue(abs(pop.dvars().haploFreq[(3,4)][(a1,a2)] - 0.25) < 0.01)
+        self.assertTrue(abs(pop.dvars().haploFreq[(3,4)][(a2,a1)] - 0.25) < 0.01)
+        self.assertTrue(abs(pop.dvars().haploFreq[(13,14)][(a1,a2)] - 0.25) < 0.01)
+        self.assertTrue(abs(pop.dvars().haploFreq[(13,14)][(a2,a1)] - 0.25) < 0.01)
+
+
+
 
     def testRecIntensity(self):
         'Testing recombination intensity'
