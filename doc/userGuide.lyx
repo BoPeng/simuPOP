@@ -7967,6 +7967,96 @@ InfoEval
 , which will be executed before an expression is evaluated.
 \end_layout
 
+\begin_layout Subsection
+Using functions in external modules in simuPOP expressions and statements
+\end_layout
+
+\begin_layout Standard
+All simuPOP expressions and statements are evaluated in a population's local
+ namespace, which is a dictionary with no access to external modules.
+ If you would like to use external modules (e.g.
+ functions from the 
+\family typewriter
+random
+\family default
+ module), you will have to import them to the namespace explicitly, using
+ something like
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+exec('import random', pop.vars(), pop.vars())
+\end_layout
+
+\end_inset
+
+before you evolve the population.
+ 
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "outputByInterval"
+
+\end_inset
+
+ demonstrates the application of this technique.
+ This example imports the 
+\family typewriter
+time
+\family default
+ module in the population's local namespace and set 
+\family typewriter
+init_time
+\family default
+ and 
+\family typewriter
+last_time
+\family default
+ before evolution.
+ During evolution, an
+\family typewriter
+ IfElse
+\family default
+ operator is used to output the status of the simulation for every 5 seconds
+ using expression 
+\family typewriter
+time.time() - last_time > 5
+\family default
+.
+ 
+\family typewriter
+last_time
+\family default
+ is reset using the 
+\family typewriter
+PyExec
+\family default
+ operator.
+ The evolution will last 20 seconds and be terminated by the Terminator
+ with expression 
+\family typewriter
+time.time() - init_time > 20.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/outputByInterval.log"
+lstparams "caption={Write the status of an evolutionary process every 10 seconds},label={outputByInterval}"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Demographic changes
 \end_layout

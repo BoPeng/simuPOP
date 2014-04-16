@@ -2346,6 +2346,35 @@ sim.infoExec(pop, 'd+=c*c')
 print(pop.dvars().d)
 #end_file
 
+#begin_file log/outputByInterval.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+import time
+pop = sim.Population(1000, loci=10)
+pop.dvars().init_time = time.time()
+pop.dvars().last_time = time.time()
+exec('import time', pop.vars(), pop.vars())
+pop.evolve(
+    initOps=sim.InitSex(),
+    matingScheme=sim.RandomMating(),
+    postOps=[
+        sim.IfElse('time.time() - last_time > 5', [
+            sim.PyEval(r'"Gen: %d\n" % gen'),
+            sim.PyExec('last_time = time.time()')
+            ]),
+        sim.TerminateIf('time.time() - init_time > 20')
+    ]
+)
+        
+#end_file
+
+
 #begin_file log/migrateByProb.py
 #begin_ignore
 import simuOpt
