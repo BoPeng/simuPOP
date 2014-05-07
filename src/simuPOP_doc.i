@@ -1164,6 +1164,58 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::ConditionalMating "
+
+Details:
+
+    A conditional mating scheme that applies different mating schemes
+    according to a condition (similar to operator IfElse). The
+    condition can be a fixed condition, an expression or a user-
+    defined function, to determine which mating scheme to be used.
+
+"; 
+
+%feature("docstring") simuPOP::ConditionalMating::ConditionalMating "
+
+Usage:
+
+    ConditionalMating(cond, ifMatingScheme, elseMatingScheme)
+
+Details:
+
+    Create a conditional mating scheme that applies mating scheme
+    ifMatingScheme if the condition cond is True, or elseMatingScheme
+    if cond is False. If a Python expression (a string) is given to
+    parameter cond, the expression will be evalulated in parental
+    population's local namespace. When a Python function is specified,
+    it accepts parameter pop for the parental population. The return
+    value of this function should be True or False. Otherwise,
+    parameter cond will be treated as a fixed condition (converted to
+    True or False) upon which ifMatingScheme or elseMatingScheme will
+    alway be applied.
+
+"; 
+
+%feature("docstring") simuPOP::ConditionalMating::~ConditionalMating "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~ConditionalMating()
+
+"; 
+
+%ignore simuPOP::ConditionalMating::ConditionalMating(const ConditionalMating &rhs);
+
+%feature("docstring") simuPOP::ConditionalMating::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::ConditionalMating::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::ConditionalMating::mate(Population &pop, Population &scratch);
+
 %ignore simuPOP::ConstNumOffModel;
 
 %feature("docstring") simuPOP::ConstNumOffModel::ConstNumOffModel "
@@ -7421,18 +7473,19 @@ Details:
     Create a hybrid mutator that uses a user-provided function to
     mutate an allele when a mutation event happens. This function
     (parameter func) accepts the allele to be mutated as parameter
-    allele and optional array of alleles as parameter context, which
-    are context alleles the left and right of the mutated allele.
-    Invalid context alleles (e.g. left allele to the first locus of a
-    chromosome) will be marked by -1. The return value of this
-    function will be used to mutate the passed allele. The passed,
-    returned and context alleles might be altered if parameter mapIn
-    and mapOut are used. This mutator by default applies to all loci
-    unless parameter loci is specified. A single mutation rate will be
-    used for all loci if a single value of parameter rates is given.
-    Otherwise, a list of mutation rates can be specified for each
-    locus in parameter loci. Please refer to classes mutator and
-    BaseOperator for descriptions of other parameters.
+    allele, locus index locus, and optional array of alleles as
+    parameter context, which are context alleles the left and right of
+    the mutated allele. Invalid context alleles (e.g. left allele to
+    the first locus of a chromosome) will be marked by -1. The return
+    value of this function will be used to mutate the passed allele.
+    The passed, returned and context alleles might be altered if
+    parameter mapIn and mapOut are used. This mutator by default
+    applies to all loci unless parameter loci is specified. A single
+    mutation rate will be used for all loci if a single value of
+    parameter rates is given. Otherwise, a list of mutation rates can
+    be specified for each locus in parameter loci. Please refer to
+    classes mutator and BaseOperator for descriptions of other
+    parameters.
 
 "; 
 
@@ -8106,16 +8159,20 @@ Details:
     specified, it will used for all loci (all loci or loci specified
     by parameter loci), regardless of physical distances between
     adjacent loci.  If a list of recombination rates are specified in
-    rates, a parameter loci with the same length should also be
-    specified. Different recombination rates can then be used after
-    these loci (between specified loci and their immediate neighbor to
-    the right).  A recombination intensity (intensity) can be used to
-    specify recombination rates that are proportional to physical
-    distances between adjacent markers. If the physical distance
-    between two markers is d, the recombination rate between them will
-    be intensity * d. No unit is assume for loci position and
-    recombination intensity.  Gene conversion is controlled using
-    parameter convMode, which can be
+    rates, different recombination rates could be applied after a list
+    of specified loci (between loci and their immediate neighbor to
+    the right). The loci should be specified by parameter loci as a
+    list with the same length as rates, or ALL_AVAIL (default) in
+    which case the length of rates should equal to the total number of
+    loci. Note that recombination rates specified for the last locus
+    on each chromosome are ignored because simuPOP assumes free
+    recombination between chromosomes.  A recombination intensity
+    (intensity) can be used to specify recombination rates that are
+    proportional to physical distances between adjacent markers. If
+    the physical distance between two markers is d, the recombination
+    rate between them will be intensity * d. No unit is assume for
+    loci position and recombination intensity.  Gene conversion is
+    controlled using parameter convMode, which can be
     *   NoConversion: no gene conversion (default).
     *   (NUM_MARKERS, prob, n): With probability prob, convert a fixed
     number (n) of markers if a recombination event happens.
