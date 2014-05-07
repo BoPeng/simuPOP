@@ -190,21 +190,10 @@ class TestSimulator(unittest.TestCase):
             initOps=InitSex(),
             matingScheme=RandomMating(subPopSize=self.demo),
             gen=10)
-
-    def demoFloat(self, pop):
-        if pop.dvars().gen == 5:
-            return [10.4444]
-        else:
-            return pop.subPopSizes()
-
-    def testFloatSize(self):
-        'Testing negative population size returned by demographic function'
         pop = Population(size=[100], loci=[2])
-        # this is ok because simuPOP automatically translate float input
-        # to integer.
-        pop.evolve(
+        self.assertRaises(TypeError, pop.evolve, 
             initOps=InitSex(),
-            matingScheme=RandomMating(subPopSize=self.demoFloat),
+            matingScheme=RandomMating(subPopSize=[-100]),
             gen=10)
 
 if __name__ == '__main__':

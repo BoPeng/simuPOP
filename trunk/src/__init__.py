@@ -123,6 +123,7 @@ __all__ = [
     'MatingScheme',
     'HomoMating',
     'HeteroMating',
+    'ConditionalMating',
     'PedigreeMating',
     'OffspringGenerator',
     'ControlledOffspringGenerator',
