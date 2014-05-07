@@ -1730,5 +1730,58 @@ private:
 };
 
 
+/** A conditional mating scheme that applies different mating schemes
+ *  according to a condition (similar to operator IfElse). The condition can
+ *  be a fixed condition, an expression or a user-defined function, to
+ *  determine which mating scheme to be used. 
+ */
+class ConditionalMating : public MatingScheme
+{
+public:
+	/** Create a conditional mating scheme that applies mating scheme \e 
+	 *  ifMatingScheme if the condition \e cond is \c True, or \e 
+	 *  elseMatingScheme if \e cond is \c False. If a Python expression 
+	 *  (a string) is given to parameter \e cond, the expression will be
+	 *  evalulated in parental population's local namespace. When a Python
+	 *  function is specified, it accepts parameter \c pop for the parental
+	 *  population. The return value of this function should be \c True or
+	 *  \c False. Otherwise, parameter \e cond will be treated as a fixed 
+	 *  condition (converted to \c True or \c False) upon which \e ifMatingScheme
+	 *  or \e elseMatingScheme will alway be applied.
+	 */
+	ConditionalMating(PyObject * cond, const MatingScheme & ifMatingScheme,
+		const MatingScheme & elseMatingScheme);
+
+	/// destructor
+	~ConditionalMating();
+
+	/// CPPONLY
+	ConditionalMating(const ConditionalMating & rhs);
+
+	/// HIDDEN Deep copy of a heterogeneous mating scheme
+	virtual MatingScheme * clone() const
+	{
+		return new ConditionalMating(*this);
+	}
+
+
+	/// HIDDEN describe a heterogeneous mating scheme.
+	virtual string describe(bool format = true) const;
+
+	/** CPPONLY Call each homogeneous mating scheme to populate offspring
+	 *  generation.
+	 */
+	bool mate(Population & pop, Population & scratch);
+
+private:
+	Expression m_cond;
+	pyFunc m_func;
+	int m_fixedCond;
+	MatingScheme * m_ifMS;
+	MatingScheme * m_elseMS;
+};
+
+
+
 }
 #endif

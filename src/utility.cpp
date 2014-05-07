@@ -4481,7 +4481,7 @@ bool intList::match(ssize_t rep, const vector<bool> * activeRep) const
 			return true;
 		// negative index
 		DBG_ASSERT(!activeRep->empty() && (*activeRep)[rep], SystemError,
-			"Check is avtive should only be done for active replicates");
+			"Active validation should only be done for active replicates");
 		// check the simple and most used case
 		if (*it == -1 && activeRep->back() && static_cast<size_t>(rep + 1) == activeRep->size())
 			return true;

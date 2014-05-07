@@ -579,7 +579,6 @@ public:
 	{
 	}
 
-
 	/// HIDDEN
 	virtual BaseOperator * clone() const
 	{

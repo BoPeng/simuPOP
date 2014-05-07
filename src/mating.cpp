@@ -1768,6 +1768,93 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 }
 
 
+
+ConditionalMating::ConditionalMating(PyObject * cond, const MatingScheme & ifMatingScheme,
+		const MatingScheme & elseMatingScheme)
+	: m_cond(PyString_Check(cond) ? PyObj_AsString(cond) : string()),
+	m_func(PyCallable_Check(cond) ? cond : NULL),
+	m_fixedCond(-1), m_ifMS(NULL), m_elseMS(NULL)
+{
+	if (!PyString_Check(cond) && !PyCallable_Check(cond)) {
+		bool c;
+		PyObj_As_Bool(cond, c);
+		m_fixedCond = c ? 1 : 0;
+	}
+
+	m_ifMS = ifMatingScheme.clone();
+	m_elseMS = elseMatingScheme.clone();
+}
+
+
+string ConditionalMating::describe(bool format) const
+{
+	string ifDesc = m_ifMS->describe(format);
+	string elseDesc = m_elseMS->describe(format);
+	string desc = "<simuPOP.ConditionalMating> a conditional mating scheme that ";
+	if (m_fixedCond != -1)
+		desc += "always applies mating scheme \n"  + (m_fixedCond == 1 ? ifDesc : elseDesc);
+	else if (m_func.isValid())
+		desc += "applies mating scheme \n" + ifDesc + "\n<indent>if function " + m_func.name()
+			+ " returns True, and otherwise apply \n" + elseDesc + "\n";
+	else {
+		desc += "applies mating scheme \n" + ifDesc + "\n<indent>if " + m_cond.expr()
+			+ " returns True, and otherwise apply\n" + elseDesc + "\n";
+	}
+
+	return format ? formatDescription(desc) : desc;
+}
+
+
+ConditionalMating::~ConditionalMating()
+{
+	delete m_ifMS;
+	delete m_elseMS;
+}
+
+
+ConditionalMating::ConditionalMating(const ConditionalMating & rhs) :
+	m_cond(rhs.m_cond), m_func(rhs.m_func), m_fixedCond(rhs.m_fixedCond),
+	m_ifMS(NULL), m_elseMS(NULL)
+{
+	m_ifMS = rhs.m_ifMS->clone();
+	m_elseMS = rhs.m_elseMS->clone();
+}
+
+
+bool ConditionalMating::mate(Population & pop, Population & scratch)
+{
+	bool res = true;
+	if (m_fixedCond != -1)
+		res = m_fixedCond == 1;
+	else if (m_func.isValid()) {
+		PyObject * args = PyTuple_New(m_func.numArgs());
+
+		DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
+
+		for (size_t i = 0; i < m_func.numArgs(); ++i) {
+			const string & arg = m_func.arg(i);
+			if (arg == "pop")
+				PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
+			else {
+				DBG_FAILIF(true, ValueError, "Only parameter 'pop' is acceptable in "
+					                         "function" + m_func.name());
+			}
+		}
+		res = m_func(PyObj_As_Bool, args);
+		Py_XDECREF(args);
+	} else {
+		m_cond.setLocalDict(pop.dict());
+		res = m_cond.valueAsBool();
+	}
+
+	if (res)
+		return m_ifMS->mate(pop, scratch);
+	else
+		return m_elseMS->mate(pop, scratch);
+	return true;
+}
+
+
 }
 
 
