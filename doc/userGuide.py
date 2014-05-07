@@ -1664,6 +1664,47 @@ for x in range(5):
 #end_file
 
 
+
+#begin_file log/matingSchemeByRepAndGen.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+simu = sim.Simulator(sim.Population(1000, loci=[10]), rep=3)
+simu.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.InitGenotype(freq=[0.5, 0.5])
+    ],
+    matingScheme=sim.ConditionalMating('rep == 0', 
+        # the first replicate use standard random mating
+        sim.RandomMating(),
+        sim.ConditionalMating('rep == 1 and gen >= 5',
+            # the second replicate produces more males for the first 10 generations
+            sim.RandomMating(),
+            # the last replicate produces more males all the time
+            sim.RandomMating(sexMode=(sim.PROB_OF_MALES, 0.7))
+            )
+        ),
+    postOps=[
+        sim.Stat(numOfMales=True),
+        sim.PyEval("'gen=%d' % gen", reps=0),
+        sim.PyEval(r"'\t%d' % numOfMales"),
+        sim.PyOutput('\n', reps=-1)
+    ],        
+    gen=10
+)
+#end_file
+
+#begin_file log/matingSchemeByFunc.py
+#begin_ignore
+
+#end_file
+
 #begin_file log/simuGen.py
 #begin_ignore
 import simuOpt
