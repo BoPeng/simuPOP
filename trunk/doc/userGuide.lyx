@@ -19997,6 +19997,83 @@ lstparams "caption={A weighting scheme used by heterogeneous mating schemes.},la
 
 \end_layout
 
+\begin_layout Subsection
+Conditional mating schemes
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+ConditionalMating
+\family default
+ mating scheme allows you to apply different mating schemes to populations
+ with different properties.
+ The condition can be a constant (True or False), an expression that will
+ be evaluated in the local namspace of the parental population, or a function
+ that can take parental population as its input paramter (with parameter
+ name 
+\family typewriter
+pop
+\family default
+).
+ 
+\end_layout
+
+\begin_layout Standard
+Using variable 
+\family typewriter
+rep
+\family default
+ and 
+\family typewriter
+gen
+\family default
+ in the local namespace of the parental population, we can use this mating
+ scheme to apply different mating schemes to different replicates and/or
+ at different generations.
+ For example, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "matingSchemeByRepAndGen"
+
+\end_inset
+
+ simulates the evolution of three replicates.
+ The first replicate uses regular mating scheme, the third replicate uses
+ a mating scheme that produces 70% of males, and the second replicate do
+ this only for the first 5 generations.
+ Because there are three cases, a nested 
+\family typewriter
+ConditionalMating
+\family default
+ is used.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/matingSchemeByRepAndGen.log"
+lstparams "caption={Apply different mating schemes for different replicates at different generations},label={matingSchemeByRepAndGen}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A function can be passed as the condition of a 
+\family typewriter
+ConditionalMating
+\family default
+ mating scheme.
+ This allows you to apply operators such as 
+\family typewriter
+Stat
+\family default
+ to examine the condition of populations more closely and determine which
+ mating scheme to use.
+\end_layout
+
 \begin_layout Section
 Simulator
 \end_layout
