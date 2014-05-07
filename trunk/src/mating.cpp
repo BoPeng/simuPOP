@@ -1256,8 +1256,11 @@ bool MatingScheme::prepareScratchPop(Population & pop, Population & scratch)
 			return false;
 		}
 		vectoru sz(res.size());
-		for (size_t i = 0; i < res.size(); i++)
+		for (size_t i = 0; i < res.size(); i++) {
+			if (res[i] < 0)
+				throw ValueError((boost::format("Negative population size %1% returned for subpopulation %2%") % res[i] % i ).str());
 			sz[i] = static_cast<ULONG>(res[i]);
+		}
 
 		// allow change of pop size of scratch
 		scratch.fitSubPopStru(sz, pop.subPopNames());
