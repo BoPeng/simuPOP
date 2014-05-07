@@ -177,5 +177,19 @@ class TestSimulator(unittest.TestCase):
             self.assertEqual(len(simu.vars(rep)["alleleFreq"]), 6)
             self.assertEqual(len(simu.dvars(rep, 1).alleleFreq), 6)
 
+    def demo(self, pop):
+        if pop.dvars().gen == 5:
+            return [-1]
+        else:
+            return pop.subPopSizes()
+
+    def testNegSize(self):
+        'Testing negative population size returned by demographic function'
+        pop = Population(size=[100], loci=[2])
+        pop.evolve(
+            initOps=InitSex(),
+            matingScheme=RandomMating(subPopSize=self.demo),
+            gen=10)
+
 if __name__ == '__main__':
     unittest.main()
