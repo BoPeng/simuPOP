@@ -464,7 +464,48 @@ class TestMatingSchemes(unittest.TestCase):
         )
         self.assertEqual(pop.genotype(), [1]*(150*25))
 
+    def testFixedCondMating(self):
+        'Testing ConditionalMating with constant condition'
+        pop = Population(size=100)
+        pop.evolve(
+            matingScheme=ConditionalMating(False, RandomMating(),
+                RandomSelection()),
+            gen=5)
+        # forgot init sex, RandomMating will fail
+        self.assertRaises(RuntimeError, pop.evolve,
+            matingScheme=ConditionalMating(True, RandomMating(),
+                RandomSelection()),
+            gen=5)
 
+    def testExprCondMating(self):
+        'Testing ConditionalMating with constant condition'
+        simu = Simulator(Population(size=1000), rep=2)
+        simu.evolve(
+            preOps=InitSex(),
+            matingScheme=ConditionalMating('rep==0',
+                RandomMating(),
+                RandomMating(sexMode=(PROB_OF_MALES, 0.7))),
+            finalOps=Stat(numOfMales=True),
+            gen=5)
+        self.assertLess(simu.dvars(0).numOfMales, 550)
+        self.assertGreater(simu.dvars(1).numOfMales, 650)
+
+    def cmFunc(self, pop):
+        return pop.dvars().rep == 0
+
+    def testFuncCondMating(self):
+        'Testing ConditionalMating with constant condition'
+        
+        simu = Simulator(Population(size=1000), rep=2)
+        simu.evolve(
+            preOps=InitSex(),
+            matingScheme=ConditionalMating(self.cmFunc,
+                RandomMating(),
+                RandomMating(sexMode=(PROB_OF_MALES, 0.7))),
+            finalOps=Stat(numOfMales=True),
+            gen=5)
+        self.assertLess(simu.dvars(0).numOfMales, 550)
+        self.assertGreater(simu.dvars(1).numOfMales, 650)
 
 if __name__ == '__main__':
     unittest.main()
