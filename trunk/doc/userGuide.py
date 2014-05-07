@@ -1684,7 +1684,7 @@ simu.evolve(
         # the first replicate use standard random mating
         sim.RandomMating(),
         sim.ConditionalMating('rep == 1 and gen >= 5',
-            # the second replicate produces more males for the first 10 generations
+            # the second replicate produces more males for the first 5 generations
             sim.RandomMating(),
             # the last replicate produces more males all the time
             sim.RandomMating(sexMode=(sim.PROB_OF_MALES, 0.7))
