@@ -797,7 +797,7 @@ public:
 
 
 	/// CPPONLY
-	virtual void finalize(Population & /* pop */, size_t /* subPop */)
+	virtual void finalize()
 	{
 		m_initialized = false;
 	}
@@ -1308,7 +1308,7 @@ public:
 	void initialize(Population & pop, size_t sp);
 
 	/// CPPONLY
-	void finalize(Population & pop, size_t sp);
+	void finalize();
 
 	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	IndividualPair chooseParents(RawIndIterator basePtr);
@@ -1380,7 +1380,7 @@ public:
 	void initialize(Population & pop, size_t sp);
 
 	/// CPPONLY
-	void finalize(Population & pop, size_t sp);
+	void finalize();
 
 	/// destructor
 	~PyParentsChooser()

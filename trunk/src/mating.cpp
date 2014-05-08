@@ -1099,10 +1099,10 @@ ParentChooser::IndividualPair CombinedParentsChooser::chooseParents(RawIndIterat
 }
 
 
-void CombinedParentsChooser::finalize(Population & pop, size_t sp)
+void CombinedParentsChooser::finalize()
 {
-	m_fatherChooser->finalize(pop, sp);
-	m_motherChooser->finalize(pop, sp);
+	m_fatherChooser->finalize();
+	m_motherChooser->finalize();
 }
 
 
@@ -1206,7 +1206,7 @@ ParentChooser::IndividualPair PyParentsChooser::chooseParents(RawIndIterator)
 }
 
 
-void PyParentsChooser::finalize(Population & /* pop */, size_t /* sp */)
+void PyParentsChooser::finalize()
 {
 	DBG_FAILIF(m_popObj == NULL, SystemError, "Python generator is not properly initialized.");
 	Py_DECREF(m_popObj);
@@ -1419,7 +1419,7 @@ bool HomoMating::mateSubPop(Population & pop, Population & offPop, size_t subPop
 			throw Exception("Unexpected error from openMP parallel region");
 #endif
 	}
-	m_ParentChooser->finalize(pop, subPop);
+	m_ParentChooser->finalize();
 	m_OffspringGenerator->finalize(pop);
 	return true;
 }
