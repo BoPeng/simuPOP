@@ -777,8 +777,8 @@ public:
 
 public:
 	// CPPONLY
-	ParentChooser(const string & selectionField = string()) : m_initialized(false),
-		m_selectionField(selectionField)
+	ParentChooser(const string & selectionField = string()) 
+		: m_initialized(false), m_selectionField(selectionField)
 	{
 	}
 
@@ -790,8 +790,8 @@ public:
 	}
 
 
-	/// CPPONLY
-	virtual void initialize(Population & /* pop */, size_t /* subPop */)
+	/// Initialize a parent chooser for subpopulation \e subPop of \e population pop
+	virtual void initialize(Population & pop, size_t subPop)
 	{
 	}
 
@@ -825,8 +825,8 @@ public:
 	}
 
 
-	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-	virtual IndividualPair chooseParents(RawIndIterator /* basePtr */)
+	/// Return chosen parents from a population if the parent chooser object is created with a population
+	virtual IndividualPair chooseParents()
 	{
 		// do not use NULL because VC2010 uses nullptr and who knows what gcc uses
 		return IndividualPair((Individual*)(0), (Individual*)(0));
@@ -834,7 +834,10 @@ public:
 
 
 	/// destructor
-	virtual ~ParentChooser() { }
+	virtual ~ParentChooser()
+	{
+		finalize();
+	}
 
 protected:
 	bool m_initialized;
@@ -880,11 +883,11 @@ public:
 	}
 
 
-	/// CPPONLY
-	void initialize(Population & pop, size_t sp);
+	/// Initialize a parent chooser for subpopulation \e subPop of \e population pop
+	void initialize(Population & pop, size_t subPop);
 
-	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-	IndividualPair chooseParents(RawIndIterator basePtr);
+	/// Return chosen parents from a population if the parent chooser object is created with a population
+	IndividualPair chooseParents();
 
 private:
 	///
@@ -922,8 +925,8 @@ public:
 	 *  (\c FEMALE_ONLY) individuals by setting parameter \e sexChoice.
 	 */
 	RandomParentChooser(bool replacement = true,
-		const string & selectionField = "fitness", SexChoice sexChoice = ANY_SEX) :
-		ParentChooser(selectionField), m_replacement(replacement), m_choice(sexChoice),
+		const string & selectionField = "fitness", SexChoice sexChoice = ANY_SEX)
+		: ParentChooser(selectionField), m_basePtr(), m_replacement(replacement), m_choice(sexChoice),
 		m_index(0), m_chosen(0), m_sampler(), m_size(0), m_shift(0)
 	{
 	}
@@ -954,13 +957,15 @@ public:
 	}
 
 
-	/// CPPONLY
-	void initialize(Population & pop, size_t sp);
+	/// Initialize a parent chooser for subpopulation \e subPop of \e population pop
+	void initialize(Population & pop, size_t subPop);
 
-	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-	IndividualPair chooseParents(RawIndIterator basePtr);
+	/// Return chosen parents from a population if the parent chooser object is created with a population
+	IndividualPair chooseParents();
 
 protected:
+	RawIndIterator m_basePtr;
+
 	bool m_replacement;
 
 	bool m_selection;
@@ -998,8 +1003,8 @@ public:
 	 *  population, the probability that a parent is chosen is proportional to
 	 *  his/her fitness value stored in \e selectionField.
 	 */
-	RandomParentsChooser(bool replacement = true, const string & selectionField = "fitness") :
-		ParentChooser(selectionField), m_replacement(replacement),
+	RandomParentsChooser(bool replacement = true, const string & selectionField = "fitness")
+		: ParentChooser(selectionField), m_replacement(replacement),
 		m_index(0), m_fitness(0), m_malesampler(), m_femalesampler()
 	{
 	}
@@ -1030,11 +1035,11 @@ public:
 	}
 
 
-	/// CPPONLY
-	void initialize(Population & pop, size_t sp);
+	/// Initialize a parent chooser for subpopulation \e subPop of \e population pop
+	void initialize(Population & pop, size_t subPop);
 
-	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-	IndividualPair chooseParents(RawIndIterator basePtr);
+	/// Return chosen parents from a population if the parent chooser object is created with a population
+	IndividualPair chooseParents();
 
 private:
 	bool m_replacement;
@@ -1078,7 +1083,7 @@ public:
 	 *  same sex.
 	 */
 	PolyParentsChooser(Sex polySex = MALE, UINT polyNum = 1,
-		const string & selectionField = "fitness") :
+		const string & selectionField = "fitness"):
 		ParentChooser(selectionField),
 		m_polySex(polySex), m_polyNum(polyNum),
 		m_maleIndex(0), m_femaleIndex(0),
@@ -1124,11 +1129,11 @@ public:
 	}
 
 
-	/// CPPONLY
-	void initialize(Population & pop, size_t sp);
+	/// Initialize a parent chooser for subpopulation \e subPop of \e population pop
+	void initialize(Population & pop, size_t subPop);
 
-	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-	IndividualPair chooseParents(RawIndIterator basePtr);
+	/// Return chosen parents from a population if the parent chooser object is created with a population
+	IndividualPair chooseParents();
 
 private:
 	Sex m_polySex;
@@ -1227,8 +1232,8 @@ private:
    /// CPPONLY
    void initialize(Population & pop, size_t sp);
 
-   /// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-   IndividualPair chooseParents(RawIndIterator basePtr);
+	/// Return chosen parents
+   IndividualPair chooseParents();
 
    private:
    vectorstr m_infoFields;
@@ -1304,14 +1309,14 @@ public:
 	}
 
 
-	/// CPPONLY
-	void initialize(Population & pop, size_t sp);
+	/// Initialize a parent chooser for subpopulation \e subPop of \e population pop
+	void initialize(Population & pop, size_t subPop);
 
 	/// CPPONLY
 	void finalize();
 
-	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-	IndividualPair chooseParents(RawIndIterator basePtr);
+	/// Return chosen parents from a population if the parent chooser object is created with a population
+	IndividualPair chooseParents();
 
 private:
 	ParentChooser * m_fatherChooser;
@@ -1376,8 +1381,8 @@ public:
 	}
 
 
-	/// CPPONLY
-	void initialize(Population & pop, size_t sp);
+	/// Initialize a parent chooser for subpopulation \e subPop of \e population pop
+	void initialize(Population & pop, size_t subPop);
 
 	/// CPPONLY
 	void finalize();
@@ -1391,8 +1396,8 @@ public:
 	}
 
 
-	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
-	IndividualPair chooseParents(RawIndIterator basePtr);
+	/// Return chosen parents from a population if the parent chooser object is created with a population
+	IndividualPair chooseParents();
 
 private:
 #ifndef OPTIMIZED

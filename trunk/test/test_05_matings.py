@@ -507,6 +507,227 @@ class TestMatingSchemes(unittest.TestCase):
         self.assertLess(simu.dvars(0).numOfMales, 550)
         self.assertGreater(simu.dvars(1).numOfMales, 650)
 
+    def testSequentialParentChooser(self):
+        'Testing SequentialParentChooser'
+        pop = Population([10, 10], loci=[1], infoFields='a')
+        initInfo(pop, range(10, 20), subPops=1, infoFields='a')
+        c = SequentialParentChooser()
+        c.initialize(pop=pop, subPop=1)
+        idx = 0
+        while idx < 10:
+            ind, tmp = c.chooseParents()
+            self.assertEqual(ind.a, 10 + idx)
+            idx += 1
+
+    def testRandomParentChooser(self):
+        'Test random parent chooser'
+        pop = Population([10, 10], loci=[1], infoFields='a')
+        initInfo(pop, range(10), subPops=0, infoFields='a')
+        initInfo(pop, range(10, 20), subPops=1, infoFields='a')
+        c = RandomParentChooser()
+        c.initialize(pop=pop, subPop=1)
+        for idx in range(100):
+            ind, tmp = c.chooseParents()
+            self.assertEqual(tmp, None)
+            self.assertLess(ind.a, 20)
+            self.assertGreaterEqual(ind.a, 10)
+        #
+        c = RandomParentChooser()
+        c.initialize(pop=pop, subPop=0)
+        for idx in range(100):
+            ind, tmp = c.chooseParents()
+            self.assertEqual(tmp, None)
+            self.assertLess(ind.a, 10)
+            self.assertGreaterEqual(ind.a, 0)
+        # fixed sex?
+        initSex(pop, sex=[MALE, FEMALE])
+        c = RandomParentChooser(sexChoice=MALE_ONLY)
+        c.initialize(pop=pop, subPop=0)
+        for idx in range(100):
+            f, tmp = c.chooseParents()
+            self.assertEqual(f.sex(), MALE)
+            # only males are chosen
+            self.assertEqual(int(f.a) % 2, 0)
+            self.assertLess(f.a, 10)
+            self.assertGreaterEqual(f.a, 0)
+
+    def testRandomParentChooserWithFitness(self):
+        'Test random parent chooser'
+        pop = Population([10, 10], loci=[1], infoFields=['a', 'fitness'])
+        initInfo(pop, range(10), subPops=0, infoFields='a')
+        initInfo(pop, [0.5]*5 + [0]*5, subPops=0, infoFields='fitness')
+        initInfo(pop, range(10, 20), subPops=1, infoFields='a')
+        initInfo(pop, [1]*5 + [0]*5, subPops=1, infoFields='fitness')
+        c = RandomParentChooser()
+        c.initialize(pop=pop, subPop=1)
+        for idx in range(500):
+            ind, tmp = c.chooseParents()
+            self.assertEqual(tmp, None)
+            self.assertLess(ind.a, 15)
+            self.assertGreaterEqual(ind.a, 10)
+        #
+        c = RandomParentChooser()
+        c.initialize(pop=pop, subPop=0)
+        for idx in range(500):
+            ind, tmp = c.chooseParents()
+            self.assertEqual(tmp, None)
+            self.assertLess(ind.a, 5)
+            self.assertGreaterEqual(ind.a, 0)
+
+    def testRandomParentChooserWithoutReplacement(self):
+        'Test random parent chooser'
+        pop = Population([10, 10], loci=[1], infoFields='a')
+        initInfo(pop, range(10), subPops=0, infoFields='a')
+        initInfo(pop, range(10, 20), subPops=1, infoFields='a')
+        c = RandomParentChooser(replacement=False)
+        c.initialize(pop=pop, subPop=1)
+        for idx in range(10):
+            ind, tmp = c.chooseParents()
+            self.assertEqual(tmp, None)
+            self.assertLess(ind.a, 20)
+            self.assertGreaterEqual(ind.a, 10)
+        self.assertRaises(RuntimeError, c.chooseParents)
+        #
+        c = RandomParentChooser(replacement=False)
+        c.initialize(pop=pop, subPop=0)
+        for idx in range(10):
+            ind, tmp = c.chooseParents()
+            self.assertEqual(tmp, None)
+            self.assertLess(ind.a, 10)
+            self.assertGreaterEqual(ind.a, 0)
+        self.assertRaises(RuntimeError, c.chooseParents)
+
+    def testRandomParentsChooser(self):
+        'Test random parent chooser'
+        pop = Population([10, 10], loci=[1], infoFields='a')
+        initSex(pop)
+        initInfo(pop, range(10), subPops=0, infoFields='a')
+        initInfo(pop, range(10, 20), subPops=1, infoFields='a')
+        c = RandomParentsChooser()
+        c.initialize(pop=pop, subPop=1)
+        for idx in range(100):
+            f, m = c.chooseParents()
+            self.assertEqual(f.sex(), MALE)
+            self.assertEqual(m.sex(), FEMALE)
+            self.assertLess(f.a, 20)
+            self.assertGreaterEqual(f.a, 10)
+            self.assertLess(m.a, 20)
+            self.assertGreaterEqual(m.a, 10)
+        #
+        c = RandomParentsChooser()
+        c.initialize(pop=pop, subPop=0)
+        for idx in range(100):
+            f, m = c.chooseParents()
+            self.assertEqual(f.sex(), MALE)
+            self.assertEqual(m.sex(), FEMALE)
+            self.assertLess(f.a, 10)
+            self.assertGreaterEqual(f.a, 0)
+            self.assertLess(m.a, 10)
+            self.assertGreaterEqual(m.a, 0)
+
+
+    def testRandomParentsChooserWithFitness(self):
+        'Test random parent chooser with Fitness'
+        pop = Population([10, 10], loci=[1], infoFields=['a', 'fitness'])
+        #
+        # Note: if we ignore sex=[MALE, FEMALE]
+        # there is a case when there is no female in the first 5 individual, therefore
+        # all females have fitness 0, and a female out of boundary could be selected
+        initSex(pop, sex=[MALE, FEMALE])
+        initInfo(pop, range(10), subPops=0, infoFields='a')
+        initInfo(pop, [0.5]*5 + [0]*5, subPops=0, infoFields='fitness')
+        initInfo(pop, range(10, 20), subPops=1, infoFields='a')
+        initInfo(pop, [1]*5 + [0]*5, subPops=1, infoFields='fitness')
+        #print([ind.sex() for ind in pop.individuals()])
+        c = RandomParentsChooser()
+        c.initialize(pop=pop, subPop=1)
+        for idx in range(5000):
+            f, m = c.chooseParents()
+            self.assertEqual(f.sex(), MALE)
+            self.assertEqual(m.sex(), FEMALE)
+            self.assertLess(f.a, 15)
+            self.assertGreaterEqual(f.a, 10)
+            self.assertLess(m.a, 15)
+            self.assertGreaterEqual(m.a, 10)
+        #
+        c = RandomParentsChooser()
+        c.initialize(pop=pop, subPop=0)
+        for idx in range(5000):
+            f, m = c.chooseParents()
+            self.assertEqual(f.sex(), MALE)
+            self.assertEqual(m.sex(), FEMALE)
+            self.assertLess(f.a, 5)
+            self.assertGreaterEqual(f.a, 0)
+            self.assertLess(m.a, 5)
+            self.assertGreaterEqual(m.a, 0)
+
+    def testRandomParentsChooserWithoutReplacement(self):
+        'Test random parents chooser without replacement'
+        pop = Population([10, 10], loci=[1], infoFields='a')
+        initSex(pop, sex=[MALE, FEMALE])
+        initInfo(pop, range(10), subPops=0, infoFields='a')
+        initInfo(pop, range(10, 20), subPops=1, infoFields='a')
+        c = RandomParentsChooser(replacement=False)
+        c.initialize(pop=pop, subPop=1)
+        for idx in range(5):
+            f, m = c.chooseParents()
+            self.assertEqual(f.sex(), MALE)
+            self.assertEqual(m.sex(), FEMALE)
+            self.assertLess(f.a, 20)
+            self.assertGreaterEqual(f.a, 10)
+            self.assertLess(m.a, 20)
+            self.assertGreaterEqual(m.a, 10)
+        self.assertRaises(RuntimeError, c.chooseParents)
+        #
+        c = RandomParentsChooser(replacement=False)
+        c.initialize(pop=pop, subPop=0)
+        for idx in range(5):
+            f, m = c.chooseParents()
+            self.assertEqual(f.sex(), MALE)
+            self.assertEqual(m.sex(), FEMALE)
+            self.assertLess(f.a, 10)
+            self.assertGreaterEqual(f.a, 0)
+            self.assertLess(m.a, 10)
+            self.assertGreaterEqual(m.a, 0)
+        self.assertRaises(RuntimeError, c.chooseParents)
+
+
+    def testPolyParentsChooser(self):
+        'Test PolyParentsChooser'
+        pop = Population([10, 10], loci=[1], infoFields='a')
+        initSex(pop)
+        initInfo(pop, range(10), subPops=0, infoFields='a')
+        initInfo(pop, range(10, 20), subPops=1, infoFields='a')
+        c = PolyParentsChooser(polySex=FEMALE, polyNum=2)
+        c.initialize(pop=pop, subPop=1)
+        for idx in range(100):
+            f, m = c.chooseParents()
+            if idx % 2 == 0:
+                lastInfo = m.a
+            else:
+                self.assertEqual(lastInfo, m.a)
+            self.assertEqual(f.sex(), MALE)
+            self.assertEqual(m.sex(), FEMALE)
+            self.assertLess(f.a, 20)
+            self.assertGreaterEqual(f.a, 10)
+            self.assertLess(m.a, 20)
+            self.assertGreaterEqual(m.a, 10)
+        #
+        c = PolyParentsChooser(polySex=MALE, polyNum=2)
+        c.initialize(pop=pop, subPop=0)
+        for idx in range(100):
+            f, m = c.chooseParents()
+            if idx % 2 == 0:
+                lastInfo = f.a
+            else:
+                self.assertEqual(lastInfo, f.a)
+            self.assertEqual(f.sex(), MALE)
+            self.assertEqual(m.sex(), FEMALE)
+            self.assertLess(f.a, 10)
+            self.assertGreaterEqual(f.a, 0)
+            self.assertLess(m.a, 10)
+            self.assertGreaterEqual(m.a, 0)
+
 if __name__ == '__main__':
     unittest.main()
     sys.exit(0)

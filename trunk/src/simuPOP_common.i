@@ -169,6 +169,7 @@ typedef long ssize_t;
 namespace std
 {
     %template()         pair<size_t, size_t>; /* e.g. chromLocusPair */
+    %template()         pair<simuPOP::Individual *, simuPOP::Individual *>; /* e.g. IndividualPair */
     %template()         vector<string>;     /* e.g. infoFields */
     %template()         vector<size_t>;      /* e.g. subPopSizes */
     %template()         vector<double>;     /* e.g. lociPos */
