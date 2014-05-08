@@ -1075,11 +1075,33 @@ Usage:
 
 %ignore simuPOP::CombinedParentsChooser::parallelizable() const;
 
-%ignore simuPOP::CombinedParentsChooser::initialize(Population &pop, size_t sp);
+%feature("docstring") simuPOP::CombinedParentsChooser::initialize "
 
-%ignore simuPOP::CombinedParentsChooser::finalize(Population &pop, size_t sp);
+Description:
 
-%ignore simuPOP::CombinedParentsChooser::chooseParents(RawIndIterator basePtr);
+    Initialize a parent chooser for subpopulation subPop of population
+    pop.
+
+Usage:
+
+    x.initialize(pop, subPop)
+
+"; 
+
+%ignore simuPOP::CombinedParentsChooser::finalize();
+
+%feature("docstring") simuPOP::CombinedParentsChooser::chooseParents "
+
+Description:
+
+    Return chosen parents from a population if the parent chooser
+    object is created with a population.
+
+Usage:
+
+    x.chooseParents()
+
+"; 
 
 %feature("docstring") simuPOP::CombinedSplitter "
 
@@ -4983,9 +5005,20 @@ Usage:
 
 %feature("docstring") simuPOP::ParentChooser::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::ParentChooser::initialize(Population &, size_t);
+%feature("docstring") simuPOP::ParentChooser::initialize "
 
-%ignore simuPOP::ParentChooser::finalize(Population &, size_t);
+Description:
+
+    Initialize a parent chooser for subpopulation subPop of population
+    pop.
+
+Usage:
+
+    x.initialize(pop, subPop)
+
+"; 
+
+%ignore simuPOP::ParentChooser::finalize();
 
 %feature("docstring") simuPOP::ParentChooser::describe "Obsolete or undocumented function."
 
@@ -4993,7 +5026,18 @@ Usage:
 
 %ignore simuPOP::ParentChooser::initialized() const;
 
-%ignore simuPOP::ParentChooser::chooseParents(RawIndIterator);
+%feature("docstring") simuPOP::ParentChooser::chooseParents "
+
+Description:
+
+    Return chosen parents from a population if the parent chooser
+    object is created with a population.
+
+Usage:
+
+    x.chooseParents()
+
+"; 
 
 %feature("docstring") simuPOP::ParentChooser::~ParentChooser "
 
@@ -5679,9 +5723,31 @@ Details:
 
 %ignore simuPOP::PolyParentsChooser::parallelizable() const;
 
-%ignore simuPOP::PolyParentsChooser::initialize(Population &pop, size_t sp);
+%feature("docstring") simuPOP::PolyParentsChooser::initialize "
 
-%ignore simuPOP::PolyParentsChooser::chooseParents(RawIndIterator basePtr);
+Description:
+
+    Initialize a parent chooser for subpopulation subPop of population
+    pop.
+
+Usage:
+
+    x.initialize(pop, subPop)
+
+"; 
+
+%feature("docstring") simuPOP::PolyParentsChooser::chooseParents "
+
+Description:
+
+    Return chosen parents from a population if the parent chooser
+    object is created with a population.
+
+Usage:
+
+    x.chooseParents()
+
+"; 
 
 %feature("docstring") simuPOP::Population "
 
@@ -7674,9 +7740,20 @@ Details:
 
 %ignore simuPOP::PyParentsChooser::parallelizable() const;
 
-%ignore simuPOP::PyParentsChooser::initialize(Population &pop, size_t sp);
+%feature("docstring") simuPOP::PyParentsChooser::initialize "
 
-%ignore simuPOP::PyParentsChooser::finalize(Population &pop, size_t sp);
+Description:
+
+    Initialize a parent chooser for subpopulation subPop of population
+    pop.
+
+Usage:
+
+    x.initialize(pop, subPop)
+
+"; 
+
+%ignore simuPOP::PyParentsChooser::finalize();
 
 %feature("docstring") simuPOP::PyParentsChooser::~PyParentsChooser "
 
@@ -7690,7 +7767,18 @@ Usage:
 
 "; 
 
-%ignore simuPOP::PyParentsChooser::chooseParents(RawIndIterator basePtr);
+%feature("docstring") simuPOP::PyParentsChooser::chooseParents "
+
+Description:
+
+    Return chosen parents from a population if the parent chooser
+    object is created with a population.
+
+Usage:
+
+    x.chooseParents()
+
+"; 
 
 %feature("docstring") simuPOP::PyPenetrance "
 
@@ -7958,9 +8046,31 @@ Details:
 
 %ignore simuPOP::RandomParentChooser::parallelizable() const;
 
-%ignore simuPOP::RandomParentChooser::initialize(Population &pop, size_t sp);
+%feature("docstring") simuPOP::RandomParentChooser::initialize "
 
-%ignore simuPOP::RandomParentChooser::chooseParents(RawIndIterator basePtr);
+Description:
+
+    Initialize a parent chooser for subpopulation subPop of population
+    pop.
+
+Usage:
+
+    x.initialize(pop, subPop)
+
+"; 
+
+%feature("docstring") simuPOP::RandomParentChooser::chooseParents "
+
+Description:
+
+    Return chosen parents from a population if the parent chooser
+    object is created with a population.
+
+Usage:
+
+    x.chooseParents()
+
+"; 
 
 %feature("docstring") simuPOP::RandomParentsChooser "
 
@@ -8003,9 +8113,31 @@ Details:
 
 %ignore simuPOP::RandomParentsChooser::parallelizable() const;
 
-%ignore simuPOP::RandomParentsChooser::initialize(Population &pop, size_t sp);
+%feature("docstring") simuPOP::RandomParentsChooser::initialize "
 
-%ignore simuPOP::RandomParentsChooser::chooseParents(RawIndIterator basePtr);
+Description:
+
+    Initialize a parent chooser for subpopulation subPop of population
+    pop.
+
+Usage:
+
+    x.initialize(pop, subPop)
+
+"; 
+
+%feature("docstring") simuPOP::RandomParentsChooser::chooseParents "
+
+Description:
+
+    Return chosen parents from a population if the parent chooser
+    object is created with a population.
+
+Usage:
+
+    x.chooseParents()
+
+"; 
 
 %ignore simuPOP::RandomSexModel;
 
@@ -8777,9 +8909,31 @@ Details:
 
 %feature("docstring") simuPOP::SequentialParentChooser::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::SequentialParentChooser::initialize(Population &pop, size_t sp);
+%feature("docstring") simuPOP::SequentialParentChooser::initialize "
 
-%ignore simuPOP::SequentialParentChooser::chooseParents(RawIndIterator basePtr);
+Description:
+
+    Initialize a parent chooser for subpopulation subPop of population
+    pop.
+
+Usage:
+
+    x.initialize(pop, subPop)
+
+"; 
+
+%feature("docstring") simuPOP::SequentialParentChooser::chooseParents "
+
+Description:
+
+    Return chosen parents from a population if the parent chooser
+    object is created with a population.
+
+Usage:
+
+    x.chooseParents()
+
+"; 
 
 %ignore simuPOP::SexModel;
 

@@ -6386,6 +6386,53 @@ pop.evolve(
 #end_file
 
 
+#begin_file log/BuiltInParentsChooser.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+from random import randint
+
+def randomChooser(pop, subPop):
+    maleChooser = sim.RandomParentChooser(sexChoice=sim.MALE_ONLY)
+    maleChooser.initialize(pop, subPop)
+    females = []
+    # identify females in each social rank
+    for rank in range(3):
+        females.append([x for x in pop.individuals(subPop) \
+            if x.sex() == sim.FEMALE and x.rank == rank])
+    #
+    while True:
+        # choose a random male
+        m = maleChooser.chooseParents()[0]
+        rank = int(m.rank)
+        # find a female in the same rank
+        yield m, females[rank][randint(0, len(females[rank]) - 1)]
+
+def setRank(off, dad):
+    'The rank of offspring can increase or drop to zero randomly'
+    off.rank = (dad.rank + randint(-1, 1)) % 3
+
+pop = sim.Population(size=[1000, 2000], loci=1, infoFields='rank')
+pop.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.InitInfo(lambda : randint(0, 2), infoFields='rank')
+    ],
+    matingScheme=sim.HomoMating(
+        sim.PyParentsChooser(randomChooser),
+        sim.OffspringGenerator(ops=sim.MendelianGenoTransmitter())
+    ),
+    gen = 5
+)    
+#end_file
+
+
+
 #begin_file log/cppParentChooser.py
 #expect_error because some system does not have swig or vc to compile
 #begin_ignore

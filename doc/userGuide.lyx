@@ -20616,7 +20616,7 @@ offspring generator
 .
  An offspring generator uses one or more during-mating operators to transmit
  parental genotype to offspring.
- These operators are call 
+ These operators are called 
 \series bold
 genotype transmitters
 \series default
@@ -21216,6 +21216,65 @@ es with the same social status.
 LatexCommand lstinputlisting
 filename "log/PyParentsChooser.log"
 lstparams "caption={A hybrid parent chooser that chooses parents by their social status},label={PyParentsChooser}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Built-in parent choosers could be used in a 
+\family typewriter
+PyParentsChooser
+\family default
+ to choose parents.
+ The parent chooser needs to be initialized with the parental population
+ and subpopulation index.
+ Calling the 
+\family typewriter
+chooseParents
+\family default
+ function repeatedly will return pairs of individuals from the population
+ (
+\family typewriter
+None
+\family default
+ will be returned for one of the parents if the parent chooser only returns
+ one parent).
+ The use of built-in parent choosers can improve the performance of your
+ 
+\family typewriter
+PyParentsChooser
+\family default
+, especially for complex selection patterns (e.g.
+ with natural selection).
+ For example, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "BuiltInParentsChooser"
+
+\end_inset
+
+ implements a similar mating scheme as Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "PyParentsChooser"
+
+\end_inset
+
+ but uses a 
+\family typewriter
+RandomParentChooser
+\family default
+ to choose males randomly.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/BuiltInParentsChooser.log"
+lstparams "caption={Use built-in parent choosers in a Python parent chooser},label={BuiltInParentsChooser}"
 
 \end_inset
 

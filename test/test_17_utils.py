@@ -13,7 +13,7 @@ import random
 import unittest, os, sys
 from simuOpt import setOptions
 # this line also tests the use of parameter version in setOptions
-setOptions(quiet=True, gui=False, version='1.0.1b')
+setOptions(quiet=True, gui=False, version='1.0.1')
 new_argv = []
 for arg in sys.argv:
     if arg in ['short', 'long', 'binary', 'mutant', 'lineage']:
@@ -227,6 +227,55 @@ class TestUtils(unittest.TestCase):
         for i in range(4):
             # the count must be exact
             self.assertEqual(num.count(i), 10000 * (i+1))
+
+    def testWeightedSamplerWithZero(self):
+        'Testing weighted sampler with Zero'
+        sampler = WeightedSampler([0, 1, 2, 0, 0, 3, 4, 0])
+        num = []
+        for i in range(100000):
+            num.append(sampler.draw())
+        self.assertAlmostEqual(num.count(1) / 100000., 0.1 * 1, places=1)
+        self.assertAlmostEqual(num.count(2) / 100000., 0.1 * 2, places=1)
+        self.assertAlmostEqual(num.count(5) / 100000., 0.1 * 3, places=1)
+        self.assertAlmostEqual(num.count(6) / 100000., 0.1 * 4, places=1)
+        self.assertEqual(num.count(0), 0)
+        self.assertEqual(num.count(3), 0)
+        self.assertEqual(num.count(4), 0)
+        self.assertEqual(num.count(7), 0)
+        num = sampler.drawSamples(100000)
+        self.assertAlmostEqual(num.count(1) / 100000., 0.1 * 1, places=1)
+        self.assertAlmostEqual(num.count(2) / 100000., 0.1 * 2, places=1)
+        self.assertAlmostEqual(num.count(5) / 100000., 0.1 * 3, places=1)
+        self.assertAlmostEqual(num.count(6) / 100000., 0.1 * 4, places=1)
+        self.assertEqual(num.count(0), 0)
+        self.assertEqual(num.count(3), 0)
+        self.assertEqual(num.count(4), 0)
+        self.assertEqual(num.count(7), 0)
+        # the proportion version
+        sampler = WeightedSampler([0, 0.1, 0.2, 0, 0, 0.3, 0.4, 0], 100000)
+        num = sampler.drawSamples(100000)
+        self.assertEqual(num.count(1), 10000)
+        self.assertEqual(num.count(2), 20000)
+        self.assertEqual(num.count(5), 30000)
+        self.assertEqual(num.count(6), 40000)
+        self.assertEqual(num.count(0), 0)
+        self.assertEqual(num.count(3), 0)
+        self.assertEqual(num.count(4), 0)
+        self.assertEqual(num.count(7), 0)
+        #
+        sampler = WeightedSampler([0, 1, 1, 0, 0, 1, 1, 0])
+        num = []
+        for i in range(100000):
+            num.append(sampler.draw())
+        self.assertAlmostEqual(num.count(1) / 100000., 0.25 , places=1)
+        self.assertAlmostEqual(num.count(2) / 100000., 0.25 , places=1)
+        self.assertAlmostEqual(num.count(5) / 100000., 0.25 , places=1)
+        self.assertAlmostEqual(num.count(6) / 100000., 0.25 , places=1)
+        self.assertEqual(num.count(0), 0)
+        self.assertEqual(num.count(3), 0)
+        self.assertEqual(num.count(4), 0)
+        self.assertEqual(num.count(7), 0)
+        num = sampler.drawSamples(100000)
 
     def TestLargePedigree(self):
         'Testing getting large Pedigree, for simuUtils.ascertainPedigree'

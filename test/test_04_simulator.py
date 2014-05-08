@@ -190,11 +190,6 @@ class TestSimulator(unittest.TestCase):
             initOps=InitSex(),
             matingScheme=RandomMating(subPopSize=self.demo),
             gen=10)
-        pop = Population(size=[100], loci=[2])
-        self.assertRaises(TypeError, pop.evolve, 
-            initOps=InitSex(),
-            matingScheme=RandomMating(subPopSize=[-100]),
-            gen=10)
 
 if __name__ == '__main__':
     unittest.main()
