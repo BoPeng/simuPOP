@@ -257,7 +257,7 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
     # Version
     if type(version) == str:
         try:
-            major, minor, release = [int(x) for x in re.sub('\D', ' ', current_version).split()]
+            major, minor, release = [int(x) for x in re.sub('\D', ' ', version).split()]
         except:
             print 'Invalid version string %s' % simuOptions['Version']
         simuOptions['Version'] = version
