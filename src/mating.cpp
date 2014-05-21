@@ -1198,6 +1198,7 @@ ParentChooser::IndividualPair PyParentsChooser::chooseParents()
 			}
 			Py_DECREF(v);
 		}
+		// PySequence_GetItem gets a new reference so we should DECREF
 		Py_DECREF(item);
 		return ParentChooser::IndividualPair(parents[0], parents[1]);
 	} else {
