@@ -4,15 +4,39 @@ Known Bugs:
   - BUG: simuPOP does not respond well to Ctrl-C under windows.
   - BUG: Textbox in Tkinter help dialog does not resize.
 
-version 1.1.1 - Not released, available at  svn://svn.code.sf.net/p/simupop/code/trunk
+
+Version 1.1.3 -- Not released
+MAJOR NEW FEATURES:
+* Add a new mating scheme [[http://simupop.sourceforge.net/manual_svn/build/refManual_ch2_sec3.html#class-conditionalmating|ConditionalMating]] to apply different matings schemes to populations with different properties. ([[http://simupop.sourceforge.net/manual_svn/build/userGuide_ch6_sec1.html#conditional-mating-schemes|Example]]
+
+NEW FEATURES:
+* Support compiling simuPOP using clang under MacOSX Maverick
+* Allow function passed to PyMutator to accept parameter locus. 
+* Allow the use of varying recombination rates rates=[...] with loci=ALL_AVAIL in operator Recombinator.
+* Raise an error if a demographic function returns a negative population size.
+* Expose the chooseParents interface of parent [[http://simupop.sourceforge.net/manual_svn/build/refManual_ch2_sec3.html#class-sequentialparentchooser|choosers]] so that they could be used in PyParentsChooser. ([[http://simupop.sourceforge.net/manual_svn/build/userGuide_ch6_sec3.html#a-python-parent-chooser|Example]])
+
+BUGS:
+* Fix a bug for random parent chooser (single parent) without replacement.
+* Fix a memory leak bug for PyParentChooser.
+
+Version 1.1.2 -- Rev 4825 (Feb 16, 2014)
+MAJOR NEW FEATURE:
+* Add a new module simuPOP.demography, move migr functions from simuPOP.utils to this module and add a migration matrix generating function for 2D stepping stone model. Add demographic models InstantChangeModel, LinearGrowthModel, ExponentialGrowthModel and MultiStageModel, OutofAfricaModel, and SettlementOfNewWorldModel.
+
+BUGS:
+* Fix a bug in Population.addLoci when a locus is added to an empty chromosome (with 0 locus).
+* Stop output details of mutations by default (> was set as default).
+* Fix the use of virtual subpopulation in import/export functions.
+* Add only one field if duplicated information fields are added.
 
 NEW FEATURE:
-  - Add an operator OffspringTagger to track the index of offspring in their familes.
-  - Allow mutators to output details of each mutant.
-  - Add parameter byName to function Population.addLociFrom.
-  - Use R package kinship2 instead of kinship in simuPOP.sampling because the kinship package is now deprecated.
+* Add support for format ms to functions simuPOP.utils.importPopulation and simuPOP.utils.export.
+* Add support for matplotlib in module simuPOP.plotter. Only VarPlotter is supported because other statistics related operators (e.g. BoxPlotter) reply on rpy for statistical analysis.
+* Stop an evolutionary process if the demographic function returns an empty list. This allows the demographic models to stop evolution.
+* Allow the passing of duplicated information fields to allow more flexibility in the design of external modules.
 
-version 1.1.0 - Rev 4744 (Feb 11, 2013)
+Version 1.1.1 - Rev 4774 (May 13, 2013)
 
 NEW FEATURE:
   - Implement temporal estimates of effective population size for sampling plan 1. Add variables
