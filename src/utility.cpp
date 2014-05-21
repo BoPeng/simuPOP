@@ -2229,6 +2229,9 @@ void * pyIndPointer(PyObject * obj)
 #ifndef STANDALONE_EXECUTABLE
 	void * ptr = 0;
 	SWIG_Python_ConvertPtr(obj, &ptr, g_swigIndividual, 0);
+	// I do not quite understand why this is needed but in PyParentChooser, when
+	// the functor returns individual object, and accepted by the mating schem,
+	// there is a memory leak 
 	Py_DECREF(obj);
 	return ptr;
 #else
@@ -2243,7 +2246,6 @@ void * pyPopPointer(PyObject * obj)
 #ifndef STANDALONE_EXECUTABLE
 	void * ptr = 0;
 	SWIG_Python_ConvertPtr(obj, &ptr, g_swigPopType, 0);
-	Py_DECREF(obj);
 	return ptr;
 #else
 	(void)obj; // avoid a compiler warning of unused variable.
