@@ -416,14 +416,18 @@ private:
 
 /** This selector assigns fitness values by calling a user provided function.
  *  It accepts a list of loci (parameter \e loci) and a Python function \c func
- *  which should be defined with one or more of parameters \c geno, \c gen,
- *  \c ind, \c pop or names of information fields. Parameter \e loci can be a
- *  list of loci indexes, names or \c ALL_AVAIL. When this operator is applied
- *  to a population, it passes genotypes at specified loci, generation number,
- *  a reference to an individual, a reference to the current population
+ *  which should be defined with one or more of parameters \c geno, \c mut,
+ *  \c gen, \c ind, \c pop or names of information fields. Parameter \e loci can
+ *  be a list of loci indexes, names or \c ALL_AVAIL. When this operator is applied
+ *  to a population, it passes genotypes or mutants at specified loci, generation
+ *  number, a reference to an individual, a reference to the current population
  *  (usually used to retrieve population variable), and values at specified
- *  information fields to respective parameters of this function. The returned
- *  value will be used to determine the fitness of each individual.
+ *  information fields to respective parameters of this function. Genotypes are
+ *  passed as a tuple of alleles arranged locus by locus (in the order of
+ *  A1,A2,B1,B2 for loci A and B). Mutants are passed as a dictionary of loci
+ *  index (with respect to all genotype of individuals, not just the first ploidy)
+ *  and alleles. The returned value will be used to determine the fitness of each
+ *  individual.
  */
 class PySelector : public BaseSelector
 {
@@ -431,9 +435,7 @@ public:
 	/** Create a Python hybrid selector that passes genotype at specified
 	 *  \e loci, values at specified information fields (if requested) and
 	 *  a generation number to a user-defined function \e func. The return
-	 *  value will be treated as individual fitness. Note that genotypes for
-	 *  parameter \c geno are passed locus by locus, namely in the order of
-	 *  A1,A2,B1,B2 for loci A and B. 
+	 *  value will be treated as individual fitness. 
 	 */
 	PySelector(PyObject * func, lociList loci = vectoru(),
 		int begin = 0, int end = -1, int step = 1,

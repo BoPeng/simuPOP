@@ -102,6 +102,8 @@ void PyQuanTrait::qtrait(Individual * ind, size_t gen, vectorf & traits) const
 			PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(ind)));
 		else if (arg == "geno")
 			PyTuple_SET_ITEM(args, i, ind->genoAtLoci(m_loci));
+		else if (arg == "mut")
+			PyTuple_SET_ITEM(args, i, ind->mutAtLoci(m_loci));
 		else if (arg == "gen")
 			PyTuple_SET_ITEM(args, i, PyInt_FromLong(static_cast<long>(gen)));
 		else {

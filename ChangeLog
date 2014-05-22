@@ -15,6 +15,7 @@ NEW FEATURES:
 * Allow the use of varying recombination rates rates=[...] with loci=ALL_AVAIL in operator Recombinator.
 * Raise an error if a demographic function returns a negative population size.
 * Expose the chooseParents interface of parent [[http://simupop.sourceforge.net/manual_svn/build/refManual_ch2_sec3.html#class-sequentialparentchooser|choosers]] so that they could be used in PyParentsChooser. ([[http://simupop.sourceforge.net/manual_svn/build/userGuide_ch6_sec3.html#a-python-parent-chooser|Example]])
+* Allow the passing of mutants (non-zero alleles) as a dictionary to user-provided function in call-back functions of PySelector, PyQuanTrait, and PyPenetrance. This can be more efficient for large genomes with few mutants.
 
 BUGS:
 * Fix a bug for random parent chooser (single parent) without replacement.

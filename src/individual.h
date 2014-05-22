@@ -363,7 +363,13 @@ public:
 	PyObject * lineage(const uintList & ploidy = uintList(), const uintList & chroms = uintList());
 
 	/** CPPONLY
-	 *  Return a Python object with alleles at specified loci. This function
+	 *  Return a Python dictionary with alleles at specified loci. This function
+	 *  is usually used to collect alleles to send to a user-provided function.
+	 */
+	PyObject * mutAtLoci(const lociList & loci);
+
+	/** CPPONLY
+	 *  Return a Python tuple with alleles at specified loci. This function
 	 *  is usually used to collect alleles to send to a user-provided function.
 	 */
 	PyObject * genoAtLoci(const lociList & loci);
