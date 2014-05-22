@@ -703,6 +703,20 @@ class TestSelector(unittest.TestCase):
         self.assertEqual(tuple(g), geno[::2] + geno[1::2])
         return 1
         
+    def pyGenoTest21(self, geno, mut):
+        self.geno.extend(geno)
+        for loc, allele in mut.items():
+            self.assertEqual(loc in [2, 4, 5, 7, 3, 12, 14, 15, 17, 13], True)
+        idx_map = {idx:v for idx,v in enumerate([2,3,4,5,7])}
+        for idx, v in enumerate(geno):
+            if v != 0:
+                self.assertEqual(idx_map[idx/2]+idx%2*10 in mut, True)
+                self.assertEqual(mut[idx_map[idx/2]+idx%2*10], v)
+            else:
+                # mut should be a default dict
+                self.assertEqual(mut[idx_map[idx/2]+idx%2*10], 0)
+        return 1
+
     def pyGenoTest2(self, geno, mut):
         self.geno.extend(geno)
         for loc, allele in mut.items():
@@ -726,6 +740,18 @@ class TestSelector(unittest.TestCase):
         PySelector(func=self.pyGenoTest1, loci=ALL_AVAIL).apply(pop)
         self.assertEqual(self.geno, pop.genotype())
         # partial?
+        #
+        self.geno = []
+        PySelector(func=self.pyGenoTest21, loci=[2, 3, 4, 5, 7]).apply(pop)
+        geno = []
+        for ind in pop.individuals():
+            geno.extend([ind.allele(2, 0), ind.allele(2,1),
+                ind.allele(3, 0), ind.allele(3,1),
+                ind.allele(4, 0), ind.allele(4,1),
+                ind.allele(5, 0), ind.allele(5,1),
+                ind.allele(7, 0), ind.allele(7,1),
+            ])
+        self.assertEqual(self.geno, geno)
         #
         self.geno = []
         PySelector(func=self.pyGenoTest2, loci=[2, 4, 5, 7, 3]).apply(pop)

@@ -25,9 +25,9 @@
 
 #include "individual.h"
 #include <sstream>
-#ifdef MUTANTALLELE
+#include <set>
 #include <map>
-#endif
+#include <algorithm>
 using std::ostringstream;
 using std::setprecision;
 
@@ -508,22 +508,42 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 					}
 				}
 			} else {
-				// otherwise put all mutants in a temporary array
-				std::map<size_t, size_t> loci_map;
-				for (size_t i = 0; i < nLoci; ++i)
-					loci_map[loci[i]] = i;
+				// check if the loci is ordered
+				bool ordered = true;
+				for (size_t i = 1; i < loci.size(); ++i)
+					if (loci[i] < loci[i-1]) {
+						ordered = false;
+						break;
+					}
+				const vectoru * sorted = & loci;
+				if (!ordered) {
+					vectoru sloci(loci.begin(), loci.end());
+					std::sort(sloci.begin(), sloci.end());
+					sorted = & sloci;
+				}
+				
+				size_t nLoci = totNumLoci();
+				size_t l = sorted->front();
+				size_t h = sorted->back();
 
-				vectorm::const_val_iterator m_ptr = m_genoPtr.get_val_iterator();
-				vectorm::const_val_iterator m_end = (m_genoPtr + genoSize()).get_val_iterator();
-				for (; m_ptr != m_end; ++m_ptr) {
-					size_t loc = m_ptr->first % genoSize();
-					size_t p = loc / totNumLoci();
-					// find it
-					std::map<size_t, size_t>::iterator it = loci_map.find(loc % totNumLoci());
-					if (it != loci_map.end())
-						PyDict_SetItem(mutDict, 
-							PyInt_FromLong(loc),
-							PyInt_FromLong(m_ptr->second));
+				vectoru::const_iterator eit = sorted->end();
+				for (size_t p = 0; p < ploidy(); ++p) {
+					vectoru::const_iterator it = sorted->begin();
+					vectorm::const_val_iterator m_ptr = (m_genoPtr + (l + p * nLoci)).get_val_iterator();
+					vectorm::const_val_iterator m_end = (m_genoPtr + (h + 1 + p * nLoci)).get_val_iterator();
+					for (; m_ptr != m_end; ++m_ptr) {
+						size_t loc = m_ptr->first % nLoci;
+						// move it
+						while (*it < loc && it != eit) 
+							++it;
+						// do not look any further
+						if (it == eit)
+							break;
+						else if (*it == loc)
+							PyDict_SetItem(mutDict, 
+								PyInt_FromLong(loc + p * nLoci),
+								PyInt_FromLong(m_ptr->second));
+					}
 				}
 			}
 		} else {
