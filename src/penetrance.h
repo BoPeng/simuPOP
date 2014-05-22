@@ -377,10 +377,10 @@ private:
  *  variables) and values at specified information fields to respective
  *  parameters of this function. Genotypes of each individual are
  *  passed as a tuple of alleles arranged locus by locus (in the order of
- *  A1,A2,B1,B2 for loci A and B). Mutants are passed as a dictionary of loci
- *  index (with respect to all genotype of individuals, not just the first ploidy)
- *  and alleles. The returned penetrance values will be used to
- *  determine the affection status of each individual.
+ *  A1,A2,B1,B2 for loci A and B). Mutants are passed as a default dictionary
+ *  of loci index (with respect to all genotype of individuals, not just
+ *  the first ploidy) and alleles. The returned penetrance values will be
+ *  used to determine the affection status of each individual.
  */
 class PyPenetrance : public BasePenetrance
 {

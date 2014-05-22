@@ -712,6 +712,9 @@ class TestSelector(unittest.TestCase):
             if v != 0:
                 self.assertEqual(idx_map[idx/2]+idx%2*10 in mut, True)
                 self.assertEqual(mut[idx_map[idx/2]+idx%2*10], v)
+            else:
+                # mut should be a default dict
+                self.assertEqual(mut[idx_map[idx/2]+idx%2*10], 0)
         return 1
 
     def testPassingGenotype(self):
