@@ -12222,12 +12222,17 @@ status open
 
 \begin_layout Plain Layout
 
-def pfunc(genotype):
+def pfunc(geno):
 \end_layout
 
 \begin_layout Plain Layout
 
     # calculate penetrance according to genotype at specified loci
+\end_layout
+
+\begin_layout Plain Layout
+
+    # in the order of A1,A2,B1,B2,C1,C2 for loci A,B,C (for diploid)
 \end_layout
 
 \begin_layout Plain Layout
@@ -12253,7 +12258,7 @@ status open
 
 \begin_layout Plain Layout
 
-def pfunc(genotype, fields):
+def pfunc(geno, fields):
 \end_layout
 
 \begin_layout Plain Layout
@@ -12286,7 +12291,7 @@ PyPenetrance
  generation-specific penetrance models (e.g.
  
 \family typewriter
-pfunc(genotype, fields, gen)
+pfunc(geno, fields, gen)
 \family default
 ).
 \end_layout
@@ -12382,33 +12387,51 @@ PyQuanTrait
 \family default
  accepts a user defined function that returns quantitative trait values
  for specified information fields.
- This operator uses parameter 
-\family typewriter
-infoFields
-\family default
- to specify one or more trait fields, and 
-\family typewriter
-paramFields
-\family default
- to specify additional information that will be passed to the user-defined
- function.
  This operator can comunicate with functions in one of the forms of 
 \family typewriter
-func(genotype)
+func(geno)
 \family default
 , 
 \family typewriter
-func(genotype, fields)
+func(geno, field_name, ...)
 \family default
  or 
 \family typewriter
-func(genotype, fields, gen)
+func(geno, field_name, gen)
 \family default
  where 
 \family typewriter
-fields
+field_name
 \family default
- will be values at specified information fields.
+ should be name of existing fields.
+ simuPOP will pass genotype and value of specified fields according to name
+ of the passed function.
+ Note that geno are arrange locus by locus, namely in the order of 
+\family typewriter
+A1
+\family default
+,
+\family typewriter
+A2
+\family default
+,
+\family typewriter
+B1
+\family default
+,
+\family typewriter
+B2
+\family default
+ for loci 
+\family typewriter
+A
+\family default
+ and 
+\family typewriter
+B
+\family default
+.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -13273,6 +13296,12 @@ def fitness_func(geno):
 
 \begin_layout Plain Layout
 
+    # genotypes are arrange locus by locus, namely A1,A2,B1,B2 for loci
+ A and B
+\end_layout
+
+\begin_layout Plain Layout
+
     return val
 \end_layout
 
@@ -13323,6 +13352,34 @@ field1
 field2
 \family default
  are names of information fields.
+ simuPOP will pass genotype and value of specified fields according to name
+ of the passed function.
+ Note that genotypes are arrange locus by locus, namely in the order of
+ 
+\family typewriter
+A1
+\family default
+,
+\family typewriter
+A2
+\family default
+,
+\family typewriter
+B1
+\family default
+,
+\family typewriter
+B2
+\family default
+ for loci 
+\family typewriter
+A
+\family default
+ and 
+\family typewriter
+B
+\family default
+.
  Other parameters such as 
 \family typewriter
 gen

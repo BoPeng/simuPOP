@@ -694,6 +694,93 @@ class TestSelector(unittest.TestCase):
         # simulation did not terminate unexpectedly
         self.assertEqual(simu.dvars(0).gen, 100)
 
+    def pyGenoTest1(self, geno):
+        self.geno.extend(geno[::2])
+        self.geno.extend(geno[1::2])
+        return 1
+        
+    def pyGenoTest2(self, geno):
+        self.geno.extend(geno)
+        return 1
+
+    def testPassingGenotype(self):
+        'Testing the pass of genotypes to user provided function'
+        pop = Population(100, loci=[6,4], infoFields='fitness')
+        initSex(pop)
+        initGenotype(pop, freq=[0.4, 0.5, 0.1])
+        self.geno = []
+        PySelector(func=self.pyGenoTest1, loci=ALL_AVAIL).apply(pop)
+        self.assertEqual(self.geno, pop.genotype())
+        # partial?
+        #
+        self.geno = []
+        PySelector(func=self.pyGenoTest2, loci=[2, 4, 5, 7, 3]).apply(pop)
+        geno = []
+        for ind in pop.individuals():
+            geno.extend([ind.allele(2, 0), ind.allele(2,1),
+                ind.allele(4, 0), ind.allele(4,1),
+                ind.allele(5, 0), ind.allele(5,1),
+                ind.allele(7, 0), ind.allele(7,1),
+                ind.allele(3, 0), ind.allele(3,1),
+            ])
+        self.assertEqual(self.geno, geno)
+
+    def pyGenoTest3(self, geno):
+        # for male, 
+        self.genoX.append(geno[:6])
+        self.genoY.append(geno[6:])
+        return 1
+
+    def pyGenoTest4(self, geno):
+        # for male, 
+        self.geno.append(geno)
+        return 1
+        
+    def testPassingMaleGenotype(self):
+        'Testing the pass of genotypes to user provided function (for males)'
+        pop = Population(100, loci=[6,4], infoFields='fitness', chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
+        initSex(pop, maleProp=1)
+        initGenotype(pop, freq=[0.4, 0.5, 0.1])
+        self.genoX = []
+        self.genoY = []
+        PySelector(func=self.pyGenoTest3, loci=ALL_AVAIL).apply(pop)
+        for ind, x, y in zip(pop.individuals(), self.genoX, self.genoY):
+            self.assertEqual(ind.genotype(0, 0), x)
+            self.assertEqual(ind.genotype(1, 1), y)
+        #
+        # selected
+        self.geno = []
+        PySelector(func=self.pyGenoTest4, loci=[2, 4, 5, 7, 3]).apply(pop)
+        for ind, x in zip(pop.individuals(), self.geno):
+            self.assertEqual(x, (ind.allele(2, 0), ind.allele(4, 0), ind.allele(5, 0), ind.allele(7, 1), ind.allele(3, 0)))
+
+    def pyGenoTest5(self, geno):
+        # for female, 
+        self.geno.append(geno[::2] + geno[1::2])
+        return 1
+
+    def pyGenoTest6(self, geno):
+        # for female, 
+        self.geno.append(geno)
+        return 1
+        
+    def testPassingFemaleGenotype(self):
+        'Testing the pass of genotypes to user provided function (for females)'
+        pop = Population(100, loci=[6,4], infoFields='fitness', chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
+        initSex(pop, maleProp=0)
+        initGenotype(pop, freq=[0.4, 0.5, 0.1])
+        self.geno = []
+        PySelector(func=self.pyGenoTest5, loci=ALL_AVAIL).apply(pop)
+        for ind, x in zip(pop.individuals(), self.geno):
+            self.assertEqual(list(ind.genotype(0, 0)) + list(ind.genotype(1,0)), list(x))
+        #
+        # selected
+        self.geno = []
+        PySelector(func=self.pyGenoTest6, loci=[2, 4, 5, 7, 3]).apply(pop)
+        for ind, x in zip(pop.individuals(), self.geno):
+            self.assertEqual(x, (ind.allele(2, 0), ind.allele(2, 1), ind.allele(4, 0), ind.allele(4, 1), ind.allele(5, 0), ind.allele(5, 1), ind.allele(3, 0), ind.allele(3,1)))
+
+
     def testMlSelector(self):
         'Testing multi-locus selector'
         simu = Simulator(

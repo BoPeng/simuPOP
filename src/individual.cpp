@@ -25,6 +25,9 @@
 
 #include "individual.h"
 #include <sstream>
+#ifdef MUTANTALLELE
+#include <map>
+#endif
 using std::ostringstream;
 using std::setprecision;
 
@@ -427,7 +430,31 @@ PyObject * Individual::genoAtLoci(const lociList & lociList)
 	vector<ULONG> alleles;
 
 	if (lociList.allAvail()) {
+#ifdef MUTANTALLELE
+		alleles.reserve(ply * totNumLoci());
+		vector<ULONG> tmp_alleles(ply * totNumLoci(), 0);
 
+		vectorm::const_val_iterator m_ptr = m_genoPtr.get_val_iterator();
+		vectorm::const_val_iterator m_end = (m_genoPtr + genoSize()).get_val_iterator();
+		for (; m_ptr != m_end; ++m_ptr)
+			tmp_alleles[ m_ptr->first % genoSize() ] = m_ptr->second;
+		
+		for (ssize_t ch = 0; ch < static_cast<ssize_t>(numChrom()); ++ch) {
+			size_t chType = chromType(ch);
+			if (chType == CHROMOSOME_Y && sex() == FEMALE)
+				continue;
+			for (size_t idx = 0; idx < numLoci(ch); ++idx) {
+				for (ssize_t p = 0; p < ply; ++p) {
+					if (((chType == CHROMOSOME_X && p == 1) ||
+						 (chType == CHROMOSOME_Y && p == 0)) && sex() == MALE)
+						continue;
+					if (chType == MITOCHONDRIAL && p > 0)
+						continue;
+					alleles.push_back(tmp_alleles[p*totNumLoci()+chromBegin(ch)+idx]);
+				}
+			}
+		}
+#else
 		alleles.reserve(ply * totNumLoci());
 
 		for (ssize_t ch = 0; ch < static_cast<ssize_t>(numChrom()); ++ch) {
@@ -445,7 +472,67 @@ PyObject * Individual::genoAtLoci(const lociList & lociList)
 				}
 			}
 		}
+
+#endif
 	} else {
+#ifdef MUTANTALLELE
+		const vectoru & loci = lociList.elems(this);
+
+		size_t nLoci = loci.size();
+		alleles.reserve(ply * nLoci);
+
+		vectoru chromTypes;
+
+		for (size_t j = 0; j < loci.size(); ++j)
+			chromTypes.push_back(chromType(chromLocusPair(loci[j]).first));
+
+		// if there is a small number of loci, or if a small fraction of loci
+		// get the loci directly.
+		if (nLoci * 100 < totNumLoci()) {
+			for (size_t idx = 0; idx < loci.size(); ++idx) {
+				for (int p = 0; p < ply; ++p) {
+					if (chromTypes[idx] == CHROMOSOME_Y && sex() == FEMALE)
+						continue;
+					if (((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
+						 (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && sex() == MALE)
+						continue;
+					if (chromTypes[idx] == MITOCHONDRIAL && p > 0)
+						continue;
+					alleles.push_back(allele(loci[idx], p));
+				}
+			}
+		} else {
+			// otherwise put all alleles in a temporary array
+			vector<ULONG> tmp_alleles(ply * nLoci, 0);
+			std::map<size_t, size_t> loci_map;
+			for (size_t i = 0; i < nLoci; ++i)
+				loci_map[loci[i]] = i;
+
+			vectorm::const_val_iterator m_ptr = m_genoPtr.get_val_iterator();
+			vectorm::const_val_iterator m_end = (m_genoPtr + genoSize()).get_val_iterator();
+			for (; m_ptr != m_end; ++m_ptr) {
+				size_t loc = m_ptr->first % genoSize();
+				size_t p = loc / totNumLoci();
+				// find it
+				std::map<size_t, size_t>::iterator it = loci_map.find(loc % totNumLoci());
+				if (it != loci_map.end())
+					tmp_alleles[it->second + p*nLoci] = m_ptr->second;
+			}
+
+			for (size_t idx = 0; idx < loci.size(); ++idx) {
+				for (int p = 0; p < ply; ++p) {
+					if (chromTypes[idx] == CHROMOSOME_Y && sex() == FEMALE)
+						continue;
+					if (((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
+						 (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && sex() == MALE)
+						continue;
+					if (chromTypes[idx] == MITOCHONDRIAL && p > 0)
+						continue;
+					alleles.push_back(tmp_alleles[idx + p * nLoci]);
+				}
+			}
+		}
+#else
 		const vectoru & loci = lociList.elems(this);
 
 		vectoru chromTypes;
@@ -467,6 +554,7 @@ PyObject * Individual::genoAtLoci(const lociList & lociList)
 				alleles.push_back(allele(loci[idx], p));
 			}
 		}
+#endif
 	}
 	PyObject * genoObj = PyTuple_New(alleles.size());
 	// set value
