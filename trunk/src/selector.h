@@ -424,7 +424,7 @@ private:
  *  (usually used to retrieve population variable), and values at specified
  *  information fields to respective parameters of this function. Genotypes are
  *  passed as a tuple of alleles arranged locus by locus (in the order of
- *  A1,A2,B1,B2 for loci A and B). Mutants are passed as a dictionary of loci
+ *  A1,A2,B1,B2 for loci A and B). Mutants are passed as a default dictionary of loci
  *  index (with respect to all genotype of individuals, not just the first ploidy)
  *  and alleles. The returned value will be used to determine the fitness of each
  *  individual.

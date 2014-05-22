@@ -34,6 +34,7 @@ using std::setprecision;
 #if PY_VERSION_HEX >= 0x03000000
 #  define PyInt_FromLong(x) PyLong_FromLong(x)
 #endif
+extern "C" PyObject * PyDefDict_New();
 
 namespace simuPOP {
 
@@ -424,7 +425,7 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 	ssize_t ply = ploidy();
 	bool autosome_only = chromX() == -1 && chromY() == -1;
 
-	PyObject * mutDict = PyDict_New();
+	PyObject * mutDict = PyDefDict_New();
 	if (isHaplodiploid() && sex() == MALE)
 		ply = 1;
 

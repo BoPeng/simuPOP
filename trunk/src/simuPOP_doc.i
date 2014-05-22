@@ -3026,6 +3026,8 @@ Details:
 
 "; 
 
+%ignore simuPOP::Individual::mutAtLoci(const lociList &loci);
+
 %ignore simuPOP::Individual::genoAtLoci(const lociList &loci);
 
 %feature("docstring") simuPOP::Individual::setGenotype "
@@ -7787,14 +7789,19 @@ Details:
     This penetrance operator assigns penetrance values by calling a
     user provided function. It accepts a list of loci (parameter
     loci), and a Python function func which should be defined with one
-    or more of parameters geno, gen, ind, pop, or names of information
-    fields. When this operator is applied to a population, it passes
-    genotypes at specified loci, generation number, a reference to an
+    or more of parameters geno, mut, gen, ind, pop, or names of
+    information fields. When this operator is applied to a population,
+    it passes genotypes or mutants (non-zero alleles) at specified
+    loci at specified loci, generation number, a reference to an
     individual, a reference to the current population (usually used to
     retrieve population variables) and values at specified information
-    fields to respective parameters of this function. The returned
-    penetrance values will be used to determine the affection status
-    of each individual.
+    fields to respective parameters of this function. Genotypes of
+    each individual are passed as a tuple of alleles arranged locus by
+    locus (in the order of A1,A2,B1,B2 for loci A and B). Mutants are
+    passed as a default dictionary of loci index (with respect to all
+    genotype of individuals, not just the first ploidy) and alleles.
+    The returned penetrance values will be used to determine the
+    affection status of each individual.
 
 "; 
 
@@ -7881,12 +7888,17 @@ Details:
     This quantitative trait operator assigns a trait field by calling
     a user provided function. It accepts a list of loci (parameter
     loci), and a Python function func which should be defined with one
-    or more of parameters geno, gen, ind, or names of information
+    or more of parameters geno, mut, gen, ind, or names of information
     fields. When this operator is applied to a population, it passes
-    genotypes at specified loci, generation number, a reference to an
-    individual, and values at specified information fields to
-    respective parameters of this function. The return values will be
-    assigned to specified trait fields.
+    genotypes or mutants (non-zero alleles) of each individual at
+    specified loci, generation number, a reference to an individual,
+    and values at specified information fields to respective
+    parameters of this function. Genotypes of each individual are
+    passed as a tuple of alleles arranged locus by locus (in the order
+    of A1,A2,B1,B2 for loci A and B). Mutants are passed as a default
+    dictionary of loci index (with respect to all genotype of
+    individuals, not just the first ploidy) and alleles. The return
+    values will be assigned to specified trait fields.
 
 "; 
 
@@ -7924,14 +7936,19 @@ Details:
     This selector assigns fitness values by calling a user provided
     function. It accepts a list of loci (parameter loci) and a Python
     function func which should be defined with one or more of
-    parameters geno, gen, ind, pop or names of information fields.
-    Parameter loci can be a list of loci indexes, names or ALL_AVAIL.
-    When this operator is applied to a population, it passes genotypes
-    at specified loci, generation number, a reference to an
-    individual, a reference to the current population (usually used to
-    retrieve population variable), and values at specified information
-    fields to respective parameters of this function. The returned
-    value will be used to determine the fitness of each individual.
+    parameters geno, mut, gen, ind, pop or names of information
+    fields. Parameter loci can be a list of loci indexes, names or
+    ALL_AVAIL. When this operator is applied to a population, it
+    passes genotypes or mutants at specified loci, generation number,
+    a reference to an individual, a reference to the current
+    population (usually used to retrieve population variable), and
+    values at specified information fields to respective parameters of
+    this function. Genotypes are passed as a tuple of alleles arranged
+    locus by locus (in the order of A1,A2,B1,B2 for loci A and B).
+    Mutants are passed as a default dictionary of loci index (with
+    respect to all genotype of individuals, not just the first ploidy)
+    and alleles. The returned value will be used to determine the
+    fitness of each individual.
 
 "; 
 
