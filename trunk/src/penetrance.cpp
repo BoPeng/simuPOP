@@ -358,6 +358,8 @@ double PyPenetrance::penet(Population * pop, RawIndIterator ind) const
 			PyTuple_SET_ITEM(args, i, pyIndObj(static_cast<void *>(&*ind)));
 		else if (arg == "geno")
 			PyTuple_SET_ITEM(args, i, ind->genoAtLoci(m_loci));
+		else if (arg == "mut")
+			PyTuple_SET_ITEM(args, i, ind->mutAtLoci(m_loci));			
 		else if (arg == "gen") {
 			DBG_FAILIF(pop == NULL, ValueError, "No valid population reference is passed.");
 			PyTuple_SET_ITEM(args, i, PyInt_FromLong(static_cast<long>(pop->gen())));

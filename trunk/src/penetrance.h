@@ -369,12 +369,17 @@ private:
 /** This penetrance operator assigns penetrance values by calling a user
  *  provided function. It accepts a list of loci (parameter \c loci),
  *  and a Python function \c func which should be defined with one or more of
- *  parameters \c geno, \c gen, \c ind, \c pop, or names of information fields.
- *  When this operator is applied to a population, it passes genotypes at
+ *  parameters \c geno, \c mut, \c gen, \c ind, \c pop, or names of 
+ *  information fields. When this operator is applied to a population, it
+ *  passes genotypes or mutants (non-zero alleles) at specified loci at
  *  specified loci, generation number, a reference to an individual, a
  *  reference to the current population (usually used to retrieve population
  *  variables) and values at specified information fields to respective
- *  parameters of this function. The returned penetrance values will be used to
+ *  parameters of this function. Genotypes of each individual are
+ *  passed as a tuple of alleles arranged locus by locus (in the order of
+ *  A1,A2,B1,B2 for loci A and B). Mutants are passed as a dictionary of loci
+ *  index (with respect to all genotype of individuals, not just the first ploidy)
+ *  and alleles. The returned penetrance values will be used to
  *  determine the affection status of each individual.
  */
 class PyPenetrance : public BasePenetrance
@@ -384,9 +389,7 @@ public:
 	 *  specified \e loci, values at specified information fields (if
 	 *  requested), and a generation number to a user-defined function \e func.
 	 *  Parameter \e loci can be a list of loci indexes, names, or \c ALL_AVAIL.
-	 *  The return value will be treated as Individual penetrance. Note that
-	 *  genotypes for parameter \c geno are passed locus by locus, namely in
-	 *  the order of A1,A2,B1,B2 for loci A and B.                 
+	 *  The return value will be treated as Individual penetrance.	
 	 */
 	PyPenetrance(PyObject * func,
 		const lociList & loci = vectoru(),

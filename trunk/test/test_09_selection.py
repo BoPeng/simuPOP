@@ -694,13 +694,24 @@ class TestSelector(unittest.TestCase):
         # simulation did not terminate unexpectedly
         self.assertEqual(simu.dvars(0).gen, 100)
 
-    def pyGenoTest1(self, geno):
+    def pyGenoTest1(self, geno, mut):
         self.geno.extend(geno[::2])
         self.geno.extend(geno[1::2])
+        g = [0]*20
+        for loc,allele in mut.items():
+            g[loc] = allele
+        self.assertEqual(tuple(g), geno[::2] + geno[1::2])
         return 1
         
-    def pyGenoTest2(self, geno):
+    def pyGenoTest2(self, geno, mut):
         self.geno.extend(geno)
+        for loc, allele in mut.items():
+            self.assertEqual(loc in [2, 4, 5, 7, 3, 12, 14, 15, 17, 13], True)
+        idx_map = {idx:v for idx,v in enumerate([2,4,5,7,3])}
+        for idx, v in enumerate(geno):
+            if v != 0:
+                self.assertEqual(idx_map[idx/2]+idx%2*10 in mut, True)
+                self.assertEqual(mut[idx_map[idx/2]+idx%2*10], v)
         return 1
 
     def testPassingGenotype(self):
@@ -725,15 +736,34 @@ class TestSelector(unittest.TestCase):
             ])
         self.assertEqual(self.geno, geno)
 
-    def pyGenoTest3(self, geno):
+    def pyGenoTest3(self, geno, mut):
         # for male, 
         self.genoX.append(geno[:6])
         self.genoY.append(geno[6:])
+        for idx,v in enumerate(geno):
+            if idx < 6:
+                if v != 0:
+                    self.assertEqual(idx in mut, True)
+                    self.assertEqual(mut[idx], v)
+            else:
+                if v != 0:
+                    self.assertEqual((idx+10) in mut, True)
+                    self.assertEqual(mut[idx+10], v)
         return 1
 
-    def pyGenoTest4(self, geno):
+    def pyGenoTest4(self, geno, mut):
         # for male, 
         self.geno.append(geno)
+        idx_map = {idx:v for idx,v in enumerate([2,4,5,7,3])}
+        for idx,v in enumerate(geno):
+            if idx_map[idx] < 6:
+                if v != 0:
+                    self.assertEqual(idx_map[idx] in mut, True)
+                    self.assertEqual(mut[idx_map[idx]], v)
+            else:
+                if v != 0:
+                    self.assertEqual((idx_map[idx]+10) in mut, True)
+                    self.assertEqual(mut[idx_map[idx]+10], v)
         return 1
         
     def testPassingMaleGenotype(self):
@@ -754,14 +784,26 @@ class TestSelector(unittest.TestCase):
         for ind, x in zip(pop.individuals(), self.geno):
             self.assertEqual(x, (ind.allele(2, 0), ind.allele(4, 0), ind.allele(5, 0), ind.allele(7, 1), ind.allele(3, 0)))
 
-    def pyGenoTest5(self, geno):
+    def pyGenoTest5(self, geno, mut):
         # for female, 
         self.geno.append(geno[::2] + geno[1::2])
+        idx_map = {idx:v for idx,v in enumerate(range(10))}
+        for idx,v in enumerate(geno):
+            p = idx % 2
+            if v != 0:
+                self.assertEqual((idx_map[idx/2]+p*10) in mut, True)
+                self.assertEqual(mut[idx_map[idx/2]+p*10], v)
         return 1
 
-    def pyGenoTest6(self, geno):
+    def pyGenoTest6(self, geno, mut):
         # for female, 
         self.geno.append(geno)
+        idx_map = {idx:v for idx,v in enumerate([2,4,5,3])}
+        for idx,v in enumerate(geno):
+            p = idx % 2
+            if v != 0:
+                self.assertEqual((idx_map[idx/2]+p*10) in mut, True)
+                self.assertEqual(mut[idx_map[idx/2]+p*10], v)
         return 1
         
     def testPassingFemaleGenotype(self):
