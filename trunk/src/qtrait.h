@@ -128,7 +128,9 @@ private:
  *  this operator is applied to a population, it passes genotypes at specified
  *  loci, generation number, a reference to an individual, and values at
  *  specified information fields to respective parameters of this function.
- *  The return values will be assigned to specified trait fields.
+ *  The return values will be assigned to specified trait fields. Note that
+ *  genotypes for parameter \c geno are passed locus by locus, namely in
+ *  the order of A1,A2,B1,B2 for loci A and B.                 
  */
 class PyQuanTrait : public BaseQuanTrait
 {

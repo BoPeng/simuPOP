@@ -384,7 +384,9 @@ public:
 	 *  specified \e loci, values at specified information fields (if
 	 *  requested), and a generation number to a user-defined function \e func.
 	 *  Parameter \e loci can be a list of loci indexes, names, or \c ALL_AVAIL.
-	 *  The return value will be treated as Individual penetrance.
+	 *  The return value will be treated as Individual penetrance. Note that
+	 *  genotypes for parameter \c geno are passed locus by locus, namely in
+	 *  the order of A1,A2,B1,B2 for loci A and B.                 
 	 */
 	PyPenetrance(PyObject * func,
 		const lociList & loci = vectoru(),
