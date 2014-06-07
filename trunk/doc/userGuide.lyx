@@ -25812,6 +25812,29 @@ Demographic models for African, Asian and European populations (cosi)
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+These functions all accept a parameter scale.
+ If specified, it will scale all population sizes and generation numbers
+ by the specified scaling factor.
+ For example
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+CosiModel(20000, scale=10)
+\end_layout
+
+\end_inset
+
+will result in a demographic model that evolves 2000 instead of 20000 generation
+s, with all population sizes reduced by a factor of 10.
+\end_layout
+
 \begin_layout Section
 Module 
 \family typewriter

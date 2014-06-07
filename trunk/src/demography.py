@@ -796,7 +796,8 @@ class OutOfAfricaModel(MultiStageModel):
         T_B=140000//25, 
         T_EU_AS=21200//25, 
         ops=[],
-        infoFields=[]
+        infoFields=[],
+        scale=1
         ):
         '''Counting **backward in time**, this model evolves a population for ``T0``
         generations (required parameter). The ancient population ``A`` started at
@@ -809,7 +810,9 @@ class OutOfAfricaModel(MultiStageModel):
         ``AS`` grew exponentially with rate ``r_AS``. The ``YRI``, ``CEU`` and
         ``CHB`` samples are drawn from ``AF``, ``EU`` and ``AS`` populations
         respectively. Additional operators could be added to ``ops``. Information
-        fields required by these operators should be passed to ``infoFields``.
+        fields required by these operators should be passed to ``infoFields``. If 
+        a scaling factor ``scale`` is specified, all population sizes and
+        generation numbers will be divided by a factor of ``scale``.
 
         This model merges all subpopulations if it is applied to a population with
         multiple subpopulation.
@@ -819,21 +822,21 @@ class OutOfAfricaModel(MultiStageModel):
             raise ValueError('Length of evolution T0=%d should be more than T_AF=%d' % (T0, T_AF))
         MultiStageModel.__init__(self, [
             InstantChangeModel(
-                T=T0-T_EU_AS,
-                N0=(N_A, 'Ancestral'),
+                T=int((T0-T_EU_AS)/scale),
+                N0=(int(N_A/scale), 'Ancestral'),
                 # change population size twice, one at T_AF, one at T_B
-                G=[T0-T_AF, T0-T_B],
+                G=[int((T0-T_AF)/scale), int((T0-T_B)/scale)],
                 NG=[
-                    (N_AF, 'AF'), 
+                    (int(N_AF/scale), 'AF'), 
                     # at T_B, split to population B from subpopulation 1
-                    [None, (N_B, 'B')]]),
+                    [None, (int(N_B/scale), 'B')]]),
             ExponentialGrowthModel(
-                T=T_EU_AS,
+                T=int(T_EU_AS/scale),
                 N0=[None, 
                     # split B into EU and AS at the beginning of this
                     # exponential growth stage
-                    [(N_EU0, 'EU'), (N_AS0, 'AS')]],
-                r=[0, r_EU, r_AS],
+                    [(int(N_EU0/scale), 'EU'), (int(N_AS0/scale), 'AS')]],
+                r=[0, r_EU*scale, r_AS*scale],
                 infoFields='migrate_to',
                 ops=Migrator(rate=[
                     [0, m_AF_EU, m_AF_AS],
@@ -869,7 +872,8 @@ class SettlementOfNewWorldModel(MultiStageModel):
         T_MX=21600//25,
         f_MX=0.48,
         ops=[],
-        infoFields=[]
+        infoFields=[],
+        scale=1
         ):
         '''Counting **backward in time**, this model evolves a population for ``T0``
         generations. The ancient population ``A`` started at size ``N_A`` and
@@ -885,10 +889,12 @@ class SettlementOfNewWorldModel(MultiStageModel):
         populations with migration rates ``m_AF_B``, ``m_EU_AS``, ``m_AF_EU``,
         and ``m_AF_AS``. At the end of the evolution, the ``AF`` and ``CHB``
         populations are removed, and the ``EU`` and ``MX`` populations are merged
-        with ``f_MX`` proportion for ``MX``. The Mexican American sample could
+        with ``f_MX`` proportion for ``MX``. The Mexican American<F19> sample could
         be sampled from the last single population. Additional operators could
         be added to ``ops``. Information fields required by these operators 
-        should be passed to ``infoFields``.
+        should be passed to ``infoFields``. If a scaling factor ``scale``
+        is specified, all population sizes and generation numbers will be divided by
+        a factor of ``scale``.
 
         This model merges all subpopulations if it is applied to a population with
         multiple subpopulation.
@@ -909,21 +915,21 @@ class SettlementOfNewWorldModel(MultiStageModel):
         MultiStageModel.__init__(self, [
             InstantChangeModel(
                 # leave one generation for last admixture step
-                T=T0-T_EU_AS-1,
-                N0=(N_A, 'Ancestral'),
+                T=int((T0-T_EU_AS-1)/scale),
+                N0=(int(N_A/scale), 'Ancestral'),
                 # change population size twice, one at T_AF, one at T_B
-                G=[T0-T_AF, T0-T_B],
+                G=[int((T0-T_AF)/scale), int((T0-T_B)/scale)],
                 NG=[
-                    (N_AF, 'AF'), 
+                    (int(N_AF/scale), 'AF'), 
                     # at T_B, split to population B from subpopulation 1
-                    [None, (N_B, 'B')]]),
+                    [None, (int(N_B/scale), 'B')]]),
             ExponentialGrowthModel(
-                T=T_EU_AS - T_MX,
+                T=int((T_EU_AS - T_MX)/scale),
                 N0=[None,
                     # split B into EU and AS at the beginning of this
                     # exponential growth stage
-                    [(N_EU0, 'EU'), (N_AS0, 'AS')]],
-                r=[0, r_EU, r_AS],
+                    [(int(N_EU0/scale), 'EU'), (int(N_AS0/scale), 'AS')]],
+                r=[0, r_EU*scale, r_AS*scale],
                 infoFields='migrate_to',
                 ops=Migrator(rate=[
                     [0, m_AF_EU, m_AF_AS],
@@ -931,15 +937,15 @@ class SettlementOfNewWorldModel(MultiStageModel):
                     [m_AF_AS, m_AF_EU, 0]
                     ])
                 ),
-            ExponentialGrowthModel(T=T_MX,
+            ExponentialGrowthModel(T=int(T_MX/scale),
                 N0=[None,
                     # initial population size has to be calculated
                     # because we only know the final population size of
                     # EU and AS
                     None,
                     # split MX from AS
-                    [(None, 'AS'), (N_MX0, 'MX')]],
-                r=[0, r_EU, r_AS, r_MX],
+                    [(None, 'AS'), (int(N_MX0//scale), 'MX')]],
+                r=[0, r_EU*scale, r_AS*scale, r_MX*scale],
                 infoFields='migrate_to',
                 ops=Migrator(rate=[
                     [0, m_AF_EU, m_AF_AS],
@@ -953,9 +959,9 @@ class SettlementOfNewWorldModel(MultiStageModel):
                 ),
             InstantChangeModel(
                 T=1,
-                N0=[0, N_EU1, 0, N_MX1],
+                N0=[0, int(N_EU1/scale), 0, int(N_MX1/scale)],
                 G=[0],
-                NG=[(N_EU1 + N_MX1, 'MXL')]
+                NG=[(int((N_EU1 + N_MX1)/scale), 'MXL')]
             )], ops=ops, infoFields=infoFields
         )
 
@@ -984,7 +990,8 @@ class CosiModel(MultiStageModel):
         m_AF_EU=0.000032,
         m_AF_AS=0.000008,
         ops=[],
-        infoFields=[]
+        infoFields=[],
+        scale=1
         ):
         '''Counting **backward in time**, this model evolves a population for a
         total of ``T0`` generations. The ancient population ``Ancestral`` started
@@ -1002,12 +1009,15 @@ class CosiModel(MultiStageModel):
         They are supposed to happen 200 generations after population split and last
         for 200 generations. The intensity is parameterized in F, which is number
         of generations devided by twice the effective size during bottleneck.
-        So the bottleneck size is 100/F.
+        So the bottleneck size is 100/F. 
 
         This model merges all subpopulations if it is applied to a population with
         multiple subpopulation. Although parameters are configurable, we assume
         the order of events so dramatically changes of parameters might need
-        to errors. '''
+        to errors.  If a scaling factor ``scale`` is specified, all population
+        sizes and generation numbers will be divided by, and migration rates
+        will be multiplied by a factor of ``scale``.
+         '''
         #
         if T0 < T_AF:
             raise ValueError('Length of evolution T0=%d should be more than T_AF=%d' % (T0, T_AF))
@@ -1028,49 +1038,49 @@ class CosiModel(MultiStageModel):
         MultiStageModel.__init__(self, [
             InstantChangeModel(
                 # constant population size before the first one to expand
-                T=T0 - T_EU_AS,
-                N0=(N_A, 'Ancestral'),
-                G=[ T0-T_AF, 
-                    T0-T_OoA,
-                    T0-T_OoA+200,
-                    T0-T_OoA+400],
+                T=int((T0 - T_EU_AS)/scale),
+                N0=(int(N_A/scale), 'Ancestral'),
+                G=[ int((T0-T_AF)/scale), 
+                    int((T0-T_OoA)/scale),
+                    int((T0-T_OoA+200)/scale),
+                    int((T0-T_OoA+400)/scale)],
                 NG=[
                     # population size incrase to N_AF
-                    (N_AF, 'Africa'),
+                    (int(N_AF/scale), 'Africa'),
                     # at T_B, split to population B from subpopulation 1
-                    [(N_AF, 'Africa'), (N_OoA, 'Out Of Africa')],
-                    [int(100./F_AF), int(100./F_OoA)], # bottleneck
-                    [N_AF, N_OoA],  # recover
+                    [(int(N_AF/scale), 'Africa'), (int(N_OoA/scale), 'Out Of Africa')],
+                    [int(100./F_AF/scale), int(100./F_OoA/scale)], # bottleneck
+                    [int(N_AF/scale), int(N_OoA/scale)],  # recover
                     ]
                 ),
             InstantChangeModel(
                 # constant population size before the first one to expand
-                T=T_EU_AS - T_AS_exp,
-                N0=[N_AF, [(N_OoA, 'Asian'), (N_OoA, 'Europe')]], # split
-                G=[ 200, 400],
+                T=int((T_EU_AS - T_AS_exp)/scale),
+                N0=[int(N_AF/scale), [(int(N_OoA/scale), 'Asian'), (int(N_OoA/scale), 'Europe')]], # split
+                G=[ int(200./scale), int(400./scale)],
                 NG=[
-                    [N_AF, int(100./F_AS), int(100./F_EU)],
-                    [N_AF, N_OoA, N_OoA] # recover
+                    [int(N_AF/scale), int(100./F_AS/scale), int(100./F_EU/scale)],
+                    [int(N_AF/scale), int(N_OoA/scale), int(N_OoA/scale)] # recover
                     ],
                 ops=migr,
                 ),
             # AS expend 
             ExponentialGrowthModel(
-                T=T_AS_exp-T_EU_exp,
+                T=int((T_AS_exp-T_EU_exp)/scale),
                 N0=[None, (None, 'Modern Asian'), None],
-                r=[0, r_AS, 0],
+                r=[0, r_AS*scale, 0],
                 infoFields='migrate_to',
                 ops=migr),
             # EU expand
-            ExponentialGrowthModel(T=T_EU_exp-T_AF_exp,
+            ExponentialGrowthModel(T=int((T_EU_exp-T_AF_exp)/scale),
                 N0=[None, None, (None, 'Modern Europe')],
-                r=[0, r_AS, r_EU],
+                r=[0, r_AS*scale, r_EU*scale],
                 infoFields='migrate_to',
                 ops=migr),
             # AF expand
-            ExponentialGrowthModel(T=T_AF_exp,
+            ExponentialGrowthModel(T=int(T_AF_exp/scale),
                 N0=[(None, 'Modern Africa'), None, None],
-                NT=[N_AF1, N_AS1, N_EU1],
+                NT=[int(N_AF1/scale), int(N_AS1/scale), int(N_EU1/scale)],
                 infoFields='migrate_to',
                 ops=migr),
             ]

@@ -4914,8 +4914,11 @@ MultiStageModel([
     ExponentialGrowthModel(r=0.01, NT=[2000, 4000])
 ]).plot('log/MultiStage.png')
 OutOfAfricaModel(10000).plot('log/OutOfAfrica.png')
+OutOfAfricaModel(10000, scale=10).plot('log/ScaledOutOfAfrica.png')
 SettlementOfNewWorldModel(10000).plot('log/SettlementOfNewWorld.png')
+SettlementOfNewWorldModel(10000, scale=10).plot('log/ScaledSettlementOfNewWorld.png')
 CosiModel(20000).plot('log/Cosi.png')
+CosiModel(20000, scale=10).plot('log/ScaledCosi.png')
 #end_ignore
 #end_file
 
