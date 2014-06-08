@@ -820,6 +820,8 @@ class OutOfAfricaModel(MultiStageModel):
         #
         if T0 < T_AF:
             raise ValueError('Length of evolution T0=%d should be more than T_AF=%d' % (T0, T_AF))
+        # for python 2.x and 3.x compatibility
+        scale = float(scale)
         MultiStageModel.__init__(self, [
             InstantChangeModel(
                 T=int((T0-T_EU_AS)/scale),
@@ -912,6 +914,8 @@ class SettlementOfNewWorldModel(MultiStageModel):
             N_EU1 = int(N_MX/f_MX*(1.-f_MX))
             N_MX1 = N_MX
         #
+        # for python 2.x and 3.x compatibility
+        scale = float(scale)
         MultiStageModel.__init__(self, [
             InstantChangeModel(
                 # leave one generation for last admixture step
@@ -1024,6 +1028,8 @@ class CosiModel(MultiStageModel):
         #
         if T_AF < T_OoA or T_OoA < T_EU_AS or T_EU_AS < T_AS_exp or T_AS_exp < T_EU_exp or T_EU_exp < T_AF_exp:
             raise ValueError('Specified parameters change the order of events to the model.')
+        # for python 2.x and 3.x compatibility
+        scale = float(scale)
         # by model
         N_AS = N_OoA
         N_EU = N_OoA
