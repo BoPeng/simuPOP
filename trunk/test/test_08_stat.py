@@ -136,6 +136,9 @@ class TestStat(unittest.TestCase):
         stat(pop, numOfSegSites=ALL_AVAIL)
         self.assertEqual(pop.dvars().numOfSegSites, 100)
         #
+        stat(pop, numOfSegSites=ALL_AVAIL, vars='segSites')
+        self.assertEqual(len(pop.dvars().segSites), 100)
+        #
         # male only?
         pop = Population(size=1000, loci=[10]*100)
         # 500 males and 500 females
@@ -148,13 +151,20 @@ class TestStat(unittest.TestCase):
         # number of segragation site should be 100
         stat(pop, numOfSegSites=ALL_AVAIL)
         self.assertEqual(pop.dvars().numOfSegSites, 100)
-        stat(pop, numOfSegSites=ALL_AVAIL, subPops=[(0,0), (0,1)], vars='numOfSegSites_sp')
+        stat(pop, numOfSegSites=ALL_AVAIL, vars='segSites')
+        self.assertEqual(len(pop.dvars().segSites), 100)
+        stat(pop, numOfSegSites=ALL_AVAIL, subPops=[(0,0), (0,1)], vars=['numOfSegSites_sp', 'segSites_sp'])
         self.assertEqual(pop.dvars().numOfSegSites, 100)
+        self.assertEqual(len(pop.dvars().segSites), 100)
         self.assertEqual(pop.dvars((0,0)).numOfSegSites, 100)
         self.assertEqual(pop.dvars((0,1)).numOfSegSites, 0)
+        self.assertEqual(len(pop.dvars((0,0)).segSites), 100)
+        self.assertEqual(len(pop.dvars((0,1)).segSites), 0)
         # selected loci
         stat(pop, numOfSegSites=range(100, 1000))
         self.assertEqual(pop.dvars().numOfSegSites, 0)
+        stat(pop, numOfSegSites=range(100, 1000), vars='segSites')
+        self.assertEqual(len(pop.dvars().segSites), 0)
         #
         # number of non-zero sites
         pop = Population(size=1000, loci=[10]*10)
@@ -164,13 +174,21 @@ class TestStat(unittest.TestCase):
         initGenotype(pop, loci= range(30, 40), freq=[0, 0.5, 0.5])
         # 10 fixed sites
         initGenotype(pop, loci= range(50, 60), freq=[0, 1])
-        stat(pop, numOfSegSites=ALL_AVAIL, vars=['numOfSegSites', 'numOfFixedSites'])
+        stat(pop, numOfSegSites=ALL_AVAIL, vars=['numOfSegSites', 'numOfFixedSites', 'segSites', 'fixedSites'])
         if moduleInfo()['alleleType'] == 'binary':
             self.assertEqual(pop.dvars().numOfSegSites, 20)
             self.assertEqual(pop.dvars().numOfFixedSites, 20)
+            self.assertEqual(len(pop.dvars().segSites), 20)
+            self.assertEqual(pop.dvars().segSites, list(range(20)))
+            self.assertEqual(len(pop.dvars().fixedSites), 20)
+            self.assertEqual(pop.dvars().fixedSites, list(range(30,40)) + list(range(50, 60)))
         else:
             self.assertEqual(pop.dvars().numOfSegSites, 30)
             self.assertEqual(pop.dvars().numOfFixedSites, 10)
+            self.assertEqual(len(pop.dvars().segSites), 30)
+            self.assertEqual(pop.dvars().segSites, list(range(20)) + list(range(30,40)))
+            self.assertEqual(len(pop.dvars().fixedSites), 10)
+            self.assertEqual(pop.dvars().fixedSites, list(range(50, 60)))
 
 
     def testNumOfMutants(self):

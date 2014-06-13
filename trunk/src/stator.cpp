@@ -31,6 +31,9 @@ using std::ostringstream;
 #include <set>
 using std::set;
 
+#include <vector>
+#include <algorithm>
+
 #if TR1_SUPPORT == 0
 #  include <map>
 typedef std::map<ULONG, pair<ULONG, ULONG> > IndexMap;
@@ -695,7 +698,10 @@ statNumOfSegSites::statNumOfSegSites(const lociList & loci, const subPopList & s
 {
 	const char * allowedVars[] = {
 		numOfSegSites_String,	numOfSegSites_sp_String,
-		numOfFixedSites_String, numOfFixedSites_sp_String,""
+		numOfFixedSites_String, numOfFixedSites_sp_String,
+		segSites_String,	    segSites_sp_String,
+		fixedSites_String,      fixedSites_sp_String,
+		""
 	};
 	const char * defaultVars[] = { numOfSegSites_String, numOfFixedSites_String, "" };
 
@@ -817,6 +823,16 @@ bool statNumOfSegSites::apply(Population & pop) const
 			pop.getVars().setVar(subPopVar_String(*sp, numOfFixedSites_String, m_suffix), fixedSites.size());
 		if (m_vars.contains(numOfSegSites_sp_String))
 			pop.getVars().setVar(subPopVar_String(*sp, numOfSegSites_String, m_suffix), segSites.size());
+		if (m_vars.contains(fixedSites_sp_String)) {
+			std::vector<size_t> fs(fixedSites.begin(), fixedSites.end());
+			std::sort(fs.begin(), fs.end());
+			pop.getVars().setVar(subPopVar_String(*sp, fixedSites_String, m_suffix), fs);
+		}
+		if (m_vars.contains(segSites_sp_String)) {
+			std::vector<size_t> ss(segSites.begin(), segSites.end());
+			std::sort(ss.begin(), ss.end());
+			pop.getVars().setVar(subPopVar_String(*sp, segSites_String, m_suffix), ss);
+		}
 
 		allFixedSites.insert(fixedSites.begin(), fixedSites.end());
 		allSegSites.insert(segSites.begin(), segSites.end());
@@ -827,6 +843,16 @@ bool statNumOfSegSites::apply(Population & pop) const
 		pop.getVars().setVar(numOfFixedSites_String + m_suffix, allFixedSites.size());
 	if (m_vars.contains(numOfSegSites_String))
 		pop.getVars().setVar(numOfSegSites_String + m_suffix, allSegSites.size());
+	if (m_vars.contains(fixedSites_String)) {
+		std::vector<size_t> fs(allFixedSites.begin(), allFixedSites.end());
+		std::sort(fs.begin(), fs.end());
+		pop.getVars().setVar(fixedSites_String + m_suffix, fs);
+	}
+	if (m_vars.contains(segSites_String)) {
+		std::vector<size_t> ss(allSegSites.begin(), allSegSites.end());
+		std::sort(ss.begin(), ss.end());
+		pop.getVars().setVar(segSites_String + m_suffix, ss);
+	}
 	return true;
 }
 

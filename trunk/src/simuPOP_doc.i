@@ -9588,11 +9588,18 @@ Details:
     *   numOfFixedSites: Number of sites with one non-zero allele in
     all or specified (virtual) subpopulations.
     *   numOfFixedSites_sp: Number of sites with one non-zero allele
-    in in each (virtual) subpopulations.numOfMutants: Parameter
-    numOfMutants accepts a list of loci (loci indexes, names, or
-    ALL_AVAIL) and count the number of mutants (non-zero alleles) for
-    individuals in all or specified (virtual) subpopulations. It sets
-    variables
+    in in each (virtual) subpopulations.
+    *   segSites: A list of segregating sites in all or specified
+    (virtual) subpopulations.
+    *   segSites_sp: A list of segregating sites in each (virtual)
+    subpopulation.
+    *   fixedSites: A list of sites with one non-zero allele in all or
+    specified (virtual) subpopulations.
+    *   fixedSites_sp: A list of sites with one non-zero allele in in
+    each (virtual) subpopulations.numOfMutants: Parameter numOfMutants
+    accepts a list of loci (loci indexes, names, or ALL_AVAIL) and
+    count the number of mutants (non-zero alleles) for individuals in
+    all or specified (virtual) subpopulations. It sets variables
     *   numOfMutants (default): Number of mutants in all or specified
     (virtual) subpopulations.
     *   numOfMutants_sp: Number of mutants in each (virtual)
