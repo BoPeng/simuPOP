@@ -283,7 +283,7 @@ class RandomSampler(BaseSampler):
             size = self.sizes
             if size > self.pop.popSize():
                 print 'Warning: sample size %d is greater than population size %d.' % (size, self.pop.popSize())
-                size = pop.popSize()
+                size = self.pop.popSize()
             # randomly choose size individuals
             values = range(self.pop.popSize())
             random_shuffle(values)
