@@ -3414,6 +3414,9 @@ pop.evolve(
         ],
     gen=500
 )
+# output a list of segregating sites
+sim.stat(pop, numOfSegSites=sim.ALL_AVAIL, vars='segSites')
+print(pop.dvars().segSites)
 #end_file
 
 

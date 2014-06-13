@@ -400,6 +400,10 @@ private:
 #define  numOfFixedSites_String      "numOfFixedSites"
 #define  numOfSegSites_sp_String     "numOfSegSites_sp"
 #define  numOfFixedSites_sp_String   "numOfFixedSites_sp"
+#define  segSites_String             "segSites"
+#define  fixedSites_String           "fixedSites"
+#define  segSites_sp_String          "segSites_sp"
+#define  fixedSites_sp_String        "fixedSites_sp"
 
 public:
 	statNumOfSegSites(const lociList & loci, const subPopList & subPops,
@@ -1101,6 +1105,14 @@ public:
 	 *  \li \c numOfFixedSites: Number of sites with one non-zero allele in all
 	 *      or specified (virtual) subpopulations.
 	 *  \li \c numOfFixedSites_sp: Number of sites with one non-zero allele in
+	 *      in each (virtual) subpopulations.
+	 *  \li \c segSites: A list of segregating sites in all or specified
+	 *      (virtual) subpopulations.
+	 *  \li \c segSites_sp: A list of segregating sites in each (virtual)
+	 *      subpopulation.
+	 *  \li \c fixedSites: A list of sites with one non-zero allele in all
+	 *      or specified (virtual) subpopulations.
+	 *  \li \c fixedSites_sp: A list of sites with one non-zero allele in
 	 *      in each (virtual) subpopulations.
 	 *
 	 *  <b>numOfMutants</b>: Parameter \e numOfMutants accepts a list of loci
