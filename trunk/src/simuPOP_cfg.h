@@ -42,6 +42,8 @@
 // under parent directory. Included with -I.. option.
 #include "config.h"
 
+const double MISSING_VALUE = 1.3579246e123;
+
 // For the handling of binary modules and for the use of unordered_map in tr1
 #ifdef _MSC_VER
 

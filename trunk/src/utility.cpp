@@ -1755,8 +1755,12 @@ PyObject * SharedVariables::setVar(const string & name, const strDict & val)
 
 	for (strDict::const_iterator i = val.begin(); i != val.end(); ++i) {
 		PyDict_SetItemString(obj, const_cast<char *>(i->first.c_str()),
-			v = PyFloat_FromDouble(i->second));
-		Py_XDECREF(v);
+		// SetItem will increase ref count for v
+		// for Py_None, this is good enough, for PyFloat, we need to 
+		// decrease its ref count
+			v = i->second == MISSING_VALUE ? Py_None : PyFloat_FromDouble(i->second));
+		if (v != Py_None)
+			Py_XDECREF(v);
 	}
 	return setVar(name, obj);
 }
@@ -1770,9 +1774,10 @@ PyObject * SharedVariables::setVar(const string & name, const intDict & val)
 	for (intDict::const_iterator i = val.begin(); i != val.end(); ++i) {
 		PyDict_SetItem(obj,
 			u = PyInt_FromLong(i->first),
-			v = PyFloat_FromDouble(i->second));
+			v = i->second == MISSING_VALUE ? Py_None : PyFloat_FromDouble(i->second));
 		Py_XDECREF(u);
-		Py_XDECREF(v);
+		if (v != Py_None)
+			Py_XDECREF(v);
 	}
 	return setVar(name, obj);
 }

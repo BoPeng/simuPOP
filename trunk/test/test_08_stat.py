@@ -383,7 +383,7 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars(2).genoFreq[0][(0, 1)], 0.6)
         self.assertEqual(pop.dvars(2).genoFreq[0][(1, 1)], 0.4)
 
-    def testInfostat(self):
+    def testInfoStat(self):
         'Testing summary statistics of information fields'
         import random
         pop = Population(size=[500, 1000, 1000], infoFields=['x', 'y', 'z'])
@@ -403,6 +403,19 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars((0, 1)).minOfInfo['y'], 4)
         self.assertEqual(pop.dvars().maxOfInfo['y'], 10)
         self.assertEqual(pop.dvars().minOfInfo['y'], 4)
+        #
+        # test cases with NO item, so mean, min, max etc should return None
+        # 
+        # Before 1.1.3, this results in seg dump
+        pop = Population(size=[500, 0, 1000], infoFields=['x', 'y', 'z'])
+        initSex(pop, sex=[MALE, FEMALE])
+        stat(pop, meanOfInfo='x', minOfInfo='x', maxOfInfo='x', varOfInfo='x',
+            subPops=1)
+        self.assertEqual(pop.dvars().meanOfInfo['x'], None)
+        self.assertEqual(pop.dvars().varOfInfo['x'], None)
+        self.assertEqual(pop.dvars().minOfInfo['x'], None)
+        self.assertEqual(pop.dvars().maxOfInfo['x'], None)
+
 
     def testFst(self):
         'Testing calculation of Fst value'

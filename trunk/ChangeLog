@@ -20,6 +20,7 @@ NEW FEATURES:
 BUGS:
 * Fix a bug for random parent chooser (single parent) without replacement.
 * Fix a memory leak bug for PyParentChooser.
+* Fix a crash for Stat(min/maxInfo) with empty subpopulation
 
 Version 1.1.2 -- Rev 4825 (Feb 16, 2014)
 MAJOR NEW FEATURE:
