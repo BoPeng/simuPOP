@@ -1888,6 +1888,8 @@ bool statInfo::apply(Population & pop) const
 	subPopList subPops = m_subPops.expandFrom(pop);
 	subPopList::const_iterator sp = subPops.begin();
 	subPopList::const_iterator spEnd = subPops.end();
+	//
+	size_t allIndCnt = 0;
 	for (; sp != spEnd; ++sp) {
 		vectorf sumVal(numSumFld, 0.);
 		vectorf meanSumVal(numMeanFld, 0.);
@@ -1901,7 +1903,8 @@ bool statInfo::apply(Population & pop) const
 		pop.activateVirtualSubPop(*sp);
 
 		IndIterator it = pop.indIterator(sp->subPop());
-		for (; it.valid(); ++it) {
+		size_t indCnt = 0;
+		for (; it.valid(); ++it, ++indCnt) {
 			for (size_t i = 0; i < numSumFld; ++i)
 				sumVal[i] += it->info(sumOfInfo[i]);
 			for (size_t i = 0; i < numMeanFld; ++i) {
@@ -1936,95 +1939,99 @@ bool statInfo::apply(Population & pop) const
 
 		pop.deactivateVirtualSubPop(sp->subPop());
 
-		for (size_t i = 0; i < numSumFld; ++i)
-			allSumVal[i] += sumVal[i];
-		for (size_t i = 0; i < numMeanFld; ++i) {
-			allMeanSumVal[i] += meanSumVal[i];
-			allMeanNumVal[i] += meanNumVal[i];
-		}
-		for (size_t i = 0; i < numVarFld; ++i) {
-			allVarSumVal[i] += varSumVal[i];
-			allVarSum2Val[i] += varSum2Val[i];
-			allVarNumVal[i] += varNumVal[i];
-		}
-		if (allMaxVal.empty()) {
-			for (size_t i = 0; i < numMaxFld; ++i)
-				allMaxVal.push_back(maxVal[i]);
-		} else {
-			for (size_t i = 0; i < numMaxFld; ++i)
-				if (allMaxVal[i] < maxVal[i])
-					allMaxVal[i] = maxVal[i];
-		}
-		if (allMinVal.empty()) {
-			for (size_t i = 0; i < numMinFld; ++i)
-				allMinVal.push_back(minVal[i]);
-		} else {
-			for (size_t i = 0; i < numMinFld; ++i)
-				if (allMinVal[i] > minVal[i])
-					allMinVal[i] = minVal[i];
+		// if no individual, special treatment is needed.
+		if (indCnt != 0) {
+			for (size_t i = 0; i < numSumFld; ++i)
+				allSumVal[i] += sumVal[i];
+			for (size_t i = 0; i < numMeanFld; ++i) {
+				allMeanSumVal[i] += meanSumVal[i];
+				allMeanNumVal[i] += meanNumVal[i];
+			}
+			for (size_t i = 0; i < numVarFld; ++i) {
+				allVarSumVal[i] += varSumVal[i];
+				allVarSum2Val[i] += varSum2Val[i];
+				allVarNumVal[i] += varNumVal[i];
+			}
+			if (allMaxVal.empty()) {
+				for (size_t i = 0; i < numMaxFld; ++i)
+					allMaxVal.push_back(maxVal[i]);
+			} else {
+				for (size_t i = 0; i < numMaxFld; ++i)
+					if (allMaxVal[i] < maxVal[i])
+						allMaxVal[i] = maxVal[i];
+			}
+			if (allMinVal.empty()) {
+				for (size_t i = 0; i < numMinFld; ++i)
+					allMinVal.push_back(minVal[i]);
+			} else {
+				for (size_t i = 0; i < numMinFld; ++i)
+					if (allMinVal[i] > minVal[i])
+						allMinVal[i] = minVal[i];
+			}
+			allIndCnt += indCnt;
 		}
 		// output variable
 		if (m_vars.contains(SumOfInfo_sp_String)) {
 			strDict dct;
 			for (size_t i = 0; i < numSumFld; ++i)
-				dct[m_sumOfInfo[i]] = sumVal[i];
+				dct[m_sumOfInfo[i]] = indCnt == 0 ? MISSING_VALUE : sumVal[i];
 			pop.getVars().setVar(subPopVar_String(*sp, SumOfInfo_String, m_suffix), dct);
 		}
 		if (m_vars.contains(MeanOfInfo_sp_String)) {
 			strDict dct;
 			for (size_t i = 0; i < numMeanFld; ++i)
-				dct[m_meanOfInfo[i]] = meanNumVal[i] == 0 ? 0 : meanSumVal[i] / meanNumVal[i];
+				dct[m_meanOfInfo[i]] = meanNumVal[i] == 0 ? MISSING_VALUE : meanSumVal[i] / meanNumVal[i];
 			pop.getVars().setVar(subPopVar_String(*sp, MeanOfInfo_String, m_suffix), dct);
 		}
 		if (m_vars.contains(VarOfInfo_sp_String)) {
 			strDict dct;
 			for (size_t i = 0; i < numVarFld; ++i)
-				dct[m_varOfInfo[i]] = varNumVal[i] <= 1 ? 0 :
+				dct[m_varOfInfo[i]] = varNumVal[i] <= 1 ? (indCnt == 0 ? MISSING_VALUE : 0) :
 				                      (varSum2Val[i] - varSumVal[i] * varSumVal[i] / varNumVal[i]) / (varNumVal[i] - 1);
 			pop.getVars().setVar(subPopVar_String(*sp, VarOfInfo_String, m_suffix), dct);
 		}
 		if (m_vars.contains(MaxOfInfo_sp_String)) {
 			strDict dct;
 			for (size_t i = 0; i < numMaxFld; ++i)
-				dct[m_maxOfInfo[i]] = maxVal[i];
+				dct[m_maxOfInfo[i]] = indCnt == 0 ? MISSING_VALUE : maxVal[i];
 			pop.getVars().setVar(subPopVar_String(*sp, MaxOfInfo_String, m_suffix), dct);
 		}
 		if (m_vars.contains(MinOfInfo_sp_String)) {
 			strDict dct;
 			for (size_t i = 0; i < numMinFld; ++i)
-				dct[m_minOfInfo[i]] = minVal[i];
+				dct[m_minOfInfo[i]] = indCnt == 0 ? MISSING_VALUE : minVal[i];
 			pop.getVars().setVar(subPopVar_String(*sp, MinOfInfo_String, m_suffix), dct);
 		}
 	}
 	if (m_vars.contains(SumOfInfo_String)) {
 		strDict dct;
 		for (size_t i = 0; i < m_sumOfInfo.size(); ++i)
-			dct[m_sumOfInfo[i]] = allSumVal[i];
+			dct[m_sumOfInfo[i]] = allIndCnt == 0 ? MISSING_VALUE : allSumVal[i];
 		pop.getVars().setVar(SumOfInfo_String + m_suffix, dct);
 	}
 	if (m_vars.contains(MeanOfInfo_String)) {
 		strDict dct;
 		for (size_t i = 0; i < numMeanFld; ++i)
-			dct[m_meanOfInfo[i]] = allMeanNumVal[i] == 0 ? 0 : allMeanSumVal[i] / allMeanNumVal[i];
+			dct[m_meanOfInfo[i]] = allMeanNumVal[i] == 0 ? MISSING_VALUE : allMeanSumVal[i] / allMeanNumVal[i];
 		pop.getVars().setVar(MeanOfInfo_String + m_suffix, dct);
 	}
 	if (m_vars.contains(VarOfInfo_String)) {
 		strDict dct;
 		for (size_t i = 0; i < numVarFld; ++i)
-			dct[m_varOfInfo[i]] = allVarNumVal[i] <= 1 ? 0 :
+			dct[m_varOfInfo[i]] = allVarNumVal[i] <= 1 ? (allIndCnt == 0 ? MISSING_VALUE : 0) :
 			                      (allVarSum2Val[i] - allVarSumVal[i] * allVarSumVal[i] / allVarNumVal[i]) / (allVarNumVal[i] - 1);
 		pop.getVars().setVar(VarOfInfo_String + m_suffix, dct);
 	}
 	if (m_vars.contains(MaxOfInfo_String)) {
 		strDict dct;
 		for (size_t i = 0; i < numMaxFld; ++i)
-			dct[m_maxOfInfo[i]] = allMaxVal[i];
+			dct[m_maxOfInfo[i]] = allIndCnt == 0 ? MISSING_VALUE : allMaxVal[i];
 		pop.getVars().setVar(MaxOfInfo_String + m_suffix, dct);
 	}
 	if (m_vars.contains(MinOfInfo_String)) {
 		strDict dct;
 		for (size_t i = 0; i < numMinFld; ++i)
-			dct[m_minOfInfo[i]] = allMinVal[i];
+			dct[m_minOfInfo[i]] = allIndCnt == 0 ? MISSING_VALUE : allMinVal[i];
 		pop.getVars().setVar(MinOfInfo_String + m_suffix, dct);
 	}
 	return true;
