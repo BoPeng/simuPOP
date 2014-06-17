@@ -2228,11 +2228,6 @@ public:
 	}
 
 
-	// first and next succ across prob
-	size_t probFirstSucc() const;
-
-	size_t probNextSucc(size_t pos) const;
-
 	// first and next succ across trial
 	size_t trialFirstSucc(size_t idx) const;
 
@@ -2283,6 +2278,97 @@ private:
 
 	/// cache the actual point m_table[i].begin()._M_p and
 	/// access bits through this pointer. This is much faster
+	/// than using the reference interface.
+	vector<WORDTYPE *> m_pointer;
+
+	/// current trial. Used when user want to access the table row by row
+	size_t m_cur;
+};
+
+
+class Bernullitrials_T
+{
+public:
+	/// CPPONLY
+	Bernullitrials_T(RNG & /* rng */);
+
+	///
+	Bernullitrials_T(RNG & /* rng */, const vectorf & prob, size_t N=1024);
+
+	///
+	~Bernullitrials_T();
+
+	/// CPPONLY
+	void setParameter(const vectorf & prob, size_t N=1024);
+
+	/// generate the trial table, reset m_cur
+	void doTrial();
+
+	/// if necessary, do trail again.
+	void trial();
+
+
+#define getBit(ptr, i)    ((*((ptr) + (i) / WORDBIT) & (1UL << ((i) - ((i) / WORDBIT) * WORDBIT))) != 0)
+	inline bool trialSucc(size_t idx) const
+	{
+		// DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
+		return getBit(m_pointer[m_cur], idx);
+	}
+
+/*
+	inline bool trialSucc(size_t idx, size_t cur) const
+	{
+		return getBit(m_pointer[cur], idx);
+	}
+*/
+
+	// first and next succ across prob
+	size_t probFirstSucc() const;
+
+	size_t probNextSucc(size_t pos) const;
+
+	void setTrialSucc(size_t idx, bool succ);
+
+	/// return the succ rate for one index, used for verification pruposes
+	double trialSuccRate(UINT index) const;
+
+	/// return the succ rate for current trial, used for verification pruposes
+	double probSuccRate() const;
+	/*
+	/// CPPONLY
+	vectorf probabilities()
+	{
+		return m_prob;
+	}
+*/
+
+public:
+	static const size_t npos = static_cast<size_t>(-1);
+
+private:
+	void setAll(size_t idx, bool v);
+
+private:
+	// We cannot cache m_RNG because differenct m_RNG will be used for
+	// different threads
+	//RNG * m_RNG;
+
+	size_t m_N;
+
+	/// vector of probabilities
+	vectorf m_prob;
+
+	/// vectors to save result
+	/// note that the result will be stored in the reversed order
+	/// i.e.
+	/// p1 last_succ_index .... first_succ_index
+	/// p2
+	/// p3 last_succ_index .... first_succ_index
+	///
+	/// then for each trial, we only need to compare m_cur with the last element
+	/// and removing them if match.
+	vector< BitSet > m_table;
+
 	/// than using the reference interface.
 	vector<WORDTYPE *> m_pointer;
 

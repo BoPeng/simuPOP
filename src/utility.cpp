@@ -3763,31 +3763,6 @@ void Bernullitrials::trial()
 }
 
 
-size_t Bernullitrials::probFirstSucc() const
-{
-	DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
-	size_t i = 0;
-	const size_t sz = probSize();
-	while (i < sz && !getBit(m_pointer[i], m_cur))
-		++i;
-	return i >= sz ? npos : i;
-}
-
-
-size_t Bernullitrials::probNextSucc(size_t pos) const
-{
-	DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
-	const size_t sz = probSize();
-	if (pos >= (sz - 1) || sz == 0)
-		return npos;
-
-	++pos;
-	while (pos < sz && !getBit(m_pointer[pos], m_cur))
-		++pos;
-	return pos >= sz ? npos : pos;
-}
-
-
 size_t Bernullitrials::trialFirstSucc(size_t idx) const
 {
 	size_t blk = m_N / WORDBIT;
@@ -3830,6 +3805,9 @@ size_t Bernullitrials::trialNextSucc(size_t idx, size_t pos) const
 	WORDTYPE tmp = *ptr & ~g_bitMask[offset];
 
 	size_t blk = m_N / WORDBIT;
+	if (i == blk)
+		// mask out bits after rest
+		tmp &= g_bitMask[m_N - blk * WORDBIT];
 	if (tmp != 0)
 		return i * WORDBIT + lowest_bit(tmp);
 	else if (blk == i)
@@ -3886,6 +3864,217 @@ double Bernullitrials::probSuccRate() const
 		count += getBit(m_pointer[cl], m_cur) ? 1 : 0;
 	return count / static_cast<double>(probSize());
 }
+
+// ###############################################
+
+Bernullitrials_T::Bernullitrials_T(RNG & /* rng */)
+	: m_N(1024), m_prob(0), m_table(0), m_pointer(0), m_cur(npos)
+{
+}
+
+
+Bernullitrials_T::Bernullitrials_T(RNG & /* rng */, const vectorf & prob, size_t N)
+	: m_N(N), m_prob(prob), m_table(N), m_pointer(N), m_cur(npos)
+{
+	//DBG_FAILIF(trials_T <= 0, ValueError, "trial number can not be zero.");
+	DBG_FAILIF(prob.empty(), ValueError, "probability table can not be empty.");
+}
+
+//
+Bernullitrials_T::~Bernullitrials_T()
+{
+}
+
+
+void Bernullitrials_T::setParameter(const vectorf & prob, size_t N)
+{
+	//
+	m_N = N == 0 ? 1024 : N;
+	m_prob = prob;
+	m_table.resize(m_N);
+	m_pointer.resize(m_N);
+	m_cur = npos;                                                             // will trigger doTrial.
+
+	DBG_FAILIF(prob.empty(), ValueError, "probability table can not be empty.");
+
+}
+
+#define setBit(ptr, i)    (*((ptr) + (i) / WORDBIT) |= 1UL << ((i) - ((i) / WORDBIT) * WORDBIT))
+#define unsetBit(ptr, i)  (*((ptr) + (i) / WORDBIT) &= ~(1UL << ((i) - ((i) / WORDBIT) * WORDBIT)))
+// use a != 0 to avoid compiler warning
+#define getBit(ptr, i)    ((*((ptr) + (i) / WORDBIT) & (1UL << ((i) - ((i) / WORDBIT) * WORDBIT))) != 0)
+
+// utility function.
+void Bernullitrials_T::setAll(size_t idx, bool v)
+{
+	if (v)
+		for (size_t i = 0; i < m_N; ++i)
+			setBit(m_pointer[i], idx);
+	else
+		for (size_t i = 0; i < m_N; ++i)
+			unsetBit(m_pointer[i], idx);
+}
+
+
+void Bernullitrials_T::doTrial()
+{
+	// reset all values to 0
+	for (size_t i = 0; i < m_N; ++i) {
+		m_table[i].clear();
+		m_table[i].resize(m_prob.size(), 0);
+		m_pointer[i] = const_cast<WORDTYPE*>(BITPTR(m_table[i].begin()));
+	}
+	// for each column
+	for (size_t cl = 0, clEnd = m_prob.size(); cl < clEnd; ++cl) {
+		double prob = m_prob[cl];
+		if (prob == 0.)
+			setAll(cl, false);
+		// algorithm i Sheldon Ross' book simulation (4ed), page 54
+		else if (prob < 0.2) {
+			// it may make sense to limit the use of this method to low p,
+			size_t i = 0;
+			while (true) {
+				// i moves at least one. (# trails until the first success)
+				// 6,3 means (0 0 0 0 0 1) (0 0 1)
+				ULONG step = getRNG().randGeometric(prob);
+				if (step == 0)
+					// gsl_ran_geometric sometimes return 0 when prob is really small.
+					break;
+				// i moves to 6 and 9
+				i += step;
+				if (i <= m_N)
+					// set the 5th and 8th element to 1.
+					setBit(m_pointer[i-1], cl);
+				else
+					break;
+			}
+		} else if (prob == 1.) {
+			setAll(cl, true);
+		} else {                                                                  // 1 > m_proc[cl] > 0.5
+			for (size_t i = 0; i < m_N; ++i)
+				if (getRNG().randUniform() < prob)
+					setBit(m_pointer[i], cl);
+		}
+	}
+	m_cur = 0;
+}
+
+
+// get a trial corresponding to m_prob.
+void Bernullitrials_T::trial()
+{
+	if (m_cur == npos || m_cur == m_N - 1)  // reach the last trial
+		doTrial();
+	else
+		m_cur++;
+	DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
+}
+
+
+size_t Bernullitrials_T::probFirstSucc() const
+{
+	size_t nProb = m_prob.size();
+	size_t blk = nProb / WORDBIT;
+	WORDTYPE * ptr = m_pointer[m_cur];
+
+	size_t i = 0;
+
+	while (i < blk && *ptr++ == 0)
+		++i;
+
+	if (i < blk)
+		return i * WORDBIT + lowest_bit(*(ptr - 1));
+	else {
+		size_t rest = nProb - blk * WORDBIT;
+		size_t tmp = *ptr & g_bitMask[rest];
+		if (tmp == 0)
+			return npos;
+		else
+			return blk * WORDBIT + lowest_bit(tmp);
+	}
+}
+
+
+size_t Bernullitrials_T::probNextSucc(size_t pos) const
+{
+	const BitSet & bs = m_table[m_cur];
+	size_t nProb = m_prob.size();
+
+	if (pos >= nProb - 1 || nProb == 0)
+		return npos;
+
+	++pos;
+
+	// first block
+	BitSet::const_iterator it = bs.begin() + pos;
+	WORDTYPE * ptr = const_cast<WORDTYPE*>(BITPTR(it));
+	size_t offset = BITOFF(it);
+	size_t i = ptr - const_cast<WORDTYPE*>(BITPTR(bs.begin()));
+
+	// mask out bits before pos
+	WORDTYPE tmp = *ptr & ~g_bitMask[offset];
+
+	size_t blk = nProb / WORDBIT;
+	if (i == blk)
+		// mask out bits after rest
+		tmp &= g_bitMask[nProb - blk * WORDBIT];
+	if (tmp != 0)
+		return i * WORDBIT + lowest_bit(tmp);
+	else if (blk == i)
+		// if i is the last block, return no.
+		return npos;
+
+	// now, go from next block
+	++ptr;
+	++i;
+	while (i < blk && *ptr++ == 0)
+		++i;
+
+	if (i < blk)
+		return i * WORDBIT + lowest_bit(*(ptr - 1));
+	else {                                                                                  // last block?
+		size_t rest = nProb - blk * WORDBIT;
+		// mask out bits after rest
+		tmp = *ptr & g_bitMask[rest];
+		if (tmp == 0)
+			return npos;
+		else
+			return blk * WORDBIT + lowest_bit(tmp);
+	}
+}
+
+
+void Bernullitrials_T::setTrialSucc(size_t idx, bool succ)
+{
+	DBG_ASSERT(m_cur < m_N, ValueError, "Wrong trial index");
+	if (succ)
+		setBit(m_pointer[m_cur], idx);
+	else
+		unsetBit(m_pointer[m_cur], idx);
+}
+
+
+
+double Bernullitrials_T::trialSuccRate(UINT index) const
+{
+	UINT count = 0;
+	for (size_t cl = 0, clEnd = m_N; cl < clEnd; ++cl)
+		count += getBit(m_pointer[cl], index) ? 1 : 0;
+	return count / static_cast<double>(m_N);
+}
+
+
+double Bernullitrials_T::probSuccRate() const
+{
+	// efficiency is not considered here
+	size_t count = 0;
+
+	for (size_t i = 0; i < m_prob.size(); ++i)
+		if (getBit(m_pointer[m_cur], i))
+			count++;
+	return double(count) / static_cast<double>(m_prob.size());
+}
+
 
 
 #undef setBit

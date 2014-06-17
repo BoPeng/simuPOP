@@ -750,10 +750,10 @@ void Recombinator::initialize(const Individual & ind) const
 	if (m_algorithm != 2) {
 #ifdef _OPENMP
 		for (size_t i = 0; i < numThreads(); i++)
-			m_bt[i].setParameter(vecP, 0 /* obsolete m_intendedSize */);
+			m_bt[i].setParameter(vecP);
 #else
 
-		m_bt.setParameter(vecP, 0 /* obsolete m_intendedSize */);
+		m_bt.setParameter(vecP);
 #endif
 	}
 
@@ -768,9 +768,9 @@ void Recombinator::transmitGenotype(const Individual & parent,
 
 	//Bernullitrial for each thread
 #ifdef _OPENMP
-	Bernullitrials & bt = m_bt[omp_get_thread_num()];
+	Bernullitrials_T & bt = m_bt[omp_get_thread_num()];
 #else
-	Bernullitrials & bt = m_bt;
+	Bernullitrials_T & bt = m_bt;
 #endif
 
 	// use which copy of chromosome
@@ -925,7 +925,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 		// if there is some recombination
 		ssize_t convCount = -1;
 		size_t convEnd;
-		if (pos != Bernullitrials::npos) {
+		if (pos != Bernullitrials_T::npos) {
 			// first piece
 #  ifdef MUTANTALLELE
 			copyGenotype(cp[curCp] + gt, cp[curCp] + m_recBeforeLoci[pos], off + gt);
@@ -946,7 +946,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 				convCount = markersConverted(gt, parent);
 			}
 			// next recombination point...
-			while ((pos = bt.probNextSucc(pos)) != Bernullitrials::npos) {
+			while ((pos = bt.probNextSucc(pos)) != Bernullitrials_T::npos) {
 				// copy from last to this recombination point, but
 				// there might be a conversion event in between
 				gtEnd = m_recBeforeLoci[pos];
@@ -1027,7 +1027,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 		// if there is some recombination
 		ssize_t convCount = -1;
 		size_t convEnd;
-		if (pos != Bernullitrials::npos) {
+		if (pos != Bernullitrials_T::npos) {
 			// first piece
 			gtEnd = m_recBeforeLoci[pos];
 			copyGenotype(cp[curCp] + gt, off + gt, m_recBeforeLoci[pos] - gt);
@@ -1044,7 +1044,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 				convCount = markersConverted(gt, parent);
 			}
 			// next recombination point...
-			while ((pos = bt.probNextSucc(pos)) != Bernullitrials::npos) {
+			while ((pos = bt.probNextSucc(pos)) != Bernullitrials_T::npos) {
 				gtEnd = m_recBeforeLoci[pos];
 				if (convCount > 0) {
 					convEnd = gt + convCount;
@@ -1100,11 +1100,11 @@ void Recombinator::transmitGenotype(const Individual & parent,
 #ifndef BINARYALLELE
 		size_t gt = 0, gtEnd = 0;
 		size_t step = getRNG().randGeometric(m_rates[0]);
-		size_t pos = (step == 0 || step > m_recBeforeLoci.size()) ? Bernullitrials::npos : (step - 1);
+		size_t pos = (step == 0 || step > m_recBeforeLoci.size()) ? Bernullitrials_T::npos : (step - 1);
 		// if there is some recombination
 		ssize_t convCount = -1;
 		size_t convEnd;
-		if (pos != Bernullitrials::npos) {
+		if (pos != Bernullitrials_T::npos) {
 			// first piece
 #  ifdef MUTANTALLELE
 			copyGenotype(cp[curCp] + gt, cp[curCp] + m_recBeforeLoci[pos], off + gt);
@@ -1125,7 +1125,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 				convCount = markersConverted(gt, parent);
 			}
 			// next recombination point...
-			while (pos != Bernullitrials::npos) {
+			while (pos != Bernullitrials_T::npos) {
 				size_t step = getRNG().randGeometric(m_rates[0]);
 				if (step == 0 || step + pos >= m_recBeforeLoci.size())
 					break;
@@ -1209,11 +1209,11 @@ void Recombinator::transmitGenotype(const Individual & parent,
 #else       // binary alleles
 		size_t gt = 0, gtEnd = 0;
 		size_t step = getRNG().randGeometric(m_rates[0]);
-		size_t pos = (step == 0 || step > m_recBeforeLoci.size()) ? Bernullitrials::npos : (step - 1);
+		size_t pos = (step == 0 || step > m_recBeforeLoci.size()) ? Bernullitrials_T::npos : (step - 1);
 		// if there is some recombination
 		ssize_t convCount = -1;
 		size_t convEnd;
-		if (pos != Bernullitrials::npos) {
+		if (pos != Bernullitrials_T::npos) {
 			// first piece
 			gtEnd = m_recBeforeLoci[pos];
 			copyGenotype(cp[curCp] + gt, off + gt, m_recBeforeLoci[pos] - gt);
@@ -1230,7 +1230,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 				convCount = markersConverted(gt, parent);
 			}
 			// next recombination point...
-			while (pos != Bernullitrials::npos) {
+			while (pos != Bernullitrials_T::npos) {
 				size_t step = getRNG().randGeometric(m_rates[0]);
 				if (step == 0 || step + pos >= m_recBeforeLoci.size())
 					break;
