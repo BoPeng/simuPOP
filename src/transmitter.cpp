@@ -684,7 +684,7 @@ void Recombinator::initialize(const Individual & ind) const
 					else
 						r = m_rates[pos - loci.begin()];
 					m_recBeforeLoci.push_back(loc + 1);
-					vecP.push_back(r);
+					vecP.push_back(min(0.5, r));
 
 					DBG_ASSERT(fcmp_ge(vecP[vecP.size() - 1], 0) && fcmp_le(vecP[vecP.size() - 1], 1),
 						ValueError,
