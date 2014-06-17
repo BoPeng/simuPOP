@@ -1916,7 +1916,7 @@ void save_float(ostringstream & str, PyObject * args)
 	double d = PyFloat_AsDouble(args);
 
 	// type + string
-	str << 'f' << d << ' ';
+	str << 'f' << boost::lexical_cast<std::string>(d) << ' ';
 }
 
 
@@ -3928,9 +3928,9 @@ void Bernullitrials_T::doTrial()
 	for (size_t cl = 0, clEnd = m_prob.size(); cl < clEnd; ++cl) {
 		double prob = m_prob[cl];
 		if (prob == 0.)
-			setAll(cl, false);
+			continue;
 		// algorithm i Sheldon Ross' book simulation (4ed), page 54
-		else if (prob < 0.2) {
+		else if (prob > 0 && prob < 0.2) {
 			// it may make sense to limit the use of this method to low p,
 			size_t i = 0;
 			while (true) {
