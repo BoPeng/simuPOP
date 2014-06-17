@@ -282,6 +282,7 @@ __all__ = [
     # For testing only
     'applyDuringMatingOperator',
     'Bernullitrials',
+    'Bernullitrials_T',
     'WeightedSampler',
     # 
     # modules are not loaded by default because they require rpy or matplotlib

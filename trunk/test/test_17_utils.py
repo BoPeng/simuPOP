@@ -178,6 +178,61 @@ class TestUtils(unittest.TestCase):
                 for j in range(pos+1, N):
                     self.assertFalse(bt.trialSucc(i, j))
 
+    def testBernullitrials_T(self):
+        'Testing bernullitrials_T'
+        import math
+        rg = getRNG()
+        p = [0.001, 0.001, 0.5, 0.99]
+        N = 1000000
+        bt = Bernullitrials_T(rg, p, N)
+        bt.doTrial()
+        for i in range(len(p)):
+            prop = bt.trialSuccRate(i)
+            # binomial, mean p, variance = p(1-p)/n
+            std = math.sqrt(p[i]*(1.-p[i])/N)
+            self.assertTrue(prop > p[i] - 3*std and prop < p[i] + 3*std)
+        # another test, for each trail
+        for pi in p:
+            bt = Bernullitrials_T(rg, [pi]*N, 10)
+            bt.doTrial()
+            for i in range(10):
+                bt.trial();
+                prop = bt.probSuccRate()
+                # binomial, mean p, variance = p(1-p)/n
+                std = math.sqrt(pi*(1.-pi)/N)
+                self.assertTrue(prop > pi - 3*std and prop < pi + 3*std, "We are testing if the proportion falls within three standard deviation of SD. This test may fail from time to time.")
+
+        # test find_first and find_next
+        nP = 10000
+        bt = Bernullitrials_T(rg, [0.001]*10000, 10)
+        for i in range(100):
+            bt.doTrial()
+            #all_pos = []
+            pos = bt.probFirstSucc()
+            if pos == bt.npos:
+                continue
+            #all_pos.append(pos)
+            self.assertTrue(pos < nP)
+            if pos != bt.npos:
+                self.assertTrue(bt.trialSucc(pos))
+                for j in range(pos):
+                    self.assertFalse(bt.trialSucc(j))
+                while True:
+                    last_pos = pos
+                    pos = bt.probNextSucc(pos)
+                    if pos == bt.npos:
+                        break;
+                    #all_pos.append(pos)
+                    self.assertTrue(pos < nP)
+                    self.assertTrue(bt.trialSucc(pos))
+                    for j in range(last_pos+1, pos):
+                        self.assertFalse(bt.trialSucc(j))
+                for j in range(pos+1, N):
+                    self.assertFalse(bt.trialSucc(j))
+            #print(all_pos)
+
+
+
     def testSeed(self):
         'Testing RNG::seed() and RNG::setSeed()'
         import random
