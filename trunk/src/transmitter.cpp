@@ -803,13 +803,26 @@ void Recombinator::transmitGenotype(const Individual & parent,
 		ignoreEnd = static_cast<int>(parent.chromEnd(m_chromY));
 	} else if (ploidy == 1 && m_chromX > 0) {
 		if (offspring.sex() == MALE) {
+			// for male
+			//
+			// xxxxxxxxxxxx
+			//             yyyyyyyyyyy  <- 1
+			//
 			ignoreBegin = static_cast<int>(parent.chromBegin(m_chromX));
 			ignoreEnd = static_cast<int>(parent.chromEnd(m_chromX));
-			forceSecondBegin = static_cast<int>(parent.chromBegin(m_chromY));
-			forceSecondEnd = static_cast<int>(parent.chromEnd(m_chromY));
+			if (m_chromY > 0) {
+				forceSecondBegin = static_cast<int>(parent.chromBegin(m_chromY));
+				forceSecondEnd = static_cast<int>(parent.chromEnd(m_chromY));
+			}
 		} else {
-			ignoreBegin = static_cast<int>(parent.chromBegin(m_chromY));
-			ignoreEnd = static_cast<int>(parent.chromEnd(m_chromY));
+			// for female
+			//
+			// xxxxxxxxxxxx
+			// xxxxxxxxxxxx
+			if (m_chromY > 0) {
+				ignoreBegin = static_cast<int>(parent.chromBegin(m_chromY));
+				ignoreEnd = static_cast<int>(parent.chromEnd(m_chromY));
+			}
 			forceFirstBegin = static_cast<int>(parent.chromBegin(m_chromX));
 			forceFirstEnd = static_cast<int>(parent.chromEnd(m_chromX));
 		}
@@ -1295,13 +1308,15 @@ void Recombinator::transmitGenotype(const Individual & parent,
 		*m_debugOutput << '\n';
 	// handle special chromosomes
 	if (m_chromX > 0) {
+		if (offspring.sex() == MALE)
+			clearChromosome(offspring, 1, m_chromX);
+	}
+	if (m_chromY > 0) {
 		if (offspring.sex() == FEMALE) {
 			clearChromosome(offspring, 0, m_chromY);
 			clearChromosome(offspring, 1, m_chromY);
-		} else {
+		} else
 			clearChromosome(offspring, 0, m_chromY);
-			clearChromosome(offspring, 1, m_chromX);
-		}
 	}
 }
 
