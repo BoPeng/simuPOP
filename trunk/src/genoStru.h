@@ -126,8 +126,8 @@ public:
 	}
 
 
-    /// CPPONLY
-    void buildLociPosMap() const;
+	/// CPPONLY
+	void buildLociPosMap() const;
 
 	/// CPPONLY
 	void setChromTypes(const vectoru & chromTypes);
@@ -240,9 +240,9 @@ private:
 	/// name of the information field
 	vectorstr m_infoFields;
 
-	mutable UINT m_refCount;
+	mutable map<genomic_pos, size_t> m_lociPosMap;
 
-    mutable map<genomic_pos, size_t> m_lociPosMap;
+	mutable UINT m_refCount;
 
 	friend class GenoStruTrait;
 };
@@ -781,10 +781,15 @@ public:
 	 */
 	vectoru lociByNames(const vectorstr & names) const;
 
-    /** CPPONLY return the indexes of loci with positions \e positions (list of (chr, pos)
-     *  pairs). Raise a \c ValueError if any of the loci cannot be found.
-     */
-    vectoru lociByPos(const vectorpos & positions) const;
+	/** return the indexes of loci with positions \e positions (list of (chr, pos)
+	 *  pairs). Raise a \c ValueError if any of the loci cannot be found.
+	 */
+	vectoru indexesOfLoci(const lociList & loci = lociList()) const;
+
+	/** CPPONLY return the indexes of loci with positions \e positions (list of (chr, pos)
+	 *  pairs). Raise a \c ValueError if any of the loci cannot be found.
+	 */
+	vectoru lociByPos(const vectorpos & positions) const;
 
 	/** HIDDEN
 	    Return \c True if \c name is one of the information fields of this population.

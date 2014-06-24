@@ -821,22 +821,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::Bernullitrials::probFirstSucc "
-
-Usage:
-
-    x.probFirstSucc()
-
-"; 
-
-%feature("docstring") simuPOP::Bernullitrials::probNextSucc "
-
-Usage:
-
-    x.probNextSucc(pos)
-
-"; 
-
 %feature("docstring") simuPOP::Bernullitrials::trialFirstSucc "
 
 Usage:
@@ -887,6 +871,111 @@ Usage:
 "; 
 
 %ignore simuPOP::Bernullitrials::probabilities();
+
+%feature("docstring") simuPOP::BernullitrialsT "
+
+"; 
+
+%ignore simuPOP::BernullitrialsT::BernullitrialsT(RNG &);
+
+%feature("docstring") simuPOP::BernullitrialsT::BernullitrialsT "
+
+Usage:
+
+    Bernullitrials_T(, prob, N=1024)
+
+"; 
+
+%feature("docstring") simuPOP::BernullitrialsT::~BernullitrialsT "
+
+Usage:
+
+    x.~Bernullitrials_T()
+
+"; 
+
+%ignore simuPOP::BernullitrialsT::setParameter(const vectorf &prob, size_t N=1024);
+
+%feature("docstring") simuPOP::BernullitrialsT::doTrial "
+
+Description:
+
+    generate the trial table, reset m_cur
+
+Usage:
+
+    x.doTrial()
+
+"; 
+
+%feature("docstring") simuPOP::BernullitrialsT::trial "
+
+Description:
+
+    if necessary, do trail again.
+
+Usage:
+
+    x.trial()
+
+"; 
+
+%feature("docstring") simuPOP::BernullitrialsT::trialSucc "
+
+Usage:
+
+    x.trialSucc(idx)
+
+"; 
+
+%feature("docstring") simuPOP::BernullitrialsT::probFirstSucc "
+
+Usage:
+
+    x.probFirstSucc()
+
+"; 
+
+%feature("docstring") simuPOP::BernullitrialsT::probNextSucc "
+
+Usage:
+
+    x.probNextSucc(pos)
+
+"; 
+
+%feature("docstring") simuPOP::BernullitrialsT::setTrialSucc "
+
+Usage:
+
+    x.setTrialSucc(idx, succ)
+
+"; 
+
+%feature("docstring") simuPOP::BernullitrialsT::trialSuccRate "
+
+Description:
+
+    return the succ rate for one index, used for verification pruposes
+
+Usage:
+
+    x.trialSuccRate(index)
+
+"; 
+
+%feature("docstring") simuPOP::BernullitrialsT::probSuccRate "
+
+Description:
+
+    return the succ rate for current trial, used for verification
+    pruposes
+
+Usage:
+
+    x.probSuccRate()
+
+"; 
 
 %ignore simuPOP::BinomialNumOffModel;
 
@@ -1804,6 +1893,8 @@ Usage:
 
 %ignore simuPOP::GenoStructure::chromIndex(UINT ch) const;
 
+%ignore simuPOP::GenoStructure::buildLociPosMap() const;
+
 %ignore simuPOP::GenoStructure::setChromTypes(const vectoru &chromTypes);
 
 %feature("docstring") simuPOP::GenoStruTrait "
@@ -2214,6 +2305,22 @@ Details:
     any of the loci cannot be found.
 
 "; 
+
+%feature("docstring") simuPOP::GenoStruTrait::indexesOfLoci "
+
+Usage:
+
+    x.indexesOfLoci(loci=ALL_AVAIL)
+
+Details:
+
+    return the indexes of loci with positions positions (list of (chr,
+    pos) pairs). Raise a ValueError if any of the loci cannot be
+    found.
+
+"; 
+
+%ignore simuPOP::GenoStruTrait::lociByPos(const vectorpos &positions) const;
 
 %feature("docstring") simuPOP::GenoStruTrait::hasInfoField "Obsolete or undocumented function."
 

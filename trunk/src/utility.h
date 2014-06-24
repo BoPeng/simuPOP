@@ -90,7 +90,7 @@ typedef vector<bool> BitSet;
 
 // this is used to compare loci positions when loci are provided by
 // (chr, pos) pair.
-#define PRECISION(f)  (double(int(f))==f ? f : (int((f)*10000.+0.5)/10000.))
+#define PRECISION(f)  (double(int(f)) == f ? f : (int((f) * 10000. + 0.5) / 10000.))
 
 namespace simuPOP {
 
@@ -622,6 +622,7 @@ protected:
 	mutable vectoru m_elems;
 	vectorstr m_names;
 	vectorpos m_positions;
+
 private:
 	listStatus m_status;
 
@@ -2298,13 +2299,13 @@ public:
 	Bernullitrials_T(RNG & /* rng */);
 
 	///
-	Bernullitrials_T(RNG & /* rng */, const vectorf & prob, size_t N=1024);
+	Bernullitrials_T(RNG & /* rng */, const vectorf & prob, size_t N = 1024);
 
 	///
 	~Bernullitrials_T();
 
 	/// CPPONLY
-	void setParameter(const vectorf & prob, size_t N=1024);
+	void setParameter(const vectorf & prob, size_t N = 1024);
 
 	/// generate the trial table, reset m_cur
 	void doTrial();
@@ -2320,12 +2321,13 @@ public:
 		return getBit(m_pointer[m_cur], idx);
 	}
 
-/*
-	inline bool trialSucc(size_t idx, size_t cur) const
-	{
-		return getBit(m_pointer[cur], idx);
-	}
-*/
+
+	/*
+	    inline bool trialSucc(size_t idx, size_t cur) const
+	    {
+	        return getBit(m_pointer[cur], idx);
+	    }
+	 */
 
 	// first and next succ across prob
 	size_t probFirstSucc() const;
@@ -2339,13 +2341,14 @@ public:
 
 	/// return the succ rate for current trial, used for verification pruposes
 	double probSuccRate() const;
+
 	/*
-	/// CPPONLY
-	vectorf probabilities()
-	{
-		return m_prob;
-	}
-*/
+	   /// CPPONLY
+	   vectorf probabilities()
+	   {
+	    return m_prob;
+	   }
+	 */
 
 public:
 	static const size_t npos = static_cast<size_t>(-1);
