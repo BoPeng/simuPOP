@@ -380,6 +380,8 @@ typedef std::vector<Allele>                              vectora;
 typedef std::vector<size_t>                              vectoru;
 typedef std::vector<std::string>                         vectorstr;
 typedef std::pair<size_t, size_t>                        pairu;
+typedef std::pair<std::string, double>                   genomic_pos;
+typedef std::vector<genomic_pos>                         vectorpos;
 typedef std::vector<std::vector<long> >                  matrixi;
 typedef std::vector<std::vector<std::string > >          matrixstr;
 typedef std::vector<std::vector<double > >               matrixf;

@@ -40,7 +40,7 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 	: m_ploidy(ploidy), m_numLoci(loci), m_chromTypes(),
 	m_haplodiploid(haplodiploid), m_lociPos(lociPos), m_chromIndex(loci.size() + 1),
 	m_chromNames(chromNames), m_alleleNames(alleleNames), m_lociNames(lociNames),
-	m_infoFields(infoFields), m_refCount(0)
+	m_infoFields(infoFields), m_lociPosMap(), m_refCount(0)
 {
 	DBG_ASSERT(ploidy >= 1, ValueError,
 		(boost::format("Ploidy must be >= 1. Given %1%") % ploidy).str());
@@ -288,6 +288,15 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 	}
 }
 
+
+void GenoStructure::buildLociPosMap() const
+{
+    if (!m_lociPosMap.empty())
+        return;
+    for (size_t ch = 0, loc = 0; ch < m_numLoci.size(); ++ch)
+        for (size_t i = 0; i < m_numLoci[ch]; ++i, ++loc)
+            m_lociPosMap[genomic_pos(m_chromNames[ch], PRECISION(m_lociPos[loc]))] = loc;
+}
 
 // initialize static variable s)genoStruRepository.
 vector<GenoStructure> GenoStruTrait::s_genoStruRepository = vector<GenoStructure>();
@@ -1062,6 +1071,28 @@ vectoru GenoStruTrait::lociByNames(const vectorstr & names) const
 	return indexes;
 }
 
+vectoru GenoStruTrait::lociByPos(const vectorpos & positions) const
+{
+	vectoru indexes(positions.size());
+
+    s_genoStruRepository[m_genoStruIdx].buildLociPosMap();
+	const map<genomic_pos, size_t> & lociPosMap = s_genoStruRepository[m_genoStruIdx].m_lociPosMap;
+
+	vectorpos::const_iterator pos = positions.begin();
+	vectorpos::const_iterator posEnd = positions.end();
+
+	for (size_t i = 0; pos != posEnd; ++pos, ++i) {
+		map<genomic_pos, size_t>::const_iterator it = lociPosMap.find(
+            genomic_pos((*pos).first, PRECISION((*pos).second)));
+
+		if (it == lociPosMap.end())
+			throw ValueError((boost::format("Failed to find locus with chromsome %1% and position %2%") % (*pos).first % (*pos).second).str());
+
+		indexes[i] = it->second;
+	}
+
+	return indexes;
+}
 
 vectorstr GenoStruTrait::alleleNames(const size_t locus) const
 {

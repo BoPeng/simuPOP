@@ -75,7 +75,7 @@ public:
 	GenoStructure() : m_ploidy(2), m_totNumLoci(0),
 		m_numLoci(0), m_chromTypes(), m_chromX(-1), m_chromY(-1), m_mitochondrial(-1), m_customized(),
 		m_haplodiploid(false), m_lociPos(0), m_chromIndex(0),
-		m_chromNames(), m_alleleNames(), m_lociNames(), m_lociNameMap(), m_infoFields(0),
+		m_chromNames(), m_alleleNames(), m_lociNames(), m_lociNameMap(), m_infoFields(0), m_lociPosMap(),
 		m_refCount(0)
 	{
 	}
@@ -125,6 +125,9 @@ public:
 		return m_chromIndex[ch];
 	}
 
+
+    /// CPPONLY
+    void buildLociPosMap() const;
 
 	/// CPPONLY
 	void setChromTypes(const vectoru & chromTypes);
@@ -238,6 +241,8 @@ private:
 	vectorstr m_infoFields;
 
 	mutable UINT m_refCount;
+
+    mutable map<genomic_pos, size_t> m_lociPosMap;
 
 	friend class GenoStruTrait;
 };
@@ -775,6 +780,11 @@ public:
 	 *  <group>3-locus</group>
 	 */
 	vectoru lociByNames(const vectorstr & names) const;
+
+    /** CPPONLY return the indexes of loci with positions \e positions (list of (chr, pos)
+     *  pairs). Raise a \c ValueError if any of the loci cannot be found.
+     */
+    vectoru lociByPos(const vectorpos & positions) const;
 
 	/** HIDDEN
 	    Return \c True if \c name is one of the information fields of this population.
