@@ -506,6 +506,22 @@ class TestOperator(unittest.TestCase):
         self.assertEqual(simu.dvars(0).gen, 1000)
 
 
+    def testLociByPos(self):
+        'Testing the use of (chr,pos) for parameter loci'
+        pop = Population(size=10, loci=10)
+        initGenotype(pop, freq=[0.4, 0.6], loci=[('', 1), ('', 3)])
+        self.assertRaises(ValueError, initGenotype, pop, freq=[0.4, 0.6], loci=[('', 1), ('', 3.5)])
+        pop = Population(size=10, loci=[5,5])
+        initGenotype(pop, freq=[0.4, 0.6], loci=[('', 1), ('', 3)])
+        #
+        pop = Population(size=10, loci=[5,5], chromNames=['a', 'b'], lociPos=[x*0.1 for x in range(10)])
+        initGenotype(pop, freq=[0.4, 0.6], loci=[('a', 0.3), ('b', 0.9001)])
+        self.assertRaises(ValueError, initGenotype, pop, freq=[0.4, 0.6], loci=[('a', .1), ('c', .3)])
+        # single number?
+        pop = Population(size=10, loci=[5,5], chromNames=['a', 'b'], lociPos=[x*0.1 for x in range(10)])
+        initGenotype(pop, freq=[0.4, 0.6], loci=('a', 0.3))
+        self.assertRaises(ValueError, initGenotype, pop, freq=[0.4, 0.6], loci=('a', 1.9))
+
     def testSubPopsOfDuringMatingOperator(self):
         'Testing subPops parameter of during mating operators'
         pop = Population([100]*2, infoFields='a')

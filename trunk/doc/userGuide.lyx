@@ -2117,6 +2117,31 @@ Recombinator(loci=[1,2,4])
 \begin_layout Itemize
 
 \family typewriter
+Recombinator(loci=[('1', 20), ('1', 25)])
+\family default
+ recombine at loci with position 
+\family typewriter
+20
+\family default
+ and
+\family typewriter
+ 25
+\family default
+ on chromosome 
+\family typewriter
+1
+\family default
+.
+ This usage is only available for parameter 
+\family typewriter
+loci
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
 Recombinator(loci=['a2', 'a4'])
 \family default
  recombine at loci 

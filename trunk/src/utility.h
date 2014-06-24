@@ -88,6 +88,10 @@ using std::setw;
 // bits directly in vector<bool>
 typedef vector<bool> BitSet;
 
+// this is used to compare loci positions when loci are provided by
+// (chr, pos) pair.
+#define PRECISION(f)  (double(int(f))==f ? f : (int((f)*10000.+0.5)/10000.))
+
 namespace simuPOP {
 
 // ////////////////////////////////////////////////////////////
@@ -557,7 +561,8 @@ private:
 		REGULAR = 0,
 		ALL_AVAIL = 1,
 		UNSPECIFIED = 2,
-		DYNAMIC = 3,
+		FROM_NAME = 3,
+		FROM_POSITION = 4,
 	};
 
 public:
@@ -606,7 +611,7 @@ public:
 
 	bool dynamic() const
 	{
-		return m_status == DYNAMIC;
+		return m_status == FROM_NAME;
 	}
 
 
@@ -616,7 +621,7 @@ public:
 protected:
 	mutable vectoru m_elems;
 	vectorstr m_names;
-
+	vectorpos m_positions;
 private:
 	listStatus m_status;
 

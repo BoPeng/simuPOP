@@ -1036,7 +1036,7 @@ lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_status(REGULAR), m_
 		// accept True/False
 		m_status = obj == Py_True ? ALL_AVAIL : UNSPECIFIED;
 	else if (PyString_Check(obj)) {
-		m_status = DYNAMIC;
+		m_status = FROM_NAME;
 		m_elems.resize(1);
 		m_names.push_back(PyObj_AsString(obj));
 	} else if (PyNumber_Check(obj)) {
@@ -1049,13 +1049,29 @@ lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_status(REGULAR), m_
 		for (size_t i = 0, iEnd = m_elems.size(); i < iEnd; ++i) {
 			PyObject * item = PySequence_GetItem(obj, i);
 			if (PyNumber_Check(item)) {
-				DBG_FAILIF(i != 0 && m_status != REGULAR, ValueError, "Cannot mix index and loci names.");
-				m_status = REGULAR;
-				m_elems[i] = static_cast<UINT>(PyInt_AsLong(item));
+				if (m_status == FROM_NAME and m_elems.size() == 2) {
+					// a special case for loci=(chr, pos)
+					m_elems.resize(1);
+					m_status = FROM_POSITION;
+					m_positions.push_back(genomic_pos(m_names[0], PyFloat_AsDouble(item)));
+					m_names.clear();
+				} else {
+					DBG_FAILIF(i != 0 && m_status != REGULAR, ValueError, "Cannot mix index and loci names.");
+					m_status = REGULAR;
+					m_elems[i] = static_cast<UINT>(PyInt_AsLong(item));
+				}
 			} else if (PyString_Check(item)) {
-				DBG_FAILIF(i != 0 && m_status != DYNAMIC, ValueError, "Cannot mix index and loci names.");
-				m_status = DYNAMIC;
+				DBG_FAILIF(i != 0 && m_status != FROM_NAME, ValueError, "Cannot mix index and loci names.");
+				m_status = FROM_NAME;
 				m_names.push_back(PyObj_AsString(item));
+			} else if (PySequence_Check(item)) {
+				// a sequence (chr, pos) is acceptable
+				DBG_FAILIF(PySequence_Size(item) != 2, ValueError, "Loci, if given as a nested list, should contain a list of (chr, pos) pairs.");
+				PyObject * chr = PySequence_GetItem(item, 0);
+				PyObject * pos = PySequence_GetItem(item, 1);
+				DBG_ASSERT(PyString_Check(chr) && PyNumber_Check(pos), ValueError, "Loci, if given as a nested list, should contain a list of (chr, pos) pair");
+				m_status = FROM_POSITION;
+				m_positions.push_back(genomic_pos(PyObj_AsString(chr), PyFloat_AsDouble(pos)));
 			} else {
 				DBG_ASSERT(false, ValueError, "Invalid input for a list of loci (index or name should be used).");
 			}
@@ -1072,8 +1088,10 @@ const vectoru & lociList::elems(const GenoStruTrait * trait) const
 	if (trait) {
 		if (trait->genoStruIdx() == m_trait)
 			return m_elems;
-		if (m_status == DYNAMIC)
+		if (m_status == FROM_NAME)
 			m_elems = trait->lociByNames(m_names);
+		else if (m_status == FROM_POSITION)
+			m_elems = trait->lociByPos(m_positions);
 		else if (m_status == ALL_AVAIL) {
 			m_elems.resize(trait->totNumLoci());
 			for (size_t i = 0; i < m_elems.size(); ++i)
