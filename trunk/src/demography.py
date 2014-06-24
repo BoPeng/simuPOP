@@ -875,6 +875,7 @@ class SettlementOfNewWorldModel(MultiStageModel):
         f_MX=0.48,
         ops=[],
         infoFields=[],
+        mix=True,
         scale=1
         ):
         '''Counting **backward in time**, this model evolves a population for ``T0``
@@ -896,7 +897,9 @@ class SettlementOfNewWorldModel(MultiStageModel):
         be added to ``ops``. Information fields required by these operators 
         should be passed to ``infoFields``. If a scaling factor ``scale``
         is specified, all population sizes and generation numbers will be divided by
-        a factor of ``scale``.
+        a factor of ``scale``. Finally, if ``mix`` is set to ``False`` (default to
+        ``True``, the three population will not be mixed to a single Mexican-American
+        population.
 
         This model merges all subpopulations if it is applied to a population with
         multiple subpopulation.
@@ -915,6 +918,18 @@ class SettlementOfNewWorldModel(MultiStageModel):
             N_MX1 = N_MX
         #
         # for python 2.x and 3.x compatibility
+        if mix:
+            mixing_stage = [
+                InstantChangeModel(
+                    T=1,
+                    N0=[0, int(N_EU1/scale), 0, int(N_MX1/scale)],
+                    G=[0],
+                    NG=[(int((N_EU1 + N_MX1)/scale), 'MXL')]
+                )
+            ]
+        else:
+            mixing_stage = []
+        #
         scale = float(scale)
         MultiStageModel.__init__(self, [
             InstantChangeModel(
@@ -960,13 +975,9 @@ class SettlementOfNewWorldModel(MultiStageModel):
                     # migration
                     subPops=[0, 1, 2],
                     toSubPops=[0, 1, 2])
-                ),
-            InstantChangeModel(
-                T=1,
-                N0=[0, int(N_EU1/scale), 0, int(N_MX1/scale)],
-                G=[0],
-                NG=[(int((N_EU1 + N_MX1)/scale), 'MXL')]
-            )], ops=ops, infoFields=infoFields
+                )
+            ] + mixing_stage,
+            ops=ops, infoFields=infoFields
         )
 
 class CosiModel(MultiStageModel):
