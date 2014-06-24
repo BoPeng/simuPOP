@@ -1773,9 +1773,9 @@ PyObject * SharedVariables::setVar(const string & name, const strDict & val)
 
 	for (strDict::const_iterator i = val.begin(); i != val.end(); ++i) {
 		PyDict_SetItemString(obj, const_cast<char *>(i->first.c_str()),
-		// SetItem will increase ref count for v
-		// for Py_None, this is good enough, for PyFloat, we need to 
-		// decrease its ref count
+			// SetItem will increase ref count for v
+			// for Py_None, this is good enough, for PyFloat, we need to
+			// decrease its ref count
 			v = i->second == MISSING_VALUE ? Py_None : PyFloat_FromDouble(i->second));
 		if (v != Py_None)
 			Py_XDECREF(v);
@@ -2254,7 +2254,7 @@ void * pyIndPointer(PyObject * obj)
 	SWIG_Python_ConvertPtr(obj, &ptr, g_swigIndividual, 0);
 	// I do not quite understand why this is needed but in PyParentChooser, when
 	// the functor returns individual object, and accepted by the mating schem,
-	// there is a memory leak 
+	// there is a memory leak
 	Py_DECREF(obj);
 	return ptr;
 #else
@@ -3597,7 +3597,7 @@ Bernullitrials::Bernullitrials(RNG & /* rng */, const vectorf & prob, ULONG tria
 		DBG_FAILIF(m_prob[i] < 0 || m_prob[i] > 1, ValueError,
 			(boost::format("Probability for a Bernulli trail should be between 0 and 1 (value %1% at index %2%)") % m_prob[i] % i).str());
 		m_table[i].resize(m_N);
-		m_pointer[i] = const_cast<WORDTYPE*>(BITPTR(m_table[i].begin()));
+		m_pointer[i] = const_cast<WORDTYPE *>(BITPTR(m_table[i].begin()));
 	}
 }
 
@@ -3629,7 +3629,7 @@ void Bernullitrials::setParameter(const vectorf & prob, size_t trials)
 		DBG_FAILIF(m_prob[i] < 0 || m_prob[i] > 1, ValueError,
 			(boost::format("Probability for a Bernulli trail should be between 0 and 1 (value %1% at index %2%)") % m_prob[i] % i).str());
 		m_table[i].resize(m_N);
-		m_pointer[i] = const_cast<WORDTYPE*>(BITPTR(m_table[i].begin()));
+		m_pointer[i] = const_cast<WORDTYPE *>(BITPTR(m_table[i].begin()));
 	}
 }
 
@@ -3815,9 +3815,9 @@ size_t Bernullitrials::trialNextSucc(size_t idx, size_t pos) const
 
 	// first block
 	BitSet::const_iterator it = bs.begin() + pos;
-	WORDTYPE * ptr = const_cast<WORDTYPE*>(BITPTR(it));
+	WORDTYPE * ptr = const_cast<WORDTYPE *>(BITPTR(it));
 	size_t offset = BITOFF(it);
-	size_t i = ptr - const_cast<WORDTYPE*>(BITPTR(bs.begin()));
+	size_t i = ptr - const_cast<WORDTYPE *>(BITPTR(bs.begin()));
 
 	// mask out bits before pos
 	WORDTYPE tmp = *ptr & ~g_bitMask[offset];
@@ -3883,6 +3883,7 @@ double Bernullitrials::probSuccRate() const
 	return count / static_cast<double>(probSize());
 }
 
+
 // ###############################################
 
 Bernullitrials_T::Bernullitrials_T(RNG & /* rng */)
@@ -3897,6 +3898,7 @@ Bernullitrials_T::Bernullitrials_T(RNG & /* rng */, const vectorf & prob, size_t
 	//DBG_FAILIF(trials_T <= 0, ValueError, "trial number can not be zero.");
 	DBG_FAILIF(prob.empty(), ValueError, "probability table can not be empty.");
 }
+
 
 //
 Bernullitrials_T::~Bernullitrials_T()
@@ -3916,6 +3918,7 @@ void Bernullitrials_T::setParameter(const vectorf & prob, size_t N)
 	DBG_FAILIF(prob.empty(), ValueError, "probability table can not be empty.");
 
 }
+
 
 #define setBit(ptr, i)    (*((ptr) + (i) / WORDBIT) |= 1UL << ((i) - ((i) / WORDBIT) * WORDBIT))
 #define unsetBit(ptr, i)  (*((ptr) + (i) / WORDBIT) &= ~(1UL << ((i) - ((i) / WORDBIT) * WORDBIT)))
@@ -3940,7 +3943,7 @@ void Bernullitrials_T::doTrial()
 	for (size_t i = 0; i < m_N; ++i) {
 		m_table[i].clear();
 		m_table[i].resize(m_prob.size(), 0);
-		m_pointer[i] = const_cast<WORDTYPE*>(BITPTR(m_table[i].begin()));
+		m_pointer[i] = const_cast<WORDTYPE *>(BITPTR(m_table[i].begin()));
 	}
 	// for each column
 	for (size_t cl = 0, clEnd = m_prob.size(); cl < clEnd; ++cl) {
@@ -3962,7 +3965,7 @@ void Bernullitrials_T::doTrial()
 				i += step;
 				if (i <= m_N)
 					// set the 5th and 8th element to 1.
-					setBit(m_pointer[i-1], cl);
+					setBit(m_pointer[i - 1], cl);
 				else
 					break;
 			}
@@ -4025,9 +4028,9 @@ size_t Bernullitrials_T::probNextSucc(size_t pos) const
 
 	// first block
 	BitSet::const_iterator it = bs.begin() + pos;
-	WORDTYPE * ptr = const_cast<WORDTYPE*>(BITPTR(it));
+	WORDTYPE * ptr = const_cast<WORDTYPE *>(BITPTR(it));
 	size_t offset = BITOFF(it);
-	size_t i = ptr - const_cast<WORDTYPE*>(BITPTR(bs.begin()));
+	size_t i = ptr - const_cast<WORDTYPE *>(BITPTR(bs.begin()));
 
 	// mask out bits before pos
 	WORDTYPE tmp = *ptr & ~g_bitMask[offset];
@@ -4072,10 +4075,10 @@ void Bernullitrials_T::setTrialSucc(size_t idx, bool succ)
 }
 
 
-
 double Bernullitrials_T::trialSuccRate(UINT index) const
 {
 	UINT count = 0;
+
 	for (size_t cl = 0, clEnd = m_N; cl < clEnd; ++cl)
 		count += getBit(m_pointer[cl], index) ? 1 : 0;
 	return count / static_cast<double>(m_N);
@@ -4092,7 +4095,6 @@ double Bernullitrials_T::probSuccRate() const
 			count++;
 	return double(count) / static_cast<double>(m_prob.size());
 }
-
 
 
 #undef setBit
@@ -4359,8 +4361,8 @@ void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
 	DBG_ASSERT(BITOFF(fr) < WORDBIT, SystemError,
 		"Your vector<bool> implementation is different...");
 
-	WORDTYPE * fr_p = const_cast<WORDTYPE*>(BITPTR(fr));
-	WORDTYPE * to_p = const_cast<WORDTYPE*>(BITPTR(to));
+	WORDTYPE * fr_p = const_cast<WORDTYPE *>(BITPTR(fr));
+	WORDTYPE * to_p = const_cast<WORDTYPE *>(BITPTR(to));
 	size_t fr_off = BITOFF(fr);
 	size_t to_off = BITOFF(to);
 
@@ -4559,7 +4561,7 @@ void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
 
 void clearGenotype(GenoIterator to, size_t n)
 {
-	WORDTYPE * to_p = const_cast<WORDTYPE*>(BITPTR(to));
+	WORDTYPE * to_p = const_cast<WORDTYPE *>(BITPTR(to));
 	size_t to_off = BITOFF(to);
 
 	// This can be made more efficient.

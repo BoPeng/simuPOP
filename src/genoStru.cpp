@@ -291,12 +291,13 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 
 void GenoStructure::buildLociPosMap() const
 {
-    if (!m_lociPosMap.empty())
-        return;
-    for (size_t ch = 0, loc = 0; ch < m_numLoci.size(); ++ch)
-        for (size_t i = 0; i < m_numLoci[ch]; ++i, ++loc)
-            m_lociPosMap[genomic_pos(m_chromNames[ch], PRECISION(m_lociPos[loc]))] = loc;
+	if (!m_lociPosMap.empty())
+		return;
+	for (size_t ch = 0, loc = 0; ch < m_numLoci.size(); ++ch)
+		for (size_t i = 0; i < m_numLoci[ch]; ++i, ++loc)
+			m_lociPosMap[genomic_pos(m_chromNames[ch], PRECISION(m_lociPos[loc]))] = loc;
 }
+
 
 // initialize static variable s)genoStruRepository.
 vector<GenoStructure> GenoStruTrait::s_genoStruRepository = vector<GenoStructure>();
@@ -1071,11 +1072,18 @@ vectoru GenoStruTrait::lociByNames(const vectorstr & names) const
 	return indexes;
 }
 
+
+vectoru GenoStruTrait::indexesOfLoci(const lociList & loci) const
+{
+	return loci.elems(this);
+}
+
+
 vectoru GenoStruTrait::lociByPos(const vectorpos & positions) const
 {
 	vectoru indexes(positions.size());
 
-    s_genoStruRepository[m_genoStruIdx].buildLociPosMap();
+	s_genoStruRepository[m_genoStruIdx].buildLociPosMap();
 	const map<genomic_pos, size_t> & lociPosMap = s_genoStruRepository[m_genoStruIdx].m_lociPosMap;
 
 	vectorpos::const_iterator pos = positions.begin();
@@ -1083,7 +1091,7 @@ vectoru GenoStruTrait::lociByPos(const vectorpos & positions) const
 
 	for (size_t i = 0; pos != posEnd; ++pos, ++i) {
 		map<genomic_pos, size_t>::const_iterator it = lociPosMap.find(
-            genomic_pos((*pos).first, PRECISION((*pos).second)));
+			genomic_pos((*pos).first, PRECISION((*pos).second)));
 
 		if (it == lociPosMap.end())
 			throw ValueError((boost::format("Failed to find locus with chromsome %1% and position %2%") % (*pos).first % (*pos).second).str());
@@ -1093,6 +1101,7 @@ vectoru GenoStruTrait::lociByPos(const vectorpos & positions) const
 
 	return indexes;
 }
+
 
 vectorstr GenoStruTrait::alleleNames(const size_t locus) const
 {
@@ -1125,6 +1134,7 @@ const GenoStructure GenoStruTrait::gsAddInfoFields(const vectorstr & fields)
 
 	vectorstr::const_iterator it = fields.begin();
 	vectorstr::const_iterator it_end = fields.end();
+
 	for (; it != it_end; ++it) {
 		if (std::find(gs.m_infoFields.begin(), gs.m_infoFields.end(), *it) == gs.m_infoFields.end())
 			gs.m_infoFields.push_back(*it);
@@ -1137,6 +1147,7 @@ const GenoStructure GenoStruTrait::gsAddInfoFields(const vectorstr & fields)
 const GenoStructure GenoStruTrait::gsSetInfoFields(const vectorstr & fields)
 {
 	GenoStructure gs = GenoStructure(s_genoStruRepository[m_genoStruIdx]);
+
 	gs.m_infoFields.clear();
 	vectorstr::const_iterator it = fields.begin();
 	vectorstr::const_iterator it_end = fields.end();
