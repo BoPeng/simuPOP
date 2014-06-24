@@ -1039,6 +1039,12 @@ lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_status(REGULAR), m_
 		m_status = FROM_NAME;
 		m_elems.resize(1);
 		m_names.push_back(PyObj_AsString(obj));
+#if PY_VERSION_HEX < 0x03000000
+	} else if (PyUnicode_Check(obj)) {
+		m_status = FROM_NAME;
+		m_elems.resize(1);
+		m_names.push_back(PyObj_AsString(obj));
+#endif
 	} else if (PyNumber_Check(obj)) {
 		m_status = REGULAR;
 		// accept a number
@@ -1064,12 +1070,22 @@ lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_status(REGULAR), m_
 				DBG_FAILIF(i != 0 && m_status != FROM_NAME, ValueError, "Cannot mix index and loci names.");
 				m_status = FROM_NAME;
 				m_names.push_back(PyObj_AsString(item));
+#if PY_VERSION_HEX < 0x03000000
+			} else if (PyUnicode_Check(item)) {
+				DBG_FAILIF(i != 0 && m_status != FROM_NAME, ValueError, "Cannot mix index and loci names.");
+				m_status = FROM_NAME;
+				m_names.push_back(PyObj_AsString(item));
+#endif
 			} else if (PySequence_Check(item)) {
 				// a sequence (chr, pos) is acceptable
 				DBG_FAILIF(PySequence_Size(item) != 2, ValueError, "Loci, if given as a nested list, should contain a list of (chr, pos) pairs.");
 				PyObject * chr = PySequence_GetItem(item, 0);
 				PyObject * pos = PySequence_GetItem(item, 1);
+#if PY_VERSION_HEX < 0x03000000
+				DBG_ASSERT((PyString_Check(chr) || PyUnicode_Check(chr)) && PyNumber_Check(pos), ValueError, "Loci, if given as a nested list, should contain a list of (chr, pos) pair");
+#else
 				DBG_ASSERT(PyString_Check(chr) && PyNumber_Check(pos), ValueError, "Loci, if given as a nested list, should contain a list of (chr, pos) pair");
+#endif
 				m_status = FROM_POSITION;
 				m_positions.push_back(genomic_pos(PyObj_AsString(chr), PyFloat_AsDouble(pos)));
 			} else {
