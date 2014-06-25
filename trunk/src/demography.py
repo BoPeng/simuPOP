@@ -60,7 +60,6 @@ from simuPOP.utils import migrIslandRates, migrHierarchicalIslandRates, \
     migrSteppingStoneRates
 
 from collections import OrderedDict
-from types import NoneType
 
 # the following lecture provides a good review of demographic models
 #
@@ -173,7 +172,7 @@ class BaseDemographicModel:
             isinstance(x[1], str) and self._isSize(x[0])
 
     def _isSize(self, x):
-        return isinstance(x, (int, float, NoneType))
+        return isinstance(x, (int, float)) or x is None
 
     def _extractSize(self, sz):
         # sz = 100
