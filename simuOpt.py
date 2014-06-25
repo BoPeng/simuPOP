@@ -123,7 +123,7 @@ if '--optimized' in sys.argv or os.getenv('SIMUOPTIMIZED') is not None:
 if os.getenv('SIMUALLELETYPE') in ['short', 'long', 'binary', 'mutant', 'lineage']:
    simuOptions['AlleleType'] = os.getenv('SIMUALLELETYPE')
 elif os.getenv('SIMUALLELETYPE') is not None:
-    print 'Environmental variable SIMUALLELETYPE can only be short, long, binary, mutant, or lineage.'
+    print('Environmental variable SIMUALLELETYPE can only be short, long, binary, mutant, or lineage.')
 
 # Debug: from environmental variable SIMUDEBUG
 if os.getenv('SIMUDEBUG') is not None:
@@ -134,7 +134,7 @@ if os.getenv('OMP_NUM_THREADS') is not None:
     try:
         simuOptions['NumThreads'] = int(os.getenv('OMP_NUM_THREADS'))
     except:
-        print 'Ignoring invalid value for environmental variable OMP_NUM_THREADS'
+        print('Ignoring invalid value for environmental variable OMP_NUM_THREADS')
 
 # GUI: from environmental variable SIMUGUI
 if os.getenv('SIMUGUI') is not None:
@@ -155,7 +155,7 @@ elif _gui in ['False', 'false', '0']:
 elif _gui in ['wxPython', 'Tkinter', 'batch', 'interactive']:
     simuOptions['GUI'] = _gui
 elif _gui is not None:
-    print "Invalid value '%s' for environmental variable SIMUGUI or commandline option --gui." % _gui
+    print("Invalid value '%s' for environmental variable SIMUGUI or commandline option --gui." % _gui)
 
 def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
         debug=None, version=None, revision=None, numThreads=None, plotter=None):
@@ -259,7 +259,7 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
         try:
             major, minor, release = [int(x) for x in re.sub('\D', ' ', version).split()]
         except:
-            print 'Invalid version string %s' % simuOptions['Version']
+            print('Invalid version string %s' % simuOptions['Version'])
         simuOptions['Version'] = version
     elif version is not None:
         raise TypeError('A version string is expected for parameter version.')
@@ -691,7 +691,7 @@ def _getParamValue(p, val, options):
     else:
         raise ValueError('Type of input parameter "' + str(val) + '" is disallowed for option ' +
             p['name'])
-    print p, val
+    #print(p, val)
 
 class _paramDialog:
     def __init__(self, options, title = '', description='', details='', nCol=1):
@@ -906,7 +906,7 @@ class _tkParamDialog(_paramDialog):
                     if lab is not None:
                         lab.configure(fg='black')
                 # set this one to red
-                print 'Error handling paramter %s: %s' % (self.options[g]['name'], e)
+                print('Error handling paramter %s: %s' % (self.options[g]['name'], e))
                 self.labelWidgets[g].configure(fg='red')
                 self.entryWidgets[g].focus_force()
                 return
@@ -1081,8 +1081,8 @@ class _wxParamDialog(_paramDialog):
                     if lab is not None:
                         lab.SetForegroundColour('black')
                         lab.Refresh()
-                print 'Error handling paramter %s' % self.options[g]['name']
-                print e
+                print('Error handling paramter %s' % self.options[g]['name'])
+                print(e)
                 if self.labelWidgets[g] is not None:
                     # happen to a boolean set...
                     # set this one to red
@@ -1421,7 +1421,7 @@ class Params:
             # solves this problem.
             if key == 'allowedTypes':
                 if 'DBG_COMPATIBILITY' in simuOptions['Debug']:
-                    print >> sys.stderr, 'WARNING: allowedTypes is obsolete and might be removed from a future version of simuPOP.'
+                    sys.stderr.write('WARNING: allowedTypes is obsolete and might be removed from a future version of simuPOP.\n')
                 if isinstance(kwargs[key], type(int)):
                     opt[key] = [kwargs[key]]
                 else:
@@ -1429,17 +1429,17 @@ class Params:
                     opt[key] = kwargs[key]
             elif key == 'validate':
                 if 'DBG_COMPATIBILITY' in simuOptions['Debug']:
-                    print >> sys.stderr, 'WARNING: key validate has been renamed to validator.'
+                    sys.stderr.write('WARNING: key validate has been renamed to validator.\n')
                 opt['validator'] = kwargs[key]
             elif key == 'longarg':
                 if 'DBG_COMPATIBILITY' in simuOptions['Debug']:
-                    print >> sys.stderr, 'WARNING: longarg is obsolete and might be removed from a future version of simuPOP.'
+                    sys.stderr.write('WARNING: longarg is obsolete and might be removed from a future version of simuPOP.\n')
                 opt['name'] = kwargs[key].rstrip('=')
                 if not kwargs[key].endswith('='):
                     opt['gui_type'] = 'boolean'
             elif key == 'arg':
                 if 'DBG_COMPATIBILITY' in simuOptions['Debug']:
-                    print >> sys.stderr, 'WARNING: arg is obsolete and might be removed from a future version of simuPOP.'
+                    sys.stderr.write('WARNING: arg is obsolete and might be removed from a future version of simuPOP.\n')
                 opt[key] = kwargs[key].rstrip(':')
                 if not kwargs[key].endswith(':'):
                     opt['gui_type'] = 'boolean'
@@ -1448,13 +1448,13 @@ class Params:
             else:
                 if key == 'chooseOneOf':
                     if 'DBG_COMPATIBILITY' in simuOptions['Debug']:
-                        print >> sys.stderr, 'WARNING: chooseOneOf is obsolete and might be removed from a future version of simuPOP. Use type instead.'
+                        sys.stderr.write('WARNING: chooseOneOf is obsolete and might be removed from a future version of simuPOP. Use type instead.\n')
                 elif key == 'chooseFrom':
                     if 'DBG_COMPATIBILITY' in simuOptions['Debug']:
-                        print >> sys.stderr, 'WARNING: chooseFrom is obsolete and might be removed from a future version of simuPOP. Use type instead.'
+                        sys.stderr.write('WARNING: chooseFrom is obsolete and might be removed from a future version of simuPOP. Use type instead.\n')
                 opt[key] = kwargs[key]
             if key == 'useDefault' and 'DBG_COMPATIBILITY' in simuOptions['Debug']:
-                print >> sys.stderr, 'WARNING: useDefault is obsolete and might be removed from a future version of simuPOP.'
+                sys.stderr.write('WARNING: useDefault is obsolete and might be removed from a future version of simuPOP.\n')
         #
         if not opt.has_key('name') and name != '':
             opt['name'] = name
@@ -1597,7 +1597,7 @@ class Params:
             opt['gui_type'] = 'others'
         #
         if opt['gui_type'] == 'boolean' and opt['default'] is True and 'DBG_COMPATIBILITY' in simuOptions['Debug']:
-            print >> sys.stderr, 'WARNING: the default value for a boolean parameter should be False.'
+            sys.stderr.write('WARNING: the default value for a boolean parameter should be False.\n')
         # is default value allowed?
         if not opt.has_key('allowedTypes'):
             if opt.has_key('chooseFrom'):
@@ -1625,10 +1625,10 @@ class Params:
         cfg = open(file,'w')
         try:
             # sys.argv[0] might not exist
-            print >> cfg, "# configuration file for program", sys.argv[0]
+            cfg.write("# configuration file for program " + sys.argv[0] + "\n")
         except:
             pass
-        print >> cfg, "# Configuration saved at at ", time.asctime()
+        cfg.write("# Configuration saved at at " + time.asctime() + "\n")
         for opt in self.options:
             if opt.has_key('separator'):
                 continue
@@ -1637,19 +1637,19 @@ class Params:
             # no label, and is not specified in params
             if not opt.has_key('label') and len(params) == 0:
                 continue
-            print >> cfg
+            cfg.write('\n')
             # write arg and long arg
             if opt.has_key('label'):
-                print >> cfg, "# label:\t%s" % opt['label']
+                cfg.write("# label:\t%s\n" % opt['label'])
             # write description
             if opt.has_key('description'):
                 desc = opt['description'].splitlines()
-                print >> cfg, "# description:"
+                cfg.write("# description:\n")
                 for d in desc:
-                    print >> cfg, "#\t", d.strip()
+                    cfg.write("#\t" + d.strip() + "\n")
             # write out option value, try to make it python readable
-            print >> cfg, "%s = %s" % (opt['name'], _prettyString(opt['value'], quoted=True))
-        print >> cfg, "\n\n#The same options can be given by command line options (subject to minor changes)"
+            cfg.write("%s = %s\n" % (opt['name'], _prettyString(opt['value'], quoted=True)))
+        cfg.write("\n\n#The same options can be given by command line options (subject to minor changes)\n")
         cmd = "#    --gui=False "
         # shorter version
         scmd = "#    --gui=False "
@@ -1672,10 +1672,10 @@ class Params:
                 cmd += " --" + opt['name']
                 if not defaultVal:
                     scmd += " --" + opt['name']
-        print >> cfg, ' \\\n#    '.join(textwrap.wrap(cmd, break_long_words=False))
+        cfg.write(' \\\n#    '.join(textwrap.wrap(cmd, break_long_words=False)) + "\n")
         # print out shorter version
-        print >> cfg, "\n\n#Or a shorter version if default arguments are ignored"
-        print >> cfg, ' \\\n#    '.join(textwrap.wrap(scmd, break_long_words=False))
+        cfg.write("\n\n#Or a shorter version if default arguments are ignored\n")
+        cfg.write(' \\\n#    '.join(textwrap.wrap(scmd, break_long_words=False)) + "\n")
         cfg.close()
 
     def loadConfig(self, file, params=[]):
@@ -1711,7 +1711,7 @@ class Params:
         else:
             cmdArgs = args
         if '-h' in cmdArgs or '--help' in cmdArgs:
-            print self.usage()
+            print(self.usage())
             return False
         for opt in self.options:
             if opt['gui_type'] == 'separator':
@@ -1775,9 +1775,9 @@ class Params:
                         opt['value'] = val
                         opt['processed'] = True
                     except Exception, e:
-                        print "ERROR: Failed to assign parameter %s with value '%s'" % (opt['name'],
-                            cmdArgs[idx+1])
-                        print e
+                        print("ERROR: Failed to assign parameter %s with value '%s'" % (opt['name'],
+                            cmdArgs[idx+1]))
+                        print(e)
                         continue
                 # case 2 --arg=something
                 else:
@@ -1787,9 +1787,9 @@ class Params:
                         opt['value'] = val
                         opt['processed'] = True
                     except Exception, e:
-                        print "ERROR: Failed to assign parameter %s with value '%s'" % (opt['name'],
-                            cmdArgs[idx][(len(name)+3):])
-                        print e
+                        print("ERROR: Failed to assign parameter %s with value '%s'" % (opt['name'],
+                            cmdArgs[idx][(len(name)+3):]))
+                        print(e)
                         continue
             if not opt.has_key('arg') or len(opt['arg']) == 0:
                 continue
@@ -1807,9 +1807,9 @@ class Params:
                         opt['value'] = val
                         opt['processed'] = True
                     except Exception, e:
-                        print "ERROR: Failed to assign parameter %s with value '%s'" % (opt['name'],
-                            cmdArgs[idx+1])
-                        print e
+                        print("ERROR: Failed to assign parameter %s with value '%s'" % (opt['name'],
+                            cmdArgs[idx+1]))
+                        print(e)
                         continue
                 # case 2: -aopt or -a=opt
                 else:
@@ -1825,9 +1825,9 @@ class Params:
                         opt['value'] = val
                         opt['processed'] = True
                     except Exception, e:
-                        print "ERROR: Failed to assign parameter %s with value '%s'" % (opt['name'],
-                            cmdArgs[idx])
-                        print e
+                        print("ERROR: Failed to assign parameter %s with value '%s'" % (opt['name'],
+                            cmdArgs[idx]))
+                        print(e)
                         continue
         return True
 
@@ -1881,7 +1881,7 @@ class Params:
                     opt['processed'] = True
                     break
                 except:
-                    print "Invalid input.\n"
+                    print("Invalid input.\n")
             if value is None and not (opt.has_key('allowedTypes') and type(None) in opt['allowedTypes']):
                 # should have a valid value now.
                 return False
