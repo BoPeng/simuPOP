@@ -710,11 +710,11 @@ class TestSelector(unittest.TestCase):
         idx_map = {idx:v for idx,v in enumerate([2,3,4,5,7])}
         for idx, v in enumerate(geno):
             if v != 0:
-                self.assertEqual(idx_map[idx/2]+idx%2*10 in mut, True)
-                self.assertEqual(mut[idx_map[idx/2]+idx%2*10], v)
+                self.assertEqual(idx_map[idx//2]+idx%2*10 in mut, True)
+                self.assertEqual(mut[idx_map[idx//2]+idx%2*10], v)
             else:
                 # mut should be a default dict
-                self.assertEqual(mut[idx_map[idx/2]+idx%2*10], 0)
+                self.assertEqual(mut[idx_map[idx//2]+idx%2*10], 0)
         return 1
 
     def pyGenoTest2(self, geno, mut):
@@ -724,11 +724,11 @@ class TestSelector(unittest.TestCase):
         idx_map = {idx:v for idx,v in enumerate([2,4,5,7,3])}
         for idx, v in enumerate(geno):
             if v != 0:
-                self.assertEqual(idx_map[idx/2]+idx%2*10 in mut, True)
-                self.assertEqual(mut[idx_map[idx/2]+idx%2*10], v)
+                self.assertEqual(idx_map[idx//2]+idx%2*10 in mut, True)
+                self.assertEqual(mut[idx_map[idx//2]+idx%2*10], v)
             else:
                 # mut should be a default dict
-                self.assertEqual(mut[idx_map[idx/2]+idx%2*10], 0)
+                self.assertEqual(mut[idx_map[idx//2]+idx%2*10], 0)
         return 1
 
     def testPassingGenotype(self):
@@ -820,8 +820,8 @@ class TestSelector(unittest.TestCase):
         for idx,v in enumerate(geno):
             p = idx % 2
             if v != 0:
-                self.assertEqual((idx_map[idx/2]+p*10) in mut, True)
-                self.assertEqual(mut[idx_map[idx/2]+p*10], v)
+                self.assertEqual((idx_map[idx//2]+p*10) in mut, True)
+                self.assertEqual(mut[idx_map[idx//2]+p*10], v)
         return 1
 
     def pyGenoTest6(self, geno, mut):
@@ -831,8 +831,8 @@ class TestSelector(unittest.TestCase):
         for idx,v in enumerate(geno):
             p = idx % 2
             if v != 0:
-                self.assertEqual((idx_map[idx/2]+p*10) in mut, True)
-                self.assertEqual(mut[idx_map[idx/2]+p*10], v)
+                self.assertEqual((idx_map[idx//2]+p*10) in mut, True)
+                self.assertEqual(mut[idx_map[idx//2]+p*10], v)
         return 1
         
     def testPassingFemaleGenotype(self):

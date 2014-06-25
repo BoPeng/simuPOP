@@ -290,6 +290,10 @@ class TestStat(unittest.TestCase):
         pop.vars().clear()
         stat(pop, alleleFreq='a')
         self.assertEqual(pop.dvars().alleleNum[0], {0: 1230., 1:1970.})
+        # a special cast that fails alleleFreq
+        pop = Population(size=[0,0,100,0], loci=5)
+        initGenotype(pop, freq=[0.4, 0.6])
+        stat(pop, alleleFreq=ALL_AVAIL)
 
 
     def testHeteroFreq(self):

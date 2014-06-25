@@ -27,7 +27,7 @@ from time import sleep
 hasRPy = True
 try:
     from simuPOP.plotter import *
-except (ImportError, RuntimeError):
+except (ImportError, RuntimeError, AttributeError):
     print("simuRPy can not be imported. Either rpy or r is not installed properly.")
     hasRPy = False
 
