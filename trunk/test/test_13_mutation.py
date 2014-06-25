@@ -287,14 +287,24 @@ class TestMutator(unittest.TestCase):
         pyMutate(pop, rates=1, func=mut)
         self.assertEqual(pop.individual(0).allele(0), 1)
         # locus specific mutator
-        def mutl(locus):
-            return locus + 2
-        pyMutate(pop, rates=1, func=mutl)
-        for ind in pop.individuals():
-            self.assertEqual(ind.allele(0, 0), 2)
-            self.assertEqual(ind.allele(0, 1), 2)
-            self.assertEqual(ind.allele(1, 0), 3)
-            self.assertEqual(ind.allele(1, 1), 3)
+        if moduleInfo()['alleleType'] == 'binary':
+            def mutl(locus):
+                return (locus + 2) % 2
+            pyMutate(pop, rates=1, func=mutl)
+            for ind in pop.individuals():
+                self.assertEqual(ind.allele(0, 0), 0)
+                self.assertEqual(ind.allele(0, 1), 0)
+                self.assertEqual(ind.allele(1, 0), 1)
+                self.assertEqual(ind.allele(1, 1), 1)
+        else:
+            def mutl(locus):
+                return locus + 2
+            pyMutate(pop, rates=1, func=mutl)
+            for ind in pop.individuals():
+                self.assertEqual(ind.allele(0, 0), 2)
+                self.assertEqual(ind.allele(0, 1), 2)
+                self.assertEqual(ind.allele(1, 0), 3)
+                self.assertEqual(ind.allele(1, 1), 3)
 
     def testMixedMutator(self):
         'Testing mixed mutator'
