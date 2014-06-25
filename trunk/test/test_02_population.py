@@ -1731,16 +1731,16 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(ind.lineage(), [0] * 20)
         # set lineage per loci
         initLineage(pop, range(20))
-        self.assertEqual(pop.lineage(), range(20) * 100)
+        self.assertEqual(pop.lineage(), list(range(20)) * 100)
         for ind in pop.allIndividuals():
-            self.assertEqual(ind.lineage(), range(20))
+            self.assertEqual(ind.lineage(), list(range(20)))
         # set lineage per ploidy
-        initLineage(pop, range(2), mode=PER_PLOIDY)
+        initLineage(pop, list(range(2)), mode=PER_PLOIDY)
         self.assertEqual(pop.lineage(), (([0] * 10) + ([1] * 10)) * 100)
-        initLineage(pop, range(200), mode=PER_PLOIDY)
+        initLineage(pop, list(range(200)), mode=PER_PLOIDY)
         self.assertEqual(pop.lineage(), reduce(lambda x,y:x+y, [10 * [i] for i in range(200)]))
         # set lineage per individual
-        initLineage(pop, range(100), mode=PER_INDIVIDUAL)
+        initLineage(pop, list(range(100)), mode=PER_INDIVIDUAL)
         self.assertEqual(pop.lineage(), reduce(lambda x,y:x+y, [20 * [i] for i in range(100)]))
 
        
