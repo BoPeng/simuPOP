@@ -498,7 +498,7 @@ class _textProgressBar(_baseProgressBar):
             if p == 100:
                 self.done()
             elif p % 10 == 0:
-                sys.stdout.write(str(p/10))
+                sys.stdout.write(str(p//10))
             elif p % self.block == 0:
                 sys.stdout.write(self.progressChar)
         sys.stdout.flush()
