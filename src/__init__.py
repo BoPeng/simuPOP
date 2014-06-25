@@ -341,7 +341,7 @@ if simuOptions['Revision'] is not None:
             'but simuPOP revision >= %d is required. ' % simuOptions['Revision'] +
             'Please upgrade your simuPOP installation.')
     if 'DBG_COMPATIBILITY' in simuOptions['Debug']:
-        print >> sys.stderr, 'WARNING: parameter revision in simuOpt.setOptions is obsolete and might be removed from a future version of simuPOP.'
+        print('WARNING: parameter revision in simuOpt.setOptions is obsolete and might be removed from a future version of simuPOP.')
 
 # set number of threads in openMP
 if simuOptions['NumThreads'] is not None:
@@ -349,17 +349,17 @@ if simuOptions['NumThreads'] is not None:
 
 if not simuOptions['Quiet']:
     info = moduleInfo()
-    print "simuPOP Version %s : Copyright (c) 2004-2011 Bo Peng" % (info['version'])
+    print("simuPOP Version %s : Copyright (c) 2004-2011 Bo Peng" % (info['version']))
     # compile date, compiler etc are macros that are replaced during compile time.
-    print "Revision %d (%s) for Python %s (%dbit, %d%s)" % \
+    print("Revision %d (%s) for Python %s (%dbit, %d%s)" % \
             (info['revision'], info['date'], info['python'], info['wordsize'], info['threads'],
-                    'thread' if info['threads'] <= 1 else 'threads')
-    print "Random Number Generator is set to %s with random seed 0x%08x." % (getRNG().name(), getRNG().seed())
+                    'thread' if info['threads'] <= 1 else 'threads'))
+    print("Random Number Generator is set to %s with random seed 0x%08x." % (getRNG().name(), getRNG().seed()))
     # MaxAllele + 1 since 0 is one of the allelic states
-    print "This is the %s %s allele version with %d maximum allelic states." % \
-            ('optimized' if info['optimized'] else 'standard', info['alleleType'], info['maxAllele']+1)
-    print "For more information, please visit http://simupop.sourceforge.net,"
-    print "or email simupop-list@lists.sourceforge.net (subscription required)."
+    print("This is the %s %s allele version with %d maximum allelic states." % \
+            ('optimized' if info['optimized'] else 'standard', info['alleleType'], info['maxAllele']+1))
+    print("For more information, please visit http://simupop.sourceforge.net,")
+    print("or email simupop-list@lists.sourceforge.net (subscription required).")
     # Turn on general debug information when not in 'quiet' mode
     # This will print out error messages when needed.
     turnOnDebug('DBG_GENERAL')
@@ -369,7 +369,7 @@ if not simuOptions['Quiet']:
 if simuOptions['Debug'] != []:
     for g in simuOptions['Debug']:
         if g not in ['', None]:
-            print "Turn on debug '%s'" % g
+            print("Turn on debug '%s'" % g)
             turnOnDebug(g)
 
 
@@ -388,7 +388,7 @@ def evolve_pop(self, initOps=[], preOps=[], matingScheme=MatingScheme(), postOps
     population with the evolved population. Please refer to function 
     ``Simulator.evolve`` for more details about each parameter.'''
     if dryrun:
-        print describeEvolProcess(initOps, preOps, matingScheme, postOps, finalOps, gen, 1)
+        print(describeEvolProcess(initOps, preOps, matingScheme, postOps, finalOps, gen, 1))
         return (0,)
     if isinstance(self, Pedigree):
         raise ValueError("Evolving a pedigree object directly is not allowed.")
