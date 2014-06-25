@@ -435,7 +435,7 @@ public:
 	/** Create a Python hybrid selector that passes genotype at specified
 	 *  \e loci, values at specified information fields (if requested) and
 	 *  a generation number to a user-defined function \e func. The return
-	 *  value will be treated as individual fitness. 
+	 *  value will be treated as individual fitness.
 	 */
 	PySelector(PyObject * func, lociList loci = vectoru(),
 		int begin = 0, int end = -1, int step = 1,

@@ -517,9 +517,9 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 					}
 				const vectoru * sorted = & loci;
 				if (!ordered) {
-					vectoru sloci(loci.begin(), loci.end());
-					std::sort(sloci.begin(), sloci.end());
-					sorted = & sloci;
+					vectoru * sloci = new vectoru(loci.begin(), loci.end());
+					std::sort(sloci->begin(), sloci->end());
+					sorted = sloci;
 				}
 				
 				size_t nLoci = totNumLoci();
@@ -545,6 +545,8 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 								PyInt_FromLong(m_ptr->second));
 					}
 				}
+				if (!ordered)
+					delete sorted;
 			}
 		} else {
 			const vectoru & loci = lociList.elems(this);
