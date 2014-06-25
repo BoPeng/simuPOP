@@ -828,7 +828,7 @@ class TestStat(unittest.TestCase):
             l = []
             [l.extend([x,x,0,0,x,x,0,0]) for x in range(1, pop.popSize() + 1)]
             self.assertEqual(pop.lineage(), l)
-            self.assertEqual(pop.dvars().Ne_demo_base, range(1, pop.popSize() + 1))
+            self.assertEqual(pop.dvars().Ne_demo_base, list(range(1, pop.popSize() + 1)))
         else:
             self.assertEqual(pop.dvars().Ne_demo_base, [])
         # 

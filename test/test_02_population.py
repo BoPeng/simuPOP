@@ -1738,10 +1738,10 @@ class TestPopulation(unittest.TestCase):
         initLineage(pop, list(range(2)), mode=PER_PLOIDY)
         self.assertEqual(pop.lineage(), (([0] * 10) + ([1] * 10)) * 100)
         initLineage(pop, list(range(200)), mode=PER_PLOIDY)
-        self.assertEqual(pop.lineage(), reduce(lambda x,y:x+y, [10 * [i] for i in range(200)]))
+        self.assertEqual(pop.lineage(), sum([10 * [i] for i in range(200)], []))
         # set lineage per individual
         initLineage(pop, list(range(100)), mode=PER_INDIVIDUAL)
-        self.assertEqual(pop.lineage(), reduce(lambda x,y:x+y, [20 * [i] for i in range(100)]))
+        self.assertEqual(pop.lineage(), sum([20 * [i] for i in range(100)], []))
 
        
     def testAllIndividuals(self):
