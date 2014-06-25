@@ -1197,8 +1197,9 @@ public:
 		m_it(it), m_index(0), m_ploidy(0), m_chromType(0),
 		m_haplodiploid(false), m_p(0)
 	{
-		m_valid = m_ptr != m_ptrEnd;
-		m_ploidy = it->ploidy();
+		m_valid = (m_ptr != m_ptrEnd) && it.valid();
+		if (m_valid)
+			m_ploidy = it->ploidy();
 	}
 
 
