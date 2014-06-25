@@ -1777,11 +1777,19 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 
 ConditionalMating::ConditionalMating(PyObject * cond, const MatingScheme & ifMatingScheme,
 		const MatingScheme & elseMatingScheme)
-	: m_cond(PyString_Check(cond) ? PyObj_AsString(cond) : string()),
+#if PY_VERSION_HEX >= 0x03000000
+	: m_cond(PyUnicode_Check(cond) ? PyObj_AsString(cond) : string()),
+#else
+	: m_cond((PyString_Check(cond) || PyUnicode_Check(cond)) ? PyObj_AsString(cond) : string()),
+#endif
 	m_func(PyCallable_Check(cond) ? cond : NULL),
 	m_fixedCond(-1), m_ifMS(NULL), m_elseMS(NULL)
 {
-	if (!PyString_Check(cond) && !PyCallable_Check(cond)) {
+#if PY_VERSION_HEX >= 0x03000000
+	if (!PyUnicode_Check(cond) && !PyCallable_Check(cond)) {
+#else
+	if (!PyString_Check(cond) && !PyUnicode_Check(cond) && !PyCallable_Check(cond)) {
+#endif
 		bool c;
 		PyObj_As_Bool(cond, c);
 		m_fixedCond = c ? 1 : 0;
