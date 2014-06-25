@@ -278,7 +278,7 @@ class TestInitialization(unittest.TestCase):
         for idx,ind in enumerate(pop.allIndividuals()):
             self.assertEqual(ind.lineage(), range(20*idx + 1, 20*idx + 21))
         initLineage(pop, range(20))
-        self.assertEqual(pop.lineage(), range(20) * 100)
+        self.assertEqual(pop.lineage(), list(range(20)) * 100)
         for ind in pop.allIndividuals():
             self.assertEqual(ind.lineage(), range(20))
         # set lineage per chromosome
