@@ -121,6 +121,11 @@ class TestMutator(unittest.TestCase):
                 self.assertTrue(freq >= freqLow[i])
                 self.assertTrue(freq <= freqHigh[i])
 
+    def testEmptyPop(self):
+        'Testing apply mutator to population without any locus'
+        pop = Population(size=1000, loci=[0])
+        snpMutate(pop, v=0.01)
+
     def testSP(self):
         'Testing the subpop support of mutators'
         pop = Population(size=[1000, 2000], ploidy=2, loci=[2, 3])

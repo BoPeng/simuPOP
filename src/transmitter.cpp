@@ -622,7 +622,7 @@ void Recombinator::initialize(const Individual & ind) const
 	//
 	const vectoru & loci = m_loci.elems(&ind);
 
-	DBG_FAILIF(m_intensity < 0 && m_rates.empty(), ValueError,
+	DBG_FAILIF(m_intensity < 0 && (m_rates.empty() && !loci.empty()), ValueError,
 		"You should specify m_intensity, or m_rates "
 		"(a number or a sequence of recombination m_ratess.)");
 
@@ -699,7 +699,8 @@ void Recombinator::initialize(const Individual & ind) const
 	//DBG_DO(DBG_TRANSMITTER, cerr	<< "Specify after Loci. With m_rates "
 	//	                            << vecP << " before " << m_recBeforeLoci << endl);
 
-	DBG_FAILIF(vecP.empty(), ValueError, "No non-empty chromosome.");
+	if (vecP.empty())
+		return;
 
 	DBG_ASSERT(vecP.size() == m_recBeforeLoci.size(), SystemError,
 		"Rate and before loci should have the same length.");
@@ -1333,8 +1334,9 @@ bool Recombinator::applyDuringMating(Population & pop, Population & offPop, RawI
 	DBG_FAILIF(dad == NULL && mom == NULL,
 		ValueError, "None of the parents is invalid.");
 
-	DBG_FAILIF(m_recBeforeLoci.empty(), ValueError,
-		"Uninitialized Recombinator");
+	if (m_recBeforeLoci.empty())
+		return true;
+	//, ValueError, "Uninitialized Recombinator");
 
 	if (infoSize() == 1 && !noOutput())
 		m_debugOutput = &getOstream(pop.dict());

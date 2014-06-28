@@ -294,6 +294,12 @@ class TestTransmitters(unittest.TestCase):
 
     def testRecombinatorAsGenoTransmitter(self):
         'Testing operator Recombinator as a genotype transmitter.'
+        # test recombine on empty population
+        pop = self.getPop(size=100, loci=[0])
+        # this should be allowed.
+        applyDuringMatingOperator(Recombinator(rates=0),
+            pop, pop, dad = 0, mom = 1, off=(2, pop.popSize()))
+        #
         pop = self.getPop(size=100, loci=[20]*5)
         applyDuringMatingOperator(Recombinator(rates=0),
             pop, pop, dad = 0, mom = 1, off=(2, pop.popSize()))
