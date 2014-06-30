@@ -135,15 +135,13 @@ bool BaseMutator::apply(Population & pop) const
 	// all use the same rate
 	vectorf rates = m_rates;
 	bool rare = true;
-	// without this test, the rates expansion will crash when the mutator is applied
-	// to a population without any locus
-	if (rates.empty())
-		return true;
-	else if (rates.size() == 1) {
+	if (rates.size() == 1) {
 		if (rates[0] > 1e02)
 			rare = false;
 		rates.resize(m_loci.allAvail() ? pop.totNumLoci() : m_loci.size());
-		fill(rates.begin() + 1, rates.end(), rates[0]);
+		// loci can be empty, in this case rates cannot be expanded.
+		if (!rates.empty())
+			fill(rates.begin() + 1, rates.end(), rates[0]);
 	} else {
 		for (size_t i = 0; i < rates.size(); ++i)
 			if (rates[i] > 1e-2) {
@@ -151,6 +149,11 @@ bool BaseMutator::apply(Population & pop) const
 				break;
 			}
 	}
+	const vectoru & loci = m_loci.elems(&pop);
+	size_t iEnd = m_loci.allAvail() ? pop.totNumLoci() : loci.size();
+	// if no loci to mutate
+	if (iEnd == 0)
+		return true;
 	// multiple (virtual) subpopulations
 	for (size_t idx = 0; idx < subPops.size(); ++idx) {
 		size_t sp = subPops[idx].subPop();
@@ -172,8 +175,6 @@ bool BaseMutator::apply(Population & pop) const
 			bt.setParameter(rates, max_pos);
 			bt.doTrial();
 		}
-		const vectoru & loci = m_loci.elems(&pop);
-		size_t iEnd = m_loci.allAvail() ? pop.totNumLoci() : loci.size();
 		for (size_t i = 0; i < iEnd; ++i) {
 			size_t locus = loci[i];
 			DBG_DO(DBG_MUTATOR, cerr << "Mutate at locus " << locus << endl);
