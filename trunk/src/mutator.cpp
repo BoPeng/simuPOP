@@ -135,11 +135,11 @@ bool BaseMutator::apply(Population & pop) const
 	// all use the same rate
 	vectorf rates = m_rates;
 	bool rare = true;
-    // without this test, the rates expansion will crash when the mutator is applied
-    // to a population without any locus
-    if (pop.totNumLoci() == 0)
-        return true;
-	if (rates.size() == 1) {
+	// without this test, the rates expansion will crash when the mutator is applied
+	// to a population without any locus
+	if (rates.empty())
+		return true;
+	else if (rates.size() == 1) {
 		if (rates[0] > 1e02)
 			rare = false;
 		rates.resize(m_loci.allAvail() ? pop.totNumLoci() : m_loci.size());
