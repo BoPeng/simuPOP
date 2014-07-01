@@ -913,6 +913,35 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(0)
 #else
 	int bounded = PyObject_HasAttrString(obj, "__self__");
 #endif
+	/*
+
+	There is a risk of memory leak in this case:
+
+	class A(sim.PyOperator):
+		def __init__(self):
+            sim.PyOperator.__init__(self, func=self.b)
+
+        def b(self):
+            return True
+
+    def func(operator):
+		pass 
+	
+	func(A())
+	
+	
+	When A() is created, self.b is passed to PyOperator. The
+	reference count for self is increased because self.b needs to
+	use other information of in self. However, because of
+	the incrase of reference count of self, A() cannot be
+	properly destructured after the A() call. The following patch
+	fixes this by reducing reference count of self.b so self.b
+	appear to be unbounded and A() can be freely destructed.
+	We check reference count >= 2 here so that A() is not immediately
+	destroyed which makes self reference incorrect.
+	*/
+	if (bounded && obj->ob_refcnt >= 2)
+		Py_XDECREF(obj);
 
 	if (!PyObject_HasAttrString(obj, "__name__")) {
 		cerr << "Cannot find name of the passed function. " << endl;
