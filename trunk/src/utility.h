@@ -274,6 +274,19 @@ public:
 	}
 
 
+	pyObject & operator=(const pyObject & rhs)
+	{
+		// this should be the combination of ~pyObject and
+		// pyObject(pyObject)
+		Py_XDECREF(m_object);
+		m_object = rhs.m_object;
+		Py_XINCREF(m_object);
+	}
+
+
+	// when a object is copied, its ref increased. This is
+	// a constructor so its own m_object does not exist
+	// yet.
 	pyObject(const pyObject & rhs) : m_object(rhs.m_object)
 	{
 		Py_XINCREF(m_object);

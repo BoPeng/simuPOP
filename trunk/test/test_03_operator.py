@@ -687,7 +687,142 @@ class TestOperator(unittest.TestCase):
                 self.assertNotEqual(pop.dvars((0,0)).alleleFreq[loc][0], 0)
                 self.assertNotEqual(pop.dvars((1,0)).alleleFreq[loc][0], 0)
 
+    def testMemberFunc(self):
+        for i in range(100):
+            pop = Population(10)
+            pop.evolve(
+                matingScheme=RandomSelection(),
+                postOps=PyOperator(func=MemberFunc().my_func, param=self),
+                gen=10
+            )
+        self.assertEqual(MemberFunc.instance_count, 0)
+        #
+        me = MemberFunc()
+        for i in range(100):
+            pop = Population(10)
+            pop.evolve(
+                matingScheme=RandomSelection(),
+                postOps=PyOperator(func=me.my_func, param=self),
+                gen=10
+            )
+        self.assertEqual(MemberFunc.instance_count, 1)
 
+
+    def testFunctor(self):
+        Functor.instance_count = 0
+        for i in range(100):
+            pop = Population(10)
+            pop.evolve(
+                matingScheme=RandomSelection(),
+                postOps=PyOperator(func=Functor(), param=self),
+                gen=10
+            )
+        self.assertEqual(Functor.instance_count, 0)
+        
+
+    def testWrapperOp(self):
+        # func
+        for i in range(100):
+            pop = Population(10)
+            pop.evolve(
+                matingScheme=RandomSelection(),
+                postOps=WrapperOpFunc(param=self),
+                gen=10
+            )
+        self.assertEqual(WrapperOpFunc.instance_count, 0)
+        #
+        for i in range(100):
+            pop = Population(10)
+            pop.evolve(
+                matingScheme=RandomSelection(),
+                postOps=WrapperOpCall(param=self),
+                gen=10
+            )
+        self.assertEqual(WrapperOpCall.instance_count, 0)
+        #
+        for i in range(100):
+            pop = Population(10)
+            pop.evolve(
+                matingScheme=RandomSelection(),
+                postOps=WrapperOpSelf(param=self),
+                gen=10
+            )
+        self.assertEqual(WrapperOpSelf.instance_count, 0)
+        #
+
+class WrapperOpFunc(PyOperator):
+    instance_count = 0
+    def __init__(self, param):
+        self.my_member = 23434
+        WrapperOpFunc.instance_count += 1
+        PyOperator.__init__(self, func=self.my_func, param=param)
+
+    def my_func(self, pop, param):
+        # can access to self from within PyOperator
+        param.assertEqual(self.my_member, 23434)
+        return True
+
+    def __del__(self):
+        WrapperOpFunc.instance_count -= 1
+
+class WrapperOpCall(PyOperator):
+    instance_count = 0
+    def __init__(self, param):
+        self.my_member = 23434
+        WrapperOpCall.instance_count += 1
+        PyOperator.__init__(self, func=self.__call__, param=param)
+
+    def __call__(self, pop, param):
+        # can access to self from within PyOperator
+        param.assertEqual(self.my_member, 23434)
+        return True
+
+    def __del__(self):
+        WrapperOpCall.instance_count -= 1
+
+class WrapperOpSelf(PyOperator):
+    instance_count = 0
+    def __init__(self, param):
+        self.my_member = 23434
+        WrapperOpSelf.instance_count += 1
+        PyOperator.__init__(self, func=self, param=param)
+
+    def __call__(self, pop, param):
+        # can access to self from within PyOperator
+        param.assertEqual(self.my_member, 23434)
+        return True
+
+    def __del__(self):
+        WrapperOpSelf.instance_count -= 1
+
+
+class MemberFunc:
+    instance_count = 0
+    def __init__(self):
+        MemberFunc.instance_count += 1
+        self.my_member = 23434
+
+    def my_func(self, pop, param):
+        # can access to self from within PyOperator
+        param.assertEqual(self.my_member, 23434)
+        return True
+
+    def __del__(self):
+        MemberFunc.instance_count -= 1
+
+class Functor:
+    instance_count = 0
+    def __init__(self):
+        Functor.instance_count += 1
+        self.my_member = 23434
+
+    def __call__(self, pop, param):
+        # can access to self from within PyOperator
+        param.assertEqual(self.my_member, 23434)
+        return True
+
+    def __del__(self):
+        Functor.instance_count -= 1
 
 if __name__ == '__main__':
     unittest.main()

@@ -905,43 +905,73 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(0)
 #endif
 			// if there is no arg so it is a member function of a class
 			obj = PyObject_GetAttrString(obj, "__call__");
+			/*
+			   If a functional object is passed (an object with __call__), we keep the reference
+			   to obj.__call__ (by GetAttrString) and decrease the reference of the object. This
+			   essentially converts func=obj to func=obj.__call__. This allows obj to be
+			   destructed after it is used.
+			 */
+			//Py_DECREF(m_func.object());
+			m_func = pyObject(obj);
+			Py_DECREF(obj);
 		}
 	}
-	// is it unbounded?
+	/* The reference count of the passed function or functor is tricky here. simuPOP
+	    allows the pass of functions and functors. There are several cases:
+
+	    1. regular function: func. They are handled directly.
+	    2. member function: A().func. This is handled directly.
+	    3. functor: A() with __call__. In this case, we keep the reference
+	        to obj.__call__ (by GetAttrString) and decrease the reference of the object. This
+	        essentially converts func=obj to func=obj.__call__ and allows obj to be
+	        destructed after it is used.
+	    4. self.func:
+	    5. self.__call__:
+	    6. self
+
+	    In the last two cases, the references are circular. When the function is passed
+	    both the function and the classes will not be released, leading to memory
+	    leak.
+
+	    class MyOperator(PyOperator):
+	        def __init__(self):
+	            // case 4
+	            PyOperator.__init__(self, func=self.my_func)
+	            // case 5
+	            PyOperator.__init__(self, func=self.__call__)
+	            // case 6
+	            PyOperator.__init__(self, func=self)
+
+	        def __call__(self):
+	            return True
+
+	        def my_func(self):
+	            return True
+
+	    In both these cases, we can decrease the reference of self to
+	    force the operator to be released.
+	 */
+	// is it bounded?
 #if PY_VERSION_HEX < 0x03000000
-	int bounded = PyObject_HasAttrString(obj, "im_self");
+#  define SELF_ATTR "im_self"
 #else
-	int bounded = PyObject_HasAttrString(obj, "__self__");
+#  define SELF_ATTR "__self__"
 #endif
-	/*
-
-	There is a risk of memory leak in this case:
-
-	class A(sim.PyOperator):
-		def __init__(self):
-            sim.PyOperator.__init__(self, func=self.b)
-
-        def b(self):
-            return True
-
-    def func(operator):
-		pass 
-	
-	func(A())
-	
-	
-	When A() is created, self.b is passed to PyOperator. The
-	reference count for self is increased because self.b needs to
-	use other information of in self. However, because of
-	the incrase of reference count of self, A() cannot be
-	properly destructured after the A() call. The following patch
-	fixes this by reducing reference count of self.b so self.b
-	appear to be unbounded and A() can be freely destructed.
-	We check reference count >= 2 here so that A() is not immediately
-	destroyed which makes self reference incorrect.
-	*/
-	if (bounded && obj->ob_refcnt >= 2)
-		Py_XDECREF(obj);
+	int bounded = PyObject_HasAttrString(obj, SELF_ATTR);
+	if (bounded) {
+		PyObject * self = PyObject_GetAttrString(obj, SELF_ATTR);
+		//
+		// This check is not very rigrious because other classes and
+		// also have these attributes, but it is difficult to really
+		// check the super class (BaseOperator) because of the SWIG
+		// interface
+		if (PyObject_HasAttrString(self, "apply") &&
+		    PyObject_HasAttrString(self, "describe")) {
+			//std::cerr << "CURCULAR " << std::endl;
+			Py_DECREF(self);
+		}
+		Py_DECREF(self);
+	}
 
 	if (!PyObject_HasAttrString(obj, "__name__")) {
 		cerr << "Cannot find name of the passed function. " << endl;
