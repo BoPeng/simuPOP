@@ -1144,6 +1144,8 @@ lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_status(REGULAR), m_
 #endif
 				m_status = FROM_POSITION;
 				m_positions.push_back(genomic_pos(PyObj_AsString(chr), PyFloat_AsDouble(pos)));
+				Py_DECREF(chr);
+				Py_DECREF(pos);
 			} else {
 				DBG_ASSERT(false, ValueError, "Invalid input for a list of loci (index or name should be used).");
 			}
