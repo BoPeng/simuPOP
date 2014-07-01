@@ -954,8 +954,10 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(0)
 	// is it bounded?
 #if PY_VERSION_HEX < 0x03000000
 #  define SELF_ATTR "im_self"
+#  define CODE_ATTR "func_code"
 #else
 #  define SELF_ATTR "__self__"
+#  define CODE_ATTR "__code__"
 #endif
 	int bounded = PyObject_HasAttrString(obj, SELF_ATTR);
 	if (bounded) {
@@ -984,32 +986,27 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(0)
 
 	// free python functions have a 'func_code' attribute
 	// built-in functions might not have (e.g. random.random)
-#if PY_VERSION_HEX < 0x03000000
-	if (!PyObject_HasAttrString(obj, "func_code"))
+	if (!PyObject_HasAttrString(obj, CODE_ATTR))
 		return;
-	PyObject * code = PyObject_GetAttrString(obj, "func_code");
-#else
-	if (!PyObject_HasAttrString(obj, "__code__"))
-		return;
-	PyObject * code = PyObject_GetAttrString(obj, "__code__");
-#endif
+	PyObject * code = PyObject_GetAttrString(obj, CODE_ATTR);
 
 	if (!code) {
 		cerr << "Invalid attribute func_code or __code__ for a function object" << endl;
 		throw SystemError("Invalid attribute func_code or __code for a function object");
 	}
 	// probe number of parameters
-	PyObject * co_argcount = PyObject_GetAttr(code, PyString_FromString("co_argcount"));
+	PyObject * co_argcount = PyObject_GetAttrString(code, "co_argcount");
 	DBG_ASSERT(co_argcount, SystemError, "Invalid attribute co_argcount for a function object");
 	// substract 1 if the method is bounded to remove the count for self.
 	m_numArgs = PyInt_AsLong(co_argcount) - bounded;
 	Py_DECREF(co_argcount);
 	// probe parameter names
-	PyObject * co_varnames = PyObject_GetAttr(code, PyString_FromString("co_varnames"));
+	PyObject * co_varnames = PyObject_GetAttrString(code, "co_varnames");
 	DBG_ASSERT(co_varnames, SystemError, "Invalid attribute co_varnames for a function object");
 	for (size_t i = 0; i < m_numArgs; ++i) {
 		PyObject * item = PyTuple_GetItem(co_varnames, i + bounded);
 		m_args.push_back(PyObj_AsString(item));
+		Py_DECREF(item);
 	}
 	Py_DECREF(co_varnames);
 	// accepting arbitrary number of parameters?
