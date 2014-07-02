@@ -1006,7 +1006,6 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(0)
 	for (size_t i = 0; i < m_numArgs; ++i) {
 		PyObject * item = PyTuple_GetItem(co_varnames, i + bounded);
 		m_args.push_back(PyObj_AsString(item));
-		Py_DECREF(item);
 	}
 	Py_DECREF(co_varnames);
 	// accepting arbitrary number of parameters?
