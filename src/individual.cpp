@@ -426,6 +426,8 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 	bool autosome_only = chromX() == -1 && chromY() == -1;
 
 	PyObject * mutDict = PyDefDict_New();
+	PyObject * dkey = NULL;
+	PyObject * dval = NULL;
 	if (isHaplodiploid() && sex() == MALE)
 		ply = 1;
 
@@ -435,10 +437,13 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 
 			vectorm::const_val_iterator m_ptr = m_genoPtr.get_val_iterator();
 			vectorm::const_val_iterator m_end = (m_genoPtr + genoSize()).get_val_iterator();
-			for (; m_ptr != m_end; ++m_ptr)
+			for (; m_ptr != m_end; ++m_ptr) {
 				PyDict_SetItem(mutDict, 
-					PyInt_FromLong(m_ptr->first % genoSize()),
-					PyInt_FromLong(m_ptr->second));
+					dkey = PyInt_FromLong(m_ptr->first % genoSize()),
+					dval = PyInt_FromLong(m_ptr->second));
+				Py_DECREF(dkey);
+				Py_DECREF(dval);
+			}
 		} else {
 			vector<ULONG> tmp_mutants(ply * totNumLoci(), 0);
 
@@ -459,10 +464,13 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 						continue;
 					size_t k = p*totNumLoci()+chromBegin(ch);
 					for (size_t idx = 0; idx < numLoci(ch); ++idx) 
-						if (tmp_mutants[k + idx] != 0)
+						if (tmp_mutants[k + idx] != 0) {
 							PyDict_SetItem(mutDict, 
-								PyInt_FromLong(k + idx),
-								PyInt_FromLong(tmp_mutants[k + idx]));
+								dkey = PyInt_FromLong(k + idx),
+								dval = PyInt_FromLong(tmp_mutants[k + idx]));
+							Py_DECREF(dkey);
+							Py_DECREF(dval);
+						}
 				}
 			}
 		}
@@ -479,10 +487,13 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 					continue;
 				size_t k = p*totNumLoci()+chromBegin(ch);
 				for (size_t idx = 0; idx < numLoci(ch); ++idx) {
-					if (*(m_genoPtr + k + idx) != 0)
+					if (*(m_genoPtr + k + idx) != 0) {
 						PyDict_SetItem(mutDict, 
-							PyInt_FromLong(k + idx),
-							PyInt_FromLong(*(m_genoPtr + k + idx)));
+							dkey = PyInt_FromLong(k + idx),
+							dval = PyInt_FromLong(*(m_genoPtr + k + idx)));
+						Py_DECREF(dkey);
+						Py_DECREF(dval);
+					}
 				}
 			}
 		}
@@ -501,10 +512,13 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 					size_t k = p * totNumLoci();
 					for (size_t idx = 0; idx < loci.size(); ++idx) {
 						ULONG a = allele(loci[idx], p);
-						if (a != 0)
+						if (a != 0) {
 							PyDict_SetItem(mutDict, 
-								PyInt_FromLong(k + loci[idx]),
-								PyInt_FromLong(a));
+								dkey = PyInt_FromLong(k + loci[idx]),
+								dval = PyInt_FromLong(a));
+							Py_DECREF(dkey);
+							Py_DECREF(dval);
+						}
 					}
 				}
 			} else {
@@ -539,10 +553,13 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 						// do not look any further
 						if (it == eit)
 							break;
-						else if (*it == loc)
+						else if (*it == loc) {
 							PyDict_SetItem(mutDict, 
-								PyInt_FromLong(loc + p * nLoci),
-								PyInt_FromLong(m_ptr->second));
+								dkey = PyInt_FromLong(loc + p * nLoci),
+								dval = PyInt_FromLong(m_ptr->second));
+							Py_DECREF(dkey);
+							Py_DECREF(dval);
+						}
 					}
 				}
 				if (!ordered)
@@ -572,10 +589,13 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 						if (chromTypes[idx] == MITOCHONDRIAL && p > 0)
 							continue;
 						ULONG a = allele(loci[idx], p);
-						if (a)
+						if (a) {
 							PyDict_SetItem(mutDict, 
-								PyInt_FromLong(k + loci[idx]),
-								PyInt_FromLong(a));
+								dkey = PyInt_FromLong(k + loci[idx]),
+								dval = PyInt_FromLong(a));
+							Py_DECREF(dkey);
+							Py_DECREF(dval);
+						}
 					}
 				}
 			} else {
@@ -605,10 +625,13 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 							continue;
 						if (chromTypes[idx] == MITOCHONDRIAL && p > 0)
 							continue;
-						if (tmp_mutants[idx + p * nLoci] != 0)
+						if (tmp_mutants[idx + p * nLoci] != 0) {
 							PyDict_SetItem(mutDict, 
-								PyInt_FromLong(loci[idx] + p*totNumLoci()),
-								PyInt_FromLong(tmp_mutants[idx + p * nLoci]));
+								dkey = PyInt_FromLong(loci[idx] + p*totNumLoci()),
+								dval = PyInt_FromLong(tmp_mutants[idx + p * nLoci]));
+							Py_DECREF(dkey);
+							Py_DECREF(dval);
+						}
 					}
 				}
 			}
@@ -631,10 +654,13 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 					continue;
 				if (chromTypes[idx] == MITOCHONDRIAL && p > 0)
 					continue;
-				if (allele(loci[idx], p) != 0)
+				if (allele(loci[idx], p) != 0) {
 					PyDict_SetItem(mutDict, 
-						PyInt_FromLong(loci[idx] + p * totNumLoci()),
-						PyInt_FromLong(allele(loci[idx], p)));
+						dkey = PyInt_FromLong(loci[idx] + p * totNumLoci()),
+						dval = PyInt_FromLong(allele(loci[idx], p)));
+					Py_DECREF(dkey);
+					Py_DECREF(dval);
+				}
 			}
 		}
 #endif

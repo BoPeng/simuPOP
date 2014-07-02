@@ -4284,6 +4284,7 @@ PyObject * moduleInfo()
 {
 	// output a dictionary with many keys
 	PyObject * dict = PyDict_New();
+	PyObject * val = NULL;
 
 	// these macros will be passed from commandline, if not, use the default
 #ifndef SIMUPOP_REV
@@ -4299,7 +4300,8 @@ PyObject * moduleInfo()
 	// XX:XX or XX:XXM, or XX
 	if (sscanf(rev, "%*d:%d", &num) != 1 && sscanf(rev, "%d", &num) != 1)
 		num = 9999;
-	PyDict_SetItem(dict, PyString_FromString("revision"), PyInt_FromLong(num));
+	PyDict_SetItem(dict, PyString_FromString("revision"), val = PyInt_FromLong(num));
+	Py_DECREF(val);
 
 	// Version
 #ifndef SIMUPOP_VER
@@ -4308,29 +4310,29 @@ PyObject * moduleInfo()
 	// convert name to a string
 	const char * ver = MacroQuote(SIMUPOP_VER);
 #endif
-	PyDict_SetItem(dict, PyString_FromString("version"), PyString_FromString(ver));
+	PyDict_SetItem(dict, PyString_FromString("version"), val = PyString_FromString(ver));
+	Py_DECREF(val);
 
 	// optimized
 #ifdef OPTIMIZED
-	Py_INCREF(Py_True);
 	PyDict_SetItem(dict, PyString_FromString("optimized"), Py_True);
 #else
-	Py_INCREF(Py_False);
 	PyDict_SetItem(dict, PyString_FromString("optimized"), Py_False);
 #endif
 
 	// AlleleType
 #ifdef LONGALLELE
-	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("long"));
+	PyDict_SetItem(dict, PyString_FromString("alleleType"), val = PyString_FromString("long"));
 #elif defined BINARYALLELE
-	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("binary"));
+	PyDict_SetItem(dict, PyString_FromString("alleleType"), val = PyString_FromString("binary"));
 #elif defined MUTANTALLELE
-	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("mutant"));
+	PyDict_SetItem(dict, PyString_FromString("alleleType"), val = PyString_FromString("mutant"));
 #elif defined LINEAGE
-	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("lineage"));
+	PyDict_SetItem(dict, PyString_FromString("alleleType"), val = PyString_FromString("lineage"));
 #else
-	PyDict_SetItem(dict, PyString_FromString("alleleType"), PyString_FromString("short"));
+	PyDict_SetItem(dict, PyString_FromString("alleleType"), val = PyString_FromString("short"));
 #endif
+	Py_DECREF(val);
 
 #ifndef COMPILER
 #  ifdef __GNUC__
@@ -4351,60 +4353,67 @@ PyObject * moduleInfo()
 #endif
 
 	// compiler
-	PyDict_SetItem(dict, PyString_FromString("compiler"), PyString_FromString(COMPILER));
+	PyDict_SetItem(dict, PyString_FromString("compiler"), val = PyString_FromString(COMPILER));
+	Py_DECREF(val);
 
 	// date
-	PyDict_SetItem(dict, PyString_FromString("date"), PyString_FromString(__DATE__));
+	PyDict_SetItem(dict, PyString_FromString("date"), val = PyString_FromString(__DATE__));
+	Py_DECREF(val);
 
 	// version of python
-	PyDict_SetItem(dict, PyString_FromString("python"), PyString_FromString(PY_VERSION));
+	PyDict_SetItem(dict, PyString_FromString("python"), val = PyString_FromString(PY_VERSION));
+	Py_DECREF(val);
 
 	// platform
-	PyDict_SetItem(dict, PyString_FromString("platform"), PyString_FromString(PLATFORM));
+	PyDict_SetItem(dict, PyString_FromString("platform"), val = PyString_FromString(PLATFORM));
+	Py_DECREF(val);
 
 	// Number of Threads in openMP
 #ifdef _OPENMP
-	PyDict_SetItem(dict, PyString_FromString("threads"), PyLong_FromLong(numThreads()));
+	PyDict_SetItem(dict, PyString_FromString("threads"), val = PyLong_FromLong(numThreads()));
 #else
-	PyDict_SetItem(dict, PyString_FromString("threads"), PyLong_FromLong(0));
+	PyDict_SetItem(dict, PyString_FromString("threads"), val = PyLong_FromLong(0));
 #endif
+	Py_DECREF(val);
 
 	// 32 or 64 bits
 #ifdef _WIN64
-	PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(64));
+	PyDict_SetItem(dict, PyString_FromString("wordsize"), val = PyLong_FromLong(64));
 #else
 #  ifdef _WIN32
-	PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(32));
+	PyDict_SetItem(dict, PyString_FromString("wordsize"), val = PyLong_FromLong(32));
 #  else
-	PyDict_SetItem(dict, PyString_FromString("wordsize"), PyLong_FromLong(__WORDSIZE));
+	PyDict_SetItem(dict, PyString_FromString("wordsize"), val = PyLong_FromLong(__WORDSIZE));
 #  endif
 #endif
+	Py_DECREF(val);
 
 #ifdef BINARYALLELE
 	// bits for each allele
-	PyDict_SetItem(dict, PyString_FromString("alleleBits"), PyLong_FromLong(1));
+	PyDict_SetItem(dict, PyString_FromString("alleleBits"), val = PyLong_FromLong(1));
 #else
-	PyDict_SetItem(dict, PyString_FromString("alleleBits"), PyLong_FromLong(sizeof(Allele) * 8));
+	PyDict_SetItem(dict, PyString_FromString("alleleBits"), val = PyLong_FromLong(sizeof(Allele) * 8));
 #endif
+	Py_DECREF(val);
 
 	// maxAllele
-	PyDict_SetItem(dict, PyString_FromString("maxAllele"), PyLong_FromUnsignedLong(ModuleMaxAllele));
+	PyDict_SetItem(dict, PyString_FromString("maxAllele"), val = PyLong_FromUnsignedLong(ModuleMaxAllele));
+	Py_DECREF(val);
 
 	// limits
-	PyDict_SetItem(dict, PyString_FromString("maxIndex"), PyLong_FromUnsignedLong(static_cast<ULONG>(MaxIndexSize)));
+	PyDict_SetItem(dict, PyString_FromString("maxIndex"), val = PyLong_FromUnsignedLong(static_cast<ULONG>(MaxIndexSize)));
+	Py_DECREF(val);
 
 	// debug (code)
 	PyObject * codes = PyDict_New();
 	for (size_t i = 0; g_debugCodes[i][0]; ++i) {
-		if (g_dbgCode[i]) {
-			Py_INCREF(Py_True);
+		if (g_dbgCode[i])
 			PyDict_SetItemString(codes, g_debugCodes[i], Py_True);
-		} else {
-			Py_INCREF(Py_False);
+		else
 			PyDict_SetItemString(codes, g_debugCodes[i], Py_False);
-		}
 	}
 	PyDict_SetItem(dict, PyString_FromString("debug"), codes);
+	Py_DECREF(codes);
 
 	// availableRNGs
 	PyObject * rngs = PyList_New(0);
@@ -4420,6 +4429,7 @@ PyObject * moduleInfo()
 		gsl_rng_free(rng);
 	}
 	PyDict_SetItem(dict, PyString_FromString("availableRNGs"), rngs);
+	Py_DECREF(rngs);
 
 	//
 	return dict;
