@@ -742,22 +742,26 @@ bool statNumOfSegSites::apply(Population & pop) const
 		// go through all loci
 #ifdef MUTANTALLELE
 		std::map<size_t, size_t> maxCnt;
-		for (size_t ch = 0; ch < pop.numChrom(); ++ch) {
-			size_t chromType = pop.chromType(ch);
-			size_t allCnt = 0;
-			if (chromType == CHROMOSOME_X) {
-				IndIterator ind = pop.indIterator(sp->subPop());
-				for (; ind.valid(); ++ind)
-					allCnt += ind->sex() == MALE ? 1 : 2;
-			} else if (chromType == CHROMOSOME_Y) {
-				IndIterator ind = pop.indIterator(sp->subPop());
-				for (; ind.valid(); ++ind)
-					if (ind->sex() == MALE)
-						allCnt += 1;
-			} else
-				allCnt = pop.ploidy() * pop.subPopSize(sp->subPop());
-			for (size_t i = pop.chromBegin(ch); i < pop.chromEnd(ch); ++i)
-				maxCnt[i] = allCnt;
+		bool no_sex_chromosome = pop.chromX() < 0 && pop.chromY() < 0;
+		if (no_sex_chromosome)
+			maxCnt[0] = pop.ploidy() * pop.subPopSize(*sp);
+		else {
+			for (size_t ch = 0; ch < pop.numChrom(); ++ch) {
+				size_t chromType = pop.chromType(ch);
+				size_t allCnt = 0;
+				if (chromType == CHROMOSOME_X) {
+					IndIterator ind = pop.indIterator(sp->subPop());
+					for (; ind.valid(); ++ind)
+						allCnt += ind->sex() == MALE ? 1 : 2;
+				} else if (chromType == CHROMOSOME_Y) {
+					IndIterator ind = pop.indIterator(sp->subPop());
+					for (; ind.valid(); ++ind)
+						if (ind->sex() == MALE)
+							allCnt += 1;
+				} else
+					allCnt = pop.ploidy() * pop.subPopSize(*sp);
+				maxCnt[ch] = allCnt;
+			}
 		}
 
 		IndIterator ind = pop.indIterator(sp->subPop());
@@ -784,10 +788,7 @@ bool statNumOfSegSites::apply(Population & pop) const
 		}
 
 		for (IndexMap::iterator map_it = indexMap.begin(); map_it != indexMap.end(); ++map_it) {
-			// chromosome Y? 
-			if (maxCnt[map_it->first] == 0)
-				continue;
-			else if (map_it->second.second == maxCnt[map_it->first])
+			if (map_it->second.second == maxCnt[no_sex_chromosome ? 0 : pop.chromLocusPair(map_it->first).first])
 				fixedSites.insert(map_it->first);
 			else
 				segSites.insert(map_it->first);
@@ -998,25 +999,27 @@ bool statAlleleFreq::apply(Population & pop) const
 
 		pop.activateVirtualSubPop(*it);
 #ifdef MUTANTALLELE
-		// max count for hold maximum number of alleles
-		// for sex chromosomes, for the calculation of allele frequency
 		std::map<size_t, size_t> maxCnt;
-		for (size_t ch = 0; ch < pop.numChrom(); ++ch) {
-			size_t chromType = pop.chromType(ch);
-			size_t allCnt = 0;
-			if (chromType == CHROMOSOME_X) {
-				IndIterator ind = pop.indIterator(it->subPop());
-				for (; ind.valid(); ++ind)
-					allCnt += ind->sex() == MALE ? 1 : 2;
-			} else if (chromType == CHROMOSOME_Y) {
-				IndIterator ind = pop.indIterator(it->subPop());
-				for (; ind.valid(); ++ind)
-					if (ind->sex() == MALE)
-						allCnt += 1;
-			} else
-				allCnt = pop.ploidy() * pop.subPopSize(*it);
-			for (size_t i = pop.chromBegin(ch); i < pop.chromEnd(ch); ++i)
-				maxCnt[i] = allCnt;
+		bool no_sex_chromosome = pop.chromX() < 0 && pop.chromY() < 0;
+		if (no_sex_chromosome)
+			maxCnt[0] = pop.ploidy() * pop.subPopSize(*it);
+		else {
+			for (size_t ch = 0; ch < pop.numChrom(); ++ch) {
+				size_t chromType = pop.chromType(ch);
+				size_t allCnt = 0;
+				if (chromType == CHROMOSOME_X) {
+					IndIterator ind = pop.indIterator(it->subPop());
+					for (; ind.valid(); ++ind)
+						allCnt += ind->sex() == MALE ? 1 : 2;
+				} else if (chromType == CHROMOSOME_Y) {
+					IndIterator ind = pop.indIterator(it->subPop());
+					for (; ind.valid(); ++ind)
+						if (ind->sex() == MALE)
+							allCnt += 1;
+				} else
+					allCnt = pop.ploidy() * pop.subPopSize(*it);
+				maxCnt[ch] = allCnt;
+			}
 		}
 
 		// for each locus, a dict of allele counts
@@ -1056,14 +1059,15 @@ bool statAlleleFreq::apply(Population & pop) const
 		// record results
 		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
 			size_t loc = loci[idx];
-			if (maxCnt[loc] == 0)
+			size_t loc_maxCnt = maxCnt[no_sex_chromosome ? 0 : pop.chromLocusPair(loc).first];
+			if (loc_maxCnt == 0)
 				continue;
 			std::map<size_t, intDict>::iterator allele_it = loci_alleles.find(loc);
 			intDict alleles;
 			// if not exists
 			if (allele_it == loci_alleles.end())
 				// all wild type allele
-				alleles[0] = maxCnt[loc];
+				alleles[0] = loc_maxCnt;
 			else {
 				size_t non_zero = 0;
 				intDict::iterator aa = allele_it->second.begin();
@@ -1073,15 +1077,15 @@ bool statAlleleFreq::apply(Population & pop) const
 					non_zero += aa->second;
 				}
 				// the rest of the alleles are wild type
-				if (maxCnt[loc] > non_zero)
-					alleles[0] = maxCnt[loc] - non_zero;
+				if (loc_maxCnt > non_zero)
+					alleles[0] = loc_maxCnt - non_zero;
 			}
 			// 
 			intDict::iterator cnt = alleles.begin();
 			intDict::iterator cntEnd = alleles.end();
 			for (; cnt != cntEnd; ++cnt)
 				alleleCnt[idx][cnt->first] += cnt->second;
-			allAllelesCnt[idx] += maxCnt[loc];
+			allAllelesCnt[idx] += loc_maxCnt;
 
 			// output variable.
 			if (m_vars.contains(AlleleNum_sp_String)) {
@@ -1097,7 +1101,7 @@ bool statAlleleFreq::apply(Population & pop) const
 				intDict::iterator cnt = alleles.begin();
 				intDict::iterator cntEnd = alleles.end();
 				for (; cnt != cntEnd; ++cnt)
-					d[cnt->first] = cnt->second / static_cast<double>(maxCnt[loc]);
+					d[cnt->first] = cnt->second / static_cast<double>(loc_maxCnt);
 				pop.getVars().setVar((boost::format("%1%{%2%}") % subPopVar_String(*it, AlleleFreq_String, m_suffix) % loc).str(), d);
 			}
 		}
