@@ -25328,6 +25328,40 @@ status open
 
 \begin_layout Plain Layout
 
+InstantChangeMoel(T=0, removEmptySubPops=True)
+\end_layout
+
+\end_inset
+
+removes all empty subpopulations from the existing subpopulation.
+ Here we do not specify an input population size because the the size of
+ the input population will be kept.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+InstantChangeMoel(T=0, N0=[None, 0, None], removEmptySubPops=True)
+\end_layout
+
+\end_inset
+
+removes the second of the three subpopulations while keep other two subpopulatio
+ns intact.
+ The input population of this demographic model must have three subpopulations.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
 ExponentialGrowthModel(T=100, NT=[10000, 20000])
 \end_layout
 
@@ -25382,6 +25416,62 @@ split a population into two subpopulations.
 \family default
  generations.
  
+\end_layout
+
+\begin_layout Standard
+The demography model also defines two models for population admxture.
+ The HI model (Hybrid Isolation) model creates a separate subpopulation
+ with 
+\begin_inset Formula $\mu$
+\end_inset
+
+ and 
+\begin_inset Formula $1-\mu$
+\end_inset
+
+ individuals from two specified subpopulations.
+ The CGF (Continuous Gene Flow) model replaces 
+\begin_inset Formula $1-\mu$
+\end_inset
+
+ individuals from the doner population at each generation, thus keep both
+ the recipient and doner population constant in size.
+ For example,
+\end_layout
+
+\begin_layout Itemize
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+AdmixtureModel(model=('HI', 1, 3, 0.5, 'Admixed'), T=10)
+\end_layout
+
+\end_inset
+
+Creates a separate population with 50% of individuals from subpopulation
+ 1 and 50% of individuals from subpopulation 3, regardless if population
+ sizes 1 and 3 have the same number of individuals.
+ An optional name Admixed is assigned to the new subpopulation.
+ The admixed population will evolve independently for 10 generations.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+AdmixtureModel(model=('CGF', 1, 3, 0.9), T=10)
+\end_layout
+
+\end_inset
+
+Replaces 10% of individuals in subpopulation 1 with individuals from subpopulati
+on 3 for 10 generations.
 \end_layout
 
 \begin_layout Standard
@@ -25460,7 +25550,12 @@ MultiStageModel([
 
 \begin_layout Plain Layout
 
-    ExponentialGrowthModel(r=0.01, NT=[2000, 4000])
+    ExponentialGrowthModel(r=0.01, NT=[2000, 4000]),
+\end_layout
+
+\begin_layout Plain Layout
+
+    AdmixtureModel(model=('HI', 0, 1, 0.8, 'admixed'), T=10)
 \end_layout
 
 \begin_layout Plain Layout
@@ -25503,7 +25598,8 @@ name "fig:multi-stage"
 
 \end_inset
 
-A linear and two stage exponential population growth model
+A linear and two stage exponential population growth model, followed by
+ population admixture
 \end_layout
 
 \end_inset

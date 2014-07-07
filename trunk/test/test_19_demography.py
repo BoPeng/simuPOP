@@ -125,6 +125,45 @@ class TestDemography(unittest.TestCase):
                 20: (250, 50),
                 99: (250, 50)
             }, initSize=[200, 300])
+        # test the removeEmptySubPops parameter
+        InstantChangeModel(T=0, N0=[100, 0])._assertSize(
+            {
+                0: (100, 0),
+            }, initSize=[200, 300])
+        InstantChangeModel(T=0, N0=[0, 100], removeEmptySubPops=True)._assertSize(
+            {
+                0: (100,),
+            }, initSize=[200, 300])
+        InstantChangeModel(T=0, removeEmptySubPops=True)._assertSize(
+            {
+                0: (200, 300, 400, 500),
+            }, initSize=[200, 300, 400, 0, 0, 500])
+
+    def testAdmixtureModel(self):
+        AdmixtureModel(T=10, model=('HI', 1, 2, 0.5))._assertSize(
+            {
+                0: (200, 300, 400, 600),
+                4: (200, 300, 400, 600),
+                5: (200, 300, 400, 600),
+            }, initSize=[200, 300, 400])
+        AdmixtureModel(T=10, model=('HI', 0, 2, 0.5))._assertSize(
+            {
+                0: (200, 300, 400, 400),
+                4: (200, 300, 400, 400),
+                5: (200, 300, 400, 400),
+            }, initSize=[200, 300, 400])
+        AdmixtureModel(T=10, model=('CGF', 0, 2, 0.8))._assertSize(
+            {
+                0: (200, 300, 400),
+                4: (200, 300, 400),
+                5: (200, 300, 400),
+            }, initSize=[200, 300, 400])
+        AdmixtureModel(T=10, model=('CGF', 1, 2, 0.8))._assertSize(
+            {
+                0: (200, 300, 400),
+                4: (200, 300, 400),
+                5: (200, 300, 400),
+            }, initSize=[200, 300, 400])
 
     def testLinearGrowthModel(self):
         self.assertRaises(LinearGrowthModel)
@@ -312,7 +351,42 @@ class TestDemography(unittest.TestCase):
                 300: [2000, 3640],
                 310: [2000, 4000],
             })
-
+        MultiStageModel([
+            LinearGrowthModel(T=100, N0=1000, r=0.01),  
+            ExponentialGrowthModel(T=100, N0=[0.4, 0.6], r=0.001),
+            ExponentialGrowthModel(r=0.01, NT=[2000, 4000]),
+            InstantChangeModel(N0=[1000, 0], T=100)
+        ])._assertSize(
+            {
+                0: 1010,
+                99: 2000,
+                100: [800, 1201],
+                102: [802, 1203],
+                199: [884, 1326],
+                250: [1472, 2208],
+                300: [2000, 3640],
+                310: [2000, 4000],
+                350: [1000, 0]
+            })
+        MultiStageModel([
+            LinearGrowthModel(T=100, N0=1000, r=0.01),  
+            ExponentialGrowthModel(T=100, N0=[0.4, 0.6], r=0.001),
+            ExponentialGrowthModel(r=0.01, NT=[2000, 4000]),
+            AdmixtureModel(model=['HI', 0, 1, 0.3], T=1),
+            InstantChangeModel(N0=[0, 0, None], T=100)
+        ])._assertSize(
+            {
+                0: 1010,
+                99: 2000,
+                100: [800, 1201],
+                102: [802, 1203],
+                199: [884, 1326],
+                250: [1472, 2208],
+                300: [2000, 3640],
+                310: [2000, 4000],
+                311: [2000, 4000, 5714],
+                350: [0, 0, 5714]
+            })
 
     def testTerminator(self):
         model = MultiStageModel([
