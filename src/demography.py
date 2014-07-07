@@ -41,6 +41,7 @@ __all__ = [
     'ExponentialGrowthModel',
     'LinearGrowthModel',
     'InstantChangeModel',
+    'AdmixtureModel',
     'MultiStageModel',
     'OutOfAfricaModel',
     'SettlementOfNewWorldModel',
@@ -669,7 +670,7 @@ class LinearGrowthModel(BaseDemographicModel):
 
 class InstantChangeModel(BaseDemographicModel):
     '''A model for instant population change (growth, resize, merge, split).'''
-    def __init__(self, T=None, N0=[], G=[], NG=[], ops=[], infoFields=[]):
+    def __init__(self, T=None, N0=[], G=[], NG=[], ops=[], infoFields=[], removeEmptySubPops=False):
         '''An instant population growth model that evolves a population
         from size ``N0`` to ``NT`` for ``T`` generations with population
         size changes at generation ``G`` to ``NT``. If ``G`` is a list,
@@ -679,7 +680,9 @@ class InstantChangeModel(BaseDemographicModel):
         (keep passed poulation size) and proportional (an float number) population
         size. Optionally, one or more operators (e.g. a migrator) ``ops``
         can be applied to population. Required information fields by these
-        operators should be passed to parameter ``infoFields``.'''
+        operators should be passed to parameter ``infoFields``. If ``removeEmpty``
+        option is set to ``True``, empty subpopulation will be removed. This
+        option can be used to remove subpopulations.'''
         BaseDemographicModel.__init__(self, T, N0, ops, infoFields)
         if isinstance(G, int):
             self.G = [G]
@@ -701,6 +704,7 @@ class InstantChangeModel(BaseDemographicModel):
             if g < 0 or g >= self.num_gens:
                 raise ValueError('Population change generation %d exceeds '
                     'total number of generations %d' % (g, self.num_gens))
+        self.removeEmptySubPops = removeEmptySubPops
 
     def __call__(self, pop):
         if not BaseDemographicModel.__call__(self, pop):
@@ -708,6 +712,104 @@ class InstantChangeModel(BaseDemographicModel):
         if self._gen in self.G:
             sz = self.NG[self.G.index(self._gen)]
             self._fitToSize(pop, sz)
+        if self.removeEmptySubPops:
+            pop.removeSubPops([idx for idx,x in enumerate(pop.subPopSizes()) if x==0])
+        return pop.subPopSizes()
+
+
+
+class AdmixtureModel(BaseDemographicModel):
+    '''An population admixture model that mimicks the admixing of two 
+    subpopulations using either an HI (hybrid isolation) or CGF
+    (continious gene flow) model. In the HI model, an admixed population
+    is created instantly from two or more subpopulation with
+    specified proportions. In the CGF model, a population will be reduced
+    to (1-alpha) N and accept alpha*N individuals from another population
+    for a number of generations. Please see Long (1990) The Stnetic Structure
+    of Admixed Populations, Genetics for details.'''
+    def __init__(self, T=None, N0=[], model=[], ops=[], infoFields=[]):
+        '''Define a population admixture model that mixed two 
+        subpopulations. The population has an initial size of ``N0``
+        which contains more than one subpopulations. The demographic
+        model will evolve for ``T`` generations with admixture model
+        ``model``, which should be ``['HI', parent1, parent2, mu, name]`` or
+        ``['CGF', receipient, doner, alpha]``. In the first case,
+        a new admixed population is created with a proportion of mu, and
+        1-mu individuals from parent1 and parent2 population. An optional
+        ``name`` can be assigned to be new subpopulation. In the latter case,
+        1-mu percent of individuals in receipient population will be replaced by
+        individuals in the doner population.
+        '''
+        BaseDemographicModel.__init__(self, T, N0, ops, infoFields)
+        if not model or model[0] not in ('HI', 'CGF') or len(model) < 4 or model[1] == model[2] or model[3] > 1:
+            raise ValueError('model should be either ("HI", parent1, paren2, mu)'
+                'or ("CGF", receipient, doner, alpha)')
+        self.model = model
+
+    def HI_size(self, N1, N2, mu):
+        #
+        #   N1         N2
+        # choose  
+        #   N*mu       N*(1-mu)
+        # so that
+        #   N*mu < N1
+        #   N*(1-mu) < N2
+        # That is to say
+        #   N < N1/mu
+        #   N < N2/(1-mu)
+        #
+        if mu == 0:
+            return (0, N2)
+        elif mu == 1:
+            return (N1, 0)
+        else:
+            N = min(N1/mu, N2/(1-mu))
+            return (int(N*mu + 0.5), int(N*(1-mu) + 0.5))
+
+    def __call__(self, pop):
+        if not BaseDemographicModel.__call__(self, pop):
+            return []
+        if self.model[0] == 'HI':
+            if self._gen != 0:
+                return pop.subPopSizes()
+            if self.model[1] >= pop.numSubPop() or self.model[2] >= pop.numSubPop():
+                raise RuntimeError('Failed to mixed populations {} and {}'.format(self.model[1], self.model[2]))
+            sz1 = pop.subPopSize(self.model[1])
+            sz2 = pop.subPopSize(self.model[2])
+            #
+            # mu from sz1, 1-mu from p2
+            sz = self.HI_size(sz1, sz2, self.model[3])
+            # create a new subpopulation
+            pop1 = pop.clone()
+            admixed_size = [0] * pop1.numSubPop()
+            admixed_size[self.model[1]] = sz[0]
+            admixed_size[self.model[2]] = sz[1]
+            pop1.resize(admixed_size)
+            if len(self.model) > 4:
+                # assign a new name
+                pop1.mergeSubPops(ALL_AVAIL, self.model[4])
+            else:
+                pop1.mergeSubPops(ALL_AVAIL)
+            pop.addIndFrom(pop1)
+        else:
+            if self.model[1] >= pop.numSubPop() or self.model[2] >= pop.numSubPop():
+                raise RuntimeError('Failed to mixed populations {} and {}'.format(self.model[1], self.model[2]))
+            sz1 = pop.subPopSize(self.model[1])
+            sz2 = pop.subPopSize(self.model[2])
+            # requested number of individuals from sz2
+            request = min(int(sz1 * (1-self.model[3]) + 0.5), sz2)
+            # we need to replace requested number of individuals in sz1 
+            # with individuals in sz2
+            #
+            # step1, enlarge doner
+            sz = list(pop.subPopSizes())
+            sz[self.model[1]] -= request
+            sz[self.model[2]] += request
+            pop.resize(sz, propagate=True)
+            # step2, split doner
+            pop.splitSubPop(self.model[2], [request, pop.subPopSize(self.model[2]) - request])
+            # step3, merge the split indiiduals to subpopulation self.model[1]
+            pop.mergeSubPops([self.model[1], self.model[2]])
         return pop.subPopSizes()
 
 
@@ -874,7 +976,7 @@ class SettlementOfNewWorldModel(MultiStageModel):
         f_MX=0.48,
         ops=[],
         infoFields=[],
-        mix=True,
+        outcome='MXL',
         scale=1
         ):
         '''Counting **backward in time**, this model evolves a population for ``T0``
@@ -896,9 +998,9 @@ class SettlementOfNewWorldModel(MultiStageModel):
         be added to ``ops``. Information fields required by these operators 
         should be passed to ``infoFields``. If a scaling factor ``scale``
         is specified, all population sizes and generation numbers will be divided by
-        a factor of ``scale``. Finally, if ``mix`` is set to ``False`` (default to
-        ``True``, the three population will not be mixed to a single Mexican-American
-        population.
+        a factor of ``scale``. This demographic model by default only returns the
+        mixed Mexican America model (``outputcom='MXL'``) but you can specify any
+        combination of ``AF``, ``EU``, ``AS``, ``MX`` and ``MXL``.
 
         This model merges all subpopulations if it is applied to a population with
         multiple subpopulation.
@@ -917,17 +1019,10 @@ class SettlementOfNewWorldModel(MultiStageModel):
             N_MX1 = N_MX
         #
         # for python 2.x and 3.x compatibility
-        if mix:
-            mixing_stage = [
-                InstantChangeModel(
-                    T=1,
-                    N0=[0, int(N_EU1/scale), 0, int(N_MX1/scale)],
-                    G=[0],
-                    NG=[(int((N_EU1 + N_MX1)/scale), 'MXL')]
-                )
-            ]
-        else:
-            mixing_stage = []
+        final_subpops = [None, None, None, None, None]
+        for (idx, name) in enumerate(['AF', 'EU', 'AS', 'MX', 'MXL']):
+            if name not in outcome:
+                final_subpops[idx] = 0
         #
         scale = float(scale)
         MultiStageModel.__init__(self, [
@@ -974,8 +1069,15 @@ class SettlementOfNewWorldModel(MultiStageModel):
                     # migration
                     subPops=[0, 1, 2],
                     toSubPops=[0, 1, 2])
-                )
-            ] + mixing_stage,
+                ),
+            AdmixtureModel(T=1,
+                N0=[None, None, None, None],
+                # mixing European and Mexican population
+                model=['HI', 1, 3, 1-f_MX, 'MXL']),
+            InstantChangeModel(T=0,
+                N0=final_subpops,
+                removeEmptySubPops=True)
+            ],
             ops=ops, infoFields=infoFields
         )
 

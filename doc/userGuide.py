@@ -4914,14 +4914,15 @@ model.plot('log/demoModel.png',
 MultiStageModel([
     LinearGrowthModel(T=100, N0=1000, r=0.01),  
     ExponentialGrowthModel(T=100, N0=[0.4, 0.6], r=0.001),
-    ExponentialGrowthModel(r=0.01, NT=[2000, 4000])
+    ExponentialGrowthModel(r=0.01, NT=[2000, 4000]),
+    AdmixtureModel(model=('HI', 0, 1, 0.8, 'admixed'), T=10)
 ]).plot('log/MultiStage.png')
-OutOfAfricaModel(10000).plot('log/OutOfAfrica.png')
-OutOfAfricaModel(10000, scale=10).plot('log/ScaledOutOfAfrica.png')
-SettlementOfNewWorldModel(10000).plot('log/SettlementOfNewWorld.png')
-SettlementOfNewWorldModel(10000, scale=10).plot('log/ScaledSettlementOfNewWorld.png')
-CosiModel(20000).plot('log/Cosi.png')
-CosiModel(20000, scale=10).plot('log/ScaledCosi.png')
+#OutOfAfricaModel(10000).plot('log/OutOfAfrica.png')
+#OutOfAfricaModel(10000, scale=10).plot('log/ScaledOutOfAfrica.png')
+#SettlementOfNewWorldModel(10000).plot('log/SettlementOfNewWorld.png')
+#SettlementOfNewWorldModel(10000, scale=10).plot('log/ScaledSettlementOfNewWorld.png')
+#CosiModel(20000).plot('log/Cosi.png')
+#CosiModel(20000, scale=10).plot('log/ScaledCosi.png')
 #end_ignore
 #end_file
 
