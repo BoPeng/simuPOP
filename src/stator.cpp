@@ -699,8 +699,8 @@ statNumOfSegSites::statNumOfSegSites(const lociList & loci, const subPopList & s
 	const char * allowedVars[] = {
 		numOfSegSites_String,	numOfSegSites_sp_String,
 		numOfFixedSites_String, numOfFixedSites_sp_String,
-		segSites_String,	    segSites_sp_String,
-		fixedSites_String,      fixedSites_sp_String,
+		segSites_String,		segSites_sp_String,
+		fixedSites_String,		fixedSites_sp_String,
 		""
 	};
 	const char * defaultVars[] = { numOfSegSites_String, numOfFixedSites_String, "" };
@@ -982,8 +982,6 @@ bool statAlleleFreq::apply(Population & pop) const
 
 	const vectoru & loci = m_loci.elems(&pop);
 
-	DBG_DO(DBG_STATOR, cerr << "Calculated allele frequency for loci " << loci << endl);
-
 	// count for all specified subpopulations
 	ALLELECNTLIST alleleCnt(loci.size());
 	vectoru allAllelesCnt(loci.size(), 0);
@@ -999,6 +997,11 @@ bool statAlleleFreq::apply(Population & pop) const
 
 		pop.activateVirtualSubPop(*it);
 #ifdef MUTANTALLELE
+		/* the following counts alleles for all loci all at once and tend to
+		   use more memory than other modules (which counts loci one by one). In
+		   particular, if there is only one subpopulation, the allele count will
+		   be kept in both loci_alleles and alleleCnt, which is not really
+		   necessary. */
 		std::map<size_t, size_t> maxCnt;
 		bool no_sex_chromosome = pop.chromX() < 0 && pop.chromY() < 0;
 		if (no_sex_chromosome)
@@ -1079,8 +1082,11 @@ bool statAlleleFreq::apply(Population & pop) const
 				// the rest of the alleles are wild type
 				if (loc_maxCnt > non_zero)
 					alleles[0] = loc_maxCnt - non_zero;
+				// try to save some memory but it is strange that
+				// no obvious reduction of memory usage is observed.
+				loci_alleles.erase(allele_it);
 			}
-			// 
+			//
 			intDict::iterator cnt = alleles.begin();
 			intDict::iterator cntEnd = alleles.end();
 			for (; cnt != cntEnd; ++cnt)
@@ -1105,18 +1111,18 @@ bool statAlleleFreq::apply(Population & pop) const
 				pop.getVars().setVar((boost::format("%1%{%2%}") % subPopVar_String(*it, AlleleFreq_String, m_suffix) % loc).str(), d);
 			}
 		}
-#else  // for mutant allele
+#else       // for mutant allele
 
 
-#pragma omp parallel for if(numThreads() > 1)
+#  pragma omp parallel for if(numThreads() > 1)
 		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
 			size_t loc = loci[idx];
 
-#ifdef LONGALLELE
+#  ifdef LONGALLELE
 			intDict alleles;
-#else
+#  else
 			vectoru alleles(2, 0);
-#endif
+#  endif
 			size_t allAlleles = 0;
 
 			// go through all alleles
@@ -1125,31 +1131,31 @@ bool statAlleleFreq::apply(Population & pop) const
 			// of alleles (e.g. markers on chromosome X and Y).
 			for (; a.valid(); ++a) {
 				Allele v = a.value();
-#ifndef BINARYALLELE
-#  ifndef LONGALLELE
+#  ifndef BINARYALLELE
+#    ifndef LONGALLELE
 				if (v >= alleles.size())
 					alleles.resize(v + 1, 0);
+#    endif
 #  endif
-#endif
 				alleles[v]++;
 				allAlleles++;
 			}
 			// total allele count
-#ifdef LONGALLELE
+#  ifdef LONGALLELE
 			intDict::iterator cnt = alleles.begin();
 			intDict::iterator cntEnd = alleles.end();
 			for ( ; cnt != cntEnd; ++cnt)
 				alleleCnt[idx][cnt->first] += cnt->second;
-#else
+#  else
 			for (size_t i = 0; i < alleles.size(); ++i)
 				if (alleles[i] != 0)
 					alleleCnt[idx][i] += alleles[i];
-#endif
+#  endif
 			allAllelesCnt[idx] += allAlleles;
 			// output variable.
-#ifdef LONGALLELE
+#  ifdef LONGALLELE
 			if (m_vars.contains(AlleleNum_sp_String)) {
-#  pragma omp critical
+#    pragma omp critical
 				pop.getVars().setVar((boost::format("%1%{%2%}") % subPopVar_String(*it, AlleleNum_String, m_suffix) % loc).str(), alleles);
 			}
 			if (m_vars.contains(AlleleFreq_sp_String)) {
@@ -1157,16 +1163,16 @@ bool statAlleleFreq::apply(Population & pop) const
 				intDict::iterator cntEnd = alleles.end();
 				for ( ; cnt != cntEnd; ++cnt)
 					cnt->second /= static_cast<double>(allAlleles);
-#  pragma omp critical
+#    pragma omp critical
 				pop.getVars().setVar((boost::format("%1%{%2%}") % subPopVar_String(*it, AlleleFreq_String, m_suffix) % loc).str(), alleles);
 			}
-#else
+#  else
 			if (m_vars.contains(AlleleNum_sp_String)) {
 				uintDict d;
 				for (size_t i = 0; i < alleles.size(); ++i)
 					if (alleles[i] != 0)
 						d[i] = static_cast<double>(alleles[i]);
-#  pragma omp critical
+#    pragma omp critical
 				pop.getVars().setVar((boost::format("%1%{%2%}") % subPopVar_String(*it, AlleleNum_String, m_suffix) % loc).str(), d);
 			}
 			if (m_vars.contains(AlleleFreq_sp_String)) {
@@ -1174,12 +1180,12 @@ bool statAlleleFreq::apply(Population & pop) const
 				for (size_t i = 0; i < alleles.size(); ++i)
 					if (alleles[i] != 0)
 						d[i] = alleles[i] / static_cast<double>(allAlleles);
-#  pragma omp critical
+#    pragma omp critical
 				pop.getVars().setVar((boost::format("%1%{%2%}") % subPopVar_String(*it, AlleleFreq_String, m_suffix) % loc).str(), d);
 			}
-#endif
+#  endif
 		}
-#endif   // for mutant allele type		
+#endif      // for mutant allele type
 		pop.deactivateVirtualSubPop(it->subPop());
 	}
 
@@ -3611,12 +3617,12 @@ string statEffectiveSize::describe(bool /* format */) const
 		if (m_vars.contains(Ne_demo_String) || m_vars.contains(Ne_demo_sp_String))
 			desc += "Calculate demographic effective population size.";
 		if (m_vars.contains(Ne_waples89_String) || m_vars.contains(Ne_waples89_sp_String) ||
-			m_vars.contains(Ne_waples89_P1_String) || m_vars.contains(Ne_waples89_P1_sp_String) ||
-			m_vars.contains(Ne_waples89_P2_String) || m_vars.contains(Ne_waples89_P2_sp_String))
+		    m_vars.contains(Ne_waples89_P1_String) || m_vars.contains(Ne_waples89_P1_sp_String) ||
+		    m_vars.contains(Ne_waples89_P2_String) || m_vars.contains(Ne_waples89_P2_sp_String))
 			desc += "Estimate effective population size using temporal method as described in Waples 1989. ";
 		if (m_vars.contains(Ne_tempoFS_String) || m_vars.contains(Ne_tempoFS_sp_String) ||
-			m_vars.contains(Ne_tempoFS_P1_String) || m_vars.contains(Ne_tempoFS_P1_sp_String) ||
-			m_vars.contains(Ne_tempoFS_P2_String) || m_vars.contains(Ne_tempoFS_P2_sp_String))
+		    m_vars.contains(Ne_tempoFS_P1_String) || m_vars.contains(Ne_tempoFS_P1_sp_String) ||
+		    m_vars.contains(Ne_tempoFS_P2_String) || m_vars.contains(Ne_tempoFS_P2_sp_String))
 			desc += "Estimate effective population size using temporal method as described in  Jorde & Ryman, 2007.";
 		if (m_vars.contains(Ne_temporal_base_String) || m_vars.contains(Ne_temporal_base_sp_String))
 			desc += "Setting temporal base.";
@@ -3685,7 +3691,7 @@ void statEffectiveSize::Waples89(size_t N, size_t S0, size_t St, size_t t,
 	// estimate of Ne
 	// plan 1, formula 12
 	res1[0] = t / (2 * (F_all - 0.5 / S0 - 0.5 / St + 1. / N));
-	// plan 2, formula 11 
+	// plan 2, formula 11
 	res2[0] = t / (2 * (F_all - 0.5 / S0 - 0.5 / St));
 	//
 	// confidence intervals for two estimates are the same
@@ -3773,26 +3779,26 @@ void statEffectiveSize::TempoFS(size_t N, size_t S0, size_t St, size_t t,
 	double sum_numerator = accumulate(numerator.begin(), numerator.end(), 0.);
 	double sum_denominator = accumulate(denominator.begin(), denominator.end(), 0.);
 	double Fs = sum_numerator / sum_denominator;
-	double Fsprim[2] = {0., 0.};
+	double Fsprim[2] = { 0., 0. };
 	Fsprim[0] = (Fs * (1.0 - 1.0 / (4.0 * n_harmonic) + 1.0 / (4.0 * N)) - 1.0 / n_harmonic + 1.0 / N) /
-	                ((1.0 + Fs / 4.0) * (1 - 1.0 / (2.0 * St)));
+	            ((1.0 + Fs / 4.0) * (1 - 1.0 / (2.0 * St)));
 	Fsprim[1] = (Fs * (1.0 - 1.0 / (4.0 * n_harmonic)) - 1.0 / n_harmonic) /
-	                ((1.0 + Fs / 4.0) * (1 - 1.0 / (2.0 * St)));
-	double Ne[2] = {0., 0.};
+	            ((1.0 + Fs / 4.0) * (1 - 1.0 / (2.0 * St)));
+	double Ne[2] = { 0., 0. };
 	for (size_t plan = 0; plan < 2; ++plan)
 		Ne[plan] = Fsprim[plan] < 0.000000001 ? -1 : 0.5 * t / Fsprim[plan];
 
-	DBG_DO(DBG_STATOR, cerr << "Fs=" << Fs << " Fs1'=" << Fsprim[0] << " Ne1=" << Ne[0] 
-		<< " Fs2'=" << Fsprim[1] << " Ne2=" << Ne[1] << endl);
+	DBG_DO(DBG_STATOR, cerr << "Fs=" << Fs << " Fs1'=" << Fsprim[0] << " Ne1=" << Ne[0]
+		                    << " Fs2'=" << Fsprim[1] << " Ne2=" << Ne[1] << endl);
 
 	/* Jackknive over loci; that is, calculate a new estimate of Fs based on all
 	   alleles, except for one locus, and repeat by omitting a different locus
 	   each time.
 	 */
-	double JackFs[2] = {0., 0.};
-	double JackFsprim[2] = {0., 0.};
-	double JackFsSE[2] = {0., 0.};
-	double JackFsprimSE[2] = {0., 0.};
+	double JackFs[2] = { 0., 0. };
+	double JackFsprim[2] = { 0., 0. };
+	double JackFsSE[2] = { 0., 0. };
+	double JackFsprimSE[2] = { 0., 0. };
 	size_t nLoci = P0.size();
 	for (size_t plan = 0; plan < 2; ++plan) {
 		for (size_t j = 0; j < nLoci; ++j) {
@@ -3802,10 +3808,10 @@ void statEffectiveSize::TempoFS(size_t N, size_t S0, size_t St, size_t t,
 			JackFsSE[plan] += temp * temp;
 			if (plan == 0)  // plan 1
 				temp = (temp * (1.0 - 1.0 / (4.0 * n_harmonic) + 1.0 / (4.0 * N)) - 1.0 / n_harmonic + 1.0 / N) /
-				   ((1.0 + temp / 4.0) * (1 - 1.0 / (2.0 * St)));
+				       ((1.0 + temp / 4.0) * (1 - 1.0 / (2.0 * St)));
 			else
 				temp = (temp * (1.0 - 1.0 / (4.0 * n_harmonic)) - 1.0 / n_harmonic) /
-				   ((1.0 + temp / 4.0) * (1 - 1.0 / (2.0 * St)));
+				       ((1.0 + temp / 4.0) * (1 - 1.0 / (2.0 * St)));
 			JackFsprim[plan] += temp;
 			JackFsprimSE[plan] += temp * temp;
 		}
@@ -4073,9 +4079,9 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 		ALLELECNTLIST P0;
 		ALLELECNTLIST Pt;
 		if (m_vars.contains(Ne_waples89_sp_String) || m_vars.contains(Ne_tempoFS_sp_String) ||
-			m_vars.contains(Ne_waples89_P1_sp_String) || m_vars.contains(Ne_tempoFS_P1_sp_String) ||
-			m_vars.contains(Ne_waples89_P2_sp_String) || m_vars.contains(Ne_tempoFS_P2_sp_String)
-		) {
+		    m_vars.contains(Ne_waples89_P1_sp_String) || m_vars.contains(Ne_tempoFS_P1_sp_String) ||
+		    m_vars.contains(Ne_waples89_P2_sp_String) || m_vars.contains(Ne_tempoFS_P2_sp_String)
+		    ) {
 			// get previous allele frequency and population size, if available
 			long gen = 0;
 			bool has_base = true;
@@ -4227,8 +4233,8 @@ bool statEffectiveSize::temporalEffectiveSize(Population & pop) const
 	//
 	// get previous ...
 	if (m_vars.contains(Ne_waples89_String) || m_vars.contains(Ne_tempoFS_String) ||
-		m_vars.contains(Ne_waples89_P1_String) || m_vars.contains(Ne_tempoFS_P1_String) ||
-		m_vars.contains(Ne_waples89_P2_String) || m_vars.contains(Ne_tempoFS_P2_String)) {
+	    m_vars.contains(Ne_waples89_P1_String) || m_vars.contains(Ne_tempoFS_P1_String) ||
+	    m_vars.contains(Ne_waples89_P2_String) || m_vars.contains(Ne_tempoFS_P2_String)) {
 		size_t S0_all = 0;
 		ALLELECNTLIST P0_all;
 		long gen = 0;
