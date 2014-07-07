@@ -1082,7 +1082,7 @@ uintList::uintList(PyObject * obj) : m_elems(), m_status(REGULAR)
 }
 
 
-lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_status(REGULAR), m_trait(MaxTraitIndex)
+lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_status(REGULAR), m_trait(MaxTraitIndex), m_lociMap()
 {
 	if (obj == NULL)
 		// accept NULL
@@ -1173,6 +1173,20 @@ const vectoru & lociList::elems(const GenoStruTrait * trait) const
 		m_trait = trait->genoStruIdx();
 	}
 	return m_elems;
+}
+
+size_t lociList::indexOf(size_t loc) const
+{
+	if (m_status == ALL_AVAIL)
+		return loc;
+	if (m_lociMap.empty())
+		for (size_t i = 0; i < m_elems.size(); ++i)
+			m_lociMap[m_elems[i]] = i;
+	std::map<size_t, size_t>::iterator it = m_lociMap.find(loc);
+	if (it == m_lociMap.end())
+		return NOT_FOUND;
+	else
+		return it->second;
 }
 
 

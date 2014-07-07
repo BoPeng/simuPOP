@@ -627,6 +627,9 @@ public:
 		return m_status == FROM_NAME;
 	}
 
+	/// CPPONLY
+	/// return the index of loc in the index list
+	size_t indexOf(size_t loc) const;
 
 	/// CPPONLY
 	const vectoru & elems(const GenoStruTrait * trait) const;
@@ -640,6 +643,8 @@ private:
 	listStatus m_status;
 
 	mutable TraitIndexType m_trait;
+	// used by indexOf
+	mutable std::map<size_t, size_t> m_lociMap;
 };
 
 
