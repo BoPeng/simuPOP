@@ -741,7 +741,27 @@ bool statNumOfSegSites::apply(Population & pop) const
 
 		// go through all loci
 #ifdef MUTANTALLELE
+		std::map<size_t, size_t> maxCnt;
+		for (size_t ch = 0; ch < pop.numChrom(); ++ch) {
+			size_t chromType = pop.chromType(ch);
+			size_t allCnt = 0;
+			if (chromType == CHROMOSOME_X) {
+				IndIterator ind = pop.indIterator(sp->subPop());
+				for (; ind.valid(); ++ind)
+					allCnt += ind->sex() == MALE ? 1 : 2;
+			} else if (chromType == CHROMOSOME_Y) {
+				IndIterator ind = pop.indIterator(sp->subPop());
+				for (; ind.valid(); ++ind)
+					if (ind->sex() == MALE)
+						allCnt += 1;
+			} else
+				allCnt = pop.ploidy() * pop.subPopSize(sp->subPop());
+			for (size_t i = pop.chromBegin(ch); i < pop.chromEnd(ch); ++i)
+				maxCnt[i] = allCnt;
+		}
+
 		IndIterator ind = pop.indIterator(sp->subPop());
+		size_t totNumLoci = pop.totNumLoci();
 		IndexMap indexMap;
 		for (; ind.valid(); ++ind) {
 			GenoIterator it = ind->genoBegin();
@@ -750,42 +770,26 @@ bool statNumOfSegSites::apply(Population & pop) const
 			vectorm::val_iterator index_it_end = it_end.get_val_iterator();
 			size_t indIndex = it.index();
 			for (; index_it != index_it_end; ++index_it) {
-				if (m_loci.allAvail()) {
-					size_t lociValue = index_it->first - indIndex;
-					if (index_it->second != 0 && lociValue < loci.size()) {
-						IndexMap::iterator map_it = indexMap.find(lociValue);
-						if (map_it == indexMap.end()) {
-							indexMap.insert(IndexMap::value_type(lociValue, std::make_pair(index_it->second, 1)));
-						} else {
-							if (map_it->second.first == index_it->second) {
-								map_it->second.second++;
-								if (map_it->second.second == pop.subPopSize(sp->subPop()))
-									fixedSites.insert(lociValue);
-							}
-						}
-					}
-				} else {
-					for (size_t idx = 0; idx < loci.size(); ++idx) {
-						if (index_it->first == indIndex + loci[idx] && index_it->second != 0) {
-							IndexMap::iterator map_it = indexMap.find(loci[idx]);
-							if (map_it == indexMap.end()) {
-								indexMap.insert(IndexMap::value_type(loci[idx], std::make_pair(index_it->second, 1)));
-							} else {
-								if (map_it->second.first == index_it->second) {
-									map_it->second.second++;
-									if (map_it->second.second == pop.subPopSize(sp->subPop()))
-										fixedSites.insert(loci[idx]);
-								}
-							}
-							break;
-						}
-					}
-				}
+				DBG_FAILIF(index_it->second == 0, RuntimeError,
+					"Non-zero allele found for mutant module.");
+				size_t lociValue = (index_it->first - indIndex) % totNumLoci;
+				if (m_loci.indexOf(lociValue) == NOT_FOUND)
+					continue;
+				IndexMap::iterator map_it = indexMap.find(lociValue);
+				if (map_it == indexMap.end())
+					indexMap.insert(IndexMap::value_type(lociValue, std::make_pair(index_it->second, 1)));
+				else if (map_it->second.first == index_it->second)
+					map_it->second.second++;
 			}
 		}
 
 		for (IndexMap::iterator map_it = indexMap.begin(); map_it != indexMap.end(); ++map_it) {
-			if (map_it->second.second != pop.subPopSize(sp->subPop()))
+			// chromosome Y? 
+			if (maxCnt[map_it->first] == 0)
+				continue;
+			else if (map_it->second.second == maxCnt[map_it->first])
+				fixedSites.insert(map_it->first);
+			else
 				segSites.insert(map_it->first);
 		}
 
@@ -993,6 +997,112 @@ bool statAlleleFreq::apply(Population & pop) const
 			pop.getVars().removeVar(subPopVar_String(*it, AlleleFreq_String, m_suffix));
 
 		pop.activateVirtualSubPop(*it);
+#ifdef MUTANTALLELE
+		// max count for hold maximum number of alleles
+		// for sex chromosomes, for the calculation of allele frequency
+		std::map<size_t, size_t> maxCnt;
+		for (size_t ch = 0; ch < pop.numChrom(); ++ch) {
+			size_t chromType = pop.chromType(ch);
+			size_t allCnt = 0;
+			if (chromType == CHROMOSOME_X) {
+				IndIterator ind = pop.indIterator(it->subPop());
+				for (; ind.valid(); ++ind)
+					allCnt += ind->sex() == MALE ? 1 : 2;
+			} else if (chromType == CHROMOSOME_Y) {
+				IndIterator ind = pop.indIterator(it->subPop());
+				for (; ind.valid(); ++ind)
+					if (ind->sex() == MALE)
+						allCnt += 1;
+			} else
+				allCnt = pop.ploidy() * pop.subPopSize(*it);
+			for (size_t i = pop.chromBegin(ch); i < pop.chromEnd(ch); ++i)
+				maxCnt[i] = allCnt;
+		}
+
+		// for each locus, a dict of allele counts
+		std::map<size_t, intDict> loci_alleles;
+		// now we need to go through all alleles
+		IndIterator ind = pop.indIterator(it->subPop());
+		size_t totNumLoci = pop.totNumLoci();
+		for (; ind.valid(); ++ind) {
+			GenoIterator it = ind->genoBegin();
+			GenoIterator it_end = ind->genoEnd();
+			vectorm::val_iterator index_it = it.get_val_iterator();
+			vectorm::val_iterator index_it_end = it_end.get_val_iterator();
+			size_t indIndex = it.index();
+			for (; index_it != index_it_end; ++index_it) {
+				DBG_FAILIF(index_it->second == 0, RuntimeError,
+					"Non-zero allele found for mutant module.");
+				size_t lociValue = (index_it->first - indIndex) % totNumLoci;
+				// if lociValue is unspecified (not ALL_AVAIL)
+				if (m_loci.indexOf(lociValue) == NOT_FOUND)
+					continue;
+				// record allele
+				std::map<size_t, intDict>::iterator allele_it = loci_alleles.find(lociValue);
+				if (allele_it == loci_alleles.end()) {
+					intDict a;
+					a[index_it->second] = 1;
+					loci_alleles.insert(std::map<size_t, intDict>::value_type(lociValue, a));
+				} else {
+					intDict::iterator aa = allele_it->second.find(index_it->second);
+					// a new allele
+					if (aa == allele_it->second.end())
+						allele_it->second[index_it->second] = 1;
+					else
+						aa->second += 1;
+				}
+			}
+		}
+		// record results
+		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
+			size_t loc = loci[idx];
+			if (maxCnt[loc] == 0)
+				continue;
+			std::map<size_t, intDict>::iterator allele_it = loci_alleles.find(loc);
+			intDict alleles;
+			// if not exists
+			if (allele_it == loci_alleles.end())
+				// all wild type allele
+				alleles[0] = maxCnt[loc];
+			else {
+				size_t non_zero = 0;
+				intDict::iterator aa = allele_it->second.begin();
+				intDict::iterator aa_end = allele_it->second.end();
+				for (; aa != aa_end; ++aa) {
+					alleles[aa->first] = aa->second;
+					non_zero += aa->second;
+				}
+				// the rest of the alleles are wild type
+				if (maxCnt[loc] > non_zero)
+					alleles[0] = maxCnt[loc] - non_zero;
+			}
+			// 
+			intDict::iterator cnt = alleles.begin();
+			intDict::iterator cntEnd = alleles.end();
+			for (; cnt != cntEnd; ++cnt)
+				alleleCnt[idx][cnt->first] += cnt->second;
+			allAllelesCnt[idx] += maxCnt[loc];
+
+			// output variable.
+			if (m_vars.contains(AlleleNum_sp_String)) {
+				uintDict d;
+				intDict::iterator cnt = alleles.begin();
+				intDict::iterator cntEnd = alleles.end();
+				for (; cnt != cntEnd; ++cnt)
+					d[cnt->first] = static_cast<double>(cnt->second);
+				pop.getVars().setVar((boost::format("%1%{%2%}") % subPopVar_String(*it, AlleleNum_String, m_suffix) % loc).str(), d);
+			}
+			if (m_vars.contains(AlleleFreq_sp_String)) {
+				uintDict d;
+				intDict::iterator cnt = alleles.begin();
+				intDict::iterator cntEnd = alleles.end();
+				for (; cnt != cntEnd; ++cnt)
+					d[cnt->first] = cnt->second / static_cast<double>(maxCnt[loc]);
+				pop.getVars().setVar((boost::format("%1%{%2%}") % subPopVar_String(*it, AlleleFreq_String, m_suffix) % loc).str(), d);
+			}
+		}
+#else  // for mutant allele
+
 
 #pragma omp parallel for if(numThreads() > 1)
 		for (ssize_t idx = 0; idx < static_cast<ssize_t>(loci.size()); ++idx) {
@@ -1065,6 +1175,7 @@ bool statAlleleFreq::apply(Population & pop) const
 			}
 #endif
 		}
+#endif   // for mutant allele type		
 		pop.deactivateVirtualSubPop(it->subPop());
 	}
 

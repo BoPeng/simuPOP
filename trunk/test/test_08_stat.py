@@ -183,12 +183,55 @@ class TestStat(unittest.TestCase):
             self.assertEqual(len(pop.dvars().fixedSites), 20)
             self.assertEqual(pop.dvars().fixedSites, list(range(30,40)) + list(range(50, 60)))
         else:
+            self.assertEqual(pop.dvars().segSites, list(range(20)) + list(range(30,40)))
             self.assertEqual(pop.dvars().numOfSegSites, 30)
             self.assertEqual(pop.dvars().numOfFixedSites, 10)
             self.assertEqual(len(pop.dvars().segSites), 30)
-            self.assertEqual(pop.dvars().segSites, list(range(20)) + list(range(30,40)))
             self.assertEqual(len(pop.dvars().fixedSites), 10)
             self.assertEqual(pop.dvars().fixedSites, list(range(50, 60)))
+        #
+        # there is a doubt if both ploidy are counted correctly
+        pop = Population(size=10, loci=10)
+        for idx in (1, 3, 5):
+            pop.individual(idx).setAllele(1, idx, 0)
+        for ind in pop.individuals():
+            ind.setAllele(1, 7, 0)
+            ind.setAllele(1, 7, 1)
+        stat(pop, numOfSegSites=ALL_AVAIL, vars=['segSites', 'fixedSites'])
+        self.assertEqual(pop.dvars().segSites, [1, 3, 5])
+        self.assertEqual(pop.dvars().fixedSites, [7])
+        #
+        pop = Population(size=10, loci=10)
+        for idx in (1, 3, 5):
+            pop.individual(idx).setAllele(1, idx, 1)
+        for ind in pop.individuals():
+            ind.setAllele(1, 7, 0)
+            ind.setAllele(1, 7, 1)
+        stat(pop, numOfSegSites=ALL_AVAIL, vars=['segSites', 'fixedSites'])
+        self.assertEqual(pop.dvars().segSites, [1, 3, 5])
+        self.assertEqual(pop.dvars().fixedSites, [7])
+        # there is however problem with sex chromosomes
+        pop = Population(size=10, loci=[5,5], chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
+        initSex(pop, sex=[MALE, FEMALE])
+        for idx,ind in enumerate(pop.individuals()):
+            if ind.sex() == MALE:
+                # male has X, Y
+                ind.setAllele(1, 2, 0)  # X
+                ind.setAllele(1, 7, 1)  # Y
+                if idx % 2 == 0:
+                    ind.setAllele(1, 4, 0)  # X
+                    ind.setAllele(1, 9, 1)  # Y
+            else:
+                ind.setAllele(1, 2, 0)  # X
+                ind.setAllele(1, 2, 1)  # X
+                if idx % 2 == 0:
+                    ind.setAllele(1, 4, 0)  # X
+                    ind.setAllele(1, 4, 1)  # Y
+        #
+        stat(pop, numOfSegSites=ALL_AVAIL, vars=['segSites', 'fixedSites'])
+        self.assertEqual(pop.dvars().segSites, [4])
+        self.assertEqual(pop.dvars().fixedSites, [2, 7, 9])
+
 
 
     def testNumOfMutants(self):
