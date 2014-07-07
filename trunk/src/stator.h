@@ -914,7 +914,7 @@ private:
 #define  Ne_temporal_base_String     "Ne_temporal_base"
 #define  Ne_temporal_base_sp_String  "Ne_temporal_base_sp"
 
-// deprecated, use Ne_waples89_P1 etc instead
+	// deprecated, use Ne_waples89_P1 etc instead
 #define  Ne_waples89_String       "Ne_waples89"
 #define  Ne_waples89_sp_String    "Ne_waples89_sp"
 #define  Ne_tempoFS_String        "Ne_tempoFS"
@@ -941,7 +941,7 @@ private:
 
 	// calculate moment based estimate of Ne based on Waples 89
 	void Waples89(size_t N, size_t S0, size_t St, size_t t,
-		const ALLELECNTLIST & P0, const ALLELECNTLIST & Pt, 
+		const ALLELECNTLIST & P0, const ALLELECNTLIST & Pt,
 		vectorf & res1, vectorf & res2) const;
 
 	// calculate moment based estimate of Ne based on Jorde & Ryman's (2007)
@@ -998,14 +998,14 @@ class Stat : public BaseOperator
 {
 public:
 	/** Create a \c Stat operator that calculates specified statistics of a
-	 *  population when it is applied to this population. This operator can 
-	 *  be applied to specified replicates (parameter \e rep) at specified 
-	 *  generations (parameter \e begin, \e end, \e step, and \e at). This 
-	 *  operator does not produce any output (ignore parameter \e output) 
+	 *  population when it is applied to this population. This operator can
+	 *  be applied to specified replicates (parameter \e rep) at specified
+	 *  generations (parameter \e begin, \e end, \e step, and \e at). This
+	 *  operator does not produce any output (ignore parameter \e output)
 	 *  after statistics are calculated. Instead, it stores results in the
 	 *  local namespace of the population being applied. Other operators can
 	 *  retrieve these variables or evalulate expression directly in this
-	 *  local namespace. Please refer to operator \c BaseOperator for a 
+	 *  local namespace. Please refer to operator \c BaseOperator for a
 	 *  detailed explanation of these common operator parameters.
 	 *
 	 *  \c Stat supports parameter \e subPops. It usually calculate the same
@@ -1451,7 +1451,7 @@ public:
 	 *       subpopulation specified.
 	 *  \li \c Ne_tempoFS_P1 Effective population size, 2.5% and 97.5%
 	 *       confidence interval for sampling plan 1 as a list of size 3,
-     *       estimated using a temporal method as described in Jorde & Ryman
+	 *       estimated using a temporal method as described in Jorde & Ryman
 	 *       (2007), and as implemented by software tempoFS
 	 *       (http://www.zoologi.su.se/~ryman/). This variable is set to census
 	 *       population size if no baseline has been set, and to the temporal
@@ -1477,13 +1477,13 @@ public:
 	 *       plan 2.
 	 *  \li \c Ne_tempoFS_sp deprecated, use \c Ne_tempoFS_P2_sp instead.
 	 *  \li \c Ne_waples89_P1 Effective population size, 2.5% and 97.5%
-	 *       confidence interval for sampling plan 1 as a list of size 6, 
+	 *       confidence interval for sampling plan 1 as a list of size 6,
 	 *       estimated using a temporal method as described in Waples 1989,
 	 *       Genetics. Because this is a temporal method, Ne_waples89 estimates
 	 *       effective size between the present and the baseline generation set
 	 *       by variable \c Ne_temporal_base. Census population size will be
 	 *       resutned if no baseline has been set. This method uses population
-	 *       size or sum of subpopulation sizes of specified (virtual) 
+	 *       size or sum of subpopulation sizes of specified (virtual)
 	 *       subpopulations as census population size for the calculation
 	 *       based on plan 1.
 	 *  \li \c Ne_waples89_P2 Effective population size, 2.5% and 97.5%
@@ -1495,7 +1495,7 @@ public:
 	 *       be returned if no baseline has been set.
 	 *  \li \c Ne_waples89_P1_sp Estimate effective size for each (virtual)
 	 *       subpopulation using method Waples 89, assuming sampling plan 1.
-	 *       The census population sizes are the sizes for each subpopulation 
+	 *       The census population sizes are the sizes for each subpopulation
 	 *       that contain the specified (virtual) subpopulation.
 	 *  \li \c Ne_waples89_P2_sp Estimate effective size for each (virtual)
 	 *       subpopulation using method Waples 89, assuming sampling plan 2.
