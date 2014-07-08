@@ -6567,6 +6567,15 @@ expr
 \end_layout
 
 \begin_layout Itemize
+File handle of an opened file.
+ Actually any python object with a 
+\family typewriter
+write
+\family default
+ function.
+\end_layout
+
+\begin_layout Itemize
 A Python function that can accept a string as its only parameter (
 \family typewriter
 func(msg)

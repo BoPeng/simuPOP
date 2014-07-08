@@ -238,8 +238,12 @@ Arguments:
                     operator is written, which can be '' (no output),
                     '>' (standard output), 'filename' prefixed by one
                     or more '>', or an Python expression prefixed by
-                    an exclamation mark ('!expr'). Alternatively, a
-                    Python function can be given to handle outputs.
+                    an exclamation mark ('!expr'). If a file object,
+                    or any Python object with a write function is
+                    provided, the output will be write to this file.
+                    Alternatively, a Python function can be given
+                    which will be called with a string of output
+                    content.
     begin:          The starting generation at which an operator will
                     be applied. Default to 0. A negative number is
                     interpreted as a generation counted from the end
@@ -3934,6 +3938,8 @@ Usage:
     x.dynamic()
 
 "; 
+
+%ignore simuPOP::lociList::indexOf(size_t loc) const;
 
 %ignore simuPOP::lociList::elems(const GenoStruTrait *trait) const;
 

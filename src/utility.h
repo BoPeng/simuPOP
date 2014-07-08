@@ -880,9 +880,20 @@ public:
 	{
 	}
 
-
-	stringFunc(PyObject * func) : m_value(), m_func(func)
+	// string func is strictly used for BaseOperator and its
+	// derived classes. It is therefore OK to make it accept
+	// both func and filehandler
+	stringFunc(PyObject * func) : m_value(), m_func(NULL)
 	{
+		if (PyCallable_Check(func))
+			m_func = pyFunc(func);
+		// is this a file handler (or an object with write function)?
+		else if (PyObject_HasAttrString(func, "write")) {
+			PyObject * write_func = PyObject_GetAttrString(func, "write");
+			m_func = pyFunc(write_func);
+			Py_DECREF(write_func);
+		} else
+			throw ValueError("Passed python object is not a function or a file handler");
 	}
 
 

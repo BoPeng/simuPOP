@@ -109,8 +109,10 @@ public:
 	 *  \param output A string that specifies how output from an operator is
 	 *    written, which can be \c '' (no output), \c '>' (standard output),
 	 *    \c 'filename' prefixed by one or more '>', or an Python expression
-	 *    prefixed by an exclamation mark (\c '!expr'). Alternatively, a
-	 *    Python function can be given to handle outputs.
+	 *    prefixed by an exclamation mark (\c '!expr'). If a \c file object, or
+	 *    any Python object with a \c write function is provided, the output 
+	 *    will be write to this file. Alternatively, a Python function can be
+	 *    given which will be called with a string of output content.
 	 *  \param begin The starting generation at which an operator will be
 	 *    applied. Default to \c 0. A negative number is interpreted as a
 	 *    generation counted from the end of an evolution (-1 being the last

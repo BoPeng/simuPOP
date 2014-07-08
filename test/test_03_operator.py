@@ -217,6 +217,28 @@ class TestOperator(unittest.TestCase):
             PyOutput("func2", output=func2),
         ], gen=10)
 
+    def testOutputFileHandler(self):
+        '''Testing output to a file handler'''
+        simu = Simulator(Population(), rep=5)
+        with open('test1.txt', 'w') as out:
+            # each replicate
+            simu.evolve(
+                matingScheme=CloneMating(),
+                postOps = [
+                PyOutput("func1", output=out.write),
+            ], gen=10)
+        self.assertEqual(open('test1.txt').read(), 'func1'*50)
+        #
+        simu = Simulator(Population(), rep=5)
+        with open('test1.txt', 'w') as out:
+            # each replicate
+            simu.evolve(
+                matingScheme=CloneMating(),
+                postOps = [
+                PyOutput("func2", output=out),
+            ], gen=10)
+        self.assertEqual(open('test1.txt').read(), 'func2'*50)
+
     def testInfoEval(self):
         '''Testing operator InfoEval'''
         pop = Population(10, infoFields=['a', 'b'])
