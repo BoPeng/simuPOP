@@ -836,6 +836,8 @@ class MultiStageModel(BaseDemographicModel):
             initSize=models[0].init_size, ops=ops, infoFields=flds+infoFields)
         #
         self.models = models
+        if self.models[-1].num_gens == 0:
+            raise ValueError('The last demographic model in a MultiStageModel cannot last zero generation.')
         self._model_idx = 0
 
     def _reset(self):
