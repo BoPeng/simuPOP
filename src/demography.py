@@ -821,7 +821,8 @@ class MultiStageModel(BaseDemographicModel):
         demographic models ``models``. It applies a model to the population
         until it reaches ``num_gens`` of the model, or if the model returns
         ``[]``. One or more operators could be specified, which will be applied
-        before a demographic model is applied. '''
+        before a demographic model is applied. Note that the last model will be
+        ignored if it lasts 0 generation.'''
         flds = []
         gens = []
         for x in models:
@@ -845,35 +846,52 @@ class MultiStageModel(BaseDemographicModel):
             if hasattr(m, '_start_gen'):
                 del m._start_gen
   
+    def _advance(self, pop):
+        self._model_idx += 1
+        while True:
+            self._start_gen = pop.dvars().gen
+            if self._model_idx == len(self.models):
+                self._reset()
+                return []
+            # call and skip
+            if self.models[self._model_idx].num_gens == 0:
+                sz = self.models[self._model_idx].__call__(pop)
+                self._model_idx += 1
+                continue
+            sz = self.models[self._model_idx].__call__(pop)
+            if sz:
+                return sz
+            else:
+                self._model_idx += 1
+                continue
+
     def __call__(self, pop):
         # determines generation number internally as self.gen
         if not BaseDemographicModel.__call__(self, pop):
             return []
-        # at the end?
-        if self.models[self._model_idx].num_gens == self._gen:
-            self._model_idx += 1
-            self._start_gen = pop.dvars().gen
-        if self._model_idx == len(self.models):
-            self._reset()
-            return []
-        # not at the end
-        sz = self.models[self._model_idx].__call__(pop)
-        if sz == []:
-            # find the next one that works
-            self._start_gen = pop.dvars().gen
-            while True:
-                # this is the end, 
-                self._model_idx += 1
-                if self._model_idx == len(self.models):
-                    self._reset()
-                    return []
-                if self.models[self._model_idx].num_gens == self._gen:
-                    continue
-                sz = self.models[self._model_idx].__call__(pop)
-                if sz == []:
-                    continue
-                else:
-                    return sz
+        # There are three cases
+        # 1. within the current model, a valid step is returned
+        #   --> return
+        # 2. within the current model, a [] is returned by a 
+        #   terminator.
+        #   --> proceed to the next available model, call, and return
+        # 3. at the end of the current model,
+        #   --> proceed to the next available model, call, and return
+        # 4. at the beginning of a zero-step model
+        #   --> call
+        #   --> process to the next available model, call, and return
+        #
+        # in the middle
+        if self.models[self._model_idx].num_gens < 0 or \
+            self.models[self._model_idx].num_gens > self._gen:
+            sz = self.models[self._model_idx].__call__(pop)
+            if not sz:
+                sz = self._advance(pop)
+        elif self.models[self._model_idx].num_gens == 0:
+            sz = self.models[self._model_idx].__call__(pop)
+            sz = self._advance(pop)
+        elif self.models[self._model_idx].num_gens == self._gen:
+            sz = self._advance(pop)
         return sz
 
 class OutOfAfricaModel(MultiStageModel):
@@ -1074,7 +1092,7 @@ class SettlementOfNewWorldModel(MultiStageModel):
                 N0=[None, None, None, None],
                 # mixing European and Mexican population
                 model=['HI', 1, 3, 1-f_MX, 'MXL']),
-            InstantChangeModel(T=0,
+            InstantChangeModel(T=1,
                 N0=final_subpops,
                 removeEmptySubPops=True)
             ],
