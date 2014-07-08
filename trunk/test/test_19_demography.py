@@ -387,6 +387,61 @@ class TestDemography(unittest.TestCase):
                 311: [2000, 4000, 5714],
                 350: [0, 0, 5714]
             })
+        MultiStageModel([
+            LinearGrowthModel(T=100, N0=1000, r=0.01),  
+            ExponentialGrowthModel(T=100, N0=[0.4, 0.6], r=0.001),
+            ExponentialGrowthModel(r=0.01, NT=[2000, 4000]),
+            AdmixtureModel(model=['HI', 0, 1, 0.3], T=1),
+            InstantChangeModel(N0=[0, 0, None], removeEmptySubPops=True, T=1)
+        ])._assertSize(
+            {
+                0: 1010,
+                99: 2000,
+                100: [800, 1201],
+                102: [802, 1203],
+                199: [884, 1326],
+                250: [1472, 2208],
+                300: [2000, 3640],
+                310: [2000, 4000],
+                311: [2000, 4000, 5714],
+                312: [5714]
+            })
+        MultiStageModel([
+            LinearGrowthModel(T=100, N0=1000, r=0.01),  
+            InstantChangeModel(N0=[1000, 1000], T=0),
+            ExponentialGrowthModel(T=100, N0=[0.4, 0.6], r=0.001),
+        ])._assertSize(
+            {
+                0: 1010,
+                99: 2000,
+                100: [400, 600],
+            })
+        MultiStageModel([
+            LinearGrowthModel(T=100, N0=1000, r=0.01),  
+            InstantChangeModel(N0=[1000, 1000], T=0),
+            ExponentialGrowthModel(T=100, N0=[0.4, 0.6], r=0.001),
+            InstantChangeModel(N0=[1000, 1000], T=1),
+        ])._assertSize(
+            {
+                0: 1010,
+                99: 2000,
+                100: [400, 600],
+                199: [442, 663],
+                200: [1000, 1000],
+            })
+        MultiStageModel([
+            LinearGrowthModel(T=100, N0=1000, r=0.01),  
+            InstantChangeModel(N0=[1000, 1000], T=0),
+            ExponentialGrowthModel(T=100, N0=[0.4, 0.6], r=0.001),
+            InstantChangeModel(N0=[1000, 1000], T=0),
+        ])._assertSize(
+            {
+                0: 1010,
+                99: 2000,
+                100: [400, 600],
+                199: [442, 663],
+                200: [442, 663],
+            })
 
     def testTerminator(self):
         model = MultiStageModel([
