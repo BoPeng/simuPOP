@@ -1702,105 +1702,104 @@ class StructureExporter:
         self.locData = locData
         self.phenotype = phenotype
     
-    def export(self, pop, filename, subPops, infoFields, gui):
+    def export(self, pop, output, subPops, infoFields, gui):
         '''export in structure format '''
         # http://pritch.bsd.uchicago.edu/structure_software/release_versions/v2.3.4/structure_doc.pdf
-        with open(filename, 'w') as out:
-            #
-            # first line: marker names
-            #
-            if self.markerNames is True:
-                names = pop.lociNames()
-                if names:
-                    out.write('\t'.join(names) + '\n')
-            elif hasattr(self.markerNames, '__iter__'):
-                if len(self.markerNames) != pop.totNumLoci():
-                    raise ValueError('%d names are provided for %d markers' % (len(self.markerNames), pop.totNumLoci()))
-                out.write('\t'.join(self.markerNames) + '\n')
-            else:
-                raise ValueError('Please provide a list of marker names for parameter markerNames')
-            #
-            # second line: recessive alleles
-            #
-            if self.recessiveAlleles is not None:
-                if self.recessiveAlleles not in [0, 1]:
-                    raise ValueError('Only 0 or 1 is acceptable for parameter revessiveAlleles')
-                out.write('%d\n' % self.recessiveAlleles)
-            # 
-            # third line: inter marker distance
-            #
-            if self.interMarkerDistances is True:
-                loci_pos = pop.lociPos()
-                # get difference
-                loci_dist = [-1] + [loci_pos[i] - loci_pos[i-1] for i in range(1, len(loci_pos))]
-                # set beginning of each chromosome to -1
-                for ch in range(pop.numChrom()):
-                    loci_dist[pop.chromBegin(ch)] = -1
-                out.write('\t'.join(['%s' % x for x in loci_dist]) + '\n')
-            #
-            # fourth line: phase information
-            #
-            if self.phaseInformation is not None:
-                if self.phaseInformation not in [0, 1]:
-                    raise ValueError('Only 0 or 1 is acceptable for parameter revessiveAlleles')
-                out.write('%d\n' % self.phaseInformation)
-            # 
-            # sixth line and later: genotype lines
-            #
-            # progress bar might be wrong with subPops parameter...
-            prog = ProgressBar(filename, pop.popSize(), gui=gui)
-            count = 0
-            for vsp in subPops:
-                sp = vsp if type(vsp) == type(0) else vsp[0]
-                for idx, ind in enumerate(pop.individuals(vsp)):
-                    items = []
-                    #
-                    # label
-                    #
-                    if self.label:
-                        items.append(str(idx + 1))
-                    #
-                    # popData
-                    #
-                    if self.popData:
-                        items.append(str(sp + 1))
-                    #
-                    # popFlag
-                    #
-                    if self.popFlag is not None:
-                        if self.popFlag not in [0, 1]:
-                            raise ValueError('Only 0 or 1 is acceptable for parameter popFlag')
-                        items.append(str(self.popFlag))
-                    #
-                    # locData
-                    #
-                    if self.locData is not None:
-                        try:
-                            items.append(str(int(ind.info(self.locData))))
-                        except:
-                            raise ValueError('Population does not have information field %s as locData' % self.locData)
-                    #
-                    # phenotype
-                    #
-                    if self.phenotype is not None:
-                        try:
-                            items.append(str(int(ind.info(self.phenotype))))
-                        except:
-                            raise ValueError('Population does not have information field %s as phenotype' % self.locData)
-                    #
-                    # genotype
-                    #
-                    for p in range(pop.ploidy()):
-                        if items:
-                            out.write('%s\t%s\n' % ('\t'.join(items), '\t'.join([str(x) for x in ind.genotype(p)])))
-                        else:
-                            out.write('%s\n' % '\t'.join([str(x) for x in ind.genotype(p)]))
-                    #
-                    # update progress bar
-                    #
-                    count += 1
-                    prog.update(count)
-            prog.done()
+        #
+        # first line: marker names
+        #
+        if self.markerNames is True:
+            names = pop.lociNames()
+            if names:
+                output('\t'.join(names) + '\n')
+        elif hasattr(self.markerNames, '__iter__'):
+            if len(self.markerNames) != pop.totNumLoci():
+                raise ValueError('%d names are provided for %d markers' % (len(self.markerNames), pop.totNumLoci()))
+            output('\t'.join(self.markerNames) + '\n')
+        else:
+            raise ValueError('Please provide a list of marker names for parameter markerNames')
+        #
+        # second line: recessive alleles
+        #
+        if self.recessiveAlleles is not None:
+            if self.recessiveAlleles not in [0, 1]:
+                raise ValueError('Only 0 or 1 is acceptable for parameter revessiveAlleles')
+            output('%d\n' % self.recessiveAlleles)
+        # 
+        # third line: inter marker distance
+        #
+        if self.interMarkerDistances is True:
+            loci_pos = pop.lociPos()
+            # get difference
+            loci_dist = [-1] + [loci_pos[i] - loci_pos[i-1] for i in range(1, len(loci_pos))]
+            # set beginning of each chromosome to -1
+            for ch in range(pop.numChrom()):
+                loci_dist[pop.chromBegin(ch)] = -1
+            output('\t'.join(['%s' % x for x in loci_dist]) + '\n')
+        #
+        # fourth line: phase information
+        #
+        if self.phaseInformation is not None:
+            if self.phaseInformation not in [0, 1]:
+                raise ValueError('Only 0 or 1 is acceptable for parameter revessiveAlleles')
+            output('%d\n' % self.phaseInformation)
+        # 
+        # sixth line and later: genotype lines
+        #
+        # progress bar might be wrong with subPops parameter...
+        prog = ProgressBar('Exporting', pop.popSize(), gui=gui)
+        count = 0
+        for vsp in subPops:
+            sp = vsp if type(vsp) == type(0) else vsp[0]
+            for idx, ind in enumerate(pop.individuals(vsp)):
+                items = []
+                #
+                # label
+                #
+                if self.label:
+                    items.append(str(idx + 1))
+                #
+                # popData
+                #
+                if self.popData:
+                    items.append(str(sp + 1))
+                #
+                # popFlag
+                #
+                if self.popFlag is not None:
+                    if self.popFlag not in [0, 1]:
+                        raise ValueError('Only 0 or 1 is acceptable for parameter popFlag')
+                    items.append(str(self.popFlag))
+                #
+                # locData
+                #
+                if self.locData is not None:
+                    try:
+                        items.append(str(int(ind.info(self.locData))))
+                    except:
+                        raise ValueError('Population does not have information field %s as locData' % self.locData)
+                #
+                # phenotype
+                #
+                if self.phenotype is not None:
+                    try:
+                        items.append(str(int(ind.info(self.phenotype))))
+                    except:
+                        raise ValueError('Population does not have information field %s as phenotype' % self.locData)
+                #
+                # genotype
+                #
+                for p in range(pop.ploidy()):
+                    if items:
+                        output('%s\t%s\n' % ('\t'.join(items), '\t'.join([str(x) for x in ind.genotype(p)])))
+                    else:
+                        output('%s\n' % '\t'.join([str(x) for x in ind.genotype(p)]))
+                #
+                # update progress bar
+                #
+                count += 1
+                prog.update(count)
+        prog.done()
 
 
 #
@@ -1812,69 +1811,68 @@ class GenePopExporter:
         self.title = title.rstrip() if title is not None else None
         self.adjust = adjust
     
-    def export(self, pop, filename, subPops, infoFields, gui):
+    def export(self, pop, output, subPops, infoFields, gui):
         ''' Export in genepop format '''
         # http://genepop.curtin.edu.au/help_input.html
         if pop.ploidy() != 2:
             raise ValueError('simuPOP currently can only export diploid populations in GenePop format.')
         #
-        with open(filename, 'w') as out:
-            #
-            # first line: title
-            #
-            if self.title is not None:
-                out.write(self.title + '\n')
-            else:
-                out.write('%s in GenePop format. Outputted by simuPOP at %s\n' % (
-                    filename, time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())))
-            #
-            # second line: allele names
-            #
-            names = pop.lociNames()
-            if names:
-                # if names are specified
-                out.write(', '.join(names) + '\n')
-            else:
-                names = []
-                for ch in range(pop.numChrom()):
-                    for loc in range(pop.numLoci(ch)):
-                        names.append('ch%d-loc%d' % (ch + 1, loc + 1))
-                out.write(', '.join(names) + '\n')
+        #
+        # first line: title
+        #
+        if self.title is not None:
+            output(self.title + '\n')
+        else:
+            output('Outputted by simuPOP at %s\n' % (
+                time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())))
+        #
+        # second line: allele names
+        #
+        names = pop.lociNames()
+        if names:
+            # if names are specified
+            output(', '.join(names) + '\n')
+        else:
+            names = []
+            for ch in range(pop.numChrom()):
+                for loc in range(pop.numLoci(ch)):
+                    names.append('ch%d-loc%d' % (ch + 1, loc + 1))
+            output(', '.join(names) + '\n')
+        # 
+        # output genotype
+        #
+        # progress bar might be wrong with subPops parameter...
+        alleleWidth = 3 if max(pop.genotype()) >= 99 else 2
+        format_string = '%%0%dd%%0%dd' % (alleleWidth, alleleWidth)
+        prog = ProgressBar('Exporting', pop.popSize(), gui=gui)
+        count = 0
+        numLoci = pop.totNumLoci()
+        for vsp in subPops:
             # 
-            # output genotype
+            # for each subpopulation, output pop
             #
-            # progress bar might be wrong with subPops parameter...
-            alleleWidth = 3 if max(pop.genotype()) >= 99 else 2
-            format_string = '%%0%dd%%0%dd' % (alleleWidth, alleleWidth)
-            prog = ProgressBar(filename, pop.popSize(), gui=gui)
-            count = 0
-            numLoci = pop.totNumLoci()
-            for vsp in subPops:
-                # 
-                # for each subpopulation, output pop
+            output('POP\n')
+            # the name might contain space etc
+            name = ''.join([x for x in pop.subPopName(vsp) if x.isalnum()])
+            if not name:
+                name = 'SubPop%d' % (vsp if type(vsp) == type(0) else vsp[0])
+            #
+            for idx, ind in enumerate(pop.individuals(vsp)):
                 #
-                out.write('POP\n')
-                # the name might contain space etc
-                name = ''.join([x for x in pop.subPopName(vsp) if x.isalnum()])
-                if not name:
-                    name = 'SubPop%d' % (vsp if type(vsp) == type(0) else vsp[0])
+                # label
                 #
-                for idx, ind in enumerate(pop.individuals(vsp)):
-                    #
-                    # label
-                    #
-                    out.write('%s-%d, ' % (name, idx + 1))
-                    #
-                    # genotype
-                    #
-                    geno = ind.genotype()
-                    out.write(' '.join([format_string % (geno[x] + self.adjust, geno[numLoci + x] + self.adjust) for x in range(numLoci)]) + '\n')
-                    #
-                    # update progress bar
-                    #
-                    count += 1
-                    prog.update(count)
-            prog.done()
+                output('%s-%d, ' % (name, idx + 1))
+                #
+                # genotype
+                #
+                geno = ind.genotype()
+                output(' '.join([format_string % (geno[x] + self.adjust, geno[numLoci + x] + self.adjust) for x in range(numLoci)]) + '\n')
+                #
+                # update progress bar
+                #
+                count += 1
+                prog.update(count)
+        prog.done()
 
 
 class GenePopImporter:
@@ -1966,57 +1964,56 @@ class FStatExporter:
         self.lociNames = lociNames
         self.adjust = adjust
     
-    def export(self, pop, filename, subPops, infoFields, gui):
+    def export(self, pop, output, subPops, infoFields, gui):
         '''Export in FSTAT format
         '''
-        with open(filename, 'w') as out:
-            #
-            # first line: np, nl, nu and nd
-            #
-            np = pop.numSubPop()
-            nl = pop.totNumLoci()
-            nu = max(pop.genotype()) + self.adjust
-            if nu < 10:
-                nd = 1
-            elif nu < 100:
-                nd = 2
-            elif nu < 1000:
-                nd = 3
-            else: # FSTAT can not handle this now. how many digits?
-                nd = len(str(nu))
-            #
-            out.write( '%d %d %d %d\n' % (np, nl, nu, nd))
-            #
-            # loci names
-            #
-            if self.lociNames:
-                if len(self.lociNames) != pop.totNumLoci():
-                    raise ValueError('Parameter lociNames, if specified, should give all %d loci a name' % pop.totNumLoci())
-                [out.write(x + '\n') for x in self.lociNames]
+        #
+        # first line: np, nl, nu and nd
+        #
+        np = pop.numSubPop()
+        nl = pop.totNumLoci()
+        nu = max(pop.genotype()) + self.adjust
+        if nu < 10:
+            nd = 1
+        elif nu < 100:
+            nd = 2
+        elif nu < 1000:
+            nd = 3
+        else: # FSTAT can not handle this now. how many digits?
+            nd = len(str(nu))
+        #
+        output( '%d %d %d %d\n' % (np, nl, nu, nd))
+        #
+        # loci names
+        #
+        if self.lociNames:
+            if len(self.lociNames) != pop.totNumLoci():
+                raise ValueError('Parameter lociNames, if specified, should give all %d loci a name' % pop.totNumLoci())
+            [output(x + '\n') for x in self.lociNames]
+        else:
+            names = pop.lociNames()
+            if names:
+                [output(x + '\n') for x in names]
             else:
-                names = pop.lociNames()
-                if names:
-                    [out.write(x + '\n') for x in names]
-                else:
-                    # cook up some name
-                    for ch in range(pop.numChrom()):
-                        for loc in range(pop.numLoci(ch)):
-                            out.write('chr%d_%d\n' % (ch, loc))
-            #
-            #  genotype
-            #
-            format_string = '%%0%dd%%0%dd' % (nd, nd)
-            numLoci = pop.totNumLoci()
-            prog = ProgressBar(filename, pop.popSize(), gui=gui)
-            count = 0
-            for vsp in subPops:
-                sp = vsp if type(vsp) == type(0) else vsp[0]
-                for ind in pop.individuals(vsp):
-                    geno = ind.genotype()
-                    out.write("%d " % (sp + 1) + ' '.join([format_string % (geno[x] + self.adjust, geno[numLoci + x] + self.adjust) for x in range(numLoci)]) + '\n')
-                    count += 1
-                    prog.update(count)
-            prog.done()
+                # cook up some name
+                for ch in range(pop.numChrom()):
+                    for loc in range(pop.numLoci(ch)):
+                        output('chr%d_%d\n' % (ch, loc))
+        #
+        #  genotype
+        #
+        format_string = '%%0%dd%%0%dd' % (nd, nd)
+        numLoci = pop.totNumLoci()
+        prog = ProgressBar('Exporting', pop.popSize(), gui=gui)
+        count = 0
+        for vsp in subPops:
+            sp = vsp if type(vsp) == type(0) else vsp[0]
+            for ind in pop.individuals(vsp):
+                geno = ind.genotype()
+                output("%d " % (sp + 1) + ' '.join([format_string % (geno[x] + self.adjust, geno[numLoci + x] + self.adjust) for x in range(numLoci)]) + '\n')
+                count += 1
+                prog.update(count)
+        prog.done()
 
 
 class FStatImporter:
@@ -2083,28 +2080,27 @@ class MapExporter:
     def __init__(self, posMultiplier = 1):
         self.posMultiplier = posMultiplier
 
-    def export(self, pop, filename, subPops, infoFields, gui):
+    def export(self, pop, output, subPops, infoFields, gui):
         '''Export in MAP format
         '''
-        with open(filename, 'w') as out:
-            # progress bar
-            prog = ProgressBar(filename, pop.totNumLoci(), gui=gui)
-            count = 0
-            for ch in range(pop.numChrom()):
-                for loc in range(pop.chromBegin(ch), pop.chromEnd(ch)):
-                    chName = pop.chromName(ch)
-                    if chName == '':
-                        chName = str(ch + 1)
-                    locusName = pop.locusName(loc)
-                    if locusName == '':
-                        locusName = '.'
-                    locusPos = str(pop.locusPos(loc) * self.posMultiplier)
-                    if locusPos.endswith('.0'):
-                        locusPos = locusPos[:-2]
-                    out.write('%s %s %s\n' % (chName, locusName, locusPos))
-                    count += 1
-                    prog.update(count)
-            prog.done()
+        # progress bar
+        prog = ProgressBar('Exporting', pop.totNumLoci(), gui=gui)
+        count = 0
+        for ch in range(pop.numChrom()):
+            for loc in range(pop.chromBegin(ch), pop.chromEnd(ch)):
+                chName = pop.chromName(ch)
+                if chName == '':
+                    chName = str(ch + 1)
+                locusName = pop.locusName(loc)
+                if locusName == '':
+                    locusName = '.'
+                locusPos = str(pop.locusPos(loc) * self.posMultiplier)
+                if locusPos.endswith('.0'):
+                    locusPos = locusPos[:-2]
+                output('%s %s %s\n' % (chName, locusName, locusPos))
+                count += 1
+                prog.update(count)
+        prog.done()
 
 
 #
@@ -2123,30 +2119,29 @@ class PEDExporter:
         self.sexCode = {MALE: '1', FEMALE: '2'}
         self.affectedCode = {True: '2', False: '1'}
 
-    def _exportUnrelated(self, pop, filename, subPops, gui):
+    def _exportUnrelated(self, pop, output, subPops, gui):
         '''Export unrelated individuals, this is easy...'''
         #
         ploidy = pop.ploidy()
-        with open(filename, 'w') as out:
-            # progress bar
-            prog = ProgressBar(filename, pop.popSize(), gui=gui)
-            count = 0
-            hasID = self.idField in pop.infoFields()
-            for vsp in subPops:
-                for ind in pop.individuals(vsp):
-                    values = [str(count + 1), '0', '0', '0', self.sexCode[ind.sex()], self.affectedCode[ind.affected()]]
-                    if hasID:
-                        values[1] = str(int(ind.info(self.idField)))
-                    if self.phenoField is not None:
-                        values[5] = str(ind.info(self.phenoField))
-                    for geno in zip(*[ind.genotype(p) for p in range(ploidy)]):
-                        values.extend([str(geno[0] + self.adjust), str(geno[1] + self.adjust)])
-                    out.write(' '.join(values) + '\n')
-                    count += 1
-                    prog.update(count)
-            prog.done()
+        # progress bar
+        prog = ProgressBar('Exporting', pop.popSize(), gui=gui)
+        count = 0
+        hasID = self.idField in pop.infoFields()
+        for vsp in subPops:
+            for ind in pop.individuals(vsp):
+                values = [str(count + 1), '0', '0', '0', self.sexCode[ind.sex()], self.affectedCode[ind.affected()]]
+                if hasID:
+                    values[1] = str(int(ind.info(self.idField)))
+                if self.phenoField is not None:
+                    values[5] = str(ind.info(self.phenoField))
+                for geno in zip(*[ind.genotype(p) for p in range(ploidy)]):
+                    values.extend([str(geno[0] + self.adjust), str(geno[1] + self.adjust)])
+                output(' '.join(values) + '\n')
+                count += 1
+                prog.update(count)
+        prog.done()
 
-    def _exportPedigree(self, pop, filename, subPops, gui):
+    def _exportPedigree(self, pop, output, subPops, gui):
         # find set of families
         pop.asPedigree(idField=self.idField, fatherField=self.fatherField,
             motherField=self.motherField)
@@ -2161,47 +2156,46 @@ class PEDExporter:
                 # unacceptable ped_index will be ignored
                 pass
         #
-        with open(filename, 'w') as out:
-            # progress bar
-            prog = ProgressBar(filename, len(sizes), gui=gui)
-            count = 0
-            for fam_id in fam_ids:
-                for ind_id in fam_id:
-                    ind = pop.indByID(ind_id)
-                    try:
-                        father = pop.indByID(ind.info(self.fatherField))
-                        fa = int(father.info(self.idField))
-                        mother = pop.indByID(ind.info(self.motherField))
-                        mo = int(mother.info(self.idField))
-                    except IndexError:
-                        fa = 0
-                        mo = 0
-                    values = [str(count + 1), str(ind_id), str(fa), str(mo), self.sexCode[ind.sex()], self.affectedCode[ind.affected()]]
-                    if self.phenoField is not None:
-                        values[5] = str(ind.info(self.phenoField))
-                    for geno in zip(*[ind.genotype(p) for p in range(2)]):
-                        values.extend([str(geno[0] + self.adjust), str(geno[1] + self.adjust)])
-                    out.write(' '.join(values) + '\n')
-                count += 1
-                prog.update(count)
-            prog.done()
+        # progress bar
+        prog = ProgressBar('Exporting', len(sizes), gui=gui)
+        count = 0
+        for fam_id in fam_ids:
+            for ind_id in fam_id:
+                ind = pop.indByID(ind_id)
+                try:
+                    father = pop.indByID(ind.info(self.fatherField))
+                    fa = int(father.info(self.idField))
+                    mother = pop.indByID(ind.info(self.motherField))
+                    mo = int(mother.info(self.idField))
+                except IndexError:
+                    fa = 0
+                    mo = 0
+                values = [str(count + 1), str(ind_id), str(fa), str(mo), self.sexCode[ind.sex()], self.affectedCode[ind.affected()]]
+                if self.phenoField is not None:
+                    values[5] = str(ind.info(self.phenoField))
+                for geno in zip(*[ind.genotype(p) for p in range(2)]):
+                    values.extend([str(geno[0] + self.adjust), str(geno[1] + self.adjust)])
+                output(' '.join(values) + '\n')
+            count += 1
+            prog.update(count)
+        prog.done()
         # change ped to a population again
         pop.removeInfoFields('ped_index')
         pop.asPopulation()
         
 
-    def export(self, pop, filename, subPops, infoFields, gui):
+    def export(self, pop, output, subPops, infoFields, gui):
         '''Export in PED format
         '''
         fields = pop.infoFields()
         if self.idField not in fields or self.fatherField not in fields or self.motherField not in fields:
             # output as unrelated individuals
-            self._exportUnrelated(pop, filename, subPops, gui)
+            self._exportUnrelated(pop, output, subPops, gui)
         else:
             # output pedigree
             if pop.ploidy() != 2:
                 raise ValueError('Exporting non-diploid population in PED format is not currently supported.')
-            self._exportPedigree(pop, filename, subPops, gui)
+            self._exportPedigree(pop, output, subPops, gui)
 
 #
 # Format Phylip
@@ -2215,15 +2209,15 @@ class PhylipExporter:
         if self.style not in ['sequential', 'interleaved']:
             raise ValueError('Style of phylip file has to be sequential or interleaved')
 
-    def export(self, pop, filename, subPops, infoFields, gui):
+    def export(self, pop, output, subPops, infoFields, gui):
         '''Export in Phylip format
         '''
         if self.style == 'sequential':
-            self._exportSequential(pop, filename, subPops, infoFields, gui)
+            self._exportSequential(pop, output, subPops, infoFields, gui)
         else:
-            self._exportInterleaved(pop, filename, subPops, infoFields, gui)
+            self._exportInterleaved(pop, output, subPops, infoFields, gui)
 
-    def _exportSequential(self, pop, filename, subPops, infoFields, gui):
+    def _exportSequential(self, pop, output, subPops, infoFields, gui):
         # count the number of sequences
         ploidy = pop.ploidy()
         nLoci = pop.totNumLoci()
@@ -2245,157 +2239,155 @@ class PhylipExporter:
             if len(self.seqNames) != nSeq and len(self.seqNames) * ploidy != nSeq:
                 raise ValueError('If sequence names are specified, it should be specified for all individuals or sequences.')
         #
-        with open(filename, 'w') as out:
-            out.write('%d %d\n' % (nSeq, nLoci))
-            # progress bar
-            prog = ProgressBar(filename, nSeq, gui=gui)
-            count = 0
-            for vsp in subPops:
-                for ind in pop.individuals(vsp):
-                    for p in range(ploidy):
-                        if self.seqNames is None:
-                            if ploidy == 1:
-                                name = 'S%d' % (count + 1)
-                            else:
-                                name = 'S%d_%d' % (count + 1, p + 1)
-                        else:
-                            if len(self.seqNames) == nSeq:
-                                name = self.seqNames[count * ploidy + p]
-                            else:
-                                name = '%s_%d' % (self.seqNames[count], p + 1)
-                        #
-                        # pick the first 10 ...
-                        out.write(('%-10s' % name)[:10])
-                        try:
-                            if locusSpecific:
-                                seq = ''.join([alleleNames[i][x] for i,x in enumerate(ind.genotype(p))])
-                            else:
-                                seq = ''.join([alleleNames[x] for x in ind.genotype(p)])
-                        except IndexError:
-                            for i,x in enumerate(ind.genotype(p)):
-                                if locusSpecific:
-                                    try:
-                                        alleleNames[i][x]
-                                    except IndexError:
-                                        raise ValueError('Allele %d at locus %d does not have a name. Please specify a name for each allele using parameter alleleName.' % (x, i))
-                                else:
-                                    try:
-                                        alleleNames[x]
-                                    except IndexError:
-                                        raise ValueError('Allele %d does not have a name. Please specify a name for each allele using parameter alleleName.' % x)
-                        # output sequence
-                        out.write(seq[:90] + '\n')
-                        # 0 - 89
-                        # 90 - 189
-                        # 190 - 289
-                        #
-                        # length = 100, 
-                        if nLoci > 90:
-                            for line in range(((nLoci-90) // 100) + 1):
-                                out.write(seq[(90 + line*100) : (190 + line*100)] + '\n')
-                    count += 1
-                    prog.update(count)
-            prog.done()
-
-    def _exportInterleaved(self, pop, filename, subPops, infoFields, gui):
-        # count the number of sequences
-        ploidy = pop.ploidy()
-        nLoci = pop.totNumLoci()
-        nSeq = 0
+        output('%d %d\n' % (nSeq, nLoci))
+        # progress bar
+        prog = ProgressBar('Exporting', nSeq, gui=gui)
+        count = 0
         for vsp in subPops:
-            nSeq += pop.subPopSize(vsp)
-        nSeq *= ploidy
-        locusSpecific = False
-        if self.alleleNames is not None:
-            alleleNames = self.alleleNames
-        else:
-            alleleNames = pop.alleleNames()
-            if len(alleleNames) > 1:
-                locusSpecific = True
-                if len(alleleNames) != nLoci:
-                    raise ValueError('If allele names are specified for each locus, it should be specified for all of them.')
-        #
-        if self.seqNames is not None:
-            if len(self.seqNames) != nSeq and len(self.seqNames) * ploidy != nSeq:
-                raise ValueError('If sequence names are specified, it should be specified for all individuals or sequences.')
-        #
-        with open(filename, 'w') as out:
-            out.write('%d %d\n' % (nSeq, nLoci))
-            # progress bar
-            prog = ProgressBar(filename, nSeq * nLoci, gui=gui)
-            count = 0
-            # first block
-            for vsp in subPops:
-                for ind in pop.individuals(vsp):
-                    for p in range(ploidy):
-                        if self.seqNames is None:
-                            if ploidy == 1:
-                                name = 'S%d' % (count + 1)
-                            else:
-                                name = 'S%d_%d' % (count + 1, p + 1)
+            for ind in pop.individuals(vsp):
+                for p in range(ploidy):
+                    if self.seqNames is None:
+                        if ploidy == 1:
+                            name = 'S%d' % (count + 1)
                         else:
-                            if len(self.seqNames) == nSeq:
-                                name = self.seqNames[count * ploidy + p]
-                            else:
-                                name = '%s_%d' % (self.seqNames[count], p + 1)
-                        #
-                        # pick the first 10 ...
-                        out.write(('%-10s' % name)[:10])
-                        try:
+                            name = 'S%d_%d' % (count + 1, p + 1)
+                    else:
+                        if len(self.seqNames) == nSeq:
+                            name = self.seqNames[count * ploidy + p]
+                        else:
+                            name = '%s_%d' % (self.seqNames[count], p + 1)
+                    #
+                    # pick the first 10 ...
+                    output(('%-10s' % name)[:10])
+                    try:
+                        if locusSpecific:
+                            seq = ''.join([alleleNames[i][x] for i,x in enumerate(ind.genotype(p))])
+                        else:
+                            seq = ''.join([alleleNames[x] for x in ind.genotype(p)])
+                    except IndexError:
+                        for i,x in enumerate(ind.genotype(p)):
                             if locusSpecific:
-                                seq = ''.join([alleleNames[i][x] for i,x in enumerate(ind.genotype(p)[:90])])
-                            else:
-                                seq = ''.join([alleleNames[x] for x in ind.genotype(p)[:90]])
-                        except IndexError:
-                            for i,x in enumerate(ind.genotype(p)):
-                                if locusSpecific:
-                                    try:
-                                        alleleNames[i][x]
-                                    except IndexError:
-                                        raise ValueError('Allele %d at locus %d does not have a name. Please specify a name for each allele using parameter alleleName.' % (x, i))
-                                else:
-                                    try:
-                                        alleleNames[x]
-                                    except IndexError:
-                                        raise ValueError('Allele %d does not have a name. Please specify a name for each allele using parameter alleleName.' % x)
-                        # output sequence
-                        out.write(seq + '\n')
-                    count += 1
-                    prog.update(count * len(seq))
-            #
-            count *= len(seq)
-            # other blocks
-            #
-            if nLoci > 90:
-                for line in range(((nLoci-90) // 100) + 1):
-                    out.write('\n')
-                    s = 90 + line*100
-                    e = 190 + line*100
-                    for vsp in subPops:
-                        for ind in pop.individuals(vsp):
-                            for p in range(ploidy):
                                 try:
-                                    if locusSpecific:
-                                        seq = ''.join([alleleNames[i][x] for i,x in enumerate(ind.genotype(p)[s:e])])
-                                    else:
-                                        seq = ''.join([alleleNames[x] for x in ind.genotype(p)[s:e]])
+                                    alleleNames[i][x]
                                 except IndexError:
-                                    for i,x in enumerate(ind.genotype(p)):
-                                        if locusSpecific:
-                                            try:
-                                                alleleNames[i][x]
-                                            except IndexError:
-                                                raise ValueError('Allele %d at locus %d does not have a name. Please specify a name for each allele using parameter alleleName.' % (x, i))
-                                        else:
-                                            try:
-                                                alleleNames[x]
-                                            except IndexError:
-                                                raise ValueError('Allele %d does not have a name. Please specify a name for each allele using parameter alleleName.' % x)
-                                # output sequence
-                                out.write(seq + '\n')
-                            count += len(seq)
-                            prog.update(count)
-            prog.done()
+                                    raise ValueError('Allele %d at locus %d does not have a name. Please specify a name for each allele using parameter alleleName.' % (x, i))
+                            else:
+                                try:
+                                    alleleNames[x]
+                                except IndexError:
+                                    raise ValueError('Allele %d does not have a name. Please specify a name for each allele using parameter alleleName.' % x)
+                    # output sequence
+                    output(seq[:90] + '\n')
+                    # 0 - 89
+                    # 90 - 189
+                    # 190 - 289
+                    #
+                    # length = 100, 
+                    if nLoci > 90:
+                        for line in range(((nLoci-90) // 100) + 1):
+                            output(seq[(90 + line*100) : (190 + line*100)] + '\n')
+                count += 1
+                prog.update(count)
+        prog.done()
+
+    def _exportInterleaved(self, pop, output, subPops, infoFields, gui):
+        # count the number of sequences
+        ploidy = pop.ploidy()
+        nLoci = pop.totNumLoci()
+        nSeq = 0
+        for vsp in subPops:
+            nSeq += pop.subPopSize(vsp)
+        nSeq *= ploidy
+        locusSpecific = False
+        if self.alleleNames is not None:
+            alleleNames = self.alleleNames
+        else:
+            alleleNames = pop.alleleNames()
+            if len(alleleNames) > 1:
+                locusSpecific = True
+                if len(alleleNames) != nLoci:
+                    raise ValueError('If allele names are specified for each locus, it should be specified for all of them.')
+        #
+        if self.seqNames is not None:
+            if len(self.seqNames) != nSeq and len(self.seqNames) * ploidy != nSeq:
+                raise ValueError('If sequence names are specified, it should be specified for all individuals or sequences.')
+        #
+        output('%d %d\n' % (nSeq, nLoci))
+        # progress bar
+        prog = ProgressBar('Exporting', nSeq * nLoci, gui=gui)
+        count = 0
+        # first block
+        for vsp in subPops:
+            for ind in pop.individuals(vsp):
+                for p in range(ploidy):
+                    if self.seqNames is None:
+                        if ploidy == 1:
+                            name = 'S%d' % (count + 1)
+                        else:
+                            name = 'S%d_%d' % (count + 1, p + 1)
+                    else:
+                        if len(self.seqNames) == nSeq:
+                            name = self.seqNames[count * ploidy + p]
+                        else:
+                            name = '%s_%d' % (self.seqNames[count], p + 1)
+                    #
+                    # pick the first 10 ...
+                    output(('%-10s' % name)[:10])
+                    try:
+                        if locusSpecific:
+                            seq = ''.join([alleleNames[i][x] for i,x in enumerate(ind.genotype(p)[:90])])
+                        else:
+                            seq = ''.join([alleleNames[x] for x in ind.genotype(p)[:90]])
+                    except IndexError:
+                        for i,x in enumerate(ind.genotype(p)):
+                            if locusSpecific:
+                                try:
+                                    alleleNames[i][x]
+                                except IndexError:
+                                    raise ValueError('Allele %d at locus %d does not have a name. Please specify a name for each allele using parameter alleleName.' % (x, i))
+                            else:
+                                try:
+                                    alleleNames[x]
+                                except IndexError:
+                                    raise ValueError('Allele %d does not have a name. Please specify a name for each allele using parameter alleleName.' % x)
+                    # output sequence
+                    output(seq + '\n')
+                count += 1
+                prog.update(count * len(seq))
+        #
+        count *= len(seq)
+        # other blocks
+        #
+        if nLoci > 90:
+            for line in range(((nLoci-90) // 100) + 1):
+                output('\n')
+                s = 90 + line*100
+                e = 190 + line*100
+                for vsp in subPops:
+                    for ind in pop.individuals(vsp):
+                        for p in range(ploidy):
+                            try:
+                                if locusSpecific:
+                                    seq = ''.join([alleleNames[i][x] for i,x in enumerate(ind.genotype(p)[s:e])])
+                                else:
+                                    seq = ''.join([alleleNames[x] for x in ind.genotype(p)[s:e]])
+                            except IndexError:
+                                for i,x in enumerate(ind.genotype(p)):
+                                    if locusSpecific:
+                                        try:
+                                            alleleNames[i][x]
+                                        except IndexError:
+                                            raise ValueError('Allele %d at locus %d does not have a name. Please specify a name for each allele using parameter alleleName.' % (x, i))
+                                    else:
+                                        try:
+                                            alleleNames[x]
+                                        except IndexError:
+                                            raise ValueError('Allele %d does not have a name. Please specify a name for each allele using parameter alleleName.' % x)
+                            # output sequence
+                            output(seq + '\n')
+                        count += len(seq)
+                        prog.update(count)
+        prog.done()
 
 
 class PhylipImporter:
@@ -2558,7 +2550,7 @@ class CSVExporter:
     def _genoCallable(self, geno):
         return self.genoFormatter(geno)
 
-    def export(self, pop, filename, subPops, infoFields, gui):
+    def export(self, pop, output, subPops, infoFields, gui):
         '''Export in CSV format
         '''
         ploidy = pop.ploidy()
@@ -2579,55 +2571,54 @@ class CSVExporter:
                 _genoFunc = self._genoCallable
             print colPerGenotype, ploidy
         #
-        with open(filename, 'w') as out:
-            # header
-            if self.header is True:
-                names = list(infoFields)
+        # header
+        if self.header is True:
+            names = list(infoFields)
+            if self.sexFormatter is not None:
+                names.append('sex')
+            if self.affectionFormatter is not None:
+                names.append('aff')
+            if colPerGenotype == 1:
+                names.extend([pop.locusName(loc) for loc in range(pop.totNumLoci())])
+            elif colPerGenotype > 1:
+                for loc in range(pop.totNumLoci()):
+                    names.extend(['%s_%d' % (pop.locusName(loc), x+1) for x in range(colPerGenotype)])
+            # output header
+            output(self.delimiter.join(names) + '\n')
+        elif type(self.header) == type(''):
+            output(self.header + '\n')
+        elif type(self.header) in [type(()), type([])]:
+            output(self.delimiter.join([str(x) for x in self.header]) + '\n')
+        # progress bar
+        prog = ProgressBar('Exporting', pop.popSize(), gui=gui)
+        count = 0
+        for vsp in subPops:
+            for ind in pop.individuals(vsp):
+                # information fields
+                if self.infoFormatter is None:
+                    values = [str(ind.info(x)) for x in infoFields]
+                elif type(self.infoFormatter) == type(''):
+                    values = [self.infoFormatter % tuple([ind.info(x) for x in infoFields])]
+                else:
+                    raise ValueError('Parameter infoFormatter can only be None or a format string.')
+                # sex
                 if self.sexFormatter is not None:
-                    names.append('sex')
+                    values.append(str(self.sexFormatter[ind.sex()]))
+                # affection status
                 if self.affectionFormatter is not None:
-                    names.append('aff')
-                if colPerGenotype == 1:
-                    names.extend([pop.locusName(loc) for loc in range(pop.totNumLoci())])
-                elif colPerGenotype > 1:
-                    for loc in range(pop.totNumLoci()):
-                        names.extend(['%s_%d' % (pop.locusName(loc), x+1) for x in range(colPerGenotype)])
-                # output header
-                out.write(self.delimiter.join(names) + '\n')
-            elif type(self.header) == type(''):
-                out.write(self.header + '\n')
-            elif type(self.header) in [type(()), type([])]:
-                out.write(self.delimiter.join([str(x) for x in self.header]) + '\n')
-            # progress bar
-            prog = ProgressBar(filename, pop.popSize(), gui=gui)
-            count = 0
-            for vsp in subPops:
-                for ind in pop.individuals(vsp):
-                    # information fields
-                    if self.infoFormatter is None:
-                        values = [str(ind.info(x)) for x in infoFields]
-                    elif type(self.infoFormatter) == type(''):
-                        values = [self.infoFormatter % tuple([ind.info(x) for x in infoFields])]
+                    values.append(str(self.affectionFormatter[ind.affected()]))
+                # genotype
+                for geno in zip(*[ind.genotype(p) for p in range(ploidy)]):
+                    val = _genoFunc(geno)
+                    if type(val) in [type([]), type(())]:
+                        values.extend(['%s' % x for x in val])
                     else:
-                        raise ValueError('Parameter infoFormatter can only be None or a format string.')
-                    # sex
-                    if self.sexFormatter is not None:
-                        values.append(str(self.sexFormatter[ind.sex()]))
-                    # affection status
-                    if self.affectionFormatter is not None:
-                        values.append(str(self.affectionFormatter[ind.affected()]))
-                    # genotype
-                    for geno in zip(*[ind.genotype(p) for p in range(ploidy)]):
-                        val = _genoFunc(geno)
-                        if type(val) in [type([]), type(())]:
-                            values.extend(['%s' % x for x in val])
-                        else:
-                            values.append(str(val))
-                    # output
-                    out.write(self.delimiter.join(values) + '\n')
-                    count += 1
-                    prog.update(count)
-            prog.done()
+                        values.append(str(val))
+                # output
+                output(self.delimiter.join(values) + '\n')
+                count += 1
+                prog.update(count)
+        prog.done()
 
 #
 #
@@ -2638,97 +2629,94 @@ class MSExporter:
     def __init__(self, splitBy=None):
         self.splitBy = splitBy
     
-    def export(self, pop, filename, subPops, infoFields, gui):
+    def export(self, pop, output, subPops, infoFields, gui):
         '''Export in MS format
         '''
         # all ...
         if self.splitBy is None:
-            with open(filename, 'w') as out:
+            #
+            # first line: command, nseq, nblocks
+            #
+            stat(pop, popSize=True, alleleFreq=range(pop.numLoci(0)), vars=['alleleNum'], 
+                subPops=subPops)
+            output('simuPOP_export %d 1\n' % (pop.dvars().popSize * pop.ploidy()))
+            # some random random number seeds
+            output('30164 48394 29292\n')
+            #
+            prog = ProgressBar('Exporting', pop.dvars().popSize, gui=gui)
+            count = 0
+            # find segregating sites
+            seg_sites = [x for x in range(pop.numLoci(0)) if len(pop.dvars().alleleNum[x]) != 1]
+            output('\n//\nsegsites: %d\n' % len(seg_sites))
+            output('positions: %s\n' % ' '.join(['%.4f' % pop.locusPos(x) for x in seg_sites]))
+            #
+            #  genotype
+            for vsp in subPops:
+                for ind in pop.individuals(vsp):
+                    for p in range(pop.ploidy()):
+                        geno = ind.genotype(p, 0)
+                        output(''.join([str(0 if geno[x] == 0 else 1) for x in seg_sites]) + '\n')
+                    count += 1
+                    prog.update(count)
+            prog.done()
+        elif self.splitBy == 'subPop':
+            #
+            # first line: command, nseq, nblocks
+            #
+            stat(pop, popSize=True, subPops=subPops)
+            sz = pop.dvars().subPopSize
+            if False in [sz[i] == sz[i-1] for i in range(1, len(sz))]:
+                raise ValueError('Subpopulations should have the same size if splitBy="subPop" is specified.')
+            output('simuPOP_export %d %d\n' % (sz[0] * pop.ploidy(), len(sz)))
+            # some random random number seeds
+            output('30164 48394 29292\n')
+            #
+            prog = ProgressBar('Exporting', sum(sz), gui=gui)
+            count = 0
+            # find segregating sites
+            stat(pop, alleleFreq=range(pop.numLoci(0)), subPops=subPops, vars='alleleNum_sp')
+            for vsp in subPops:
+                seg_sites = [x for x in range(pop.numLoci(0)) if len(pop.dvars(vsp).alleleNum[x]) != 1]
+                output('\n//\nsegsites: %d\n' % len(seg_sites))
+                output('positions: %s\n' % ' '.join(['%.4f' % pop.locusPos(x) for x in seg_sites]))
                 #
-                # first line: command, nseq, nblocks
-                #
-                stat(pop, popSize=True, alleleFreq=range(pop.numLoci(0)), vars=['alleleNum'], 
-                    subPops=subPops)
-                out.write('simuPOP_export %d 1\n' % (pop.dvars().popSize * pop.ploidy()))
-                # some random random number seeds
-                out.write('30164 48394 29292\n')
-                #
-                prog = ProgressBar(filename, pop.dvars().popSize, gui=gui)
-                count = 0
+                #  genotype
+                for ind in pop.individuals(vsp):
+                    for p in range(pop.ploidy()):
+                        geno = ind.genotype(p, 0)
+                        output(''.join([str(0 if geno[x] == 0 else 1) for x in seg_sites]) + '\n')
+                    count += 1
+                    prog.update(count)
+            prog.done()
+        elif self.splitBy == 'chrom':
+            #
+            # first line: command, nseq, nblocks
+            #
+            stat(pop, popSize=True, alleleFreq=ALL_AVAIL, vars=['alleleNum'], 
+                subPops=subPops)
+            output('simuPOP_export %d %d\n' % (pop.dvars().popSize * pop.ploidy(), pop.numChrom()))
+            # some random random number seeds
+            output('30164 48394 29292\n')
+            #
+            prog = ProgressBar('Exporting', pop.dvars().popSize, gui=gui)
+            count = 0
+            for ch in range(pop.numChrom()):
+                b = pop.chromBegin(ch)
                 # find segregating sites
-                seg_sites = [x for x in range(pop.numLoci(0)) if len(pop.dvars().alleleNum[x]) != 1]
-                out.write('\n//\nsegsites: %d\n' % len(seg_sites))
-                out.write('positions: %s\n' % ' '.join(['%.4f' % pop.locusPos(x) for x in seg_sites]))
+                seg_sites = [x for x in range(pop.chromBegin(ch), pop.chromEnd(ch)) \
+                    if len(pop.dvars().alleleNum[x]) != 1]
+                output('\n//\nsegsites: %d\n' % len(seg_sites))
+                output('positions: %s\n' % ' '.join(['%.4f' % pop.locusPos(x) for x in seg_sites]))
                 #
                 #  genotype
                 for vsp in subPops:
                     for ind in pop.individuals(vsp):
                         for p in range(pop.ploidy()):
-                            geno = ind.genotype(p, 0)
-                            out.write(''.join([str(0 if geno[x] == 0 else 1) for x in seg_sites]) + '\n')
+                            geno = ind.genotype(p, ch)
+                            output(''.join([str(0 if geno[x - b] == 0 else 1) for x in seg_sites]) + '\n')
                         count += 1
                         prog.update(count)
-                prog.done()
-        elif self.splitBy == 'subPop':
-            with open(filename, 'w') as out:
-                #
-                # first line: command, nseq, nblocks
-                #
-                stat(pop, popSize=True, subPops=subPops)
-                sz = pop.dvars().subPopSize
-                if False in [sz[i] == sz[i-1] for i in range(1, len(sz))]:
-                    raise ValueError('Subpopulations should have the same size if splitBy="subPop" is specified.')
-                out.write('simuPOP_export %d %d\n' % (sz[0] * pop.ploidy(), len(sz)))
-                # some random random number seeds
-                out.write('30164 48394 29292\n')
-                #
-                prog = ProgressBar(filename, sum(sz), gui=gui)
-                count = 0
-                # find segregating sites
-                stat(pop, alleleFreq=range(pop.numLoci(0)), subPops=subPops, vars='alleleNum_sp')
-                for vsp in subPops:
-                    seg_sites = [x for x in range(pop.numLoci(0)) if len(pop.dvars(vsp).alleleNum[x]) != 1]
-                    out.write('\n//\nsegsites: %d\n' % len(seg_sites))
-                    out.write('positions: %s\n' % ' '.join(['%.4f' % pop.locusPos(x) for x in seg_sites]))
-                    #
-                    #  genotype
-                    for ind in pop.individuals(vsp):
-                        for p in range(pop.ploidy()):
-                            geno = ind.genotype(p, 0)
-                            out.write(''.join([str(0 if geno[x] == 0 else 1) for x in seg_sites]) + '\n')
-                        count += 1
-                        prog.update(count)
-                prog.done()
-        elif self.splitBy == 'chrom':
-            with open(filename, 'w') as out:
-                #
-                # first line: command, nseq, nblocks
-                #
-                stat(pop, popSize=True, alleleFreq=ALL_AVAIL, vars=['alleleNum'], 
-                    subPops=subPops)
-                out.write('simuPOP_export %d %d\n' % (pop.dvars().popSize * pop.ploidy(), pop.numChrom()))
-                # some random random number seeds
-                out.write('30164 48394 29292\n')
-                #
-                prog = ProgressBar(filename, pop.dvars().popSize, gui=gui)
-                count = 0
-                for ch in range(pop.numChrom()):
-                    b = pop.chromBegin(ch)
-                    # find segregating sites
-                    seg_sites = [x for x in range(pop.chromBegin(ch), pop.chromEnd(ch)) \
-                        if len(pop.dvars().alleleNum[x]) != 1]
-                    out.write('\n//\nsegsites: %d\n' % len(seg_sites))
-                    out.write('positions: %s\n' % ' '.join(['%.4f' % pop.locusPos(x) for x in seg_sites]))
-                    #
-                    #  genotype
-                    for vsp in subPops:
-                        for ind in pop.individuals(vsp):
-                            for p in range(pop.ploidy()):
-                                geno = ind.genotype(p, ch)
-                                out.write(''.join([str(0 if geno[x - b] == 0 else 1) for x in seg_sites]) + '\n')
-                            count += 1
-                            prog.update(count)
-                prog.done()
+            prog.done()
         else:
             raise ValueError('Parameter splitBy can only take values None (default), '
                 'subPop, and chrom')
@@ -3047,10 +3035,10 @@ class Exporter(PyOperator):
 
     This operator supports the usual applicability parameters such as begin,
     end, step, at, reps, and subPops. If subPops are specified, only
-    individuals from specified (virtual) subPops are exported. Because this
-    exporter will always overwite any existing file, leading '>' of parameter
-    output is ignored, although the '!expr' format can still be used to
-    generate context dependent output filename. Unless explicitly stated for
+    individuals from specified (virtual) subPops are exported. Similar to
+    other operators, parameter ``output`` can be an output specification string
+    (``filename``, ``>>filename``, ``!expr``), filehandle (or any Python object
+    with a ``write`` function), any python function. Unless explicitly stated for
     a particular format, this operator exports individuals from the current
     generation if there are multiple ancestral generations in the population.
     
@@ -3087,8 +3075,7 @@ class Exporter(PyOperator):
             step=step, at=at, reps=reps, subPops=ALL_AVAIL, infoFields=[])
 
     def _determineOutput(self, pop):
-        # determine the output filename
-        # the expression form
+        # determine the output filename the expression form
         if self.output.startswith('!'):
             # evaluate output with the population variable
             output = eval(self.output[1:], pop.vars(), pop.vars())
@@ -3143,8 +3130,26 @@ class Exporter(PyOperator):
         return subPops
         
     def _export(self, pop):
-        self.exporter.export(pop, self._determineOutput(pop),
-            self._determineSubPops(pop), self.infoFields, gui=self.gui)
+        if isinstance(self.output, str):
+            if self.output.startswith('!'):
+                self.output = eval(self.output[1:], pop.vars(), pop.vars())
+            if self.output.startswith('>>'):
+                mode = 'a'
+            else:
+                mode = 'w'
+            with open(self.output.lstrip('>'), mode) as out:
+                self.exporter.export(pop, out.write,
+                    self._determineSubPops(pop), self.infoFields, gui=self.gui)
+        elif callable(self.output):
+            # it is a regular python function, call it with output
+            self.exporter.export(pop, self.output,
+                self._determineSubPops(pop), self.infoFields, gui=self.gui)
+        elif hasattr(self.output, 'write'):
+            # this must be a file handle
+            self.exporter.export(pop, self.output.write,
+                self._determineSubPops(pop), self.infoFields, gui=self.gui)
+        else:
+            raise ValueError('Invalid output specification.')
         return True
 
 def export(pop, format, *args, **kwargs):

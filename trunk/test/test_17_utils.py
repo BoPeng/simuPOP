@@ -10,6 +10,7 @@
 #
 
 import random
+import gzip
 import unittest, os, sys
 from simuOpt import setOptions
 # this line also tests the use of parameter version in setOptions
@@ -873,7 +874,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(self.lineOfFile('genepop.txt', 1), 'something\n')
         # first line?
         export(pop, format='genepop', output='genepop.txt')
-        self.assertEqual(self.lineOfFile('genepop.txt', 1)[:10], 'genepop.tx')
+        self.assertEqual(self.lineOfFile('genepop.txt', 1)[:10], 'Outputted ')
         # loci names
         self.assertEqual(self.lineOfFile('genepop.txt', 2), 'a, b, c, d, e, f\n')
         # pop?
@@ -1247,6 +1248,41 @@ class TestUtils(unittest.TestCase):
             alleleNames='ACTG', ploidy=2)
         # cleanup
         os.remove('pop.phy')
+
+    def pyFunc(self, line):
+        pass
+
+    def testExportToFunc(self):
+        'Testing export genotype to python func, to file handle, and to gzip'
+        # starting from a haploid population
+        pop = Population(size=[4,5], loci=[20, 90], ploidy=1)
+        initGenotype(pop, freq=[0.25]*4)
+        # 1: export to a python func
+        export(pop, format='phylip', output=self.pyFunc, alleleNames='ACTG', style='interleaved')
+        # 2: export to a file handle
+        with open('pop.phy', 'w') as phy:
+            export(pop, format='phylip', output=phy, alleleNames='ACTG', style='interleaved')
+        pop1 = importPopulation(format='phylip', filename='pop.phy', alleleNames='ACTG')
+        self.assertEqual(pop.genotype(), pop1.genotype())
+        self.assertEqual(pop1.ploidy(), 1)
+        # 3: export to a gzip file handle
+        with gzip.open('pop.phy.gz', 'wb') as phy:
+            export(pop, format='phylip', output=phy, alleleNames='ACTG', style='interleaved')
+        # unzip first?
+        f_in = gzip.open('pop.phy.gz', 'rb')
+        f_out = open('pop1.phy', 'wb')
+        f_out.writelines(f_in)
+        f_out.close()
+        f_in.close()
+        #
+        pop1 = importPopulation(format='phylip', filename='pop1.phy', alleleNames='ACTG')
+        self.assertEqual(pop.genotype(), pop1.genotype())
+        self.assertEqual(pop1.ploidy(), 1)
+        #
+        # cleanup
+        os.remove('pop.phy')
+        os.remove('pop.phy.gz')
+
 
 if __name__ == '__main__':
     unittest.main()
