@@ -52,9 +52,11 @@ public:
 	 *  restrict mutations to certain generations (parameters \e begin, \e end,
 	 *  \e step and \e at), replicate populations (parameter \e rep), (virtual)
 	 *  subpopulations (parameter \e subPops) and loci (parameter \e loci).
-	 *  Parameter \e loci can be a list of loci indexes, names or \c ALL_AVAIL.
-	 *  Please refer to class \c BaseOperator for a detailed explanation of
-	 *  these parameters.
+	 *  Parameter \e loci can be a list of loci indexes, names, list
+	 *  of chromosome position pairs, \c ALL_AVAIL, or a function with optional
+	 *  parameter \c pop that will be called at each ganeeration to determine
+	 *  indexes of loci. Please refer to class \c BaseOperator for a detailed
+	 *  explanation of these parameters.
 	 *
 	 *  Parameter \e rate or its equivalence specifies the probability that a
 	 *  a mutation event happens. The exact form and meaning of \e rate is
@@ -417,7 +419,7 @@ class PyMutator : public BaseMutator
 public:
 	/** Create a hybrid mutator that uses a user-provided function to mutate an
 	 *  allele when a mutation event happens. This function (parameter \e func)
-	 *  accepts the allele to be mutated as parameter \c allele, locus index 
+	 *  accepts the allele to be mutated as parameter \c allele, locus index
 	 *  \c locus, and optional array of alleles as parameter \c context, which
 	 *  are \e context alleles the left and right of the mutated allele. Invalid
 	 *  context alleles (e.g. left allele to the first locus of a chromosome)

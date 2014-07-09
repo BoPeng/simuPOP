@@ -39,6 +39,7 @@
 #  include "omp.h"
 #endif
 
+#include "population.h"
 
 #include <sstream>
 using std::ostringstream;
@@ -1082,7 +1083,7 @@ uintList::uintList(PyObject * obj) : m_elems(), m_status(REGULAR)
 }
 
 
-lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_func(NULL), m_status(REGULAR), m_trait(MaxTraitIndex), m_lociMap()
+lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_func(NULL), m_func_gen(NOT_FOUND), m_status(REGULAR), m_trait(MaxTraitIndex), m_lociMap()
 {
 	if (obj == NULL)
 		// accept NULL
@@ -1169,17 +1170,39 @@ const vectoru & lociList::elems(const GenoStruTrait * trait) const
 			m_elems = trait->lociByNames(m_names);
 		else if (m_status == FROM_POSITION)
 			m_elems = trait->lociByPos(m_positions);
+		else if (m_status == FROM_FUNC)
+			throw ValueError("Calling a function for lociList from this operator is not allowed.");
+		else if (m_status == ALL_AVAIL) {
+			m_elems.resize(trait->totNumLoci());
+			for (size_t i = 0; i < m_elems.size(); ++i)
+				m_elems[i] = i;
+		}
+		m_trait = trait->genoStruIdx();
+	}
+	return m_elems;
+}
+
+
+const vectoru & lociList::elems(const Population * trait) const
+{
+	if (trait) {
+		if (trait->genoStruIdx() == m_trait && m_status != FROM_FUNC)
+			return m_elems;
+		if (m_status == FROM_NAME)
+			m_elems = trait->lociByNames(m_names);
+		else if (m_status == FROM_POSITION)
+			m_elems = trait->lociByPos(m_positions);
 		else if (m_status == FROM_FUNC) {
-			// the point can be individual or population, but we trust that
-			// it is a population when this particular feature is used (in operators).
+			if (m_func_gen == trait->gen())
+				return m_elems;
+
 			PyObject * args = PyTuple_New(m_func.numArgs());
 			DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
 
 			for (size_t i = 0; i < m_func.numArgs(); ++i) {
 				const string & arg = m_func.arg(i);
 				if (arg == "pop")
-					PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(
-						const_cast<GenoStruTrait*>(trait))));
+					PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(const_cast<Population *>((trait)))));
 				else {
 					DBG_FAILIF(true, ValueError,
 						"Only parameter pop are acceptable in function " + m_func.name());
@@ -1188,7 +1211,7 @@ const vectoru & lociList::elems(const GenoStruTrait * trait) const
 
 			m_elems = m_func(PyObj_As_SizeTArray, args);
 			Py_XDECREF(args);
-			
+			m_func_gen = trait->gen();
 		} else if (m_status == ALL_AVAIL) {
 			m_elems.resize(trait->totNumLoci());
 			for (size_t i = 0; i < m_elems.size(); ++i)
@@ -1198,6 +1221,7 @@ const vectoru & lociList::elems(const GenoStruTrait * trait) const
 	}
 	return m_elems;
 }
+
 
 size_t lociList::indexOf(size_t loc) const
 {
@@ -1274,6 +1298,7 @@ void PyObj_As_Int(PyObject * obj, long & val)
 	Py_DECREF(res);
 }
 
+
 void PyObj_As_SizeT(PyObject * obj, size_t & val)
 {
 	if (obj == NULL) {
@@ -1288,7 +1313,6 @@ void PyObj_As_SizeT(PyObject * obj, size_t & val)
 	val = PyInt_AsLong(res);
 	Py_DECREF(res);
 }
-
 
 
 void PyObj_As_Double(PyObject * obj, double & val)
@@ -1365,6 +1389,7 @@ void PyObj_As_IntArray(PyObject * obj, vectori & val)
 		PyObj_As_Int(obj, val[0]);
 	}
 }
+
 
 void PyObj_As_SizeTArray(PyObject * obj, vectoru & val)
 {

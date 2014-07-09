@@ -970,7 +970,7 @@ string statAlleleFreq::describe(bool /* format */) const
 	if (m_loci.allAvail())
 		desc << "calculate allele frequency at all loci";
 	else if (m_loci.size() > 0)
-		desc << "calculate allele frequency at " << (m_loci.size() == 1 ? "locus " : "loci ") << m_loci.elems(NULL);
+		desc << "calculate allele frequency at " << (m_loci.size() == 1 ? "locus " : "loci ") << m_loci.elems();
 	return desc.str();
 }
 
@@ -1220,8 +1220,8 @@ statHeteroFreq::statHeteroFreq(const lociList & heteroFreq, const lociList & hom
 		m_loci = lociList();
 	else {
 		// add homofreq to m_loci
-		vectoru hetero = heteroFreq.elems(NULL);
-		vectoru homo = homoFreq.elems(NULL);
+		vectoru hetero = heteroFreq.elems();
+		vectoru homo = homoFreq.elems();
 		for (size_t i = 0; i < homo.size(); ++i)
 			if (find(hetero.begin(), hetero.end(), homo[i]) == hetero.end())
 				hetero.push_back(homo[i]);
