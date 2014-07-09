@@ -898,6 +898,39 @@ simu.evolve(
 )
 #end_file
 
+#begin_file log/dynamicLoci.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+pop = sim.Population(100, loci=[10], infoFields='fitness')
+
+def mostPopular(pop):
+    sim.stat(pop, alleleFreq=sim.ALL_AVAIL)
+    freq = [pop.dvars().alleleFreq[x][1] for x in range(pop.totNumLoci())]
+    max_freq = max(freq)
+    pop.dvars().selLoci = (freq.index(max_freq), max_freq)
+    return [freq.index(max_freq)]
+
+pop.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.InitGenotype(freq=[0.6, 0.4]),
+    ],
+    preOps=[
+        sim.MaSelector(fitness=[1, 0.9, 0.8], loci=mostPopular),
+        sim.PyEval(r"'gen=%d, select against %d with frequency %.2f\n' % (gen, selLoci[0], selLoci[1])"),
+    ],
+    matingScheme=sim.RandomMating(),
+    gen=10,
+)
+#end_file
+
+
 
 #begin_file log/output.py
 #begin_ignore

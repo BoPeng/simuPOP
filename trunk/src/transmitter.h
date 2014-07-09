@@ -494,7 +494,9 @@ public:
 	 *
 	 *  Recombination happens by default between all adjacent markers but can
 	 *  be limited to a given set of \e loci, which can be a list of loci
-	 *  indexes, names or \c ALL_AVAIL. Each locus in this list specifies
+	 *  indexes, names, list of chromosome position pairs, \c ALL_AVAIL, or a
+	 *  function with optional parameter \c pop that will be called at each
+	 *  ganeeration to determine indexes of loci. Each locus in this list specifies
 	 *  a recombination point between the locus and the locus immediately
 	 *  \b after it. Loci that are the last locus on each chromosome are
 	 *  ignored.

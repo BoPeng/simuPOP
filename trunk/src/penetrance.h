@@ -150,8 +150,10 @@ public:
 	 *  penetrance as values. For each individual, genotypes at \e loci are
 	 *  collected one by one (e.g. p0_loc0, p1_loc0, p0_loc1, p1_loc1... for
 	 *  a diploid individual) and are looked up in the dictionary. Parameter
-	 *  \e loci can be a list of loci indexes, names or \c ALL_AVAIL. If a
-	 *  genotype cannot be found, it will be looked up again without phase
+	 *  \e loci can be a list of loci indexes, names, list of chromosome
+	 *  position pairs, \c ALL_AVAIL, or a function with optional parameter
+	 *  \c pop that will be called at each ganeeration to determine indexes of loci.
+	 *  If a genotype cannot be found, it will be looked up again without phase
 	 *  information (e.g. <tt>(1,0)</tt> will match key <tt>(0,1)</tt>). If the
 	 *  genotype still can not be found, a \c ValueError will be raised. This
 	 *  operator supports sex chromosomes and haplodiploid populations. In
@@ -221,7 +223,9 @@ public:
 	 *  into a wildtype group (with alleles \e wildtype, default to <tt>[0]</tt>),
 	 *  and a non-wildtype group. A list of penetrance values is specified
 	 *  through parameter \e penetrance, for genotypes at one or more \e loci.
-	 *  Parameter \e loci can be a list of loci indexes, names or \c ALL_AVAIL.
+	 *  Parameter \e loci can be a list of loci indexes, names, list of chromosome
+	 *  position pairs, \c ALL_AVAIL, or a function with optional parameter \c pop
+	 *  that will be called at each ganeeration to determine indexes of loci.
 	 *  If we denote wildtype alleles using capital letters \c A, \c B ... and
 	 *  non-wildtype alleles using small letters \c a, \c b ..., the penetrance
 	 *  values should be for
@@ -369,7 +373,7 @@ private:
 /** This penetrance operator assigns penetrance values by calling a user
  *  provided function. It accepts a list of loci (parameter \c loci),
  *  and a Python function \c func which should be defined with one or more of
- *  parameters \c geno, \c mut, \c gen, \c ind, \c pop, or names of 
+ *  parameters \c geno, \c mut, \c gen, \c ind, \c pop, or names of
  *  information fields. When this operator is applied to a population, it
  *  passes genotypes or mutants (non-zero alleles) at specified loci at
  *  specified loci, generation number, a reference to an individual, a
@@ -388,8 +392,10 @@ public:
 	/** Create a Python hybrid penetrance operator that passes genotype at
 	 *  specified \e loci, values at specified information fields (if
 	 *  requested), and a generation number to a user-defined function \e func.
-	 *  Parameter \e loci can be a list of loci indexes, names, or \c ALL_AVAIL.
-	 *  The return value will be treated as Individual penetrance.	
+	 *  Parameter \e loci can be a list of loci indexes, names, list
+	 *  of chromosome position pairs, \c ALL_AVAIL, or a function with optional
+	 *  parameter \c pop that will be called at each ganeeration to determine
+	 *  indexes of loci. The return value will be treated as Individual penetrance.
 	 */
 	PyPenetrance(PyObject * func,
 		const lociList & loci = vectoru(),

@@ -41,7 +41,7 @@ double BaseMutator::mutRate(size_t loc) const
 	}
 	// without a population reference, we assume that m_loci has already been filled
 	// with correct loci.
-	const vectoru & loci = m_loci.elems(NULL);
+	const vectoru & loci = m_loci.elems();
 	vectoru::const_iterator it = find(loci.begin(), loci.end(), loc);
 
 	DBG_ASSERT(it != loci.end(), RuntimeError,

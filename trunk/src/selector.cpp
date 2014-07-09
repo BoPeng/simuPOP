@@ -69,10 +69,10 @@ bool BaseSelector::apply(Population & pop) const
 }
 
 
-double MapSelector::indFitness(Population & /* pop */, RawIndIterator ind) const
+double MapSelector::indFitness(Population & pop, RawIndIterator ind) const
 {
 	vectoru chromTypes;
-	const vectoru & loci = m_loci.elems(&*ind);
+	const vectoru & loci = m_loci.elems(&pop);
 
 	for (size_t i = 0; i < loci.size(); ++i)
 		chromTypes.push_back(ind->chromType(ind->chromLocusPair(loci[i]).first));
@@ -166,11 +166,11 @@ double MapSelector::indFitness(Population & /* pop */, RawIndIterator ind) const
 
 
 // currently assuming diploid
-double MaSelector::indFitness(Population & /* pop */, RawIndIterator ind) const
+double MaSelector::indFitness(Population & pop, RawIndIterator ind) const
 {
 	UINT index = 0;
 	bool singleST = m_wildtype.size() == 1;
-	const vectoru & loci = m_loci.elems(&*ind);
+	const vectoru & loci = m_loci.elems(&pop);
 
 	DBG_FAILIF((ind->ploidy() == 2 && m_fitness.size() != static_cast<UINT>(pow(3., static_cast<double>(loci.size())))) ||
 		(ind->ploidy() == 1 && m_fitness.size() != static_cast<UINT>(pow(2., static_cast<double>(loci.size())))),
@@ -342,10 +342,10 @@ PyMlSelector::PyMlSelector(PyObject * func, int mode,
 }
 
 
-double PyMlSelector::indFitness(Population & /* pop */, RawIndIterator ind) const
+double PyMlSelector::indFitness(Population & pop, RawIndIterator ind) const
 {
 	FitnessAccumulator fit(m_mode);
-	const vectoru & loci = m_loci.elems(&*ind);
+	const vectoru & loci = m_loci.elems(&pop);
 
 	size_t ply = ind->ploidy();
 

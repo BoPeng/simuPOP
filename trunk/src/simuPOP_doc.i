@@ -87,39 +87,41 @@ Details:
     mutations to certain generations (parameters begin, end, step and
     at), replicate populations (parameter rep), (virtual)
     subpopulations (parameter subPops) and loci (parameter loci).
-    Parameter loci can be a list of loci indexes, names or ALL_AVAIL.
-    Please refer to class BaseOperator for a detailed explanation of
-    these parameters.  Parameter rate or its equivalence specifies the
-    probability that a a mutation event happens. The exact form and
-    meaning of rate is mutator-specific. If a single rate is
-    specified, it will be applied to all loci. If a list of mutation
-    rates are given, they will be applied to each locus specified in
-    parameter loci. Note that not all mutators allow specification of
-    multiple mutation rate, especially when the mutation rate itself
-    is a list or matrix.  Alleles at a locus are non-negative numbers
-    0, 1, ... up to the maximum allowed allele for the loaded module
-    (1 for binary, 255 for short and 65535 for long modules). Whereas
-    some general mutation models treat alleles as numbers, other
-    models assume specific interpretation of alleles. For example, an
-    AcgtMutator assumes alleles 0, 1, 2 and 3 as nucleotides A, C, G
-    and T. Using a mutator that is incompatible with your simulation
-    will certainly yield erroneous results.  If your simulation
-    assumes different alleles with a mutation model, you can map an
-    allele to the allele used in the model and map the mutated allele
-    back. This is achieved using a mapIn list with its i-th item being
-    the corresponding allele of real allele i, and a mapOut list with
-    its i-th item being the real allele of allele i assumed in the
-    model. For example mapIn=[0, 0, 1] and mapOut=[1, 2] would allow
-    the use of a SNPMutator to mutate between alleles 1 and 2, instead
-    of 0 and 1. Parameters mapIn and mapOut also accept a user-defined
-    Python function that returns a corresponding allele for a given
-    allele. This allows easier mapping between a large number of
-    alleles and advanced models such as random emission of alleles.
-    If a valid information field is specified for parameter infoFields
-    (default to ind_id) for modules with lineage allele type, the
-    lineage of the mutated alleles will be the ID (stored in the first
-    field of infoFields) of individuals that harbor the mutated
-    alleles if lineageMode is set to FROM_INFO (default). If
+    Parameter loci can be a list of loci indexes, names, list of
+    chromosome position pairs, ALL_AVAIL, or a function with optional
+    parameter pop that will be called at each ganeeration to determine
+    indexes of loci. Please refer to class BaseOperator for a detailed
+    explanation of these parameters.  Parameter rate or its
+    equivalence specifies the probability that a a mutation event
+    happens. The exact form and meaning of rate is mutator-specific.
+    If a single rate is specified, it will be applied to all loci. If
+    a list of mutation rates are given, they will be applied to each
+    locus specified in parameter loci. Note that not all mutators
+    allow specification of multiple mutation rate, especially when the
+    mutation rate itself is a list or matrix.  Alleles at a locus are
+    non-negative numbers 0, 1, ... up to the maximum allowed allele
+    for the loaded module (1 for binary, 255 for short and 65535 for
+    long modules). Whereas some general mutation models treat alleles
+    as numbers, other models assume specific interpretation of
+    alleles. For example, an AcgtMutator assumes alleles 0, 1, 2 and 3
+    as nucleotides A, C, G and T. Using a mutator that is incompatible
+    with your simulation will certainly yield erroneous results.  If
+    your simulation assumes different alleles with a mutation model,
+    you can map an allele to the allele used in the model and map the
+    mutated allele back. This is achieved using a mapIn list with its
+    i-th item being the corresponding allele of real allele i, and a
+    mapOut list with its i-th item being the real allele of allele i
+    assumed in the model. For example mapIn=[0, 0, 1] and mapOut=[1,
+    2] would allow the use of a SNPMutator to mutate between alleles 1
+    and 2, instead of 0 and 1. Parameters mapIn and mapOut also accept
+    a user-defined Python function that returns a corresponding allele
+    for a given allele. This allows easier mapping between a large
+    number of alleles and advanced models such as random emission of
+    alleles.  If a valid information field is specified for parameter
+    infoFields (default to ind_id) for modules with lineage allele
+    type, the lineage of the mutated alleles will be the ID (stored in
+    the first field of infoFields) of individuals that harbor the
+    mutated alleles if lineageMode is set to FROM_INFO (default). If
     lineageMode is set to FROM_INFO_SIGNED, the IDs will be assigned a
     sign depending on the ploidy the mutation happens (1 for ploidy 0,
     -1 for ploidy 1, etc). The lineage information will be transmitted
@@ -3941,7 +3943,7 @@ Usage:
 
 %ignore simuPOP::lociList::indexOf(size_t loc) const;
 
-%ignore simuPOP::lociList::elems(const GenoStruTrait *trait) const;
+%ignore simuPOP::lociList::elems(const GenoStruTrait *trait=NULL) const;
 
 %feature("docstring") simuPOP::MaPenetrance "
 
@@ -3971,10 +3973,12 @@ Details:
     alleles into a wildtype group (with alleles wildtype, default to
     [0]), and a non-wildtype group. A list of penetrance values is
     specified through parameter penetrance, for genotypes at one or
-    more loci. Parameter loci can be a list of loci indexes, names or
-    ALL_AVAIL. If we denote wildtype alleles using capital letters A,
-    B ... and non-wildtype alleles using small letters a, b ..., the
-    penetrance values should be for
+    more loci. Parameter loci can be a list of loci indexes, names,
+    list of chromosome position pairs, ALL_AVAIL, or a function with
+    optional parameter pop that will be called at each ganeeration to
+    determine indexes of loci. If we denote wildtype alleles using
+    capital letters A, B ... and non-wildtype alleles using small
+    letters a, b ..., the penetrance values should be for
     *   genotypes A and a for the haploid single-locus case,
     *   genotypes AB, Ab, aB and bb for haploid two=locus cases,
     *   genotypes AA, Aa and aa for diploid single-locus cases,
@@ -4026,13 +4030,15 @@ Details:
     penetrance as values. For each individual, genotypes at loci are
     collected one by one (e.g. p0_loc0, p1_loc0, p0_loc1, p1_loc1...
     for a diploid individual) and are looked up in the dictionary.
-    Parameter loci can be a list of loci indexes, names or ALL_AVAIL.
-    If a genotype cannot be found, it will be looked up again without
-    phase information (e.g. (1,0) will match key (0,1)). If the
-    genotype still can not be found, a ValueError will be raised. This
-    operator supports sex chromosomes and haplodiploid populations. In
-    these cases, only valid genotypes should be used to generator the
-    dictionary keys.
+    Parameter loci can be a list of loci indexes, names, list of
+    chromosome position pairs, ALL_AVAIL, or a function with optional
+    parameter pop that will be called at each ganeeration to determine
+    indexes of loci. If a genotype cannot be found, it will be looked
+    up again without phase information (e.g. (1,0) will match key
+    (0,1)). If the genotype still can not be found, a ValueError will
+    be raised. This operator supports sex chromosomes and haplodiploid
+    populations. In these cases, only valid genotypes should be used
+    to generator the dictionary keys.
 
 "; 
 
@@ -4073,18 +4079,21 @@ Details:
 
     Create a selector that assigns individual fitness values using a
     dictionary fitness with genotype at loci as keys, and fitness as
-    values. Parameter loci can be a list of indexes, loci names or
-    ALL_AVAIL. For each individual (parents if this operator is
-    applied before mating, and offspring if this operator is applied
-    during mating), genotypes at loci are collected one by one (e.g.
-    p0_loc0, p1_loc0, p0_loc1, p1_loc1... for a diploid individual,
-    with number of alleles varying for sex and mitochondrial DNAs) and
-    are looked up in the dictionary. If a genotype cannot be found, it
-    will be looked up again without phase information (e.g. (1,0) will
-    match key (0,1)). If the genotype still can not be found, a
-    ValueError will be raised. This operator supports sex chromosomes
-    and haplodiploid populations. In these cases, only valid genotypes
-    should be used to generator the dictionary keys.
+    values. Parameter loci can be a list of indexes, loci names, list
+    of chromosome position pairs, ALL_AVAIL, or a function with
+    optional parameter pop that will be called at each ganeeration to
+    determine indexes of loci. For each individual (parents if this
+    operator is applied before mating, and offspring if this operator
+    is applied during mating), genotypes at loci are collected one by
+    one (e.g. p0_loc0, p1_loc0, p0_loc1, p1_loc1... for a diploid
+    individual, with number of alleles varying for sex and
+    mitochondrial DNAs) and are looked up in the dictionary. If a
+    genotype cannot be found, it will be looked up again without phase
+    information (e.g. (1,0) will match key (0,1)). If the genotype
+    still can not be found, a ValueError will be raised. This operator
+    supports sex chromosomes and haplodiploid populations. In these
+    cases, only valid genotypes should be used to generator the
+    dictionary keys.
 
 "; 
 
@@ -4131,10 +4140,12 @@ Details:
     a wildtype group (with alleles wildtype, default to [0]), and a
     non-wildtype group. A list of fitness values is specified through
     parameter fitness, for genotypes at one or more loci. Parameter
-    loci can be a list of indexes, loci names or ALL_AVAIL. If we
-    denote wildtype alleles using capital letters A, B ... and non-
-    wildtype alleles using small letters a, b ..., the fitness values
-    should be for
+    loci can be a list of indexes, loci names , list of chromosome
+    position pairs, ALL_AVAIL, or a function with optional parameter
+    pop that will be called at each ganeeration to determine indexes
+    of loci. If we denote wildtype alleles using capital letters A, B
+    ... and non-wildtype alleles using small letters a, b ..., the
+    fitness values should be for
     *   genotypes A and a for the haploid single-locus case,
     *   genotypes AB, Ab, aB and bb for haploid two=locus cases,
     *   genotypes AA, Aa and aa for diploid single-locus cases,
@@ -7931,8 +7942,10 @@ Details:
     Create a Python hybrid penetrance operator that passes genotype at
     specified loci, values at specified information fields (if
     requested), and a generation number to a user-defined function
-    func. Parameter loci can be a list of loci indexes, names, or
-    ALL_AVAIL. The return value will be treated as Individual
+    func. Parameter loci can be a list of loci indexes, names, list of
+    chromosome position pairs, ALL_AVAIL, or a function with optional
+    parameter pop that will be called at each ganeeration to determine
+    indexes of loci. The return value will be treated as Individual
     penetrance.
 
 "; 
@@ -8050,18 +8063,20 @@ Details:
     function. It accepts a list of loci (parameter loci) and a Python
     function func which should be defined with one or more of
     parameters geno, mut, gen, ind, pop or names of information
-    fields. Parameter loci can be a list of loci indexes, names or
-    ALL_AVAIL. When this operator is applied to a population, it
-    passes genotypes or mutants at specified loci, generation number,
-    a reference to an individual, a reference to the current
-    population (usually used to retrieve population variable), and
-    values at specified information fields to respective parameters of
-    this function. Genotypes are passed as a tuple of alleles arranged
-    locus by locus (in the order of A1,A2,B1,B2 for loci A and B).
-    Mutants are passed as a default dictionary of loci index (with
-    respect to all genotype of individuals, not just the first ploidy)
-    and alleles. The returned value will be used to determine the
-    fitness of each individual.
+    fields. Parameter loci can be a list of loci indexes, names, list
+    of chromosome position pairs, ALL_AVAIL, or a function with
+    optional parameter pop that will be called at each ganeeration to
+    determine indexes of loci. When this operator is applied to a
+    population, it passes genotypes or mutants at specified loci,
+    generation number, a reference to an individual, a reference to
+    the current population (usually used to retrieve population
+    variable), and values at specified information fields to
+    respective parameters of this function. Genotypes are passed as a
+    tuple of alleles arranged locus by locus (in the order of
+    A1,A2,B1,B2 for loci A and B). Mutants are passed as a default
+    dictionary of loci index (with respect to all genotype of
+    individuals, not just the first ploidy) and alleles. The returned
+    value will be used to determine the fitness of each individual.
 
 "; 
 
@@ -8414,27 +8429,29 @@ Details:
     parents (or a parent in case of self-fertilization) to offspring.
     Recombination happens by default between all adjacent markers but
     can be limited to a given set of loci, which can be a list of loci
-    indexes, names or ALL_AVAIL. Each locus in this list specifies a
-    recombination point between the locus and the locus immediately
-    after it. Loci that are the last locus on each chromosome are
-    ignored.  If a single recombination rate (parameter rates) is
-    specified, it will used for all loci (all loci or loci specified
-    by parameter loci), regardless of physical distances between
-    adjacent loci.  If a list of recombination rates are specified in
-    rates, different recombination rates could be applied after a list
-    of specified loci (between loci and their immediate neighbor to
-    the right). The loci should be specified by parameter loci as a
-    list with the same length as rates, or ALL_AVAIL (default) in
-    which case the length of rates should equal to the total number of
-    loci. Note that recombination rates specified for the last locus
-    on each chromosome are ignored because simuPOP assumes free
-    recombination between chromosomes.  A recombination intensity
-    (intensity) can be used to specify recombination rates that are
-    proportional to physical distances between adjacent markers. If
-    the physical distance between two markers is d, the recombination
-    rate between them will be intensity * d. No unit is assume for
-    loci position and recombination intensity.  Gene conversion is
-    controlled using parameter convMode, which can be
+    indexes, names, list of chromosome position pairs, ALL_AVAIL, or a
+    function with optional parameter pop that will be called at each
+    ganeeration to determine indexes of loci. Each locus in this list
+    specifies a recombination point between the locus and the locus
+    immediately after it. Loci that are the last locus on each
+    chromosome are ignored.  If a single recombination rate (parameter
+    rates) is specified, it will used for all loci (all loci or loci
+    specified by parameter loci), regardless of physical distances
+    between adjacent loci.  If a list of recombination rates are
+    specified in rates, different recombination rates could be applied
+    after a list of specified loci (between loci and their immediate
+    neighbor to the right). The loci should be specified by parameter
+    loci as a list with the same length as rates, or ALL_AVAIL
+    (default) in which case the length of rates should equal to the
+    total number of loci. Note that recombination rates specified for
+    the last locus on each chromosome are ignored because simuPOP
+    assumes free recombination between chromosomes.  A recombination
+    intensity (intensity) can be used to specify recombination rates
+    that are proportional to physical distances between adjacent
+    markers. If the physical distance between two markers is d, the
+    recombination rate between them will be intensity * d. No unit is
+    assume for loci position and recombination intensity.  Gene
+    conversion is controlled using parameter convMode, which can be
     *   NoConversion: no gene conversion (default).
     *   (NUM_MARKERS, prob, n): With probability prob, convert a fixed
     number (n) of markers if a recombination event happens.
@@ -11460,6 +11477,8 @@ Details:
 
 %ignore simuPOP::PyObjAsInt(PyObject *obj, long &val);
 
+%ignore simuPOP::PyObjAsSizeT(PyObject *obj, size_t &val);
+
 %ignore simuPOP::PyObjAsDouble(PyObject *obj, double &val);
 
 %ignore simuPOP::PyObjAsString(PyObject *obj, string &val);
@@ -11467,6 +11486,8 @@ Details:
 %ignore simuPOP::PyObjAsArray(PyObject *obj, vectorf &val);
 
 %ignore simuPOP::PyObjAsIntArray(PyObject *obj, vectori &val);
+
+%ignore simuPOP::PyObjAsSizeTArray(PyObject *obj, vectoru &val);
 
 %ignore simuPOP::AlleleVecAsNumArray(GenoIterator begin, GenoIterator end);
 

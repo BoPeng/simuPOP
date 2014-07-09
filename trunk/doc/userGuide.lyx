@@ -6431,6 +6431,103 @@ the simuPOP reference manual
 \end_layout
 
 \begin_layout Subsection
+Dynamically determined loci (parameter 
+\family typewriter
+loci
+\family default
+) *
+\end_layout
+
+\begin_layout Standard
+Many operators accept a parameter 
+\family typewriter
+loci
+\family default
+ to specify the applicable loci.
+ This parameter can be
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ALL_AVAIL
+\family default
+: all available loci of the population to which the operator is applied.
+\end_layout
+
+\begin_layout Itemize
+[1, 2, 4, 5]: A list of loci indexes.
+ When the operator is applied to a population, it will be applied to the
+ specified loci.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+[('chr1', 5), ('chr1', 10), ('chr2', 5)]
+\family default
+: A list of chromosome position pairs.
+ That is to say, when the operator is applied to a population, it will find
+ loci at specified position of specified chromosome.
+ Here chromosome names are names specified by parameter 
+\family typewriter
+chromNames
+\family default
+ of the 
+\family typewriter
+Population
+\family default
+ constructor.
+ That is to say, the operator can be applied to all population with such
+ chromosomes and loci at specified locations.
+\end_layout
+
+\begin_layout Itemize
+func: A function with an optional parameter 
+\family typewriter
+pop
+\family default
+.
+ When the operator is applied to a population, it will call this function,
+ optionally pass the population to be applied to this function, and use
+ its output as indexes of loci.
+\end_layout
+
+\begin_layout Standard
+The last usage is very interesting because it allows the determination of
+ loci according to population property.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "dynamicLoci"
+
+\end_inset
+
+ shows an example with a 
+\family typewriter
+MaSelector
+\family default
+ that is applied to the locus with highest frequency at each generation
+ by calling function 
+\family typewriter
+mostPopular
+\family default
+, which calculates allele frequency and pick the locus with highest allele
+ frequency, This example looks silly, but the technique is very useful in
+ simulating the introduction of disease loci by, for example, adding positive
+ selection pressure to one of the chosen loci.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/dynamicLoci.log"
+lstparams "caption={Natural selection with dynamically determined loci},label={dynamicLoci}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Write output of operators to one or more files
 \end_layout
 

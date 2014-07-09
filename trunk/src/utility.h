@@ -562,6 +562,7 @@ private:
 // lociList(NULL) is UNSPECIFIED
 // At the Python level True is ALL_AVAIL, a list if regular, False is UNSPECIFIED
 class GenoStruTrait;
+class Population;
 
 class lociList
 {
@@ -633,7 +634,9 @@ public:
 	size_t indexOf(size_t loc) const;
 
 	/// CPPONLY
-	const vectoru & elems(const GenoStruTrait * trait) const;
+	const vectoru & elems(const GenoStruTrait * trait=NULL) const;
+	/// CPPONLY
+	const vectoru & elems(const Population * trait) const;
 
 protected:
 	mutable vectoru m_elems;
@@ -641,9 +644,13 @@ protected:
 	vectorpos m_positions;
 
 	mutable pyFunc m_func;
+	// to control m_func so that it is called only once for
+	// each generation
+	mutable size_t m_func_gen;
 
 private:
 	listStatus m_status;
+
 
 	mutable TraitIndexType m_trait;
 	// used by indexOf

@@ -191,8 +191,10 @@ class MapSelector : public BaseSelector
 public:
 	/** Create a selector that assigns individual fitness values using a
 	 *  dictionary \e fitness with genotype at \e loci as keys, and fitness
-	 *  as values. Parameter \e loci can be a list of indexes, loci names or
-	 *  \c ALL_AVAIL. For each individual (parents if this operator is applied
+	 *  as values. Parameter \e loci can be a list of indexes, loci names, list
+	 *  of chromosome position pairs, \c ALL_AVAIL, or a function with optional
+	 *  parameter \c pop that will be called at each ganeeration to determine
+	 *  indexes of loci. For each individual (parents if this operator is applied
 	 *  before mating, and offspring if this operator is applied during
 	 *  mating), genotypes at \e loci are collected one by one (e.g.
 	 *  p0_loc0, p1_loc0, p0_loc1, p1_loc1... for a diploid individual, with
@@ -269,7 +271,9 @@ public:
 	 *  wildtype group (with alleles \e wildtype, default to <tt>[0]</tt>), and
 	 *  a non-wildtype group. A list of fitness values is specified through
 	 *  parameter \e fitness, for genotypes at one or more \e loci. Parameter
-	 *  \e loci can be a list of indexes, loci names or \c ALL_AVAIL. If we
+	 *  \e loci can be a list of indexes, loci names , list of chromosome position
+	 *  pairs, \c ALL_AVAIL, or a function with optional parameter \c pop that
+	 *  will be called at each ganeeration to determine indexes of loci. If we
 	 *  denote wildtype alleles using capital letters \c A, \c B ... and
 	 *  non-wildtype alleles using small letters \c a, \c b ..., the fitness
 	 *  values should be for
@@ -418,7 +422,9 @@ private:
  *  It accepts a list of loci (parameter \e loci) and a Python function \c func
  *  which should be defined with one or more of parameters \c geno, \c mut,
  *  \c gen, \c ind, \c pop or names of information fields. Parameter \e loci can
- *  be a list of loci indexes, names or \c ALL_AVAIL. When this operator is applied
+ *  be a list of loci indexes, names, list of chromosome position pairs,
+ *  \c ALL_AVAIL, or a function with optional parameter \c pop that will be
+ *  called at each ganeeration to determine indexes of loci. When this operator is applied
  *  to a population, it passes genotypes or mutants at specified loci, generation
  *  number, a reference to an individual, a reference to the current population
  *  (usually used to retrieve population variable), and values at specified
