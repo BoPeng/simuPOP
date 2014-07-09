@@ -728,6 +728,15 @@ class TestOperator(unittest.TestCase):
         stat(pop, alleleFreq=ALL_AVAIL)
         for i in range(10):
             self.assertGreater(pop.dvars().alleleFreq[i][1], 0)
+        #
+        pop = Population(100, loci=10)
+        initGenotype(pop, freq=[0.2, 0.8], loci=lociFunc(1))
+        stat(pop, alleleFreq=ALL_AVAIL)
+        for i in range(10):
+            if i == 1:
+                self.assertGreater(pop.dvars().alleleFreq[i][1], 0)
+            else:
+                self.assertEqual(pop.dvars().alleleFreq[i][1], 0)
 
 
     def testMemberFunc(self):
@@ -792,6 +801,13 @@ class TestOperator(unittest.TestCase):
             )
         self.assertEqual(WrapperOpSelf.instance_count, 0)
         #
+
+class lociFunc:
+    def __init__(self, a):
+        self.a = a
+
+    def __call__(self, pop):
+        return self.a
 
 class WrapperOpFunc(PyOperator):
     instance_count = 0
