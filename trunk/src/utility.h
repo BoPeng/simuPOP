@@ -576,13 +576,14 @@ private:
 		UNSPECIFIED = 2,
 		FROM_NAME = 3,
 		FROM_POSITION = 4,
+		FROM_FUNC = 5,
 	};
 
 public:
 	lociList(PyObject * obj = Py_True);
 
 	/// CPPONLY
-	lociList(const vectoru & values) : m_elems(values), m_names(), m_status(REGULAR), m_trait(MaxTraitIndex)
+	lociList(const vectoru & values) : m_elems(values), m_names(), m_func(NULL), m_status(REGULAR), m_trait(MaxTraitIndex)
 	{
 	}
 
@@ -638,6 +639,8 @@ protected:
 	mutable vectoru m_elems;
 	vectorstr m_names;
 	vectorpos m_positions;
+
+	mutable pyFunc m_func;
 
 private:
 	listStatus m_status;
@@ -1026,6 +1029,9 @@ void PyObj_As_Bool(PyObject * obj, bool & val);
 void PyObj_As_Int(PyObject * obj, long & val);
 
 /// CPPONLY
+void PyObj_As_SizeT(PyObject * obj, size_t & val);
+
+/// CPPONLY
 void PyObj_As_Double(PyObject * obj, double & val);
 
 /// CPPONLY
@@ -1036,6 +1042,9 @@ void PyObj_As_Array(PyObject * obj, vectorf & val);
 
 /// CPPONLY
 void PyObj_As_IntArray(PyObject * obj, vectori & val);
+
+/// CPPONLY
+void PyObj_As_SizeTArray(PyObject * obj, vectoru & val);
 
 /// CPPONLY
 PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
