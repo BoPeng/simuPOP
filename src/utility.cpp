@@ -1082,7 +1082,7 @@ uintList::uintList(PyObject * obj) : m_elems(), m_status(REGULAR)
 }
 
 
-lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_status(REGULAR), m_trait(MaxTraitIndex), m_lociMap()
+lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_func(NULL), m_status(REGULAR), m_trait(MaxTraitIndex), m_lociMap()
 {
 	if (obj == NULL)
 		// accept NULL
@@ -1150,6 +1150,10 @@ lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_status(REGULAR), m_
 			}
 			Py_DECREF(item);
 		}
+	} else if (PyCallable_Check(obj)) {
+		// if a function is provided
+		m_status = FROM_FUNC;
+		m_func = pyFunc(obj);
 	} else {
 		DBG_FAILIF(true, ValueError, "Invalid input for a list of integers.");
 	}
@@ -1165,7 +1169,27 @@ const vectoru & lociList::elems(const GenoStruTrait * trait) const
 			m_elems = trait->lociByNames(m_names);
 		else if (m_status == FROM_POSITION)
 			m_elems = trait->lociByPos(m_positions);
-		else if (m_status == ALL_AVAIL) {
+		else if (m_status == FROM_FUNC) {
+			// the point can be individual or population, but we trust that
+			// it is a population when this particular feature is used (in operators).
+			PyObject * args = PyTuple_New(m_func.numArgs());
+			DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
+
+			for (size_t i = 0; i < m_func.numArgs(); ++i) {
+				const string & arg = m_func.arg(i);
+				if (arg == "pop")
+					PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(
+						const_cast<GenoStruTrait*>(trait))));
+				else {
+					DBG_FAILIF(true, ValueError,
+						"Only parameter pop are acceptable in function " + m_func.name());
+				}
+			}
+
+			m_elems = m_func(PyObj_As_SizeTArray, args);
+			Py_XDECREF(args);
+			
+		} else if (m_status == ALL_AVAIL) {
 			m_elems.resize(trait->totNumLoci());
 			for (size_t i = 0; i < m_elems.size(); ++i)
 				m_elems[i] = i;
@@ -1250,6 +1274,22 @@ void PyObj_As_Int(PyObject * obj, long & val)
 	Py_DECREF(res);
 }
 
+void PyObj_As_SizeT(PyObject * obj, size_t & val)
+{
+	if (obj == NULL) {
+		val = 0;
+		return;
+	}
+	// try to convert
+	PyObject * res = PyNumber_Long(obj);
+	if (res == NULL)
+		throw ValueError("Can not convert object to an integer");
+
+	val = PyInt_AsLong(res);
+	Py_DECREF(res);
+}
+
+
 
 void PyObj_As_Double(PyObject * obj, double & val)
 {
@@ -1323,6 +1363,27 @@ void PyObj_As_IntArray(PyObject * obj, vectori & val)
 	} else {
 		val.resize(1);
 		PyObj_As_Int(obj, val[0]);
+	}
+}
+
+void PyObj_As_SizeTArray(PyObject * obj, vectoru & val)
+{
+	if (obj == NULL) {
+		val = vectoru();
+		return;
+	}
+	if (PySequence_Check(obj)) {
+		val.resize(PySequence_Size(obj));
+
+		// assign values
+		for (size_t i = 0, iEnd = val.size(); i < iEnd; ++i) {
+			PyObject * item = PySequence_GetItem(obj, i);
+			PyObj_As_SizeT(item, val[i]);
+			Py_DECREF(item);
+		}
+	} else {
+		val.resize(1);
+		PyObj_As_SizeT(obj, val[0]);
 	}
 }
 

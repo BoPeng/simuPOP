@@ -709,6 +709,27 @@ class TestOperator(unittest.TestCase):
                 self.assertNotEqual(pop.dvars((0,0)).alleleFreq[loc][0], 0)
                 self.assertNotEqual(pop.dvars((1,0)).alleleFreq[loc][0], 0)
 
+    def locateLoci(self):
+        return [1,2]
+
+    def locateEmptyLoci(self, pop):
+        stat(pop, alleleFreq=ALL_AVAIL)
+        return [x for x in range(pop.totNumLoci()) if pop.dvars().alleleFreq[x][1] == 0]   
+
+    def testDynamicLoci(self):
+        pop = Population(100, loci=10)
+        initGenotype(pop, freq=[0.2, 0.8], loci=self.locateLoci)
+        stat(pop, alleleFreq=ALL_AVAIL)
+        self.assertGreater(pop.dvars().alleleFreq[1][1], 0)
+        self.assertGreater(pop.dvars().alleleFreq[2][1], 0)
+        self.assertEqual(pop.dvars().alleleFreq[3][1], 0)
+        #
+        initGenotype(pop, freq=[0.2, 0.8], loci=self.locateEmptyLoci)
+        stat(pop, alleleFreq=ALL_AVAIL)
+        for i in range(10):
+            self.assertGreater(pop.dvars().alleleFreq[i][1], 0)
+
+
     def testMemberFunc(self):
         for i in range(100):
             pop = Population(10)
