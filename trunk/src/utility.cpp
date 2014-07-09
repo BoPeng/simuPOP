@@ -1101,6 +1101,14 @@ lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_func(NULL), m_func_
 		m_elems.resize(1);
 		m_names.push_back(PyObj_AsString(obj));
 #endif
+	/* for some reason I do not understand, if we pass a 
+	   Python callable object (obj with _-call__, PyNumber_Check
+	   will be ok so PyCallable_Check must be checked before
+	   that case. */
+	} else if (PyCallable_Check(obj)) {
+		// if a function is provided
+		m_status = FROM_FUNC;
+		m_func = pyFunc(obj);
 	} else if (PyNumber_Check(obj)) {
 		m_status = REGULAR;
 		// accept a number
@@ -1151,10 +1159,6 @@ lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_func(NULL), m_func_
 			}
 			Py_DECREF(item);
 		}
-	} else if (PyCallable_Check(obj)) {
-		// if a function is provided
-		m_status = FROM_FUNC;
-		m_func = pyFunc(obj);
 	} else {
 		DBG_FAILIF(true, ValueError, "Invalid input for a list of integers.");
 	}
