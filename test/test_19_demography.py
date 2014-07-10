@@ -429,19 +429,12 @@ class TestDemography(unittest.TestCase):
                 199: [442, 663],
                 200: [1000, 1000],
             })
-        MultiStageModel([
+        self.assertRaises(ValueError, MultiStageModel, [
             LinearGrowthModel(T=100, N0=1000, r=0.01),  
             InstantChangeModel(N0=[1000, 1000], T=0),
             ExponentialGrowthModel(T=100, N0=[0.4, 0.6], r=0.001),
             InstantChangeModel(N0=[1000, 1000], T=0),
-        ])._assertSize(
-            {
-                0: 1010,
-                99: 2000,
-                100: [400, 600],
-                199: [442, 663],
-                200: [442, 663],
-            })
+        ])
 
     def testTerminator(self):
         model = MultiStageModel([
