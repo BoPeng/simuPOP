@@ -686,7 +686,7 @@ class RevertFixedSites : public BaseOperator
 {
 public:
 	/** Create an operator to set all alleles to zero at specified (parameter
-	 *  \e loci) or all loci if they are fixed (having no zero-allele) at these
+	 *  \e loci) or all loci if they are fixed (having one non-zero allele) at these
 	 *  loci. If parameter \e subPops are specified, only individuals in these
 	 *  subpopulations are considered.
 	 */

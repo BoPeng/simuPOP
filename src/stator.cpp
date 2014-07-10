@@ -1043,6 +1043,15 @@ bool statAlleleFreq::apply(Population & pop) const
 				// if lociValue is unspecified (not ALL_AVAIL)
 				if (m_loci.indexOf(lociValue) == NOT_FOUND)
 					continue;
+				if (!no_sex_chromosome) {
+					size_t p = (index_it->first - indIndex) / totNumLoci;
+					size_t chromType = pop.chromType(pop.chromLocusPair(lociValue).first);
+					if ((ind->sex() == FEMALE && chromType == CHROMOSOME_Y) ||
+					    (ind->sex() == MALE && (
+					                            (chromType == CHROMOSOME_X && p == 1) ||
+					                            (chromType == CHROMOSOME_Y && p == 0))))
+						continue;
+				}
 				// record allele
 				std::map<size_t, intDict>::iterator allele_it = loci_alleles.find(lociValue);
 				if (allele_it == loci_alleles.end()) {
