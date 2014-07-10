@@ -560,7 +560,10 @@ class TestOperator(unittest.TestCase):
         # for diploid
         pop = Population([1000]*2, loci=10)
         initGenotype(pop, freq=[0.4, 0.6])
-        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        if moduleInfo()['alleleType'] != 'binary':
+            initGenotype(pop, loci=[2, 4], freq=[0, 1])
+        else:
+            initGenotype(pop, loci=[2, 4], freq=[0, 0, 1])
         revertFixedSites(pop)
         stat(pop, alleleFreq=ALL_AVAIL)
         for loc in range(10):
@@ -571,7 +574,10 @@ class TestOperator(unittest.TestCase):
         # for one subpopulation
         pop = Population([1000]*2, loci=10)
         initGenotype(pop, freq=[0.4, 0.6])
-        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        if moduleInfo()['alleleType'] != 'binary':
+            initGenotype(pop, loci=[2, 4], freq=[0, 1])
+        else:
+            initGenotype(pop, loci=[2, 4], freq=[0, 0, 1])
         revertFixedSites(pop, subPops=[1])
         stat(pop, alleleFreq=ALL_AVAIL)
         for loc in range(10):
@@ -582,7 +588,10 @@ class TestOperator(unittest.TestCase):
         # parameter loci
         pop = Population([1000]*2, loci=10)
         initGenotype(pop, freq=[0.4, 0.6])
-        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        if moduleInfo()['alleleType'] != 'binary':
+            initGenotype(pop, loci=[2, 4], freq=[0, 1])
+        else:
+            initGenotype(pop, loci=[2, 4], freq=[0, 0, 1])
         revertFixedSites(pop, loci=range(4))
         stat(pop, alleleFreq=ALL_AVAIL)
         for loc in range(10):
@@ -596,7 +605,10 @@ class TestOperator(unittest.TestCase):
         initSex(pop, sex=[MALE, FEMALE])
         pop.setVirtualSplitter(SexSplitter())
         initGenotype(pop, freq=[0.4, 0.6])
-        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        if moduleInfo()['alleleType'] != 'binary':
+            initGenotype(pop, loci=[2, 4], freq=[0, 1])
+        else:
+            initGenotype(pop, loci=[2, 4], freq=[0, 0, 1])
         revertFixedSites(pop, subPops=[(0,0), (1,1)])
         stat(pop, alleleFreq=ALL_AVAIL, vars='alleleFreq_sp')
         for loc in range(10):
@@ -611,7 +623,10 @@ class TestOperator(unittest.TestCase):
         #
         pop = Population([1000]*2, ploidy=1, loci=10)
         initGenotype(pop, freq=[0.4, 0.6])
-        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        if moduleInfo()['alleleType'] != 'binary':
+            initGenotype(pop, loci=[2, 4], freq=[0, 1])
+        else:
+            initGenotype(pop, loci=[2, 4], freq=[0, 0, 1])
         revertFixedSites(pop)
         stat(pop, alleleFreq=ALL_AVAIL)
         for loc in range(10):
@@ -622,7 +637,10 @@ class TestOperator(unittest.TestCase):
         # for one subpopulation
         pop = Population([1000]*2,ploidy=1,  loci=10)
         initGenotype(pop, freq=[0.4, 0.6])
-        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        if moduleInfo()['alleleType'] != 'binary':
+            initGenotype(pop, loci=[2, 4], freq=[0, 1])
+        else:
+            initGenotype(pop, loci=[2, 4], freq=[0, 0, 1])
         revertFixedSites(pop, subPops=[1])
         stat(pop, alleleFreq=ALL_AVAIL)
         for loc in range(10):
@@ -633,7 +651,10 @@ class TestOperator(unittest.TestCase):
         # parameter loci
         pop = Population([1000]*2, ploidy=1, loci=10)
         initGenotype(pop, freq=[0.4, 0.6])
-        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        if moduleInfo()['alleleType'] != 'binary':
+            initGenotype(pop, loci=[2, 4], freq=[0, 1])
+        else:
+            initGenotype(pop, loci=[2, 4], freq=[0, 0, 1])
         revertFixedSites(pop, loci=range(4))
         stat(pop, alleleFreq=ALL_AVAIL)
         for loc in range(10):
@@ -647,7 +668,10 @@ class TestOperator(unittest.TestCase):
         initSex(pop, sex=[MALE, FEMALE])
         pop.setVirtualSplitter(SexSplitter())
         initGenotype(pop, freq=[0.4, 0.6])
-        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        if moduleInfo()['alleleType'] != 'binary':
+            initGenotype(pop, loci=[2, 4], freq=[0, 1])
+        else:
+            initGenotype(pop, loci=[2, 4], freq=[0, 0, 1])
         revertFixedSites(pop, subPops=[(0,0), (1,1)])
         stat(pop, alleleFreq=ALL_AVAIL, vars='alleleFreq_sp')
         for loc in range(10):
@@ -662,7 +686,10 @@ class TestOperator(unittest.TestCase):
         #
         pop = Population([1000]*2, loci=[3, 7], chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
         initGenotype(pop, freq=[0.4, 0.6])
-        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        if moduleInfo()['alleleType'] != 'binary':
+            initGenotype(pop, loci=[2, 4], freq=[0, 1])
+        else:
+            initGenotype(pop, loci=[2, 4], freq=[0, 0, 1])
         revertFixedSites(pop)
         stat(pop, alleleFreq=ALL_AVAIL)
         for loc in range(10):
@@ -673,7 +700,10 @@ class TestOperator(unittest.TestCase):
         # for one subpopulation
         pop = Population([1000]*2, loci=[3, 7], chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
         initGenotype(pop, freq=[0.4, 0.6])
-        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        if moduleInfo()['alleleType'] != 'binary':
+            initGenotype(pop, loci=[2, 4], freq=[0, 1])
+        else:
+            initGenotype(pop, loci=[2, 4], freq=[0, 0, 1])
         revertFixedSites(pop, subPops=[1])
         stat(pop, alleleFreq=ALL_AVAIL)
         for loc in range(10):
@@ -684,7 +714,10 @@ class TestOperator(unittest.TestCase):
         # parameter loci
         pop = Population([1000]*2, loci=[3, 7], chromTypes=[CHROMOSOME_X, CHROMOSOME_Y])
         initGenotype(pop, freq=[0.4, 0.6])
-        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        if moduleInfo()['alleleType'] != 'binary':
+            initGenotype(pop, loci=[2, 4], freq=[0, 1])
+        else:
+            initGenotype(pop, loci=[2, 4], freq=[0, 0, 1])
         revertFixedSites(pop, loci=range(4))
         stat(pop, alleleFreq=ALL_AVAIL)
         for loc in range(10):
@@ -698,7 +731,10 @@ class TestOperator(unittest.TestCase):
         initSex(pop, sex=[MALE, FEMALE])
         pop.setVirtualSplitter(SexSplitter())
         initGenotype(pop, freq=[0.4, 0.6])
-        initGenotype(pop, loci=[2, 4], freq=[0, 0.5, 0.5])
+        if moduleInfo()['alleleType'] != 'binary':
+            initGenotype(pop, loci=[2, 4], freq=[0, 1])
+        else:
+            initGenotype(pop, loci=[2, 4], freq=[0, 0, 1])
         revertFixedSites(pop, subPops=[(0,0), (1,0)])
         stat(pop, alleleFreq=ALL_AVAIL, subPops=[(0,0), (1,0)], vars='alleleFreq_sp')
         for loc in range(10):

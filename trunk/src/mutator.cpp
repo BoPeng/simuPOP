@@ -608,10 +608,17 @@ bool RevertFixedSites::apply(Population & pop) const
 		for (size_t idx = 0; idx < loci.size(); ++idx) {
 			size_t loc = loci[idx];
 #endif
+			Allele non_zero = 0;
 			bool fixed = true;
 			ConstIndAlleleIterator a = const_cast<const Population &>(pop).alleleIterator(loc, sp->subPop());
 			for (; a.valid(); ++a) {
-				if (!DEREF_ALLELE(a)) {
+				Allele aa = DEREF_ALLELE(a);
+				if (aa == 0) {
+					fixed = false;
+					break;
+				} else if (non_zero == 0)  // the first time
+					non_zero = aa;
+				else if (non_zero != aa) {
 					fixed = false;
 					break;
 				}
