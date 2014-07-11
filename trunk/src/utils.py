@@ -2805,6 +2805,13 @@ class MSImporter:
                 pop.addIndFrom(p)
         return pop
 
+class _binaryWriter:
+    def __init__(self, func):
+        self.func = func
+
+    def __call__(self, item):
+        self.func(item.encode('ISO8859-1'))
+
 class Exporter(PyOperator):
     '''An operator to export the current population in specified format.
     Currently supported file formats include:
@@ -3146,8 +3153,18 @@ class Exporter(PyOperator):
                 self._determineSubPops(pop), self.infoFields, gui=self.gui)
         elif hasattr(self.output, 'write'):
             # this must be a file handle
-            self.exporter.export(pop, self.output.write,
-                self._determineSubPops(pop), self.infoFields, gui=self.gui)
+            if sys.version_info.major == 2:
+                self.exporter.export(pop, self.output.write,
+                    self._determineSubPops(pop), self.infoFields, gui=self.gui)
+            else:
+                try:
+                    # in python 3, if the file is opened in binary mode, only bytes are
+                    # accepted.
+                    self.exporter.export(pop, _binaryWriter(self.output.write),
+                        self._determineSubPops(pop), self.infoFields, gui=self.gui)
+                except TypeError:  
+                    self.exporter.export(pop, self.output.write,
+                        self._determineSubPops(pop), self.infoFields, gui=self.gui)
         else:
             raise ValueError('Invalid output specification.')
         return True

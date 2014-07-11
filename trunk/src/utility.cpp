@@ -3042,8 +3042,22 @@ void StreamProvider::closeOstream()
 			DBG_ASSERT(m_func.isValid(), SystemError,
 				"Passed function object is invalid");
 			string str = dynamic_cast<ostringstream *>(m_filePtr)->str();
+// in swingpyrun.h, the PyString_Check is defined to PyBytes_Check
+#if PY_VERSION_HEX >= 0x03000000
+			// This is not efficient because all 'write-string operations will
+			// pass as BYTES first. There should be a way to test if the function
+			// accept string or bytes.
+			// first try bytes
+			PyObject * arglist = Py_BuildValue("(S)", PyBytes_FromString(str.c_str()));
+			PyObject * pyResult = PyEval_CallObject(m_func.func(), arglist);
+			if (pyResult == NULL) {
+				arglist = Py_BuildValue("(s)", str.c_str());
+				pyResult = PyEval_CallObject(m_func.func(), arglist);
+			}
+#else
 			PyObject * arglist = Py_BuildValue("(s)", str.c_str());
 			PyObject * pyResult = PyEval_CallObject(m_func.func(), arglist);
+#endif
 			if (pyResult == NULL) {
 				PyErr_Print();
 				PyErr_Clear();
