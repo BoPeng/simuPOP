@@ -296,7 +296,20 @@ vectoru Simulator::evolve(
 						fill(activeReps.begin(), activeReps.end(), false);
 						numStopped = activeReps.size();
 						break;
+					} catch (RevertEvolution e) {
+						if (!curPop.getVars().hasVar("gen"))
+							curPop.setGen(0);
+						if (!curPop.getVars().hasVar("rep"))
+							curPop.setRep(curRep);
+						long newCurGen = curPop.getVars().getVarAsInt("gen");
+						if (newCurGen != static_cast<long>(curPop.gen()))
+							curPop.setGen(newCurGen);
+						if (gens > 0)
+							gens += curGen - newCurGen;
+						curGen = newCurGen;
+						DBG_DO(DBG_SIMULATOR, cerr << "Revert to generation " << curGen << endl);
 					}
+
 					elapsedTime("Applied " + preOps[it]->describe());
 				}
 			}
@@ -324,6 +337,18 @@ vectoru Simulator::evolve(
 				numStopped = activeReps.size();
 				// does not execute post mating operator
 				break;
+			} catch (RevertEvolution e) {
+				if (!curPop.getVars().hasVar("gen"))
+					curPop.setGen(0);
+				if (!curPop.getVars().hasVar("rep"))
+					curPop.setRep(curRep);
+				long newCurGen = curPop.getVars().getVarAsInt("gen");
+				if (newCurGen != static_cast<long>(curPop.gen()))
+					curPop.setGen(newCurGen);
+				if (gens > 0)
+					gens += curGen - newCurGen;
+				curGen = newCurGen;
+				DBG_DO(DBG_SIMULATOR, cerr << "Revert to generation " << curGen << endl);
 			}
 
 			elapsedTime("Mating finished.");
@@ -355,6 +380,18 @@ vectoru Simulator::evolve(
 						numStopped = activeReps.size();
 						// does not run the rest of the post-mating operators.
 						break;
+					} catch (RevertEvolution e) {
+						if (!curPop.getVars().hasVar("gen"))
+							curPop.setGen(0);
+						if (!curPop.getVars().hasVar("rep"))
+							curPop.setRep(curRep);
+						long newCurGen = curPop.getVars().getVarAsInt("gen");
+						if (newCurGen != static_cast<long>(curPop.gen()))
+							curPop.setGen(newCurGen);
+						if (gens > 0)
+							gens += curGen - newCurGen;
+						curGen = newCurGen;
+						DBG_DO(DBG_SIMULATOR, cerr << "Revert to generation " << curGen << endl);
 					}
 					elapsedTime("Applied " + postOps[it]->describe());
 				}
@@ -403,8 +440,11 @@ bool Simulator::apply(const opList & ops)
 			if (!ops[it]->isActive(curRep, 0, 0, activeReps, true))
 				continue;
 
-			ops[it]->apply(curPop);
-
+			try {
+				ops[it]->apply(curPop);
+			} catch (RevertEvolution e) {
+				//
+			}
 			elapsedTime("Applied " + ops[it]->describe());
 		}
 	}

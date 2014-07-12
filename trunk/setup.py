@@ -741,7 +741,7 @@ if os.name == 'nt':    # Windows
 if __name__ == '__main__':
     SIMUPOP_VER, SIMUPOP_REV = simuPOP_version()
     # create source file for each module
-    MODULES = ['std', 'op', 'la', 'laop', 'ba', 'baop', 'mu', 'muop', 'lin', 'linop']
+    MODULES = ['std']
     #
     # Generate Wrapping files
     #

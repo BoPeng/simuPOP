@@ -8596,6 +8596,18 @@ Usage:
 
 %feature("docstring") simuPOP::ResizeSubPops::describe "Obsolete or undocumented function."
 
+%feature("docstring") simuPOP::RevertEvolution "
+
+"; 
+
+%feature("docstring") simuPOP::RevertEvolution::RevertEvolution "
+
+Usage:
+
+    RevertEvolution(msg)
+
+"; 
+
 %feature("docstring") simuPOP::RevertFixedSites "
 
 Details:
@@ -8620,9 +8632,9 @@ Usage:
 Details:
 
     Create an operator to set all alleles to zero at specified
-    (parameter loci) or all loci if they are fixed (having no zero-
-    allele) at these loci. If parameter subPops are specified, only
-    individuals in these subpopulations are considered.
+    (parameter loci) or all loci if they are fixed (having one non-
+    zero allele) at these loci. If parameter subPops are specified,
+    only individuals in these subpopulations are considered.
 
 "; 
 
@@ -8643,6 +8655,55 @@ Usage:
 %feature("docstring") simuPOP::RevertFixedSites::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::RevertFixedSites::describe "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::RevertIf "
+
+Details:
+
+    This operator replaces the current evolving population by a
+    population loaded from a specified filename if certain condition
+    is met. It is mostly used to return to a previously saved state if
+    the simulation process fails to met a condition (e.g. a disease
+    allele is lost).
+
+"; 
+
+%feature("docstring") simuPOP::RevertIf::RevertIf "
+
+Usage:
+
+    RevertIf(cond, fromPop=\"\", output=\"\", begin=0, end=-1, step=1,
+      at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+Details:
+
+    Replaces the current evolving population by a population loaded
+    from fromPop, which should be a file saved by function
+    Population.save() or operator @ SavePopulation@. If a Python
+    expression (a string) is given to parameter cond, the expression
+    will be evalulated in each population's local namespace when this
+    operator is applied. When a Python function with optional
+    parameter pop is specified, it should accept the current
+    population (to parameter pop) and converts and return True or
+    False. Otherwise, parameter cond will be treated as a fixed
+    condition (converted to True or False) upon which the population
+    is reverted.
+
+"; 
+
+%feature("docstring") simuPOP::RevertIf::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::RevertIf::describe "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::RevertIf::apply "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::RevertIf::~RevertIf "
+
+Usage:
+
+    x.~RevertIf()
+
+"; 
 
 %feature("docstring") simuPOP::RNG "
 

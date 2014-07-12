@@ -211,6 +211,7 @@ __all__ = [
     'SummaryTagger',
     #
     'TerminateIf',
+    'RevertIf',
     'DiscardIf',
     'discardIf',
     #
