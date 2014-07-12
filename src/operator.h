@@ -110,7 +110,7 @@ public:
 	 *    written, which can be \c '' (no output), \c '>' (standard output),
 	 *    \c 'filename' prefixed by one or more '>', or an Python expression
 	 *    prefixed by an exclamation mark (\c '!expr'). If a \c file object, or
-	 *    any Python object with a \c write function is provided, the output 
+	 *    any Python object with a \c write function is provided, the output
 	 *    will be write to this file. Alternatively, a Python function can be
 	 *    given which will be called with a string of output content.
 	 *  \param begin The starting generation at which an operator will be
@@ -581,6 +581,7 @@ public:
 	{
 	}
 
+
 	/// HIDDEN
 	virtual BaseOperator * clone() const
 	{
@@ -667,6 +668,61 @@ private:
 
 	/// message to print when terminated
 	const string m_message;
+};
+
+
+/** This operator replaces the current evolving population by a population
+ *  loaded from a specified filename if certain condition is met. It is mostly
+ *  used to return to a previously saved state if the simulation process
+ *  fails to met a condition (e.g. a disease allele is lost).
+ */
+class RevertIf : public BaseOperator
+{
+
+public:
+	/** Replaces the current evolving population by a population loaded from
+	 *  \e fromPop, which should be a file saved by function \c Population.save()
+	 *  or operator \c SavePopulation. If a Python expression (a string) is
+	 *  given to parameter \e cond, the expression will be evalulated in each
+	 *  population's local namespace when this operator is applied. When a Python
+	 *  function with optional parameter \c pop is specified, it should accept 
+	 *  the current population (to parameter \c pop) and converts and return 
+	 *  \c True or \c False. Otherwise, parameter \e cond will be treated as a
+	 *  fixed condition (converted to \c True or \c False) upon which the population
+	 *  is reverted.
+	 */
+	RevertIf(PyObject * cond, const string & fromPop = string(),
+		const stringFunc & output = "", int begin = 0, int end = -1,
+		int step = 1, const intList & at = vectori(), const intList & reps = intList(),
+		const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr());
+
+	/// HIDDEN Deep copy of a \c RevertIf terminator
+	virtual BaseOperator * clone() const
+	{
+		return new RevertIf(*this);
+	}
+
+
+	/// HIDDEN
+	string describe(bool format = true) const;
+
+
+	/// HIDDEN check all alleles in vector allele if they are fixed.
+	bool apply(Population & pop) const;
+
+	virtual ~RevertIf()
+	{
+	}
+
+
+private:
+	/// 
+	Expression m_cond;
+	pyFunc m_func;
+	int m_fixedCond;
+
+	/// message to print when terminated
+	const string m_fromPop;
 };
 
 

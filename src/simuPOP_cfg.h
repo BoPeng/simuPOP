@@ -485,6 +485,14 @@ public:
 	};
 };
 
+class RevertEvolution : public Exception
+{
+public:
+	RevertEvolution(const string msg) : Exception(msg)
+	{
+	};
+};
+
 
 #define UnnamedSubPop        ""
 }

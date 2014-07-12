@@ -17476,6 +17476,166 @@ lstparams "caption={Terminate the evolution of all populations in a simulator},l
 \end_layout
 
 \begin_layout Subsection
+Conditionally revert or forward an evolutionary process to a saved state
+ (operator 
+\family typewriter
+RevertIf
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+RevertIf
+\family default
+ is a very interesting operator.
+ It accepts a condition and a saved population (
+\family typewriter
+.pop
+\family default
+ file) and will revert the current evolving population to the saved population
+ if the condition is met.
+ There are at least two secenarios for which this operator can be very useful.
+\end_layout
+
+\begin_layout Standard
+One of the biggest problem with introducing a disease allele to an evolving
+ population (using an operator PointMutate) is that the disease allele will
+ very likely get lost because of genetic drift.
+ It is possible to simulate the allele frequency trajectory backward in
+ time and follow the trajectory during the forward-time simulation phase
+ (
+\family typewriter
+simuPOP.utils.simulateBackwardTrajectory
+\family default
+, 
+\family typewriter
+simuPOP.utils.simulateForwardTrajectory
+\family default
+, and a 
+\family typewriter
+ControlledRandomMating
+\family default
+ mating scheme with a 
+\family typewriter
+ControlledOffspringGenerator
+\family default
+).
+ However, that method is applicable only to evolutionary processes with
+ a small number of loci under selection, and has a number of limitations
+ (e.g.
+ unlinked disease predisposing loci).
+\end_layout
+
+\begin_layout Standard
+A natural way to simulate the introduction of disease alleles is therefore
+ to terminate and restart the simulation whenever the disease allele gets
+ lost.
+ This could be done by splitting the evolutionary process into two stages.
+ The disease allele is introduced at the second stage and the simulation
+ will be terminated as soon as the introduced allele is lost (using a 
+\family typewriter
+TerminateIf
+\family default
+ operator).
+ The second stage would be repeated until the simulation succeeds.
+ Alternatively, you can save the population before the introduction of the
+ disease allele, and revert to the saved population when the introduced
+ allele gets lost.
+ The latter can be done using operator 
+\family typewriter
+RevertIf
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "RevertToSaved"
+
+\end_inset
+
+ shows an example of such an evolutionary process.
+ This example saves an evolving population at the beginning of generation
+ 4 and introduces a disease allele to the population.
+ Starting from the fifth generation, a RevertIf opeartor checks if the disease
+ allele still exists in the population, and revert to the saved population
+ if the allele has been lost.
+ When you read the example, it is important to remind yourself that after
+ the 
+\family typewriter
+RevertIf
+\family default
+ operator is triggered and applied, the population is at generation 4 before
+ the disease allele is introduced, This is why the 
+\family typewriter
+SavePopulation
+\family default
+ and 
+\family typewriter
+RevertIf
+\family default
+ operators are usually put together.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/RevertToSaved.log"
+lstparams "caption={Revert an evolutionary process to a previous saved state when an introduced allele is lost},label={RevertToSaved}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The second application is to skip certain part of the evolutionary process
+ if it has been executed before.
+ For example, many forward-time simulation scenarios have a long burn-in
+ process.
+ It you simulate several replicates of the evolutionary process, you can
+ save the burned in initial population of the first replicate, and reuse
+ it for subsequent simulations.
+ In Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ReuseBurnin"
+
+\end_inset
+
+, we save the population at generation 10 for the first replicate.
+ The next few replicates would load the saved file and jump directly to
+ generation 10.
+ Note that although the 
+\family typewriter
+RevertIf
+\family default
+ is applied at generation 0, it cannot be put in parameter 
+\family typewriter
+initOps
+\family default
+ because it otherwise evolve another 20 generations from generation 10.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/ReuseBurnIn.log"
+lstparams "caption={Jump to the middle of an evolutionary process by uing a previously saved population.},label={ReuseBurnin}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Conditional during mating operator (operator 
 \family typewriter
 DiscardIf

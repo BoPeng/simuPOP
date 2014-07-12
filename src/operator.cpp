@@ -31,6 +31,8 @@ using std::ostringstream;
 #  define PyString_Check PyUnicode_Check
 #endif
 
+#include "utility.h"
+
 namespace simuPOP {
 
 bool BaseOperator::isActive(ssize_t rep, ssize_t gen) const
@@ -583,6 +585,73 @@ bool TerminateIf::apply(Population & pop) const
 		if (m_stopAll)
 			throw StopEvolution(m_message);
 		return false;                                             // return false, this replicate will be stopped
+	} else
+		return true;
+}
+
+
+RevertIf::RevertIf(PyObject * cond, const string & fromPop,
+	const stringFunc & output, int begin, int end, int step, const intList & at,
+	const intList & reps, const subPopList & subPops,
+	const stringList & infoFields) :
+	BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
+	m_cond(PyString_Check(cond) ? PyObj_AsString(cond) : string()),
+	m_func(PyCallable_Check(cond) ? cond : NULL),
+	m_fixedCond(-1), m_fromPop(fromPop)
+{
+	(void)output;  // avoid warning about unused parameter
+	if (!PyString_Check(cond) && !PyCallable_Check(cond)) {
+		bool c;
+		PyObj_As_Bool(cond, c);
+		const_cast<RevertIf *>(this)->m_fixedCond = c ? 1 : 0;
+	}
+}
+
+string RevertIf::describe(bool /* format */) const
+{
+	return string("<simuPOP.RevertIf> revert the evolution of population to ") +
+	       m_fromPop + " if a condition is met";
+}
+
+bool RevertIf::apply(Population & pop) const
+{
+	bool res = true;
+	if (m_fixedCond != -1)
+		res = m_fixedCond == 1;
+	else if (m_func.isValid()) {
+		PyObject * args = PyTuple_New(m_func.numArgs());
+
+		DBG_ASSERT(args, RuntimeError, "Failed to create a parameter tuple");
+
+		for (size_t i = 0; i < m_func.numArgs(); ++i) {
+			const string & arg = m_func.arg(i);
+			if (arg == "pop")
+				PyTuple_SET_ITEM(args, i, pyPopObj(static_cast<void *>(&pop)));
+			else {
+				DBG_FAILIF(true, ValueError, "Only parameters 'pop', 'off', 'dad', and 'mom' are acceptable in "
+					                         "function" + m_func.name());
+			}
+		}
+		res = m_func(PyObj_As_Bool, args);
+		Py_XDECREF(args);
+	} else {
+		m_cond.setLocalDict(pop.dict());
+		res = m_cond.valueAsBool();
+	}
+
+	if (res) {
+		if (!noOutput()) {
+			ostream & out = getOstream(pop.dict());
+			out << "Revert to population " << m_fromPop << " at " << pop.gen() << endl;
+			closeOstream();
+		}
+		pop.load(m_fromPop);
+		/*
+		} else {
+			Population * p = (Population *)pyPopPointer(m_fromPop);
+			pop.swap(*p);
+		} */
+		throw RevertEvolution("");
 	} else
 		return true;
 }

@@ -527,6 +527,41 @@ class TestOperator(unittest.TestCase):
         )
         self.assertEqual(simu.dvars(0).gen, 1000)
 
+    def testRevertToSavedPop(self):
+        'Testing revert to saved population' 
+        pop = Population(100, loci=10)
+        evolved = pop.evolve(
+            initOps=InitSex(),
+            preOps=[
+                SavePopulation('init.pop', at=4),
+                RevertIf('alleleFreq[0][1] == 0', "init.pop", begin=5),
+                PointMutator(at=4, inds=0, allele=1, loci=0),
+            ],
+            matingScheme=RandomMating(),
+            postOps=Stat(alleleFreq=0),
+            gen=20
+        )
+        self.assertTrue(evolved >= 20)
+
+    #def testRevertToPop(self):
+    #    'Testing revert to a population object' 
+    #    pop = Population(100, loci=10)
+    #    initSex(pop)
+    #    pop1 = pop.clone()
+    #    evolved = pop.evolve(
+    #        initOps=[
+    #            PointMutator(inds=0, allele=1, loci=0),
+    #        ],
+    #        preOps=[
+    #            Stat(alleleFreq=0),
+    #            RevertIf('alleleFreq[0][1] == 0', pop1),
+    #        ],
+    #        matingScheme=RandomMating(),
+    #        gen=20
+    #    )
+    #    self.assertTrue(evolved >= 20)
+
+
     def testSubPopsOfDuringMatingOperator(self):
         'Testing subPops parameter of during mating operators'
         pop = Population([100]*2, infoFields='a')

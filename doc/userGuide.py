@@ -2233,6 +2233,67 @@ simu.evolve(
 
 #end_file
 
+
+#begin_file log/RevertToSaved.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.setRNG(seed=1234)
+#end_ignore
+
+pop = sim.Population(1000, loci=1)
+evolved = pop.evolve(
+    initOps=sim.InitSex(),
+    preOps=[
+        sim.SavePopulation('init.pop', at=4),
+        sim.RevertIf('alleleFreq[0][1] == 0', "init.pop", begin=5),
+        sim.PointMutator(at=4, inds=0, allele=1, loci=0),
+    ],
+    matingScheme=sim.RandomMating(),
+    postOps=[
+        sim.Stat(alleleFreq=0),
+        sim.PyEval(r"'%d %.4f\n' % (gen, alleleFreq[0][1])"),
+        ],
+    gen=20
+)
+print('Evolved {} generations'.format(evolved))
+#end_file
+
+
+#begin_file log/ReuseBurnIn.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import os
+import simuPOP as sim
+#begin_ignore
+if os.path.isfile('burnin.pop'):
+    os.remove('burnin.pop')
+
+sim.setRNG(seed=1234)
+#end_ignore
+
+for rep in range(5):
+    pop = sim.Population(1000, loci=1)
+    evolved = pop.evolve(
+        initOps=sim.InitSex(),
+        preOps=[
+            sim.RevertIf(os.path.isfile('burnin.pop'), 'burnin.pop', at=0),
+            sim.IfElse(not os.path.isfile('burnin.pop'),
+                [sim.PyOutput('Save burnin at gen=10\n'),
+                 sim.SavePopulation('burnin.pop')], at=10),
+        ],
+        matingScheme=sim.RandomMating(),
+        gen=20
+    )
+    print('Evolved {} generations'.format(evolved))
+
+#end_file
+
 #begin_file log/DiscardIf.py
 #begin_ignore
 import simuOpt

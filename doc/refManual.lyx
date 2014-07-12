@@ -1415,6 +1415,13 @@ TerminateIfRef
 
 
 \backslash
+RevertIfRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 DiscardIfRef
 \end_layout
 
