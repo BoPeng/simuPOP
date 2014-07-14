@@ -458,5 +458,94 @@ class TestDemography(unittest.TestCase):
         )
 
     
+    def testRevertSimulation(self):
+        #
+        # There is a big problem with applying a demographic model
+        # NOT in sequential manner. That is to say, when we apply
+        # a demographic model to a population for the first time, it
+        # will take its generation number as the initial generation
+        # number. 
+        pop = Population(100, loci=1)
+        m = LinearGrowthModel(N0=[0.5, 0.5], r=[0.1, 0.2], T=100)
+        for gen in [0, 10, 5, 7, 6, 8, 20]:
+            pop.dvars().gen = gen
+            self.assertEqual(m(pop), [50  + 5 * (gen+1), 50 + 10*(gen+1)])
+        #
+        m = InstantChangeModel(N0=100, T=100, G=[10, 40], NG=[30, 50])
+        for gen in [0, 5, 60, 10, 45, 15, 70]:
+            # the object has to be initialized with gen = 0
+            pop.dvars().gen = gen
+            self.assertEqual(list(m(pop)), 
+                [{0:100, 5: 100, 10: 30, 15: 30, 45: 50, 60:50, 70:50}[gen]])
+        #
+        # for multiple stage stuff
+        m = MultiStageModel([
+            LinearGrowthModel(T=100, N0=1000, r=0.01),  
+            InstantChangeModel(N0=[1000, 1000], T=1),
+            LinearGrowthModel(T=100, N0=[400, 600], r=0.01),
+        ])
+        for gen in [0, 10, 40, 20, 50, 110, 120, 10, 40, 50]:
+            # the object has to be initialized with gen = 0
+            pop.dvars().gen = gen
+            self.assertEqual(m(pop), 
+                {0:[1000 + 10], 50: [1000 + 10*51],
+                10:[1000 + 10*11],
+                20:[1000 + 10*21],
+                40:[1000 + 10*41],
+                110:[400 + 4*10, 600+6*10],
+                120:[400 + 4*20, 600+6*20],
+                }[gen])
+        #
+        # for multiple stage stuff
+        m = MultiStageModel([
+            LinearGrowthModel(T=100, N0=1000, r=0.01),  
+            InstantChangeModel(N0=[1000, 1000], T=1),
+            LinearGrowthModel(T=100, N0=[0.4, 0.6], r=0.01),
+        ])
+        for gen in [0, 10, 40, 20, 50, 100, 101, 110, 120, 10, 40, 50]:
+            # the object has to be initialized with gen = 0
+            pop.dvars().gen = gen
+            self.assertEqual(m(pop), 
+                {0:[1000 + 10], 50: [1000 + 10*51],
+                10:[1000 + 10*11],
+                20:[1000 + 10*21],
+                40:[1000 + 10*41],
+                99:[1000 + 10*100],
+                100:[1000, 1000],
+                101:[400 + 4*1, 600+6*1],
+                110:[400 + 4*10, 600+6*10],
+                120:[400 + 4*20, 600+6*20],
+                }[gen])
+        #
+
+    def testRevertAndDemo(self):
+        pop = Population(100, loci=1)
+        initpop = pop.clone()
+        pop.evolve(initOps=InitSex(), matingScheme=RandomMating(), gen=10)
+        pop.save('burnin.pop')
+        pop1 = initpop.clone()
+        gens = pop1.evolve(
+            preOps=RevertIf(True, 'burnin.pop', at=0),
+            matingScheme=RandomMating(),
+            gen=20
+        )
+        self.assertEqual(gens, 10)
+        # in this case, the evolution starts at generation 10
+        # and evolve for another 20 generations.
+        pop1 = initpop.clone()
+        self.assertEqual(pop1.evolve(
+            preOps=RevertIf(True, 'burnin.pop', at=0),
+            matingScheme=RandomMating(subPopSize=LinearGrowthModel(T=20, r=0.1))
+        ), 20)
+        #
+        pop1 = initpop.clone()
+        self.assertEqual(pop1.evolve(
+            initOps=InitSex(),
+            postOps=RevertIf(True, 'burnin.pop', at=0),
+            matingScheme=RandomMating(subPopSize=LinearGrowthModel(T=20, r=0.1))
+        ), 10)
+
+
+
 if __name__ == '__main__':
     unittest.main()

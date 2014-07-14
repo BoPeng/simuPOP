@@ -29,7 +29,31 @@
 """
 simuPOP demographic models
 
-This module provides some commonly used  demographic models
+This module provides some commonly used demographic models. In addition
+to several migration rate generation functions, it provides models that
+encapsulate complete demographic features of one or more populations (
+population growth, split, bottleneck, admixture, migration). These models
+provides:
+
+1. The model itself can be passed to parameter subPopSize of a mating
+   scheme to determine the size of the next generation. More importantly,
+   it performs necessary actions of population size change when needed.
+
+2. The model provides attribute num_gens, which can be passed to parameter
+   ``gens`` of ``Simulator.evolve`` or ``Population.evolve`` function.
+   A demographic model can also terminate an evolutionary process by
+   returnning an empty list so ``gens=model.num_gens`` is no longer required.
+
+The demographic model considers two use cases:
+1. When the demographic model is called sequencially, namely each time with
+   a population having pop.dvars().gen increased by 1, the model will change
+   the passed population as necessary.
+
+2. When the demographic model is accessed randomly, it is assumed that the
+   evolving population is affected by a RevertIf operator. In this case, it
+   is assumed that the passed population already have the population size
+   of the correct size of the generation so the demographic model should 
+   simply return the size of the next generation.
 
 """
 
@@ -173,7 +197,10 @@ class BaseDemographicModel:
             isinstance(x[1], str) and self._isSize(x[0])
 
     def _isSize(self, x):
-        return isinstance(x, (int, float)) or x is None
+        if sys.version_info.major == 2:
+            return isinstance(x, (int, long, float)) or x is None
+        else:
+            return isinstance(x, (int, float)) or x is None
 
     def _extractSize(self, sz):
         # sz = 100
@@ -243,6 +270,8 @@ class BaseDemographicModel:
         # if size is None or size is [], return unchanged
         if not size:
             return 
+        if '__locked__' in pop.vars() and pop.dvars().__locked__:
+            raise RuntimeError('Change population size of a locked population is not allowed.')
         named_size = self._convertToNamedSize(size)
         if pop.numSubPop() > 1:
             # merge subpopualtions
@@ -258,7 +287,7 @@ class BaseDemographicModel:
             elif len(size) != pop.numSubPop():
                 raise ValueError('Number of subpopulations mismatch: %d in population '
                     '%d required for ExponentialGrowthModel.' % (pop.numSubPop(), len(size)))
-            elif all([self._isNamedSize(x) for x in size]):
+            elif all([self._isNamedSize(x) for x in named_size]):
                 # matching number of subpopulations, ...
                 new_size = [x[0] for x in named_size]
                 # replace None with exsiting size
@@ -290,6 +319,8 @@ class BaseDemographicModel:
                         split_sizes.insert(0, [idx])
                         for z in x:
                             if isinstance(z[0], int):
+                                split_sizes[0].append(z[0])
+                            elif sys.version_info.major == 2 and isinstance(z[0], long):
                                 split_sizes[0].append(z[0])
                             elif isinstance(z[0], float):
                                 split_sizes[0].append(int(z[0]*y))
@@ -465,7 +496,7 @@ class BaseDemographicModel:
         if x == T-1:
             return NT
         elif x >= T:
-            raise ValueError('Generation number %d out of bound (0<= t < %d is expected'
+            raise ValueError('Generation number %d out of bound (0<= t < %d is expected)'
                 % (x, T))
         else:
             return int(((x+1-T0)*NT + (T-x-1)*N0)/(T-T0))
@@ -474,19 +505,61 @@ class BaseDemographicModel:
         return True
 
     def __call__(self, pop):
-        # the first time this function is called
-        if (not hasattr(self, '_start_gen')) or self._start_gen > pop.dvars().gen:
+        # When calling the demographic function, there are two quite separate scenarios
+        #
+        # 1. The demographic function is called sequentially. When a demographic model
+        #   is initialized, it is considered part of its own generation zero. There can
+        #   be two cases, the first one for initialization, the other one for instant
+        #   population change (in the case of InstantChangeModel).
+        #
+        # 2. When the demographic function is called randomly, that is to say we might
+        #   have a population already at the destination size, and we just want to start
+        #   from that generation. In this case, all _fitTo_Size calls from the initialization
+        #   part should be disallowed. The other call from InstantChangeModel can be
+        #   called but the population is assumed to be already in place, so it should
+        #   not have any impact.
+        # 
+        # It is not quite clear how to tell these two cases apart. For a single-model or
+        # multi-stage model case, the first time the demographic model is called, 
+        # _start_gen should be set and fitSize will be called. 
+        #
+        # Then, for any subsequent calls, a single-model will not call initizliation again.
+        # For prograss-like calling, events will be triggered to change population size,
+        # for random access, we only assume that population already has the right size 
+        # and do not call fitSize.
+        #
+        # In the case of multi-model, random access will not call fitSize for any
+        # intermediate steps.
+        # 
+        # the first time this demographic function is called
+        self._randomAccess = False
+        if not hasattr(self, '_start_gen'):
             self._reset()
             self._start_gen = pop.dvars().gen
+            self._last_gen = pop.dvars().gen
             # resize populations if necessary
-            self._fitToSize(pop, self._raw_init_size)
-            # by this time, we should know the initial population size
-            self.init_size = pop.subPopSizes()
+            if '__locked__' in pop.vars() and pop.dvars().__locked__:
+                # pop is assumed to be in destination population size
+                # the initial population size has to be determined from user input 
+                # size, which is not possible if dynamic population size was
+                # specified.
+                self.init_size = self._extractSize(self._raw_init_size)
+                for sz in self.init_size:
+                    if sz is None or isinstance(sz, (float, list, tuple)):
+                        raise RuntimeError('Random access to an uninitialized demographic model with '
+                            'dynamic population size is not allowed.')
+            else:
+                self._fitToSize(pop, self._raw_init_size)
+                # by this time, we should know the initial population size
+                self.init_size = pop.subPopSizes()
             # then we can set up model if the model depends on initial
             # population size
             self._setup(pop)
+        elif pop.dvars().gen != self._last_gen + 1:
+            self._randomAccess = True
         #
         self._gen = pop.dvars().gen - self._start_gen
+        self._last_gen = pop.dvars().gen
         #
         for op in self.ops:
             if not op.apply(pop):
@@ -572,6 +645,11 @@ class ExponentialGrowthModel(BaseDemographicModel):
     def __call__(self, pop):
         if not BaseDemographicModel.__call__(self, pop):
             return []
+        #
+        # this model does not need differntiation between _randomAccess or not
+        # because it does not call fitSize to change population size. 
+        # pop passed to _setup() is not used.
+        #
         if self._gen == self.num_gens:
             return []
         elif self.r is None:
@@ -656,6 +734,10 @@ class LinearGrowthModel(BaseDemographicModel):
     def __call__(self, pop):
         if not BaseDemographicModel.__call__(self, pop):
             return []
+        #
+        # this model does not need differntiation between _randomAccess or not
+        # because it does not call fitSize to change population size.
+        #
         if self._gen == self.num_gens:
             return []
         elif self.r is None:
@@ -697,8 +779,8 @@ class InstantChangeModel(BaseDemographicModel):
                 raise ValueError('Multiple sizes should be specified if multiple G is provided.')
             if len(G) != len(NG):
                 raise ValueError('Please provide population size for each growth generation.')
-            self.G = G
-            self.NG = NG
+            self.G = sorted(G)
+            self.NG = [NG[G.index(x)] for x in self.G]
         #
         for g in self.G:
             if g < 0 or g >= self.num_gens:
@@ -707,14 +789,34 @@ class InstantChangeModel(BaseDemographicModel):
         self.removeEmptySubPops = removeEmptySubPops
 
     def __call__(self, pop):
+        # this one fixes N0... (self.init_size)
         if not BaseDemographicModel.__call__(self, pop):
             return []
-        if self._gen in self.G:
-            sz = self.NG[self.G.index(self._gen)]
-            self._fitToSize(pop, sz)
-        if self.removeEmptySubPops:
-            pop.removeSubPops([idx for idx,x in enumerate(pop.subPopSizes()) if x==0])
-        return pop.subPopSizes()
+        # 
+        if self._randomAccess or '__locked__' in pop.vars():
+            # for random access, we just return calculate size
+            if not self.G or self._gen < self.G[0]:
+                sz = self.init_size
+            else:
+                # we do not expect pop.gen() to come in sequence
+                # so that we can change the population size at exactly
+                # self.G generations, therefore we have to check which
+                # internal self._gen falls into.
+                for i in range(len(self.G)):
+                    if self._gen >= self.G[i] and (i == len(self.G) - 1 or self._gen < self.G[i+1]):
+                        sz = self.NG[i]
+                        break
+            if not isinstance(sz, (list, tuple)):
+                sz = [sz]
+        else:
+            # this is a sequential call, we do fitSize
+            if self._gen in self.G:
+                sz = self.NG[self.G.index(self._gen)]
+                self._fitToSize(pop, sz)
+            if self.removeEmptySubPops:
+                pop.removeSubPops([idx for idx,x in enumerate(pop.subPopSizes()) if x==0])
+            sz = pop.subPopSizes()
+        return sz
 
 
 
@@ -769,6 +871,9 @@ class AdmixtureModel(BaseDemographicModel):
     def __call__(self, pop):
         if not BaseDemographicModel.__call__(self, pop):
             return []
+        if self._randomAccess:
+            raise ValueError('simuPOP does not yet support random access to '
+                'an admixture demographic model')
         if self.model[0] == 'HI':
             if self._gen != 0:
                 return pop.subPopSizes()
@@ -839,6 +944,7 @@ class MultiStageModel(BaseDemographicModel):
         if self.models[-1].num_gens == 0:
             raise ValueError('The last demographic model in a MultiStageModel cannot last zero generation.')
         self._model_idx = 0
+        self._model_start_gen = 0
 
     def _reset(self):
         self._model_idx = 0
@@ -850,8 +956,8 @@ class MultiStageModel(BaseDemographicModel):
   
     def _advance(self, pop):
         self._model_idx += 1
+        self._model_start_gen = pop.dvars().gen
         while True:
-            self._start_gen = pop.dvars().gen
             if self._model_idx == len(self.models):
                 self._reset()
                 return []
@@ -868,33 +974,70 @@ class MultiStageModel(BaseDemographicModel):
                 continue
 
     def __call__(self, pop):
+        # in a special case when the demographic model has been
+        # initialized but the population has revert to a previous stage
+        # so that the starting gen is after the current gen. We will
+        # need to handle this case.
         # determines generation number internally as self.gen
         if not BaseDemographicModel.__call__(self, pop):
             return []
-        # There are three cases
-        # 1. within the current model, a valid step is returned
-        #   --> return
-        # 2. within the current model, a [] is returned by a 
-        #   terminator.
-        #   --> proceed to the next available model, call, and return
-        # 3. at the end of the current model,
-        #   --> proceed to the next available model, call, and return
-        # 4. at the beginning of a zero-step model
-        #   --> call
-        #   --> process to the next available model, call, and return
-        #
-        # in the middle
-        if self.models[self._model_idx].num_gens < 0 or \
-            self.models[self._model_idx].num_gens > self._gen:
-            sz = self.models[self._model_idx].__call__(pop)
-            if not sz:
+        if self._randomAccess:
+            # in this case, we assume that the population is already
+            # at the generation and is in need of size for next 
+            pop.dvars().__locked__ = True
+            # self._start_gen works, so is self._gen 
+            # but self._model_idx cannot be used, try to find it
+            g = 0
+            for idx,model in enumerate(self.models):
+                if model.num_gens == 0:
+                    continue
+                if model.num_gens < 0 or self._gen - g < model.num_gens:
+                    self._model_idx = idx
+                    # if we are jumping to an uninitialized model, we cannot
+                    # initialize it with a later generation and has to forcefully
+                    # initialize it with the correct starting generation.
+                    if self._gen > g and not hasattr(model, '_last_gen'):
+                        model._start_gen = g
+                        model._last_gen = g
+                        model.init_size = model._extractSize(model._raw_init_size)
+                        for sz in model.init_size:
+                            if sz is None or isinstance(sz, (float, list, tuple)):
+                                raise RuntimeError('Random access to an uninitialized demographic model with '
+                                    'dynamic population size is not allowed.')
+                        model._setup(pop)
+                    model._randomAccess = True
+                    sz = model.__call__(pop)
+                    pop.vars().pop('__locked__')
+                    return sz
+                g += model.num_gens
+            raise RuntimeError('Failed to jump to generation {}'.format(pop.dvars().gen))
+        else:
+            # sequential access to the demographic model
+            #
+            # There are three cases
+            # 1. within the current model, a valid step is returned
+            #   --> return
+            # 2. within the current model, a [] is returned by a 
+            #   terminator.
+            #   --> proceed to the next available model, call, and return
+            # 3. at the end of the current model,
+            #   --> proceed to the next available model, call, and return
+            # 4. at the beginning of a zero-step model
+            #   --> call
+            #   --> process to the next available model, call, and return
+            #
+            # in the middle
+            if self.models[self._model_idx].num_gens < 0 or \
+                self.models[self._model_idx].num_gens > self._gen - self._model_start_gen:
+                sz = self.models[self._model_idx].__call__(pop)
+                if not sz:
+                    sz = self._advance(pop)
+            elif self.models[self._model_idx].num_gens == 0:
+                sz = self.models[self._model_idx].__call__(pop)
                 sz = self._advance(pop)
-        elif self.models[self._model_idx].num_gens == 0:
-            sz = self.models[self._model_idx].__call__(pop)
-            sz = self._advance(pop)
-        elif self.models[self._model_idx].num_gens == self._gen:
-            sz = self._advance(pop)
-        return sz
+            elif self.models[self._model_idx].num_gens <= self._gen - self._model_start_gen:
+                sz = self._advance(pop)
+            return sz
 
 class OutOfAfricaModel(MultiStageModel):
     '''A dempgrahic model for the CHB, CEU, and YRI populations, as defined in
