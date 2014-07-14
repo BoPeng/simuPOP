@@ -590,14 +590,14 @@ bool TerminateIf::apply(Population & pop) const
 }
 
 
-RevertIf::RevertIf(PyObject * cond, const string & fromPop,
+RevertIf::RevertIf(PyObject * cond, const string & fromPop, const opList & ops,
 	const stringFunc & output, int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops,
 	const stringList & infoFields) :
 	BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 	m_cond(PyString_Check(cond) ? PyObj_AsString(cond) : string()),
 	m_func(PyCallable_Check(cond) ? cond : NULL),
-	m_fixedCond(-1), m_fromPop(fromPop)
+	m_fixedCond(-1), m_fromPop(fromPop), m_ops(ops)
 {
 	(void)output;  // avoid warning about unused parameter
 	if (!PyString_Check(cond) && !PyCallable_Check(cond)) {
@@ -645,12 +645,23 @@ bool RevertIf::apply(Population & pop) const
 			out << "Revert to population " << m_fromPop << " at " << pop.gen() << endl;
 			closeOstream();
 		}
+		size_t rep = pop.rep();
 		pop.load(m_fromPop);
-		/*
-		} else {
-			Population * p = (Population *)pyPopPointer(m_fromPop);
-			pop.swap(*p);
-		} */
+		if (!pop.getVars().hasVar("gen"))
+			pop.setGen(0);
+		if (!pop.getVars().hasVar("rep"))
+			pop.setRep(rep);
+		//
+		const vectorop & ops = m_ops.elems();
+		vectorop::const_iterator it = ops.begin();
+		vectorop::const_iterator itEnd = ops.end();
+		for (; it != itEnd; ++it) {
+			if (!(*it)->isActive(pop.rep(), pop.gen()))
+				continue;
+			bool ret = (*it)->apply(pop);
+			if (!ret)
+				return false;
+		}
 		throw RevertEvolution("");
 	} else
 		return true;
