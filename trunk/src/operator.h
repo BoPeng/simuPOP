@@ -689,9 +689,10 @@ public:
 	 *  the current population (to parameter \c pop) and converts and return 
 	 *  \c True or \c False. Otherwise, parameter \e cond will be treated as a
 	 *  fixed condition (converted to \c True or \c False) upon which the population
-	 *  is reverted.
+	 *  is reverted. After the population is reverted, an optional list of 
+	 *  operators \e ops could be applied to the population.
 	 */
-	RevertIf(PyObject * cond, const string & fromPop = string(),
+	RevertIf(PyObject * cond, const string & fromPop = string(), const opList & ops = opList(),
 		const stringFunc & output = "", int begin = 0, int end = -1,
 		int step = 1, const intList & at = vectori(), const intList & reps = intList(),
 		const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr());
@@ -723,6 +724,8 @@ private:
 
 	/// message to print when terminated
 	const string m_fromPop;
+
+	const opList m_ops;
 };
 
 

@@ -297,10 +297,6 @@ vectoru Simulator::evolve(
 						numStopped = activeReps.size();
 						break;
 					} catch (RevertEvolution e) {
-						if (!curPop.getVars().hasVar("gen"))
-							curPop.setGen(0);
-						if (!curPop.getVars().hasVar("rep"))
-							curPop.setRep(curRep);
 						long newCurGen = curPop.getVars().getVarAsInt("gen");
 						if (newCurGen != static_cast<long>(curPop.gen()))
 							curPop.setGen(newCurGen);
@@ -338,10 +334,6 @@ vectoru Simulator::evolve(
 				// does not execute post mating operator
 				break;
 			} catch (RevertEvolution e) {
-				if (!curPop.getVars().hasVar("gen"))
-					curPop.setGen(0);
-				if (!curPop.getVars().hasVar("rep"))
-					curPop.setRep(curRep);
 				long newCurGen = curPop.getVars().getVarAsInt("gen");
 				if (newCurGen != static_cast<long>(curPop.gen()))
 					curPop.setGen(newCurGen);
@@ -381,10 +373,6 @@ vectoru Simulator::evolve(
 						// does not run the rest of the post-mating operators.
 						break;
 					} catch (RevertEvolution e) {
-						if (!curPop.getVars().hasVar("gen"))
-							curPop.setGen(0);
-						if (!curPop.getVars().hasVar("rep"))
-							curPop.setRep(curRep);
 						long newCurGen = curPop.getVars().getVarAsInt("gen");
 						if (newCurGen != static_cast<long>(curPop.gen()))
 							curPop.setGen(newCurGen);
