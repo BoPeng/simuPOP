@@ -8672,8 +8672,8 @@ Details:
 
 Usage:
 
-    RevertIf(cond, fromPop=\"\", output=\"\", begin=0, end=-1, step=1,
-      at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+    RevertIf(cond, fromPop=\"\", ops=[], output=\"\", begin=0, end=-1,
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
@@ -8687,7 +8687,8 @@ Details:
     population (to parameter pop) and converts and return True or
     False. Otherwise, parameter cond will be treated as a fixed
     condition (converted to True or False) upon which the population
-    is reverted.
+    is reverted. After the population is reverted, an optional list of
+    operators ops could be applied to the population.
 
 "; 
 
