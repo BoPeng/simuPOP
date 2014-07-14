@@ -8679,7 +8679,7 @@ Details:
 
     Replaces the current evolving population by a population loaded
     from fromPop, which should be a file saved by function
-    Population.save() or operator @ SavePopulation@. If a Python
+    Population.save() or operator SavePopulation. If a Python
     expression (a string) is given to parameter cond, the expression
     will be evalulated in each population's local namespace when this
     operator is applied. When a Python function with optional

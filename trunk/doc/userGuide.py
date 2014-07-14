@@ -2276,8 +2276,9 @@ if os.path.isfile('burnin.pop'):
 
 sim.setRNG(seed=1234)
 #end_ignore
+from simuPOP.demography import LinearGrowthModel
 
-for rep in range(5):
+for rep in range(3):
     pop = sim.Population(1000, loci=1)
     evolved = pop.evolve(
         initOps=sim.InitSex(),
@@ -2291,6 +2292,23 @@ for rep in range(5):
         gen=20
     )
     print('Evolved {} generations'.format(evolved))
+
+for rep in range(3):
+    pop = sim.Population(1000, loci=1)
+    evolved = pop.evolve(
+        initOps=sim.InitSex(),
+        preOps=[
+            sim.RevertIf(os.path.isfile('burnin.pop'), 'burnin.pop', at=0),
+            sim.IfElse(not os.path.isfile('burnin.pop'),
+                [sim.PyOutput('Save burnin at gen=10\n'),
+                 sim.SavePopulation('burnin.pop')], at=10),
+        ],
+        matingScheme=sim.RandomMating(
+            subPopSize=LinearGrowthModel(T=20, r=0.1)),
+    )
+    print('Evolved {} generations'.format(evolved))
+
+
 
 #end_file
 

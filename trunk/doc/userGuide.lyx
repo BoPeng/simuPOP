@@ -17621,7 +17621,20 @@ RevertIf
 initOps
 \family default
  because it otherwise evolve another 20 generations from generation 10.
- 
+ However, combining the 
+\family typewriter
+RevertIf
+\family default
+ operator with complex demographic models can have unexpected results.
+ As shown in the second part of the example, because the demographic model
+ starts from the generation when the model is first called (intialized),
+ the evolutionary model will evolve from generation 10 to 30.
+ The problem can be avoided by calling 
+\family typewriter
+RevertIf
+\family default
+ at the second generation where the demographic model is already initialized
+ at generation 0.
 \end_layout
 
 \begin_layout Standard
