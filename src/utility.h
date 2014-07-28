@@ -882,19 +882,31 @@ private:
 };
 
 
+/// CPPONLY
+string PyObj_AsString(PyObject * str);
+
 class stringFunc
 {
 public:
 	stringFunc(const char * value) :
-		m_value(value), m_func(NULL)
+		m_value(value), m_func(NULL), m_mode()
 	{
 	}
 
 	// string func is strictly used for BaseOperator and its
 	// derived classes. It is therefore OK to make it accept
 	// both func and filehandler
-	stringFunc(PyObject * func) : m_value(), m_func(NULL)
+	stringFunc(PyObject * obj) : m_value(), m_func(NULL), m_mode()
 	{
+		PyObject * func = obj;
+		// if obj is a WithMode wrapper class
+		if (PyObject_HasAttrString(obj, "_with_mode") && PyObject_HasAttrString(obj, "_with_output")) {
+			PyObject * mode = PyObject_GetAttrString(obj, "_with_mode");
+			m_mode = PyObj_AsString(mode);
+			Py_DECREF(mode);
+			func = PyObject_GetAttrString(obj, "_with_output");
+			Py_DECREF(func);			
+		}
 		if (PyCallable_Check(func))
 			m_func = pyFunc(func);
 		// is this a file handler (or an object with write function)?
@@ -927,11 +939,17 @@ public:
 		return m_value.empty() && !m_func.isValid();
 	}
 
-
+	/// COPY
+	string mode() const
+	{
+		return m_mode;
+	}
 private:
 	string m_value;
 
 	pyFunc m_func;
+
+	string m_mode;
 };
 
 
@@ -1058,9 +1076,6 @@ PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
 
 /// CPPONLY
 PyObject * Lineage_Vec_As_NumArray(LineageIterator begin, LineageIterator end);
-
-/// CPPONLY
-string PyObj_AsString(PyObject * str);
 
 // ///////////////////////////////////////////////////////
 /** CPPONLY shared variables.
@@ -1609,7 +1624,7 @@ class StreamProvider
 {
 public:
 	/// CPPONLY constructor. set the name parser
-	StreamProvider(const string & output, const pyFunc & func);
+	StreamProvider(const string & output, const pyFunc & func, const string & mode);
 
 	~StreamProvider()
 	{
@@ -1689,6 +1704,8 @@ private:
 
 	/// m_flags
 	unsigned char m_flags;
+
+	string m_mode;
 
 	/// file stream pointer, used ONLY if we create a new file stream
 	ostream * m_filePtr;

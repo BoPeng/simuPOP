@@ -227,7 +227,8 @@ class TestOperator(unittest.TestCase):
                 postOps = [
                 PyOutput("func1", output=out.write),
             ], gen=10)
-        self.assertEqual(open('test1.txt').read(), 'func1'*50)
+        with open('test1.txt') as test1txt:
+            self.assertEqual(test1txt.read(), 'func1'*50)
         #
         simu = Simulator(Population(), rep=5)
         with open('test1.txt', 'w') as out:
@@ -237,7 +238,31 @@ class TestOperator(unittest.TestCase):
                 postOps = [
                 PyOutput("func2", output=out),
             ], gen=10)
-        self.assertEqual(open('test1.txt').read(), 'func2'*50)
+        with open('test1.txt') as test1txt:
+            self.assertEqual(test1txt.read(), 'func2'*50)
+        #
+        simu = Simulator(Population(), rep=5)
+        with open('test1.txt', 'wb') as out:
+            # each replicate
+            self.assertRaises(RuntimeError, simu.evolve,
+                matingScheme=CloneMating(),
+                postOps = [
+                PyOutput("func2", output=out),
+            ], gen=10)
+        #
+        simu = Simulator(Population(), rep=5)
+        with open('test1.txt', 'wb') as out:
+            # each replicate
+            simu.evolve(
+                matingScheme=CloneMating(),
+                postOps = [
+                PyOutput('func2', output=WithMode(out, 'b')),
+            ], gen=10)
+        with open('test1.txt') as test1txt:
+            self.assertEqual(test1txt.read(), 'func2'*50)
+
+    def testInfoEval(self):
+        '''Testing operator InfoEval'''
 
     def testInfoEval(self):
         '''Testing operator InfoEval'''
@@ -340,20 +365,24 @@ class TestOperator(unittest.TestCase):
         '''Testing global function closeOutput'''
         pop = Population(100, loci=[2])
         dump(pop, output='a.pop')
-        size = len(open('a.pop').read())
+        with open('a.pop') as apop:
+            size = len(apop.read())
         self.assertRaises(RuntimeError, closeOutput, 'a.pop')
         dump(pop, output='>>a.pop')
         closeOutput('a.pop')
-        self.assertEqual(len(open('a.pop').read()), size)
+        with open('a.pop') as apop:
+            self.assertEqual(len(apop.read()), size)
         self.assertRaises(RuntimeError, closeOutput, 'a.pop')
         self.assertRaises(RuntimeError, closeOutput, 'b.pop')
         dump(pop, output='>>a.pop')
         dump(pop, output='>>a.pop')
-        self.assertEqual(len(open('a.pop').read()), size * 2)
+        with open('a.pop') as apop:
+            self.assertEqual(len(apop.read()), size * 2)
         #
         dump(pop, output='>>>a.pop')
         dump(pop, output='>>>a.pop')
-        self.assertEqual(len(open('a.pop').read()), size * 4)
+        with open('a.pop') as apop:
+            self.assertEqual(len(apop.read()), size * 4)
         closeOutput('a.pop')
         self.assertRaises(RuntimeError, closeOutput, 'a.pop')
         os.remove('a.pop')

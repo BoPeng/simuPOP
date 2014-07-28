@@ -3081,15 +3081,6 @@ class Exporter(PyOperator):
         PyOperator.__init__(self, func=self._export, begin=begin, end=end,
             step=step, at=at, reps=reps, subPops=ALL_AVAIL, infoFields=[])
 
-    def _determineOutput(self, pop):
-        # determine the output filename the expression form
-        if self.output.startswith('!'):
-            # evaluate output with the population variable
-            output = eval(self.output[1:], pop.vars(), pop.vars())
-            return output.lstrip('>')
-        else:
-            return self.output.lstrip('>')
-            
     def _determineSubPops(self, pop):
         # this is basically subPopList::expandFrom(pop)
         if self.subPops is ALL_AVAIL:
@@ -3137,6 +3128,10 @@ class Exporter(PyOperator):
         return subPops
         
     def _export(self, pop):
+        bin_mode = False
+        if hasattr(self.output, '_with_output') and hasattr(self.output, '_with_mode'):
+            bin_mode  = 'b' in self.output._with_mode
+            self.output = self.output._with_output
         if isinstance(self.output, str):
             if self.output.startswith('!'):
                 self.output = eval(self.output[1:], pop.vars(), pop.vars())
@@ -3144,27 +3139,27 @@ class Exporter(PyOperator):
                 mode = 'a'
             else:
                 mode = 'w'
+            if bin_mode:
+                mode += 'b'
             with open(self.output.lstrip('>'), mode) as out:
                 self.exporter.export(pop, out.write,
                     self._determineSubPops(pop), self.infoFields, gui=self.gui)
         elif callable(self.output):
             # it is a regular python function, call it with output
-            self.exporter.export(pop, self.output,
-                self._determineSubPops(pop), self.infoFields, gui=self.gui)
-        elif hasattr(self.output, 'write'):
-            # this must be a file handle
-            if sys.version_info.major == 2:
-                self.exporter.export(pop, self.output.write,
+            if bin_mode:
+                self.exporter.export(pop, _binaryWriter(self.output),
                     self._determineSubPops(pop), self.infoFields, gui=self.gui)
             else:
-                try:
-                    # in python 3, if the file is opened in binary mode, only bytes are
-                    # accepted.
-                    self.exporter.export(pop, _binaryWriter(self.output.write),
-                        self._determineSubPops(pop), self.infoFields, gui=self.gui)
-                except TypeError:  
-                    self.exporter.export(pop, self.output.write,
-                        self._determineSubPops(pop), self.infoFields, gui=self.gui)
+                self.exporter.export(pop, self.output,
+                    self._determineSubPops(pop), self.infoFields, gui=self.gui)
+        elif hasattr(self.output, 'write'):
+            # this must be a file handle
+            if bin_mode:
+                self.exporter.export(pop, _binaryWriter(self.output.write),
+                    self._determineSubPops(pop), self.infoFields, gui=self.gui)
+            else:
+                self.exporter.export(pop, self.output.write,
+                    self._determineSubPops(pop), self.infoFields, gui=self.gui)
         else:
             raise ValueError('Invalid output specification.')
         return True
