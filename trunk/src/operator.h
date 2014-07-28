@@ -95,6 +95,9 @@ namespace simuPOP {
  *  local namespace to obtain a population specific output specification.
  *  As an advanced feature, a Python function can be assigned to this
  *  parameter. Output strings will be sent to this function for processing.
+ *  Lastly, if the output stream only accept a binary output (e.g.
+ *  a gzip stream), <tt>WithMode(output, 'b')</tt> should be used to 
+ *  let simuPOP convert string to bytes before writing to the output.
  */
 class BaseOperator
 {
@@ -111,8 +114,11 @@ public:
 	 *    \c 'filename' prefixed by one or more '>', or an Python expression
 	 *    prefixed by an exclamation mark (\c '!expr'). If a \c file object, or
 	 *    any Python object with a \c write function is provided, the output
-	 *    will be write to this file. Alternatively, a Python function can be
-	 *    given which will be called with a string of output content.
+	 *    will be write to this file. Alternatively, a Python function or a
+	 *    file object (any Python object with a \c write function) can be
+	 *    given which will be called with a string of output content. A
+	 *    global function \c WithMode can be used to let simuPOP output
+	 *    bytes instead of string.
 	 *  \param begin The starting generation at which an operator will be
 	 *    applied. Default to \c 0. A negative number is interpreted as a
 	 *    generation counted from the end of an evolution (-1 being the last
@@ -146,7 +152,7 @@ public:
 		const intList & reps, const subPopList & subPops, const stringList & infoFields) :
 		m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at.elems()),
 		m_flags(0), m_reps(reps), m_subPops(subPops),
-		m_ostream(output.value(), output.func()), m_infoFields(infoFields)
+		m_ostream(output.value(), output.func(), output.mode()), m_infoFields(infoFields)
 	{
 		PARAM_FAILIF(step <= 0, ValueError, "step need to be at least one");
 

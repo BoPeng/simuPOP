@@ -1267,7 +1267,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(pop1.ploidy(), 1)
         # 3: export to a gzip file handle
         with gzip.open('pop.phy.gz', 'wb') as phy:
-            export(pop, format='phylip', output=phy, alleleNames='ACTG', style='interleaved')
+            export(pop, format='phylip', output=WithMode(phy, 'b'), alleleNames='ACTG', style='interleaved')
         # unzip first?
         f_in = gzip.open('pop.phy.gz', 'rb')
         f_out = open('pop1.phy', 'wb')

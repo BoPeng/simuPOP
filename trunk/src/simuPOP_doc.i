@@ -217,7 +217,10 @@ Details:
     population's local namespace to obtain a population specific
     output specification. As an advanced feature, a Python function
     can be assigned to this parameter. Output strings will be sent to
-    this function for processing.
+    this function for processing. Lastly, if the output stream only
+    accept a binary output (e.g. a gzip stream), WithMode(output, 'b')
+    should be used to let simuPOP convert string to bytes before
+    writing to the output.
 
 "; 
 
@@ -243,9 +246,11 @@ Arguments:
                     an exclamation mark ('!expr'). If a file object,
                     or any Python object with a write function is
                     provided, the output will be write to this file.
-                    Alternatively, a Python function can be given
-                    which will be called with a string of output
-                    content.
+                    Alternatively, a Python function or a file object
+                    (any Python object with a write function) can be
+                    given which will be called with a string of output
+                    content. A global function WithMode can be used to
+                    let simuPOP output bytes instead of string.
     begin:          The starting generation at which an operator will
                     be applied. Default to 0. A negative number is
                     interpreted as a generation counted from the end
@@ -10844,7 +10849,7 @@ Usage:
 
 %ignore simuPOP::StreamProvider;
 
-%ignore simuPOP::StreamProvider::StreamProvider(const string &output, const pyFunc &func);
+%ignore simuPOP::StreamProvider::StreamProvider(const string &output, const pyFunc &func, const string &mode);
 
 %feature("docstring") simuPOP::StreamProvider::~StreamProvider "
 
@@ -10877,6 +10882,18 @@ Usage:
 %ignore simuPOP::stringFunc::func() const;
 
 %ignore simuPOP::stringFunc::empty() const;
+
+%feature("docstring") simuPOP::stringFunc::mode "
+
+Description:
+
+    COPY.
+
+Usage:
+
+    x.mode()
+
+"; 
 
 %feature("docstring") simuPOP::stringList "
 
@@ -11535,6 +11552,8 @@ Details:
 
 %ignore simuPOP::simuPOPgetch();
 
+%ignore simuPOP::PyObjAsString(PyObject *str);
+
 %ignore simuPOP::PyObjAsBool(PyObject *obj, bool &val);
 
 %ignore simuPOP::PyObjAsInt(PyObject *obj, long &val);
@@ -11554,8 +11573,6 @@ Details:
 %ignore simuPOP::AlleleVecAsNumArray(GenoIterator begin, GenoIterator end);
 
 %ignore simuPOP::LineageVecAsNumArray(LineageIterator begin, LineageIterator end);
-
-%ignore simuPOP::PyObjAsString(PyObject *str);
 
 %ignore simuPOP::mainVars();
 

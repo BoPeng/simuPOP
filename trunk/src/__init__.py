@@ -259,6 +259,7 @@ __all__ = [
     #
     # Global functions
     'WithArgs',
+    'WithMode',
     # RNG Related
     'RNG',
     'getRNG',
@@ -660,6 +661,22 @@ class WithArgs:
 
     def __call__(self, *args, **kwargs):
         return self.func(*args, **kwargs)
+
+class WithMode:
+    '''This class wraps around a user-provided output string or 
+    function (acceptable by parameter ``output`` of operators so that
+    simuPOP knows which mode should the output should be write 
+    to. For example, if the output of the operator is a binary
+    compressed string, WithMode(output, 'b') should be used to tell
+    the operators to output bytes instead of string. This is
+    most needed for Python 3 because files in Python 2 accepts
+    string even if they are opened in binary mode.
+    '''
+    def __init__(self, output, mode=''):
+        '''Return an object that wraps around ``output``, currently
+        only mode='b' is accepted.'''
+        self._with_output = output
+        self._with_mode = mode
 
 
 # mating schemes

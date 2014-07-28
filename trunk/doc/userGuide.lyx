@@ -6682,6 +6682,23 @@ func(msg)
  message.
 \end_layout
 
+\begin_layout Itemize
+A 
+\family typewriter
+WithMode(output, 'b')
+\family default
+ object with 
+\family typewriter
+output
+\family default
+ being the any of the allowed output string or function.
+ This object tells simuPOP that the output is opened in binary model so
+ that it should output bytes instead of texts to it.
+ This is mostly designed for Python 3 because file objects in Python 2 accepts
+ string even if they are opened in binary mode.
+ 
+\end_layout
+
 \begin_layout Standard
 Because a table output such as the one in Example 
 \begin_inset CommandInset ref

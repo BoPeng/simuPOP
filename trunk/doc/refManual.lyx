@@ -706,6 +706,13 @@ simuPOPWithArgsRef
 
 
 \backslash
+simuPOPWithModeRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 RNGRef
 \end_layout
 

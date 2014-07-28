@@ -2942,8 +2942,8 @@ OstreamManager & ostreamManager()
 // Stream provider
 
 // all flags will be cleared to 0
-StreamProvider::StreamProvider(const string & output, const pyFunc & func)
-	: m_filename(output), m_filenameExpr(), m_func(func), m_flags(0), m_filePtr(NULL)
+StreamProvider::StreamProvider(const string & output, const pyFunc & func, const string & mode)
+	: m_filename(output), m_filenameExpr(), m_func(func), m_flags(0), m_filePtr(NULL), m_mode(mode)
 {
 	if (!m_filename.empty() && m_filename[0] == '!') {
 		m_filenameExpr.setExpr(m_filename.substr(1));
@@ -2953,6 +2953,8 @@ StreamProvider::StreamProvider(const string & output, const pyFunc & func)
 		SETFLAG(m_flags, m_flagCloseAfterUse);
 	} else
 		analyzeOutputString(m_filename);
+	if (m_mode != "" && m_mode != "b")
+		throw ValueError("Only empty or b mode are supported.");
 }
 
 
@@ -3044,13 +3046,12 @@ void StreamProvider::closeOstream()
 			string str = dynamic_cast<ostringstream *>(m_filePtr)->str();
 // in swingpyrun.h, the PyString_Check is defined to PyBytes_Check
 #if PY_VERSION_HEX >= 0x03000000
-			// This is not efficient because all 'write-string operations will
-			// pass as BYTES first. There should be a way to test if the function
-			// accept string or bytes.
-			// first try bytes
-			PyObject * arglist = Py_BuildValue("(S)", PyBytes_FromString(str.c_str()));
-			PyObject * pyResult = PyEval_CallObject(m_func.func(), arglist);
-			if (pyResult == NULL) {
+			PyObject * arglist = NULL;
+			PyObject * pyResult = NULL;
+			if (m_mode == "b") {
+				arglist = Py_BuildValue("(S)", PyBytes_FromString(str.c_str()));
+				pyResult = PyEval_CallObject(m_func.func(), arglist);
+			} else {
 				arglist = Py_BuildValue("(s)", str.c_str());
 				pyResult = PyEval_CallObject(m_func.func(), arglist);
 			}
