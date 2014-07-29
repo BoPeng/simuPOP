@@ -281,6 +281,7 @@ public:
 		Py_XDECREF(m_object);
 		m_object = rhs.m_object;
 		Py_XINCREF(m_object);
+		return *this;
 	}
 
 

@@ -1119,7 +1119,7 @@ lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_func(NULL), m_func_
 		for (size_t i = 0, iEnd = m_elems.size(); i < iEnd; ++i) {
 			PyObject * item = PySequence_GetItem(obj, i);
 			if (PyNumber_Check(item)) {
-				if (m_status == FROM_NAME and m_elems.size() == 2) {
+				if (m_status == FROM_NAME && m_elems.size() == 2) {
 					// a special case for loci=(chr, pos)
 					m_elems.resize(1);
 					m_status = FROM_POSITION;
