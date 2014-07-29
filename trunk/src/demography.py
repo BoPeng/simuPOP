@@ -44,17 +44,6 @@ provides:
    A demographic model can also terminate an evolutionary process by
    returnning an empty list so ``gens=model.num_gens`` is no longer required.
 
-The demographic model considers two use cases:
-1. When the demographic model is called sequencially, namely each time with
-   a population having pop.dvars().gen increased by 1, the model will change
-   the passed population as necessary.
-
-2. When the demographic model is accessed randomly, it is assumed that the
-   evolving population is affected by a RevertIf operator. In this case, it
-   is assumed that the passed population already have the population size
-   of the correct size of the generation so the demographic model should 
-   simply return the size of the next generation.
-
 """
 
 __all__ = [
