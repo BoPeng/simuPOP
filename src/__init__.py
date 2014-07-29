@@ -663,18 +663,18 @@ class WithArgs:
         return self.func(*args, **kwargs)
 
 class WithMode:
-    '''This class wraps around a user-provided output string or 
-    function (acceptable by parameter ``output`` of operators so that
-    simuPOP knows which mode should the output should be write 
-    to. For example, if the output of the operator is a binary
-    compressed string, WithMode(output, 'b') should be used to tell
-    the operators to output bytes instead of string. This is
-    most needed for Python 3 because files in Python 2 accepts
-    string even if they are opened in binary mode.
-    '''
+    '''This class wraps around a user-provided output string, function
+    or file handle (acceptable by parameter ``output`` of operators) so
+    that simuPOP knows which mode the output should be written to. For
+    example, if the output of the operator is a binary compressed stream,
+    ``WithMode(output, 'b')`` could be used to tell the operators to 
+    output bytes instead of string. This is most needed for Python 3 
+    because files in Python 2 accepts string even if they are opened in
+    binary mode.'''
     def __init__(self, output, mode=''):
-        '''Return an object that wraps around ``output``, currently
-        only mode='b' is accepted.'''
+        '''Return an object that wraps around ``output`` and tells simuPOP
+        to output string in ``mode``. This class currently only support
+        ``mode=''`` for text mode and ``mode='b'`` for binary output.'''
         self._with_output = output
         self._with_mode = mode
 
