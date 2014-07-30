@@ -422,6 +422,11 @@ class TestMatingSchemes(unittest.TestCase):
             while True:
                 yield pop.individual(random.randint(0, pop.subPopSize(subPop) - 1)), \
                      pop.individual(random.randint(0, pop.subPopSize(subPop) - 1))
+        def retVarInds(pop, subPop):
+            while True:
+                male = pop.individual(random.randint(0, pop.subPopSize(subPop) - 1))
+                female = pop.individual(random.randint(0, pop.subPopSize(subPop) - 1))
+                yield male, female
         def retPop(pop, subPop):
             while True:
                 yield pop
@@ -444,6 +449,7 @@ class TestMatingSchemes(unittest.TestCase):
         testPyRetValue(retIndexes)
         testPyRetValue(retInd)
         testPyRetValue(retInds)
+        testPyRetValue(retVarInds)
         self.assertRaises(ValueError, testPyRetValue, retPop)
         self.assertRaises(ValueError, testPyRetValue, retWrongIndex)
         self.assertRaises(ValueError, testPyRetValue, retWrongIndexes)
