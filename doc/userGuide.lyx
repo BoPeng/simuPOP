@@ -25864,9 +25864,15 @@ MultiStageModel([
 defines a demographic model that expands a single population linearly for
  100 generations, split into two subpopulations and grow exponentially at
  a rate of 0.001, and growth at a higher rate of 0.01 until they reaches sizes
- 5000 and 10000 respectively.
- The last stage is tricky because one of the subpopulations will reach its
- carrying capacity sooner and keep a contant population size afterwards.
+ 2000 and 4000 respectively.
+ This stage is tricky because one of the subpopulations will reach its carrying
+ capacity sooner and keep a contant population size afterwards.
+ As the last step, the two populations admixed and formed a new subpopulation
+ called 
+\family typewriter
+admixed
+\family default
+.
  The model is depicted in figure 
 \begin_inset CommandInset ref
 LatexCommand ref
