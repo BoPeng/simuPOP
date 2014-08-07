@@ -937,6 +937,7 @@ class MultiStageModel(BaseDemographicModel):
 
     def _reset(self):
         self._model_idx = 0
+        self._model_start_gen = 0
         if hasattr(self, '_start_gen'):
             del self._start_gen
         for m in self.models:
