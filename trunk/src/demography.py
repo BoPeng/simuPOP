@@ -946,7 +946,7 @@ class MultiStageModel(BaseDemographicModel):
   
     def _advance(self, pop):
         self._model_idx += 1
-        self._model_start_gen = pop.dvars().gen
+        self._model_start_gen = pop.dvars().gen - self._start_gen
         while True:
             if self._model_idx == len(self.models):
                 self._reset()
