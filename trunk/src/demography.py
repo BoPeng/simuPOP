@@ -1172,10 +1172,34 @@ class SettlementOfNewWorldModel(MultiStageModel):
             N_MX1 = N_MX
         #
         # for python 2.x and 3.x compatibility
-        final_subpops = [None, None, None, None, None]
-        for (idx, name) in enumerate(['AF', 'EU', 'AS', 'MX', 'MXL']):
-            if name not in outcome:
-                final_subpops[idx] = 0
+        if isinstance(outcome, str):
+            outcome = [outcome]
+        if 'MXL' in final_subpops:
+            # with admixture
+            final_subpops = [None, None, None, None, None]
+            for (idx, name) in enumerate(['AF', 'EU', 'AS', 'MX', 'MXL']):
+                if name not in outcome:
+                    final_subpops[idx] = 0
+            #
+            admixtureStage = [
+                AdmixtureModel(T=1,
+                    N0=[None, None, None, None],
+                    # mixing European and Mexican population
+                    model=['HI', 1, 3, 1-f_MX, 'MXL']),
+                InstantChangeModel(T=1,
+                    N0=final_subpops,
+                    removeEmptySubPops=True)
+                ]
+        else:
+            final_subpops = [None, None, None, None]
+            for (idx, name) in enumerate(['AF', 'EU', 'AS', 'MX']):
+                if name not in outcome:
+                    final_subpops[idx] = 0
+            admixtureStage = [
+                InstantChangeModel(T=1,
+                    N0=final_subpops,
+                    removeEmptySubPops=True)
+                ]
         #
         scale = float(scale)
         MultiStageModel.__init__(self, [
@@ -1222,15 +1246,8 @@ class SettlementOfNewWorldModel(MultiStageModel):
                     # migration
                     subPops=[0, 1, 2],
                     toSubPops=[0, 1, 2])
-                ),
-            AdmixtureModel(T=1,
-                N0=[None, None, None, None],
-                # mixing European and Mexican population
-                model=['HI', 1, 3, 1-f_MX, 'MXL']),
-            InstantChangeModel(T=1,
-                N0=final_subpops,
-                removeEmptySubPops=True)
-            ],
+                )
+            ] + admixtureStage,
             ops=ops, infoFields=infoFields
         )
 
