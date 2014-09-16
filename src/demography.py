@@ -1096,8 +1096,8 @@ class OutOfAfricaModel(MultiStageModel):
                 infoFields='migrate_to',
                 ops=Migrator(rate=[
                     [0, m_AF_EU, m_AF_AS],
-                    [m_EU_AS, 0, m_AF_EU],
-                    [m_AF_AS, m_AF_EU, 0]
+                    [m_AF_EU, 0, m_EU_AS],
+                    [m_AF_AS, m_EU_AS, 0]
                     ])
                 ),
             ], ops=ops, infoFields=infoFields
@@ -1168,7 +1168,7 @@ class SettlementOfNewWorldModel(MultiStageModel):
         # for python 2.x and 3.x compatibility
         if isinstance(outcome, str):
             outcome = [outcome]
-        if 'MXL' in final_subpops:
+        if 'MXL' in outcome:
             # with admixture
             final_subpops = [None, None, None, None, None]
             for (idx, name) in enumerate(['AF', 'EU', 'AS', 'MX', 'MXL']):
@@ -1198,15 +1198,22 @@ class SettlementOfNewWorldModel(MultiStageModel):
         scale = float(scale)
         MultiStageModel.__init__(self, [
             InstantChangeModel(
-                # leave one generation for last admixture step
-                T=int((T0-T_EU_AS-1)/scale),
+                T=int((T0-T_B)/scale),
                 N0=(int(N_A/scale), 'Ancestral'),
                 # change population size twice, one at T_AF, one at T_B
-                G=[int((T0-T_AF)/scale), int((T0-T_B)/scale)],
-                NG=[
-                    (int(N_AF/scale), 'AF'), 
-                    # at T_B, split to population B from subpopulation 1
-                    [None, (int(N_B/scale), 'B')]]),
+                G=[int((T0-T_AF)/scale)],
+                NG=[(int(N_AF/scale), 'AF')] 
+            ),
+            #
+            # at T_B, split to population B from subpopulation 1
+            InstantChangeModel(
+                T=int((T_B - T_EU_AS)/scale),
+                # change population size twice, one at T_AF, one at T_B
+                N0=[None, (int(N_B/scale), 'B')],
+                ops=Migrator(rate=[
+                    [m_AF_B, 0],
+                    [0, m_AF_B]])
+                ),
             ExponentialGrowthModel(
                 T=int((T_EU_AS - T_MX)/scale),
                 N0=[None,
@@ -1217,8 +1224,8 @@ class SettlementOfNewWorldModel(MultiStageModel):
                 infoFields='migrate_to',
                 ops=Migrator(rate=[
                     [0, m_AF_EU, m_AF_AS],
-                    [m_EU_AS, 0, m_AF_EU],
-                    [m_AF_AS, m_AF_EU, 0]
+                    [m_AF_EU, 0, m_EU_AS],
+                    [m_AF_AS, m_EU_AS, 0]
                     ])
                 ),
             ExponentialGrowthModel(T=int(T_MX/scale),
@@ -1233,8 +1240,8 @@ class SettlementOfNewWorldModel(MultiStageModel):
                 infoFields='migrate_to',
                 ops=Migrator(rate=[
                     [0, m_AF_EU, m_AF_AS],
-                    [m_EU_AS, 0, m_AF_EU],
-                    [m_AF_AS, m_AF_EU, 0]
+                    [m_AF_EU, 0, m_EU_AS],
+                    [m_AF_AS, m_EU_AS, 0]
                     ],
                     # the last MX population does not involve in 
                     # migration
