@@ -519,6 +519,7 @@ class TestDemography(unittest.TestCase):
         #
 
     def testRevertAndDemo(self):
+        'Test the use of demographic model with RevertIf operator'
         pop = Population(100, loci=1)
         initpop = pop.clone()
         pop.evolve(initOps=InitSex(), matingScheme=RandomMating(), gen=10)
@@ -545,6 +546,18 @@ class TestDemography(unittest.TestCase):
             matingScheme=RandomMating(subPopSize=LinearGrowthModel(T=20, r=0.1))
         ), 10)
 
+
+    def testStockModels(self):
+        'Test stock demographic models'
+        OutOfAfricaModel(20000).plot()
+        OutOfAfricaModel(20000, scale=5).plot()
+        SettlementOfNewWorldModel(20000).plot()
+        SettlementOfNewWorldModel(20000, scale=5).plot()
+        SettlementOfNewWorldModel(20000, outcome='MXL', scale=5).plot()
+        SettlementOfNewWorldModel(20000, outcome='AF', scale=5).plot()
+        SettlementOfNewWorldModel(20000, outcome=['EU', 'AS'], scale=5).plot()
+        CosiModel(20000).plot()
+        CosiModel(20000, scale=5).plot()
 
 
 if __name__ == '__main__':
