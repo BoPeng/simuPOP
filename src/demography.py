@@ -1164,12 +1164,6 @@ class SettlementOfNewWorldModel(MultiStageModel):
         # try to figure out how to mix two populations
         N_EU=int(N_EU0*math.exp(r_EU*T_EU_AS))
         N_MX=int(N_MX0*math.exp(r_MX*T_MX))
-        if int(N_EU/(1.-f_MX)*f_MX) <= N_MX:
-            N_EU1 = N_EU
-            N_MX1 = int(N_EU/(1.-f_MX)*f_MX)
-        else:
-            N_EU1 = int(N_MX/f_MX*(1.-f_MX))
-            N_MX1 = N_MX
         #
         # for python 2.x and 3.x compatibility
         if isinstance(outcome, str):
