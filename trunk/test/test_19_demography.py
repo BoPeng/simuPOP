@@ -551,6 +551,8 @@ class TestDemography(unittest.TestCase):
         'Test stock demographic models'
         OutOfAfricaModel(20000).plot()
         OutOfAfricaModel(20000, scale=5).plot()
+        OutOfAfricaModel(20000, outcome='EU', scale=5).plot()
+        OutOfAfricaModel(20000, outcome=['EU', 'AS'], scale=5).plot()
         SettlementOfNewWorldModel(20000).plot()
         SettlementOfNewWorldModel(20000, scale=5).plot()
         SettlementOfNewWorldModel(20000, outcome='MXL', scale=5).plot()

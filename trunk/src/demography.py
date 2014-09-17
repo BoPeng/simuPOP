@@ -1051,6 +1051,7 @@ class OutOfAfricaModel(MultiStageModel):
         T_EU_AS=21200//25, 
         ops=[],
         infoFields=[],
+        outcome=['AF', 'EU', 'AS'],
         scale=1
         ):
         '''Counting **backward in time**, this model evolves a population for ``T0``
@@ -1066,14 +1067,33 @@ class OutOfAfricaModel(MultiStageModel):
         respectively. Additional operators could be added to ``ops``. Information
         fields required by these operators should be passed to ``infoFields``. If 
         a scaling factor ``scale`` is specified, all population sizes and
-        generation numbers will be divided by a factor of ``scale``.
+        generation numbers will be divided by a factor of ``scale``. This demographic
+        model by default returns all populations (``AF``, ``EU``, ``AS``) but
+        you can choose to keep only selected subpopulations using parameter
+        ``outcome`` (e.g. ``outcome=['EU', 'AS']``).
 
-        This model merges all subpopulations if it is applied to a population with
-        multiple subpopulation.
+        This model merges all subpopulations if it is applied to an initial 
+        population with multiple subpopulation.
         '''
         #
         if T0 < T_AF:
             raise ValueError('Length of evolution T0=%d should be more than T_AF=%d' % (T0, T_AF))
+        #
+        if isinstance(outcome, str):
+            outcome = [outcome]
+        final_subpops = [None, None, None]
+        for (idx, name) in enumerate(['AF', 'EU', 'AS']):
+            if name not in outcome:
+                final_subpops[idx] = 0
+        #
+        if 0 in final_subpops:
+            finalStage = [
+                InstantChangeModel(T=1,
+                    N0=final_subpops,
+                    removeEmptySubPops=True)
+            ]
+        else:
+            finalStage = []
         # for python 2.x and 3.x compatibility
         scale = float(scale)
         MultiStageModel.__init__(self, [
@@ -1108,7 +1128,7 @@ class OutOfAfricaModel(MultiStageModel):
                     [m_AF_AS, m_EU_AS, 0]
                     ])
                 ),
-            ], ops=ops, infoFields=infoFields
+            ] + finalStage, ops=ops, infoFields=infoFields
         )
 
 class SettlementOfNewWorldModel(MultiStageModel):
@@ -1163,8 +1183,8 @@ class SettlementOfNewWorldModel(MultiStageModel):
         mixed Mexican America model (``outputcom='MXL'``) but you can specify any
         combination of ``AF``, ``EU``, ``AS``, ``MX`` and ``MXL``.
 
-        This model merges all subpopulations if it is applied to a population with
-        multiple subpopulation.
+        This model merges all subpopulations if it is applied to an initial population
+        with multiple subpopulation.
         '''
         #
         if T0 < T_AF:
