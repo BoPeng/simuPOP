@@ -1182,7 +1182,7 @@ string GenotypeSplitter::name(size_t subPop) const
 bool GenotypeSplitter::match(const Individual * it, const vectori & alleles) const
 {
 	int ploidy = it->ploidy();
-	size_t numLoci = m_loci.allAvail() ? m_loci.elems((const GenoStruTrait*)(it)).size() : m_loci.size();
+	size_t numLoci = m_loci.allAvail() ? m_loci.elems((const GenoStruTrait *)(it)).size() : m_loci.size();
 
 	size_t choices = alleles.size() / ploidy / numLoci;
 
@@ -1202,7 +1202,7 @@ bool GenotypeSplitter::match(const Individual * it, const vectori & alleles) con
 bool GenotypeSplitter::matchSingle(const Individual * it, const vectori & alleles) const
 {
 	int ploidy = it->ploidy();
-	const vectoru & loci = m_loci.elems((const GenoStruTrait*)(it));
+	const vectoru & loci = m_loci.elems((const GenoStruTrait *)(it));
 
 	if (m_phase || ploidy == 1) {
 		// if phase=True, has to match exactly.

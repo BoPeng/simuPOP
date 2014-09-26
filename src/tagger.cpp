@@ -284,12 +284,12 @@ bool ParentsTagger::applyDuringMating(Population & pop, Population & offPop, Raw
 string OffspringTagger::describe(bool /* format */) const
 {
 	return "<simuPOP.OffspringTagger> records indexes of offspring within family in the offspring population "
-		       " to information fields " + infoField(0) + " of each offspring.";
+	       " to information fields " + infoField(0) + " of each offspring.";
 }
 
 
 bool OffspringTagger::applyDuringMating(Population &, Population & offPop, RawIndIterator offspring,
-                                      Individual *, Individual *) const
+                                        Individual *, Individual *) const
 {
 	// if offspring does not belong to subPops, do nothing, but does not fail.
 	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
@@ -299,7 +299,7 @@ bool OffspringTagger::applyDuringMating(Population &, Population & offPop, RawIn
 	if (offspring->firstOffspring())
 		offspring->setInfo(0, infoField(0));
 	else
-		offspring->setInfo((*(offspring-1)).intInfo(infoField(0)) + 1, infoField(0));
+		offspring->setInfo((*(offspring - 1)).intInfo(infoField(0)) + 1, infoField(0));
 	return true;
 }
 

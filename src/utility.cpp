@@ -58,11 +58,11 @@ using std::ofstream;
 #include "genoStru.h"
 
 // for PySys_WriteStdout and python expressions
-#  pragma GCC diagnostic ignored "-Wunused-parameter"
-#  pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-#  include "swigpyrun.h"
-#  pragma GCC diagnostic warning "-Wunused-parameter"
-#  pragma GCC diagnostic warning "-Wmissing-field-initializers"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#include "swigpyrun.h"
+#pragma GCC diagnostic warning "-Wunused-parameter"
+#pragma GCC diagnostic warning "-Wmissing-field-initializers"
 
 // The PyString_Check should be defined after swingpyrun.h because
 // in swingpyrun.h, the PyString_Check is defined to PyBytes_Check
@@ -1064,10 +1064,10 @@ lociList::lociList(PyObject * obj) : m_elems(), m_names(), m_func(NULL), m_func_
 		m_elems.resize(1);
 		m_names.push_back(PyObj_AsString(obj));
 #endif
-	/* for some reason I do not understand, if we pass a 
-	   Python callable object (obj with _-call__, PyNumber_Check
-	   will be ok so PyCallable_Check must be checked before
-	   that case. */
+		/* for some reason I do not understand, if we pass a
+		   Python callable object (obj with _-call__, PyNumber_Check
+		   will be ok so PyCallable_Check must be checked before
+		   that case. */
 	} else if (PyCallable_Check(obj)) {
 		// if a function is provided
 		m_status = FROM_FUNC;
@@ -2378,6 +2378,7 @@ PyObject * pyIndObj(void * p)
 void * pyIndPointer(PyObject * obj)
 {
 	void * ptr = 0;
+
 	SWIG_Python_ConvertPtr(obj, &ptr, g_swigIndividual, SWIG_POINTER_DISOWN);
 	return ptr;
 }
@@ -2386,6 +2387,7 @@ void * pyIndPointer(PyObject * obj)
 void * pyPopPointer(PyObject * obj)
 {
 	void * ptr = 0;
+
 	SWIG_Python_ConvertPtr(obj, &ptr, g_swigPopType, 0);
 	return ptr;
 }
@@ -2981,7 +2983,7 @@ void StreamProvider::closeOstream()
 			DBG_ASSERT(m_func.isValid(), SystemError,
 				"Passed function object is invalid");
 			string str = dynamic_cast<ostringstream *>(m_filePtr)->str();
-// in swingpyrun.h, the PyString_Check is defined to PyBytes_Check
+			// in swingpyrun.h, the PyString_Check is defined to PyBytes_Check
 #if PY_VERSION_HEX >= 0x03000000
 			PyObject * arglist = NULL;
 			PyObject * pyResult = NULL;
@@ -4754,11 +4756,11 @@ bool initialize(PyObject * module)
 	        cerr << "Warning: Unable to install keyboard interruption handler" << endl;
 	   #endif
 	 */
-#  if __WORDSIZE == 32
+#if __WORDSIZE == 32
 	DBG_ASSERT(WORDBIT == 32, SystemError,
 		"We are assuming 32 bit word size for this system but we are wrong."
 		"Please report this problem to the simuPOP mailinglist.");
-#  endif
+#endif
 	// for example, if WORDBIT is 8 (most likely 32), we define
 	// 0x0, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F, 0xFF
 	for (size_t i = 0; i < WORDBIT; ++i) {
@@ -4768,15 +4770,15 @@ bool initialize(PyObject * module)
 	}
 
 	// give at most 100 ref count warnings.
-#  ifdef Py_REF_DEBUG
+#ifdef Py_REF_DEBUG
 	g_refWarningCount = 100;
-#  endif
+#endif
 
 	// SIMUPOP_MODULE is passed as name, but we need it to be quoted.
 	// Note that under gcc, I could pass the macro from command line
 	// using \" \" but this trick does not work under VC.
 	// the following process is safer.
-#  define SimuPOP_Module_Name "##SIMUPOP_MODULE##"
+#define SimuPOP_Module_Name "##SIMUPOP_MODULE##"
 
 	// set global dictionary/variable
 	PyObject * mm = PyImport_AddModule(SimuPOP_Module_Name);
@@ -4801,13 +4803,13 @@ bool initialize(PyObject * module)
 	// set gsl error handler
 	gsl_set_error_handler(&gsl_error_handler);
 
-#  ifndef OPTIMIZED
-#    ifdef BINARYALLELE
+#ifndef OPTIMIZED
+#  ifdef BINARYALLELE
 	// binary level genotype copy is compiler dependent and may
 	// fail on some systems. Such a test will make sure the binary
 	testCopyGenotype();
-#    endif
 #  endif
+#endif
 	return true;
 }
 
