@@ -96,7 +96,7 @@ namespace simuPOP {
  *  As an advanced feature, a Python function can be assigned to this
  *  parameter. Output strings will be sent to this function for processing.
  *  Lastly, if the output stream only accept a binary output (e.g.
- *  a gzip stream), <tt>WithMode(output, 'b')</tt> should be used to 
+ *  a gzip stream), <tt>WithMode(output, 'b')</tt> should be used to
  *  let simuPOP convert string to bytes before writing to the output.
  */
 class BaseOperator
@@ -691,11 +691,11 @@ public:
 	 *  or operator \c SavePopulation. If a Python expression (a string) is
 	 *  given to parameter \e cond, the expression will be evalulated in each
 	 *  population's local namespace when this operator is applied. When a Python
-	 *  function with optional parameter \c pop is specified, it should accept 
-	 *  the current population (to parameter \c pop) and converts and return 
+	 *  function with optional parameter \c pop is specified, it should accept
+	 *  the current population (to parameter \c pop) and converts and return
 	 *  \c True or \c False. Otherwise, parameter \e cond will be treated as a
 	 *  fixed condition (converted to \c True or \c False) upon which the population
-	 *  is reverted. After the population is reverted, an optional list of 
+	 *  is reverted. After the population is reverted, an optional list of
 	 *  operators \e ops could be applied to the population.
 	 */
 	RevertIf(PyObject * cond, const string & fromPop = string(), const opList & ops = opList(),
@@ -723,7 +723,7 @@ public:
 
 
 private:
-	/// 
+	///
 	Expression m_cond;
 	pyFunc m_func;
 	int m_fixedCond;

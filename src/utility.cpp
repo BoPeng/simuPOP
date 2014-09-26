@@ -58,13 +58,11 @@ using std::ofstream;
 #include "genoStru.h"
 
 // for PySys_WriteStdout and python expressions
-#ifndef STANDALONE_EXECUTABLE
 #  pragma GCC diagnostic ignored "-Wunused-parameter"
 #  pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #  include "swigpyrun.h"
 #  pragma GCC diagnostic warning "-Wunused-parameter"
 #  pragma GCC diagnostic warning "-Wmissing-field-initializers"
-#endif
 
 // The PyString_Check should be defined after swingpyrun.h because
 // in swingpyrun.h, the PyString_Check is defined to PyBytes_Check
@@ -116,7 +114,6 @@ using boost::cmatch;
 #define MacroQuote_(x) # x
 #define MacroQuote(x) MacroQuote_(x)
 
-#ifndef STANDALONE_EXECUTABLE
 // these functions are defined in customizedTypes.c which is included
 // in simuPOP_wrap.cpp
 
@@ -129,40 +126,6 @@ extern "C" PyObject * PyDefDict_New();
 extern "C" bool is_defdict(PyTypeObject * type);
 
 extern "C" int initCustomizedTypes(PyObject * m);
-
-#else
-
-PyObject * newcarrayobject(GenoIterator, GenoIterator)
-{
-	return NULL;
-}
-
-
-PyObject * newcarrayobject_lineage(LineageIterator, LineageIterator)
-{
-	return NULL;
-}
-
-
-PyObject * PyDefDict_New()
-{
-	return NULL;
-}
-
-
-bool is_defdict(PyTypeObject *)
-{
-	return true;
-}
-
-
-int initCustomizedTypes(PyObject * m)
-{
-	return 0;
-}
-
-
-#endif
 
 // for streambuf stuff
 #include <streambuf>
@@ -2386,9 +2349,7 @@ void SharedVariables::fromString(const string & vars)
 // DO NOT OWN the dictionaries
 SharedVariables g_main_vars, g_module_vars;
 
-#ifndef STANDALONE_EXECUTABLE
 swig_type_info * g_swigPopType, * g_swigIndividual;
-#endif
 
 SharedVariables & mainVars()
 {
@@ -2404,49 +2365,29 @@ SharedVariables & moduleVars()
 
 PyObject * pyPopObj(void * p)
 {
-#ifndef STANDALONE_EXECUTABLE
 	return SWIG_NewPointerObj(p, g_swigPopType, 0);
-#else
-	(void)p; // avoid a compiler warning of unused variable.
-	return NULL;
-#endif
 }
 
 
 PyObject * pyIndObj(void * p)
 {
-#ifndef STANDALONE_EXECUTABLE
 	return SWIG_NewPointerObj(p, g_swigIndividual, 0);
-#else
-	(void)p; // avoid a compiler warning of unused variable.
-	return NULL;
-#endif
 }
 
 
 void * pyIndPointer(PyObject * obj)
 {
-#ifndef STANDALONE_EXECUTABLE
 	void * ptr = 0;
 	SWIG_Python_ConvertPtr(obj, &ptr, g_swigIndividual, SWIG_POINTER_DISOWN);
 	return ptr;
-#else
-	(void)obj; // avoid a compiler warning of unused variable.
-	return NULL;
-#endif
 }
 
 
 void * pyPopPointer(PyObject * obj)
 {
-#ifndef STANDALONE_EXECUTABLE
 	void * ptr = 0;
 	SWIG_Python_ConvertPtr(obj, &ptr, g_swigPopType, 0);
 	return ptr;
-#else
-	(void)obj; // avoid a compiler warning of unused variable.
-	return NULL;
-#endif
 }
 
 
@@ -4802,10 +4743,6 @@ void clearGenotype(GenoIterator begin, GenoIterator end)
    include this file. */
 bool initialize(PyObject * module)
 {
-
-#ifdef STANDALONE_EXECUTABLE
-	setOptions(0);
-#else
 	setOptions(1);
 	// tie python stdout to cerr
 	std::cout.rdbuf(&g_pythonStdoutBuf);
@@ -4849,7 +4786,6 @@ bool initialize(PyObject * module)
 	mm = PyImport_AddModule("__main__");
 	g_main_vars = SharedVariables(PyModule_GetDict(mm), false);
 
-#  ifndef STANDALONE_EXECUTABLE
 	// get population and Individual type pointer
 	g_swigPopType = SWIG_TypeQuery(PopSWIGType);
 	g_swigIndividual = SWIG_TypeQuery(IndSWIGType);
@@ -4857,7 +4793,6 @@ bool initialize(PyObject * module)
 	// g_swigOperator = SWIG_TypeQuery(OperatorSWIGType);
 	if (g_swigPopType == NULL || g_swigIndividual == NULL)
 		throw SystemError("Can not get population and Individual type pointer, your SWIG version may be run.");
-#  endif
 
 	// load carray function and type
 	if (initCustomizedTypes(module) < 0)
@@ -4873,7 +4808,6 @@ bool initialize(PyObject * module)
 	testCopyGenotype();
 #    endif
 #  endif
-#endif
 	return true;
 }
 

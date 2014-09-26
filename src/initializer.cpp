@@ -268,7 +268,7 @@ bool InitGenotype::apply(Population & pop) const
 				}
 			}
 		} else {
-			// openMP is disabled here because of unknown cause of initialization error for binary module 
+			// openMP is disabled here because of unknown cause of initialization error for binary module
 			{
 				IndIterator it = pop.indIterator(sp->subPop());
 				// m_freq can be empty if ....

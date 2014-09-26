@@ -607,15 +607,18 @@ RevertIf::RevertIf(PyObject * cond, const string & fromPop, const opList & ops,
 	}
 }
 
+
 string RevertIf::describe(bool /* format */) const
 {
 	return string("<simuPOP.RevertIf> revert the evolution of population to ") +
 	       m_fromPop + " if a condition is met";
 }
 
+
 bool RevertIf::apply(Population & pop) const
 {
 	bool res = true;
+
 	if (m_fixedCond != -1)
 		res = m_fixedCond == 1;
 	else if (m_func.isValid()) {

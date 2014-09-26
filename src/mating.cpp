@@ -633,7 +633,7 @@ ParentChooser::IndividualPair SequentialParentChooser::chooseParents()
 			m_ind = m_begin;
 			DBG_ASSERT(m_ind.valid(), RuntimeError, "No valid individual if found.")
 		}
-		return ParentChooser::IndividualPair(&*m_ind++, (Individual*)(0));
+		return ParentChooser::IndividualPair(&*m_ind++, (Individual *)(0));
 	} else {
 		if (m_curInd == m_index.size())
 			m_curInd = 0;
@@ -678,7 +678,7 @@ void RandomParentChooser::initialize(Population & pop, size_t sp)
 		}
 	} else {
 		if (!m_replacement)
-			for(IndIterator it = pop.indIterator(sp); it.valid(); ++it)
+			for (IndIterator it = pop.indIterator(sp); it.valid(); ++it)
 				m_index.push_back(it.rawIter());
 		if (m_selection)
 			fitness = vectorf(pop.infoBegin(fit_id, sp), pop.infoEnd(fit_id, sp));
@@ -710,7 +710,7 @@ ParentChooser::IndividualPair RandomParentChooser::chooseParents()
 			throw RuntimeError("All parents have been chosen.");
 		Individual * ind = &*m_index.back();
 		m_index.pop_back();
-		return IndividualPair(ind, (Individual*)(0));
+		return IndividualPair(ind, (Individual *)(0));
 	}
 	Individual * ind = NULL;
 	if (m_index.empty()) {
@@ -725,7 +725,7 @@ ParentChooser::IndividualPair RandomParentChooser::chooseParents()
 		else
 			ind = &*(m_index[getRNG().randInt(static_cast<ULONG>(m_size))]);
 	}
-	return IndividualPair(ind, (Individual*)(0));
+	return IndividualPair(ind, (Individual *)(0));
 }
 
 
@@ -1179,7 +1179,7 @@ ParentChooser::IndividualPair PyParentsChooser::chooseParents()
 			ValueError, (boost::format("Returned index (%1%) is greater than subpopulation size %2%") % parent % m_size).str());
 #endif
 		Py_DECREF(item);
-		return ParentChooser::IndividualPair(&*(m_begin + parent), (Individual*)(0));
+		return ParentChooser::IndividualPair(&*(m_begin + parent), (Individual *)(0));
 	} else if (PySequence_Check(item)) {
 		DBG_ASSERT(PySequence_Size(item) == 2, RuntimeError,
 			"Parents should be returned in the form of a sequence of two elements");
@@ -1205,10 +1205,10 @@ ParentChooser::IndividualPair PyParentsChooser::chooseParents()
 		// is an individual object is returned?
 		void * ind = pyIndPointer(item);
 		DBG_ASSERT(ind, ValueError, "Invalid type of returned parent.");
-		return ParentChooser::IndividualPair(reinterpret_cast<Individual *>(ind), (Individual*)(0));
+		return ParentChooser::IndividualPair(reinterpret_cast<Individual *>(ind), (Individual *)(0));
 	}
 	// this should not be reached
-	return ParentChooser::IndividualPair((Individual*)(0), (Individual*)(0));
+	return ParentChooser::IndividualPair((Individual *)(0), (Individual *)(0));
 }
 
 
@@ -1264,7 +1264,7 @@ bool MatingScheme::prepareScratchPop(Population & pop, Population & scratch)
 		vectoru sz(res.size());
 		for (size_t i = 0; i < res.size(); i++) {
 			if (res[i] < 0)
-				throw ValueError((boost::format("Negative population size %1% returned for subpopulation %2%") % res[i] % i ).str());
+				throw ValueError((boost::format("Negative population size %1% returned for subpopulation %2%") % res[i] % i).str());
 			sz[i] = static_cast<ULONG>(res[i]);
 		}
 
@@ -1774,9 +1774,8 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 }
 
 
-
 ConditionalMating::ConditionalMating(PyObject * cond, const MatingScheme & ifMatingScheme,
-		const MatingScheme & elseMatingScheme)
+	const MatingScheme & elseMatingScheme)
 #if PY_VERSION_HEX >= 0x03000000
 	: m_cond(PyUnicode_Check(cond) ? PyObj_AsString(cond) : string()),
 #else
@@ -1805,14 +1804,15 @@ string ConditionalMating::describe(bool format) const
 	string ifDesc = m_ifMS->describe(format);
 	string elseDesc = m_elseMS->describe(format);
 	string desc = "<simuPOP.ConditionalMating> a conditional mating scheme that ";
+
 	if (m_fixedCond != -1)
-		desc += "always applies mating scheme \n"  + (m_fixedCond == 1 ? ifDesc : elseDesc);
+		desc += "always applies mating scheme \n" + (m_fixedCond == 1 ? ifDesc : elseDesc);
 	else if (m_func.isValid())
 		desc += "applies mating scheme \n" + ifDesc + "\n<indent>if function " + m_func.name()
-			+ " returns True, and otherwise apply \n" + elseDesc + "\n";
+		        + " returns True, and otherwise apply \n" + elseDesc + "\n";
 	else {
 		desc += "applies mating scheme \n" + ifDesc + "\n<indent>if " + m_cond.expr()
-			+ " returns True, and otherwise apply\n" + elseDesc + "\n";
+		        + " returns True, and otherwise apply\n" + elseDesc + "\n";
 	}
 
 	return format ? formatDescription(desc) : desc;
@@ -1838,6 +1838,7 @@ ConditionalMating::ConditionalMating(const ConditionalMating & rhs) :
 bool ConditionalMating::mate(Population & pop, Population & scratch)
 {
 	bool res = true;
+
 	if (m_fixedCond != -1)
 		res = m_fixedCond == 1;
 	else if (m_func.isValid()) {

@@ -270,6 +270,7 @@ public:
 	{
 	}
 
+
 	virtual ~ParentsTagger()
 	{
 	}
@@ -328,6 +329,7 @@ public:
 			"A single field to record offspring index is required for operator OffspringTagger.");
 	}
 
+
 	virtual ~OffspringTagger()
 	{
 	}
@@ -355,8 +357,9 @@ public:
 	{
 		return true;
 	}
-};
 
+
+};
 
 
 /** This tagging operator records the ID of parents of each offspring in

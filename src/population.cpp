@@ -2905,8 +2905,8 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 						DBG_FAILIF(loci[i] >= numLoci, IndexError, "Loci index out of range");
 						GenoIterator allele = ptr + loci[i];
 						DBG_FAILIF(static_cast<size_t>(DEREF_ALLELE(allele)) >= map.size(),
-							ValueError, (boost::format("Allele %1% can not be recoded") % 
-								static_cast<size_t>(DEREF_ALLELE(allele))).str());
+							ValueError, (boost::format("Allele %1% can not be recoded") %
+							             static_cast<size_t>(DEREF_ALLELE(allele))).str());
 						REF_ASSIGN_ALLELE(allele, TO_ALLELE(map[DEREF_ALLELE(allele)]));
 					}
 				}
@@ -3346,7 +3346,7 @@ void Population::useAncestralGen(ssize_t idx)
 		return;
 
 	DBG_DO(DBG_POPULATION, cerr << "Use ancestral generation: " << idx <<
-		    " Current ancestral index: " << m_curAncestralGen << endl);
+		" Current ancestral index: " << m_curAncestralGen << endl);
 
 	if (idx == 0 || m_curAncestralGen != 0) {         // recover pop.
 		popData & pd = m_ancestralPops[ m_curAncestralGen - 1];
