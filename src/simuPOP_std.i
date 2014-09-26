@@ -26,4 +26,7 @@
 %module simuPOP_std
 
 %include "simuPOP_common.i"
+%pythoncode %{
+defdict = _simuPOP_std.defdict
+%}
 

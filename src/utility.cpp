@@ -128,7 +128,7 @@ extern "C" PyObject * PyDefDict_New();
 
 extern "C" bool is_defdict(PyTypeObject * type);
 
-extern "C" int initCustomizedTypes(void);
+extern "C" int initCustomizedTypes(PyObject * m);
 
 #else
 
@@ -156,7 +156,7 @@ bool is_defdict(PyTypeObject *)
 }
 
 
-int initCustomizedTypes(void)
+int initCustomizedTypes(PyObject * m)
 {
 	return 0;
 }
@@ -4800,7 +4800,7 @@ void clearGenotype(GenoIterator begin, GenoIterator end)
 /* This file is used to initialize simuPOP when being load into
    python. The swig interface file will has a init% % entry to
    include this file. */
-bool initialize()
+bool initialize(PyObject * module)
 {
 
 #ifdef STANDALONE_EXECUTABLE
@@ -4860,7 +4860,7 @@ bool initialize()
 #  endif
 
 	// load carray function and type
-	if (initCustomizedTypes() < 0)
+	if (initCustomizedTypes(module) < 0)
 		throw SystemError("Failed to initialize carray and defdict types");
 
 	// set gsl error handler

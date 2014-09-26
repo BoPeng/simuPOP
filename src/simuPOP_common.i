@@ -182,7 +182,7 @@ namespace std
 ////////////////////////// SWIG_INIT FUNCTION //////////////////////////
 %init
 %{
-    simuPOP::initialize();
+    simuPOP::initialize(m);
 %}
 
 

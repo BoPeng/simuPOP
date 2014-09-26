@@ -2503,7 +2503,7 @@ void clearGenotype(GenoIterator begin, GenoIterator end);
 
 
 /// CPPONLY initialize module simuPOP when using "import simuPOP"
-bool initialize();
+bool initialize(PyObject * module);
 
 /// CPPONLY get a null stream that discard everything
 ostream & cnull();

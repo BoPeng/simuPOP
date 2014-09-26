@@ -62,18 +62,6 @@ def memory(since=0.0):
     '''
     return _VmB('VmSize:') - since
 
-def resident(since=0.0):
-    '''Return resident memory usage in bytes.
-    '''
-    return _VmB('VmRSS:') - since
-
-
-def stacksize(since=0.0):
-    '''Return stack size in bytes.
-    '''
-    return _VmB('VmStk:') - since
-
-
 class TestUtils(unittest.TestCase):
 
     def interactiveTestPauseAtGen(self):
@@ -98,6 +86,15 @@ class TestUtils(unittest.TestCase):
         print("Please check the existence of variable tmpPop\n\n")
         simu.evolve(
             postOps=[ Pause(at=[20], popName='tmpPop') ], end=25)
+
+    def testDefDictType(self):
+        'Testing type defdict'
+        d = defdict()
+        self.assertEqual(d[1], 0)
+        self.assertEqual(d[10], 0)
+        self.assertEqual(d[20], 0)
+        d[4] = 5
+        self.assertEqual(d[4], 5)
 
     def testsetRNG(self):
         'Testing all RNG types'
