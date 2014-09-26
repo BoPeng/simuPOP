@@ -428,6 +428,7 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 	PyObject * mutDict = PyDefDict_New();
 	PyObject * dkey = NULL;
 	PyObject * dval = NULL;
+
 	if (isHaplodiploid() && sex() == MALE)
 		ply = 1;
 
@@ -438,7 +439,7 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 			vectorm::const_val_iterator m_ptr = m_genoPtr.get_val_iterator();
 			vectorm::const_val_iterator m_end = (m_genoPtr + genoSize()).get_val_iterator();
 			for (; m_ptr != m_end; ++m_ptr) {
-				PyDict_SetItem(mutDict, 
+				PyDict_SetItem(mutDict,
 					dkey = PyInt_FromLong(m_ptr->first % genoSize()),
 					dval = PyInt_FromLong(m_ptr->second));
 				Py_DECREF(dkey);
@@ -451,21 +452,21 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 			vectorm::const_val_iterator m_end = (m_genoPtr + genoSize()).get_val_iterator();
 			for (; m_ptr != m_end; ++m_ptr)
 				tmp_mutants[ m_ptr->first % genoSize() ] = m_ptr->second;
-			
+
 			for (ssize_t p = 0; p < ply; ++p) {
 				for (ssize_t ch = 0; ch < static_cast<ssize_t>(numChrom()); ++ch) {
 					size_t chType = chromType(ch);
 					if (chType == CHROMOSOME_Y && sex() == FEMALE)
 						continue;
 					if (((chType == CHROMOSOME_X && p == 1) ||
-						 (chType == CHROMOSOME_Y && p == 0)) && sex() == MALE)
+					     (chType == CHROMOSOME_Y && p == 0)) && sex() == MALE)
 						continue;
 					if (chType == MITOCHONDRIAL && p > 0)
 						continue;
-					size_t k = p*totNumLoci()+chromBegin(ch);
-					for (size_t idx = 0; idx < numLoci(ch); ++idx) 
+					size_t k = p * totNumLoci() + chromBegin(ch);
+					for (size_t idx = 0; idx < numLoci(ch); ++idx)
 						if (tmp_mutants[k + idx] != 0) {
-							PyDict_SetItem(mutDict, 
+							PyDict_SetItem(mutDict,
 								dkey = PyInt_FromLong(k + idx),
 								dval = PyInt_FromLong(tmp_mutants[k + idx]));
 							Py_DECREF(dkey);
@@ -485,10 +486,10 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 					continue;
 				if (chType == MITOCHONDRIAL && p > 0)
 					continue;
-				size_t k = p*totNumLoci()+chromBegin(ch);
+				size_t k = p * totNumLoci() + chromBegin(ch);
 				for (size_t idx = 0; idx < numLoci(ch); ++idx) {
 					if (*(m_genoPtr + k + idx) != 0) {
-						PyDict_SetItem(mutDict, 
+						PyDict_SetItem(mutDict,
 							dkey = PyInt_FromLong(k + idx),
 							dval = PyInt_FromLong(*(m_genoPtr + k + idx)));
 						Py_DECREF(dkey);
@@ -513,7 +514,7 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 					for (size_t idx = 0; idx < loci.size(); ++idx) {
 						ULONG a = allele(loci[idx], p);
 						if (a != 0) {
-							PyDict_SetItem(mutDict, 
+							PyDict_SetItem(mutDict,
 								dkey = PyInt_FromLong(k + loci[idx]),
 								dval = PyInt_FromLong(a));
 							Py_DECREF(dkey);
@@ -525,17 +526,17 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 				// check if the loci is ordered
 				bool ordered = true;
 				for (size_t i = 1; i < loci.size(); ++i)
-					if (loci[i] < loci[i-1]) {
+					if (loci[i] < loci[i - 1]) {
 						ordered = false;
 						break;
 					}
-				const vectoru * sorted = & loci;
+				const vectoru * sorted = &loci;
 				if (!ordered) {
 					vectoru * sloci = new vectoru(loci.begin(), loci.end());
 					std::sort(sloci->begin(), sloci->end());
 					sorted = sloci;
 				}
-				
+
 				size_t nLoci = totNumLoci();
 				size_t l = sorted->front();
 				size_t h = sorted->back();
@@ -548,13 +549,13 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 					for (; m_ptr != m_end; ++m_ptr) {
 						size_t loc = m_ptr->first % nLoci;
 						// move it
-						while (*it < loc && it != eit) 
+						while (*it < loc && it != eit)
 							++it;
 						// do not look any further
 						if (it == eit)
 							break;
 						else if (*it == loc) {
-							PyDict_SetItem(mutDict, 
+							PyDict_SetItem(mutDict,
 								dkey = PyInt_FromLong(loc + p * nLoci),
 								dval = PyInt_FromLong(m_ptr->second));
 							Py_DECREF(dkey);
@@ -584,13 +585,13 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 						if (chromTypes[idx] == CHROMOSOME_Y && sex() == FEMALE)
 							continue;
 						if (((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
-							 (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && sex() == MALE)
+						     (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && sex() == MALE)
 							continue;
 						if (chromTypes[idx] == MITOCHONDRIAL && p > 0)
 							continue;
 						ULONG a = allele(loci[idx], p);
 						if (a) {
-							PyDict_SetItem(mutDict, 
+							PyDict_SetItem(mutDict,
 								dkey = PyInt_FromLong(k + loci[idx]),
 								dval = PyInt_FromLong(a));
 							Py_DECREF(dkey);
@@ -613,7 +614,7 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 					// find it
 					std::map<size_t, size_t>::iterator it = loci_map.find(loc % totNumLoci());
 					if (it != loci_map.end())
-						tmp_mutants[it->second + p*nLoci] = m_ptr->second;
+						tmp_mutants[it->second + p * nLoci] = m_ptr->second;
 				}
 
 				for (int p = 0; p < ply; ++p) {
@@ -621,13 +622,13 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 						if (chromTypes[idx] == CHROMOSOME_Y && sex() == FEMALE)
 							continue;
 						if (((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
-							 (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && sex() == MALE)
+						     (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && sex() == MALE)
 							continue;
 						if (chromTypes[idx] == MITOCHONDRIAL && p > 0)
 							continue;
 						if (tmp_mutants[idx + p * nLoci] != 0) {
-							PyDict_SetItem(mutDict, 
-								dkey = PyInt_FromLong(loci[idx] + p*totNumLoci()),
+							PyDict_SetItem(mutDict,
+								dkey = PyInt_FromLong(loci[idx] + p * totNumLoci()),
 								dval = PyInt_FromLong(tmp_mutants[idx + p * nLoci]));
 							Py_DECREF(dkey);
 							Py_DECREF(dval);
@@ -655,7 +656,7 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 				if (chromTypes[idx] == MITOCHONDRIAL && p > 0)
 					continue;
 				if (allele(loci[idx], p) != 0) {
-					PyDict_SetItem(mutDict, 
+					PyDict_SetItem(mutDict,
 						dkey = PyInt_FromLong(loci[idx] + p * totNumLoci()),
 						dval = PyInt_FromLong(allele(loci[idx], p)));
 					Py_DECREF(dkey);
@@ -687,7 +688,7 @@ PyObject * Individual::genoAtLoci(const lociList & lociList)
 		vectorm::const_val_iterator m_end = (m_genoPtr + genoSize()).get_val_iterator();
 		for (; m_ptr != m_end; ++m_ptr)
 			tmp_alleles[ m_ptr->first % genoSize() ] = m_ptr->second;
-		
+
 		for (ssize_t ch = 0; ch < static_cast<ssize_t>(numChrom()); ++ch) {
 			size_t chType = chromType(ch);
 			if (chType == CHROMOSOME_Y && sex() == FEMALE)
@@ -695,11 +696,11 @@ PyObject * Individual::genoAtLoci(const lociList & lociList)
 			for (size_t idx = 0; idx < numLoci(ch); ++idx) {
 				for (ssize_t p = 0; p < ply; ++p) {
 					if (((chType == CHROMOSOME_X && p == 1) ||
-						 (chType == CHROMOSOME_Y && p == 0)) && sex() == MALE)
+					     (chType == CHROMOSOME_Y && p == 0)) && sex() == MALE)
 						continue;
 					if (chType == MITOCHONDRIAL && p > 0)
 						continue;
-					alleles.push_back(tmp_alleles[p*totNumLoci()+chromBegin(ch)+idx]);
+					alleles.push_back(tmp_alleles[p * totNumLoci() + chromBegin(ch) + idx]);
 				}
 			}
 		}
@@ -743,7 +744,7 @@ PyObject * Individual::genoAtLoci(const lociList & lociList)
 					if (chromTypes[idx] == CHROMOSOME_Y && sex() == FEMALE)
 						continue;
 					if (((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
-						 (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && sex() == MALE)
+					     (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && sex() == MALE)
 						continue;
 					if (chromTypes[idx] == MITOCHONDRIAL && p > 0)
 						continue;
@@ -765,7 +766,7 @@ PyObject * Individual::genoAtLoci(const lociList & lociList)
 				// find it
 				std::map<size_t, size_t>::iterator it = loci_map.find(loc % totNumLoci());
 				if (it != loci_map.end())
-					tmp_alleles[it->second + p*nLoci] = m_ptr->second;
+					tmp_alleles[it->second + p * nLoci] = m_ptr->second;
 			}
 
 			for (size_t idx = 0; idx < loci.size(); ++idx) {
@@ -773,7 +774,7 @@ PyObject * Individual::genoAtLoci(const lociList & lociList)
 					if (chromTypes[idx] == CHROMOSOME_Y && sex() == FEMALE)
 						continue;
 					if (((chromTypes[idx] == CHROMOSOME_X && p == 1) ||
-						 (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && sex() == MALE)
+					     (chromTypes[idx] == CHROMOSOME_Y && p == 0)) && sex() == MALE)
 						continue;
 					if (chromTypes[idx] == MITOCHONDRIAL && p > 0)
 						continue;

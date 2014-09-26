@@ -630,12 +630,14 @@ public:
 		return m_status == FROM_NAME;
 	}
 
+
 	/// CPPONLY
 	/// return the index of loc in the index list
 	size_t indexOf(size_t loc) const;
 
 	/// CPPONLY
-	const vectoru & elems(const GenoStruTrait * trait=NULL) const;
+	const vectoru & elems(const GenoStruTrait * trait = NULL) const;
+
 	/// CPPONLY
 	const vectoru & elems(const Population * trait) const;
 
@@ -894,19 +896,21 @@ public:
 	{
 	}
 
+
 	// string func is strictly used for BaseOperator and its
 	// derived classes. It is therefore OK to make it accept
 	// both func and filehandler
 	stringFunc(PyObject * obj) : m_value(), m_func(NULL), m_mode()
 	{
 		PyObject * func = obj;
+
 		// if obj is a WithMode wrapper class
 		if (PyObject_HasAttrString(obj, "_with_mode") && PyObject_HasAttrString(obj, "_with_output")) {
 			PyObject * mode = PyObject_GetAttrString(obj, "_with_mode");
 			m_mode = PyObj_AsString(mode);
 			Py_DECREF(mode);
 			func = PyObject_GetAttrString(obj, "_with_output");
-			Py_DECREF(func);			
+			Py_DECREF(func);
 		}
 		if (PyCallable_Check(func))
 			m_func = pyFunc(func);
@@ -940,11 +944,14 @@ public:
 		return m_value.empty() && !m_func.isValid();
 	}
 
+
 	/// COPY
 	string mode() const
 	{
 		return m_mode;
 	}
+
+
 private:
 	string m_value;
 
@@ -1307,7 +1314,6 @@ public:
 		if (m_locals == NULL)
 			m_locals = mainVars().dict();
 
-#ifndef STANDALONE_EXECUTABLE
 		/* PyEval_GetBuildtins cannot be executed without a Python interpreter
 		 * so it is commented out when simuPOP is built as a standalone executable.
 		 */
@@ -1315,7 +1321,6 @@ public:
 			if (PyDict_SetItemString(m_locals, "__builtins__", PyEval_GetBuiltins()) != 0)
 				throw RuntimeError("Cannot set __builtins__ for a dictionary.");
 
-#endif
 		// empty expression
 		if (expr.empty() && stmts.empty())
 			return;

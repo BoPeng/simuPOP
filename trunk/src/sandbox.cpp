@@ -264,12 +264,12 @@ double MutSpaceSelector::randomSelMulFitnessExt(GenoIterator it, GenoIterator it
 		SelMap::iterator sit = m_selFactory.find(mit->first);
 		if (sit == m_selFactory.end()) {
 			SelCoef sf = getFitnessValue(mit->first);
-			if (mit->second == 1 && ! chrX)
+			if (mit->second == 1 && !chrX)
 				s *= 1 - sf.first * sf.second;
 			else
 				s *= 1 - sf.first;
 		} else {
-			if (mit->second == 1 && ! chrX)
+			if (mit->second == 1 && !chrX)
 				s *= 1 - sit->second.first * sit->second.second;
 			else
 				s *= 1 - sit->second.first;
@@ -300,12 +300,12 @@ double MutSpaceSelector::randomSelAddFitnessExt(GenoIterator it, GenoIterator it
 		SelMap::iterator sit = m_selFactory.find(mit->first);
 		if (sit == m_selFactory.end()) {
 			SelCoef sf = getFitnessValue(mit->first);
-			if (mit->second == 1 && ! chrX)
+			if (mit->second == 1 && !chrX)
 				s += sf.first * sf.second;
 			else
 				s += sf.first;
 		} else {
-			if (mit->second == 1 && ! chrX)
+			if (mit->second == 1 && !chrX)
 				s += sit->second.first * sit->second.second;
 			else
 				s += sit->second.first;
@@ -336,12 +336,12 @@ double MutSpaceSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it
 		SelMap::iterator sit = m_selFactory.find(mit->first);
 		if (sit == m_selFactory.end()) {
 			SelCoef sf = getFitnessValue(mit->first);
-			if (mit->second == 1 && ! chrX)
+			if (mit->second == 1 && !chrX)
 				s += sf.first * sf.second;
 			else
 				s += sf.first;
 		} else {
-			if (mit->second == 1 && ! chrX)
+			if (mit->second == 1 && !chrX)
 				s += sit->second.first * sit->second.second;
 			else
 				s += sit->second.first;
@@ -590,7 +590,7 @@ void MutSpaceRecombinator::transmitGenotype0(Population & pop, Population & offP
 		// not enough size
 		if (alleles.size() + 1 > offPop.numLoci(ch)) {
 			DBG_DO(DBG_TRANSMITTER, cerr << "Extending size of chromosome " << ch <<
-				    " to " << alleles.size() + 2 << endl);
+				" to " << alleles.size() + 2 << endl);
 			size_t sz = alleles.size() - offPop.numLoci(ch) + 2;
 			vectorf added(sz);
 			for (size_t j = 0; j < sz; ++j)
@@ -697,7 +697,7 @@ void MutSpaceRecombinator::transmitGenotype1(Population & pop, Population & offP
 		// not enough size
 		if (alleles.size() + 1 > offPop.numLoci(ch)) {
 			DBG_DO(DBG_TRANSMITTER, cerr << "Extending size of chromosome " << ch <<
-				    " to " << alleles.size() + 2 << endl);
+				" to " << alleles.size() + 2 << endl);
 			size_t sz = alleles.size() - offPop.numLoci(ch) + 2;
 			vectorf added(sz);
 			for (size_t j = 0; j < sz; ++j)

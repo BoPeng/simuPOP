@@ -241,13 +241,9 @@ vectoru Simulator::evolve(
 			Population & curPop = *m_pops[curRep];
 			// sync population variable gen with gen(). This allows
 			// users to set population variable to change generation number.
-#ifndef STANDALONE_EXECUTABLE
 			long curGen = curPop.getVars().getVarAsInt("gen");
 			if (curGen != static_cast<long>(curPop.gen()))
 				curPop.setGen(curGen);
-#else
-			ssize_t curGen = curPop.gen();
-#endif
 
 			ssize_t end = -1;
 			if (gens > 0)

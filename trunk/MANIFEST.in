@@ -64,7 +64,6 @@ include src/tagger.cpp
 include src/pedigree.cpp
 include src/virtualSubPop.cpp
 include src/sandbox.cpp
-include src/main.cpp
 
 # source generated files
 include src/swigpyrun.h 

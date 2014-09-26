@@ -1730,9 +1730,7 @@ public:
 	void setRep(size_t rep)
 	{
 		m_rep = rep;
-#ifndef STANDALONE_EXECUTABLE
 		m_vars.setVar("rep", rep);
-#endif
 	}
 
 
@@ -1751,9 +1749,7 @@ public:
 	void setGen(size_t gen)
 	{
 		m_gen = gen;
-#ifndef STANDALONE_EXECUTABLE
 		m_vars.setVar("gen", gen);
-#endif
 	}
 
 

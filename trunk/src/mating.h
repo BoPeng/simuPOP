@@ -777,7 +777,7 @@ public:
 
 public:
 	// CPPONLY
-	ParentChooser(const string & selectionField = string()) 
+	ParentChooser(const string & selectionField = string())
 		: m_initialized(false), m_selectionField(selectionField)
 	{
 	}
@@ -791,7 +791,7 @@ public:
 
 
 	/// Initialize a parent chooser for subpopulation \e subPop of \e population pop
-	virtual void initialize(Population & pop, size_t subPop )
+	virtual void initialize(Population & pop, size_t subPop)
 	{
 	}
 
@@ -829,7 +829,7 @@ public:
 	virtual IndividualPair chooseParents()
 	{
 		// do not use NULL because VC2010 uses nullptr and who knows what gcc uses
-		return IndividualPair((Individual*)(0), (Individual*)(0));
+		return IndividualPair((Individual *)(0), (Individual *)(0));
 	}
 
 
@@ -838,6 +838,7 @@ public:
 	{
 		finalize();
 	}
+
 
 protected:
 	bool m_initialized;
@@ -1083,7 +1084,7 @@ public:
 	 *  same sex.
 	 */
 	PolyParentsChooser(Sex polySex = MALE, UINT polyNum = 1,
-		const string & selectionField = "fitness"):
+		const string & selectionField = "fitness") :
 		ParentChooser(selectionField),
 		m_polySex(polySex), m_polyNum(polyNum),
 		m_maleIndex(0), m_femaleIndex(0),
@@ -1232,7 +1233,7 @@ private:
    /// CPPONLY
    void initialize(Population & pop, size_t sp);
 
-	/// Return chosen parents
+    /// Return chosen parents
    IndividualPair chooseParents();
 
    private:
@@ -1738,19 +1739,19 @@ private:
 /** A conditional mating scheme that applies different mating schemes
  *  according to a condition (similar to operator IfElse). The condition can
  *  be a fixed condition, an expression or a user-defined function, to
- *  determine which mating scheme to be used. 
+ *  determine which mating scheme to be used.
  */
 class ConditionalMating : public MatingScheme
 {
 public:
-	/** Create a conditional mating scheme that applies mating scheme \e 
-	 *  ifMatingScheme if the condition \e cond is \c True, or \e 
-	 *  elseMatingScheme if \e cond is \c False. If a Python expression 
+	/** Create a conditional mating scheme that applies mating scheme \e
+	 *  ifMatingScheme if the condition \e cond is \c True, or \e
+	 *  elseMatingScheme if \e cond is \c False. If a Python expression
 	 *  (a string) is given to parameter \e cond, the expression will be
 	 *  evalulated in parental population's local namespace. When a Python
 	 *  function is specified, it accepts parameter \c pop for the parental
 	 *  population. The return value of this function should be \c True or
-	 *  \c False. Otherwise, parameter \e cond will be treated as a fixed 
+	 *  \c False. Otherwise, parameter \e cond will be treated as a fixed
 	 *  condition (converted to \c True or \c False) upon which \e ifMatingScheme
 	 *  or \e elseMatingScheme will alway be applied.
 	 */
@@ -1785,7 +1786,6 @@ private:
 	MatingScheme * m_ifMS;
 	MatingScheme * m_elseMS;
 };
-
 
 
 }
