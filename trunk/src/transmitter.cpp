@@ -632,7 +632,7 @@ void Recombinator::initialize(const Individual & ind) const
 
 	DBG_FAILIF(m_rates.size() > 1 && m_rates.size() != loci.size(),
 		ValueError, "If both rates and loci are specified (or for all loci using value "
-			"ALL_AVAIL), they should have the same length.");
+		            "ALL_AVAIL), they should have the same length.");
 
 	bool useLociDist = m_rates.empty();
 
@@ -736,16 +736,16 @@ void Recombinator::initialize(const Individual & ind) const
 	// handling of sex chromosomes etc.
 	//
 	// average recombination rate > 0.01, or with sex chromosomes
-	if ( fabs(std::accumulate(vecP.begin(), vecP.end(), 0.) - 0.5 * ind.numChrom()) > 0.01 * vecP.size()
+	if (fabs(std::accumulate(vecP.begin(), vecP.end(), 0.) - 0.5 * ind.numChrom()) > 0.01 * vecP.size()
 	    || m_chromX > 0 || m_customizedBegin > 0)
 		m_algorithm = 0;
 	else if (uniform_rare) {
 		// uniform rare
 		// do not use a bernulli generator because recombination rate is uniform
 		if (useLociDist)
-			const_cast<vectorf&>(m_rates).push_back(vecP[0]);
+			const_cast<vectorf &>(m_rates).push_back(vecP[0]);
 		m_algorithm = 2;
-	} else 
+	} else
 		m_algorithm = 1;
 
 	if (m_algorithm != 2) {
