@@ -713,7 +713,7 @@ PyMappingMethods defdict_as_mapping = *PyDict_Type.tp_as_mapping;
 PyTypeObject defdict_type = {
 	PyObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type))
 	0,                              /* ob_size */
-	"simupop.defdict",              /* tp_name */
+	"simuPOP.defdict",              /* tp_name */
 	sizeof(defdictobject),          /* tp_basicsize */
 	0,                              /* tp_itemsize */
 	/* methods */
@@ -783,7 +783,7 @@ bool is_defdict(PyTypeObject * type)
 // we do not import or export hings,
 // carray is defined within simuPOP.
 /// CPPONLY
-int initCustomizedTypes(void)
+int initCustomizedTypes(PyObject * m)
 {
 	// this will be done in PyType_Ready() is your read this
 	// from python reference manual.
@@ -798,7 +798,10 @@ int initCustomizedTypes(void)
 
 	if (PyType_Ready(&defdict_type) < 0)
 		return -1;
-	//Py_INCREF(&defdict_type);
+
+	Py_INCREF(&defdict_type);
+	if (PyModule_AddObject(m, "defdict", (PyObject *)&defdict_type) < 0)
+		return -1;
 	return 0;
 }
 
@@ -1505,7 +1508,7 @@ PyObject * PyDefDict_New()
 }
 
 
-int initCustomizedTypes(void)
+int initCustomizedTypes(PyObject * m)
 {
 	Py_TYPE(&Arraytype) = &PyType_Type;
 	if (PyType_Ready(&Arraytype) < 0)
@@ -1516,7 +1519,9 @@ int initCustomizedTypes(void)
 
 	if (PyType_Ready(&defdict_type) < 0)
 		return -1;
-	//Py_INCREF(&defdict_type);
+
+	Py_INCREF(&defdict_type);
+	PyModule_AddObject(m, "defdict", (PyObject *)&defdict_type);
 	return 0;
 }
 

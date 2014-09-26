@@ -28,3 +28,6 @@
 #define OPTIMIZED
 #define LINEAGE
 %include "simuPOP_common.i"
+%pythoncode %{
+defdict = _simuPOP_linop.defdict
+%}

@@ -29,3 +29,6 @@
 #define OPTIMIZED
 
 %include "simuPOP_common.i"
+%pythoncode %{
+defdict = _simuPOP_muop.defdict
+%}

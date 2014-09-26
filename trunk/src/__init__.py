@@ -103,6 +103,9 @@ __all__ = [
     'HAPLODIPLOID',
     'ALL_AVAIL',
     'UNSPECIFIED',
+    # 
+    # type
+    'defdict',
     #
     # Major simuPOP classes
     'Population',

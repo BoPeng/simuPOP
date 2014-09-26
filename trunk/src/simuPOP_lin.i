@@ -27,4 +27,6 @@
 
 #define LINEAGE
 %include "simuPOP_common.i"
-
+%pythoncode %{
+defdict = _simuPOP_lin.defdict
+%}

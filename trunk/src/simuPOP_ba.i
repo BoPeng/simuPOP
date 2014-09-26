@@ -27,3 +27,6 @@
 
 #define BINARYALLELE
 %include "simuPOP_common.i"
+%pythoncode %{
+defdict = _simuPOP_ba.defdict
+%}

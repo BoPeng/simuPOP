@@ -28,3 +28,6 @@
 #define LONGALLELE
 
 %include "simuPOP_common.i"
+%pythoncode %{
+defdict = _simuPOP_la.defdict
+%}
