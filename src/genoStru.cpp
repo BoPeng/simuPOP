@@ -1094,7 +1094,8 @@ vectoru GenoStruTrait::lociByPos(const vectorpos & positions) const
 			genomic_pos((*pos).first, PRECISION((*pos).second)));
 
 		if (it == lociPosMap.end())
-			throw ValueError((boost::format("Failed to find locus with chromsome %1% and position %2%") % (*pos).first % (*pos).second).str());
+			throw ValueError((boost::format("Failed to find locus with chromsome %1% and position %2%")
+				 % (*pos).first % size_t((*pos).second)).str());
 
 		indexes[i] = it->second;
 	}
