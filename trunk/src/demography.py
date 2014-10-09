@@ -55,6 +55,13 @@ __all__ = [
     'LinearGrowthModel',
     'InstantChangeModel',
     'AdmixtureModel',
+    #
+    'EventBasedModel',
+    'DemographicEvent',
+    'ExponentialGrowthEvent',
+    'LinearGrowthEvent',
+    'AdmixtureEvent',
+    #
     'MultiStageModel',
     'OutOfAfricaModel',
     'SettlementOfNewWorldModel',
@@ -550,12 +557,16 @@ class BaseDemographicModel:
         self._gen = pop.dvars().gen - self._start_gen
         self._last_gen = pop.dvars().gen
         #
+        pop.dvars()._gen = self._gen
+        pop.dvars()._num_gens = self.num_gens
         for op in self.ops:
             if not op.apply(pop):
                 self._reset()
                 return []
-        return pop.subPopSizes()
-        
+        if '_expected_size' in pop.vars():
+            return pop.vars().pop('_expected_size')
+        else:
+            return pop.subPopSizes()
 
 class ExponentialGrowthModel(BaseDemographicModel):
     '''A model for exponential population growth with carry capacity'''
@@ -812,12 +823,17 @@ class InstantChangeModel(BaseDemographicModel):
 class AdmixtureModel(BaseDemographicModel):
     '''An population admixture model that mimicks the admixing of two 
     subpopulations using either an HI (hybrid isolation) or CGF
-    (continious gene flow) model. In the HI model, an admixed population
+    (continuous gene flow) model. In the HI model, an admixed population
     is created instantly from two or more subpopulation with
     specified proportions. In the CGF model, a population will be reduced
     to (1-alpha) N and accept alpha*N individuals from another population
     for a number of generations. Please see Long (1990) The Stnetic Structure
-    of Admixed Populations, Genetics for details.'''
+    of Admixed Populations, Genetics for details. 
+    
+    This model is deprecated due to the introduction of event based
+    implementation of admixture models (e.g. ``AdmixToNewPopAdmixture``
+    and ``ContinuousGeneFlowAdmixture events``). 
+    '''
     def __init__(self, T=None, N0=[], model=[], ops=[], infoFields=[]):
         '''Define a population admixture model that mixed two 
         subpopulations. The population has an initial size of ``N0``
@@ -1028,6 +1044,281 @@ class MultiStageModel(BaseDemographicModel):
             elif self.models[self._model_idx].num_gens <= self._gen - self._model_start_gen:
                 sz = self._advance(pop)
             return sz
+
+
+        
+class EventBasedModel(BaseDemographicModel):
+    '''An event based demographic model in which the demographic changes are 
+    triggered by demographic events such as population growth, split, join, and 
+    admixture. The population size will be kept constant if no event is applied
+    at a certain generation.
+    '''
+    def __init__(self, events=[], T=None, N0=[], ops=[], infoFields=[]):
+        '''A demographic model that is driven by a list of demographic events.
+        The events should be subclasses of ``DemographicEvent``, which have similar
+        interface as regular operators with the exception that applicable parameters
+        ``begin``, ``end``, ``step``, ``at`` are relative to the demographic model,
+        not the population.
+        '''
+        if isinstance(events, DemographicEvent):
+            events = [events]
+        BaseDemographicModel.__init__(self, numGens=T, initSize=N0,
+            ops=ops + events, infoFields=infoFields)
+
+
+class DemographicEvent:
+    '''Events that will be applied to one or more populations at specified
+    generations. The interface of a DemographicEvent is very similar to
+    an simuPOP operator, but the applicable parameters are handled so that
+    the generations are relative to the demographic model, not the populations
+    the event is applied.
+    '''
+    def __init__(self, output='', begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+        subPops=ALL_AVAIL, infoFields=[]):
+        self.output = output
+        self.begin = begin
+        self.end = end
+        self.step = step
+        if isinstance(at, int):
+            self.at = [at]
+        else:
+            self.at = at
+        self.reps = reps
+        self.subPops = subPops
+        self.infoFields = infoFields
+    
+    def _applicable(self, pop):
+        if '_gen' not in pop.vars() or '_num_gens' not in pop.vars():
+            raise ValueError('Cannot apply to a population without variables _gen or _num_gens')
+        #
+        gen = pop.dvars()._gen
+        end = pop.dvars()._num_gens
+
+        if self.reps != ALL_AVAIL and pop.dvars().rep not in self.reps:
+            return False
+        #
+        if self.at:
+            for a in self.at:
+                if a >= 0:
+                    if a == gen:
+                        return True
+                    else:
+                        continue
+                else:
+                    if end < 0:
+                        continue
+                        #raise ValueError('Cannot specify negative at generation for a demographic '
+                        #    'model without fixed number of generations.')
+                    if end + a + 1 == gen:
+                        return True
+                    else:
+                        continue
+            return False
+        #
+        if end < 0:
+            if self.begin < 0 or self.begin > gen:
+                return False
+            if ((gen - self.begin) % self.step == 0) and (end < 0 or end >= gen):
+                return True
+            else:
+                return False
+        else:
+            rstart = self.begin if self.begin >= 0 else self.begin + end + 1
+            rend = self.end if self.end >= 0 else self.end + end + 1
+            if rstart > rend:
+                return False
+            return gen >= rstart and gen <= rend and (gen - rstart) % self.step == 0
+        return False
+
+    def _identifySubPops(self, pop):
+        if self.subPops == ALL_AVAIL:
+            return range(pop.numSubPop())
+        else:
+            ret = []
+            names = pop.subPopNames()
+            for sp in self.subPops:
+                if type(sp) == int:
+                    ret.append(sp)
+                else:
+                    if sp not in names:
+                        raise ValueError('Invalid subpopulation name {}'.format(sp))
+                    ret.append(names.index(sp))
+        return ret
+
+    def apply(self, pop):
+        return True
+
+
+def PopSplitEvent(DemographicEvent):
+    '''
+    '''
+    pass
+
+
+class ExponentialGrowthEvent(DemographicEvent):
+    '''A demographic event that increase applicable population size by
+    ``N*r`` (to size ``N*(1+r)``) at each applicable generation. Note that
+    if both population size and ``r`` are small (e.g. ``N*r<1``), the population
+    might not expand as expected.'''
+    def __init__(self, rates=[], output='', name='', begin=0, end=-1, 
+        step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
+        '''A demographic event that expands all or specified subpopulations
+        (``subPops``) exponentially by a rate of ``rates``. Parameter ``rates``
+        can be a single number or a list of rates for all subpopulations.
+        ``subPops`` can be a ``ALL_AVAIL`` or a list of subpopulation index
+        or names.
+        '''
+        self.rates = rates
+        DemographicEvent.__init__(self, output, begin, end, step, at, reps,
+            subPops, infoFields)
+    
+    def apply(self, pop):
+        if not self._applicable(pop):
+            return True
+        #
+        # identify applicable subpopulations
+        subPops = self._identifySubPops(pop)
+        #
+        sz = list(pop.subPopSizes())
+        for idx, sp in enumerate(subPops):
+            if type(self.rates) in [list, tuple]:
+                sz[idx] = int(sz[idx] * (1 + self.rates[idx]))
+            else:
+                sz[idx] = int(sz[idx] * (1 + self.rates))
+        print(sz)
+        pop.dvars()._expected_size = sz 
+        return True
+
+
+class LinearGrowthEvent(DemographicEvent):
+    '''A demographic event that increase applicable population size by
+    ``N0*r`` at each applicable generation. Note that if both population
+    size and ``r`` are small (e.g. ``N0*r<1``), the population might not
+    expand as expected.'''
+    def __init__(self, rates=[], output='', name='', begin=0, end=-1, 
+        step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
+        '''A demographic event that expands all or specified subpopulations
+        (``subPops``) linearly by adding ``N0*rates`` individuals. Parameter
+        ``rates`` can be a single number or a list of rates for all
+        subpopulations. ``subPops`` can be a ``ALL_AVAIL`` or a list of
+        subpopulation index or names.
+        '''
+        self.rates = rates
+        self._inc_by = None
+        DemographicEvent.__init__(self, output, begin, end, step, at, reps,
+            subPops, infoFields)
+    
+    def apply(self, pop):
+        if not self._applicable(pop):
+            return True
+        #
+        # identify applicable subpopulations
+        subPops = self._identifySubPops(pop)
+        #
+        sz = list(pop.subPopSizes())
+        if self._inc_by is None:
+            self._inc_by = [0 for x in range(pop.numSubPop())]
+            for idx, sp in enumerate(subPops):
+                if type(self.rates) in [list, tuple]:
+                    self._inc_by[idx] = int(sz[idx] * self.rates[idx])
+                else:
+                    self._inc_by[idx] = int(sz[idx] * self.rates)
+        elif len(self._inc_by) != pop.numSubPop():
+            raise RuntimeError('Linear growth event applied to a'
+                'population with different number of subpopulations.')
+        pop.dvars()._expected_size = [x + y for x,y in zip(sz, self._inc_by)]
+        return True
+
+
+class AdmixtureEvent(DemographicEvent):
+    '''This event implements a population admixture event that mix
+    individuals from specified subpopulations to either a new 
+    subpopulation or an existing subpopulation. The first case
+    represents a Hybrid Isolation admixture model which creates
+    a new subpopulation from two parentsl populations with
+    specified proportions for one generation. The second case represents
+    a Continuous Gene Flow model where an admixed population
+    continues to accept migrants from other subpopulations for 
+    a number of generations.
+    '''
+    def __init__(self, proportions=[], toSubPop=None, output='',
+        name='', begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, 
+        subPops=ALL_AVAIL, infoFields=[]):
+        '''Create an admixed population by choosing individuals
+        from all or specified subpopulations (``subPops``). The admixed
+        population will be appended to the population as a new subpopulation
+        with name ``name`` if no ``toSubPop`` is specified, or otherwise
+        replace an existing subpopulation ``toSubPop``. ``toSubPop`` can
+        be ``None`` (create new), or name or index of an existing subpopulation.
+        The proportion of individuals from each subpopulation is specified by
+        parameter ``proportions``, which should be a list of float numbers 
+        between 0 and 1, and add up to 1 (e.g. ``[0.4, 0.4, 0.2]``, this 
+        function actually ignores the last element and set it to 1 minus the 
+        sum of the other numbers). Alternatively, number of individuals from 
+        each subpopulation can be explicitly specified (e.g. ``[500, 500]``).
+        '''
+        DemographicEvent.__init__(self, output, begin, end, step, at, reps,
+            subPops, infoFields)
+        self.proportions = proportions
+        self.subPopName = name
+        self.toSubPop = toSubPop
+
+    def apply(self, pop):
+        if not self._applicable(pop):
+            return True
+        #
+        # identify applicable subpopulations
+        subPops = self._identifySubPops(pop)
+        #
+        sz = list(pop.subPopSizes())
+        #
+        try:
+            old_sz = [sz[idx] for idx in subPops]
+        except Exception as e:
+            raise RuntimeError('Failed to admix subpopulations {}'
+                .format([str(x) for x in subPops]))
+        #
+        if len(subPops) != len(self.proportions):
+            raise ValueError('Number of subpopulations and proportions mismatch.')
+        #
+        # determine the maximum number of individuals that 
+        # can be draw from each subpopulation
+        if all([isinstance(x, int) for x in self.proportions]):
+            # if specific numbers are specified
+            new_sz = [min(x,y) for x,y in zip(self.proportions, old_sz)]
+        else:
+            if sum(self.proportions[:-1]) > 1:
+                raise ValueError('Proportions of individual from parental populations add up more than 1.')
+            if any([x < 0 or x > 1 for x in self.proportions]):
+                raise ValueError('Proportion of one of the parental populations is negative or more than 1.')
+            if sum(self.proportions) != 1.:
+                self.proportions[-1] = 1. - sum(self.proportions[:-1])
+            #
+            # now determine the size ...
+            new_sz = None
+            for idx in range(len(old_sz)):
+                if self.proportions[idx] == 0:
+                    continue
+                # if we use all individuals in this subpopulation
+                N = old_sz[idx] / self.proportions[idx]
+                new_sz = [int(N*x) for x in self.proportions]
+                if all([x <= y for x,y in zip(new_sz, old_sz)]):
+                    break
+            if new_sz is None:
+                raise RuntimeError('Failed to determine size of admixed subpopulation.')
+        #
+        if self.toSubPop is None:
+            # Now, we need to select specified number of individuals from the subpopulations
+            indexes = []
+            for sz, sp in zip(new_sz, subPops):
+                indexes.extend(range(pop.subPopBegin(sp), pop.subPopBegin(sp) + sz))
+            sample = pop.extractIndividuals(indexes=indexes)
+            sample.mergeSubPops(name=self.subPopName)
+            pop.addIndFrom(sample)
+            return True
+        else:
+            pass
+        
 
 class OutOfAfricaModel(MultiStageModel):
     '''A dempgrahic model for the CHB, CEU, and YRI populations, as defined in
