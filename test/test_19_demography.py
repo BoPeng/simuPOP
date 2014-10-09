@@ -518,6 +518,123 @@ class TestDemography(unittest.TestCase):
                 }[gen])
         #
 
+    def testEventBasedModel(self):
+        'Test event based implementation of demographic models'
+        EventBasedModel(T=100, N0=200)._assertSize(
+            {
+                0: 200,
+                99: 200,
+            })
+
+    def testExponentialGrowthEvent(self):
+        EventBasedModel(T=100, N0=200,
+            events=ExponentialGrowthEvent(rates=0.01)
+            )._assertSize(
+            {
+                0: 202,
+                2: 206,
+                99: 466,
+            }, initSize=500)
+        EventBasedModel(T=100, N0=[200, 200], 
+            events=ExponentialGrowthEvent(rates=0.01)
+            )._assertSize(
+            {
+                0: [202, 202],
+                2: [206, 206],
+                99: [466, 466],
+            }, initSize=500)
+        # unknown NT
+        EventBasedModel(T=100, N0=[200, 200], 
+            events=ExponentialGrowthEvent(rates=[0.01, 0.03])
+            )._assertSize(
+            {
+                0: [202, 206],
+                2: [206, 218],
+                99: [466, 3574],
+            }, initSize=500)
+      
+    def testLinearGrowthEvent(self):
+        EventBasedModel(T=100, N0=200,
+            events=LinearGrowthEvent(rates=0.01)
+            )._assertSize(
+            {
+                0: 202,
+                2: 206,
+                99: 400,
+            }, initSize=500)
+        EventBasedModel(T=100, N0=[200, 200], 
+            events=LinearGrowthEvent(rates=0.01)
+            )._assertSize(
+            {
+                0: [202, 202],
+                2: [206, 206],
+                99: [400, 400],
+            }, initSize=500)
+        # unknown NT
+        EventBasedModel(T=100, N0=[200, 200], 
+            events=LinearGrowthEvent(rates=[0.01, 0.03])
+            )._assertSize(
+            {
+                0: [202, 206],
+                2: [206, 218],
+                99: [400, 800],
+            }, initSize=500)
+
+    def testHIAdmixtureEvent(self):
+        EventBasedModel(T=10, 
+            events=AdmixToNewPopEvent(subPops=[1, 2], proportions=[0.5, 0.5], at=2)
+        )._assertSize(
+            {
+                0: (200, 300, 400),
+                2: (200, 300, 400, 600),
+                4: (200, 300, 400, 600),
+                5: (200, 300, 400, 600),
+            }, initSize=[200, 300, 400])
+        EventBasedModel(T=10, 
+            events=AdmixToNewPopEvent(subPops=[0, 2], proportions=[0.5, 0.5], at=2)
+        )._assertSize(
+            {
+                0: (200, 300, 400),
+                2: (200, 300, 400, 400),
+                4: (200, 300, 400, 400),
+                5: (200, 300, 400, 400),
+            }, initSize=[200, 300, 400])
+        EventBasedModel(T=10, 
+            events=AdmixToNewPopEvent(subPops=[0, 2], proportions=[0.5, 0.1], at=2)
+        )._assertSize(
+            {
+                0: (200, 300, 400),
+                2: (200, 300, 400, 400),
+                4: (200, 300, 400, 400),
+                5: (200, 300, 400, 400),
+            }, initSize=[200, 300, 400])
+        EventBasedModel(T=10, 
+            events=AdmixToNewPopEvent(subPops=[0, 1, 2], proportions=[0.2, 0.3, 0.5], at=2)
+        )._assertSize(
+            {
+                0: (200, 300, 400),
+                # take 160, 240, 400
+                2: (200, 300, 400, 800),
+                4: (200, 300, 400, 800),
+                5: (200, 300, 400, 800),
+            }, initSize=[200, 300, 400])
+
+    def testCGFAdmixtureEvent(self):
+        EventBasedModel(T=10, model=('CGF', 0, 2, 0.8))._assertSize(
+            {
+                0: (200, 300, 400),
+                4: (200, 300, 400),
+                5: (200, 300, 400),
+            }, initSize=[200, 300, 400])
+        EventBasedModel(T=10, model=('CGF', 1, 2, 0.8))._assertSize(
+            {
+                0: (200, 300, 400),
+                4: (200, 300, 400),
+                5: (200, 300, 400),
+            }, initSize=[200, 300, 400])
+
+
+
     def testRevertAndDemo(self):
         'Test the use of demographic model with RevertIf operator'
         pop = Population(100, loci=1)
