@@ -634,6 +634,31 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.subPopName(sp), 'new')
         self.assertEqual(pop.subPopNames(), ('A', 'new', 'D', 'F'))
         self.assertEqual(pop.subPopSize(1), pop1.subPopSize(1)+pop1.subPopSize(2)+pop1.subPopSize(4))
+        #
+        # merge to a specified subpopulation
+        pop = self.getPop(size=[100, 20, 30, 80, 50, 60], subPopNames=['A', 'B', 'C', 'D', 'E', 'F'])
+        pop1 = pop.clone()
+        self.assertRaises(ValueError, pop.mergeSubPops, [1, 3, 4], toSubPop=2)
+        pop.mergeSubPops([1, 3, 4], toSubPop=3)
+        self.assertEqual(pop.subPopSize(2), pop1.subPopSize(1)+pop1.subPopSize(3)+pop1.subPopSize(4))
+        for (oldsp, newsp) in [(0, 0), (2, 1), (5, 3)]:  # map of old and new id.
+            self.assertEqual(pop1.subPopSize(oldsp), pop.subPopSize(newsp))
+            self.assertEqual(pop1.subPopName(oldsp), pop.subPopName(newsp))
+            for idx in range(pop1.subPopSize(oldsp)):
+                self.assertEqual(pop1.individual(idx, oldsp), pop.individual(idx, newsp))
+        # set new name to merged subpopulation
+        pop = self.getPop(size=[100, 20, 30, 80, 50, 60], subPopNames=['A', 'B', 'C', 'D', 'E', 'F'])
+        pop1 = pop.clone()
+        sp = pop.mergeSubPops([2, 1, 4], toSubPop=4, name='new')
+        for (oldsp, newsp) in [(0, 0), (3, 1), (5, 3)]:  # map of old and new id.
+            self.assertEqual(pop1.subPopSize(oldsp), pop.subPopSize(newsp))
+            self.assertEqual(pop1.subPopName(oldsp), pop.subPopName(newsp))
+            for idx in range(pop1.subPopSize(oldsp)):
+                self.assertEqual(pop1.individual(idx, oldsp), pop.individual(idx, newsp))
+        self.assertEqual(sp, 2)
+        self.assertEqual(pop.subPopName(sp), 'new')
+        self.assertEqual(pop.subPopNames(), ('A', 'D', 'new', 'F'))
+        self.assertEqual(pop.subPopSize(2), pop1.subPopSize(1)+pop1.subPopSize(2)+pop1.subPopSize(4))
 
     def testRemoveSubPops(self):
         'Testing Population::removeSubPops()'

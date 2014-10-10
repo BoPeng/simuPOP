@@ -1555,7 +1555,7 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name, i
 		if (find(sps.begin(), sps.end(), sp) != sps.end()) {
 			merged_size += subPopSize(sp);
 			if (sp == toSubPop) {
-				merged_idx = new_size.size()
+				merged_idx = new_size.size();
 				new_size.push_back(0);
 				if (!m_subPopNames.empty())
 					new_names.push_back(name.empty() ? m_subPopNames[sp] : name);
