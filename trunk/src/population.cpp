@@ -1509,12 +1509,12 @@ void Population::removeIndividuals(const uintList & indexList, const floatList &
 }
 
 
-size_t Population::mergeSubPops(const uintList & subPops, const string & name)
+size_t Population::mergeSubPops(const uintList & subPops, const string & name, int toSubPop)
 {
 	if (!name.empty() && m_subPopNames.empty())
 		m_subPopNames.resize(numSubPop(), UnnamedSubPop);
 
-	// merge all subpopulations
+	// merge all subpopulations, toSubPop does not matter
 	if (subPops.allAvail()) {
 		// [ popSize() ]
 		vectoru sz(1, popSize());
@@ -1524,6 +1524,7 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 			setSubPopStru(sz, vectorstr(1, name.empty() ? m_subPopNames[0] : name));
 		return 0;
 	}
+	// this is equivalent to subpop rename
 	if (subPops.elems().size() == 1) {
 		if (!name.empty())
 			m_subPopNames[0] = name;
@@ -1539,24 +1540,37 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 			consecutive = false;
 			break;
 		}
+	// default to the smallest subpopulation
+	if (toSubPop < 0)
+		toSubPop = sps[0];
+	else if (find(sps.begin(), sps.end(), toSubPop) == sps.end())
+		throw ValueError("toSubPop is not one of the merged subpopulations.");
 	// new subpopulation sizes and names
 	vectoru new_size;
 	vectorstr new_names;
+	size_t merged_size = 0;
+	size_t merged_idx = 0;
 	for (size_t sp = 0; sp < numSubPop(); ++sp) {
+		// if sp is being merged
 		if (find(sps.begin(), sps.end(), sp) != sps.end()) {
-			if (new_size.size() <= sps[0]) {
-				new_size.push_back(subPopSize(sp));
+			merged_size += subPopSize(sp);
+			if (sp == toSubPop) {
+				merged_idx = new_size.size()
+				new_size.push_back(0);
 				if (!m_subPopNames.empty())
 					new_names.push_back(name.empty() ? m_subPopNames[sp] : name);
-			} else
-				new_size[sps[0]] += subPopSize(sp);
+			}
 		} else {
+			// not being merged
 			new_size.push_back(subPopSize(sp));
 			if (!m_subPopNames.empty())
 				new_names.push_back(m_subPopNames[sp]);
 		}
 	}
+	// merged_size is now the sum of sizes of all subpopulations being merged
+	new_size[merged_idx] = merged_size;
 	// if consecutive, no need to move anyone
+	// toSubPop does not matter either
 	if (consecutive) {
 		setSubPopStru(new_size, new_names);
 		return sps[0];
@@ -1565,10 +1579,14 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 	syncIndPointers();
 	// find the new subpop order
 	vectoru sp_order;
-	for (size_t sp = 0; sp < sps[0]; ++sp)
-		sp_order.push_back(sp);
+	// subpopulations before toSubPop
+	for (size_t sp = 0; sp < toSubPop; ++sp)
+		if (find(sps.begin(), sps.end(), sp) == sps.end())
+			sp_order.push_back(sp);
+	// all merged subpopulations 
 	sp_order.insert(sp_order.end(), sps.begin(), sps.end());
-	for (size_t sp = sps[0]; sp < numSubPop(); ++sp)
+	// subpopulations after toSubPop
+	for (size_t sp = toSubPop; sp < numSubPop(); ++sp)
 		if (find(sps.begin(), sps.end(), sp) == sps.end())
 			sp_order.push_back(sp);
 	//
@@ -1629,7 +1647,7 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name)
 		m_inds[i].setLineagePtr(lineagePtr);
 	}
 #endif
-	return sps[0];
+	return merged_idx;
 }
 
 

@@ -1175,13 +1175,14 @@ public:
 	/** Merge subpopulations \e subPops. If \e subPops is \c ALL_AVAIL (default),
 	 *  all subpopulations will be merged. \e subPops do not have to be adjacent
 	 *  to each other. They will all be merged to the subpopulation with the
-	 *  smallest subpopulation ID. Indexes of the rest of the subpopulation may
+	 *  smallest subpopulation ID, unless a subpopulation ID is specified using
+	 *  parameter \c toSubPop. Indexes of the rest of the subpopulation may
 	 *  be changed. A new name can be assigned to the merged subpopulation
 	 *  through parameter \e name (an empty \e name will be ignored). This
 	 *  function returns the ID of the merged subpopulation.
 	 *  <group>7-manipulate</group>
 	 */
-	size_t mergeSubPops(const uintList & subPops = uintList(), const string & name = UnnamedSubPop);
+	size_t mergeSubPops(const uintList & subPops = uintList(), const string & name = UnnamedSubPop, int toSubPop=-1);
 
 	/** Add all individuals, including ancestors, in \e pop to the current
 	 *  population. Two populations should have the same genotypic structures
