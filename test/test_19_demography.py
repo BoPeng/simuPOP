@@ -580,9 +580,9 @@ class TestDemography(unittest.TestCase):
                 99: [400, 800],
             }, initSize=500)
 
-    def testHIAdmixtureEvent(self):
+    def testAdmixtureEvent(self):
         EventBasedModel(T=10, 
-            events=AdmixToNewPopEvent(subPops=[1, 2], proportions=[0.5, 0.5], at=2)
+            events=AdmixtureEvent(subPops=[1, 2], proportions=[0.5, 0.5], at=2)
         )._assertSize(
             {
                 0: (200, 300, 400),
@@ -591,7 +591,7 @@ class TestDemography(unittest.TestCase):
                 5: (200, 300, 400, 600),
             }, initSize=[200, 300, 400])
         EventBasedModel(T=10, 
-            events=AdmixToNewPopEvent(subPops=[0, 2], proportions=[0.5, 0.5], at=2)
+            events=AdmixtureEvent(subPops=[0, 2], proportions=[0.5, 0.5], at=2)
         )._assertSize(
             {
                 0: (200, 300, 400),
@@ -600,7 +600,7 @@ class TestDemography(unittest.TestCase):
                 5: (200, 300, 400, 400),
             }, initSize=[200, 300, 400])
         EventBasedModel(T=10, 
-            events=AdmixToNewPopEvent(subPops=[0, 2], proportions=[0.5, 0.1], at=2)
+            events=AdmixtureEvent(subPops=[0, 2], proportions=[0.5, 0.1], at=2)
         )._assertSize(
             {
                 0: (200, 300, 400),
@@ -609,7 +609,7 @@ class TestDemography(unittest.TestCase):
                 5: (200, 300, 400, 400),
             }, initSize=[200, 300, 400])
         EventBasedModel(T=10, 
-            events=AdmixToNewPopEvent(subPops=[0, 1, 2], proportions=[0.2, 0.3, 0.5], at=2)
+            events=AdmixtureEvent(subPops=[0, 1, 2], proportions=[0.2, 0.3, 0.5], at=2)
         )._assertSize(
             {
                 0: (200, 300, 400),
@@ -618,22 +618,67 @@ class TestDemography(unittest.TestCase):
                 4: (200, 300, 400, 800),
                 5: (200, 300, 400, 800),
             }, initSize=[200, 300, 400])
-
-    def testCGFAdmixtureEvent(self):
-        EventBasedModel(T=10, model=('CGF', 0, 2, 0.8))._assertSize(
+        #
+        EventBasedModel(T=10, 
+            events=AdmixtureEvent(subPops=[0, 1, 2], numbers=[20, 30, 50], at=2)
+        )._assertSize(
             {
                 0: (200, 300, 400),
+                # take 160, 240, 400
+                2: (200, 300, 400, 100),
+                4: (200, 300, 400, 100),
+                5: (200, 300, 400, 100),
+            }, initSize=[200, 300, 400])
+        EventBasedModel(T=10, 
+            events=AdmixtureEvent(subPops=[0, 1, 2], numbers=[20, 30, 50], begin=2)
+        )._assertSize(
+            {
+                0: (200, 300, 400),
+                2: (200, 300, 400, 100),
+                4: (200, 300, 400, 100, 100, 100),
+                5: (200, 300, 400, 100, 100, 100, 100),
+            }, initSize=[200, 300, 400])
+        # with toSubPop ...
+        EventBasedModel(T=10, 
+            events=AdmixtureEvent(subPops=[1, 2], proportions=[0.5, 0.5], at=2, toSubPop=1)
+        )._assertSize(
+            {
+                0: (200, 300, 400),
+                2: (200, 300, 400),
                 4: (200, 300, 400),
                 5: (200, 300, 400),
             }, initSize=[200, 300, 400])
-        EventBasedModel(T=10, model=('CGF', 1, 2, 0.8))._assertSize(
+        EventBasedModel(T=10, 
+            events=AdmixtureEvent(subPops=[0, 1, 2], numbers=[20, 30, 50], toSubPop=1, at=2)
+        )._assertSize(
             {
                 0: (200, 300, 400),
-                4: (200, 300, 400),
-                5: (200, 300, 400),
+                2: (200, 100, 400),
+                4: (200, 100, 400),
+                5: (200, 100, 400),
             }, initSize=[200, 300, 400])
+        EventBasedModel(T=10, 
+            events=AdmixtureEvent(subPops=[0, 1, 2], numbers=[20, 30, 50], toSubPop=1, begin=2)
+        )._assertSize(
+            {
+                0: (200, 300, 400),
+                2: (200, 100, 400),
+                4: (200, 100, 400),
+                5: (200, 100, 400),
+            }, initSize=[200, 300, 400]) 
 
 
+    def testOperatorEvent(self):
+        EventBasedModel(T=10, 
+            events=MergeEvent(subPops=[0, 2], at=2)
+        )._assertSize(
+            {
+                0: (200, 300, 400),
+                2: (600, 300),
+                4: (600, 300),
+                5: (600, 300),
+            }, initSize=[200, 300, 400]) 
+        
 
     def testRevertAndDemo(self):
         'Test the use of demographic model with RevertIf operator'
