@@ -79,7 +79,8 @@ import math
 from simuOpt import simuOptions
 
 from simuPOP import Population, PyEval, RandomSelection, \
-    ALL_AVAIL, Stat, stat, Migrator, InitSex, PyOperator
+    ALL_AVAIL, Stat, stat, Migrator, InitSex, PyOperator, \
+    MergeSubPops, SplitSubPops, ResizeSubPops
 
 from simuPOP.utils import migrIslandRates, migrHierarchicalIslandRates, \
     migrSteppingStoneRates
@@ -1223,7 +1224,7 @@ class OperatorEvent(DemographicEvent):
     def apply(self, pop):
         if not self._applicable(pop):
             return True
-        for op in ops:
+        for op in self.ops:
             if not op.apply(pop):
                 return False
         return True
@@ -1258,7 +1259,7 @@ class SplitEvent(OperatorEvent):
 
 class MergeEvent(OperatorEvent):
     '''A demographic event wrapper of operator MergeSubPops'''
-    def __init__(self, name='', begin=0, end=-1, 
+    def __init__(self, name='', output='', begin=0, end=-1, 
         step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
         '''A demographic event that merges subpopulations into a single subpopulation.
         Please refer to operator ``MergeSubPops`` for details.'''
@@ -1390,22 +1391,45 @@ class AdmixtureEvent(DemographicEvent):
         # identify applicable subpopulations
         subPops = self._identifySubPops(pop)
         #
-        sz = list(pop.subPopSizes())
+        if self.toSubPop is None:
+            toSubPop = self.toSubPop
+        else:
+            # replacing an existing subpopulation
+            if isinstance(self.toSubPop, int):
+                if self.toSubPop >= pop.numSubPop():
+                    raise ValueError('Subpopulation index {} out of range'.format(self.toSubPop))
+                toSubPop = self.toSubPop
+            else:
+                if self.toSubPop != pop.subPopNames():
+                    raise ValueError('No subpopulation with name {} can be located'.format(self.toSubPop))
+                toSubPop = pop.subPopNames().index(self.toSubPop)
         #
-        try:
-            old_sz = [sz[idx] for idx in subPops]
-        except Exception as e:
-            raise RuntimeError('Failed to admix subpopulations {}'
-                .format([str(x) for x in subPops]))
-        #
-        if len(subPops) != len(self.proportions):
+        if self.proportions and len(subPops) != len(self.proportions):
+            raise ValueError('Number of subpopulations and proportions mismatch.')
+        if self.numbers and len(subPops) != len(self.numbers):
             raise ValueError('Number of subpopulations and proportions mismatch.')
         #
         # determine the maximum number of individuals that 
         # can be draw from each subpopulation
-        if self.numbers
+        if self.numbers:
             # if specific numbers are specified
-            num_migrants = [min(x,y) for x,y in zip(self.numbers, old_sz)]
+            num_migrants = []
+            for sp in range(pop.numSubPop()):
+                if sp in subPops:
+                    num_migrants.append(min(pop.subPopSize(sp), self.numbers[subPops.index(sp)]))
+                else:
+                    # not involved
+                    num_migrants.append(0)
+            # if to a certain subpopulation ...
+            if toSubPop is not None:
+                # 100, 200, 300
+                #
+                # pick 200, 200 to subpop 2
+                #
+                # we are supposed to keep num_migrants[toSubPop] individuals so the
+                # number of migrant is - (N - migrants)
+                #
+                num_migrants[toSubPop] -= pop.subPopSize(toSubPop)
         else:
             if sum(self.proportions[:-1]) > 1:
                 raise ValueError('Proportions of individual from parental populations add up more than 1.')
@@ -1413,48 +1437,55 @@ class AdmixtureEvent(DemographicEvent):
                 raise ValueError('Proportion of one of the parental populations is negative or more than 1.')
             if sum(self.proportions) != 1.:
                 self.proportions[-1] = 1. - sum(self.proportions[:-1])
-            #
-            # now determine the size ...
-            num_migrants = None
-            for idx in range(len(old_sz)):
-                if self.proportions[idx] == 0:
-                    continue
-                # if we use all individuals in this subpopulation
-                N = old_sz[idx] / self.proportions[idx]
-                num_migrants = [int(N*x) for x in self.proportions]
-                if all([x <= y for x,y in zip(num_migrants, old_sz)]):
-                    break
-            if num_migrants is None:
-                raise RuntimeError('Failed to determine size of admixed subpopulation.')
+            # 
+            # create a new subpopulation
+            if toSubPop is None:
+                # now determine the size ... try different source subpopulation
+                num_migrants = None
+                for sp in range(pop.numSubPop()):
+                    if sp not in subPops:
+                        continue
+                    idx = subPops.index(sp)
+                    if self.proportions[idx] == 0:
+                        continue
+                    # if we use all individuals in this subpopulation
+                    N = pop.subPopSize(sp) / self.proportions[idx]
+                    num_migrants = [int(N*self.proportions[subPops.index(x)]) if x in subPops else 0 for x in range(pop.numSubPop())]
+                    if all([x <= y for x,y in zip(num_migrants, pop.subPopSizes())]):
+                        break
+                if num_migrants is None:
+                    raise RuntimeError('Failed to determine size of admixed subpopulation.')
+            else:
+                N = pop.subPopSize(toSubPop)
+                # proportion of individules from each source subpopulation (migrate out)
+                num_migrants = [int(N*self.proportions[subPops.index(x)]) if x in subPops else 0 for x in range(pop.numSubPop())]
+                # migrate into toSubPop and replace individuals
+                num_migrants[toSubPop] -= pop.subPopSize(toSubPop)
         #
-        if self.toSubPop is None:
+        if toSubPop is None:
             # Now, we need to select specified number of individuals from the subpopulations
             indexes = []
-            for sz, sp in zip(num_migrants, subPops):
+            for sz, sp in zip(num_migrants, range(pop.numSubPop())):
                 indexes.extend(range(pop.subPopBegin(sp), pop.subPopBegin(sp) + sz))
             sample = pop.extractIndividuals(indexes=indexes)
             sample.mergeSubPops(name=self.subPopName)
             pop.addIndFrom(sample)
         else:
-            if isinstance(self.toSubPop, int):
-                if self.toSubPop >= pop.numSubPop():
-                    raise ValueError('Subpopulation index {} out of range'.format(self.toSubPop))
-                sp = self.toSubPop
-            else:
-                if self.toSubPop != pop.subPopNames():
-                    raise ValueError('No subpopulation with name {} can be located'.format(self.toSubPop))
-                sp = pop.subPopNames().index(self.toSubPop)
+            # replacing an existing subpopulation
             # adjust the size of existing subpopulations
             # copy individuals that will be in admixed population
-            pop.resize([(x+y if s != sp else x) for s,x,y in zip(subPops, old_sz, num_migrants)],
-                propagate=True)
+            sz_before = list(pop.subPopSizes())
+            sz_after = [x + y for x,y in zip(pop.subPopSizes(), num_migrants)]
+            pop.resize(sz_after, propagate=True)
             for sp in range(pop.numSubPop() - 1, -1, -1):
-                pop.splitSubPop(sp, [old_sz[sp], pop.subPopSize(sp)-ols_sz[sp]])
-            pop.mergeSubPops([x+x for x in range(len(old_sz))], toSubPop=sp+sp)
+                if sz_after[sp] > sz_before[sp]:
+                    pop.splitSubPop(sp, [sz_before[sp], sz_after[sp] - sz_before[sp]])
+                else:
+                    pop.splitSubPop(sp, [sz_after[sp], 0])
+            pop.mergeSubPops([x+x + 1 for x in range(pop.numSubPop()//2)], toSubPop=toSubPop+toSubPop+1)
+            pop.mergeSubPops([toSubPop, toSubPop + 1])
         return True
 
-            
-        
 
 class OutOfAfricaModel(MultiStageModel):
     '''A dempgrahic model for the CHB, CEU, and YRI populations, as defined in
