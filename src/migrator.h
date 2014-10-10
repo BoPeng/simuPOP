@@ -123,7 +123,6 @@ public:
 	 *  in specified (virtual) subpopulations will migrate) but \e toSubPops
 	 *  is ignored.
 	 *
-	 *  This operator is by default applied pre-mating (parameter \e stage).
 	 *  Please refer to operator \c BaseOperator for a detailed explanation for
 	 *  all parameters.
 	 */
@@ -205,7 +204,6 @@ public:
 	 *  this parameter is not recommended when multiple subpopulations are
 	 *  split.
 	 *
-	 *  This operator is by default applied pre-mating (parameter \e stage).
 	 *  Please refer to operator \c BaseOperator for a detailed explanation for
 	 *  all parameters.
 	 *
@@ -282,7 +280,6 @@ public:
 	 *  merged. The merged subpopulation will take the name of the first
 	 *  subpopulation being merged unless a new \e name is given.
 	 *
-	 *  This operator is by default applied pre-mating (parameter \e stage).
 	 *  Please refer to operator \c BaseOperator for a detailed explanation for
 	 *  all parameters.
 	 */
@@ -344,7 +341,6 @@ public:
 	 *  set to \c True (default). In this case, existing individuals will be
 	 *  copied sequentially, and repeatedly if needed.
 	 *
-	 *  This operator is by default applied pre-mating (parameter \e stage).
 	 *  Please refer to operator \c BaseOperator for a detailed explanation for
 	 *  all parameters.
 	 */
