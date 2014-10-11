@@ -61,7 +61,8 @@ __all__ = [
     'ExponentialGrowthEvent',
     'LinearGrowthEvent',
     'AdmixtureEvent',
-    'OperatorEvent',
+    'AsEvent',
+    'CopyEvent',
     'ResizeEvent',
     'SplitEvent',
     'MergeEvent',
@@ -1154,31 +1155,6 @@ class DemographicEvent:
         return True
 
 
-class SplitEvent(DemographicEvent):
-    '''This event split a subpopulation into two or more subpopulations 
-    of specified size of proportion relative to the original subpopulation.
-    '''
-    def __init__(self, rates=[], output='', name='', begin=0, end=-1, 
-        step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
-        '''A demographic event that expands all or specified subpopulations
-        (``subPops``) exponentially by a rate of ``rates``. Parameter ``rates``
-        can be a single number or a list of rates for all subpopulations.
-        ``subPops`` can be a ``ALL_AVAIL`` or a list of subpopulation index
-        or names.
-        '''
-        self.rates = rates
-        DemographicEvent.__init__(self, output, begin, end, step, at, reps,
-            subPops, infoFields)
-    
-    def apply(self, pop):
-        if not self._applicable(pop):
-            return True
-        #
-        # identify applicable subpopulations
-        subPops = self._identifySubPops(pop)
-        #
-        sz = list(pop.subPopSizes())
-
 class MergeEvent(DemographicEvent):
     '''This event split a subpopulation into two or more subpopulations 
     of specified size of proportion relative to the original subpopulation.
@@ -1204,7 +1180,7 @@ class MergeEvent(DemographicEvent):
         #
         sz = list(pop.subPopSizes())
 
-class OperatorEvent(DemographicEvent):
+class AsEvent(DemographicEvent):
     '''This event wraps around regular simuPOP operators and handles 
     applicability parameters relative to a demographic model, instead
     of the population that is being evolved. '''
@@ -1229,7 +1205,7 @@ class OperatorEvent(DemographicEvent):
                 return False
         return True
 
-class ResizeEvent(OperatorEvent):
+class ResizeEvent(AsEvent):
     '''A demographic event wrapper of operator ResizeSubPops'''
     def __init__(self, sizes=[], proportions=[], output='', name='', begin=0, end=-1, 
         step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
@@ -1238,35 +1214,70 @@ class ResizeEvent(OperatorEvent):
         All subpopulations will be resized if subPops is not specified. If the new
         size is larger, existing individuals will be copied to sequentially, and repeatedly
         if needed.'''
-        OperatorEvent.__init__(self, 
+        AsEvent.__init__(self, 
             ops=ResizeSubPops(subPops=subPops, sizes=sizes, proportions=proportions),
             output=output, begin=begin, end=end, step=step, at=at,
             reps=reps, subPops=subPops, infoFields=infoFields)
 
-class SplitEvent(OperatorEvent):
+class SplitEvent(AsEvent):
     '''A demographic event wrapper of operator SplitSubPops'''
     def __init__(self, sizes=[], proportions=[], names=[], randomize=True,
         output='', begin=0, end=-1, 
         step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
         '''A demographic event that split subpopulations ``subPops`` into finer subpopulations
         resizes given subpopulations. Please refer to operator ``SplitSubPops`` for details.'''
-        OperatorEvent.__init__(self, 
+        AsEvent.__init__(self, 
             ops=SplitSubPops(subPops=subPops, sizes=sizes, proportions=proportions,
                 names=names, randomize=randomize),
             output=output, begin=begin, end=end, step=step, at=at,
             reps=reps, subPops=subPops, infoFields=infoFields)
 
 
-class MergeEvent(OperatorEvent):
+class MergeEvent(AsEvent):
     '''A demographic event wrapper of operator MergeSubPops'''
     def __init__(self, name='', output='', begin=0, end=-1, 
         step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
         '''A demographic event that merges subpopulations into a single subpopulation.
         Please refer to operator ``MergeSubPops`` for details.'''
-        OperatorEvent.__init__(self, 
+        AsEvent.__init__(self, 
             ops=MergeSubPops(subPops=subPops, name=name),
             output=output, begin=begin, end=end, step=step, at=at,
             reps=reps, subPops=subPops, infoFields=infoFields)
+
+
+class CopyEvent(DemographicEvent):
+    '''A demographic event that copy a specified population to a new 
+    subpopulation and optionally resize both subpopulations. This event
+    is similar to ``SplitEvent`` but allows individuals to be copied
+    to create larger subpopulations.'''
+    def __init__(self, sizes=[], names=[], output='', begin=0, end=-1, 
+        step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
+        '''A demographic event that copies a subpopulation specified by
+        ``subPops`` to two or more subpopulations, with specified ``sizes``
+        and ``names``. Note that ``sizes`` and ``names``, if specified,
+        should include the source subpopulation as the first element.
+        '''
+        self.sizes = sizes
+        self.names = names
+        DemographicEvent.__init__(self, output, begin, end, step, at, reps,
+            subPops, infoFields)
+    
+    def apply(self, pop):
+        if not self._applicable(pop):
+            return True
+        #
+        # identify applicable subpopulations
+        subPops = self._identifySubPops(pop)
+        if len(subPops) != 1:
+            raise ValueError('Please specify one and only one subpopulation for event CopyEvent.')
+        subPop = subPops[0]
+        #
+        sz = list(pop.subPopSizes())
+        if not self.sizes:
+            self.sizes = [pop.subPopSize(subPop)]*len(self.names)
+        pop.resizeSubPops(subPop, sum(self.sizes), propagate=True)
+        pop.splitSubPop(subPop, self.sizes, self.names)
+        return True
 
 class ExponentialGrowthEvent(DemographicEvent):
     '''A demographic event that increase applicable population size by
@@ -1298,7 +1309,6 @@ class ExponentialGrowthEvent(DemographicEvent):
                 sz[idx] = int(sz[idx] * (1 + self.rates[idx]))
             else:
                 sz[idx] = int(sz[idx] * (1 + self.rates))
-        print(sz)
         pop.dvars()._expected_size = sz 
         return True
 
@@ -1354,7 +1364,7 @@ class AdmixtureEvent(DemographicEvent):
     continues to accept migrants from other subpopulations for 
     a number of generations.
     '''
-    def __init__(self, proportions=[], numbers=[], toSubPop=None, name='',
+    def __init__(self, sizes=[], toSubPop=None, name='',
         output='', begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, 
         subPops=ALL_AVAIL, infoFields=[]):
         '''Create an admixed population by choosing individuals
@@ -1364,24 +1374,26 @@ class AdmixtureEvent(DemographicEvent):
         ``name`` if ``toSubPop`` is ``None`` (default), or replace an
         existing subpopulation with name or index ``toSubPop``. The admixed
         population consists of individuals from ``subPops`` according to
-        specified ``proportions``. Its size is maximized to have the largest
+        specified ``sizes``. Its size is maximized to have the largest
         number of individuals from the source population when a new population
         is created, or equal to the size of the existing destination population.
-        The parameter ``proportions`` should be a list of float numbers 
+        The parameter ``sizes`` should be a list of float numbers 
         between 0 and 1, and add up to 1 (e.g. ``[0.4, 0.4, 0.2]``, although
         this function ignores the last element and set it to 1 minus the 
-        sum of the other numbers). Alternatively, parameter ``numbers`` can
-        be used to explicitly specify the size of admixed population and 
-        number of individuals from each source subpopulation. In all cases,
-        the size of source populations will be kept constant.
+        sum of the other numbers). Alternatively, parameter ``sizes`` can
+        be a list of numbers used to explicitly specify the size of admixed
+        population and number of individuals from each source subpopulation.
+        In all cases, the size of source populations will be kept constant.
         '''
         DemographicEvent.__init__(self, output, begin, end, step, at, reps,
             subPops, infoFields)
-        self.proportions = proportions
-        self.numbers = numbers
+        if all([isinstance(x, int) for x in sizes]):
+            self.numbers = sizes
+            self.proportions = None
+        else:
+            self.numbers = None
+            self.proportions = sizes
         self.subPopName = name
-        if proportions and numbers:
-            raise ValueError('Please specify only one of paramter proportions and numbers.')
         self.toSubPop = toSubPop
 
     def apply(self, pop):
