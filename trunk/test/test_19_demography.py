@@ -582,7 +582,7 @@ class TestDemography(unittest.TestCase):
 
     def testAdmixtureEvent(self):
         EventBasedModel(T=10, 
-            events=AdmixtureEvent(subPops=[1, 2], proportions=[0.5, 0.5], at=2)
+            events=AdmixtureEvent(subPops=[1, 2], sizes=[0.5, 0.5], at=2)
         )._assertSize(
             {
                 0: (200, 300, 400),
@@ -591,7 +591,7 @@ class TestDemography(unittest.TestCase):
                 5: (200, 300, 400, 600),
             }, initSize=[200, 300, 400])
         EventBasedModel(T=10, 
-            events=AdmixtureEvent(subPops=[0, 2], proportions=[0.5, 0.5], at=2)
+            events=AdmixtureEvent(subPops=[0, 2], sizes=[0.5, 0.5], at=2)
         )._assertSize(
             {
                 0: (200, 300, 400),
@@ -600,7 +600,7 @@ class TestDemography(unittest.TestCase):
                 5: (200, 300, 400, 400),
             }, initSize=[200, 300, 400])
         EventBasedModel(T=10, 
-            events=AdmixtureEvent(subPops=[0, 2], proportions=[0.5, 0.1], at=2)
+            events=AdmixtureEvent(subPops=[0, 2], sizes=[0.5, 0.1], at=2)
         )._assertSize(
             {
                 0: (200, 300, 400),
@@ -609,7 +609,7 @@ class TestDemography(unittest.TestCase):
                 5: (200, 300, 400, 400),
             }, initSize=[200, 300, 400])
         EventBasedModel(T=10, 
-            events=AdmixtureEvent(subPops=[0, 1, 2], proportions=[0.2, 0.3, 0.5], at=2)
+            events=AdmixtureEvent(subPops=[0, 1, 2], sizes=[0.2, 0.3, 0.5], at=2)
         )._assertSize(
             {
                 0: (200, 300, 400),
@@ -620,7 +620,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=[200, 300, 400])
         #
         EventBasedModel(T=10, 
-            events=AdmixtureEvent(subPops=[0, 1, 2], numbers=[20, 30, 50], at=2)
+            events=AdmixtureEvent(subPops=[0, 1, 2], sizes=[20, 30, 50], at=2)
         )._assertSize(
             {
                 0: (200, 300, 400),
@@ -630,7 +630,7 @@ class TestDemography(unittest.TestCase):
                 5: (200, 300, 400, 100),
             }, initSize=[200, 300, 400])
         EventBasedModel(T=10, 
-            events=AdmixtureEvent(subPops=[0, 1, 2], numbers=[20, 30, 50], begin=2)
+            events=AdmixtureEvent(subPops=[0, 1, 2], sizes=[20, 30, 50], begin=2)
         )._assertSize(
             {
                 0: (200, 300, 400),
@@ -640,7 +640,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=[200, 300, 400])
         # with toSubPop ...
         EventBasedModel(T=10, 
-            events=AdmixtureEvent(subPops=[1, 2], proportions=[0.5, 0.5], at=2, toSubPop=1)
+            events=AdmixtureEvent(subPops=[1, 2], sizes=[0.5, 0.5], at=2, toSubPop=1)
         )._assertSize(
             {
                 0: (200, 300, 400),
@@ -649,7 +649,7 @@ class TestDemography(unittest.TestCase):
                 5: (200, 300, 400),
             }, initSize=[200, 300, 400])
         EventBasedModel(T=10, 
-            events=AdmixtureEvent(subPops=[0, 1, 2], numbers=[20, 30, 50], toSubPop=1, at=2)
+            events=AdmixtureEvent(subPops=[0, 1, 2], sizes=[20, 30, 50], toSubPop=1, at=2)
         )._assertSize(
             {
                 0: (200, 300, 400),
@@ -658,7 +658,7 @@ class TestDemography(unittest.TestCase):
                 5: (200, 100, 400),
             }, initSize=[200, 300, 400])
         EventBasedModel(T=10, 
-            events=AdmixtureEvent(subPops=[0, 1, 2], numbers=[20, 30, 50], toSubPop=1, begin=2)
+            events=AdmixtureEvent(subPops=[0, 1, 2], sizes=[20, 30, 50], toSubPop=1, begin=2)
         )._assertSize(
             {
                 0: (200, 300, 400),
@@ -668,7 +668,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=[200, 300, 400]) 
 
 
-    def testOperatorEvent(self):
+    def testAsEvent(self):
         EventBasedModel(T=10, 
             events=MergeEvent(subPops=[0, 2], at=2)
         )._assertSize(
