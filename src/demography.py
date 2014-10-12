@@ -61,7 +61,6 @@ __all__ = [
     'ExponentialGrowthEvent',
     'LinearGrowthEvent',
     'AdmixtureEvent',
-    'AsEvent',
     'CopyEvent',
     'ResizeEvent',
     'SplitEvent',
@@ -1079,8 +1078,12 @@ class DemographicEvent:
     the generations are relative to the demographic model, not the populations
     the event is applied.
     '''
-    def __init__(self, output='', begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+    def __init__(self, ops=[], output='', begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
         subPops=ALL_AVAIL, infoFields=[]):
+        if isinstance(ops, (list, tuple)):
+            self.ops = ops
+        else:
+            self.ops = [ops]
         self.output = output
         self.begin = begin
         self.end = end
@@ -1152,95 +1155,49 @@ class DemographicEvent:
         return ret
 
     def apply(self, pop):
-        return True
-
-
-class MergeEvent(DemographicEvent):
-    '''This event split a subpopulation into two or more subpopulations 
-    of specified size of proportion relative to the original subpopulation.
-    '''
-    def __init__(self, rates=[], output='', name='', begin=0, end=-1, 
-        step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
-        '''A demographic event that expands all or specified subpopulations
-        (``subPops``) exponentially by a rate of ``rates``. Parameter ``rates``
-        can be a single number or a list of rates for all subpopulations.
-        ``subPops`` can be a ``ALL_AVAIL`` or a list of subpopulation index
-        or names.
-        '''
-        self.rates = rates
-        DemographicEvent.__init__(self, output, begin, end, step, at, reps,
-            subPops, infoFields)
-    
-    def apply(self, pop):
-        if not self._applicable(pop):
-            return True
-        #
-        # identify applicable subpopulations
-        subPops = self._identifySubPops(pop)
-        #
-        sz = list(pop.subPopSizes())
-
-class AsEvent(DemographicEvent):
-    '''This event wraps around regular simuPOP operators and handles 
-    applicability parameters relative to a demographic model, instead
-    of the population that is being evolved. '''
-    def __init__(self, ops=[], output='', begin=0, end=-1, 
-        step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
-        '''A demographic event that will apply ``ops`` at specified
-        generations according to applicability parameters ``begin``,
-        ``end``, ``step``, and ``at`` relative to generations of the
-        demographic model.'''
-        DemographicEvent.__init__(self, output, begin, end, step, at, reps,
-            subPops, infoFields)
-        if type(ops) in [list, tuple]:
-            self.ops = ops
-        else:
-            self.ops = [ops]
-
-    def apply(self, pop):
-        if not self._applicable(pop):
-            return True
         for op in self.ops:
             if not op.apply(pop):
                 return False
         return True
 
-class ResizeEvent(AsEvent):
+
+
+class ResizeEvent(DemographicEvent):
     '''A demographic event wrapper of operator ResizeSubPops'''
-    def __init__(self, sizes=[], proportions=[], output='', name='', begin=0, end=-1, 
+    def __init__(self, sizes=[], proportions=[], ops=[], output='', name='', begin=0, end=-1, 
         step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
         '''A demographic event that resizes given subpopulations ``subPops`` to new
         ``sizes``, or sizes proportional to original sizes (parameter ``proportions``).
         All subpopulations will be resized if subPops is not specified. If the new
         size is larger, existing individuals will be copied to sequentially, and repeatedly
         if needed.'''
-        AsEvent.__init__(self, 
-            ops=ResizeSubPops(subPops=subPops, sizes=sizes, proportions=proportions),
+        DemographicEvent.__init__(self, 
+            ops=[ResizeSubPops(subPops=subPops, sizes=sizes, proportions=proportions)] + ops,
             output=output, begin=begin, end=end, step=step, at=at,
             reps=reps, subPops=subPops, infoFields=infoFields)
 
-class SplitEvent(AsEvent):
+class SplitEvent(DemographicEvent):
     '''A demographic event wrapper of operator SplitSubPops'''
     def __init__(self, sizes=[], proportions=[], names=[], randomize=True,
-        output='', begin=0, end=-1, 
+        ops=[], output='', begin=0, end=-1, 
         step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
         '''A demographic event that split subpopulations ``subPops`` into finer subpopulations
         resizes given subpopulations. Please refer to operator ``SplitSubPops`` for details.'''
-        AsEvent.__init__(self, 
-            ops=SplitSubPops(subPops=subPops, sizes=sizes, proportions=proportions,
-                names=names, randomize=randomize),
+        DemographicEvent.__init__(self, 
+            ops=[SplitSubPops(subPops=subPops, sizes=sizes, proportions=proportions,
+                names=names, randomize=randomize)] + ops,
             output=output, begin=begin, end=end, step=step, at=at,
             reps=reps, subPops=subPops, infoFields=infoFields)
 
 
-class MergeEvent(AsEvent):
+class MergeEvent(DemographicEvent):
     '''A demographic event wrapper of operator MergeSubPops'''
-    def __init__(self, name='', output='', begin=0, end=-1, 
+    def __init__(self, name='', ops=[], output='', begin=0, end=-1, 
         step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
         '''A demographic event that merges subpopulations into a single subpopulation.
         Please refer to operator ``MergeSubPops`` for details.'''
-        AsEvent.__init__(self, 
-            ops=MergeSubPops(subPops=subPops, name=name),
+        DemographicEvent.__init__(self, 
+            ops=[MergeSubPops(subPops=subPops, name=name)] + ops,
             output=output, begin=begin, end=end, step=step, at=at,
             reps=reps, subPops=subPops, infoFields=infoFields)
 
@@ -1250,7 +1207,7 @@ class CopyEvent(DemographicEvent):
     subpopulation and optionally resize both subpopulations. This event
     is similar to ``SplitEvent`` but allows individuals to be copied
     to create larger subpopulations.'''
-    def __init__(self, sizes=[], names=[], output='', begin=0, end=-1, 
+    def __init__(self, sizes=[], names=[], ops=[], output='', begin=0, end=-1, 
         step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
         '''A demographic event that copies a subpopulation specified by
         ``subPops`` to two or more subpopulations, with specified ``sizes``
@@ -1259,13 +1216,15 @@ class CopyEvent(DemographicEvent):
         '''
         self.sizes = sizes
         self.names = names
-        DemographicEvent.__init__(self, output, begin, end, step, at, reps,
+        DemographicEvent.__init__(self, ops, output, begin, end, step, at, reps,
             subPops, infoFields)
     
     def apply(self, pop):
         if not self._applicable(pop):
             return True
         #
+        if not DemographicEvent.apply(self, pop):
+            return False
         # identify applicable subpopulations
         subPops = self._identifySubPops(pop)
         if len(subPops) != 1:
@@ -1284,31 +1243,50 @@ class ExponentialGrowthEvent(DemographicEvent):
     ``N*r`` (to size ``N*(1+r)``) at each applicable generation. Note that
     if both population size and ``r`` are small (e.g. ``N*r<1``), the population
     might not expand as expected.'''
-    def __init__(self, rates=[], output='', name='', begin=0, end=-1, 
+    def __init__(self, rates=[], capacity=[], ops=[], output='', name='', begin=0, end=-1, 
         step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
         '''A demographic event that expands all or specified subpopulations
-        (``subPops``) exponentially by a rate of ``rates``. Parameter ``rates``
-        can be a single number or a list of rates for all subpopulations.
+        (``subPops``) exponentially by a rate of ``rates``, unless carray 
+        capacity (``capacity``) of the population has been reached. Parameter
+        ``rates`` can be a single number or a list of rates for all subpopulations.
         ``subPops`` can be a ``ALL_AVAIL`` or a list of subpopulation index
-        or names.
+        or names. ``capacity`` can be empty (no limit on carrying capacity), or
+        one or more numbers for each of the subpopulations.
         '''
         self.rates = rates
-        DemographicEvent.__init__(self, output, begin, end, step, at, reps,
+        self.capacity = capacity
+        DemographicEvent.__init__(self, ops, output, begin, end, step, at, reps,
             subPops, infoFields)
     
     def apply(self, pop):
         if not self._applicable(pop):
             return True
         #
+        if not DemographicEvent.apply(self, pop):
+            return False
+        #
         # identify applicable subpopulations
         subPops = self._identifySubPops(pop)
+        if isinstance(self.rates, (list, tuple)) and len(self.rates) != len(subPops):
+            raise ValueError('Please specify growth rate for all subpopulations or '
+                'each of the {} subpopulations'.format(len(subPops)))
+        if self.capacity and isinstance(self.capacity, (list, tuple)) and len(self.capacity) != len(subPops):
+            raise ValueError('If specified, please specify carrying capacity for all '
+                'subpopulations or each of the {} subpopulations'.format(len(subPops)))
         #
         sz = list(pop.subPopSizes())
         for idx, sp in enumerate(subPops):
             if type(self.rates) in [list, tuple]:
                 sz[idx] = int(sz[idx] * (1 + self.rates[idx]))
+
             else:
                 sz[idx] = int(sz[idx] * (1 + self.rates))
+        if capacity:
+            for idx, sp in enumerate(subPops):
+                if isinstance(capacity, (list, tuple)):
+                     sz[idx] = min(sz[idx], capacity[idx])
+                else:
+                     sz[idx] = min(sz[idx], capacity)
         pop.dvars()._expected_size = sz 
         return True
 
@@ -1318,38 +1296,57 @@ class LinearGrowthEvent(DemographicEvent):
     ``N0*r`` at each applicable generation. Note that if both population
     size and ``r`` are small (e.g. ``N0*r<1``), the population might not
     expand as expected.'''
-    def __init__(self, rates=[], output='', name='', begin=0, end=-1, 
-        step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
+    def __init__(self, rates=[], capacity=[], ops=[], output='', name='', 
+        begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
+        infoFields=[]):
         '''A demographic event that expands all or specified subpopulations
         (``subPops``) linearly by adding ``N0*rates`` individuals. Parameter
         ``rates`` can be a single number or a list of rates for all
         subpopulations. ``subPops`` can be a ``ALL_AVAIL`` or a list of
-        subpopulation index or names.
-        '''
+        subpopulation index or names. ``capacity`` can be empty (no limit on
+        carrying capacity), or one or more numbers for each of the
+        subpopulations. '''
         self.rates = rates
+        self.capacity = capacity
         self._inc_by = None
-        DemographicEvent.__init__(self, output, begin, end, step, at, reps,
+        DemographicEvent.__init__(self, ops, output, begin, end, step, at, reps,
             subPops, infoFields)
     
     def apply(self, pop):
         if not self._applicable(pop):
             return True
         #
+        if not DemographicEvent.apply(self, pop):
+            return False
+        #
         # identify applicable subpopulations
         subPops = self._identifySubPops(pop)
+        if isinstance(self.rates, (list, tuple)) and len(self.rates) != len(subPops):
+            raise ValueError('Please specify growth rate for all subpopulations or '
+                'each of the {} subpopulations'.format(len(subPops)))
+        if self.capacity and isinstance(self.capacity, (list, tuple)) and len(self.capacity) != len(subPops):
+            raise ValueError('If specified, please specify carrying capacity for all '
+                'subpopulations or each of the {} subpopulations'.format(len(subPops)))
         #
         sz = list(pop.subPopSizes())
         if self._inc_by is None:
             self._inc_by = [0 for x in range(pop.numSubPop())]
             for idx, sp in enumerate(subPops):
-                if type(self.rates) in [list, tuple]:
+                if isinstance(self.rates, (list, tuple)):
                     self._inc_by[idx] = int(sz[idx] * self.rates[idx])
                 else:
                     self._inc_by[idx] = int(sz[idx] * self.rates)
         elif len(self._inc_by) != pop.numSubPop():
             raise RuntimeError('Linear growth event applied to a'
                 'population with different number of subpopulations.')
-        pop.dvars()._expected_size = [x + y for x,y in zip(sz, self._inc_by)]
+        sz = [x + y for x,y in zip(sz, self._inc_by)]
+        if capacity:
+            for idx, sp in enumerate(subPops):
+                if isinstance(capacity, (list, tuple)):
+                     sz[idx] = min(sz[idx], capacity[idx])
+                else:
+                     sz[idx] = min(sz[idx], capacity)
+        pop.dvars()._expected_size = sz
         return True
 
 
@@ -1365,7 +1362,7 @@ class AdmixtureEvent(DemographicEvent):
     a number of generations.
     '''
     def __init__(self, sizes=[], toSubPop=None, name='',
-        output='', begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, 
+        ops=[], output='', begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, 
         subPops=ALL_AVAIL, infoFields=[]):
         '''Create an admixed population by choosing individuals
         from all or specified subpopulations (``subPops``) and create
@@ -1385,7 +1382,7 @@ class AdmixtureEvent(DemographicEvent):
         population and number of individuals from each source subpopulation.
         In all cases, the size of source populations will be kept constant.
         '''
-        DemographicEvent.__init__(self, output, begin, end, step, at, reps,
+        DemographicEvent.__init__(self, ops, output, begin, end, step, at, reps,
             subPops, infoFields)
         if all([isinstance(x, int) for x in sizes]):
             self.numbers = sizes
@@ -1399,6 +1396,9 @@ class AdmixtureEvent(DemographicEvent):
     def apply(self, pop):
         if not self._applicable(pop):
             return True
+        #
+        if not DemographicEvent.apply(self, pop):
+            return False
         #
         # identify applicable subpopulations
         subPops = self._identifySubPops(pop)
@@ -1500,7 +1500,7 @@ class AdmixtureEvent(DemographicEvent):
 
 
 class OutOfAfricaModel(MultiStageModel):
-    '''A dempgrahic model for the CHB, CEU, and YRI populations, as defined in
+    '''A dempgraphic model for the CHB, CEU, and YRI populations, as defined in
     Gutenkunst 2009, Plos Genetics. The model is depicted in Figure 2, and the 
     default parameters are listed in Table 1 of this paper. '''
     def __init__(self, 
@@ -1602,7 +1602,7 @@ class OutOfAfricaModel(MultiStageModel):
         )
 
 class SettlementOfNewWorldModel(MultiStageModel):
-    '''A dempgrahic model for settlement of the new world of Americans, as defined
+    '''A dempgraphic model for settlement of the new world of Americans, as defined
     in Gutenkunst 2009, Plos Genetics. The model is depicted in Figure 3, and the 
     default parameters are listed in Table 2 of this paper. '''
     def __init__(self,
@@ -1751,7 +1751,7 @@ class SettlementOfNewWorldModel(MultiStageModel):
         )
 
 class CosiModel(MultiStageModel):
-    '''A dempgrahic model for Africa, Asia and Europe, as described in 
+    '''A dempgraphic model for Africa, Asia and Europe, as described in 
     Schaffner et al, Genome Research, 2005, and implemented in the coalescent
     simulator cosi.'''
     def __init__(self,
