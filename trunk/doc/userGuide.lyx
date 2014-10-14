@@ -25252,8 +25252,8 @@ A realistic demographic models can be very complex that involves population
  models for animal populations under continuous habitat).
  The goal of this module is to provide a common interface for demographic
  models, classes for frequently used demographic models, and several pre-defined
- demographic models for some human populations.
- More complex demographic models will be added upon request.
+ demographic models for human populations.
+ More complex demographic models will be added if needed.
 \end_layout
 
 \begin_layout Standard
@@ -25403,8 +25403,22 @@ RandomSelection
  properly.
 \end_layout
 
+\begin_layout Standard
+A demographic model can be defined in two ways.
+ The first approach is to specify the size of subpopulations at each generation,
+ and the second approach is to specify the events that change population
+ sizes.
+ The 
+\family typewriter
+simuPOP.demography
+\family default
+ module provides functions and classes to define demographic models using
+ both approaches and you can use the one that is most convenient for your
+ model.
+\end_layout
+
 \begin_layout Subsection
-Simple demographic models
+Demographic models defined by outcomes
 \end_layout
 
 \begin_layout Standard
@@ -25412,10 +25426,9 @@ The
 \family typewriter
 simuPOP.demography
 \family default
- module defines a number of demographic models that can be used to implement
- many popular demographic models, including linear and exponential population
- growth with carrying capacity, shrink, split and merge, and bottleneck.
- 
+ module defines a number of widely used demographic models, including linear
+ and exponential population growth with carrying capacity, shrink, split
+ and merge, and bottleneck.
 \end_layout
 
 \begin_layout Standard
@@ -25435,7 +25448,7 @@ InstantChangeModel(T=1000, N0=1000, G=500, NG=2000)
 \end_inset
 
 defines an instant population growth model that expands a population of
- size 1000 to 2000 instantly at generation 500
+ size from 1000 to 2000 instantly at generation 500
 \end_layout
 
 \begin_layout Itemize
@@ -25624,7 +25637,7 @@ status open
 
 \begin_layout Plain Layout
 
-InstantChangeMoel(T=0, removEmptySubPops=True)
+InstantChangeModel(T=0, removEmptySubPops=True)
 \end_layout
 
 \end_inset
@@ -25997,32 +26010,267 @@ A exponential population growth followed by bottleneck demographic model
 \end_layout
 
 \begin_layout Subsection
-Demographic model without predefined generations to evolve
+Demographic models defined by population changes (events)
 \end_layout
 
 \begin_layout Standard
-All migration models accept one or more operators that will be applied to
- the population before population population changes are applied.
- The most frequently application of this operator is to pass a migrator
- to the model, but we can also pass an operator to terminate a demographic
- model under certain conditions.
- For example, Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "demoTerminate"
+Another way to define a demographic model is to specify the events that
+ changes population sizes.
+ This approach can be easier to use because it conforms with the way many
+ demographic models are specified, also because the events can be specified
+ for a subset of subpopulations so you can, for example, split one subpopulation
+ without worrying about its impact on other subpopulations.
+ 
+\end_layout
+
+\begin_layout Standard
+A event-based demographic model is defined using
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+EventBasedModel(events=[], T=None, N0=None, ops=[], infoFields=[])
+\end_layout
 
 \end_inset
 
- defines a demographic model that starts with a burn-in stage with indefinite
- size and will stop if the average allele frequency at segregating sites
- exceeds 0.1.
- It splits to two equally sized subpopulations and expand rate a rate of
- 0.01 to size 2000 and 5000 respectively.
+where
+\family typewriter
+ T
+\family default
+ and 
+\family typewriter
+N0
+\family default
+ are the duration and initial size of the demographic model, respectively,
+ and ops is the operators that will be applied to the population (without
+ checking applicability).
+ Parameter 
+\family typewriter
+events
+\family default
+ acepts one or more of 
+\family typewriter
+DemographicEvent
+\family default
+ and its derived classes.
+ For example, 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ExpansionEvent(rates=0.05, begin=500)
+\end_layout
+
+\end_inset
+
+expands all subpopulations exponentially at a rate of 0.05, and 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ExpansionEvent(rates=[0.05, 0.01], capacity=10000, subPops=[0, 2], begin=500)
+\end_layout
+
+\end_inset
+
+expands two subpopulations at rates 0.05 and 0.01 respectively, until they
+ reach 10000 individuals in each subpopulation.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ExpansionEvent(slopes=500, subPops=[0, 2], begin=500)
+\end_layout
+
+\end_inset
+
+expands the populations linearly by adding 500 individuals to each subpopulation
+ at each generation.
+ These events happen at each generation starting from generation 500.
+\end_layout
+
+\begin_layout Standard
+Simiarly, you can split, merge, and resize subpopulations using events 
+\family typewriter
+SplitEvent
+\family default
+, 
+\family typewriter
+MergeEvent
+\family default
+, and 
+\family typewriter
+ResizeEvent
+\family default
+.
+ For example, 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+SplitEvent(subPops='AF', sizes=[500, 500], names=['AF', 'EU'], at=-4000)
+\end_layout
+
+\end_inset
+
+splits an ancestral population named AF to two populations AF and EU at
+ 4000 generations before the end of the demographic model.
+ The AF population will be expanded automatically if it does not have 1000
+ individuals.
+ 
+\end_layout
+
+\begin_layout Standard
+Finally, an AdmixEvent mix two or more subpopulations by certain proportions,
+ and either create a new subpopulation or replace an existing subpopulation.
+ In particular,
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+AdmixEvent(subPops=['MX', 'EU'], at=-10, sizes=[0.4, 0.6], names='MXL')
+\end_layout
+
+\end_inset
+
+
+\family default
+creates a new admixed population called MXL with 40% of individuals from
+ the MX population, and the rest from the EU population.
+ The admixture process happens once and follows an Hybrid Isolation model.
+ Alternatively,
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+AdmixEvent(subPops=['MX', 'EU'], begin=-10, sizes=[0.8, 0.2], toSubPop='MX')
+\end_layout
+
+\end_inset
+
+will create an admixed population with 80% MX and 20% EU individuals for
+ 10 generations.
+ Because 20% of the admixed population will be replaced by individuals from
+ the EU population, this models a continuous gene flow model of admixture.
+\end_layout
+
+\begin_layout Standard
+Example
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "demoEventModel"
+
+\end_inset
+
+ defines the same model as 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "demoModel"
+
+\end_inset
+
+ using an event based demographic model.
+ The result is depicted in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:demoEventModel_example"
+
+\end_inset
+
+.
+ These two models look similar but the event-based model does not have the
+ same final population sizes as the previous model.
+ This is because the population size of the previous model was calculated
+ by 
+\begin_inset Formula $N(t)=N(0)\exp(rt)$
+\end_inset
+
+ whereas the event based model was calculated using 
+\begin_inset Formula $N(t)=\mbox{round}(N(t-1)*(1+r))$
+\end_inset
+
+ for each generation, and the integer rounding error accumulates over time.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/demoTerminate.log"
-lstparams "caption={A demographic model with a terminator},label={demoTerminate}"
+filename "log/demoEventModel.log"
+lstparams "caption={A event-based demographic model},label={demoEventModel}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:demoEventModel_example"
+
+\end_inset
+
+A event-based demographic model 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename log/demoEventModel.png
+	lyxscale 40
+	width 60text%
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -26034,8 +26282,7 @@ Predefined demographic models for human populations
 \end_layout
 
 \begin_layout Standard
-More demographic models are defined in this module using this method.
- The 
+The 
 \family typewriter
 simuPOP.demography
 \family default
@@ -26265,6 +26512,42 @@ CosiModel(20000, scale=10)
 
 will result in a demographic model that evolves 2000 instead of 20000 generation
 s, with all population sizes reduced by a factor of 10.
+ Note that the burn-in period of the examples above are relatively short
+ and you might need to use a longer burn-in period (e.g.
+ T=100,000 generations for a burn-in period of about 80,000 generations).
+\end_layout
+
+\begin_layout Subsection
+Demographic model without predefined generations to evolve *
+\end_layout
+
+\begin_layout Standard
+All migration models accept one or more operators that will be applied to
+ the population before population population changes are applied.
+ The most frequently application of this operator is to pass a migrator
+ to the model, but we can also pass an operator to terminate a demographic
+ model under certain conditions.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "demoTerminate"
+
+\end_inset
+
+ defines a demographic model that starts with a burn-in stage with indefinite
+ size and will stop if the average allele frequency at segregating sites
+ exceeds 0.1.
+ It splits to two equally sized subpopulations and expand rate a rate of
+ 0.01 to size 2000 and 5000 respectively.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/demoTerminate.log"
+lstparams "caption={A demographic model with a terminator},label={demoTerminate}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
