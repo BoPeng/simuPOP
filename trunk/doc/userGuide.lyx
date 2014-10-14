@@ -17493,8 +17493,8 @@ lstparams "caption={Terminate the evolution of all populations in a simulator},l
 \end_layout
 
 \begin_layout Subsection
-Conditionally revert or forward an evolutionary process to a saved state
- (operator 
+Conditionally revert an evolutionary process to a saved state (operator
+ 
 \family typewriter
 RevertIf
 \family default
@@ -17513,13 +17513,17 @@ RevertIf
 \family default
  file) and will revert the current evolving population to the saved population
  if the condition is met.
- There are at least two secenarios for which this operator can be very useful.
+ 
 \end_layout
 
 \begin_layout Standard
-One of the biggest problem with introducing a disease allele to an evolving
- population (using an operator PointMutate) is that the disease allele will
- very likely get lost because of genetic drift.
+For example, one of the biggest problem with introducing a disease allele
+ to an evolving population (using an operator 
+\family typewriter
+PointMutator
+\family default
+) is that the disease allele will very likely get lost because of genetic
+ drift.
  It is possible to simulate the allele frequency trajectory backward in
  time and follow the trajectory during the forward-time simulation phase
  (
@@ -17548,7 +17552,7 @@ ControlledOffspringGenerator
 \begin_layout Standard
 A natural way to simulate the introduction of disease alleles is therefore
  to terminate and restart the simulation whenever the disease allele gets
- lost.
+ lost (or fixed).
  This could be done by splitting the evolutionary process into two stages.
  The disease allele is introduced at the second stage and the simulation
  will be terminated as soon as the introduced allele is lost (using a 
@@ -17612,57 +17616,13 @@ lstparams "caption={Revert an evolutionary process to a previous saved state whe
 \end_layout
 
 \begin_layout Standard
-The second application is to skip certain part of the evolutionary process
- if it has been executed before.
- For example, many forward-time simulation scenarios have a long burn-in
- process.
- It you simulate several replicates of the evolutionary process, you can
- save the burned in initial population of the first replicate, and reuse
- it for subsequent simulations.
- In Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "ReuseBurnin"
-
-\end_inset
-
-, we save the population at generation 10 for the first replicate.
- The next few replicates would load the saved file and jump directly to
- generation 10.
- Note that although the 
+Although operator 
 \family typewriter
 RevertIf
 \family default
- is applied at generation 0, it cannot be put in parameter 
-\family typewriter
-initOps
-\family default
- because it otherwise evolve another 20 generations from generation 10.
- However, combining the 
-\family typewriter
-RevertIf
-\family default
- operator with complex demographic models can have unexpected results.
- As shown in the second part of the example, because the demographic model
- starts from the generation when the model is first called (intialized),
- the evolutionary model will evolve from generation 10 to 30.
- The problem can be avoided by calling 
-\family typewriter
-RevertIf
-\family default
- at the second generation where the demographic model is already initialized
- at generation 0.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/ReuseBurnIn.log"
-lstparams "caption={Jump to the middle of an evolutionary process by uing a previously saved population.},label={ReuseBurnin}"
-
-\end_inset
-
-
+ can also be used to fast-forward an evolutionary process (skip to a previously
+ saved state directly), it is tricky to make it work with complex demographic
+ models and therefore not recommended.
 \end_layout
 
 \begin_layout Subsection
@@ -25401,6 +25361,15 @@ RandomSelection
 \family default
  mating scheme, which is a good way to test if your demographic model works
  properly.
+\end_layout
+
+\begin_layout Itemize
+saves population sizes of evolved generations, which makes it possible to
+ revert an evolutionary process to an previous state using operator 
+\family typewriter
+RevertIf
+\family default
+.
 \end_layout
 
 \begin_layout Standard
