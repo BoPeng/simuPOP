@@ -1190,7 +1190,10 @@ class ResizeEvent(DemographicEvent):
         0 and ``removeEmptySubPops`` is ``True``, empty subpopulations will be
         removed. A new set of names could be assigned to the population being resized. '''
         self.sizes = sizes
-        self.names = names
+        if isinstance(names, str):
+            self.names = [names]
+        else:
+            self.names = names
         self.removeEmptySubPops = removeEmptySubPops
         DemographicEvent.__init__(self, ops, output, begin, end, step, at, reps,
             subPops, infoFields)
@@ -1205,6 +1208,8 @@ class ResizeEvent(DemographicEvent):
         subPops = self._identifySubPops(pop)
         if isinstance(self.sizes, (tuple, list)) and len(subPops) != len(self.sizes):
             raise ValueError('If a list of sizes are specified, please specify them for all subpopulations.')
+        if self.names and len(self.names) != len(subPops):
+            raise ValueError('If a list of names are specified, please assign to all specified subpopulations.')
         # new size ...
         sz = list(pop.subPopSizes())
         for idx, sp in enumerate(subPops):
@@ -1220,6 +1225,9 @@ class ResizeEvent(DemographicEvent):
         pop.resize(sz, propagate=True)
         if self.removeEmptySubPops:
             pop.removeSubPops([idx for idx,x in enumerate(pop.subPopSizes()) if x==0])
+        if self.names:
+            for sp,name in zip(subPops, self.names):
+                pop.setSubPopName(name, sp)
         return True
 
 
@@ -1565,7 +1573,7 @@ class OutOfAfricaModel(EventBasedModel):
                     ops=Migrator(rate=[
                         [m_AF_B, 0],
                         [0, m_AF_B]]), 
-                    begin=-int(T_AF/scale), 
+                    begin=-int(T_B/scale), 
                     end=-int(T_EU_AS/scale)
                 ),
                 # split EU AS from B
@@ -1706,7 +1714,7 @@ class SettlementOfNewWorldModel(EventBasedModel):
                     ops=Migrator(rate=[
                         [m_AF_B, 0],
                         [0, m_AF_B]]), 
-                    begin=-int(T_AF/scale), 
+                    begin=-int(T_B/scale), 
                     end=-int(T_EU_AS/scale)
                 ),
                 # split EU AS from B
