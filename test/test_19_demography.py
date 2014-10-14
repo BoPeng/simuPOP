@@ -255,33 +255,33 @@ class TestDemography(unittest.TestCase):
         ExponentialGrowthModel(T=100, N0=200, NT=400)._assertSize(
             {
                 0: 201,
-                1: 202,
+                1: 203,
                 99: 400,
             }, initSize=500)
         ExponentialGrowthModel(T=100, N0=200, r=0.01)._assertSize(
             {
                 0: 202,
                 2: 206,
-                99: 540,
+                99: 541,
             }, initSize=500)
         ExponentialGrowthModel(N0=200, r=0.01, NT=400)._assertSize(
             {
                 0: 202,
                 2: 206,
-                99: 540,
+                99: 541,
             }, initSize=500)
         #
         ExponentialGrowthModel(T=100, N0=[200, 200], NT=[400, 800])._assertSize(
             {
-                0: [201, 202],
-                1: [202, 205],
+                0: [201, 203],
+                1: [203, 206],
                 99: [400, 800],
             }, initSize=500)
         ExponentialGrowthModel(T=100, N0=[200, 200], r=0.01)._assertSize(
             {
                 0: [202, 202],
                 2: [206, 206],
-                99: [540, 540],
+                99: [541, 541],
             }, initSize=500)
         # unknown NT
         ExponentialGrowthModel(T=100, N0=[200, 200], r=[0.01, 0.03])._assertSize(
@@ -535,6 +535,83 @@ class TestDemography(unittest.TestCase):
                 99: 200,
             })
 
+    def testResizeEvent(self):
+        EventBasedModel(T=100, N0=(200, 200, 200),
+            events=ResizeEvent(sizes=300, subPops=1, names='AF', at=2)
+            )._assertSize(
+            {
+                0: (200, 200, 200),
+                2: (200, 300, 200),
+                99: (200, 300, 200),
+            }, initSize=500)
+        EventBasedModel(T=100, N0=(200, 200, 200),
+            events=ResizeEvent(sizes=1.5, subPops=1, names='AF', at=2)
+            )._assertSize(
+            {
+                0: (200, 200, 200),
+                2: (200, 300, 200),
+                99: (200, 300, 200),
+            }, initSize=500)
+        EventBasedModel(T=100, N0=(200, 200, 200),
+            events=ResizeEvent(sizes=(1.5, 1.5, 1.8), names=('AF', 'A', 'B'), at=2)
+            )._assertSize(
+            {
+                0: (200, 200, 200),
+                2: (300, 300, 360),
+                99: (300, 300, 360),
+            }, initSize=500)
+        EventBasedModel(T=100, N0=(200, 200, 200),
+            events=ResizeEvent(sizes=(300, 1.5), subPops=[0, 1], at=2)
+            )._assertSize(
+            {
+                0: (200, 200, 200),
+                2: (300, 300, 200),
+                99: (300, 300, 200),
+            }, initSize=500)
+        EventBasedModel(T=100, N0=(200, 200, 200),
+            events=ResizeEvent(sizes=(300, 0.9), subPops=[0, 1], begin=2)
+            )._assertSize(
+            {
+                0: (200, 200, 200),
+                2: (300, 180, 200),
+                99: (300, 5, 200),
+            }, initSize=500)
+        EventBasedModel(T=100, N0=(200, 200, 200),
+            events=ResizeEvent(sizes=(300, 0), subPops=[0, 1], at=2, removeEmptySubPops=True)
+            )._assertSize(
+            {
+                0: (200, 200, 200),
+                2: (300, 200),
+                99: (300, 200),
+            }, initSize=500)
+
+
+    def testMergeEvent(self):
+        EventBasedModel(T=100, N0=(200, 200, 200),
+            events=MergeEvent(name='AF', at=2)
+            )._assertSize(
+            {
+                0: (200, 200, 200),
+                2: (600,),
+                99: (600,),
+            }, initSize=500)
+        EventBasedModel(T=100, N0=((100, 'AF'), (200, 'EU'), (300, 'AS')),
+            events=MergeEvent(name='AF', subPops=('AF', 'AS'), at=2)
+            )._assertSize(
+            {
+                0: (100, 200, 300),
+                2: (400, 200),
+                99: (400, 200),
+            }, initSize=500)
+        EventBasedModel(T=100, N0=((100, 'AF'), (200, 'EU'), (300, 'AS')),
+            events=MergeEvent(name='EU', subPops=('EU', 'AS'), at=2)
+            )._assertSize(
+            {
+                0: (100, 200, 300),
+                2: (100, 500),
+                99: (100, 500),
+            }, initSize=500)
+
     def testExpansionEvent(self):
         EventBasedModel(T=100, N0=200,
             events=ExpansionEvent(rates=0.01)
@@ -542,7 +619,15 @@ class TestDemography(unittest.TestCase):
             {
                 0: 202,
                 2: 206,
-                99: 466,
+                99: 532,
+            }, initSize=500)
+        EventBasedModel(T=100, N0=(200, 'AF'),
+            events=ExpansionEvent(rates=0.01, subPops='AF')
+            )._assertSize(
+            {
+                0: 202,
+                2: 206,
+                99: 532,
             }, initSize=500)
         EventBasedModel(T=100, N0=[200, 200], 
             events=ExpansionEvent(rates=0.01)
@@ -550,7 +635,15 @@ class TestDemography(unittest.TestCase):
             {
                 0: [202, 202],
                 2: [206, 206],
-                99: [466, 466],
+                99: [532, 532],
+            }, initSize=500)
+        EventBasedModel(T=100, N0=[(200, 'A'), (200, 'B')], 
+            events=ExpansionEvent(rates=0.01, subPops=('A', 'B'))
+            )._assertSize(
+            {
+                0: [202, 202],
+                2: [206, 206],
+                99: [532, 532],
             }, initSize=500)
         # unknown NT
         EventBasedModel(T=100, N0=[200, 200], 
@@ -559,10 +652,16 @@ class TestDemography(unittest.TestCase):
             {
                 0: [202, 206],
                 2: [206, 218],
-                99: [466, 3574],
+                99: [532, 3858],
             }, initSize=500)
-      
-    def testExpansionEvent(self):
+        EventBasedModel(T=100, N0=[(200, 'AF'), (200, 'EU'), (200, 'AS')], 
+            events=ExpansionEvent(rates=[0.01, 0.02], subPops=['EU', 'AS'])
+            )._assertSize(
+            {
+                0: [200, 202, 204],
+                2: [200, 206, 212],
+                99: [200, 532, 1445],
+            }, initSize=500) 
         EventBasedModel(T=100, N0=200,
             events=ExpansionEvent(slopes=2)
             )._assertSize(
@@ -579,7 +678,6 @@ class TestDemography(unittest.TestCase):
                 2: [206, 206],
                 99: [400, 400],
             }, initSize=500)
-        # unknown NT
         EventBasedModel(T=100, N0=[200, 200], 
             events=ExpansionEvent(slopes=[2, 6])
             )._assertSize(
@@ -588,6 +686,7 @@ class TestDemography(unittest.TestCase):
                 2: [206, 218],
                 99: [400, 800],
             }, initSize=500)
+
 
     def testAdmixtureEvent(self):
         EventBasedModel(T=10, 
@@ -675,19 +774,6 @@ class TestDemography(unittest.TestCase):
                 4: (200, 100, 400),
                 5: (200, 100, 400),
             }, initSize=[200, 300, 400]) 
-
-
-    def testAsEvent(self):
-        EventBasedModel(T=10, 
-            events=MergeEvent(subPops=[0, 2], at=2)
-        )._assertSize(
-            {
-                0: (200, 300, 400),
-                2: (600, 300),
-                4: (600, 300),
-                5: (600, 300),
-            }, initSize=[200, 300, 400]) 
-        
 
     def testRevertAndDemo(self):
         'Test the use of demographic model with RevertIf operator'
