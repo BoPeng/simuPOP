@@ -1761,6 +1761,8 @@ class _SettlementOfNewWorldModel_event(EventBasedModel):
             raise ValueError('Length of evolution T0=%d should be more than T_AF=%d' % (T0, T_AF))
         #
         scale = float(scale)
+        if isinstance(outcome, str):
+            outcome = [outcome]
         EventBasedModel.__init__(self,
             T = int(T0/scale),
             N0 = (int(N_A/scale), 'Ancestral'),
