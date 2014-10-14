@@ -738,7 +738,12 @@ class Doxy2SWIG:
                 self.content[-1]['ignore'] = 'CPPONLY' in self.content[-1]['Doc']
                 self.content[-1]['hidden'] = 'HIDDEN' in self.content[-1]['Doc']
                 # these is no details...
-                args, varargs, varkw, defaults = inspect.getargspec(value.__init__)
+                try:
+                    args, varargs, varkw, defaults = inspect.getargspec(value.__init__)
+                except:
+                    print('Failed to get args for {}'.format(value.__init__))
+                    self.content.pop()
+                    continue
                 self.content[-1]['Usage'] = key + inspect.formatargspec(
                     args, varargs, varkw, defaults)
                 self.content[-1]['Usage'] = self.content[-1]['Usage'].replace('self, ', '').replace('self)', ')')
