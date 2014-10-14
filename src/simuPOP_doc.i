@@ -4376,10 +4376,9 @@ Details:
     Create an operator that merges subpopulations subPops to a single
     subpopulation. If subPops is not given, all subpopulations will be
     merged. The merged subpopulation will take the name of the first
-    subpopulation being merged unless a new name is given.  This
-    operator is by default applied pre-mating (parameter stage).
-    Please refer to operator BaseOperator for a detailed explanation
-    for all parameters.
+    subpopulation being merged unless a new name is given.  Please
+    refer to operator BaseOperator for a detailed explanation for all
+    parameters.
 
 "; 
 
@@ -4479,8 +4478,7 @@ Details:
     subpopulations (mode = BY_COUNTS), or ignored completely (mode =
     BY_IND_INFO). In the last case, parameter subPops is respected
     (only individuals in specified (virtual) subpopulations will
-    migrate) but toSubPops is ignored.  This operator is by default
-    applied pre-mating (parameter stage). Please refer to operator
+    migrate) but toSubPops is ignored.  Please refer to operator
     BaseOperator for a detailed explanation for all parameters.
 
 "; 
@@ -6588,15 +6586,16 @@ Details:
 
 Usage:
 
-    x.mergeSubPops(subPops=ALL_AVAIL, name=\"\")
+    x.mergeSubPops(subPops=ALL_AVAIL, name=\"\", toSubPop=-1)
 
 Details:
 
     Merge subpopulations subPops. If subPops is ALL_AVAIL (default),
     all subpopulations will be merged. subPops do not have to be
     adjacent to each other. They will all be merged to the
-    subpopulation with the smallest subpopulation ID. Indexes of the
-    rest of the subpopulation may be changed. A new name can be
+    subpopulation with the smallest subpopulation ID, unless a
+    subpopulation ID is specified using parameter toSubPop. Indexes of
+    the rest of the subpopulation may be changed. A new name can be
     assigned to the merged subpopulation through parameter name (an
     empty name will be ignored). This function returns the ID of the
     merged subpopulation.
@@ -8577,7 +8576,6 @@ Details:
     individuals with empty genotype will be inserted, unless parameter
     propagate is set to True (default). In this case, existing
     individuals will be copied sequentially, and repeatedly if needed.
-    This operator is by default applied pre-mating (parameter stage).
     Please refer to operator BaseOperator for a detailed explanation
     for all parameters.
 
@@ -9631,8 +9629,7 @@ Details:
     subpopulations using a list of names specified in parameter names.
     Because the same set of names will be used for all subpopulations,
     this parameter is not recommended when multiple subpopulations are
-    split.  This operator is by default applied pre-mating (parameter
-    stage). Please refer to operator BaseOperator for a detailed
+    split.  Please refer to operator BaseOperator for a detailed
     explanation for all parameters.
 
 Note:
@@ -11661,7 +11658,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::initialize();
+%ignore simuPOP::initialize(PyObject *module);
 
 %ignore simuPOP::cnull();
 
