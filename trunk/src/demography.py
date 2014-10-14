@@ -51,11 +51,13 @@ __all__ = [
     'migrHierarchicalIslandRates',
     'migrSteppingStoneRates',
     'migr2DSteppingStoneRates',
+    # outcome-based models
+    'InstantChangeModel',
     'ExponentialGrowthModel',
     'LinearGrowthModel',
-    'InstantChangeModel',
     'AdmixtureModel',
-    #
+    'MultiStageModel',
+    # event-based models
     'EventBasedModel',
     'DemographicEvent',
     'ExpansionEvent',
@@ -63,8 +65,7 @@ __all__ = [
     'SplitEvent',
     'MergeEvent',
     'AdmixtureEvent',
-    #
-    'MultiStageModel',
+    # existing models
     'OutOfAfricaModel',
     'SettlementOfNewWorldModel',
     'CosiModel'
@@ -1070,14 +1071,21 @@ class EventBasedModel(BaseDemographicModel):
 
 
 class DemographicEvent:
-    '''Events that will be applied to one or more populations at specified
-    generations. The interface of a DemographicEvent is very similar to
+    '''A demographic events that will be applied to one or more populations at
+    specified generations. The interface of a DemographicEvent is very similar to
     an simuPOP operator, but the applicable parameters are handled so that
     the generations are relative to the demographic model, not the populations
-    the event is applied.
+    to which the event is applied.
     '''
-    def __init__(self, ops=[], output='', begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
-        subPops=ALL_AVAIL, infoFields=[]):
+    def __init__(self, ops=[], output='', begin=0, end=-1, step=1, at=[],
+        reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
+        '''Create a demographic event that will be applied at specified
+        generations according to applicability parameters ``reps``, ``begin``, 
+        ``end``, ``step`` and ``at``. Parameter ``subPops`` is usually used
+        to specify the subpopulations affected by the event. One or more simuPOP
+        operators, if specified in ``ops``, will be applied when the event
+        happens. Parameters ``output`` and ``infoFields`` are currently ignored. 
+        '''
         if isinstance(ops, (list, tuple)):
             self.ops = ops
         else:
@@ -1100,8 +1108,11 @@ class DemographicEvent:
         #
         gen = pop.dvars()._gen
         end = pop.dvars()._num_gens
-
-        if self.reps != ALL_AVAIL and pop.dvars().rep not in self.reps:
+        rep = pop.dvars().rep
+        #
+        if self.reps != ALL_AVAIL and (\
+            (isinstance(self.reps, int) and self.reps != rep) or \
+            rep not in self.reps):
             return False
         #
         if self.at:
@@ -1140,22 +1151,24 @@ class DemographicEvent:
     def _identifySubPops(self, pop):
         if self.subPops == ALL_AVAIL:
             return range(pop.numSubPop())
+        #
+        ret = []
+        names = pop.subPopNames()
+        if isinstance(self.subPops, (str, int)):
+            sps = [self.subPops]
         else:
-            ret = []
-            names = pop.subPopNames()
-            for sp in self.subPops:
-                if type(sp) == int:
-                    ret.append(sp)
-                else:
-                    if sp not in names:
-                        raise ValueError('Invalid subpopulation name {}'.format(sp))
-                    ret.append(names.index(sp))
+            sps = self.subPops
+        for sp in sps:
+            if type(sp) == int:
+                ret.append(sp)
+            else:
+                if sp not in names:
+                    raise ValueError('Invalid subpopulation name {}'.format(sp))
+                ret.append(names.index(sp))
         return ret
 
     def apply(self, pop):
-        if self.ops:
-            if not self._applicable(pop):
-                return True
+        if self.ops and self._applicable(pop):
             for op in self.ops:
                 if not op.apply(pop):
                     return False
@@ -1164,26 +1177,30 @@ class DemographicEvent:
 
 
 class ResizeEvent(DemographicEvent):
-    '''A demographic event wrapper of operator ResizeSubPops'''
-    def __init__(self, sizes=[], names=[], ops=[], output='', begin=0, end=-1, 
+    '''A demographic event that resize specified subpopulations'''
+    def __init__(self, sizes=[], names=[], removeEmptySubPops=False,
+        ops=[], output='', begin=0, end=-1, 
         step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
         '''A demographic event that resizes given subpopulations ``subPops`` to new
-        ``sizes``, or sizes proportional to original sizes (if a float number is given)
-        All subpopulations will be resized if subPops is not specified. If the new
-        size is larger, existing individuals will be copied to sequentially, and
-        repeatedly if needed. A new set of names could be assigned to the population
-        being resized.'''
+        ``sizes`` (integer type), or sizes proportional to original sizes (if a float
+        number is given). For example, ``sizes=[0.5, 500]`` will resize the first
+        subpopulation to half of its original size, and the second subpopulation to
+        size ``500``. If the new size is larger, existing individuals will be copied
+        to sequentially, and repeatedly if needed. If the size of a subpopulation is
+        0 and ``removeEmptySubPops`` is ``True``, empty subpopulations will be
+        removed. A new set of names could be assigned to the population being resized. '''
         self.sizes = sizes
         self.names = names
+        self.removeEmptySubPops = removeEmptySubPops
         DemographicEvent.__init__(self, ops, output, begin, end, step, at, reps,
             subPops, infoFields)
 
     def apply(self, pop):
-        if not self._applicable(pop):
-            return True
-        #
         if not DemographicEvent.apply(self, pop):
             return False
+        #
+        if not self._applicable(pop):
+            return True
         # identify applicable subpopulations
         subPops = self._identifySubPops(pop)
         if isinstance(self.sizes, (tuple, list)) and len(subPops) != len(self.sizes):
@@ -1195,21 +1212,25 @@ class ResizeEvent(DemographicEvent):
                 sz[sp] = self.sizes
             elif isinstance(sizes, float):
                 sz[sp] = int(round(sz[sp] * self.sizes))
-            elif isinstance(x, (list, tuple)) and isinstance(self.sizes[idx], int):
+            elif isinstance(sp, (list, tuple)) and isinstance(self.sizes[idx], int):
                 sz[sp] = self.sizes[idx]
-            elif isinstance(x, (list, tuple)) and isinstance(self.sizes[idx], float):
+            elif isinstance(sp, (list, tuple)) and isinstance(self.sizes[idx], float):
                 sz[sp] = int(round(self.sizes[idx] * sz[sp]))
         #
         pop.resize(sz, propagate=True)
+        if self.removeEmptySubPops:
+            pop.removeSubPops([idx for idx,x in enumerate(pop.subPopSizes()) if x==0])
         return True
 
 
 class MergeEvent(DemographicEvent):
-    '''A demographic event wrapper of operator MergeSubPops'''
+    '''A demographic event that merges one or more subpopulation to
+    a single one.'''
     def __init__(self, name='', ops=[], output='', begin=0, end=-1, 
         step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
         '''A demographic event that merges subpopulations into a single subpopulation.
-        Please refer to operator ``MergeSubPops`` for details.'''
+        The merged subpopulation will have the name of the first merged subpopulation
+        unless a separate ``name`` is supported.'''
         DemographicEvent.__init__(self, 
             ops=[MergeSubPops(subPops=subPops, name=name)] + ops,
             output=output, begin=begin, end=end, step=step, at=at,
@@ -1217,19 +1238,17 @@ class MergeEvent(DemographicEvent):
 
 
 class SplitEvent(DemographicEvent):
-    '''A demographic event that split a specified population into one or
-    new new subpopulations and optionally resize both subpopulations. This
-    event is similar to ``SplitSubPops`` operator but it allows individuals 
-    to be copied to create larger subpopulations.'''
+    '''A demographic event that splits a specified population into two or
+    more subpopulations.'''
     def __init__(self, sizes=[], names=[], ops=[], output='', begin=0, end=-1, 
         step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
-        '''A demographic event that split a subpopulation specified by
+        '''A demographic event that splits a subpopulation specified by
         ``subPops`` to two or more subpopulations, with specified ``sizes``
         and ``names``. ``sizes`` can be a list of numbers, proportions
         (e.g. ``[1., 500]`` keeps the original population and copies 500
-        individuals to create a new subpupulation. Note that ``sizes``
+        individuals to create a new subpupulation). Note that ``sizes``
         and ``names``, if specified, should include the source subpopulation
-        as the first element.
+        as its first element.
         '''
         self.sizes = sizes
         self.names = names
@@ -1237,11 +1256,11 @@ class SplitEvent(DemographicEvent):
             subPops, infoFields)
     
     def apply(self, pop):
-        if not self._applicable(pop):
-            return True
-        #
         if not DemographicEvent.apply(self, pop):
             return False
+        #
+        if not self._applicable(pop):
+            return True
         # identify applicable subpopulations
         subPops = self._identifySubPops(pop)
         if len(subPops) != 1:
@@ -1266,26 +1285,26 @@ class SplitEvent(DemographicEvent):
         pop.splitSubPop(subPop, sz, self.names)
         return True
 
-
 class ExpansionEvent(DemographicEvent):
     '''A demographic event that increase applicable population size by
-    ``N*r`` (to size ``N*(1+r)``), or ``counts`` (to size ``N+n``) at each applicable
+    ``N*r`` (to size ``N*(1+r)``), or ``s`` (to size ``N+s``) at each applicable
     generation. The first model leads to an exponential population expansion
     model with rate ``r`` (``N(t)=N(0)*exp(r*t)``), where the second model leads to
-    an linear population growth model (``N(t)=N(0)+n*t``) and this is why the
+    an linear population growth model (``N(t)=N(0)+s*t``) and this is why the
     parameter is called ``slopes``. Note that if both population
     size and ``r`` are small (e.g. ``N*r<1``),  the population might not expand
     as expected.'''
-    def __init__(self, rates=[], slopes=[], capacity=[], ops=[], output='', name='', begin=0, end=-1, 
+    def __init__(self, rates=[], slopes=[], capacity=[], name='', 
+        ops=[], output='', begin=0, end=-1, 
         step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
         '''A demographic event that expands all or specified subpopulations
         (``subPops``) exponentially by a rate of ``rates``, or linearly by a slope
         of ``slopes``, unless carray capacity (``capacity``) of the population has
         been reached. Parameter ``rates`` can be a single number or a list of rates
-        for all subpopulations. Parameter ``slopes`` can be a 
-        ``subPops`` can be a ``ALL_AVAIL`` or a list of subpopulation index
-        or names. ``capacity`` can be empty (no limit on carrying capacity), or
-        one or more numbers for each of the subpopulations.
+        for all subpopulations. Parameter ``slopes`` should be a number, or a list
+        of numbers for all subpopulations. ``subPops`` can be a ``ALL_AVAIL`` or a list
+        of subpopulation index or names. ``capacity`` can be empty (no limit on
+        carrying capacity), or one or more numbers for each of the subpopulations.
         '''
         self.rates = rates
         self.slopes = slopes
@@ -1337,19 +1356,12 @@ class ExpansionEvent(DemographicEvent):
 class AdmixtureEvent(DemographicEvent):
     '''This event implements a population admixture event that mix
     individuals from specified subpopulations to either a new 
-    subpopulation or an existing subpopulation. The first case
-    represents a Hybrid Isolation admixture model which creates
-    a new subpopulation from two parentsl populations with
-    specified proportions for one generation. The second case represents
-    a Continuous Gene Flow model where an admixed population
-    continues to accept migrants from other subpopulations for 
-    a number of generations.
-    '''
+    subpopulation or an existing subpopulation.'''
     def __init__(self, sizes=[], toSubPop=None, name='',
         ops=[], output='', begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, 
         subPops=ALL_AVAIL, infoFields=[]):
         '''Create an admixed population by choosing individuals
-        from all or specified subpopulations (``subPops``) and create
+        from all or specified subpopulations (``subPops``) and creating
         an admixed population ``toSubPop``. The admixed population will
         be appended to the population as a new subpopulation with name
         ``name`` if ``toSubPop`` is ``None`` (default), or replace an
@@ -1483,7 +1495,7 @@ class AdmixtureEvent(DemographicEvent):
         return True
 
 
-class OutOfAfricaModel(MultiStageModel):
+class OutOfAfricaModel(EventBasedModel):
     '''A dempgraphic model for the CHB, CEU, and YRI populations, as defined in
     Gutenkunst 2009, Plos Genetics. The model is depicted in Figure 2, and the 
     default parameters are listed in Table 1 of this paper. '''
@@ -1535,55 +1547,89 @@ class OutOfAfricaModel(MultiStageModel):
         #
         if isinstance(outcome, str):
             outcome = [outcome]
-        final_subpops = [None, None, None]
-        for (idx, name) in enumerate(['AF', 'EU', 'AS']):
-            if name not in outcome:
-                final_subpops[idx] = 0
         #
-        if 0 in final_subpops:
-            finalStage = [
-                InstantChangeModel(T=1,
-                    N0=final_subpops,
+        scale = float(scale)
+        EventBasedModel.__init__(self, 
+            T = int(T0/scale),
+            N0 = (int(N_A/scale), 'Ancestral'),
+            infoFields = 'migrate_to',
+            events = [
+                # resize ancestral to AF
+                ResizeEvent(at= -int(T_AF/scale), subPops='Ancestral',
+                    sizes=int(N_AF/scale), names='AF'),
+                # split B from AF
+                SplitEvent(at=-int(T_B/scale), subPops='AF',
+                    sizes=(1.0, int(N_AF/scale)), names=('AF', 'B')),
+                # migration between AF and B
+                DemographicEvent(
+                    ops=Migrator(rate=[
+                        [m_AF_B, 0],
+                        [0, m_AF_B]]), 
+                    begin=-int(T_AF/scale), 
+                    end=-int(T_EU_AS/scale)
+                ),
+                # split EU AS from B
+                SplitEvent(at=-int(T_EU_AS/scale), subPops='B',
+                    sizes=(int(N_EU0/scale), int(N_AS0/scale)),
+                    names=('EU', 'AS')),
+                # exponential growth 
+                ExpansionEvent(begin=-int(T_EU_AS/scale),
+                    subPops=('EU', 'AS'), 
+                    rates=(r_EU*scale, r_AS*scale)),
+                # migration between AF, EU and AS
+                DemographicEvent(
+                    ops=Migrator(rate=[
+                        [0, m_AF_EU, m_AF_AS],
+                        [m_AF_EU, 0, m_EU_AS],
+                        [m_AF_AS, m_EU_AS, 0]
+                        ]), 
+                    begin=-int(T_EU_AS/scale)
+                ),
+                # keep only selected populations
+                ResizeEvent(at=-1, 
+                    sizes=[float('AF' in outcome),
+                        float('EU' in outcome),
+                        float('AS' in outcome)],
                     removeEmptySubPops=True)
             ]
-        else:
-            finalStage = []
-        # for python 2.x and 3.x compatibility
-        scale = float(scale)
-        MultiStageModel.__init__(self, [
-            InstantChangeModel(
-                T=int((T0-T_B)/scale),
-                N0=(int(N_A/scale), 'Ancestral'),
-                # change population size twice, one at T_AF, one at T_B
-                G=[int((T0-T_AF)/scale)],
-                NG=[(int(N_AF/scale), 'AF')] 
-            ),
-            #
-            # at T_B, split to population B from subpopulation 1
-            InstantChangeModel(
-                T=int((T_B - T_EU_AS)/scale),
-                # change population size twice, one at T_AF, one at T_B
-                N0=[None, (int(N_B/scale), 'B')],
-                ops=Migrator(rate=[
-                    [m_AF_B, 0],
-                    [0, m_AF_B]])
-                ),
-            ExponentialGrowthModel(
-                T=int(T_EU_AS/scale),
-                N0=[None, 
-                    # split B into EU and AS at the beginning of this
-                    # exponential growth stage
-                    [(int(N_EU0/scale), 'EU'), (int(N_AS0/scale), 'AS')]],
-                r=[0, r_EU*scale, r_AS*scale],
-                infoFields='migrate_to',
-                ops=Migrator(rate=[
-                    [0, m_AF_EU, m_AF_AS],
-                    [m_AF_EU, 0, m_EU_AS],
-                    [m_AF_AS, m_EU_AS, 0]
-                    ])
-                ),
-            ] + finalStage, ops=ops, infoFields=infoFields
         )
+
+        # # for python 2.x and 3.x compatibility
+        # scale = float(scale)
+        # MultiStageModel.__init__(self, [
+        #     InstantChangeModel(
+        #         T=int((T0-T_B)/scale),
+        #         N0=(int(N_A/scale), 'Ancestral'),
+        #         # change population size twice, one at T_AF, one at T_B
+        #         G=[int((T0-T_AF)/scale)],
+        #         NG=[(int(N_AF/scale), 'AF')] 
+        #     ),
+        #     #
+        #     # at T_B, split to population B from subpopulation 1
+        #     InstantChangeModel(
+        #         T=int((T_B - T_EU_AS)/scale),
+        #         # change population size twice, one at T_AF, one at T_B
+        #         N0=[None, (int(N_B/scale), 'B')],
+        #         ops=Migrator(rate=[
+        #             [m_AF_B, 0],
+        #             [0, m_AF_B]])
+        #         ),
+        #     ExponentialGrowthModel(
+        #         T=int(T_EU_AS/scale),
+        #         N0=[None, 
+        #             # split B into EU and AS at the beginning of this
+        #             # exponential growth stage
+        #             [(int(N_EU0/scale), 'EU'), (int(N_AS0/scale), 'AS')]],
+        #         r=[0, r_EU*scale, r_AS*scale],
+        #         infoFields='migrate_to',
+        #         ops=Migrator(rate=[
+        #             [0, m_AF_EU, m_AF_AS],
+        #             [m_AF_EU, 0, m_EU_AS],
+        #             [m_AF_AS, m_EU_AS, 0]
+        #             ])
+        #         ),
+        #     ] + finalStage, ops=ops, infoFields=infoFields
+        # )
 
 class SettlementOfNewWorldModel(EventBasedModel):
     '''A dempgraphic model for settlement of the new world of Americans, as defined
@@ -1642,32 +1688,77 @@ class SettlementOfNewWorldModel(EventBasedModel):
         '''
         if T0 < T_AF:
             raise ValueError('Length of evolution T0=%d should be more than T_AF=%d' % (T0, T_AF))
-        # try to figure out how to mix two populations
-        N_EU=int(N_EU0*math.exp(r_EU*T_EU_AS))
-        N_MX=int(N_MX0*math.exp(r_MX*T_MX))
         #
-        EventBasedModel.__init__(
-            T = T0,
+        scale = float(scale)
+        EventBasedModel.__init__(self,
+            T = int(T0/scale),
             N0 = (int(N_A/scale), 'Ancestral'),
             infoFields = 'migrate_to',
             events = [
-                ResizeEvent(at=-int(T_AF/scale), subPops='Ancestral',
+                # resize ancestral to AF
+                ResizeEvent(at= -int(T_AF/scale), subPops='Ancestral',
                     sizes=int(N_AF/scale), names='AF'),
+                # split B from AF
                 SplitEvent(at=-int(T_B/scale), subPops='AF',
                     sizes=(1.0, int(N_AF/scale)), names=('AF', 'B')),
-                SplitEvent(at=-int(T_EU_AS), subPops='B',
+                # migration between AF and B
+                DemographicEvent(
+                    ops=Migrator(rate=[
+                        [m_AF_B, 0],
+                        [0, m_AF_B]]), 
+                    begin=-int(T_AF/scale), 
+                    end=-int(T_EU_AS/scale)
+                ),
+                # split EU AS from B
+                SplitEvent(at=-int(T_EU_AS/scale), subPops='B',
                     sizes=(int(N_EU0/scale), int(N_AS0/scale)),
                     names=('EU', 'AS')),
-                ExpansionEvent(begin=-int(T_EU_AS),
-                    subPops=('EU', 'AS'), rates=(r_EU*scale, r_AS*scale)),
-                ResizeEvent(at=-1, subPops=('EU', 'AS'),
-                    sizes=[int(N_EU/scale), int(N_AS/scale)])
-            ],
+                # exponential growth 
+                ExpansionEvent(begin=-int(T_EU_AS/scale),
+                    subPops=('EU', 'AS'), 
+                    rates=(r_EU*scale, r_AS*scale)),
+                # split MX from AS
+                SplitEvent(at=-int(T_MX/scale),
+                    subPops='AS',
+                    sizes=(1.0, int(N_MX0/scale)),
+                    names=('AS', 'MX')),
+                # expansion of MX
+                ExpansionEvent(begin=-int(T_MX/scale),
+                    subPops='MX',
+                    rates=r_MX),
+                # migration between AF, EU and AS
+                DemographicEvent(
+                    ops=Migrator(rate=[
+                        [0, m_AF_EU, m_AF_AS],
+                        [m_AF_EU, 0, m_EU_AS],
+                        [m_AF_AS, m_EU_AS, 0]
+                        ]), 
+                    begin=-int(T_EU_AS/scale)
+                ),
+                # admixture
+                AdmixtureEvent(
+                    at=-1,
+                    subPops=['EU', 'MX'],
+                    sizes=(1-f_MX, f_MX),
+                    name='MXL'),
+                # keep only selected populations
+                ResizeEvent(at=-1, 
+                    sizes=[float('AF' in outcome),
+                        float('EU' in outcome),
+                        float('AS' in outcome),
+                        float('MX' in outcome),
+                        float('MXL' in outcome)],
+                    removeEmptySubPops=True)
+            ]
         )
+
         ##
         ## The following is the old outcome-based implementation. The new version
         ## uses event-based model, which is easier to implement and change.
         ##
+        ## # try to figure out how to mix two populations
+        ## N_EU=int(N_EU0*math.exp(r_EU*T_EU_AS))
+        ## N_MX=int(N_MX0*math.exp(r_MX*T_MX))
         ## #
         ## #
         ## # for python 2.x and 3.x compatibility
