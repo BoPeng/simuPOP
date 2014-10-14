@@ -132,7 +132,7 @@ def migr2DSteppingStoneRates(r, m, n, diagonal=False, circular=False):
                 rates[-1][x[0] * n + x[1]] = r * 1.0 / len(neighbors)
     return rates
 
-class BaseDemographicModel:
+class DemographicModel:
     '''This class is the base class for all demographic models and 
     provides common interface and utility functions for derived classes. A
     demographic model is essentially a callable Python object that encapsulates
@@ -187,6 +187,9 @@ class BaseDemographicModel:
             self.ops = list(ops)
         else:
             self.ops = [ops]
+        #
+        # history
+        self.size_cache = {}
 
     def _reset(self):
         if hasattr(self, '_start_gen'):
@@ -270,8 +273,6 @@ class BaseDemographicModel:
         # if size is None or size is [], return unchanged
         if not size:
             return 
-        if '__locked__' in pop.vars() and pop.dvars().__locked__:
-            raise RuntimeError('Change population size of a locked population is not allowed.')
         named_size = self._convertToNamedSize(size)
         if pop.numSubPop() > 1:
             # merge subpopualtions
@@ -504,6 +505,30 @@ class BaseDemographicModel:
     def _setup(self, pop):
         return True
 
+    def _save_size(self, gen, sz):
+        if self.size_cache:
+            prev = [x for x in self.size_cache.keys() if x < gen]
+            if prev and self.size_cache[max(prev)] == sz:
+                return sz
+        self.size_cache[gen] = sz
+        return sz
+
+    def _cached_size(self, gen):
+        if gen in self.size_cache:
+            return self.size_cache[gen]
+        if not self.size_cache:
+            raise RuntimeError('Failed to determine size for generation {}'
+                    .format(gen))
+        # if we look further, keep contant size
+        if gen > max(self.size_cache.keys()):
+            return self.size_cache[max(self.size_cache.keys())]
+        prev = [x for x in self.size_cache.keys() if x < gen]
+        if prev:
+            return self.size_cache[max(prev)]
+        else:
+            raise RuntimeError('Failed to determine size for generation {}'
+                    .format(gen))
+
     def __call__(self, pop):
         # When calling the demographic function, there are two quite separate scenarios
         #
@@ -512,51 +537,30 @@ class BaseDemographicModel:
         #   be two cases, the first one for initialization, the other one for instant
         #   population change (in the case of InstantChangeModel).
         #
-        # 2. When the demographic function is called randomly, that is to say we might
-        #   have a population already at the destination size, and we just want to start
-        #   from that generation. In this case, all _fitTo_Size calls from the initialization
-        #   part should be disallowed. The other call from InstantChangeModel can be
-        #   called but the population is assumed to be already in place, so it should
-        #   not have any impact.
+        # 2. When the demographic function is called randomly, only a previously evolved
+        #   generation is allowed. This is because many demographic models depend on
+        #   size of previous generations to determine new population size, which makes
+        #   jumping forward impossible.
         # 
-        # It is not quite clear how to tell these two cases apart. For a single-model or
-        # multi-stage model case, the first time the demographic model is called, 
-        # _start_gen should be set and fitSize will be called. 
-        #
-        # Then, for any subsequent calls, a single-model will not call initizliation again.
-        # For prograss-like calling, events will be triggered to change population size,
-        # for random access, we only assume that population already has the right size 
-        # and do not call fitSize.
-        #
         # In the case of multi-model, random access will not call fitSize for any
         # intermediate steps.
         # 
         # the first time this demographic function is called
-        self._randomAccess = False
+        self._use_cached = False
         if not hasattr(self, '_start_gen'):
             self._reset()
             self._start_gen = pop.dvars().gen
             self._last_gen = pop.dvars().gen
             # resize populations if necessary
-            if '__locked__' in pop.vars() and pop.dvars().__locked__:
-                # pop is assumed to be in destination population size
-                # the initial population size has to be determined from user input 
-                # size, which is not possible if dynamic population size was
-                # specified.
-                self.init_size = self._extractSize(self._raw_init_size)
-                for sz in self.init_size:
-                    if sz is None or isinstance(sz, (float, list, tuple)):
-                        raise RuntimeError('Random access to an uninitialized demographic model with '
-                            'dynamic population size is not allowed.')
-            else:
-                self._fitToSize(pop, self._raw_init_size)
-                # by this time, we should know the initial population size
-                self.init_size = pop.subPopSizes()
+            self._fitToSize(pop, self._raw_init_size)
+            # by this time, we should know the initial population size
+            self.init_size = pop.subPopSizes()
             # then we can set up model if the model depends on initial
             # population size
             self._setup(pop)
         elif pop.dvars().gen != self._last_gen + 1:
-            self._randomAccess = True
+            self._use_cached = True
+            return self._cached_size(pop.dvars().gen)
         #
         self._gen = pop.dvars().gen - self._start_gen
         self._last_gen = pop.dvars().gen
@@ -568,11 +572,11 @@ class BaseDemographicModel:
                 self._reset()
                 return []
         if '_expected_size' in pop.vars():
-            return pop.vars().pop('_expected_size')
+            return self._save_size(pop.dvars().gen, pop.vars().pop('_expected_size'))
         else:
-            return pop.subPopSizes()
+            return self._save_size(pop.dvars().gen, pop.subPopSizes())
 
-class ExponentialGrowthModel(BaseDemographicModel):
+class ExponentialGrowthModel(DemographicModel):
     '''A model for exponential population growth with carry capacity'''
     def __init__(self, T=None, N0=[], NT=None, r=None, ops=[], infoFields=[]):
         '''An exponential population growth model that evolves a population from size
@@ -586,7 +590,7 @@ class ExponentialGrowthModel(BaseDemographicModel):
         population will keep contant after it reaches size ``NT``. Optionally,
         one or more operators (e.g. a migrator) ``ops`` can be applied to 
         population. '''
-        BaseDemographicModel.__init__(self, T, N0, ops, infoFields)
+        DemographicModel.__init__(self, T, N0, ops, infoFields)
         #
         if [x is None or x == [] for x in [T, NT, r]].count(True) > 1:
             raise ValueError('Please specify at least two parameters of T, NT and r')
@@ -647,25 +651,25 @@ class ExponentialGrowthModel(BaseDemographicModel):
                 'is expected')
 
     def __call__(self, pop):
-        if not BaseDemographicModel.__call__(self, pop):
-            return []
+        if not DemographicModel.__call__(self, pop):
+           return []
         #
-        # this model does not need differntiation between _randomAccess or not
-        # because it does not call fitSize to change population size. 
-        # pop passed to _setup() is not used.
+        if self._use_cached:
+            return self._cached_size(pop.dvars().gen)
         #
         if self._gen == self.num_gens:
             return []
         elif self.r is None:
-            return [self._expIntepolate(n0, nt, self.num_gens, self._gen)
-                for (n0, nt) in zip(self.init_size, self.NT)]
+            return self._save_size(pop.dvars().gen, 
+                [self._expIntepolate(n0, nt, self.num_gens, self._gen)
+                for (n0, nt) in zip(self.init_size, self.NT)])
         else:
             # with r ...
-            return [min(nt, int(n0 * math.exp(r * (self._gen + 1))))
-                for (n0, nt, r) in zip(self.init_size, self.NT, self.r)]
+            return self._save_size(pop.dvars().gen, [min(nt, int(n0 * math.exp(r * (self._gen + 1))))
+                for (n0, nt, r) in zip(self.init_size, self.NT, self.r)])
 
 
-class LinearGrowthModel(BaseDemographicModel):
+class LinearGrowthModel(DemographicModel):
     '''A model for linear population growth with carry capacity.'''
     def __init__(self, T=None, N0=[], NT=None, r=None, ops=[], infoFields=[]):
         '''An linear population growth model that evolves a population from size
@@ -679,7 +683,7 @@ class LinearGrowthModel(BaseDemographicModel):
         population will keep contant after it reaches size ``NT``. Optionally,
         one or more operators (e.g. a migrator) ``ops`` can be applied to 
         population. '''
-        BaseDemographicModel.__init__(self, T, N0, ops, infoFields)
+        DemographicModel.__init__(self, T, N0, ops, infoFields)
         #
         if [x is None or x == [] for x in [T, NT, r]].count(True) > 1:
             raise ValueError('Please specify at least two parameters of T, NT and r')
@@ -736,25 +740,25 @@ class LinearGrowthModel(BaseDemographicModel):
                 'is expected')
 
     def __call__(self, pop):
-        if not BaseDemographicModel.__call__(self, pop):
+        if not DemographicModel.__call__(self, pop):
             return []
         #
-        # this model does not need differntiation between _randomAccess or not
-        # because it does not call fitSize to change population size.
+        if self._use_cached:
+            return self._cached_size(pop.dvars().gen)
         #
         if self._gen == self.num_gens:
             return []
         elif self.r is None:
             # no r use intepolation
-            return [self._linearIntepolate(n0, nt, self.num_gens, self._gen)
-                for (n0, nt) in zip(self.init_size, self.NT)]    
+            return self._save_size(pop.dvars().gen, [self._linearIntepolate(n0, nt, self.num_gens, self._gen)
+                for (n0, nt) in zip(self.init_size, self.NT)])
         else:
             # with r ...
-            return [min(nt, int(n0 + n0 * (self._gen + 1.) * r))
-                for (n0, nt, r) in zip(self.init_size, self.NT, self.r)]
+            return self._save_size(pop.dvars().gen, [min(nt, int(n0 + n0 * (self._gen + 1.) * r))
+                for (n0, nt, r) in zip(self.init_size, self.NT, self.r)])
 
 
-class InstantChangeModel(BaseDemographicModel):
+class InstantChangeModel(DemographicModel):
     '''A model for instant population change (growth, resize, merge, split).'''
     def __init__(self, T=None, N0=[], G=[], NG=[], ops=[], infoFields=[], removeEmptySubPops=False):
         '''An instant population growth model that evolves a population
@@ -769,7 +773,7 @@ class InstantChangeModel(BaseDemographicModel):
         operators should be passed to parameter ``infoFields``. If ``removeEmpty``
         option is set to ``True``, empty subpopulation will be removed. This
         option can be used to remove subpopulations.'''
-        BaseDemographicModel.__init__(self, T, N0, ops, infoFields)
+        DemographicModel.__init__(self, T, N0, ops, infoFields)
         if isinstance(G, int):
             self.G = [G]
             if isinstance(NG, int) :
@@ -794,37 +798,23 @@ class InstantChangeModel(BaseDemographicModel):
 
     def __call__(self, pop):
         # this one fixes N0... (self.init_size)
-        if not BaseDemographicModel.__call__(self, pop):
+        if not DemographicModel.__call__(self, pop):
             return []
+        #
+        if self._use_cached:
+            return self._cached_size(pop.dvars().gen)
         # 
-        if self._randomAccess or '__locked__' in pop.vars():
-            # for random access, we just return calculate size
-            if not self.G or self._gen < self.G[0]:
-                sz = self.init_size
-            else:
-                # we do not expect pop.gen() to come in sequence
-                # so that we can change the population size at exactly
-                # self.G generations, therefore we have to check which
-                # internal self._gen falls into.
-                for i in range(len(self.G)):
-                    if self._gen >= self.G[i] and (i == len(self.G) - 1 or self._gen < self.G[i+1]):
-                        sz = self.NG[i]
-                        break
-            if not isinstance(sz, (list, tuple)):
-                sz = [sz]
-        else:
-            # this is a sequential call, we do fitSize
-            if self._gen in self.G:
-                sz = self.NG[self.G.index(self._gen)]
-                self._fitToSize(pop, sz)
-            if self.removeEmptySubPops:
-                pop.removeSubPops([idx for idx,x in enumerate(pop.subPopSizes()) if x==0])
-            sz = pop.subPopSizes()
-        return sz
+        if self._gen in self.G:
+            sz = self.NG[self.G.index(self._gen)]
+            self._fitToSize(pop, sz)
+        if self.removeEmptySubPops:
+            pop.removeSubPops([idx for idx,x in enumerate(pop.subPopSizes()) if x==0])
+        sz = pop.subPopSizes()
+        return self._save_size(pop.dvars().gen, sz)
 
 
 
-class AdmixtureModel(BaseDemographicModel):
+class AdmixtureModel(DemographicModel):
     '''An population admixture model that mimicks the admixing of two 
     subpopulations using either an HI (hybrid isolation) or CGF
     (continuous gene flow) model. In the HI model, an admixed population
@@ -851,7 +841,7 @@ class AdmixtureModel(BaseDemographicModel):
         1-mu percent of individuals in receipient population will be replaced by
         individuals in the doner population.
         '''
-        BaseDemographicModel.__init__(self, T, N0, ops, infoFields)
+        DemographicModel.__init__(self, T, N0, ops, infoFields)
         if not model or model[0] not in ('HI', 'CGF') or len(model) < 4 or model[1] == model[2] or model[3] > 1:
             raise ValueError('model should be either ("HI", parent1, paren2, mu)'
                 'or ("CGF", receipient, doner, alpha)')
@@ -878,11 +868,12 @@ class AdmixtureModel(BaseDemographicModel):
             return (int(N*mu + 0.5), int(N*(1-mu) + 0.5))
 
     def __call__(self, pop):
-        if not BaseDemographicModel.__call__(self, pop):
+        if not DemographicModel.__call__(self, pop):
             return []
-        if self._randomAccess:
-            raise ValueError('simuPOP does not yet support random access to '
-                'an admixture demographic model')
+        #
+        if self._use_cached:
+            return self._cached_size(pop.dvars().gen)
+        #
         if self.model[0] == 'HI':
             if self._gen != 0:
                 return pop.subPopSizes()
@@ -924,10 +915,10 @@ class AdmixtureModel(BaseDemographicModel):
             pop.splitSubPop(self.model[2], [request, pop.subPopSize(self.model[2]) - request])
             # step3, merge the split indiiduals to subpopulation self.model[1]
             pop.mergeSubPops([self.model[1], self.model[2]])
-        return pop.subPopSizes()
+        return self._save_size(pop.dvars().gen, pop.subPopSizes())
 
 
-class MultiStageModel(BaseDemographicModel):
+class MultiStageModel(DemographicModel):
     '''A multi-stage demographic model that connects a number of demographic
     models. '''
     def __init__(self, models, ops=[], infoFields=[]):
@@ -946,7 +937,7 @@ class MultiStageModel(BaseDemographicModel):
             total_gens = sum(gens)
         else:
             total_gens = -1
-        BaseDemographicModel.__init__(self, numGens=total_gens,
+        DemographicModel.__init__(self, numGens=total_gens,
             initSize=models[0].init_size, ops=ops, infoFields=flds+infoFields)
         #
         self.models = models
@@ -989,69 +980,40 @@ class MultiStageModel(BaseDemographicModel):
         # so that the starting gen is after the current gen. We will
         # need to handle this case.
         # determines generation number internally as self.gen
-        if not BaseDemographicModel.__call__(self, pop):
+        if not DemographicModel.__call__(self, pop):
             return []
-        if self._randomAccess:
-            # in this case, we assume that the population is already
-            # at the generation and is in need of size for next 
-            pop.dvars().__locked__ = True
-            # self._start_gen works, so is self._gen 
-            # but self._model_idx cannot be used, try to find it
-            g = 0
-            for idx,model in enumerate(self.models):
-                if model.num_gens == 0:
-                    continue
-                if model.num_gens < 0 or self._gen - g < model.num_gens:
-                    self._model_idx = idx
-                    # if we are jumping to an uninitialized model, we cannot
-                    # initialize it with a later generation and has to forcefully
-                    # initialize it with the correct starting generation.
-                    if self._gen > g and not hasattr(model, '_last_gen'):
-                        model._start_gen = g
-                        model._last_gen = g
-                        model.init_size = model._extractSize(model._raw_init_size)
-                        for sz in model.init_size:
-                            if sz is None or isinstance(sz, (float, list, tuple)):
-                                raise RuntimeError('Random access to an uninitialized demographic model with '
-                                    'dynamic population size is not allowed.')
-                        model._setup(pop)
-                    model._randomAccess = True
-                    sz = model.__call__(pop)
-                    pop.vars().pop('__locked__')
-                    return sz
-                g += model.num_gens
-            raise RuntimeError('Failed to jump to generation {}'.format(pop.dvars().gen))
-        else:
-            # sequential access to the demographic model
-            #
-            # There are three cases
-            # 1. within the current model, a valid step is returned
-            #   --> return
-            # 2. within the current model, a [] is returned by a 
-            #   terminator.
-            #   --> proceed to the next available model, call, and return
-            # 3. at the end of the current model,
-            #   --> proceed to the next available model, call, and return
-            # 4. at the beginning of a zero-step model
-            #   --> call
-            #   --> process to the next available model, call, and return
-            #
-            # in the middle
-            if self.models[self._model_idx].num_gens < 0 or \
-                self.models[self._model_idx].num_gens > self._gen - self._model_start_gen:
-                sz = self.models[self._model_idx].__call__(pop)
-                if not sz:
-                    sz = self._advance(pop)
-            elif self.models[self._model_idx].num_gens == 0:
-                sz = self.models[self._model_idx].__call__(pop)
+        #
+        if self._use_cached:
+            return self._cached_size(pop.dvars().gen)
+        #
+        # There are three cases
+        # 1. within the current model, a valid step is returned
+        #   --> return
+        # 2. within the current model, a [] is returned by a 
+        #   terminator.
+        #   --> proceed to the next available model, call, and return
+        # 3. at the end of the current model,
+        #   --> proceed to the next available model, call, and return
+        # 4. at the beginning of a zero-step model
+        #   --> call
+        #   --> process to the next available model, call, and return
+        #
+        # in the middle
+        if self.models[self._model_idx].num_gens < 0 or \
+            self.models[self._model_idx].num_gens > self._gen - self._model_start_gen:
+            sz = self.models[self._model_idx].__call__(pop)
+            if not sz:
                 sz = self._advance(pop)
-            elif self.models[self._model_idx].num_gens <= self._gen - self._model_start_gen:
-                sz = self._advance(pop)
-            return sz
+        elif self.models[self._model_idx].num_gens == 0:
+            sz = self.models[self._model_idx].__call__(pop)
+            sz = self._advance(pop)
+        elif self.models[self._model_idx].num_gens <= self._gen - self._model_start_gen:
+            sz = self._advance(pop)
+        return self._save_size(pop.dvars().gen, sz)
 
 
         
-class EventBasedModel(BaseDemographicModel):
+class EventBasedModel(DemographicModel):
     '''An event based demographic model in which the demographic changes are 
     triggered by demographic events such as population growth, split, join, and 
     admixture. The population size will be kept constant if no event is applied
@@ -1066,7 +1028,7 @@ class EventBasedModel(BaseDemographicModel):
         '''
         if isinstance(events, DemographicEvent):
             events = [events]
-        BaseDemographicModel.__init__(self, numGens=T, initSize=N0,
+        DemographicModel.__init__(self, numGens=T, initSize=N0,
             ops=ops + events, infoFields=infoFields)
 
 
@@ -1740,8 +1702,9 @@ class SettlementOfNewWorldModel(EventBasedModel):
                         [0, m_AF_EU, m_AF_AS],
                         [m_AF_EU, 0, m_EU_AS],
                         [m_AF_AS, m_EU_AS, 0]
-                        ]), 
-                    begin=-int(T_EU_AS/scale)
+                        ],
+                    subPops=['AF', 'EU', 'AS']), 
+                    begin=-int(T_EU_AS/scale),
                 ),
                 # admixture
                 AdmixtureEvent(
