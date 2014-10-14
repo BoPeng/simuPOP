@@ -526,9 +526,9 @@ class TestDemography(unittest.TestCase):
                 99: 200,
             })
 
-    def testExponentialGrowthEvent(self):
+    def testExpansionEvent(self):
         EventBasedModel(T=100, N0=200,
-            events=ExponentialGrowthEvent(rates=0.01)
+            events=ExpansionEvent(rates=0.01)
             )._assertSize(
             {
                 0: 202,
@@ -536,7 +536,7 @@ class TestDemography(unittest.TestCase):
                 99: 466,
             }, initSize=500)
         EventBasedModel(T=100, N0=[200, 200], 
-            events=ExponentialGrowthEvent(rates=0.01)
+            events=ExpansionEvent(rates=0.01)
             )._assertSize(
             {
                 0: [202, 202],
@@ -545,7 +545,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=500)
         # unknown NT
         EventBasedModel(T=100, N0=[200, 200], 
-            events=ExponentialGrowthEvent(rates=[0.01, 0.03])
+            events=ExpansionEvent(rates=[0.01, 0.03])
             )._assertSize(
             {
                 0: [202, 206],
@@ -553,9 +553,9 @@ class TestDemography(unittest.TestCase):
                 99: [466, 3574],
             }, initSize=500)
       
-    def testLinearGrowthEvent(self):
+    def testExpansionEvent(self):
         EventBasedModel(T=100, N0=200,
-            events=LinearGrowthEvent(rates=0.01)
+            events=ExpansionEvent(slopes=2)
             )._assertSize(
             {
                 0: 202,
@@ -563,7 +563,7 @@ class TestDemography(unittest.TestCase):
                 99: 400,
             }, initSize=500)
         EventBasedModel(T=100, N0=[200, 200], 
-            events=LinearGrowthEvent(rates=0.01)
+            events=ExpansionEvent(slopes=2)
             )._assertSize(
             {
                 0: [202, 202],
@@ -572,7 +572,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=500)
         # unknown NT
         EventBasedModel(T=100, N0=[200, 200], 
-            events=LinearGrowthEvent(rates=[0.01, 0.03])
+            events=ExpansionEvent(slopes=[2, 6])
             )._assertSize(
             {
                 0: [202, 206],
