@@ -2056,6 +2056,55 @@ simuPOPdemographyBaseDemographicModelRef
 
 
 \backslash
+simuPOPdemographyEventBasedModelRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPdemographyDemographicEventRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPdemographyExpansionEventRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPdemographyResizeEventRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPdemographySplitEventRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPdemographyMergeEventRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPdemographyAdmixtureEventRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 simuPOPdemographyInstantChangeModelRef
 \end_layout
 

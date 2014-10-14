@@ -4993,7 +4993,7 @@ model = MultiStageModel([
         # change to population size 200 and back to 1000
         NG=[(200, 'bottleneck'), (1000, 'Post-Bottleneck')]),
     ExponentialGrowthModel(
-        T=200, 
+        T=50, 
         # split the population into two subpopulations
         N0=[(400, 'P1'), (600, 'P2')],
         # expand to size 4000 and 5000 respectively
@@ -5039,6 +5039,54 @@ MultiStageModel([
 #end_file
 
 
+
+
+#begin_file log/demoEventModel.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True, plotter='matplotlib')
+#end_ignore
+import simuPOP as sim
+from simuPOP.demography import *
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+import math
+model = EventBasedModel(
+    N0=(1000, 'Ancestral'),
+    T=250,
+    events=[
+        ResizeEvent(at=50, sizes=200),
+        ResizeEvent(at=60, sizes=1000),
+        SplitEvent(sizes=[0.4, 0.6], names=['P1', 'P2'], at=200),
+        ExpansionEvent(rates=[math.log(4000/400)/50, math.log(5000/600)/50], begin=200)
+    ]
+)
+#
+# model.init_size returns the initial population size
+# migrate_to is required for migration
+pop = sim.Population(size=model.init_size, loci=1,
+    infoFields=model.info_fields)
+pop.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.InitGenotype(freq=[0.5, 0.5])
+    ],
+    matingScheme=sim.RandomMating(subPopSize=model),
+    finalOps=
+        sim.Stat(alleleFreq=0, vars=['alleleFreq_sp']),
+    gen=model.num_gens
+)
+# print out population size and frequency
+for idx, name in enumerate(pop.subPopNames()):
+    print('%s (%d): %.4f' % (name, pop.subPopSize(name), 
+        pop.dvars(idx).alleleFreq[0][0]))
+
+# get a visual presentation of the demographic model
+model.plot('log/demoEventModel.png',
+    title='A event-based bottleneck + exponential growth demographic model')
+
+#end_file
 
 #begin_file log/demoTerminate.py
 #begin_ignore
