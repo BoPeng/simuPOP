@@ -534,6 +534,43 @@ class TestDemography(unittest.TestCase):
                 0: 200,
                 99: 200,
             })
+        EventBasedModel(T=100, N0=(200, 200, 200),
+            events=[
+                ResizeEvent(sizes=300, subPops=1, names='AF', at=2),
+                MergeEvent(subPops=[1,2], at=3),
+                ]
+            )._assertSize(
+            {
+                0: (200, 200, 200),
+                2: (200, 300, 200),
+                99: (200, 500),
+            }, initSize=500)
+        EventBasedModel(T=100, N0=(200, 200, 200),
+            events=[
+                ResizeEvent(sizes=300, subPops=1, at=2),
+                ResizeEvent(sizes=400, subPops=2, at=2),
+                ResizeEvent(sizes=350, subPops=1, at=2),
+                ]
+            )._assertSize(
+            {
+                0: (200, 200, 200),
+                2: (200, 350, 400),
+                99: (200, 350, 400),
+            }, initSize=500)
+        EventBasedModel(T=100, N0=(200, 200, 200),
+            events=[
+                ResizeEvent(sizes=300, subPops=1, at=2),
+                MergeEvent(subPops=[1,0], at=2),
+                ResizeEvent(sizes=350, subPops=1, at=2),
+                ]
+            )._assertSize(
+            {
+                0: (200, 200, 200),
+                2: (500, 350),
+                99: (500, 350),
+            }, initSize=500)
+
+
 
     def testResizeEvent(self):
         EventBasedModel(T=100, N0=(200, 200, 200),
@@ -686,7 +723,36 @@ class TestDemography(unittest.TestCase):
                 2: [206, 218],
                 99: [400, 800],
             }, initSize=500)
+        self.assertRaises(ValueError, ExpansionEvent, rates=[0.2, 0.4], slopes=[2, 6])
 
+    def testSplitEvent(self):
+        EventBasedModel(T=100, N0=200, 
+            events=SplitEvent(sizes=(0.4, 0.6), at=2)
+            )._assertSize(
+            {
+                0: [200],
+                2: [80, 120],
+                99: [80, 120],
+            }, initSize=500)
+        EventBasedModel(T=100, N0=200, 
+            events=SplitEvent(sizes=(0.4, 250), at=2)
+            )._assertSize(
+            {
+                0: [200],
+                2: [80, 250],
+                99: [80, 250],
+            }, initSize=500)
+        self.assertRaises(ValueError, EventBasedModel(T=100, N0=200, 
+            events=SplitEvent(sizes=(0.4, 250), begin=2)
+            )._assertSize, { }, initSize=500)
+        EventBasedModel(T=100, N0=((100, 'A'), (200, 'B')), 
+            events=SplitEvent(sizes=(0.4, 250), at=2, subPops='B')
+            )._assertSize(
+            {
+                0: [100, 200],
+                2: [100, 80, 250],
+                99: [100, 80, 250],
+            }, initSize=500)
 
     def testAdmixtureEvent(self):
         EventBasedModel(T=10, 

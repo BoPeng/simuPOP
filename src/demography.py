@@ -1303,6 +1303,8 @@ class ExpansionEvent(DemographicEvent):
         '''
         self.rates = rates
         self.slopes = slopes
+        if self.rates and self.slopes:
+            raise ValueError('Please specify one and only one of parameter rates and slopes.')
         self.capacity = capacity
         DemographicEvent.__init__(self, ops, output, begin, end, step, at, reps,
             subPops, infoFields)
