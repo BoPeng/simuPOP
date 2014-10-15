@@ -454,29 +454,30 @@ class DemographicModel:
             plt.savefig(filename)
             plt.close()
 
-    def _checkSize(self, pop):
+    def _checkSize(self, pop, param):
         gen = pop.dvars().gen
-        if gen in self.intended_size:
-            sz = self.intended_size[gen]
+        if gen - param in self.intended_size:
+            sz = self.intended_size[gen - param]
             if isinstance(sz, int):
                 sz = (sz,)
             else:
                 sz = tuple(sz)
             if sz != pop.subPopSizes():
-                raise ValueError('Mismatch population size at generation %s: observed=%s, intended=%s' % \
-                    (gen, pop.subPopSizes(), sz))
+                raise ValueError('Mismatch population size at generation %s (with starting gen %s): observed=%s, intended=%s' % \
+                    (gen - param, param, pop.subPopSizes(), sz))
         return True
         
-    def _assertSize(self, sizes, initSize=[]):
+    def _assertSize(self, sizes, initSize=[], startGen=0):
         '''This function is provided for testing purpose.
         '''
         self.intended_size = sizes
         pop = Population(size=initSize if initSize else self.init_size,
             infoFields=self.info_fields)
+        pop.dvars().gen = startGen
         pop.evolve(
             matingScheme=RandomSelection(subPopSize=self),
-            postOps=PyOperator(self._checkSize),
-            finalOps=PyOperator(self._checkSize),
+            postOps=PyOperator(self._checkSize, param=startGen),
+            finalOps=PyOperator(self._checkSize, param=startGen),
             gen=self.num_gens
         )
 

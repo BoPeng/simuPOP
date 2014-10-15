@@ -6,7 +6,7 @@
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 1.1.3 (\mbox{Rev: 4913})}
+\setreleaseinfo{Release 1.1.4 (\mbox{Rev: 4950})}
 % file revision $Rev: 3372$
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
@@ -26113,27 +26113,27 @@ splits an ancestral population named AF to two populations AF and EU at
 \end_layout
 
 \begin_layout Standard
-Finally, an AdmixEvent mix two or more subpopulations by certain proportions,
- and either create a new subpopulation or replace an existing subpopulation.
+Finally, an 
+\family typewriter
+AdmixtureEvent
+\family default
+ mix two or more subpopulations by certain proportions, and either create
+ a new subpopulation or replace an existing subpopulation.
  In particular,
 \end_layout
 
 \begin_layout Standard
-
-\family typewriter
 \begin_inset listings
 inline false
 status open
 
 \begin_layout Plain Layout
 
-AdmixEvent(subPops=['MX', 'EU'], at=-10, sizes=[0.4, 0.6], names='MXL')
+AdmixtureEvent(subPops=['MX', 'EU'], at=-10, sizes=[0.4, 0.6], name='MXL')
 \end_layout
 
 \end_inset
 
-
-\family default
 creates a new admixed population called MXL with 40% of individuals from
  the MX population, and the rest from the EU population.
  The admixture process happens once and follows an Hybrid Isolation model.
@@ -26147,7 +26147,7 @@ status open
 
 \begin_layout Plain Layout
 
-AdmixEvent(subPops=['MX', 'EU'], begin=-10, sizes=[0.8, 0.2], toSubPop='MX')
+AdmixtureEvent(subPops=['MX', 'EU'], begin=-10, sizes=[0.8, 0.2], toSubPop='MX')
 \end_layout
 
 \end_inset
@@ -26156,6 +26156,38 @@ will create an admixed population with 80% MX and 20% EU individuals for
  10 generations.
  Because 20% of the admixed population will be replaced by individuals from
  the EU population, this models a continuous gene flow model of admixture.
+ If you would like to control the exact size of the admixed population,
+ you can specify the number of individuals as integer numbers instead of
+ proportions:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+AdmixtureEvent(subPops=['MX', 'EU'], begin=-10, sizes=[int(1400*0.8), int(1400*0.2
+)], toSubPop='MX')
+\end_layout
+
+\end_inset
+
+Note that the type of elements in parameter 
+\family typewriter
+sizes
+\family default
+ is important, 
+\family typewriter
+1.
+
+\family default
+ stands for all subpopulation and 
+\family typewriter
+1
+\family default
+ stands for one individual from it.
 \end_layout
 
 \begin_layout Standard
