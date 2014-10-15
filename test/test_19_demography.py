@@ -262,13 +262,13 @@ class TestDemography(unittest.TestCase):
             {
                 0: 202,
                 2: 206,
-                99: 541,
+                99: 544,
             }, initSize=500)
         ExponentialGrowthModel(N0=200, r=0.01, NT=400)._assertSize(
             {
                 0: 202,
                 2: 206,
-                99: 541,
+                99: 544,
             }, initSize=500)
         #
         ExponentialGrowthModel(T=100, N0=[200, 200], NT=[400, 800])._assertSize(
@@ -281,33 +281,33 @@ class TestDemography(unittest.TestCase):
             {
                 0: [202, 202],
                 2: [206, 206],
-                99: [541, 541],
+                99: [544, 544],
             }, initSize=500)
         # unknown NT
         ExponentialGrowthModel(T=100, N0=[200, 200], r=[0.01, 0.03])._assertSize(
             {
                 0: [202, 206],
-                2: [206, 218],
-                99: [543, 4017],
+                2: [206, 219],
+                99: [544, 4017],
             }, initSize=500)
         # unknown T
         ExponentialGrowthModel(N0=[200, 200], r=0.01, NT=[400, 800])._assertSize(
             {
                 2: [206, 206],
-                99: [400, 543],
+                99: [400, 544],
                 100: [400, 549],
             }, initSize=500)
         # N0 size ...
         ExponentialGrowthModel(N0=[1., 1.], r=0.01, NT=[400, 800])._assertSize(
             {
                 2: [206, 206],
-                99: [400, 543],
+                99: [400, 544],
                 100: [400, 549],
             }, initSize=200)
         ExponentialGrowthModel(N0=[(None, 'name'), 1.], r=0.01, NT=[400, 800])._assertSize(
             {
                 2: [206, 206],
-                99: [400, 543],
+                99: [400, 544],
                 100: [400, 549],
             }, initSize=200)
         self.assertRaises(ExponentialGrowthModel, N0=[1., 1.], r=0.01, NT=[2, 3.])
@@ -656,7 +656,7 @@ class TestDemography(unittest.TestCase):
             {
                 0: 202,
                 2: 206,
-                99: 532,
+                99: 544,
             }, initSize=500)
         EventBasedModel(T=100, N0=(200, 'AF'),
             events=ExpansionEvent(rates=0.01, subPops='AF')
@@ -664,7 +664,7 @@ class TestDemography(unittest.TestCase):
             {
                 0: 202,
                 2: 206,
-                99: 532,
+                99: 544,
             }, initSize=500)
         EventBasedModel(T=100, N0=[200, 200], 
             events=ExpansionEvent(rates=0.01)
@@ -672,7 +672,7 @@ class TestDemography(unittest.TestCase):
             {
                 0: [202, 202],
                 2: [206, 206],
-                99: [532, 532],
+                99: [544, 544],
             }, initSize=500)
         EventBasedModel(T=100, N0=[(200, 'A'), (200, 'B')], 
             events=ExpansionEvent(rates=0.01, subPops=('A', 'B'))
@@ -680,7 +680,7 @@ class TestDemography(unittest.TestCase):
             {
                 0: [202, 202],
                 2: [206, 206],
-                99: [532, 532],
+                99: [544, 544],
             }, initSize=500)
         # unknown NT
         EventBasedModel(T=100, N0=[200, 200], 
@@ -688,8 +688,8 @@ class TestDemography(unittest.TestCase):
             )._assertSize(
             {
                 0: [202, 206],
-                2: [206, 218],
-                99: [532, 3858],
+                2: [206, 219],
+                99: [544, 4017],
             }, initSize=500)
         EventBasedModel(T=100, N0=[(200, 'AF'), (200, 'EU'), (200, 'AS')], 
             events=ExpansionEvent(rates=[0.01, 0.02], subPops=['EU', 'AS'])
@@ -697,7 +697,7 @@ class TestDemography(unittest.TestCase):
             {
                 0: [200, 202, 204],
                 2: [200, 206, 212],
-                99: [200, 532, 1445],
+                99: [200, 544, 1478],
             }, initSize=500) 
         EventBasedModel(T=100, N0=200,
             events=ExpansionEvent(slopes=2)

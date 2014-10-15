@@ -630,7 +630,7 @@ class ExponentialGrowthModel(DemographicModel):
                 #
             elif self.NT is None:
                 # get final population size from T and r
-                self.NT = [int(round(x*((1.+self.r)**self.num_gens))) for x in self.init_size]
+                self.NT = [x*math.exp(self.r*self.num_gens) for x in self.init_size]
             elif None in self.NT or \
                 any([isinstance(x, float) for x in self.NT]):
                 raise ValueError('Relative ending population size is not allowed'
@@ -641,7 +641,7 @@ class ExponentialGrowthModel(DemographicModel):
                 raise ValueError('Please specify growth rate for each subpopulation '
                     'if multiple growth rates are specified.')
             if self.NT is None:
-                self.NT = [int(round(x*math.exp(y*self.num_gens))) for x,y in zip(self.init_size, self.r)]
+                self.NT = [x*math.exp(y*self.num_gens) for x,y in zip(self.init_size, self.r)]
             elif None in self.NT or \
                 any([isinstance(x, float) for x in self.NT]):
                 raise ValueError('Relative ending population size is not allowed'
@@ -665,7 +665,7 @@ class ExponentialGrowthModel(DemographicModel):
                 for (n0, nt) in zip(self.init_size, self.NT)])
         else:
             # with r ...
-            return self._save_size(pop.dvars().gen, [min(nt, int(n0 * math.exp(r * (self._gen + 1))))
+            return self._save_size(pop.dvars().gen, [min(int(round(nt)), int(round(n0 * math.exp(r * (self._gen + 1)))))
                 for (n0, nt, r) in zip(self.init_size, self.NT, self.r)])
 
 
@@ -1301,6 +1301,8 @@ class ExpansionEvent(DemographicEvent):
         of subpopulation index or names. ``capacity`` can be empty (no limit on
         carrying capacity), or one or more numbers for each of the subpopulations.
         '''
+        self._N0 = None
+        self._T0 = None
         self.rates = rates
         self.slopes = slopes
         if self.rates and self.slopes:
@@ -1332,17 +1334,48 @@ class ExpansionEvent(DemographicEvent):
             sz = pop.dvars()._expected_size
         else:
             sz = list(pop.subPopSizes())
+        #
+        if self._N0 is None or len(self._N0) != len(subPops):
+            self._N0 = [sz[x] for x in subPops]
+            self._T0 = pop.dvars().gen
         for idx, sp in enumerate(subPops):
             if self.rates:
                 if type(self.rates) in [list, tuple]:
-                    sz[sp] = int(round(sz[sp] * (1 + self.rates[idx])))
+                    # if current size match, use it to do next
+                    if sz[sp] == int(round(self._N0[idx] * math.exp((pop.dvars().gen - self._T0) * self.rates[idx]))):
+                        sz[sp] = int(round(self._N0[idx] * math.exp((pop.dvars().gen - self._T0 + 1) * self.rates[idx])))
+                    # otherwise reset ...
+                    else:
+                        self._N0 = [sz[x] for x in subPops]
+                        self._T0 = pop.dvars().gen
+                        sz[sp] = int(round(sz[sp] * math.exp(self.rates[idx])))
                 else:
-                    sz[sp] = int(round(sz[sp] * (1 + self.rates)))
+                    if sz[sp] == int(round(self._N0[idx] * math.exp((pop.dvars().gen - self._T0) * self.rates))):
+                        sz[sp] = int(round(self._N0[idx] * math.exp((pop.dvars().gen - self._T0 + 1) * self.rates)))
+                    # otherwise reset ...
+                    else:
+                        self._N0 = [sz[x] for x in subPops]
+                        self._T0 = pop.dvars().gen
+                        sz[sp] = int(round(sz[sp] * math.exp(self.rates)))
             else:
                 if type(self.slopes) in [list, tuple]:
-                    sz[sp] = int(round(sz[sp] + self.slopes[idx]))
+                    # if current size match, use it to do next
+                    if sz[sp] == int(round(self._N0[idx] + (pop.dvars().gen - self._T0) * self.slopes[idx])):
+                        sz[sp] = int(round(self._N0[idx] + (pop.dvars().gen - self._T0 + 1) * self.slopes[idx]))
+                    # otherwise reset ...
+                    else:
+                        self._N0 = [sz[x] for x in subPops]
+                        self._T0 = pop.dvars().gen
+                        sz[sp] = int(round(sz[sp] + self.slopes[idx]))
                 else:
-                    sz[sp] = int(round(sz[sp] + self.slopes))
+                    # if current size match, use it to do next
+                    if sz[sp] == int(round(self._N0[idx] + (pop.dvars().gen - self._T0) * self.slopes)):
+                        sz[sp] = int(round(self._N0[idx] + (pop.dvars().gen - self._T0 + 1) * self.slopes))
+                    # otherwise reset ...
+                    else:
+                        self._N0 = [sz[x] for x in subPops]
+                        self._T0 = pop.dvars().gen
+                        sz[sp] = int(round(sz[sp] + self.slopes))
         if self.capacity:
             for idx, sp in enumerate(subPops):
                 if isinstance(self.capacity, (list, tuple)):
