@@ -23,49 +23,50 @@ for arg in sys.argv:
 sys.argv=new_argv
 from simuPOP import *
 from time import sleep
+import random
 
 from simuPOP.demography import *
 
 class TestDemography(unittest.TestCase):
     def testInstantChangeModel(self):
-        InstantChangeModel(T=100, N0=200)._assertSize(
+        InstantChangeModel(T=100, N0=200)._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: 200,
                 99: 200,
             })
-        InstantChangeModel(T=100, N0=[200, 300])._assertSize(
+        InstantChangeModel(T=100, N0=[200, 300])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: [200, 300],
                 99: [200, 300]
             })
-        InstantChangeModel(T=100, N0=200, G=10, NG=30)._assertSize(
+        InstantChangeModel(T=100, N0=200, G=10, NG=30)._assertSize(startGen=random.randint(0,100), sizes=
             {
                 9: 200,
                 10: 30,
                 99: 30
             })
-        InstantChangeModel(T=100, N0=200, G=10, NG=30)._assertSize(
+        InstantChangeModel(T=100, N0=200, G=10, NG=30)._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: 200,
                 9: 200,
                 10: 30,
                 99: 30
             }, initSize=500)
-        InstantChangeModel(T=100, N0=200, G=10, NG=[30, 40])._assertSize(
+        InstantChangeModel(T=100, N0=200, G=10, NG=[30, 40])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: 200,
                 9: 200,
                 10: (30, 40),
                 99: (30, 40),
             }, initSize=500)
-        InstantChangeModel(T=100, N0=[200, 300], G=10, NG=[30, 40])._assertSize(
+        InstantChangeModel(T=100, N0=[200, 300], G=10, NG=[30, 40])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 300),
                 9: (200, 300),
                 10: (30, 40),
                 99: (30, 40),
             }, initSize=500)
-        InstantChangeModel(T=100, N0=[200, 300], G=10, NG=[[30, 40]])._assertSize(
+        InstantChangeModel(T=100, N0=[200, 300], G=10, NG=[[30, 40]])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 300),
                 9: (200, 300),
@@ -74,7 +75,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=500)
         self.assertRaises(ValueError, InstantChangeModel, T=100, N0=[200, 300],
             G=[10], NG=[30, 40])
-        InstantChangeModel(T=100, N0=[200, 300], G=(10, 20), NG=[30, 40])._assertSize(
+        InstantChangeModel(T=100, N0=[200, 300], G=(10, 20), NG=[30, 40])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 300),
                 9: (200, 300),
@@ -82,7 +83,7 @@ class TestDemography(unittest.TestCase):
                 20: 40,
                 99: 40,
             }, initSize=500)
-        InstantChangeModel(T=100, N0=[200, 300], G=(10, 20), NG=[30, [40, 50]])._assertSize(
+        InstantChangeModel(T=100, N0=[200, 300], G=(10, 20), NG=[30, [40, 50]])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 300),
                 9: (200, 300),
@@ -93,7 +94,7 @@ class TestDemography(unittest.TestCase):
         self.assertRaises(ValueError, InstantChangeModel, T=100, N0=[200, 300], G=(10, 20),
             NG=[30, [40, 50], 40], )
         # testing the use of proportions
-        InstantChangeModel(T=100, N0=[200, 300], G=(10, 20), NG=[0.5, [0.4, 0.5]])._assertSize(
+        InstantChangeModel(T=100, N0=[200, 300], G=(10, 20), NG=[0.5, [0.4, 0.5]])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 300),
                 9: (200, 300),
@@ -101,7 +102,7 @@ class TestDemography(unittest.TestCase):
                 20: (100, 125),
                 99: (100, 125)
             })
-        InstantChangeModel(T=100, G=(10, 20), NG=[0.5, [0.4, 0.5]])._assertSize(
+        InstantChangeModel(T=100, G=(10, 20), NG=[0.5, [0.4, 0.5]])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 300),
                 9: (200, 300),
@@ -109,7 +110,7 @@ class TestDemography(unittest.TestCase):
                 20: (100, 125),
                 99: (100, 125)
             }, initSize=[200, 300])
-        InstantChangeModel(T=100, G=(10, 20), NG=[0.5, [0.4, None]])._assertSize(
+        InstantChangeModel(T=100, G=(10, 20), NG=[0.5, [0.4, None]])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 300),
                 9: (200, 300),
@@ -117,7 +118,7 @@ class TestDemography(unittest.TestCase):
                 20: (100, 250),
                 99: (100, 250)
             }, initSize=[200, 300])
-        InstantChangeModel(T=100, G=(10, 20), NG=[0.5, [None, 50]])._assertSize(
+        InstantChangeModel(T=100, G=(10, 20), NG=[0.5, [None, 50]])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 300),
                 9: (200, 300),
@@ -126,39 +127,39 @@ class TestDemography(unittest.TestCase):
                 99: (250, 50)
             }, initSize=[200, 300])
         # test the removeEmptySubPops parameter
-        InstantChangeModel(T=0, N0=[100, 0])._assertSize(
+        InstantChangeModel(T=0, N0=[100, 0])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (100, 0),
             }, initSize=[200, 300])
-        InstantChangeModel(T=0, N0=[0, 100], removeEmptySubPops=True)._assertSize(
+        InstantChangeModel(T=0, N0=[0, 100], removeEmptySubPops=True)._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (100,),
             }, initSize=[200, 300])
-        InstantChangeModel(T=0, removeEmptySubPops=True)._assertSize(
+        InstantChangeModel(T=0, removeEmptySubPops=True)._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 300, 400, 500),
             }, initSize=[200, 300, 400, 0, 0, 500])
 
     def testAdmixtureModel(self):
-        AdmixtureModel(T=10, model=('HI', 1, 2, 0.5))._assertSize(
+        AdmixtureModel(T=10, model=('HI', 1, 2, 0.5))._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 300, 400, 600),
                 4: (200, 300, 400, 600),
                 5: (200, 300, 400, 600),
             }, initSize=[200, 300, 400])
-        AdmixtureModel(T=10, model=('HI', 0, 2, 0.5))._assertSize(
+        AdmixtureModel(T=10, model=('HI', 0, 2, 0.5))._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 300, 400, 400),
                 4: (200, 300, 400, 400),
                 5: (200, 300, 400, 400),
             }, initSize=[200, 300, 400])
-        AdmixtureModel(T=10, model=('CGF', 0, 2, 0.8))._assertSize(
+        AdmixtureModel(T=10, model=('CGF', 0, 2, 0.8))._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 300, 400),
                 4: (200, 300, 400),
                 5: (200, 300, 400),
             }, initSize=[200, 300, 400])
-        AdmixtureModel(T=10, model=('CGF', 1, 2, 0.8))._assertSize(
+        AdmixtureModel(T=10, model=('CGF', 1, 2, 0.8))._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 300, 400),
                 4: (200, 300, 400),
@@ -169,46 +170,46 @@ class TestDemography(unittest.TestCase):
         self.assertRaises(LinearGrowthModel)
         self.assertRaises(LinearGrowthModel, T=100, N0=200)
         #
-        LinearGrowthModel(T=100, N0=200, NT=400)._assertSize(
+        LinearGrowthModel(T=100, N0=200, NT=400)._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: 202,
                 1: 204,
                 99: 400,
             }, initSize=500)
-        LinearGrowthModel(T=100, N0=200, r=0.01)._assertSize(
+        LinearGrowthModel(T=100, N0=200, r=0.01)._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: 202,
                 2: 206,
                 99: 400,
             }, initSize=500)
-        LinearGrowthModel(N0=200, r=0.01, NT=400)._assertSize(
+        LinearGrowthModel(N0=200, r=0.01, NT=400)._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: 202,
                 2: 206,
                 99: 400,
             }, initSize=500)
         #
-        LinearGrowthModel(T=100, N0=[200, 200], NT=[400, 800])._assertSize(
+        LinearGrowthModel(T=100, N0=[200, 200], NT=[400, 800])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: [202, 206],
                 1: [204, 212],
                 99: [400, 800],
             }, initSize=500)
-        LinearGrowthModel(T=100, N0=[200, 200], r=0.01)._assertSize(
+        LinearGrowthModel(T=100, N0=[200, 200], r=0.01)._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: [202, 202],
                 2: [206, 206],
                 99: [400, 400],
             }, initSize=500)
         # unknown NT
-        LinearGrowthModel(T=100, N0=[200, 200], r=[0.01, 0.03])._assertSize(
+        LinearGrowthModel(T=100, N0=[200, 200], r=[0.01, 0.03])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: [202, 206],
                 2: [206, 218],
                 99: [400, 800],
             }, initSize=500)
         # unknown T
-        LinearGrowthModel(N0=[200, 200], r=0.01, NT=[400, 800])._assertSize(
+        LinearGrowthModel(N0=[200, 200], r=0.01, NT=[400, 800])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: [202, 202],
                 2: [206, 206],
@@ -218,7 +219,7 @@ class TestDemography(unittest.TestCase):
                 300: [400, 800],
             }, initSize=500)
         # N0 size ...
-        LinearGrowthModel(N0=[1., 1.], r=0.01, NT=[400, 800])._assertSize(
+        LinearGrowthModel(N0=[1., 1.], r=0.01, NT=[400, 800])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: [202, 202],
                 2: [206, 206],
@@ -227,7 +228,7 @@ class TestDemography(unittest.TestCase):
                 298: [400, 798],
                 300: [400, 800],
             }, initSize=200)
-        LinearGrowthModel(N0=[(None, 'name'), 1.], r=0.01, NT=[400, 800])._assertSize(
+        LinearGrowthModel(N0=[(None, 'name'), 1.], r=0.01, NT=[400, 800])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: [202, 202],
                 2: [206, 206],
@@ -240,7 +241,7 @@ class TestDemography(unittest.TestCase):
         self.assertRaises(LinearGrowthModel, N0=[1., 1.], r=0.01, NT=[2000])
         self.assertRaises(LinearGrowthModel, N0=[1., 1.], r=[0.01], NT=[2000, 3000])
         # carrying capacity
-        LinearGrowthModel(T=100, N0=[200, 200], r=0.01, NT=[300, 350])._assertSize(
+        LinearGrowthModel(T=100, N0=[200, 200], r=0.01, NT=[300, 350])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: [202, 202],
                 2: [206, 206],
@@ -252,59 +253,59 @@ class TestDemography(unittest.TestCase):
         self.assertRaises(ExponentialGrowthModel)
         self.assertRaises(ExponentialGrowthModel, T=100, N0=200)
         #
-        ExponentialGrowthModel(T=100, N0=200, NT=400)._assertSize(
+        ExponentialGrowthModel(T=100, N0=200, NT=400)._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: 201,
                 1: 203,
                 99: 400,
             }, initSize=500)
-        ExponentialGrowthModel(T=100, N0=200, r=0.01)._assertSize(
+        ExponentialGrowthModel(T=100, N0=200, r=0.01)._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: 202,
                 2: 206,
                 99: 544,
             }, initSize=500)
-        ExponentialGrowthModel(N0=200, r=0.01, NT=400)._assertSize(
+        ExponentialGrowthModel(N0=200, r=0.01, NT=400)._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: 202,
                 2: 206,
                 99: 544,
             }, initSize=500)
         #
-        ExponentialGrowthModel(T=100, N0=[200, 200], NT=[400, 800])._assertSize(
+        ExponentialGrowthModel(T=100, N0=[200, 200], NT=[400, 800])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: [201, 203],
                 1: [203, 206],
                 99: [400, 800],
             }, initSize=500)
-        ExponentialGrowthModel(T=100, N0=[200, 200], r=0.01)._assertSize(
+        ExponentialGrowthModel(T=100, N0=[200, 200], r=0.01)._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: [202, 202],
                 2: [206, 206],
                 99: [544, 544],
             }, initSize=500)
         # unknown NT
-        ExponentialGrowthModel(T=100, N0=[200, 200], r=[0.01, 0.03])._assertSize(
+        ExponentialGrowthModel(T=100, N0=[200, 200], r=[0.01, 0.03])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: [202, 206],
                 2: [206, 219],
                 99: [544, 4017],
             }, initSize=500)
         # unknown T
-        ExponentialGrowthModel(N0=[200, 200], r=0.01, NT=[400, 800])._assertSize(
+        ExponentialGrowthModel(N0=[200, 200], r=0.01, NT=[400, 800])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 2: [206, 206],
                 99: [400, 544],
                 100: [400, 549],
             }, initSize=500)
         # N0 size ...
-        ExponentialGrowthModel(N0=[1., 1.], r=0.01, NT=[400, 800])._assertSize(
+        ExponentialGrowthModel(N0=[1., 1.], r=0.01, NT=[400, 800])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 2: [206, 206],
                 99: [400, 544],
                 100: [400, 549],
             }, initSize=200)
-        ExponentialGrowthModel(N0=[(None, 'name'), 1.], r=0.01, NT=[400, 800])._assertSize(
+        ExponentialGrowthModel(N0=[(None, 'name'), 1.], r=0.01, NT=[400, 800])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 2: [206, 206],
                 99: [400, 544],
@@ -314,7 +315,7 @@ class TestDemography(unittest.TestCase):
         self.assertRaises(ExponentialGrowthModel, N0=[1., 1.], r=0.01, NT=[2000])
         self.assertRaises(ExponentialGrowthModel, N0=[1., 1.], r=[0.01], NT=[2000, 3000])
         # carrying capacity
-        ExponentialGrowthModel(T=100, N0=[200, 200], r=0.01, NT=[300, 350])._assertSize(
+        ExponentialGrowthModel(T=100, N0=[200, 200], r=0.01, NT=[300, 350])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: [202, 202],
                 2: [206, 206],
@@ -326,7 +327,7 @@ class TestDemography(unittest.TestCase):
         MultiStageModel([
             InstantChangeModel(T=1000, N0=1000, G=[500, 600], NG=[100, 1000]),  
             ExponentialGrowthModel(T=100, NT=10000)
-        ])._assertSize(
+        ])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 100: 1000,
                 500: 100,
@@ -340,15 +341,15 @@ class TestDemography(unittest.TestCase):
             LinearGrowthModel(T=100, N0=1000, r=0.01),  
             ExponentialGrowthModel(T=100, N0=[0.4, 0.6], r=0.001),
             ExponentialGrowthModel(r=0.01, NT=[2000, 4000])
-        ])._assertSize(
+        ])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: 1010,
                 99: 2000,
-                100: [800, 1201],
-                102: [802, 1203],
+                100: [801, 1201],
+                102: [802, 1204],
                 199: [884, 1326],
                 250: [1472, 2208],
-                300: [2000, 3640],
+                300: [2000, 3641],
                 310: [2000, 4000],
             })
         MultiStageModel([
@@ -356,15 +357,15 @@ class TestDemography(unittest.TestCase):
             ExponentialGrowthModel(T=100, N0=[0.4, 0.6], r=0.001),
             ExponentialGrowthModel(r=0.01, NT=[2000, 4000]),
             InstantChangeModel(N0=[1000, 0], T=100)
-        ])._assertSize(
+        ])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: 1010,
                 99: 2000,
-                100: [800, 1201],
-                102: [802, 1203],
+                100: [801, 1201],
+                102: [802, 1204],
                 199: [884, 1326],
                 250: [1472, 2208],
-                300: [2000, 3640],
+                300: [2000, 3641],
                 310: [2000, 4000],
                 350: [1000, 0]
             })
@@ -374,15 +375,15 @@ class TestDemography(unittest.TestCase):
             ExponentialGrowthModel(r=0.01, NT=[2000, 4000]),
             AdmixtureModel(model=['HI', 0, 1, 0.3], T=1),
             InstantChangeModel(N0=[0, 0, None], T=100)
-        ])._assertSize(
+        ])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: 1010,
                 99: 2000,
-                100: [800, 1201],
-                102: [802, 1203],
+                100: [801, 1201],
+                102: [802, 1204],
                 199: [884, 1326],
                 250: [1472, 2208],
-                300: [2000, 3640],
+                300: [2000, 3641],
                 310: [2000, 4000],
                 311: [2000, 4000, 5714],
                 350: [0, 0, 5714]
@@ -393,15 +394,15 @@ class TestDemography(unittest.TestCase):
             ExponentialGrowthModel(r=0.01, NT=[2000, 4000]),
             AdmixtureModel(model=['HI', 0, 1, 0.3], T=1),
             InstantChangeModel(N0=[0, 0, None], removeEmptySubPops=True, T=1)
-        ])._assertSize(
+        ])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: 1010,
                 99: 2000,
-                100: [800, 1201],
-                102: [802, 1203],
+                100: [801, 1201],
+                102: [802, 1204],
                 199: [884, 1326],
                 250: [1472, 2208],
-                300: [2000, 3640],
+                300: [2000, 3641],
                 310: [2000, 4000],
                 311: [2000, 4000, 5714],
                 312: [5714]
@@ -410,22 +411,22 @@ class TestDemography(unittest.TestCase):
             LinearGrowthModel(T=100, N0=1000, r=0.01),  
             InstantChangeModel(N0=[1000, 1000], T=0),
             ExponentialGrowthModel(T=100, N0=[0.4, 0.6], r=0.001),
-        ])._assertSize(
+        ])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: 1010,
                 99: 2000,
-                100: [400, 600],
+                100: [400, 601],
             })
         MultiStageModel([
             LinearGrowthModel(T=100, N0=1000, r=0.01),  
             InstantChangeModel(N0=[1000, 1000], T=0),
             ExponentialGrowthModel(T=100, N0=[0.4, 0.6], r=0.001),
             InstantChangeModel(N0=[1000, 1000], T=1),
-        ])._assertSize(
+        ])._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: 1010,
                 99: 2000,
-                100: [400, 600],
+                100: [400, 601],
                 199: [442, 663],
                 200: [1000, 1000],
             })
@@ -529,7 +530,7 @@ class TestDemography(unittest.TestCase):
 
     def testEventBasedModel(self):
         'Test event based implementation of demographic models'
-        EventBasedModel(T=100, N0=200)._assertSize(
+        EventBasedModel(T=100, N0=200)._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: 200,
                 99: 200,
@@ -539,7 +540,7 @@ class TestDemography(unittest.TestCase):
                 ResizeEvent(sizes=300, subPops=1, names='AF', at=2),
                 MergeEvent(subPops=[1,2], at=3),
                 ]
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 200, 200),
                 2: (200, 300, 200),
@@ -551,7 +552,7 @@ class TestDemography(unittest.TestCase):
                 ResizeEvent(sizes=400, subPops=2, at=2),
                 ResizeEvent(sizes=350, subPops=1, at=2),
                 ]
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 200, 200),
                 2: (200, 350, 400),
@@ -563,7 +564,7 @@ class TestDemography(unittest.TestCase):
                 MergeEvent(subPops=[1,0], at=2),
                 ResizeEvent(sizes=350, subPops=1, at=2),
                 ]
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 200, 200),
                 2: (500, 350),
@@ -575,7 +576,7 @@ class TestDemography(unittest.TestCase):
     def testResizeEvent(self):
         EventBasedModel(T=100, N0=(200, 200, 200),
             events=ResizeEvent(sizes=300, subPops=1, names='AF', at=2)
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 200, 200),
                 2: (200, 300, 200),
@@ -583,7 +584,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=500)
         EventBasedModel(T=100, N0=(200, 200, 200),
             events=ResizeEvent(sizes=1.5, subPops=1, names='AF', at=2)
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 200, 200),
                 2: (200, 300, 200),
@@ -591,7 +592,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=500)
         EventBasedModel(T=100, N0=(200, 200, 200),
             events=ResizeEvent(sizes=(1.5, 1.5, 1.8), names=('AF', 'A', 'B'), at=2)
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 200, 200),
                 2: (300, 300, 360),
@@ -599,7 +600,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=500)
         EventBasedModel(T=100, N0=(200, 200, 200),
             events=ResizeEvent(sizes=(300, 1.5), subPops=[0, 1], at=2)
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 200, 200),
                 2: (300, 300, 200),
@@ -607,7 +608,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=500)
         EventBasedModel(T=100, N0=(200, 200, 200),
             events=ResizeEvent(sizes=(300, 0.9), subPops=[0, 1], begin=2)
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 200, 200),
                 2: (300, 180, 200),
@@ -615,7 +616,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=500)
         EventBasedModel(T=100, N0=(200, 200, 200),
             events=ResizeEvent(sizes=(300, 0), subPops=[0, 1], at=2, removeEmptySubPops=True)
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 200, 200),
                 2: (300, 200),
@@ -626,7 +627,7 @@ class TestDemography(unittest.TestCase):
     def testMergeEvent(self):
         EventBasedModel(T=100, N0=(200, 200, 200),
             events=MergeEvent(name='AF', at=2)
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 200, 200),
                 2: (600,),
@@ -634,7 +635,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=500)
         EventBasedModel(T=100, N0=((100, 'AF'), (200, 'EU'), (300, 'AS')),
             events=MergeEvent(name='AF', subPops=('AF', 'AS'), at=2)
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (100, 200, 300),
                 2: (400, 200),
@@ -642,7 +643,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=500)
         EventBasedModel(T=100, N0=((100, 'AF'), (200, 'EU'), (300, 'AS')),
             events=MergeEvent(name='EU', subPops=('EU', 'AS'), at=2)
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (100, 200, 300),
                 2: (100, 500),
@@ -652,7 +653,7 @@ class TestDemography(unittest.TestCase):
     def testExpansionEvent(self):
         EventBasedModel(T=100, N0=200,
             events=ExpansionEvent(rates=0.01)
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: 202,
                 2: 206,
@@ -660,7 +661,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=500)
         EventBasedModel(T=100, N0=(200, 'AF'),
             events=ExpansionEvent(rates=0.01, subPops='AF')
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: 202,
                 2: 206,
@@ -668,7 +669,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=500)
         EventBasedModel(T=100, N0=[200, 200], 
             events=ExpansionEvent(rates=0.01)
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: [202, 202],
                 2: [206, 206],
@@ -676,7 +677,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=500)
         EventBasedModel(T=100, N0=[(200, 'A'), (200, 'B')], 
             events=ExpansionEvent(rates=0.01, subPops=('A', 'B'))
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: [202, 202],
                 2: [206, 206],
@@ -685,7 +686,7 @@ class TestDemography(unittest.TestCase):
         # unknown NT
         EventBasedModel(T=100, N0=[200, 200], 
             events=ExpansionEvent(rates=[0.01, 0.03])
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: [202, 206],
                 2: [206, 219],
@@ -693,7 +694,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=500)
         EventBasedModel(T=100, N0=[(200, 'AF'), (200, 'EU'), (200, 'AS')], 
             events=ExpansionEvent(rates=[0.01, 0.02], subPops=['EU', 'AS'])
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: [200, 202, 204],
                 2: [200, 206, 212],
@@ -701,7 +702,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=500) 
         EventBasedModel(T=100, N0=200,
             events=ExpansionEvent(slopes=2)
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: 202,
                 2: 206,
@@ -709,7 +710,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=500)
         EventBasedModel(T=100, N0=[200, 200], 
             events=ExpansionEvent(slopes=2)
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: [202, 202],
                 2: [206, 206],
@@ -717,7 +718,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=500)
         EventBasedModel(T=100, N0=[200, 200], 
             events=ExpansionEvent(slopes=[2, 6])
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: [202, 206],
                 2: [206, 218],
@@ -728,7 +729,7 @@ class TestDemography(unittest.TestCase):
     def testSplitEvent(self):
         EventBasedModel(T=100, N0=200, 
             events=SplitEvent(sizes=(0.4, 0.6), at=2)
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: [200],
                 2: [80, 120],
@@ -736,7 +737,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=500)
         EventBasedModel(T=100, N0=200, 
             events=SplitEvent(sizes=(0.4, 250), at=2)
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: [200],
                 2: [80, 250],
@@ -747,7 +748,7 @@ class TestDemography(unittest.TestCase):
             )._assertSize, { }, initSize=500)
         EventBasedModel(T=100, N0=((100, 'A'), (200, 'B')), 
             events=SplitEvent(sizes=(0.4, 250), at=2, subPops='B')
-            )._assertSize(
+            )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: [100, 200],
                 2: [100, 80, 250],
@@ -757,7 +758,7 @@ class TestDemography(unittest.TestCase):
     def testAdmixtureEvent(self):
         EventBasedModel(T=10, 
             events=AdmixtureEvent(subPops=[1, 2], sizes=[0.5, 0.5], at=2)
-        )._assertSize(
+        )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 300, 400),
                 2: (200, 300, 400, 600),
@@ -766,7 +767,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=[200, 300, 400])
         EventBasedModel(T=10, 
             events=AdmixtureEvent(subPops=[0, 2], sizes=[0.5, 0.5], at=2)
-        )._assertSize(
+        )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 300, 400),
                 2: (200, 300, 400, 400),
@@ -775,7 +776,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=[200, 300, 400])
         EventBasedModel(T=10, 
             events=AdmixtureEvent(subPops=[0, 2], sizes=[0.5, 0.1], at=2)
-        )._assertSize(
+        )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 300, 400),
                 2: (200, 300, 400, 400),
@@ -784,7 +785,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=[200, 300, 400])
         EventBasedModel(T=10, 
             events=AdmixtureEvent(subPops=[0, 1, 2], sizes=[0.2, 0.3, 0.5], at=2)
-        )._assertSize(
+        )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 300, 400),
                 # take 160, 240, 400
@@ -795,7 +796,7 @@ class TestDemography(unittest.TestCase):
         #
         EventBasedModel(T=10, 
             events=AdmixtureEvent(subPops=[0, 1, 2], sizes=[20, 30, 50], at=2)
-        )._assertSize(
+        )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 300, 400),
                 # take 160, 240, 400
@@ -805,7 +806,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=[200, 300, 400])
         EventBasedModel(T=10, 
             events=AdmixtureEvent(subPops=[0, 1, 2], sizes=[20, 30, 50], begin=2)
-        )._assertSize(
+        )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 300, 400),
                 2: (200, 300, 400, 100),
@@ -815,7 +816,7 @@ class TestDemography(unittest.TestCase):
         # with toSubPop ...
         EventBasedModel(T=10, 
             events=AdmixtureEvent(subPops=[1, 2], sizes=[0.5, 0.5], at=2, toSubPop=1)
-        )._assertSize(
+        )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 300, 400),
                 2: (200, 300, 400),
@@ -824,7 +825,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=[200, 300, 400])
         EventBasedModel(T=10, 
             events=AdmixtureEvent(subPops=[0, 1, 2], sizes=[20, 30, 50], toSubPop=1, at=2)
-        )._assertSize(
+        )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 300, 400),
                 2: (200, 100, 400),
@@ -833,7 +834,7 @@ class TestDemography(unittest.TestCase):
             }, initSize=[200, 300, 400])
         EventBasedModel(T=10, 
             events=AdmixtureEvent(subPops=[0, 1, 2], sizes=[20, 30, 50], toSubPop=1, begin=2)
-        )._assertSize(
+        )._assertSize(startGen=random.randint(0,100), sizes=
             {
                 0: (200, 300, 400),
                 2: (200, 100, 400),
