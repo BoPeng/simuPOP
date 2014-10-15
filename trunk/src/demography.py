@@ -1412,7 +1412,7 @@ class AdmixtureEvent(DemographicEvent):
                     raise ValueError('Subpopulation index {} out of range'.format(self.toSubPop))
                 toSubPop = self.toSubPop
             else:
-                if self.toSubPop != pop.subPopNames():
+                if self.toSubPop not in pop.subPopNames():
                     raise ValueError('No subpopulation with name {} can be located'.format(self.toSubPop))
                 toSubPop = pop.subPopNames().index(self.toSubPop)
         #
@@ -1428,7 +1428,7 @@ class AdmixtureEvent(DemographicEvent):
             num_migrants = []
             for sp in range(pop.numSubPop()):
                 if sp in subPops:
-                    num_migrants.append(min(pop.subPopSize(sp), self.numbers[subPops.index(sp)]))
+                    num_migrants.append(self.numbers[subPops.index(sp)])
                 else:
                     # not involved
                     num_migrants.append(0)
