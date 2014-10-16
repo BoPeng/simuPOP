@@ -674,15 +674,15 @@ void Recombinator::initialize(const Individual & ind) const
 			// get loci distance * m_rates and then recombinant points
 			for (size_t loc = chBegin; loc < chEnd - 1; ++loc) {
 				// if this locus will be recombined.
-				vectoru::const_iterator pos = find(loci.begin(), loci.end(), loc);
-				if (pos != loci.end()) {
+				size_t pos = m_loci.indexOf(loc);
+				if (pos != NOT_FOUND) {
 					double r = 0;
 					if (useLociDist)
 						r = m_intensity > 0 ? ((ind.locusPos(loc + 1) - ind.locusPos(loc)) * m_intensity) : r;
 					else if (m_rates.size() == 1 && !useLociDist)
 						r = max(m_rates[0], 0.);
 					else
-						r = m_rates[pos - loci.begin()];
+						r = m_rates[pos];
 					m_recBeforeLoci.push_back(loc + 1);
 					vecP.push_back(min(0.5, r));
 
