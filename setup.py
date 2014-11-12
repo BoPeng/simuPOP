@@ -835,7 +835,7 @@ if __name__ == '__main__':
         url = "http://simupop.sourceforge.net",
         description = "Forward-time population genetics simulation environment",
         long_description = DESCRIPTION, 
-        download_url = 'http://simupop.sourceforge.net/Main/Download',
+        download_url = 'http://sourceforge.net/projects/simupop/files/simupop/',
         classifiers = [
             'Development Status :: 5 - Production/Stable',
             'Environment :: Console',
