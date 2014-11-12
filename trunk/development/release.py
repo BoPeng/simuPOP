@@ -332,6 +332,10 @@ def createMacImage(ver, pyver):
         .format(dmg, ver, dest, pyver))
 
 
+def condaRelease(release):
+    '''Build conda binary'''
+    run_command('conda build conda')
+
 def tagRelease(release):
     ''' if there are changes, commit it '''
     if subprocess.check_output('svn diff', shell=True) != '':
@@ -386,3 +390,5 @@ if __name__ == '__main__':
         createMacImage(ver, pyver='2.7')
     if 'tag' in args.actions:
         tagRelease(ver)
+    if 'conda' in args.actions:
+        condaRelease()

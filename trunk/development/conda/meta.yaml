@@ -1,6 +1,6 @@
 package:
   name: simupop
-  version: !!str 1.0.0
+  version: !!str 1.1.4
 
 source:
   fn: simuPOP-1.1.4.tar.gz
@@ -38,7 +38,7 @@ requirements:
 test:
   # Python imports
   imports:
-    - simupop
+    - simuPOP
     - src
 
   # commands:
