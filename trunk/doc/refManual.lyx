@@ -679,6 +679,13 @@ simuPOPSelfMatingRef
 
 
 \backslash
+simuPOPHermaphroditicMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 simuPOPControlledRandomMatingRef
 \end_layout
 

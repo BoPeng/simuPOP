@@ -1267,15 +1267,19 @@ public:
 	 *  for \e motherChooser. Although these two parent choosers are supposed
 	 *  to return a father and a mother respectively, the sex of returned
 	 *  parents are not checked so it is possible to return parents with the
-	 *  same sex using this parents chooser.
+	 *  same sex using this parents chooser. This choose by default allows
+	 *  the selection of the same parents as father and mother
+	 *  (self-fertilization), unless a parameter \e allowSelfing is used to
+	 *  disable it.
 	 */
 	CombinedParentsChooser(const ParentChooser & fatherChooser,
-		const ParentChooser & motherChooser);
+		const ParentChooser & motherChooser, bool allowSelfing=true);
 
 	/// CPPONLY
 	CombinedParentsChooser(const CombinedParentsChooser & rhs)
 		: ParentChooser("fitness"), m_fatherChooser(rhs.m_fatherChooser->clone()),
-		m_motherChooser(rhs.m_motherChooser->clone())
+		m_motherChooser(rhs.m_motherChooser->clone()),
+		m_allowSelfing(rhs.m_allowSelfing)
 	{
 		m_initialized = false;
 	}
@@ -1322,6 +1326,7 @@ public:
 private:
 	ParentChooser * m_fatherChooser;
 	ParentChooser * m_motherChooser;
+	bool m_allowSelfing;
 };
 
 /** This parent chooser accepts a Python generator function that repeatedly

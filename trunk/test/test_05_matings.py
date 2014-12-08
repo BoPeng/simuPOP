@@ -734,6 +734,28 @@ class TestMatingSchemes(unittest.TestCase):
             self.assertLess(m.a, 10)
             self.assertGreaterEqual(m.a, 0)
 
+    def testHermaphroditicMating(self):
+        'Test HermaphroditicMating'
+        pop = Population(100, loci=10)
+        pop.evolve(
+            matingScheme=HermaphroditicMating(),
+            gen=10)
+        #
+        def theSame(dad, mom):
+            if dad.ind_id == mom.ind_id:
+                raise RuntimeError()
+            return True
+        #
+        pop = Population(100, loci=10, infoFields='ind_id')
+        pop.evolve(
+            preOps=IdTagger(),
+            matingScheme=HermaphroditicMating(allowSelfing=False,
+                ops=[MendelianGenoTransmitter(),
+                    IdTagger(),
+                    PyOperator(func=theSame),
+                    ]),
+            gen=100)
+
 if __name__ == '__main__':
     unittest.main()
     sys.exit(0)
