@@ -1079,9 +1079,10 @@ ParentChooser::IndividualPair PolyParentsChooser::chooseParents()
  */
 
 CombinedParentsChooser::CombinedParentsChooser(const ParentChooser & fatherChooser,
-	const ParentChooser & motherChooser)
+	const ParentChooser & motherChooser, bool allowSelfing)
 	: m_fatherChooser(fatherChooser.clone()),
-	m_motherChooser(motherChooser.clone())
+	m_motherChooser(motherChooser.clone()),
+	m_allowSelfing(allowSelfing)
 {
 }
 
@@ -1095,12 +1096,20 @@ void CombinedParentsChooser::initialize(Population & pop, size_t sp)
 
 ParentChooser::IndividualPair CombinedParentsChooser::chooseParents()
 {
-	ParentChooser::IndividualPair p1 = m_fatherChooser->chooseParents();
-	ParentChooser::IndividualPair p2 = m_motherChooser->chooseParents();
-	Individual * dad = p1.first != NULL ? p1.first : p1.second;
-	Individual * mom = p2.second != NULL ? p2.second : p2.first;
+	size_t attempts = 0;
+	while (attempts < 100) {
+		ParentChooser::IndividualPair p1 = m_fatherChooser->chooseParents();
+		ParentChooser::IndividualPair p2 = m_motherChooser->chooseParents();
+		Individual * dad = p1.first != NULL ? p1.first : p1.second;
+		Individual * mom = p2.second != NULL ? p2.second : p2.first;
 
-	return ParentChooser::IndividualPair(dad, mom);
+		if (dad != mom || m_allowSelfing)
+			return ParentChooser::IndividualPair(dad, mom);
+		if (attempts ++ == 100)
+			throw RuntimeError("Failed to select distinct parents using CombinedParentsChooser.");
+	}
+	// just make the compiler happy
+	return ParentChooser::IndividualPair((Individual *)(0), (Individual *)(0));
 }
 
 

@@ -143,6 +143,7 @@ __all__ = [
     'RandomSelection',
     'MonogamousMating',
     'SelfMating',
+    'HermaphroditicMating',
     'CloneMating',
     'HaplodiploidMating',
     #'consanguineousMating',
@@ -847,6 +848,33 @@ class SelfMating(HomoMating):
         *subPopSize*, *subPops* and *weight*. '''
         HomoMating.__init__(self,
             chooser = RandomParentChooser(replacement, selectionField),
+            generator = OffspringGenerator(ops, numOffspring, sexMode),
+            subPopSize = subPopSize,
+            subPops = subPops,
+            weight = weight)
+
+class HermaphroditicMating(HomoMating):
+    '''A hermaphroditic mating scheme that chooses two parents randomly
+    from the population regardless of sex. The parents could be chosen
+    with or without replacement (parameter *replacement*). Selfing (if
+    the same parents are chosen) is allowed unless *allowSelfing* is 
+    set to *False* '''
+    def __init__(self, replacement=True, allowSelfing=True, numOffspring = 1,
+        sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(), 
+        subPopSize = [], subPops = ALL_AVAIL, weight = 0,
+        selectionField = 'fitness'):
+        '''Creates a hermaphroditic mating scheme where individuals can
+        serve as father or mother, or both (self-fertilization). Please 
+        refer to class ``CombinedParentsChooser`` for parameter *allowSelfing``,
+        to ``RandomParentChooser`` for parameter *replacement* and
+        *selectionField*, to class ``OffspringGenerator`` for parameters *ops*,
+        *sexMode* and *numOffspring*, and to class ``HomoMating`` for parameters
+        *subPopSize*, *subPops* and *weight*. '''
+        HomoMating.__init__(self,
+            chooser = CombinedParentsChooser(
+                RandomParentChooser(replacement, selectionField),
+                RandomParentChooser(replacement, selectionField),
+                allowSelfing=allowSelfing),
             generator = OffspringGenerator(ops, numOffspring, sexMode),
             subPopSize = subPopSize,
             subPops = subPops,
