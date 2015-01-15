@@ -6485,9 +6485,10 @@ def randomChooser(pop, subPop):
         yield males[rank][randint(0, len(males[rank]) - 1)], \
             females[rank][randint(0, len(females[rank]) - 1)]
 
-def setRank(off, dad):
+def setRank(rank):
     'The rank of offspring can increase or drop to zero randomly'
-    off.rank = (dad.rank + randint(-1, 1)) % 3
+    # only use rank of the father
+    return (rank[0] + randint(-1, 1)) % 3
 
 pop = sim.Population(size=[1000, 2000], loci=1, infoFields='rank')
 pop.evolve(
@@ -6497,7 +6498,10 @@ pop.evolve(
     ],
     matingScheme=sim.HomoMating(
         sim.PyParentsChooser(randomChooser),
-        sim.OffspringGenerator(ops=sim.MendelianGenoTransmitter())
+        sim.OffspringGenerator(ops=[
+            sim.MendelianGenoTransmitter(),
+            sim.PyTagger(setRank),
+            ])
     ),
     gen = 5
 )    
@@ -6531,9 +6535,10 @@ def randomChooser(pop, subPop):
         # find a female in the same rank
         yield m, females[rank][randint(0, len(females[rank]) - 1)]
 
-def setRank(off, dad):
+def setRank(rank):
     'The rank of offspring can increase or drop to zero randomly'
-    off.rank = (dad.rank + randint(-1, 1)) % 3
+    # only use rank of the father
+    return (rank[0] + randint(-1, 1)) % 3
 
 pop = sim.Population(size=[1000, 2000], loci=1, infoFields='rank')
 pop.evolve(
@@ -6543,7 +6548,10 @@ pop.evolve(
     ],
     matingScheme=sim.HomoMating(
         sim.PyParentsChooser(randomChooser),
-        sim.OffspringGenerator(ops=sim.MendelianGenoTransmitter())
+        sim.OffspringGenerator(ops=[
+            sim.MendelianGenoTransmitter(),
+            sim.PyTagger(setRank),
+            ])
     ),
     gen = 5
 )    
