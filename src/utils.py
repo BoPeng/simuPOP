@@ -3183,7 +3183,10 @@ def importPopulation(format, filename, *args, **kwargs):
     adjust
         Adjust alleles by specified value (default to 0 for no adjustment). This
         parameter is mostly used to convert alleles 1 and 2 in a GenePop file to
-        alleles 0 and 1 (with adjust=-1) in simuPOP.
+        alleles 0 and 1 (with adjust=-1) in simuPOP. Negative allele (e.g. missing
+        value 0) will be imported as regular allele with module-dependent values
+        (e.g. -1 imported as 255 for standard module).
+
 
     FSTAT (http://www2.unil.ch/popgen/softwares/fstat.htm). This format accepts
     the following parameters:
@@ -3191,7 +3194,9 @@ def importPopulation(format, filename, *args, **kwargs):
     adjust
         Adjust alleles by specified value (default to 0 for no adjustment). This
         parameter is mostly used to convert alleles 1 and 2 in a GenePop file to
-        alleles 0 and 1 (with adjust=-1) in simuPOP.
+        alleles 0 and 1 (with adjust=-1) in simuPOP. Negative allele (e.g. missing
+        value 0) will be imported as regular allele with module-dependent values
+        (e.g. -1 imported as 255 for standard module).
 
     Phylip (Joseph Felsenstein's Phylip format). This function ignores sequence
     names and import sequences in a haploid (default) or diploid population (if
