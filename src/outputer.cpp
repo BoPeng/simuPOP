@@ -105,6 +105,11 @@ UINT Dumper::displayGenotype(const Population & pop, const subPopList & subPops,
 	subPopList::const_iterator sp = subPops.begin();
 	subPopList::const_iterator spEnd = subPops.end();
 
+	vectoru infoIdx;
+	if (infoSize(&pop) > 0)
+		for (size_t i = 0; i < infoSize(); ++i)
+			infoIdx.push_back(pop.infoIdx(infoField(i)));
+
 	for ( ; sp != spEnd; ++sp) {
 		size_t spSize = pop.subPopSize(*sp);
 		out << "SubPopulation " << *sp << " (" << pop.subPopName(*sp) << "), "
@@ -114,7 +119,7 @@ UINT Dumper::displayGenotype(const Population & pop, const subPopList & subPops,
 		IndIterator ind = const_cast<Population &>(pop).indIterator(sp->subPop());
 		for ( ; ind.valid(); ++ind, ++count) {
 			out << setw(4) << (&*ind - &*pop.rawIndBegin()) << ": ";
-			ind->display(out, m_width, m_loci);
+			ind->display(out, m_width, m_loci, infoIdx);
 			out << endl;
 			if (m_max > 0 && count + 1 >= m_max && count < pop.popSize())
 				break;

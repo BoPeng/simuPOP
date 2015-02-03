@@ -1006,7 +1006,7 @@ void Individual::swap(Individual & ind, bool swapContent)
 }
 
 
-void Individual::display(ostream & out, int width, const vectoru & loci)
+void Individual::display(ostream & out, int width, const vectoru & loci, const vectoru & infoIdx)
 {
 	out << (sex() == MALE ? 'M' : 'F') << (affected() ? 'A' : 'U') << " ";
 	int pEnd = ploidy();
@@ -1028,8 +1028,9 @@ void Individual::display(ostream & out, int width, const vectoru & loci)
 	}
 	if (infoSize() != 0) {
 		out << "| ";
-		for (vectorf::const_iterator info = infoBegin(); info != infoEnd(); ++info)
-			out << " " << *info;
+		for (vectoru::const_iterator info = infoIdx.begin();
+			info != infoIdx.end(); ++info)
+			out << " " << *(infoBegin() + *info);
 	}
 }
 
