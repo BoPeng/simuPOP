@@ -361,6 +361,15 @@ class TestOperator(unittest.TestCase):
         )
 
 
+    def testDumper(self):
+        '''Testing operator Dumper'''
+        pop = Population(100, loci=10, infoFields=('a', 'b'))
+        dump(pop, genotype=False, output='a.dump')
+        dump(pop, structure = False, output='a.dump')
+        dump(pop, width=2, output='a.dump')
+        dump(pop, infoFields='a', output='a.dump')
+        dump(pop, infoFields=('b', 'a', 'b'), output='a.dump')
+
     def testcloseOutput(self):
         '''Testing global function closeOutput'''
         pop = Population(100, loci=[2])

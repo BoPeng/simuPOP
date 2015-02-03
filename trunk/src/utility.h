@@ -706,13 +706,13 @@ public:
 	stringList(PyObject * str = NULL);
 
 	/// CPPONLY
-	stringList(const string & str) : m_elems(1, str), m_allAvail(false)
+	stringList(const string & str) : m_elems(1, str), m_allAvail(false), m_trait(MaxTraitIndex)
 	{
 	}
 
 
 	/// CPPONLY
-	stringList(const string & str1, const string & str2) : m_elems(), m_allAvail(false)
+	stringList(const string & str1, const string & str2) : m_elems(), m_allAvail(false), m_trait(MaxTraitIndex)
 	{
 		m_elems.push_back(str1);
 		m_elems.push_back(str2);
@@ -720,7 +720,7 @@ public:
 
 
 	/// CPPONLY
-	stringList(const vectorstr & str) : m_elems(str), m_allAvail(false)
+	stringList(const vectorstr & str) : m_elems(str), m_allAvail(false), m_trait(MaxTraitIndex)
 	{
 	}
 
@@ -758,18 +758,18 @@ public:
 
 
 	/// CPPONLY
-	const vectorstr & elems() const
-	{
-		return m_elems;
-	}
+	/// Return lists. Population from information fields of a population
+	/// if allAvail is true.
+	const vectorstr & elems(const GenoStruTrait * trait = NULL) const;
 
 
 private:
 	void addString(PyObject * str);
 
 protected:
-	vectorstr m_elems;
+	mutable vectorstr m_elems;
 	bool m_allAvail;
+	mutable TraitIndexType m_trait;
 };
 
 

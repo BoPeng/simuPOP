@@ -587,7 +587,7 @@ floatList::floatList(PyObject * obj) : m_elems()
 }
 
 
-stringList::stringList(PyObject * obj) : m_elems(), m_allAvail(false)
+stringList::stringList(PyObject * obj) : m_elems(), m_allAvail(false), m_trait(MaxTraitIndex)
 {
 	if (obj == NULL || obj == Py_None)
 		m_allAvail = true;
@@ -662,6 +662,21 @@ void stringList::obtainFrom(const stringList & items, const char * allowedItems[
 			m_elems.push_back(defaultItems[i]);
 }
 
+const vectorstr & stringList::elems(const GenoStruTrait * trait) const
+{
+	if (trait == NULL || ! allAvail())
+		return m_elems;
+	
+	if (trait) {
+		if (trait->genoStruIdx() == m_trait)
+			return m_elems;
+		m_elems.clear();
+		const vectorstr fields = trait->infoFields();
+		m_elems.insert(m_elems.end(), fields.begin(), fields.end());
+		m_trait = trait->genoStruIdx();
+	}
+	return m_elems;
+}
 
 intMatrix::intMatrix(PyObject * obj) : m_elems()
 {

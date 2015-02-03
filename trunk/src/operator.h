@@ -200,17 +200,16 @@ public:
 
 	/// get the length of information fields for this operator
 	/// CPPONLY
-	size_t infoSize() const
+	size_t infoSize(const GenoStruTrait * trait = NULL) const
 	{
-		return m_infoFields.elems().size();
+		return m_infoFields.elems(trait).size();
 	}
-
-
+	
 	/// get the information field specified by user (or by default)
 	/// CPPONLY
-	string infoField(size_t idx) const
+	string infoField(size_t idx, const GenoStruTrait * trait = NULL) const
 	{
-		DBG_ASSERT(idx < m_infoFields.elems().size(), IndexError,
+		DBG_ASSERT(idx < m_infoFields.elems(trait).size(), IndexError,
 			(boost::format("Given info index %1% is out of range of 0 ~ %2%") % idx % m_infoFields.elems().size()).str());
 		return m_infoFields.elems()[idx];
 	}
