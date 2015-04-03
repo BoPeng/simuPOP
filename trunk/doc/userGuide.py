@@ -4728,10 +4728,8 @@ pop.evolve(
 #end_file
 
 #begin_file log/forwardTrajectory.py
-#begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True, plotter='matplotlib')
-#end_ignore
 import simuPOP as sim
 #begin_ignore
 sim.setRNG(seed=12345)
@@ -4771,7 +4769,7 @@ pop.evolve(
 #begin_file log/backTrajectory.py
 #begin_ignore
 import simuOpt
-simuOpt.setOptions(quiet=True, plotter='matplotlib')
+simuOpt.setOptions(quiet=True, plotter='rpy2')
 #end_ignore
 import simuPOP as sim
 #begin_ignore
@@ -4791,11 +4789,11 @@ def fitness(gen, sp):
 traj = simulateBackwardTrajectory(N=Nt, fitness=fitness, nLoci=2,
      endGen=1000, endFreq=[0.1, 0.2])
 # matplotlib syntax
-traj.plot('log/backTrajectory.png', set_ylim_top=0.3, set_ylim_bottom=0,
-        plot_c_loc=['r', 'b'], set_title_label='Simulated Trajectory (backward-time)')
+#traj.plot('log/backTrajectory.png', set_ylim_top=0.3, set_ylim_bottom=0,
+#        plot_c_loc=['r', 'b'], set_title_label='Simulated Trajectory (backward-time)')
 # rpy syntax
-#    traj.plot('log/backTrajectory.png', plot_ylim=[0, 0.3], plot_xlim=[0, 1000],
-#        col_loc=['red', 'blue'], plot_main='Simulated Trajectory (backward-time)')
+traj.plot('log/backTrajectory.png', plot_ylim=[0, 0.3], plot_xlim=[0, 1000],
+    col_loc=['red', 'blue'], plot_main='Simulated Trajectory (backward-time)')
 
 print('Trajectory simulated with length %s ' % len(traj.traj))
 pop = sim.Population(size=Nt(0), loci=[1]*2)
@@ -5125,7 +5123,7 @@ simu.evolve(
 #begin_file log/varPlotByDim.py
 #begin_ignore
 import simuOpt
-simuOpt.setOptions(quiet=True, plotter='matplotlib')
+simuOpt.setOptions(quiet=True, plotter='rpy2')
 #end_ignore
 import simuPOP as sim
 #begin_ignore
@@ -5159,35 +5157,33 @@ simu.evolve(
     matingScheme=sim.RandomMating(),
     postOps=[
         sim.Stat(alleleFreq=range(4)),
-        # rpy syntax
-        #VarPlotter('[alleleFreq[x][0] for x in range(4)]', byDim=True,
-        #    update=10, saveAs='log/rpy_byDim.png',
-        #    legend=['Replicate %d' % x for x in range(3)],
-        #    ylab='Allele frequency',
-        #    ylim=[0, 1],
-        #    main_dim=['Genetic drift, freq=%.1f' % ((x+1)*0.10) for x in range(4)],
-        #    col_rep=['red', 'blue', 'black'],
-        #    lty_rep=[1, 2, 3],
-        #    # the default png dimension is 800x600
-        #    dev_print_width=600, dev_print_height=500,
-        #    # do not draw axes in r.plot, leaving the job to drawFrame
-        #    plot_axes=False,
-        #    # plot frame, grid etc after each r.plot call
-        #    plotHook = rpy_drawFrame,
-        #),
-        # matplot lib syntax
+        # rpy and rpy2 syntax
         VarPlotter('[alleleFreq[x][0] for x in range(4)]', byDim=True,
-            update=10, saveAs='log/varplot_byDim.png',
+            update=10, saveAs='log/rpy_byDim.png',
             legend=['Replicate %d' % x for x in range(3)],
-            set_ylabel_ylabel='Allele frequency',
-            set_ylim_bottom=0, set_ylim_top=1,
-            set_title_label_dim=['Genetic drift, freq=%.1f' % ((x+1)*0.10) for x in range(4)],
-            plot_c_rep=['red', 'blue', 'black'],
-            plot_linestyle_rep=['-', '-.', ':'],
-            figure_figsize=(10,8),
-            # plot frame, grid etc after each r.plot call
-            plotHook = mat_drawFrame,
+            ylab='Allele frequency',
+            ylim=[0, 1],
+            main_dim=['Genetic drift, freq=%.1f' % ((x+1)*0.10) for x in range(4)],
+            col_rep=['red', 'blue', 'black'],
+            lty_rep=[1, 2, 3],
+            # the default png dimension is 800x600
+            dev_print_width=600, dev_print_height=500,
+            # do not draw axes in r.plot, leaving the job to drawFrame
+            plot_axes=False,
+            plotHook = rpy_drawFrame,
         ),
+        # matplot lib syntax
+        #VarPlotter('[alleleFreq[x][0] for x in range(4)]', byDim=True,
+        #    update=10, saveAs='log/varplot_byDim.png',
+        #    legend=['Replicate %d' % x for x in range(3)],
+        #    set_ylabel_ylabel='Allele frequency',
+        #    set_ylim_bottom=0, set_ylim_top=1,
+        #    set_title_label_dim=['Genetic drift, freq=%.1f' % ((x+1)*0.10) for x in range(4)],
+        #    plot_c_rep=['red', 'blue', 'black'],
+        #    plot_linestyle_rep=['-', '-.', ':'],
+        #    figure_figsize=(10,8),
+        #    plotHook = mat_drawFrame,
+        #),
     ],
     gen=100
 )
@@ -5196,7 +5192,7 @@ simu.evolve(
 #begin_file log/ScatterPlotter.py
 #begin_ignore
 import simuOpt
-simuOpt.setOptions(quiet=True, plotter='matplotlib')
+simuOpt.setOptions(quiet=True, plotter='rpy2')
 #end_ignore
 import simuPOP as sim
 #begin_ignore
@@ -5229,25 +5225,25 @@ pop.evolve(
         sim.PyTagger(passInfo)]),
     postOps=[
         # rpy syntax
-        #ScatterPlotter(['x', 'y'], 
-        #    saveAs = 'log/ScatterPlotter.png',
-        #    subPops = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4)],
-        #    ylim = [0, 1.2],
-        #    main = "!'Ancestry distribution of individuals at generation %d' % gen",
-        #    legend = ['anc < 0.2', '0.2 <= anc < 0.4', '0.4 <= anc < 0.6',
-        #        '0.6 <= anc < 0.8', '0.8 <= anc'],
-        #    plot_axes = False,
-        #    par_mar = [0, 0, 2, 0],
-        #),
-        # matplotlib syntax
         ScatterPlotter(['x', 'y'], 
             saveAs = 'log/ScatterPlotter.png',
             subPops = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4)],
-            set_ylim_bottom = 0, set_ylim_top=1.2,
-            set_title_label = "!'Ancestry distribution of individuals at generation %d' % gen",
+            ylim = [0, 1.2],
+            main = "!'Ancestry distribution of individuals at generation %d' % gen",
             legend = ['anc < 0.2', '0.2 <= anc < 0.4', '0.4 <= anc < 0.6',
                 '0.6 <= anc < 0.8', '0.8 <= anc'],
+            plot_axes = False,
+            par_mar = [0, 0, 2, 0],
         ),
+        # matplotlib syntax
+        #ScatterPlotter(['x', 'y'], 
+        #    saveAs = 'log/ScatterPlotter.png',
+        #    subPops = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4)],
+        #    set_ylim_bottom = 0, set_ylim_top=1.2,
+        #    set_title_label = "!'Ancestry distribution of individuals at generation %d' % gen",
+        #    legend = ['anc < 0.2', '0.2 <= anc < 0.4', '0.4 <= anc < 0.6',
+        #        '0.6 <= anc < 0.8', '0.8 <= anc'],
+        #),
 
     ],
     gen = 5,
@@ -5257,7 +5253,7 @@ pop.evolve(
 #begin_file log/HistPlotter.py
 #begin_ignore
 import simuOpt
-simuOpt.setOptions(quiet=True, plotter='rpy')
+simuOpt.setOptions(quiet=True, plotter='rpy2')
 #end_ignore
 import simuPOP as sim
 #begin_ignore
