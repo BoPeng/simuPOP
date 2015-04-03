@@ -27,11 +27,10 @@
 
 '''
 This module defines several utility functions and Python operators that make
-use of the Python rpy module (http://rpy.sourceforge.net) to plot expressions
-and information fields of evolving populations using a popular statistical
-analysis language R (http://www.r-project.org) or matplotlib. Note that 
-rpy2, the successor of rpy, is currently not supported. You can specify the
-plotting library using simuOpt.setOptions(plotter='matplotlib').
+use of the Python rpy or rpy2 module (http://rpy.sourceforge.net) to plot
+expressions and information fields of evolving populations using a popular
+statistical analysis language R (http://www.r-project.org) or matplotlib.
+You can specify the plotting library using simuOpt.setOptions(plotter='matplotlib').
 
 Each operator calls a sequence of R or matplotlib functions to draw and save
 figures. A special parameter passing mechanism is used so that you can specify
@@ -40,7 +39,8 @@ arbitrary parameters to these functions. For example, you can use parameter
 ``lty_rep=[1,2]`` to pass ``lty=1`` and ``lty=2`` to specify different line
 types for different replicates if ``rpy`` is used. The help message of each class
 will describe which and in what sequence these R or matplotlib functions are
-called to help you figure out which parameters are allowed.
+called to help you figure out which parameters are allowed. The syntax
+will be different if different plotting module is used.
 '''
 
 __all__ = [
@@ -53,8 +53,9 @@ __all__ = [
     'HistPlotter',
     'QQPlotter',
     'BoxPlotter',
-    # export essential piece of rpy so that other modules could use them
+    # export essential piece of rpy or rpy2 so that other modules could use them
     'r',
+    # exported with rpy. Not meaningful if rpy2 is used.
     'with_mode',
     'NO_CONVERSION'
 ]
@@ -64,41 +65,81 @@ import os
 
 from simuOpt import simuOptions
 
+# used by rpy2
+def my_py2ri(o):
+    '''Convert tuple to R object. This is defined because the default
+    py2ri function does not support tuple type.'''
+    if isinstance(o, (tuple, list)):
+        if all([isinstance(x, int) for x in o]):
+            res = ro.vectors.IntVector(o)
+        elif all([isinstance(x, (int, float)) for x in o]):
+            res = ro.vectors.FloatVector(o)
+        elif all([isinstance(x, str) for x in o]):
+            res = ro.vectors.StrVector(o)
+        elif isinstance(o, tuple):
+            raise RuntimeError('Failed to convert tuple {}'.format(o))
+        else:
+            # default_py2ri can handle list of
+            # heterogeneous type, I guess
+            res = ro.default_py2ri(o)
+    else:
+        res = ro.default_py2ri(o)
+    return res
+
 if simuOptions['Plotter'] is None:
     try:
         import rpy_options
         rpy_options.set_options(VERBOSE = False)
         from rpy import r, with_mode, NO_CONVERSION
-        use_rpy = True
+        plotter = 'rpy'
     except ImportError, e:
         try:
-            import matplotlib.pylab as plt
-            use_rpy = False
-        except:
-            print('Neither rpy nor matplotlib is available.')
-            raise e
+            import rpy2.robjects as ro
+            from rpy2.robjects import r, conversion
+            conversion.py2ri = my_py2ri
+            with_mode = None
+            NO_CONVERSION = None
+            plotter = 'rpy2'
+        except ImportError, e:
+            try:
+                import matplotlib.pylab as plt
+                plotter = 'matplotlib'
+            except:
+                print('Neither rpy nor matplotlib is available.')
+                raise e
 elif simuOptions['Plotter'] == 'rpy':
     import rpy_options
     rpy_options.set_options(VERBOSE = False)
     from rpy import r, with_mode, NO_CONVERSION
-    use_rpy = True
+    plotter = 'rpy'
+elif simuOptions['Plotter'] == 'rpy2':
+    import rpy2.robjects as ro
+    from rpy2.robjects import r, conversion
+    conversion.py2ri = my_py2ri
+    with_mode = None
+    NO_CONVERSION = None
+    plotter = 'rpy2'
 else:
     import matplotlib.pylab as plt
-    use_rpy = False
+    plotter = 'matplotlib'
 
 
 # if under windows, fix a bug with rpy which uses blocking i/o so
 # R figure will not be refreshed in time. See
 #     https://Stat.ethz.ch/pipermail/r-devel/2006-January/036049.html
 # for details.
-if use_rpy and os.name == 'nt':
-    r.options(windowsBuffered=False)
+if os.name == 'nt':
     # In addition to options(windowsBuffered=False), I find that I also need to
     # call windows.options(buffered=False) to make functions such as hist work.
     #
     # This function is only available for R 2.9.0 (rev 48333)
-    if int(r.R_Version()['svn rev']) >= 48333:
-        r.windows_options(buffered=False)
+    if plotter == 'rpy':
+        r.options(windowsBuffered=False)
+        if int(r.R_Version()['svn rev']) >= 48333:
+            r.windows_options(buffered=False)
+    elif plotter == 'rpy2':
+        if int(r('R.Version()$"svn rev"')[0]) >= 48333:
+            r("windows.options(buffered=False)")
 
 
 from simuPOP import PyOperator, ALL_AVAIL
@@ -107,7 +148,7 @@ def newDevice():
     '''Create a new graphics window and return its device number in R. This
     function essentially calls ``getOption('device')()`` in R.
     '''
-    if use_rpy:
+    if plotter == 'rpy':
         # open a new window
         try:
             # 46754 is the revision number for R 2.8.0
@@ -124,6 +165,24 @@ def newDevice():
         if device == 0:
             raise RuntimeError('Can not open new device')
         return device
+    elif plotter == 'rpy2':
+        # open a new window
+        try:
+            # 46754 is the revision number for R 2.8.0
+            if int(r('R.Version()$"svn rev"')[0]) < 46754:
+                # For R < 2.8.0, getOption('device') returns a string (such as 'X11')
+                r(r.getOption('device') + '()')
+            else:
+                # For R >= 2.8.0, getOption('device') returns a function
+                r('getOption("device")()')
+        except:
+            raise RuntimeError("Failed to get R version to start a graphical device");
+        # get device number
+        device = r['dev.cur']()
+        if device == 0:
+            raise RuntimeError('Can not open new device')
+        return device
+
     else:
         return plt.figure()
 
@@ -139,7 +198,7 @@ def saveFigure(file=None, **kwargs):
     '''
     if file is None:
         return
-    if use_rpy:
+    if 'rpy' in plotter:
         filename, ext = os.path.splitext(file)
         dirname = os.path.dirname(file)
         if dirname != '' and not os.path.isdir(dirname):
@@ -175,7 +234,10 @@ def saveFigure(file=None, **kwargs):
             print 'Can not determine which device to use to save file %s. A postscript driver is used.' % name
             device = r.postscript
         params.update(kwargs)
-        r.dev_print(file=file, device=device, **params)
+        if plotter == 'rpy':
+            r.dev_print(file=file, device=device, **params)
+        else:
+            r['dev.print'](file=file, device=device, **params)
     else:
         plt.savefig(file)
 
@@ -482,7 +544,7 @@ class VarPlotter(PyOperator):
         self.preHook = preHook
         self.postHook = postHook
         self.plotHook = plotHook
-        if use_rpy:
+        if 'rpy' in plotter:
             self.args = DerivedArgs(
                 defaultFuncs = ['plot', 'lines'],
                 allFuncs = ['par', 'plot', 'lines', 'dev_print', 'legend'],
@@ -522,15 +584,18 @@ class VarPlotter(PyOperator):
         self.gen = []
         self.data = []
         # when apply is called, self._rpy_plot is called.
-        PyOperator.__init__(self, func=self._rpy_plot if use_rpy else self._mat_plot,
+        PyOperator.__init__(self, func=self._rpy_plot if plotter == 'rpy' else self._mat_plot,
             begin=begin, end=end, step=step, at=at, reps=reps,
             subPops=ALL_AVAIL, infoFields=[])
 
     def __del__(self):
         # Close the device if needed.
-        if use_rpy:
+        if plotter == 'rpy':
             if not self.leaveOpen and hasattr(self, 'device'):
                 r.dev_off(self.device)
+        elif plotter == 'rpy2':
+            if not self.leaveOpen and hasattr(self, 'device'):
+                r['dev.off'](self.device)
         else:
             if not self.leaveOpen:
                 plt.close()
@@ -604,7 +669,10 @@ class VarPlotter(PyOperator):
         if not hasattr(self, 'device'):
             self.device = newDevice()
         else: # if there are multiple devices, set it back
-            r.dev_set(self.device)
+            if plotter == 'rpy':
+                r.dev_set(self.device)
+            else:
+                r['dev.set'](self.device)
         # call the preHook function if given
         if self.preHook is not None:
             self.preHook(r)
@@ -949,7 +1017,7 @@ class ScatterPlotter(PyOperator):
         self.preHook = preHook
         self.postHook = postHook
         self.subPops = subPops
-        if use_rpy:
+        if plotter == 'rpy':
             self.args = DerivedArgs(
                 defaultFuncs = ['plot', 'points'],
                 allFuncs = ['par', 'plot', 'points', 'dev_print', 'legend'],
@@ -977,7 +1045,7 @@ class ScatterPlotter(PyOperator):
             )
 
         if len(self.subPops) > 1:
-            if use_rpy:
+            if plotter == 'rpy':
                 self.args.addDefault(
                     pch_sp = range(1, len(self.subPops) + 1),
                     col_sp = r.rainbow(len(self.subPops)))
@@ -986,14 +1054,17 @@ class ScatterPlotter(PyOperator):
                 self.args.addDefault(
                     scatter_c_sp=[cm(i*1.0/len(self.subPops)) for i in range(len(self.subPops))])
         # when apply is called, self._rpy_plot is called.
-        PyOperator.__init__(self, func=self._rpy_plot if use_rpy else self._mat_plot,
+        PyOperator.__init__(self, func=self._rpy_plot if 'rpy' in plotter else self._mat_plot,
             begin=begin, end=end, step=step, at=at, reps=reps)
 
 
     def __del__(self):
         # Close the device if needed.
         if not self.leaveOpen and hasattr(self, 'device'):
-            r.dev_off(self.device)
+            if plotter == 'rpy':
+                r.dev_off(self.device)
+            elif plotter == 'rpy2':
+                r['dev.off'](self.device)
 
     def _rpy_plot(self, pop):
         "Evaluate expression in pop and save result. Plot all data if needed"
@@ -1003,7 +1074,10 @@ class ScatterPlotter(PyOperator):
         if not hasattr(self, 'device'):
             self.device = newDevice()
         else: # if there are multiple devices, set it back
-            r.dev_set(self.device)
+            if plotter == 'rpy':
+                r.dev_set(self.device)
+            else:
+                r['dev.set'](self.device)
         # call the preHook function if given
         if self.preHook is not None:
             self.preHook(r)
@@ -1195,9 +1269,12 @@ class InfoPlotter(PyOperator):
         self.postHook = postHook
         self.plotHook = plotHook
         self.subPops = subPops
-        if use_rpy:
+        if 'rpy' in plotter:
             if self.func is not None:
-                self.rfunc = r(self.func)
+                if plotter == 'rpy':
+                    self.rfunc = r(self.func)
+                else:
+                    self.rfunc = r[self.func]
             self.args = DerivedArgs(
                 defaultFuncs = [] if self.func is None else [self.func],
                 allFuncs = ['par', 'dev_print', 'legend'] + ([] if self.func is None else [self.func]),
@@ -1213,9 +1290,12 @@ class InfoPlotter(PyOperator):
 
     def __del__(self):
         # Close the device if needed.
-        if use_rpy:
+        if plotter == 'rpy':
             if not self.leaveOpen and hasattr(self, 'device'):
                 r.dev_off(self.device)
+        elif plotter == 'rpy2':
+            if not self.leaveOpen and hasattr(self, 'device'):
+                r['dev.off'](self.device)
         else:
             if not self.leaveOpen:
                 plt.close()
@@ -1228,7 +1308,10 @@ class InfoPlotter(PyOperator):
         if not hasattr(self, 'device'):
             self.device = newDevice()
         else: # if there are multiple devices, set it back
-            r.dev_set(self.device)
+            if plotter == 'rpy':
+                r.dev_set(self.device)
+            else:
+                r['dev.set'](self.device)
         # call the preHook function if given
         if self.preHook is not None:
             self.preHook(r)
@@ -1388,7 +1471,7 @@ class BoxPlotter(PyOperator):
             self.infoFields = infoFields
         if len(self.infoFields) == 0:
             raise RuntimeError('At least one information field should be given')
-        if not use_rpy:
+        if 'rpy' not in plotter:
             raise RuntimeError('BoxPlotter function does not support matplotlib plotter')
         self.saveAs = saveAs
         self.leaveOpen = leaveOpen
@@ -1416,7 +1499,11 @@ class BoxPlotter(PyOperator):
     def __del__(self):
         # Close the device if needed.
         if not self.leaveOpen and hasattr(self, 'device'):
-            r.dev_off(self.device)
+            if plotter == 'rpy':
+                r.dev_off(self.device)
+            elif plotter == 'rpy2':
+                r['dev.off'](self.device)
+
 
     def _rpy_plot(self, pop):
         "Evaluate expression in pop and save result. Plot all data if needed"
@@ -1426,7 +1513,10 @@ class BoxPlotter(PyOperator):
         if not hasattr(self, 'device'):
             self.device = newDevice()
         else: # if there are multiple devices, set it back
-            r.dev_set(self.device)
+            if plotter == 'rpy':
+                r.dev_set(self.device)
+            else:
+                r['dev.set'](self.device)
         # call the preHook function if given
         if self.preHook is not None:
             self.preHook(r)
@@ -1470,9 +1560,15 @@ class BoxPlotter(PyOperator):
                             data.extend(spData)
                             owner.extend([pop.subPopName(sp)]*len(spData))
                     #
-                    r.boxplot(r('data ~ owner'), data=r.data_frame(data=data, owner=owner),
-                        **self.args.getArgs('boxplot', pop, fld=fldIdx,
-                        main='Field %s at gen %d' % (fld, gen)))
+                    if plotter == 'rpy':
+                        r.boxplot(r('data ~ owner'), data=r.data_frame(data=data, owner=owner),
+                            **self.args.getArgs('boxplot', pop, fld=fldIdx,
+                            main='Field %s at gen %d' % (fld, gen)))
+                    else:
+                        r.boxplot(ro.Formula('data ~ owner'), 
+                            data=ro.vectors.DataFrame({'data': data, 'owner': owner}), 
+                            **self.args.getArgs('boxplot', pop, fld=fldIdx,
+                            main='Field %s at gen %d' % (fld, gen)))
                     if self.plotHook is not None:
                         self.plotHook(r=r, field=fld)
         elif not self.byField and self.bySubPop:
@@ -1485,9 +1581,15 @@ class BoxPlotter(PyOperator):
                     data.extend(fldData)
                     owner.extend([fld]*len(fldData))
                 #
-                r.boxplot(r('data ~ owner'), data=r.data_frame(data=data, owner=owner),
-                    **self.args.getArgs('boxplot', pop, sp=spIdx,
-                        main='Subpop %s at gen %d' % (pop.subPopName(sp), gen)))
+                if plotter == 'rpy':
+                    r.boxplot(r('data ~ owner'), data=r.data_frame(data=data, owner=owner),
+                        **self.args.getArgs('boxplot', pop, sp=spIdx,
+                            main='Subpop %s at gen %d' % (pop.subPopName(sp), gen)))
+                else:
+                    r.boxplot(ro.Formula('data ~ owner'), 
+                        data=ro.vectors.DataFrame({'data': data, 'owner': owner}), 
+                        **self.args.getArgs('boxplot', pop, sp=spIdx,
+                            main='Subpop %s at gen %d' % (pop.subPopName(sp), gen)))
                 if self.plotHook is not None:
                     self.plotHook(r=r, subPop=sp)
         else:
@@ -1508,8 +1610,13 @@ class BoxPlotter(PyOperator):
                     else:
                         owner.extend(['%s, %s' % (fld, pop.subPopName(sp))]*len(spData))
             #
-            r.boxplot(r("data ~ owner"), data=r.data_frame(data=data, owner=owner),
-                **self.args.getArgs('boxplot', pop))
+            if plotter == 'rpy':
+                r.boxplot(r("data ~ owner"), data=r.data_frame(data=data, owner=owner),
+                    **self.args.getArgs('boxplot', pop))
+            else:
+                r.boxplot(ro.Formula('data ~ owner'), 
+                    data=ro.vectors.DataFrame({'data': data, 'owner': owner}), 
+                    **self.args.getArgs('boxplot', pop))
             if self.plotHook is not None:
                 self.plotHook(r=r)
         # call the postHook function if given
