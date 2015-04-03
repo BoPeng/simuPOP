@@ -856,19 +856,25 @@ class Trajectory:
         if plotter is None:
             try:
                 import rpy
-                self._rpy_plot(filename, **kwargs)
+                self._rpy_plot(filename, rpy2=False, **kwargs)
             except ImportError:
                 try:
-                    import matplotlib
-                    self._mat_plot(filename, **kwargs)
+                    import rpy2
+                    self._rpy_plot(filename, rpy2=True, **kwargs)
                 except ImportError:
-                    sys.stderr.write('Failed to draw figure: rpy or matplotlib is not available.')
+                    try:
+                        import matplotlib
+                        self._mat_plot(filename, **kwargs)
+                    except ImportError:
+                        sys.stderr.write('Failed to draw figure: rpy or matplotlib is not available.')
         elif plotter == 'rpy':                    
-            self._rpy_plot(filename, **kwargs)
+            self._rpy_plot(filename, rpy2=False, **kwargs)
+        elif plotter == 'rpy2':
+            self._rpy_plot(filename, rpy2=True, **kwargs)
         else:
             self._mat_plot(filename, **kwargs)
 
-    def _rpy_plot(self, filename, **kwargs):
+    def _rpy_plot(self, filename, rpy2, **kwargs):
         import plotter
         #
         args = plotter.DerivedArgs(
@@ -926,8 +932,11 @@ class Trajectory:
                         **args.getArgs('lines', None, sp=sp, loc=loc))
         #
         plotter.saveFigure(**args.getArgs('dev_print', None, file=filename))
-        plotter.r.dev_off()
-        
+        if rpy2:
+            plotter.r['dev.off']()
+        else:
+            plotter.r.dev_off()
+
     def _mat_plot(self, filename, **kwargs):
         import matplotlib.pylab as plt
         import plotter

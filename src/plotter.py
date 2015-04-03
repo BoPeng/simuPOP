@@ -584,7 +584,7 @@ class VarPlotter(PyOperator):
         self.gen = []
         self.data = []
         # when apply is called, self._rpy_plot is called.
-        PyOperator.__init__(self, func=self._rpy_plot if plotter == 'rpy' else self._mat_plot,
+        PyOperator.__init__(self, func=self._rpy_plot if 'rpy' in plotter else self._mat_plot,
             begin=begin, end=end, step=step, at=at, reps=reps,
             subPops=ALL_AVAIL, infoFields=[])
 
@@ -1017,7 +1017,7 @@ class ScatterPlotter(PyOperator):
         self.preHook = preHook
         self.postHook = postHook
         self.subPops = subPops
-        if plotter == 'rpy':
+        if 'rpy' in plotter:
             self.args = DerivedArgs(
                 defaultFuncs = ['plot', 'points'],
                 allFuncs = ['par', 'plot', 'points', 'dev_print', 'legend'],
@@ -1045,7 +1045,7 @@ class ScatterPlotter(PyOperator):
             )
 
         if len(self.subPops) > 1:
-            if plotter == 'rpy':
+            if 'rpy' in plotter:
                 self.args.addDefault(
                     pch_sp = range(1, len(self.subPops) + 1),
                     col_sp = r.rainbow(len(self.subPops)))
