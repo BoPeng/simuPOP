@@ -318,9 +318,9 @@ Details:
 
 %ignore simuPOP::BaseOperator::isActive(ssize_t rep, ssize_t gen) const;
 
-%ignore simuPOP::BaseOperator::infoSize() const;
+%ignore simuPOP::BaseOperator::infoSize(const GenoStruTrait *trait=NULL) const;
 
-%ignore simuPOP::BaseOperator::infoField(size_t idx) const;
+%ignore simuPOP::BaseOperator::infoField(size_t idx, const GenoStruTrait *trait=NULL) const;
 
 %ignore simuPOP::BaseOperator::infoFields() const;
 
@@ -1143,7 +1143,8 @@ Details:
 
 Usage:
 
-    CombinedParentsChooser(fatherChooser, motherChooser)
+    CombinedParentsChooser(fatherChooser, motherChooser,
+      allowSelfing=True)
 
 Details:
 
@@ -1155,7 +1156,10 @@ Details:
     for motherChooser. Although these two parent choosers are supposed
     to return a father and a mother respectively, the sex of returned
     parents are not checked so it is possible to return parents with
-    the same sex using this parents chooser.
+    the same sex using this parents chooser. This choose by default
+    allows the selection of the same parents as father and mother
+    (self-fertilization), unless a parameter allowSelfing is used to
+    disable it.
 
 "; 
 
@@ -1559,7 +1563,7 @@ Usage:
 
     Dumper(genotype=True, structure=True, ancGens=UNSPECIFIED,
       width=1, max=100, loci=[], output=\">\", begin=0, end=-1, step=1,
-      at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+      at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
 
 Details:
 
@@ -1569,10 +1573,13 @@ Details:
     this operator will only output the first 100 (parameter max)
     individuals of the present generation (parameter ancGens). All
     loci will be outputed unless parameter loci are used to specify a
-    subset of loci. If a list of (virtual) subpopulations are
-    specified, this operator will only output individuals in these
-    outputs. Please refer to class BaseOperator for a detailed
-    explanation for common parameters such as output and stage.
+    subset of loci. This operator by default output values of all
+    information fields unless parameter infoFields is used to specify
+    a subset of info fields to display. If a list of (virtual)
+    subpopulations are specified, this operator will only output
+    individuals in these outputs. Please refer to class BaseOperator
+    for a detailed explanation for common parameters such as output
+    and stage.
 
 "; 
 
@@ -2922,7 +2929,7 @@ Usage:
 
 Usage:
 
-    indCompare(idx)
+    indCompare(idx, reverse=False)
 
 "; 
 
@@ -3304,7 +3311,7 @@ Usage:
 
 %ignore simuPOP::Individual::swap(Individual &ind, bool swapContent=true);
 
-%ignore simuPOP::Individual::display(ostream &out, int width=1, const vectoru &loci=vectoru());
+%ignore simuPOP::Individual::display(ostream &out, int width=1, const vectoru &loci=vectoru(), const vectoru &infoIdx=vectoru());
 
 %feature("docstring") simuPOP::IndividualIterator "
 
@@ -6487,13 +6494,13 @@ Details:
 
 Usage:
 
-    x.sortIndividuals(infoFields)
+    x.sortIndividuals(infoFields, reverse=False)
 
 Details:
 
     Sort individuals according to values at specified information
     fields (infoFields). Individuals will be sorted at an increasing
-    order.
+    order unless reverse is set to true.
 
 "; 
 
@@ -10916,7 +10923,7 @@ Usage:
 
 %ignore simuPOP::stringList::pushback(const string &str);
 
-%ignore simuPOP::stringList::elems() const;
+%ignore simuPOP::stringList::elems(const GenoStruTrait *trait=NULL) const;
 
 %feature("docstring") simuPOP::stringMatrix "
 
