@@ -1110,9 +1110,9 @@ public:
 
 	/** Sort individuals according to values at specified information
 	 *  fields (\e infoFields). Individuals will be sorted at an increasing
-	 *  order.
+	 *  order unless \e reverse is set to \c true.
 	 */
-	void sortIndividuals(const stringList & infoFields);
+	void sortIndividuals(const stringList & infoFields, bool reverse=false);
 
 	/** Rearrange individuals to their new subpopulations according to their
 	 *  integer values at information field \e field (value returned by
