@@ -1037,7 +1037,7 @@ size_t Population::subPopSize(vspID subPopID, int ancGen) const
 }
 
 
-void Population::sortIndividuals(const stringList & infoList)
+void Population::sortIndividuals(const stringList & infoList, bool reverse)
 {
 	const vectorstr & infoFields = infoList.elems();
 
@@ -1047,7 +1047,7 @@ void Population::sortIndividuals(const stringList & infoList)
 	for (size_t i = 0; i < infoFields.size(); ++i)
 		fields[i] = infoIdx(infoFields[i]);
 	for (size_t sp = 0; sp < numSubPop(); ++sp)
-		parallelSort(rawIndBegin(sp), rawIndEnd(sp), indCompare(fields));
+		parallelSort(rawIndBegin(sp), rawIndEnd(sp), indCompare(fields, reverse=reverse));
 	setIndOrdered(false);
 }
 

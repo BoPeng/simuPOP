@@ -779,15 +779,15 @@ protected:
 
 
 /** CPPONLY
- *  A class used to compare two individuals by an information field.
+ *  A class used to compare two individuals by one or more information fields.
  */
 class indCompare
 {
 public:
 	// accept the index to an information field
-	indCompare(size_t idx) : m_fields(1, idx) {}
+	indCompare(size_t idx, bool reverse=false) : m_fields(1, idx), m_reverse(reverse) {}
 
-	indCompare(const vectoru & idx) : m_fields(idx) {}
+	indCompare(const vectoru & idx, bool reverse=false) : m_fields(idx), m_reverse(reverse) {}
 
 	bool operator()(const Individual & lhs, const Individual & rhs) const
 	{
@@ -799,7 +799,7 @@ public:
 				continue;
 			else
 				// if < or >, we have a comparison
-				return v1 < v2;
+				return m_reverse ? v1 > v2 : v1 < v2;
 		}
 		// they are actually equal, but we are inplementing operator <
 		return false;
@@ -808,6 +808,8 @@ public:
 
 private:
 	vectoru m_fields;
+
+	bool m_reverse;
 };
 
 
