@@ -662,11 +662,12 @@ void stringList::obtainFrom(const stringList & items, const char * allowedItems[
 			m_elems.push_back(defaultItems[i]);
 }
 
+
 const vectorstr & stringList::elems(const GenoStruTrait * trait) const
 {
-	if (trait == NULL || ! allAvail())
+	if (trait == NULL || !allAvail())
 		return m_elems;
-	
+
 	if (trait) {
 		if (trait->genoStruIdx() == m_trait)
 			return m_elems;
@@ -677,6 +678,7 @@ const vectorstr & stringList::elems(const GenoStruTrait * trait) const
 	}
 	return m_elems;
 }
+
 
 intMatrix::intMatrix(PyObject * obj) : m_elems()
 {
@@ -835,7 +837,7 @@ stringMatrix::stringMatrix(PyObject * obj) : m_elems()
 }
 
 
-pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(0)
+pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(0), m_circular(false)
 {
 	if (!m_func.isValid())
 		return;
@@ -947,10 +949,9 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(0)
 		// check the super class (BaseOperator) because of the SWIG
 		// interface
 		if (PyObject_HasAttrString(self, "apply") &&
-		    PyObject_HasAttrString(self, "describe")) {
-			//std::cerr << "CURCULAR " << std::endl;
-			Py_DECREF(self);
-		}
+		    PyObject_HasAttrString(self, "describe"))
+			//std::cerr << "CIRCULAR " << std::endl;
+			m_circular = true;
 		Py_DECREF(self);
 	}
 
@@ -988,11 +989,52 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(0)
 	}
 	Py_DECREF(co_varnames);
 	// accepting arbitrary number of parameters?
-	PyObject * co_flag = PyObject_GetAttrString(code, "co_flags");
-	DBG_ASSERT(co_flag, SystemError, "Invalid attribute co_flags for a function object");
-	m_flags = static_cast<unsigned char>(PyInt_AsLong(co_flag));
-	Py_DECREF(co_flag);
+	/*
+	   PyObject * co_flag = PyObject_GetAttrString(code, "co_flags");
+	   DBG_ASSERT(co_flag, SystemError, "Invalid attribute co_flags for a function object");
+	   int flags = static_cast<unsigned char>(PyInt_AsLong(co_flag));
+	   Py_DECREF(co_flag);
+	 */
 	Py_DECREF(code);
+}
+
+
+pyFunc::pyFunc(const pyFunc & rhs) : m_func(rhs.m_func), m_name(rhs.m_name), m_numArgs(rhs.m_numArgs),
+	m_args(rhs.m_args), m_circular(rhs.m_circular)
+{
+	// prevent reference decrease of circular reference caused by removing of
+	// temporary rhs objects
+	rhs.m_circular = false;
+}
+
+
+pyFunc & pyFunc::operator=(const pyFunc & rhs)
+{
+	m_func = rhs.m_func;
+	m_name = rhs.m_name;
+	m_numArgs = rhs.m_numArgs;
+	m_args = rhs.m_args;
+	m_circular = rhs.m_circular;
+	// prevent reference decrease of circular reference caused by removing of
+	// temporary rhs objects
+	rhs.m_circular = false;
+}
+
+
+pyFunc::~pyFunc()
+{
+	// in the case of circular reference, we will have to
+	// manually reduce reference of self, then self.func in order
+	// for both of them to be removed from memory
+	if (m_circular) {
+		PyObject * self = PyObject_GetAttrString(m_func.object(), SELF_ATTR);
+		// remove circular reference of self
+		Py_XDECREF(self);
+		// remove circular reference of self.func (not sure if this is needed)
+		Py_XDECREF(m_func.object());
+		// remove reference caused by PyObject_GetAttrString.
+		Py_XDECREF(self);
+	}
 }
 
 

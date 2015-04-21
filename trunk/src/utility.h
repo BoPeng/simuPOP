@@ -319,6 +319,12 @@ class pyFunc
 public:
 	pyFunc(PyObject * func);
 
+	pyFunc(const pyFunc & rhs);
+
+	pyFunc & operator=(const pyFunc & rhs);
+
+	~pyFunc();
+
 	/// return number of arguments this function accepts.
 	/// This function does not count tuple parameters.
 	size_t numArgs() const
@@ -433,7 +439,10 @@ private:
 
 	vectorstr m_args;
 
-	int m_flags;
+	// if this function is a member function of a class
+	// that release of this function requires destroying
+	// self first.
+	mutable bool m_circular;
 };
 
 /// CPPONLY
