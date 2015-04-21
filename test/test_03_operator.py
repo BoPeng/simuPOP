@@ -49,6 +49,16 @@ class func1:
     def __call__(self, x1, x2):
         return sum([x1, x2])
 
+class OutputCollector:
+    def __init__(self):
+        self.messages = []
+
+    def func1(self, msg):
+        self.messages.append(msg)
+
+    def func2(self, msg):
+        self.messages.append(msg)
+
 class TestOperator(unittest.TestCase):
 
     def setUp(self):
@@ -217,6 +227,21 @@ class TestOperator(unittest.TestCase):
             PyOutput("func2", output=func2),
         ], gen=10)
 
+
+    def testOutputMemberFunc(self):
+        '''Testing output to a function'''
+
+        simu = Simulator(Population(), rep=5)
+        o = OutputCollector()
+        # each replicate
+        simu.evolve(
+            matingScheme=CloneMating(),
+            postOps = [
+            PyOutput("func1", output=o.func1),
+            PyOutput("func2", output=o.func2),
+        ], gen=10)
+        self.assertEqual(o.messages, ['func1', 'func2'] * 50)
+
     def testOutputFileHandler(self):
         '''Testing output to a file handler'''
         simu = Simulator(Population(), rep=5)
@@ -240,7 +265,7 @@ class TestOperator(unittest.TestCase):
             ], gen=10)
         with open('test1.txt') as test1txt:
             self.assertEqual(test1txt.read(), 'func2'*50)
-        #
+        # runtime error only raise in python 3
         simu = Simulator(Population(), rep=5)
         with open('test1.txt', 'wb') as out:
             # each replicate
