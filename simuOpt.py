@@ -97,7 +97,6 @@ __all__ = [
 ]
 
 import os, sys, re, time, textwrap
-
 #
 # simuOptions that will be checked when simuPOP is loaded. This structure
 # can be changed by function setOptions
@@ -228,16 +227,40 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
         threads will be set to 1, or a value set by environmental variable
         ``OMP_NUM_THREADS``.
     '''
-    # Optimized
-    if optimized in [True, False]:
-        simuOptions['Optimized'] = optimized
-    elif optimized is not None:
-        raise TypeError('Parameter optimized can be either True or False.')
+    # if the module has already been imported, check which module
+    # was imported
+    try:
+        _imported = sys.modules['simuPOP'].moduleInfo()
+    except Exception as e:
+        _imported = {}
     # Allele type
     if alleleType in ['long', 'binary', 'short', 'mutant', 'lineage']:
+        # if simuPOP has been imported and re-imported with a different module name
+        # the existing module will be used so moduleInfo() will return a different
+        # module type from what is specified in simuOptions.
+        if _imported and _imported['alleleType'] != alleleType:
+            raise ImportError(('simuPOP has already been imported with allele type %s (%s) and cannot be '
+                're-imported with allele type %s. Please make sure you import module simuOpt before '
+                'any simuPOP module is imported.') % (
+                    _imported['alleleType'], ('optimized' if _imported['optimized'] else 'standard'),
+                    alleleType))
         simuOptions['AlleleType'] = alleleType
     elif alleleType is not None:
         raise TypeError('Parameter alleleType can be either short, long, binary, mutant or lineage.')
+    # Optimized
+    if optimized in [True, False]:
+        # if simuPOP has been imported and re-imported with a different module name
+        # the existing module will be used so moduleInfo() will return a different
+        # module type from what is specified in simuOptions.
+        if _imported and _imported['optimized'] != optimized:
+            raise ImportError(('simuPOP has already been imported with allele type %s (%s) and cannot be '
+                're-imported in %s mode. Please make sure you import module simuOpt before '
+                'any simuPOP module is imported.') % (
+                    _imported['alleleType'], ('optimized' if _imported['optimized'] else 'standard'),
+                    'optimized' if optimized else 'standard'))
+        simuOptions['Optimized'] = optimized
+    elif optimized is not None:
+        raise TypeError('Parameter optimized can be either True or False.')        
     # Graphical toolkit
     if gui in [True, False, 'wxPython', 'Tkinter', 'batch']:
         simuOptions['GUI'] = gui
