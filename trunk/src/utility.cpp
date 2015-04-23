@@ -1018,7 +1018,7 @@ pyFunc & pyFunc::operator=(const pyFunc & rhs)
 	// prevent reference decrease of circular reference caused by removing of
 	// temporary rhs objects
 	rhs.m_circular = false;
-	return *rhs;
+	return *this;
 }
 
 
