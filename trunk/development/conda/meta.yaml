@@ -1,10 +1,10 @@
 package:
   name: simupop
-  version: !!str 1.1.4
+  version: !!str 1.1.5
 
 source:
-  fn: simuPOP-1.1.4.tar.gz
-  url: https://pypi.python.org/packages/source/s/simuPOP/simuPOP-1.1.4.tar.gz#md5=f157cd3902747d72c59fd8460a78e3fc
+  fn: simuPOP-1.1.5.tar.gz
+  url: https://pypi.python.org/packages/source/s/simuPOP/simuPOP-1.1.5.tar.gz
   md5: 
 #  patches:
    # List any patch files here
@@ -29,11 +29,9 @@ requirements:
   build:
     - python
     - setuptools
-    - distribute
 
   run:
     - python
-    - distribute
 
 test:
   # Python imports
