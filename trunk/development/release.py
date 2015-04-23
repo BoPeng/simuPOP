@@ -333,7 +333,7 @@ def createMacImage(ver, pyver):
         .format(dmg, ver, dest, pyver))
 
 
-def condaRelease(release):
+def condaRelease():
     '''Build conda binary'''
     run_command('conda build conda')
 
