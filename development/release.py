@@ -335,7 +335,10 @@ def createMacImage(ver, pyver):
 
 def condaRelease():
     '''Build conda binary'''
+    d = os.getcwd()
+    os.chdir('development')
     run_command('conda build conda')
+    os.chdir(d)
 
 def tagRelease(release):
     ''' if there are changes, commit it '''
