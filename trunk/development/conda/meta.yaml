@@ -29,9 +29,11 @@ requirements:
   build:
     - python
     - setuptools
+    - distribute
 
   run:
     - python
+    - setuptools
 
 test:
   # Python imports
