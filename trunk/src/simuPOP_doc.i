@@ -7333,6 +7333,14 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::pyFunc::~pyFunc "
+
+Usage:
+
+    x.~pyFunc()
+
+"; 
+
 %feature("docstring") simuPOP::pyFunc::numArgs "
 
 Description:

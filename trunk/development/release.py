@@ -171,6 +171,7 @@ def uploadSourceDocuments(ver, rev):
 def uploadDocuments(ver, rev):
     d = os.getcwd()
     os.chdir('doc')
+    run_command('make pdf')
     run_command('make dist_release')
     os.chdir(d)
     
@@ -373,6 +374,7 @@ if __name__ == '__main__':
     if 'build' in args.actions:
         prepareEnvironment()
         generateSWIGWrappers()
+        # documents need to be generated before simuPOP is built
         generateDocuments(ver, rev)
         buildSimuPOP()
     if 'src' in args.actions:
