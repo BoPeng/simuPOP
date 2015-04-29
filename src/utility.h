@@ -435,6 +435,12 @@ private:
 	vectorstr m_args;
 };
 
+
+/// CPPONLY
+/// Remove circular references to release memory of objects that 
+/// are derived from PyObject
+void cleanupCircularRefs();
+
 /// CPPONLY
 class pyGenerator
 {
