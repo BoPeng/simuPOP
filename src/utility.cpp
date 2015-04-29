@@ -837,7 +837,51 @@ stringMatrix::stringMatrix(PyObject * obj) : m_elems()
 }
 
 
-pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(0), m_circular(false)
+
+/** A wrapper to a python function
+ *  CPPONLY
+ */
+class CircularReferences
+{
+public:
+	CircularReferences(): m_references()
+	{
+	}
+
+	void register_ref(PyObject * obj)
+	{
+		// there is a slight chance that self has two functions...
+		// in which case obj should have at least reference two.
+		// I am ignoring this case here.
+		m_references.insert(obj);
+	}
+
+	void cleanup()
+	{
+		std::set<PyObject *>::iterator it = m_references.begin();
+		while (it != m_references.end())
+		{
+			// a circular ref has a reference to the function self.func
+			// so it has at least one reference. In another word, if we see
+			// that self has only one reference, it means the object is not
+			// referenced by anyone else and should be removed.
+			if ((*it)->ob_refcnt == 1) {
+				// this will cause the destructor of operator to be called.
+				Py_DECREF(*it);
+				m_references.erase(it++);
+			} else 
+				++it;
+		}
+	}
+
+private:
+	std::set<PyObject *> m_references;
+};
+
+CircularReferences g_circular_refs;
+
+
+pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(0)
 {
 	if (!m_func.isValid())
 		return;
@@ -949,12 +993,12 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(0), m_circular(false)
 		// check the super class (BaseOperator) because of the SWIG
 		// interface
 		if (PyObject_HasAttrString(self, "apply") &&
-		    PyObject_HasAttrString(self, "describe"))
-			//std::cerr << "CIRCULAR " << std::endl;
-			m_circular = true;
+		    PyObject_HasAttrString(self, "describe")) {
+			g_circular_refs.cleanup();
+			g_circular_refs.register_ref(self);
+		}
 		Py_DECREF(self);
 	}
-
 	if (!PyObject_HasAttrString(obj, "__name__")) {
 		cerr << "Cannot find name of the passed function. " << endl;
 		throw ValueError("Cannot find name of the passed function.");
@@ -997,47 +1041,6 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(0), m_circular(false)
 	 */
 	Py_DECREF(code);
 }
-
-
-pyFunc::pyFunc(const pyFunc & rhs) : m_func(rhs.m_func), m_name(rhs.m_name), m_numArgs(rhs.m_numArgs),
-	m_args(rhs.m_args), m_circular(rhs.m_circular)
-{
-	// prevent reference decrease of circular reference caused by removing of
-	// temporary rhs objects
-	rhs.m_circular = false;
-}
-
-
-pyFunc & pyFunc::operator=(const pyFunc & rhs)
-{
-	m_func = rhs.m_func;
-	m_name = rhs.m_name;
-	m_numArgs = rhs.m_numArgs;
-	m_args = rhs.m_args;
-	m_circular = rhs.m_circular;
-	// prevent reference decrease of circular reference caused by removing of
-	// temporary rhs objects
-	rhs.m_circular = false;
-	return *this;
-}
-
-
-pyFunc::~pyFunc()
-{
-	// in the case of circular reference, we will have to
-	// manually reduce reference of self, then self.func in order
-	// for both of them to be removed from memory
-	if (m_circular) {
-		PyObject * self = PyObject_GetAttrString(m_func.object(), SELF_ATTR);
-		// remove circular reference of self
-		Py_XDECREF(self);
-		// remove circular reference of self.func (not sure if this is needed)
-		Py_XDECREF(m_func.object());
-		// remove reference caused by PyObject_GetAttrString.
-		Py_XDECREF(self);
-	}
-}
-
 
 void pyGenerator::set(PyObject * gen)
 {

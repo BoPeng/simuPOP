@@ -68,6 +68,8 @@ using std::find;
 #include <iomanip>
 using std::setw;
 
+#include <set>
+
 /// for ranr generator
 #include "gsl/gsl_sys.h"                                           // for floating point comparison
 #include "gsl/gsl_rng.h"
@@ -310,7 +312,6 @@ private:
 	PyObject * m_object;
 };
 
-
 /** A wrapper to a python function
  *  CPPONLY
  */
@@ -318,12 +319,6 @@ class pyFunc
 {
 public:
 	pyFunc(PyObject * func);
-
-	pyFunc(const pyFunc & rhs);
-
-	pyFunc & operator=(const pyFunc & rhs);
-
-	~pyFunc();
 
 	/// return number of arguments this function accepts.
 	/// This function does not count tuple parameters.
@@ -438,11 +433,6 @@ private:
 	size_t m_numArgs;
 
 	vectorstr m_args;
-
-	// if this function is a member function of a class
-	// that release of this function requires destroying
-	// self first.
-	mutable bool m_circular;
 };
 
 /// CPPONLY
