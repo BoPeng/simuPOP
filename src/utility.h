@@ -433,6 +433,8 @@ private:
 	size_t m_numArgs;
 
 	vectorstr m_args;
+
+	PyObject * m_circular_self;
 };
 
 
