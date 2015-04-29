@@ -407,6 +407,7 @@ vectoru Simulator::evolve(
 
 	// close every opened file (including append-cross-evolution ones)
 	ostreamManager().closeAll();
+	cleanupCircularRefs();
 	return evolvedGens;
 }
 

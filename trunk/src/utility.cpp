@@ -856,6 +856,9 @@ public:
 		m_references.insert(obj);
 	}
 
+	// clean up circular refs. Because such objects might exist during
+	// the creation of evolutionary scenario, we wait till the end of 
+	// each evolutionary cycle to clean up the mess
 	void cleanup()
 	{
 		std::set<PyObject *>::iterator it = m_references.begin();
@@ -879,6 +882,11 @@ private:
 };
 
 CircularReferences g_circular_refs;
+
+void cleanupCircularRefs()
+{
+	g_circular_refs.cleanup();
+}
 
 
 pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(0)
@@ -936,7 +944,6 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(0)
 			   essentially converts func=obj to func=obj.__call__. This allows obj to be
 			   destructed after it is used.
 			 */
-			//Py_DECREF(m_func.object());
 			m_func = pyObject(obj);
 			Py_DECREF(obj);
 		}
@@ -993,10 +1000,8 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(0)
 		// check the super class (BaseOperator) because of the SWIG
 		// interface
 		if (PyObject_HasAttrString(self, "apply") &&
-		    PyObject_HasAttrString(self, "describe")) {
-			g_circular_refs.cleanup();
+		    PyObject_HasAttrString(self, "describe"))
 			g_circular_refs.register_ref(self);
-		}
 		Py_DECREF(self);
 	}
 	if (!PyObject_HasAttrString(obj, "__name__")) {
