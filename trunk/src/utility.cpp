@@ -856,25 +856,40 @@ public:
 		m_references.insert(obj);
 	}
 
+	// this function will be called by the destructor to remove
+	// the pointer from this global list. The destructor can
+	// be triggered by cleanup(), or at the Python level if the user
+	// decided to do something.
+	void deregister_ref(PyObject * obj)
+	{
+		std::set<PyObject *>::iterator it = m_references.find(obj);
+		if (it != m_references.end())
+			m_references.erase(it);
+	}
+
 	// clean up circular refs. Because such objects might exist during
 	// the creation of evolutionary scenario, we wait till the end of 
 	// each evolutionary cycle to clean up the mess
 	void cleanup()
 	{
 		std::set<PyObject *>::iterator it = m_references.begin();
-		while (it != m_references.end())
-		{
+		std::set<PyObject *>::iterator it_end = m_references.end();
+		std::vector<PyObject *> to_be_removed;
+		for (; it != it_end; ++it)
 			// a circular ref has a reference to the function self.func
 			// so it has at least one reference. In another word, if we see
 			// that self has only one reference, it means the object is not
 			// referenced by anyone else and should be removed.
-			if ((*it)->ob_refcnt == 1) {
-				// this will cause the destructor of operator to be called.
-				Py_DECREF(*it);
-				m_references.erase(it++);
-			} else 
-				++it;
-		}
+			if ((*it)->ob_refcnt == 1)
+				to_be_removed.push_back(*it);
+
+		// now really remove the objects. We do it not within the above loop
+		// because the removal of objects will call deregister_ref and
+		// change the container.
+		std::vector<PyObject *>::iterator iv = to_be_removed.begin();
+		std::vector<PyObject *>::iterator iv_end = to_be_removed.end();
+		for (; iv != iv_end; ++iv)
+			Py_DECREF(*iv);
 	}
 
 private:
@@ -889,7 +904,7 @@ void cleanupCircularRefs()
 }
 
 
-pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(0)
+pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(0), m_circular_self(NULL)
 {
 	if (!m_func.isValid())
 		return;
@@ -1000,8 +1015,10 @@ pyFunc::pyFunc(PyObject * func) : m_func(func), m_numArgs(0)
 		// check the super class (BaseOperator) because of the SWIG
 		// interface
 		if (PyObject_HasAttrString(self, "apply") &&
-		    PyObject_HasAttrString(self, "describe"))
+		    PyObject_HasAttrString(self, "describe")) {
+			m_circular_self = self;
 			g_circular_refs.register_ref(self);
+		}
 		Py_DECREF(self);
 	}
 	if (!PyObject_HasAttrString(obj, "__name__")) {
