@@ -445,14 +445,14 @@ public:
 	 */
 	PySelector(PyObject * func, lociList loci = vectoru(),
 		int begin = 0, int end = -1, int step = 1,
-		const intList & at = vectori(), const intList & reps = intList(),
+		const intList & at = vectori(), const intList & reps = intList(), const stringFunc & output = "",
 		const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
-		BaseSelector("", begin, end, step, at, reps, subPops, infoFields),
+		BaseSelector(output, begin, end, step, at, reps, subPops, infoFields),
 		m_func(func), m_loci(loci)
 	{
 		DBG_ASSERT(m_func.isValid(), ValueError, "Passed variable is not a callable python function.");
-	};
+	}
 
 
 	/// HIDDEN Deep copy of a \c PySelector

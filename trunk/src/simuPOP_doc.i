@@ -7333,14 +7333,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyFunc::~pyFunc "
-
-Usage:
-
-    x.~pyFunc()
-
-"; 
-
 %feature("docstring") simuPOP::pyFunc::numArgs "
 
 Description:
@@ -8104,7 +8096,8 @@ Details:
 Usage:
 
     PySelector(func, loci=[], begin=0, end=-1, step=1, at=[],
-      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
+      reps=ALL_AVAIL, output=\"\", subPops=ALL_AVAIL,
+      infoFields=ALL_AVAIL)
 
 Details:
 
