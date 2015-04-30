@@ -334,18 +334,17 @@ __version__ = moduleInfo()['version']
 
 if simuOptions['Version'] is not None:
     expMajor, expMinor, expRelease = [int(x) for x in re.match(r'^(\d+)\.(\d+)\.(\d+)', simuOptions['Version']).groups()]
-    myMajor, myMinor, myRelease = [int(x) for x in re.match(r'^(\d+)\.(\d+)\.(\d+)', moduleInfo()['version']).groups()]
+    myMajor, myMinor, myRelease = [int(x) for x in re.match(r'^(\d+)\.(\d+)\.(\d+)', __version__).groups()]
     if (expMajor > myMajor) or (expMajor == myMajor and expMinor > myMinor) or \
         (expMajor == myMajor and expMinor == myMinor and expRelease > myRelease):
         raise ImportError('simuPOP version %s is installed but version >= %s is required. ' % \
-            (moduleInfo()['version'], simuOptions['Version']) + 
+            (__version__, simuOptions['Version']) + 
             'Please upgrade your simuPOP installation.')
 
 if simuOptions['Revision'] is not None:
-    ver = moduleInfo()['version']
     rev = moduleInfo()['revision']
     if rev < simuOptions['Revision']:
-        raise ImportError('simuPOP version %s (revision %d) is installed ' % (ver, rev) +
+        raise ImportError('simuPOP version %s (revision %d) is installed ' % (__version__, rev) +
             'but simuPOP revision >= %d is required. ' % simuOptions['Revision'] +
             'Please upgrade your simuPOP installation.')
     if 'DBG_COMPATIBILITY' in simuOptions['Debug']:
@@ -357,7 +356,7 @@ if simuOptions['NumThreads'] is not None:
 
 if not simuOptions['Quiet']:
     info = moduleInfo()
-    print("simuPOP Version %s : Copyright (c) 2004-2011 Bo Peng" % (info['version']))
+    print("simuPOP Version %s : Copyright (c) 2004-2011 Bo Peng" % (__version__))
     # compile date, compiler etc are macros that are replaced during compile time.
     print("Revision %d (%s) for Python %s (%dbit, %d%s)" % \
             (info['revision'], info['date'], info['python'], info['wordsize'], info['threads'],
