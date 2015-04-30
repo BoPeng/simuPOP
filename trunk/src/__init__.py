@@ -30,6 +30,7 @@ simuPOP core module.
 """
 
 __all__ = [
+    '__version__',
     # Constants
     #
     'MALE',
@@ -329,6 +330,7 @@ else:
     else:
         from simuPOP.simuPOP_std import *
 
+__version__ = moduleInfo()['version']
 
 if simuOptions['Version'] is not None:
     expMajor, expMinor, expRelease = [int(x) for x in re.match(r'^(\d+)\.(\d+)\.(\d+)', simuOptions['Version']).groups()]
