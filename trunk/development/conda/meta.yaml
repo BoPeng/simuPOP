@@ -4,12 +4,11 @@ package:
 
 source:
   fn: simuPOP-1.1.6.tar.gz
-  url: file:///simuPOP-1.1.6-src.tar.gz
+  url: https://binstar.org/simupop/simuPOP/1.1.6/download/simuPOP-1.1.6-src.tar.gz
   md5: 
    #  patches:
    # List any patch files here
    # - fix.patch
-  #url: https://binstar.org/simupop/simuPOP/1.1.6/download/simuPOP-1.1.6-src.tar.gz
 
 # build:
   # preserve_egg_dir: True
