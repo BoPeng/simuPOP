@@ -11557,6 +11557,8 @@ Details:
 
 %ignore simuPOP::simuPOPgetch();
 
+%ignore simuPOP::cleanupCircularRefs();
+
 %ignore simuPOP::PyObjAsString(PyObject *str);
 
 %ignore simuPOP::PyObjAsBool(PyObject *obj, bool &val);

@@ -1,14 +1,15 @@
 package:
   name: simupop
-  version: !!str 1.1.5
+  version: !!str 1.1.6
 
 source:
-  fn: simuPOP-1.1.5.tar.gz
-  url: https://pypi.python.org/packages/source/s/simuPOP/simuPOP-1.1.5.tar.gz
+  fn: simuPOP-1.1.6.tar.gz
+  url: file:///simuPOP-1.1.6-src.tar.gz
   md5: 
-#  patches:
+   #  patches:
    # List any patch files here
    # - fix.patch
+  #url: https://binstar.org/simupop/simuPOP/1.1.6/download/simuPOP-1.1.6-src.tar.gz
 
 # build:
   # preserve_egg_dir: True
@@ -29,7 +30,6 @@ requirements:
   build:
     - python
     - setuptools
-    - distribute
 
   run:
     - python
@@ -39,7 +39,6 @@ test:
   # Python imports
   imports:
     - simuPOP
-    - src
 
   # commands:
     # You can put test commands to be run here.  Use this to test that the
