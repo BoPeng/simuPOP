@@ -222,7 +222,7 @@ if boost_dir == '':
     import tarfile
     downloadProgress.counter = 0
     try:
-        BOOST_URL = 'http://downloads.sourceforge.net/project/boost/boost/1.48.0/boost_1_48_0.tar.gz?r=&ts=1435893980&use_mirror=iweb'
+        BOOST_URL = 'http://downloads.sourceforge.net/project/boost/boost/1.49.0/boost_1_49_0.tar.gz?r=&ts=1440446866&use_mirror=iweb'
         sys.stdout.write('Downloading boost C++ library 1.49.0 ')
         sys.stdout.flush()
         if not os.path.isfile('boost_1_49_0.tar.gz'):
