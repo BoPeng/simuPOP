@@ -641,8 +641,12 @@ if is_maverick():
     common_extra_link_args = ['-stdlib=libstdc++']
     common_extra_include_dirs = ['/usr/include/c++/4.2.1']
     common_extra_compile_args = ['-Wno-error=unused-command-line-argument-hard-error-in-future']
-else:
+elif os.name == 'nt':  
     common_extra_link_args = []
+    common_extra_include_dirs = []
+    common_extra_compile_args = []
+else:
+    common_extra_link_args = ['-static-libgcc', '-static-libstdc++']
     common_extra_include_dirs = []
     common_extra_compile_args = []
 
@@ -661,7 +665,7 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     if os.name == 'nt':    # Windows, build zlib from source
         res['libraries'] = []
     else:
-        res['libraries'] = ['stdc++', 'z']
+        res['libraries'] = ['z']
         if USE_OPENMP:
             if USE_ICC:
                 res['libraries'].append('iomp5')
