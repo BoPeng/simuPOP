@@ -2398,13 +2398,17 @@ PyObject * loadObj(const string & vars, size_t & offset)
 
 string SharedVariables::to_pickle() const
 {
+#if PY_VERSION_HEX >= 0x03000000
 	PyObject * pickle = PyImport_ImportModule("pickle");
+#else
+	PyObject * pickle = PyImport_ImportModule("cPickle");
+#endif
 	if (! pickle)
 		throw RuntimeError("Failed to import module pickle to serialize population variables.");
 
 	// here we use version 2 because this is the latest version that supported by
-	// both python 2 and python 3. This is a binary format so both point and size
-	// are needed.
+	// both python 2 and python 3, also because it is the one that handles simuPOP's
+	// defdict type using its __reduce__ interface.
 	PyObject * pres = PyObject_CallMethod(pickle, "dumps", "(Oi)", m_dict, 2);
 	if (pres == NULL) {
 		PyErr_Print();
@@ -2418,10 +2422,12 @@ string SharedVariables::to_pickle() const
 #else
 	PyString_AsStringAndSize(pres, &buf, &sz);
 #endif
+	// need to copy the data out before releasing pres
+	string res(buf, sz);
 	Py_DECREF(pres);
 	Py_DECREF(pickle);
 
-	return string(buf, sz);
+	return res;
 }
 
 
@@ -2455,7 +2461,11 @@ void SharedVariables::fromString(const string & vars)
 
 void SharedVariables::from_pickle(const string & vars)
 {
+#if PY_VERSION_HEX >= 0x03000000
 	PyObject * pickle = PyImport_ImportModule("pickle");
+#else
+	PyObject * pickle = PyImport_ImportModule("cPickle");
+#endif
 	if (! pickle)
 		throw RuntimeError("Failed to import module pickle to serialize population variables.");
 
