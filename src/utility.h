@@ -1264,7 +1264,14 @@ public:
 	/// CPPONLY, save m_dist as string
 	string asString() const;
 
+	/// CPPONLY
 	void fromString(const string & vars);
+
+	/// CPPONLY, save m_dist to pickle
+	string to_pickle() const;
+
+	/// CPPONLY
+	void from_pickle(const string & vars);
 
 private:
 	/// the list
