@@ -3392,7 +3392,7 @@ void Population::useAncestralGen(ssize_t idx)
 }
 
 
-void Population::save(boost::archive::text_oarchive & ar, const unsigned int) const
+void Population::save(boost::archive::text_oarchive & ar, const unsigned int version) const
 {
 	// deep adjustment: everyone in order
 	const_cast<Population *>(this)->syncIndPointers();
@@ -3631,7 +3631,8 @@ void Population::save(boost::archive::text_oarchive & ar, const unsigned int) co
 	// save shared variables as string.
 	// note that many format are not supported.
 	DBG_DO(DBG_POPULATION, cerr << "Handling shared variables" << endl);
-	string vars = varsAsString();
+
+	string vars = varsAsString(version >= 3);
 	ar & vars;
 }
 
@@ -3653,7 +3654,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 	DBG_DO(DBG_POPULATION, cerr << "Handling genotype" << endl);
 
 	// newer version unfied importer
-	if (version == 2) {
+	if (version >= 2) {
 		// a newer version
 		size_t size;
 		ar & size;
@@ -3873,7 +3874,7 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 		ar & pd.m_subPopSize;
 		ar & pd.m_subPopNames;
 
-		if (version == 2) {
+		if (version >= 2) {
 			// a newer version
 			size_t size;
 			ar & size;
@@ -4063,8 +4064,8 @@ void Population::load(boost::archive::text_iarchive & ar, const unsigned int ver
 	DBG_DO(DBG_POPULATION, cerr << "Handling shared variables" << endl);
 	string vars;
 	ar & vars;
-	varsFromString(vars);
 
+	varsFromString(vars, version >= 3);
 	setIndOrdered(true);
 	DBG_WARNIF(max_allele > ModuleMaxAllele, (boost::format("Warning: the maximum allele of the loaded population is %1%"
 												            " which is larger than the maximum allowed allele of this module. "

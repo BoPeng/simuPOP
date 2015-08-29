@@ -1596,16 +1596,22 @@ public:
 
 
 	/// CPPONLY
-	string varsAsString() const
+	string varsAsString(bool use_pickle=false) const
 	{
-		return m_vars.asString();
+		if (use_pickle)
+			return m_vars.to_pickle();
+		else
+			return m_vars.asString();
 	}
 
 
 	/// CPPONLY
-	void varsFromString(const string & vars)
+	void varsFromString(const string & vars, bool use_pickle=false)
 	{
-		return m_vars.fromString(vars);
+		if (use_pickle)
+			return m_vars.from_pickle(vars);
+		else
+			return m_vars.fromString(vars);
 	}
 
 
@@ -1768,7 +1774,8 @@ Population & loadPopulation(const string & file);
 // version 0: base (reset for version 1.0)
 // version 1: with lineage information for lineage-aware modules
 // version 2: for memory-efficient save/load
-BOOST_CLASS_VERSION(simuPOP::Population, 2)
+// version 3: use pickle to save load population variables
+BOOST_CLASS_VERSION(simuPOP::Population, 3)
 #  endif
 #endif
 #endif

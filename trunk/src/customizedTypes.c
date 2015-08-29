@@ -806,7 +806,10 @@ int initCustomizedTypes(PyObject * m)
 }
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #else  // for Python 3
+
 /* Array object implementation */
 
 typedef struct arrayobject_template<GenoIterator> arrayobject;
@@ -1364,7 +1367,7 @@ defdict_reduce(defdictobject * dd)
 		return NULL;
 	}
 	result = PyTuple_Pack(4, Py_TYPE(dd),
-		Py_None, Py_None, iter);
+		PyTuple_New(0), Py_None, iter);
 	Py_DECREF(iter);
 	Py_DECREF(items);
 	return result;
@@ -1442,7 +1445,7 @@ The default value is returned when an invalid key is used.\n\
 
 PyTypeObject defdict_type = {
 	PyVarObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type),		   0)
-	"simuPOP.defaultdict",                                          /* tp_name */
+	"defdict",                                          /* tp_name */
 	sizeof(defdictobject),                                          /* tp_basicsize */
 	0,                                                              /* tp_itemsize */
 	/* methods */

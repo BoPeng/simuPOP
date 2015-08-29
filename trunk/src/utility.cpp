@@ -2396,6 +2396,35 @@ PyObject * loadObj(const string & vars, size_t & offset)
 }
 
 
+string SharedVariables::to_pickle() const
+{
+	PyObject * pickle = PyImport_ImportModule("pickle");
+	if (! pickle)
+		throw RuntimeError("Failed to import module pickle to serialize population variables.");
+
+	// here we use version 2 because this is the latest version that supported by
+	// both python 2 and python 3. This is a binary format so both point and size
+	// are needed.
+	PyObject * pres = PyObject_CallMethod(pickle, "dumps", "(Oi)", m_dict, 2);
+	if (pres == NULL) {
+		PyErr_Print();
+		PyErr_Clear();
+		throw RuntimeError("Failed to call pickle.dumps to save population variables.");
+	}
+	Py_ssize_t sz = 0;
+	char * buf = NULL;
+#if PY_VERSION_HEX >= 0x03000000
+	PyBytes_AsStringAndSize(pres, &buf, &sz);
+#else
+	PyString_AsStringAndSize(pres, &buf, &sz);
+#endif
+	Py_DECREF(pres);
+	Py_DECREF(pickle);
+
+	return string(buf, sz);
+}
+
+
 string SharedVariables::asString() const
 {
 	// go through each variable and save
@@ -2424,6 +2453,35 @@ void SharedVariables::fromString(const string & vars)
 	m_dict = obj;
 }
 
+void SharedVariables::from_pickle(const string & vars)
+{
+	PyObject * pickle = PyImport_ImportModule("pickle");
+	if (! pickle)
+		throw RuntimeError("Failed to import module pickle to serialize population variables.");
+
+	// use protocol 1 for compatibility
+	string res;
+#if PY_VERSION_HEX >= 0x03000000
+	PyObject * args = PyBytes_FromStringAndSize(vars.c_str(), vars.size());
+#else
+	PyObject * args = PyString_FromStringAndSize(vars.c_str(), vars.size());
+#endif
+	// remove m_dict
+	if (m_ownVars) {
+		PyDict_Clear(m_dict);
+		Py_XDECREF(m_dict);
+	}
+	m_ownVars = true;
+	m_dict = PyObject_CallMethod(pickle, "loads", "(O)", args);
+	if (m_dict == NULL) {
+		PyErr_Print();
+		PyErr_Clear();
+		throw RuntimeError("Failed to call pickle.loads to load population variables.");
+	}
+	Py_DECREF(args);
+
+	Py_DECREF(pickle);
+}
 
 // simuVars will hold replicate specific Shared Variables.
 
