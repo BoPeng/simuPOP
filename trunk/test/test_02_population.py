@@ -1296,7 +1296,7 @@ class TestPopulation(unittest.TestCase):
 
     def testCrossPlatformLoad(self):
         'Testing loading populations created from other platform and allele types'
-        localFile = 'sample_%d_%s_v2.pop' % ( \
+        localFile = 'sample_%d_%s_v3.pop' % ( \
             moduleInfo()['wordsize'],
             {'short': 'std', 
              'binary': 'ba',
@@ -1309,9 +1309,10 @@ class TestPopulation(unittest.TestCase):
             pop = Population(10000, loci=100, infoFields=['a', 'ind_id'])
             initGenotype(pop, genotype=[0, 1, 1, 1, 0, 1, 1])
             initInfo(pop, values=[1, 2, 3, 4, 5], infoFields='a')
+            stat(pop, alleleFreq=ALL_AVAIL)
             pop.save(localFile)
                 
-        for version in [0, 1, 2]:
+        for version in [0, 1, 2, 3]:
             for plat in [32, 64]:
                 for mod in ['std', 'la', 'ba', 'mu', 'lin']:
                     if version == 0 and mod in ['lin', 'mu']:
@@ -1334,6 +1335,8 @@ class TestPopulation(unittest.TestCase):
                         [1, 2, 3, 4, 5] * int(10000 / 5))
                     self.assertEqual(pop.genotype(),
                         ([0, 1, 1, 1, 0, 1, 1] * int(10000*100*2/7+1))[:10000*100*2])
+                    if '_v3' in popname:
+                        self.assertTrue(isinstance(pop.dvars().alleleFreq, defdict))
 
     def testVars(self):
         'Testing Population::vars(), vars(subPop), dvars(), dvars(subPop)'
