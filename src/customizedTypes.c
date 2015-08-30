@@ -1366,8 +1366,8 @@ defdict_reduce(defdictobject * dd)
 		Py_DECREF(items);
 		return NULL;
 	}
-	result = PyTuple_Pack(4, Py_TYPE(dd),
-		PyTuple_New(0), Py_None, iter);
+	result = PyTuple_Pack(5, Py_TYPE(dd),
+		PyTuple_New(0), Py_None, Py_None, iter);
 	Py_DECREF(iter);
 	Py_DECREF(items);
 	return result;
