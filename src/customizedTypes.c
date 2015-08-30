@@ -1445,7 +1445,7 @@ The default value is returned when an invalid key is used.\n\
 
 PyTypeObject defdict_type = {
 	PyVarObject_HEAD_INIT(DEFERRED_ADDRESS(&PyType_Type),		   0)
-	"defdict",                                          /* tp_name */
+	"simuPOP.defdict",                                          /* tp_name */
 	sizeof(defdictobject),                                          /* tp_basicsize */
 	0,                                                              /* tp_itemsize */
 	/* methods */
