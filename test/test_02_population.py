@@ -1170,7 +1170,7 @@ class TestPopulation(unittest.TestCase):
         'Testing Population::sortIndividuals(infoFields)'
         pop = self.getPop(size=[1000, 2000], infoFields=['a', 'b'])
         initInfo(pop, lambda: random.randint(1, 5), infoFields=['a', 'b'])
-        print(pop.indInfo('a'))
+        pop.sortIndividuals('a')
         for sp in range(2):
             for i in range(1, pop.subPopSize(sp)):
                 self.assertTrue(pop.individual(i-1, sp).a <= pop.individual(i, sp).a)
