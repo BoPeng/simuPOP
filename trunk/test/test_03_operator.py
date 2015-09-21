@@ -266,14 +266,15 @@ class TestOperator(unittest.TestCase):
         with open('test1.txt') as test1txt:
             self.assertEqual(test1txt.read(), 'func2'*50)
         # runtime error only raise in python 3
-        simu = Simulator(Population(), rep=5)
-        with open('test1.txt', 'wb') as out:
-            # each replicate
-            self.assertRaises(RuntimeError, simu.evolve,
-                matingScheme=CloneMating(),
-                postOps = [
-                PyOutput("func2", output=out),
-            ], gen=10)
+        if sys.version_info.major > 2:
+            simu = Simulator(Population(), rep=5)
+            with open('test1.txt', 'wb') as out:
+                # each replicate
+                self.assertRaises(RuntimeError, simu.evolve,
+                    matingScheme=CloneMating(),
+                    postOps = [
+                    PyOutput("func2", output=out),
+                ], gen=10)
         #
         simu = Simulator(Population(), rep=5)
         with open('test1.txt', 'wb') as out:
@@ -903,11 +904,14 @@ class TestOperator(unittest.TestCase):
                 postOps=PyOperator(func=Functor(), param=self),
                 gen=10
             )
-        self.assertEqual(Functor.instance_count, 0)
+        self.assertLessEqual(Functor.instance_count, 1)
         
 
     def testWrapperOp(self):
-        # func
+        # test memory leak of Function or class that involves self
+        # simuPOP automatically clears memory but the first instance
+        # is not cleared (due to the fact that we do not know the 
+        # life of the object at the C++ level.
         for i in range(100):
             pop = Population(10)
             pop.evolve(
@@ -915,7 +919,7 @@ class TestOperator(unittest.TestCase):
                 postOps=WrapperOpFunc(param=self),
                 gen=10
             )
-        self.assertEqual(WrapperOpFunc.instance_count, 0)
+        self.assertLessEqual(WrapperOpFunc.instance_count, 1)
         #
         for i in range(100):
             pop = Population(10)
@@ -924,7 +928,7 @@ class TestOperator(unittest.TestCase):
                 postOps=WrapperOpCall(param=self),
                 gen=10
             )
-        self.assertEqual(WrapperOpCall.instance_count, 0)
+        self.assertLessEqual(WrapperOpCall.instance_count, 1)
         #
         for i in range(100):
             pop = Population(10)
@@ -933,7 +937,7 @@ class TestOperator(unittest.TestCase):
                 postOps=WrapperOpSelf(param=self),
                 gen=10
             )
-        self.assertEqual(WrapperOpSelf.instance_count, 0)
+        self.assertLessEqual(WrapperOpSelf.instance_count, 1)
         #
 
 class lociFunc:
