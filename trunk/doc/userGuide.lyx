@@ -1,5 +1,5 @@
-#LyX 2.0 created this file. For more info see http://www.lyx.org/
-\lyxformat 413
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
 \begin_document
 \begin_header
 \textclass manual
@@ -52,13 +52,13 @@ Last modified \\
 \font_roman default
 \font_sans default
 \font_typewriter beramono
+\font_math auto
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 70
-
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -83,15 +83,24 @@ Last modified \\
 \pdf_quoted_options "linkcolor=TitleColor,urlcolor=LinkColor"
 \papersize default
 \use_geometry false
-\use_amsmath 1
-\use_esint 0
-\use_mhchem 1
-\use_mathdots 1
-\cite_engine natbib_authoryear
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 0
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plainnat
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
 \suppress_date false
+\justification true
 \use_refstyle 0
 \index Index
 \shortcut idx
@@ -473,7 +482,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -1669,7 +1678,7 @@ status open
 
 \begin_layout Plain Layout
 
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -2665,7 +2674,7 @@ status open
 
 \begin_layout Plain Layout
 
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -3101,7 +3110,7 @@ status open
 
 \begin_layout Plain Layout
 
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Turn on/off debug information
@@ -3964,7 +3973,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -4235,7 +4244,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -18760,7 +18769,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -19401,6 +19410,87 @@ reference "OffspringTagger"
 \end_layout
 
 \begin_layout Subsection
+Dynamic population size determined by number of offspring *
+\end_layout
+
+\begin_layout Standard
+What we have described so far requires you to determine the size of offspring
+ population in advance.
+ Each mating event produces a number of offspring that is determined by
+ parameter 
+\family typewriter
+NumOffspring
+\family default
+.
+ The mating process stops when the offspring population is filled.
+ This works for most scenarios but there are cases where the offspring populatio
+n size is determined dynamically from a fixed number of mating events with
+ random number of offspring.
+ For example, you might design a mating scheme where all males in a population
+ mate only once and produce random number of offspring.
+\end_layout
+
+\begin_layout Standard
+These kind of mating schemes can be simulated using a demographic model
+ that calculates offspring population size from pre-simulated number of
+ offspring for each family.
+ More specifically, we
+\end_layout
+
+\begin_layout Itemize
+Define a demogrphic function (model) that will be called before mating happens.
+\end_layout
+
+\begin_layout Itemize
+This function determines and save the number of offspring for each mating
+ event, and return the total number of offspring as offspring population
+ size.
+\end_layout
+
+\begin_layout Itemize
+Pass a function or generator to parameter numOffspring to pass pre-determined
+ number of offspring.
+ This function will be called each time when number of offspring is needed.
+\end_layout
+
+\begin_layout Standard
+The number of offspring could be saved and retrieved as global variable
+ but a more clever method is to store the numbers of offspring in a demographic
+ model (class).
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "dynamicNumOff"
+
+\end_inset
+
+ demonstrates this method by implementing a demographic model that simulate,
+ save, and return the number of offspring.
+ Note that although we determine the number of mating events from number
+ of males in the parental population, a random mating scheme will choose
+ parents with replacement so it is likely that some parents will be chosen
+ multiple times while some others are not chosen at all.
+ Please refer to section 
+\begin_inset Quotes eld
+\end_inset
+
+Non-random and customized mating schemes
+\begin_inset Quotes erd
+\end_inset
+
+ to learn how to define a mating scheme that picks parents without replacement.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/dynamicNumOff.log"
+lstparams "caption={Dynamic population size determined by number of offspring},label={dynamicNumOff}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Determine sex of offspring
 \begin_inset CommandInset label
 LatexCommand label
@@ -19956,7 +20046,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -20846,7 +20936,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -23870,7 +23960,7 @@ status open
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -24325,7 +24415,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -24424,7 +24514,7 @@ sideways false
 status collapsed
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -24589,7 +24679,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -25873,7 +25963,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -25944,7 +26034,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -26244,7 +26334,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -26324,7 +26414,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -26395,7 +26485,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -26457,7 +26547,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -27006,7 +27096,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -27164,7 +27254,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -27288,7 +27378,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -27549,7 +27639,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -27734,7 +27824,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -27775,7 +27865,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -27813,7 +27903,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -28211,7 +28301,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -28316,7 +28406,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -28423,7 +28513,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -28542,7 +28632,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -28653,7 +28743,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -29956,7 +30046,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
