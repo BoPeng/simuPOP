@@ -2406,6 +2406,13 @@ string SharedVariables::to_pickle() const
 	if (! pickle)
 		throw RuntimeError("Failed to import module pickle to serialize population variables.");
 
+	// Some items in __builtins__ are not pickable so we will have to remove them
+	// before picking.
+	PyObject * builtins = PyString_FromString("__builtins__");
+	if (PyDict_Contains(m_dict, builtins))
+		PyDict_DelItem(m_dict, builtins);
+	Py_DECREF(builtins);
+
 	// here we use version 2 because this is the latest version that supported by
 	// both python 2 and python 3, also because it is the one that handles simuPOP's
 	// defdict type using its __reduce__ interface.
