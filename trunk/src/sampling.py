@@ -157,14 +157,15 @@ def plotPedigree(ped, filename=None, idField='ind_id', fatherField='father_id',
     plotter.newDevice()
     #
     try:
+        from rpy2.robjects.packages import importr
         # try to use the kinship2 library
-        plotter.r.library('kinship2')
-    except:
+        importr('kinship2')
+    except Exception as e:
         # if not found, try the older version
         try:
             plotter.r.library('kinship')
         except:
-            raise ImportError('Failed to load R library kinship2.')
+            raise ImportError('Failed to load R library kinship2. {}'.format(e))
     id = []
     dadid = []
     momid = []
@@ -207,8 +208,9 @@ def plotPedigree(ped, filename=None, idField='ind_id', fatherField='father_id',
             momid[idx] = 0
             dadid[idx] = 0
     # create an object of ped structure recognizable by R library
-    ptemp = plotter.with_mode(plotter.NO_CONVERSION, plotter.r.pedigree)(
-        id=id, dadid=dadid, momid=momid, sex=sex, affected=aff)
+    #ptemp = plotter.with_mode(plotter.NO_CONVERSION, plotter.r.pedigree)(
+    #    id=id, dadid=dadid, momid=momid, sex=sex, affected=aff)
+    ptemp = plotter.r.pedigree(id=id, dadid=dadid, momid=momid, sex=sex, affected=aff)
     # plot the ped structure
     plotter.r.par(**args.getArgs('par', None))
     plotter.r.plot(ptemp, **args.getArgs('plot', None))

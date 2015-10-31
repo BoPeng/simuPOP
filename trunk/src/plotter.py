@@ -151,15 +151,9 @@ def newDevice():
     if plotter == 'rpy':
         # open a new window
         try:
-            # 46754 is the revision number for R 2.8.0
-            if int(r.R_Version()['svn rev']) < 46754:
-                # For R < 2.8.0, getOption('device') returns a string (such as 'X11')
-                r(r.getOption('device') + '()')
-            else:
-                # For R >= 2.8.0, getOption('device') returns a function
-                r('getOption("device")()')
-        except:
-            raise RuntimeError("Failed to get R version to start a graphical device");
+            r('getOption("device")()')
+        except Exception as e:
+            raise RuntimeError("Failed to get R version to start a graphical device: {}".format(e));
         # get device number
         device = r.dev_cur()
         if device == 0:
@@ -169,14 +163,10 @@ def newDevice():
         # open a new window
         try:
             # 46754 is the revision number for R 2.8.0
-            if int(r('R.Version()$"svn rev"')[0]) < 46754:
-                # For R < 2.8.0, getOption('device') returns a string (such as 'X11')
-                r(r.getOption('device') + '()')
-            else:
-                # For R >= 2.8.0, getOption('device') returns a function
-                r('getOption("device")()')
-        except:
-            raise RuntimeError("Failed to get R version to start a graphical device");
+            # For R >= 2.8.0, getOption('device') returns a function
+            r('getOption("device")()')
+        except Exception as e:
+            raise RuntimeError("Failed to get R version to start a graphical device: {}".format(e));
         # get device number
         device = r['dev.cur']()
         if device == 0:
