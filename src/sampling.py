@@ -62,7 +62,6 @@ number of individuals from each subpopulation.
 __all__ = [
     #
     'indexToID',
-    'plotPedigree',
     # Classes that can be derived to implement more complicated
     # sampling scheme
     'BaseSampler',
@@ -128,93 +127,6 @@ def indexToID(pop, idField='ind_id', fatherField='father_id', motherField='mothe
             if ind.info(motherIndex) != -1:
                 mother = pop.ancestor(ind.info(motherIndex), gen+1)
                 ind.setInfo(mother.info(idField), motherField)
-
-
-# pedigree drawing
-def plotPedigree(ped, filename=None, idField='ind_id', fatherField='father_id',
-    motherField='mother_id', *args, **kwargs):
-    '''A wrapper function that calls R to draw pedigree by outputting the
-    pedigree to a format that is recognizable by R's ``kinship2`` library.
-    *ped* can be a population or a pedigree object, as long as there are
-    valid *idField*, *fatherField* and *motherField* fields in the population.
-    Aliased arguments could be used to pass parameters to functions
-    ``pedigree``, ``plot`` and ``par``. Please refer to module
-    ``simuPOP.plotter`` for details about aliased arguments. This function
-    returns silently if rpy is not properly installed.
-    '''
-    try:
-        import plotter
-    except ImportError:
-        return
-    #
-    args = plotter.DerivedArgs(
-        defaultFuncs = ['plot'],
-        allFuncs = ['par', 'plot', 'Pedigree', 'dev_print'],
-        defaultParams = {'par_xpd': True},
-        **kwargs
-    )
-    # device
-    plotter.newDevice()
-    #
-    try:
-        from rpy2.robjects.packages import importr
-        # try to use the kinship2 library
-        importr('kinship2')
-    except Exception as e:
-        # if not found, try the older version
-        try:
-            plotter.r.library('kinship')
-        except:
-            raise ImportError('Failed to load R library kinship2. {}'.format(e))
-    id = []
-    dadid = []
-    momid = []
-    sex = []
-    aff = []
-    for gen in range(ped.ancestralGens(), -1, -1):
-        ped.useAncestralGen(gen)
-        for ind in ped.individuals():
-            id.append(int(ind.info(idField)))
-            #
-            fid = int(ind.info(fatherField))
-            if fid >= 1:
-                dadid.append(fid)
-            else:
-                # father does not exist
-                dadid.append(0)
-            #
-            mid = int(ind.info(motherField))
-            if mid >= 1:
-                momid.append(mid)
-            else:
-                momid.append(0)
-            #
-            if ind.sex() == MALE:
-                sex.append(1)
-            else:
-                sex.append(2)
-            #
-            if ind.affected():
-                aff.append(2)
-            else:
-                aff.append(1)
-    # set momid or dadid to zero if they do not appear in id.
-    # datatype set is available only after 2.6.... so use a dictionary
-    uniqueID = {}
-    for ind in id:
-        uniqueID[ind] = True
-    for idx in range(len(id)):
-        if not uniqueID.has_key(momid[idx]) or not uniqueID.has_key(dadid[idx]):
-            momid[idx] = 0
-            dadid[idx] = 0
-    # create an object of ped structure recognizable by R library
-    #ptemp = plotter.with_mode(plotter.NO_CONVERSION, plotter.r.pedigree)(
-    #    id=id, dadid=dadid, momid=momid, sex=sex, affected=aff)
-    ptemp = plotter.r.pedigree(id=id, dadid=dadid, momid=momid, sex=sex, affected=aff)
-    # plot the ped structure
-    plotter.r.par(**args.getArgs('par', None))
-    plotter.r.plot(ptemp, **args.getArgs('plot', None))
-    plotter.saveFigure(**args.getArgs('dev_print', None, file=filename))
 
 
 # Sampling classes and functions

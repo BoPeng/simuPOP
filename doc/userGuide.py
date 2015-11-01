@@ -4783,7 +4783,7 @@ pop.evolve(
 
 #begin_file log/forwardTrajectory.py
 import simuOpt
-simuOpt.setOptions(quiet=True, plotter='matplotlib')
+simuOpt.setOptions(quiet=True)
 import simuPOP as sim
 #begin_ignore
 sim.setRNG(seed=12345)
@@ -4823,7 +4823,7 @@ pop.evolve(
 #begin_file log/backTrajectory.py
 #begin_ignore
 import simuOpt
-simuOpt.setOptions(quiet=True, plotter='matplotlib')
+simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
@@ -4977,7 +4977,7 @@ os.remove('pop.csv')
 #begin_file log/demoModel.py
 #begin_ignore
 import simuOpt
-simuOpt.setOptions(quiet=True, plotter='matplotlib')
+simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 from simuPOP.demography import *
@@ -5044,7 +5044,7 @@ MultiStageModel([
 #begin_file log/demoEventModel.py
 #begin_ignore
 import simuOpt
-simuOpt.setOptions(quiet=True, plotter='matplotlib')
+simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 from simuPOP.demography import *
@@ -5133,7 +5133,7 @@ pop.evolve(
 #begin_file log/varPlotByRep.py
 #begin_ignore
 import simuOpt
-simuOpt.setOptions(quiet=True, plotter='matplotlib')
+simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
@@ -5149,15 +5149,6 @@ simu.evolve(
     matingScheme=sim.RandomMating(),
     postOps=[
         sim.Stat(alleleFreq=range(4)),
-        # rpy syntax
-        #VarPlotter('[alleleFreq[x][0] for x in range(4)]', byRep=True,
-        #    update=10, saveAs='log/rpy_byRep.png',
-        #    legend=['Locus %d' % x for x in range(4)],
-        #    ylab='Allele frequency',
-        #    ylim=[0, 1],
-        #    main_rep=['Genetic drift, replicate %d' % x for x in range(3)],
-        #),
-        # matplotlib syntax
         VarPlotter('[alleleFreq[x][0] for x in range(4)]', byRep=True,
             update=10, saveAs='log/varplot_byRep.png',
             figure_figsize=(10, 8),
@@ -5174,7 +5165,7 @@ simu.evolve(
 #begin_file log/varPlotByDim.py
 #begin_ignore
 import simuOpt
-simuOpt.setOptions(quiet=True, plotter='matplotlib')
+simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
@@ -5227,7 +5218,7 @@ simu.evolve(
 #begin_file log/ScatterPlotter.py
 #begin_ignore
 import simuOpt
-simuOpt.setOptions(quiet=True, plotter='matplotlib')
+simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
@@ -5273,61 +5264,6 @@ pop.evolve(
 )
 #end_file
 
-#begin_file log/HistPlotter.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True, plotter='rpy2')
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.setRNG(seed=12345)
-#end_ignore
-import simuPOP as sim
-from simuPOP.plotter import HistPlotter, QQPlotter, BoxPlotter
-import random
-pop = sim.Population([500], infoFields=['x', 'y', 'anc'])
-# Defines VSP 0, 1, 2, 3, 4 by anc.
-pop.setVirtualSplitter(sim.SexSplitter())
-
-def passInfo(x, y, anc):
-    'Parental fields will be passed as tuples'
-    off_anc = (anc[0] + anc[1])/2.
-    off_x = (x[0] + x[1])/2 + random.normalvariate(off_anc - 0.5, 0.1)
-    off_y = (y[0] + y[1])/2 + random.normalvariate(0, 0.1)
-    return off_x, off_y, off_anc
-
-pop.evolve(
-    initOps=[
-        sim.InitSex(),
-        # random geographic location
-        sim.InitInfo(random.random, infoFields=['x', 'y']),
-        # anc is 0 or 1
-        sim.InitInfo(lambda : random.randint(0, 1), infoFields='anc')
-    ],
-    matingScheme=sim.RandomMating(ops=[
-        sim.MendelianGenoTransmitter(),
-        sim.PyTagger(passInfo)]),
-    postOps=[
-        HistPlotter(infoFields='anc', 
-            subPops=[(0,0), (0,1)], col_sp=['blue', 'red'],
-            saveAs='log/HistPlotter.png',
-            main="!'Histogram of ancestry values at generation %d' % gen",
-        ),
-        QQPlotter(infoFields='anc', 
-            subPops=[(0,0), (0,1)], col_sp=['blue', 'red'],
-            saveAs='log/QQPlotter.png',
-            main="!'QQ plot of ancestry values at generation %d' % gen",
-        ),
-        BoxPlotter(infoFields='anc', 
-            subPops=[(0,0), (0,1)],
-            saveAs='whatever',
-            dev_print_file='!"log/Gen%d.png" % gen',
-            main="!'Boxplots of ancestry values at generation %d' % gen",
-        ),
-    ],
-    gen = 5,
-)
-#end_file
 
 #begin_file log/getParam.py
 #begin_ignore
@@ -5476,16 +5412,17 @@ for sample in samples:
 
 #end_file
 
-#begin_file log/plotPedigree.py
+
+#begin_file log/sampleAffectedSibpair.py
 #begin_ignore
 import simuOpt
 simuOpt.setOptions(quiet=True)
 #end_ignore
 import simuPOP as sim
 #begin_ignore
-sim.setRNG(seed=12311)
+sim.setRNG(seed=12347)
 #end_ignore
-from simuPOP.sampling import indexToID #, plotPedigree
+from simuPOP.sampling import indexToID
 pop = sim.Population(size=15, loci=5, infoFields=['father_idx', 'mother_idx'], ancGen=2)
 pop.evolve(
     preOps=[
@@ -5502,25 +5439,10 @@ indexToID(pop, reset=True)
 print(pop.infoFields())
 # save this population for future use
 pop.save('log/pedigree.pop')
-# draw pedigree, this function is now deprecated because of the removal of 
-# rpy/rpy2 support
-#plotPedigree(pop, filename='log/pedigree.png')
-#end_file
 
-
-#begin_file log/sampleAffectedSibpair.py
-#begin_ignore
-import simuOpt
-simuOpt.setOptions(quiet=True)
-#end_ignore
-import simuPOP as sim
-#begin_ignore
-sim.setRNG(seed=12347)
-#end_ignore
-from simuPOP.sampling import drawAffectedSibpairSample #, plotPedigree
+from simuPOP.sampling import drawAffectedSibpairSample
 pop = sim.loadPopulation('log/pedigree.pop')
 sample = drawAffectedSibpairSample(pop, families=2)
-#plotPedigree(sample, filename='log/affectedSibpair.png')
 #end_file
 
 
@@ -5533,7 +5455,7 @@ import simuPOP as sim
 #begin_ignore
 sim.setRNG(seed=12347)
 #end_ignore
-from simuPOP.sampling import drawNuclearFamilySample #, plotPedigree
+from simuPOP.sampling import drawNuclearFamilySample
 pop = sim.loadPopulation('log/pedigree.pop')
 sample = drawNuclearFamilySample(pop, families=2, numOffspring=(2,4),
     affectedParents=(1,2), affectedOffspring=(1, 3))
@@ -5547,7 +5469,6 @@ print(sz)
 ped1 = sample.extractIndividuals(IDs=0, idField='ped_id')
 # print the ID of all individuals in the first pedigree
 print([ind.ind_id for ind in ped1.allIndividuals()])
-#plotPedigree(sample, filename='log/nuclerFamily.png')
 #end_file
 
 
@@ -5561,11 +5482,10 @@ import simuPOP as sim
 #begin_ignore
 sim.setRNG(seed=12347)
 #end_ignore
-from simuPOP.sampling import drawThreeGenFamilySample #, plotPedigree
+from simuPOP.sampling import drawThreeGenFamilySample
 pop = sim.loadPopulation('log/pedigree.pop')
 sample = drawThreeGenFamilySample(pop, families=2, numOffspring=(1, 3),
     pedSize=(8, 15), numOfAffected=(2, 5))
-#plotPedigree(sample, filename='log/threeGenFamily.png')
 #end_file
 
 
@@ -5578,13 +5498,12 @@ import simuPOP as sim
 #begin_ignore
 sim.setRNG(seed=12347)
 #end_ignore
-from simuPOP.sampling import drawCombinedSample, AffectedSibpairSampler, NuclearFamilySampler #, plotPedigree
+from simuPOP.sampling import drawCombinedSample, AffectedSibpairSampler, NuclearFamilySampler
 pop = sim.loadPopulation('log/pedigree.pop')
 sample = drawCombinedSample(pop, samplers = [
     AffectedSibpairSampler(families=1),
     NuclearFamilySampler(families=1, numOffspring=(2,4), affectedParents=(1,2), affectedOffspring=(1,3))
     ])
-#plotPedigree(sample, filename='log/combinedSampling.png')
 #end_file
 
 
