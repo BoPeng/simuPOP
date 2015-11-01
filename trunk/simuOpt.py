@@ -195,10 +195,7 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
         commandline option ``--gui``.
 
     plotter
-        The plotting library used to draw figures. simuPOP will try to
-        use ``rpy``, ``rpy2``, and ``matplotlib`` if the module is 
-        available. You can set this parameter to one of them to force the
-        use a particular library.
+        (Deprecated)
 
     quiet
         If set to ``True``, suppress the banner message when a simuPOP module
@@ -296,10 +293,8 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
         simuOptions['NumThreads'] = numThreads
     elif numThreads is not None:
         raise TypeError('An integer number is expected for parameter numThreads.')
-    if plotter in ['rpy', 'rpy2', 'matplotlib']:
-        simuOptions['Plotter'] = plotter
-    elif plotter is not None:
-        raise TypeError('Only rpy and matplotlib are allowed for parameter plotter.')
+    if plotter is not None:
+        sys.stderr.write('WARNING: plotter option is deprecated because of the removal of rpy/rpy2 support\n')
 
 #
 # define some validataion functions

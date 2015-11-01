@@ -26,38 +26,20 @@
 #
 
 '''
-This module defines several utility functions and Python operators that make
-use of the Python rpy or rpy2 module (http://rpy.sourceforge.net) to plot
-expressions and information fields of evolving populations using a popular
-statistical analysis language R (http://www.r-project.org) or matplotlib.
-You can specify the plotting library using simuOpt.setOptions(plotter='matplotlib').
+This module defines several utility functions and Python operators that plot
+expressions and information fields of evolving populations using matplotlib.
+Plotting through rpy and rpy2 was supported in version 1.1.6 and earlier but
+was removed in version 1.1.7 due to stability problems of rpy2.
 
-Each operator calls a sequence of R or matplotlib functions to draw and save
+Each operator calls a sequence of  matplotlib functions to draw and save
 figures. A special parameter passing mechanism is used so that you can specify
-arbitrary parameters to these functions. For example, you can use parameter
-``par_mfrow=[2,2]`` to pass ``mfrow=[2,2]`` to function ``par``, and use
-``lty_rep=[1,2]`` to pass ``lty=1`` and ``lty=2`` to specify different line
-types for different replicates if ``rpy`` is used. The help message of each class
-will describe which and in what sequence these R or matplotlib functions are
-called to help you figure out which parameters are allowed. The syntax
-will be different if different plotting module is used.
+arbitrary parameters to these functions. 
 '''
 
 __all__ = [
-    'newDevice', 
-    'saveFigure',
     'DerivedArgs',
     'VarPlotter',
     'ScatterPlotter',
-    'InfoPlotter',
-    'HistPlotter',
-    'QQPlotter',
-    'BoxPlotter',
-    # export essential piece of rpy or rpy2 so that other modules could use them
-    'r',
-    # exported with rpy. Not meaningful if rpy2 is used.
-    'with_mode',
-    'NO_CONVERSION'
 ]
     
 from math import ceil, sqrt
@@ -65,177 +47,14 @@ import os
 
 from simuOpt import simuOptions
 
-# used by rpy2
-def my_py2ri(o):
-    '''Convert tuple to R object. This is defined because the default
-    py2ri function does not support tuple type.'''
-    if isinstance(o, (tuple, list)):
-        if all([isinstance(x, int) for x in o]):
-            res = ro.vectors.IntVector(o)
-        elif all([isinstance(x, (int, float)) for x in o]):
-            res = ro.vectors.FloatVector(o)
-        elif all([isinstance(x, str) for x in o]):
-            res = ro.vectors.StrVector(o)
-        elif isinstance(o, tuple):
-            raise RuntimeError('Failed to convert tuple {}'.format(o))
-        else:
-            # default_py2ri can handle list of
-            # heterogeneous type, I guess
-            res = ro.default_py2ri(o)
-    else:
-        res = ro.default_py2ri(o)
-    return res
-
-if simuOptions['Plotter'] is None:
-    try:
-        import rpy_options
-        rpy_options.set_options(VERBOSE = False)
-        from rpy import r, with_mode, NO_CONVERSION
-        plotter = 'rpy'
-    except ImportError, e:
-        try:
-            import rpy2.robjects as ro
-            from rpy2.robjects import r, conversion
-            conversion.py2ri = my_py2ri
-            with_mode = None
-            NO_CONVERSION = None
-            plotter = 'rpy2'
-        except ImportError, e:
-            try:
-                import matplotlib.pylab as plt
-                plotter = 'matplotlib'
-            except:
-                print('Neither rpy nor matplotlib is available.')
-                raise e
-elif simuOptions['Plotter'] == 'rpy':
-    import rpy_options
-    rpy_options.set_options(VERBOSE = False)
-    from rpy import r, with_mode, NO_CONVERSION
-    plotter = 'rpy'
-elif simuOptions['Plotter'] == 'rpy2':
-    import rpy2.robjects as ro
-    from rpy2.robjects import r, conversion
-    conversion.py2ri = my_py2ri
-    with_mode = None
-    NO_CONVERSION = None
-    plotter = 'rpy2'
-else:
-    import matplotlib.pylab as plt
-    plotter = 'matplotlib'
-
-
-# if under windows, fix a bug with rpy which uses blocking i/o so
-# R figure will not be refreshed in time. See
-#     https://Stat.ethz.ch/pipermail/r-devel/2006-January/036049.html
-# for details.
-if os.name == 'nt':
-    # In addition to options(windowsBuffered=False), I find that I also need to
-    # call windows.options(buffered=False) to make functions such as hist work.
-    #
-    # This function is only available for R 2.9.0 (rev 48333)
-    if plotter == 'rpy':
-        r.options(windowsBuffered=False)
-        if int(r.R_Version()['svn rev']) >= 48333:
-            r.windows_options(buffered=False)
-    elif plotter == 'rpy2':
-        if int(r('R.Version()$"svn rev"')[0]) >= 48333:
-            r("windows.options(buffered=False)")
-
+import matplotlib.pylab as plt
 
 from simuPOP import PyOperator, ALL_AVAIL
-
-def newDevice():
-    '''Create a new graphics window and return its device number in R. This
-    function essentially calls ``getOption('device')()`` in R.
-    '''
-    if plotter == 'rpy':
-        # open a new window
-        try:
-            r('getOption("device")()')
-        except Exception as e:
-            raise RuntimeError("Failed to get R version to start a graphical device: {}".format(e));
-        # get device number
-        device = r.dev_cur()
-        if device == 0:
-            raise RuntimeError('Can not open new device')
-        return device
-    elif plotter == 'rpy2':
-        # open a new window
-        try:
-            # 46754 is the revision number for R 2.8.0
-            # For R >= 2.8.0, getOption('device') returns a function
-            r('getOption("device")()')
-        except Exception as e:
-            raise RuntimeError("Failed to get R version to start a graphical device: {}".format(e));
-        # get device number
-        device = r['dev.cur']()
-        if device == 0:
-            raise RuntimeError('Can not open new device')
-        return device
-
-    else:
-        return plt.figure()
-
-def saveFigure(file=None, **kwargs):
-    '''
-    Save current figure into ``file``. File format and graphics device are
-    determined by file extension. Supported file formats include ``pdf``,
-    ``png``, ``bmp``, ``jpg (jpeg)``, ``tif (tiff)``, and ``eps``, which
-    correspond to R devices ``pdf``, ``png``, ``bmp``, ``jpeg``, ``tiff``
-    and ``postscript``. A postscript device will be used if there is no file
-    extension or the file extension is not recognizable. Additional keyword
-    parameters will be passed to the underlying ``dev.print`` function.
-    '''
-    if file is None:
-        return
-    if 'rpy' in plotter:
-        filename, ext = os.path.splitext(file)
-        dirname = os.path.dirname(file)
-        if dirname != '' and not os.path.isdir(dirname):
-            # this might fail and raise an error
-            os.makedirs(dirname)
-        # default extension and format
-        if ext == '':
-            ext = '.eps'
-        #
-        params = {}
-        # these two parameters have to be specified for raster formats
-        try:
-            # I need to use this more lengthy form because some
-            # functions are not available in, for example, R 2.6.2
-            if ext.lower() == '.pdf':
-                device = r.pdf
-            elif ext.lower() == '.png':
-                device = r.png
-                params = {'width': 800, 'height': 600}
-            elif ext.lower() == '.bmp':
-                device = r.bmp
-                params = {'width': 800, 'height': 600}
-            elif ext.lower() in ['.jpg', '.jpeg']:
-                device = r.jpeg
-                params = {'width': 800, 'height': 600}
-            elif ext.lower() in ['.tif', '.tiff']:
-                device = r.tiff
-                params = {'width': 800, 'height': 600}
-            elif ext.lower() == '.eps':
-                device = r.postscript
-        except Exception, e:
-            print e
-            print 'Can not determine which device to use to save file %s. A postscript driver is used.' % name
-            device = r.postscript
-        params.update(kwargs)
-        if plotter == 'rpy':
-            r.dev_print(file=file, device=device, **params)
-        else:
-            r['dev.print'](file=file, device=device, **params)
-    else:
-        plt.savefig(file)
-
 
 class DerivedArgs:
     '''This class implements the derived keyword argument handling mechanism that
     is used by all classes defined in this module. It is provided for users who
-    would like to use this mechanism for their own rpy or matplotlib-related
+    would like to use this mechanism for their own matplotlib-related
     operators.
     
     An derived keyword argument is an argument that is prefixed with a function
@@ -417,30 +236,6 @@ class VarPlotter(PyOperator):
     various formats if parameter ``saveAs`` is specified. File format is
     determined by file extension. After the evolution, the graphic device could
     be left open (``leaveOpen``).
-
-    If the rpy module is used (default if rpy if available), arbitrary keyword
-    parameters could be specified and be passed to the underlying R drawing functions
-    ``plot`` and ``lines``. These parameters could be used to specify line type (``lty``),
-    color (``col``), title (``main``), limit of x and y axes (``xlim`` and
-    ``ylim``) and many other options (see R manual for details). As a special
-    case, multiple values can be passed to each replicate and/or dimension if
-    the name of a parameter ends with ``_rep``, ``_dim``, or ``_repdim``
-    For example, ``lty_rep=range(1, 5)`` will pass parameters ``lty=1``, ...
-    ``lty=4`` to four replicates. You can also pass parameters to specific
-    R functions such as ``par``, ``plot``, ``lines``, ``legend``, ``dev_print``
-    by prefixing parameter names with a function name. For example, 
-    ``dev_print_width=300`` will pass ``width=300`` to function ``dev.print()``
-    when you save your figures using this function. In addition, if the value
-    of a parameter is a string starting with ``!``, the evaluated result of
-    the remaining string will be used as parameter value. Further customization
-    of your figures could be achieved by writing your own hook functions that
-    will be called before and after a figure is drawn, and after each ``plot``
-    call.
-
-    This opertor calls R functions ``par``, ``plot``, ``lines``, ``legend``,
-    and ``dev.print``. Functions ``plot`` and ``lines`` are the default
-    destination for keyword arguments and the ones that accept list parameters
-    to customize lines by replicate and/or dimension.
     '''
     def __init__(self, expr, win=0, update=1, byRep=False, byDim=False,
         saveAs="", leaveOpen=False, legend=[], preHook=None, postHook=None,
@@ -505,18 +300,15 @@ class VarPlotter(PyOperator):
 
         plotHook
             A function that, if given, will be called after each ``plot``
-            function. The ``r`` object from the ``rpy`` module or ``Figure``
-            object from the ``matplotlib`` module , generation
-            list, data being plotted, replicate number (if applicable) and
-            dimension index (if applicable) will be passed as keyword arguments
-            ``r``, ``gen``, ``data``, ``rep`` (optional) and ``dim``
-            (optional).
+            function. The ``Figure`` object from the ``matplotlib`` module ,
+            generation list, data being plotted, replicate number (if applicable)
+            and dimension index (if applicable) will be passed as keyword arguments
+            ``gen``, ``data``, ``rep`` (optional) and ``dim`` (optional).
 
         kwargs
             Additional keyword arguments that will be interpreted and sent to
-            underlying R or matplotlib functions. These arguments could have prefixes
-            (destination function names) ``plot_``, ``lines_``, ``par_``,
-            ``legend_`` and ``dev_print_``, and suffixes (list parameters)
+            underlying matplotlib functions. These arguments could have prefixes
+            (destination function names) and suffixes (list parameters)
             ``_rep``, ``_dim``, and ``_repdim`` for the ``rpy`` option. Arguments
             without prefixes are sent to functions ``plot`` and ``lines``. String
             values with a leading ``!`` will be replaced by its evaluated result
@@ -534,35 +326,19 @@ class VarPlotter(PyOperator):
         self.preHook = preHook
         self.postHook = postHook
         self.plotHook = plotHook
-        if 'rpy' in plotter:
-            self.args = DerivedArgs(
-                defaultFuncs = ['plot', 'lines'],
-                allFuncs = ['par', 'plot', 'lines', 'dev_print', 'legend'],
-                suffixes = ['rep', 'dim', 'repdim'],
-                defaultParams = {
-                    'plot_type': 'l',
-                    'plot_xlab': 'Generation',
-                    'plot_ylab': '',
-                    'lines_lty': 1,
-                    'legend_bty': 'n',
-                    'legend_x': 'topright',
-                },
-                **kwargs
-            )
-        else:
-            self.args = DerivedArgs(
-                defaultFuncs = ['figure', 'plot'],
-                allFuncs = ['figure', 'plot', 'set_title', 'set_xlabel',
-                    'set_ylabel', 'set_ylim', 'legend'],
-                suffixes = ['rep', 'dim', 'repdim'],
-                defaultParams = {
-                    'plot_linestyle': '-',
-                    'set_xlabel_xlabel': 'Generation',
-                    'set_ylabel_ylabel': '',
-                    'set_title_label': '',
-                },
-                **kwargs
-            )
+        self.args = DerivedArgs(
+            defaultFuncs = ['figure', 'plot'],
+            allFuncs = ['figure', 'plot', 'set_title', 'set_xlabel',
+                'set_ylabel', 'set_ylim', 'legend'],
+            suffixes = ['rep', 'dim', 'repdim'],
+            defaultParams = {
+                'plot_linestyle': '-',
+                'set_xlabel_xlabel': 'Generation',
+                'set_ylabel_ylabel': '',
+                'set_title_label': '',
+            },
+            **kwargs
+        )
         # internal flags
         self.nRep = 0
         self.reps = []   # allows specification of selected replicates
@@ -574,21 +350,13 @@ class VarPlotter(PyOperator):
         self.gen = []
         self.data = []
         # when apply is called, self._rpy_plot is called.
-        PyOperator.__init__(self, func=self._rpy_plot if 'rpy' in plotter else self._mat_plot,
+        PyOperator.__init__(self, func=self._mat_plot,
             begin=begin, end=end, step=step, at=at, reps=reps,
             subPops=ALL_AVAIL, infoFields=[])
 
     def __del__(self):
-        # Close the device if needed.
-        if plotter == 'rpy':
-            if not self.leaveOpen and hasattr(self, 'device'):
-                r.dev_off(self.device)
-        elif plotter == 'rpy2':
-            if not self.leaveOpen and hasattr(self, 'device'):
-                r['dev.off'](self.device)
-        else:
-            if not self.leaveOpen:
-                plt.close()
+        if not self.leaveOpen:
+            plt.close()
 
     def _pushData(self, gen, rep, data):
         '''Push history data to self.data for later retrieval. Set self.min and
@@ -638,133 +406,6 @@ class VarPlotter(PyOperator):
             return [x[dim] for x in self.data[rep]]
         else:
             return self.data[rep]
-
-    def _rpy_plot(self, pop):
-        "Evaluate expression in pop and save result. Plot all data if needed"
-        gen = pop.dvars().gen
-        rep = pop.dvars().rep
-        # push data 
-        self._pushData(gen, rep, pop.evaluate(self.expr))
-        # Draw a plot only when
-        # 1. There are at least two obervations.
-        # 2. rep is the last recorded replicate.
-        # 3. we are self.update away from last plot.
-        if len(self.gen) <= 1 or rep + 1 != len(self.data) or \
-            (self.update >= 1 and gen < self.lastPlot + self.update):
-            # do not plot
-            return True
-        else:
-            self.lastPlot = gen
-        # create a new graphical device if needed
-        if not hasattr(self, 'device'):
-            self.device = newDevice()
-        else: # if there are multiple devices, set it back
-            if plotter == 'rpy':
-                r.dev_set(self.device)
-            else:
-                r['dev.set'](self.device)
-        # call the preHook function if given
-        if self.preHook is not None:
-            self.preHook(r)
-        # figure out the dimension of data
-        if self.nRep == 1:
-            self.byRep = False
-        if self.nDim == 1:
-            self.byDim = False
-        # needs subplots?
-        nPlots = 1
-        if self.byDim:
-            nPlots *= self.nDim
-        if self.byRep:
-            nPlots *= self.nRep
-        # try to use colors
-        if self.nDim > 1 and not self.byDim:
-            self.args.addDefault(col_dim=r.rainbow(self.nDim))
-        if self.nRep > 1 and not self.byRep:
-            self.args.addDefault(col_rep=r.rainbow(self.nRep))
-        # suggest how to arrange subplots
-        if nPlots > 1:
-            nrow = int(ceil(sqrt(nPlots)))
-            ncol = int(ceil(nPlots/float(nrow)))
-            if nrow > ncol:
-                nrow, ncol = ncol, nrow
-            self.args.addDefault(par_mfrow=[nrow, ncol])
-        # users might set additional parameters and override calculated mfrow.
-        r.par(**self.args.getArgs('par', pop))
-        # now plot.
-        if self.byRep:
-            # handle each replicate separately
-            for rep_idx,rep in enumerate(self.reps):
-                if self.byDim:
-                    # separate plot for each dim
-                    for dim in range(self.nDim):
-                        data = self._getData(rep, dim)
-                        r.plot(self.gen, data,
-                            **self.args.getArgs('plot', pop, rep=rep_idx, dim=dim,
-                                repdim=self.nDim*rep_idx + dim, ylim=[self.min, self.max]))
-                        if self.plotHook is not None:
-                            self.plotHook(r=r, gen=self.gen, data=data, rep=rep, dim=dim)
-                else:
-                    # all var in one subplot
-                    data = self._getData(rep, 0)
-                    r.plot(self.gen, data,
-                        **self.args.getArgs('plot', pop, rep=rep_idx, dim=0,
-                            repdim=self.nDim * rep_idx, ylim=[self.min, self.max]))
-                    if self.plotHook is not None:
-                        self.plotHook(r=r, gen=self.gen, data=data, rep=rep)
-                    for dim in range(1, self.nDim):
-                        r.lines(self.gen, self._getData(rep, dim),
-                            **self.args.getArgs('lines', pop, rep=rep_idx, dim=dim,
-                                repdim=self.nDim * rep_idx + dim))
-                    if len(self.legend) > 0:
-                        args = self.args.getLegendArgs('lines', pop, ['lty', 'col', 'lwd'],
-                            'rep', range(self.nRep))
-                        args.update(self.args.getArgs('legend', pop))
-                        r.legend(legend=self.legend, **args)
-        else:
-            # all replicate in one figure
-            if self.byDim:
-                for dim in range(self.nDim):
-                    data = self._getData(self.reps[0], dim)
-                    r.plot(self.gen, data,
-                        **self.args.getArgs('plot', pop, rep=self.reps[0], dim=dim, repdim=dim,
-                            ylim=[self.min, self.max]))
-                    if self.plotHook is not None:
-                        self.plotHook(r=r, gen=self.gen, data=data, dim=dim)
-                    for rep_idx,rep in enumerate(self.reps[1:]):
-                        r.lines(self.gen, self._getData(rep, dim),
-                            **self.args.getArgs('lines', pop, rep=rep_idx+1, dim=dim,
-                                repdim=self.nDim * (rep_idx + 1) + dim))
-                    if len(self.legend) > 0:
-                        args = self.args.getLegendArgs('lines', pop, ['lty', 'col', 'lwd'],
-                            'rep', range(self.nRep))
-                        args.update(self.args.getArgs('legend', pop))
-                        r.legend(legend=self.legend, **args)
-            else:
-                data = self._getData(0, 0)
-                r.plot(self.gen, data,
-                    **self.args.getArgs('plot', pop, rep=0, dim=0, repdim=0,
-                        ylim=[self.min, self.max]))
-                if self.plotHook is not None:
-                    self.plotHook(r=r, gen=self.gen, data=data)
-                for rep_idx,rep in enumerate(self.reps):
-                    for dim in range(self.nDim):
-                        r.lines(self.gen, self._getData(rep, dim),
-                            **self.args.getArgs('lines', pop, rep=rep_idx, dim=dim,
-                                repdim=self.nDim * rep_idx + dim))
-                if len(self.legend) > 0:
-                    args = self.args.getLegendArgs('lines', pop, ['lty', 'col', 'lwd'],
-                        ['rep', 'dim'], [(x,y) for x in range(self.nRep) for y in range(self.nDim)])
-                    args.update(self.args.getArgs('legend', pop))
-                    r.legend(legend=self.legend, **args)
-        # call the postHook function if given
-        if self.postHook is not None:
-            self.postHook(r)
-        if self.saveAs != '':
-            file, ext = os.path.splitext(self.saveAs)
-            filename = '%s_%d%s' % (file, gen, ext)
-            saveFigure(**self.args.getArgs('dev_print', pop, file=filename))
-        return True
 
     def _mat_plot(self, pop):
         "Evaluate expression in pop and save result. Plot all data if needed"
@@ -917,18 +558,7 @@ class ScatterPlotter(PyOperator):
     Population, using values at two information fields as their x- and y-axis.
 
     Arbitrary keyword parameters could be specified and be passed to the
-    underlying R drawing functions ``plot`` and ``points``. These parameters
-    could be used to specify point type (``pch``), color (``col``),
-    title (``main``), limit of x and y axes (``xlim`` and ``ylim``) and many
-    other options (see R manual for details). You can also pass parameters
-    to specific R functions such as ``par``, ``plot``, ``points``, ``legend``,
-    ``pdf`` by prefixing parameter names with a function name. For example,
-    ``par_mar=[1]*4`` will pass ``par=[1]*4`` to function ``par()`` which is
-    called before a figure is drawn. (Note that the function to save a figure
-    is ``dev.print`` so parameters such as ``dev_print_width`` should be
-    used.) Further customization of your figures could be achieved by writing
-    your own hook functions that will be called before and after a figure is
-    drawn.
+    underlying matplotlib drawing functions ``plot`` and ``scatter``. 
 
     The power of this operator lies in its ability to differentiate individuals
     from different (virtual) subpopulations. If you specify IDs of (virtual)
@@ -941,11 +571,6 @@ class ScatterPlotter(PyOperator):
     individuals with red. In addition, if the value of a parameter is a string
     starting with ``!``, the evaluated result of the remaining string will be
     used as parameter value.
-
-    This opertor calls R functions ``par``, ``plot``, ``points``, ``legend``,
-    and ``dev.print``. Functions ``plot`` and ``points`` are the default
-    destination for keyword arguments and the ones that accept list parameters
-    to customize lines by (virtual) subpopulation.
     '''
     def __init__(self, infoFields=[], saveAs="", leaveOpen=False, legend=[], 
         preHook=None, postHook=None, begin=0, end=-1, step=1,
@@ -980,22 +605,18 @@ class ScatterPlotter(PyOperator):
 
         preHook
             A function that, if given, will be called before the figure is
-            draw. The ``r`` object from the ``plotter`` module or the ``Figure``
+            draw. The ``plotter`` module or the ``Figure``
             object from matplotlib will be passed to this function.
 
         postHook
             A function that, if given, will be called after the figure is
-            drawn. The ``r`` object from the ``plotter`` module or the ``Figure``
+            drawn. The ``plotter`` module or the ``Figure``
             object from matplotlib will be passed to this function.
 
         kwargs
             Additional keyword arguments that will be interpreted and sent to
-            underlying R functions. These arguments could have prefixes
-            (destination function names) ``plot_``, ``points_``, ``par_``,
-            ``legend_`` and ``dev_print_``, and suffixes (list parameters)
-            ``_sp``. Arguments without prefixes are sent to functions
-            ``plot`` and ``points``. String values with a leading ``!`` will be
-            replaced by its evaluated result against the current population.
+            underlying matplotlib functions. String values with a leading ``!`` 
+            will be replaced by its evaluated result against the current population.
         '''
         # parameters
         self.infoFields = infoFields
@@ -1007,105 +628,28 @@ class ScatterPlotter(PyOperator):
         self.preHook = preHook
         self.postHook = postHook
         self.subPops = subPops
-        if 'rpy' in plotter:
-            self.args = DerivedArgs(
-                defaultFuncs = ['plot', 'points'],
-                allFuncs = ['par', 'plot', 'points', 'dev_print', 'legend'],
-                suffixes = ['sp'],
-                defaultParams = {
-                    'legend_bty': 'n',
-                    'plot_xlab': self.infoFields[0],
-                    'plot_ylab': self.infoFields[1],
-                    'legend_x': 'topright',
-                },
-                **kwargs)
-        else:
-            self.args = DerivedArgs(
-                defaultFuncs = ['figure', 'plot'],
-                allFuncs = ['figure', 'plot', 'scatter', 'set_title', 'set_xlabel',
-                    'set_ylabel', 'set_ylim', 'legend'],
-                suffixes = ['sp'],
-                defaultParams = {
-                    'plot_linestyle': '-',
-                    'set_xlabel_xlabel': self.infoFields[0],
-                    'set_ylabel_ylabel': self.infoFields[1],
-                    'set_title_label': '',
-                },
-                **kwargs
-            )
+        self.args = DerivedArgs(
+            defaultFuncs = ['figure', 'plot'],
+            allFuncs = ['figure', 'plot', 'scatter', 'set_title', 'set_xlabel',
+                'set_ylabel', 'set_ylim', 'legend'],
+            suffixes = ['sp'],
+            defaultParams = {
+                'plot_linestyle': '-',
+                'set_xlabel_xlabel': self.infoFields[0],
+                'set_ylabel_ylabel': self.infoFields[1],
+                'set_title_label': '',
+            },
+            **kwargs
+        )
 
         if len(self.subPops) > 1:
-            if 'rpy' in plotter:
-                self.args.addDefault(
-                    pch_sp = range(1, len(self.subPops) + 1),
-                    col_sp = r.rainbow(len(self.subPops)))
-            else:
-                cm = plt.get_cmap('gist_rainbow')
-                self.args.addDefault(
-                    scatter_c_sp=[cm(i*1.0/len(self.subPops)) for i in range(len(self.subPops))])
+            cm = plt.get_cmap('gist_rainbow')
+            self.args.addDefault(
+                scatter_c_sp=[cm(i*1.0/len(self.subPops)) for i in range(len(self.subPops))])
         # when apply is called, self._rpy_plot is called.
-        PyOperator.__init__(self, func=self._rpy_plot if 'rpy' in plotter else self._mat_plot,
+        PyOperator.__init__(self, func=self._mat_plot,
             begin=begin, end=end, step=step, at=at, reps=reps)
 
-
-    def __del__(self):
-        # Close the device if needed.
-        if not self.leaveOpen and hasattr(self, 'device'):
-            if plotter == 'rpy':
-                r.dev_off(self.device)
-            elif plotter == 'rpy2':
-                r['dev.off'](self.device)
-
-    def _rpy_plot(self, pop):
-        "Evaluate expression in pop and save result. Plot all data if needed"
-        gen = pop.dvars().gen
-        rep = pop.dvars().rep
-        # create a new graphical device if needed
-        if not hasattr(self, 'device'):
-            self.device = newDevice()
-        else: # if there are multiple devices, set it back
-            if plotter == 'rpy':
-                r.dev_set(self.device)
-            else:
-                r['dev.set'](self.device)
-        # call the preHook function if given
-        if self.preHook is not None:
-            self.preHook(r)
-        # call par in case some parameter is provided
-        parParam = self.args.getArgs('par', pop)
-        if len(parParam) > 0:
-            r.par(**parParam)
-        #
-        x = pop.indInfo(self.infoFields[0])
-        y = pop.indInfo(self.infoFields[1])
-        xlim = [min(x), max(x)]
-        ylim = [min(y), max(y)]
-        # if there is no subpopulation, easy
-        if len(self.subPops) == 0:
-            r.plot(x, y, 
-                **self.args.getArgs('plot', pop, type='p', xlim=xlim, ylim=ylim))
-        else:
-            parPlot = self.args.getArgs('plot', pop, type='n', xlim=xlim, ylim=ylim)
-            parPlot['type'] = 'n'
-            r.plot(x[0], y[0], **parPlot)
-            for idx,sp in enumerate(self.subPops):
-                x = pop.indInfo(self.infoFields[0], sp)
-                y = pop.indInfo(self.infoFields[1], sp)
-                r.points(x, y, **self.args.getArgs('points', pop, sp=idx))
-            # legend
-            if len(self.legend) > 0:
-                args = self.args.getLegendArgs('points', pop, ['col', 'pch', 'lwd', 'cex'],
-                    'sp', range(len(self.subPops)))
-                args.update(self.args.getArgs('legend', pop))
-                r.legend(legend=self.legend, **args)
-        # call the postHook function if given
-        if self.postHook is not None:
-            self.postHook(r)
-        if self.saveAs != '':
-            file, ext = os.path.splitext(self.saveAs)
-            filename = '%s_%d_%d%s' % (file, gen, rep, ext)
-            saveFigure(**self.args.getArgs('dev_print', pop, file=filename))
-        return True
 
     def _mat_plot(self, pop):
         "Evaluate expression in pop and save result. Plot all data if needed"
@@ -1155,466 +699,5 @@ class ScatterPlotter(PyOperator):
             file, ext = os.path.splitext(self.saveAs)
             filename = '%s_%d_%d%s' % (file, gen, rep, ext)
             self.device.savefig(filename)
-        return True
-
-class InfoPlotter(PyOperator):
-    '''
-    This operator uses a R function such as ``hist`` and ``qqplot`` to plot
-    properties of one or more information fields of individuals in one or more
-    (virtual) subpopulations. Separate subplots are used for different
-    information fields and subpopulations.
-
-    This operator essentially gets values of information fields and sends them
-    to a R function such as ``hist``. The resulting figures could be customized
-    by additional keyword parameters and various hook functions. For example,
-    a ``qqline`` function could be called in a ``plotHook`` function to add a
-    QQ line to a ``qqnorm`` plot. The ``plotHook`` can be used to draw the
-    whole (sub)plot if no R function is specified for parameter ``func``.
-    
-    Besides regular keyword parameters, keyword parameters ending in ``_sp``,
-    ``_fld`` or ``_spfld`` are expected to have multiple values which will be
-    used for differnt subpopulations, information fields, and their
-    combinations. You can also specify which function the keyword should be
-    sent by prefixing a function name to the parameter name. For example,
-    ``pch_fld=[1, 2]`` will use different symbols for different information
-    fields, and ``par_mar=[1]*4`` will send parameter ``mar=[1]*4`` to function
-    ``par``. In addition, if the value of a parameter is a string starting with
-    ``!``, the evaluated result of the remaining string will be used as
-    parameter value.
-    
-    This opertor calls R functions ``par``, ``dev.print``, and a user-specified
-    function. Additional keyword arguments without function prefix will be sent
-    to this function.
-    '''
-    def __init__(self, func=None, infoFields=[], saveAs="", leaveOpen=False,
-        preHook=None, postHook=None, plotHook = None, begin=0,
-        end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=[], **kwargs):
-        '''
-        func
-            Name of the R or matplotlib function that will be called to draw figures
-            from values of given information fields. No R function will be called
-            if it is not specified. In this case, a ``plotHook`` can be used
-            to plot passed values.
-
-        infoFields
-            Information fields whose values will be sent to the specified
-            plotting function.
-
-        subPops
-            A list of subpopulations and virtual subpopulations. Each
-            subpopulation will be plotted in a separate subplot.
-
-        saveAs
-            Save figures in files saveAs_gen_rep.ext (e.g. ``figure_10_0.eps``
-            if ``saveAs='figure.eps'``). If ext is given, a corresponding
-            device will be used. Otherwise, a default postscript driver will be
-            used. Currently supported formats include ``.pdf``, ``.png``,
-            ``.bmp``, ``.jpg``, and ``.tif``. The default filename could be
-            overriden by derived argument ``dev_print_file``.
-
-        leaveOpen
-            Whether or not leave the plot open when plotting is done. Default
-            to ``False`` functions. If this option is set to ``True``, you will
-            have to close the graphic device explicitly using function
-            ``r.dev_off()``. Note that leaving the device open allows
-            further manipuation of the figures outside of this operator.
-
-        preHook
-            A function that, if given, will be called before the figure is
-            draw. The ``r`` object for ``rpy`` will be passed to this function.
-
-        postHook
-            A function that, if given, will be called after the figure is
-            drawn.  The ``r`` object for ``rpy`` will be passed to this function.
-
-        plotHook
-            A function that, if given, will be called after each ``plot``
-            function. The ``r`` object from the ``rpy`` module  , data being
-            plotted, name of the information field and index of subpopulation
-            (in parameter ``subPops``, if applicable) will be passed with
-            keywords ``r``, ``data``, ``field`` and ``subPop`` (optional)
-            respectively.
-
-        kwargs
-            Additional keyword arguments that will be interpreted and sent to
-            underlying R functions. These arguments could have prefixes
-            (destination function names) ``par_``, ``dev_print_`` and the
-            function you specify (parameter ``func``), and suffixes (list
-            parameters) ``_sp``, ``_fld``, and ``_spfld``. Arguments without
-            prefixes are sent to the user specified function. String values
-            with a leading ``!`` will be replaced by its evaluated result
-            against the current population.
-        '''
-        # parameters
-        if type(infoFields) == type(''):
-            self.infoFields = [infoFields]
-        else:
-            self.infoFields = infoFields
-        self.func = func
-        if len(self.infoFields) == 0:
-            raise RuntimeError('At least one information field should be given')
-        self.saveAs = saveAs
-        self.leaveOpen = leaveOpen
-        self.preHook = preHook
-        self.postHook = postHook
-        self.plotHook = plotHook
-        self.subPops = subPops
-        if 'rpy' in plotter:
-            if self.func is not None:
-                if plotter == 'rpy':
-                    self.rfunc = r(self.func)
-                else:
-                    self.rfunc = r[self.func]
-            self.args = DerivedArgs(
-                defaultFuncs = [] if self.func is None else [self.func],
-                allFuncs = ['par', 'dev_print', 'legend'] + ([] if self.func is None else [self.func]),
-                suffixes = ['sp', 'fld', 'spfld'],
-                defaultParams = {'legend_x': 'topright'},
-                **kwargs)
-        else:
-            raise RuntimeError('InfoPlotter does not yet support matplotlib plotter')
-        # when apply is called, self._rpy_plot is called.
-        PyOperator.__init__(self, func=self._rpy_plot,
-            begin=begin, end=end, step=step, at=at, reps=reps)
-
-
-    def __del__(self):
-        # Close the device if needed.
-        if plotter == 'rpy':
-            if not self.leaveOpen and hasattr(self, 'device'):
-                r.dev_off(self.device)
-        elif plotter == 'rpy2':
-            if not self.leaveOpen and hasattr(self, 'device'):
-                r['dev.off'](self.device)
-        else:
-            if not self.leaveOpen:
-                plt.close()
-
-    def _rpy_plot(self, pop):
-        "Evaluate expression in pop and save result. Plot all data if needed"
-        gen = pop.dvars().gen
-        rep = pop.dvars().rep
-        # create a new graphical device if needed
-        if not hasattr(self, 'device'):
-            self.device = newDevice()
-        else: # if there are multiple devices, set it back
-            if plotter == 'rpy':
-                r.dev_set(self.device)
-            else:
-                r['dev.set'](self.device)
-        # call the preHook function if given
-        if self.preHook is not None:
-            self.preHook(r)
-        # subplots?
-        nPlots = len(self.infoFields)
-        if len(self.subPops) > 1:
-            nPlots *= len(self.subPops)
-        # call par in case some parameter is provided
-        if nPlots > 1:
-            nrow = int(ceil(sqrt(nPlots)))
-            ncol = int(ceil(nPlots/float(nrow)))
-            if nrow > ncol:
-                nrow, ncol = ncol, nrow
-            self.args.addDefault(par_mfrow=[nrow, ncol])
-        #
-        r.par(**self.args.getArgs('par', pop))
-        #
-        for fldIdx,fld in enumerate(self.infoFields):
-            # if there is no subpopulation, easy
-            if len(self.subPops) == 0:
-                val = pop.indInfo(fld)
-                if self.func is not None:
-                    self.rfunc(val, **self.args.getArgs(self.func, pop, fld=fldIdx, sp=0,
-                        spfld=fldIdx, main='%s at gen %d' % (fld, gen), xlab=fld, ylab=self.func))
-                if self.plotHook is not None:
-                    self.plotHook(r=r, data=val, field=fld)
-            else:
-                for spIdx,sp in enumerate(self.subPops):
-                    val = pop.indInfo(fld, sp)
-                    if self.func is not None:
-                        self.rfunc(val, **self.args.getArgs(self.func, pop,
-                            fld=fldIdx, sp=spIdx, spfld=len(self.infoFields)*spIdx + fldIdx,
-                            main='%s in %s at gen %d' % (fld, pop.subPopName(sp), gen),
-                            xlab=fld, ylab=self.func))
-                    if self.plotHook is not None:
-                        self.plotHook(r=r, data=val, field=fld, subPop=sp)
-        # call the postHook function if given
-        if self.postHook is not None:
-            self.postHook(r)
-        if self.saveAs != '':
-            file, ext = os.path.splitext(self.saveAs)
-            filename = '%s_%d_%d%s' % (file, gen, rep, ext)
-            saveFigure(**self.args.getArgs('dev_print', pop, file=filename))
-        return True
-
-class HistPlotter(InfoPlotter):
-    '''An ``InfoPlotter`` that uses function ``hist``.'''
-    def __init__(self, *args, **kwargs):
-        '''Returns an ``InfoPlotter`` that uses R function ``hist`` to draw
-        histogram of individual information fields of specified (virtual)
-        subpopulations. Please see ``InfoPlotter`` for details.
-        '''
-        InfoPlotter.__init__(self, 'hist', *args, **kwargs)
-
-
-class QQPlotter(InfoPlotter):
-    '''An ``InfoPlotter`` that uses function ``qqnorm``.'''
-    def __init__(self, *args, **kwargs):
-        '''Returns an ``InfoPlotter`` that uses R function ``qqnorm`` to draw
-        qq plot of individual information fields of specified (virtual)
-        subpopulations. Please see ``InfoPlotter`` for details.
-        '''
-        InfoPlotter.__init__(self, 'qqnorm', *args, **kwargs)
-
-
-class BoxPlotter(PyOperator):
-    '''
-    This operator draws boxplots of one or more information fields of
-    individuals in one or more (virtual) subpopulations of a population.
-    Although a ``InfoPlotter`` with ``func=boxplot`` could be used to plot
-    boxplots for each information field and/or subpopulation, this class allows
-    multiple whiskers to share one plot. How the whiskers are oraganized is
-    controlled by parameters ``byField`` and ``bySubPop``.
-    
-    This operator essentially gets values of information fields and sends them
-    to boxplots. Individual ownerships (subpopulation or field) are also passed
-    so that multiple whiskers could be drawn in the same plot. The resulting
-    figures could be customized by additional keyword parameters and various
-    hook functions.
-    
-    Besides regular keyword parameters, keyword parameters ending in ``_sp``,
-    ``_fld`` or ``_spfld`` are expected to have multiple values which will be
-    used for differnt subpopulations, information fields, and their
-    combinations. You can also specify which function the keyword should be
-    sent by prefixing a function name to the parameter name. For example,
-    ``pch_fld=[1, 2]`` will use different symbols for different information
-    fields, and ``par_mar=[1]*4`` will send parameter ``mar=[1]*4`` to function
-    ``par``. In addition, if the value of a parameter is a string starting with
-    ``!``, the evaluated result of the remaining string will be used as
-    parameter value.
- 
-    This opertor calls R functions ``par``, ``boxplot`` and ``dev.print``.
-    Keyword parameters without function prefix will be passed to ``boxplot``.
-    '''
-    def __init__(self, infoFields=[], byField=False, bySubPop=False, saveAs="",
-        leaveOpen=False, preHook=None, postHook=None, plotHook = None,
-        begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=[], **kwargs):
-        '''
-        infoFields
-            Information fields whose values will be sent to R function
-            ``boxplot``.
-
-        subPops
-            A list of subpopulations and virtual subpopulations. Separate
-            whiskers will be drawn for individuals in these subpopulations.
-
-        byField
-            If multiple information fields are specified, separate the whiskers
-            different subplots if this parameter is ``True``.
-        
-        bySubPop
-            If multiple (virtual) subpopulations are specified, separate the
-            whiskers to different subplots if this parameter is ``True``.
-
-        saveAs
-            Save figures in files saveAs_gen_rep.ext (e.g. ``figure_10_0.eps``
-            if ``saveAs='figure.eps'``). If ext is given, a corresponding
-            device will be used. Otherwise, a default postscript driver will be
-            used. Currently supported formats include ``.pdf``, ``.png``,
-            ``.bmp``, ``.jpg``, and ``.tif``. The default filename could be
-            overriden by derived argument ``dev_print_file``.
-
-        leaveOpen
-            Whether or not leave the plot open when plotting is done. Default
-            to ``False`` functions. If this option is set to ``True``, you will
-            have to close the graphic device explicitly using function
-            ``r.dev_off()``. Note that leaving the device open allows
-            further manipuation of the figures outside of this operator.
-
-        preHook
-            A function that, if given, will be called before the figure is
-            draw. The ``r`` object for ``rpy`` will be passed to this function.
-
-        postHook
-            A function that, if given, will be called after the figure is
-            drawn.  The ``r`` object for ``rpy`` will be passed to this function.
-
-        plotHook
-            A function that, if given, will be called after each ``plot``
-            function. The ``r`` object from the ``rpy`` module, current field
-            and subpopulation will be passed with keywords ``r``, ``field`` and
-            ``subPop`` if applicable.
-
-        kwargs
-            Additional keyword arguments that will be interpreted and sent to
-            underlying R functions. These arguments could have prefixes
-            (destination function names) ``plot_``, ``boxplot_``, ``par_``,
-            and ``dev_print_``, and suffixes (list parameters) ``_sp``,
-            ``_fld`` and ``_spfld``. Arguments without prefixes are sent to
-            function ``boxplot``. String values with a leading ``!`` will be
-            replaced by its evaluated result against the current population.
-        '''
-        # parameters
-        if type(infoFields) == type(''):
-            self.infoFields = [infoFields]
-        else:
-            self.infoFields = infoFields
-        if len(self.infoFields) == 0:
-            raise RuntimeError('At least one information field should be given')
-        if 'rpy' not in plotter:
-            raise RuntimeError('BoxPlotter function does not support matplotlib plotter')
-        self.saveAs = saveAs
-        self.leaveOpen = leaveOpen
-        self.preHook = preHook
-        self.postHook = postHook
-        self.plotHook = plotHook
-        self.subPops = subPops
-        self.byField = byField
-        if len(self.infoFields) == 1:
-            self.byField = False
-        self.bySubPop = bySubPop
-        if len(self.subPops) <= 1:
-            self.bySubPop = False
-        self.args = DerivedArgs(
-            defaultFuncs = ['boxplot'],
-            allFuncs = ['par', 'boxplot', 'dev_print', 'legend'],
-            suffixes = ['sp', 'fld', 'spfld'],
-            defaultParams = {'legend_x': 'topright'},
-            **kwargs)
-        # when apply is called, self.plot is called, additional keyword
-        # parameters are passed by kwargs.
-        PyOperator.__init__(self, func=self._rpy_plot, begin=begin, end=end,
-            step=step, at=at, reps=reps)
-
-    def __del__(self):
-        # Close the device if needed.
-        if not self.leaveOpen and hasattr(self, 'device'):
-            if plotter == 'rpy':
-                r.dev_off(self.device)
-            elif plotter == 'rpy2':
-                r['dev.off'](self.device)
-
-
-    def _rpy_plot(self, pop):
-        "Evaluate expression in pop and save result. Plot all data if needed"
-        gen = pop.dvars().gen
-        rep = pop.dvars().rep
-        # create a new graphical device if needed
-        if not hasattr(self, 'device'):
-            self.device = newDevice()
-        else: # if there are multiple devices, set it back
-            if plotter == 'rpy':
-                r.dev_set(self.device)
-            else:
-                r['dev.set'](self.device)
-        # call the preHook function if given
-        if self.preHook is not None:
-            self.preHook(r)
-        # subplots?
-        nPlots = 1
-        if len(self.infoFields) > 1 and self.byField:
-            nPlots *= len(self.infoFields)
-        if len(self.subPops) > 1 and self.bySubPop:
-            nPlots *= len(self.subPops)
-        # call par in case some parameter is provided
-        if nPlots > 1:
-            nrow = int(ceil(sqrt(nPlots)))
-            ncol = int(ceil(nPlots/float(nrow)))
-            if nrow > ncol:
-                nrow, ncol = ncol, nrow
-            self.args.addDefault(par_mfrow=[nrow, ncol])
-        #
-        r.par(**self.args.getArgs('par', pop))
-        #
-        if self.byField:
-            for fldIdx,fld in enumerate(self.infoFields):
-                if self.bySubPop:
-                    # multiple Field and subpop, each has its own subplot
-                    for spIdx,sp in enumerate(self.subPops):
-                        val = pop.indInfo(fld, sp)
-                        r.boxplot(val, **self.args.getArgs('boxplot', pop,
-                            fld=fld, sp=sp, spfld=len(self.infoFields)*spIdx + fldIdx,
-                            main='%s in %s at gen %d' % (fld, pop.subPopName(sp), gen)))
-                        if self.plotHook is not None:
-                            self.plotHook(r=r, field=fld, subPop=spIdx)
-                else:
-                    # combine data
-                    data = []
-                    owner = []
-                    if len(self.subPops) == 0:
-                        data = pop.indInfo(fld)
-                        owner = [fld]*len(data)
-                    else:
-                        for spIdx,sp in enumerate(self.subPops):
-                            spData = pop.indInfo(fld, sp)
-                            data.extend(spData)
-                            owner.extend([pop.subPopName(sp)]*len(spData))
-                    #
-                    if plotter == 'rpy':
-                        r.boxplot(r('data ~ owner'), data=r.data_frame(data=data, owner=owner),
-                            **self.args.getArgs('boxplot', pop, fld=fldIdx,
-                            main='Field %s at gen %d' % (fld, gen)))
-                    else:
-                        r.boxplot(ro.Formula('data ~ owner'), 
-                            data=ro.vectors.DataFrame({'data': data, 'owner': owner}), 
-                            **self.args.getArgs('boxplot', pop, fld=fldIdx,
-                            main='Field %s at gen %d' % (fld, gen)))
-                    if self.plotHook is not None:
-                        self.plotHook(r=r, field=fld)
-        elif not self.byField and self.bySubPop:
-            for spIdx,sp in enumerate(self.subPops):
-                # combine data
-                data = []
-                owner = []
-                for fldIdx,fld in enumerate(self.infoFields):
-                    fldData = pop.indInfo(fld, sp)
-                    data.extend(fldData)
-                    owner.extend([fld]*len(fldData))
-                #
-                if plotter == 'rpy':
-                    r.boxplot(r('data ~ owner'), data=r.data_frame(data=data, owner=owner),
-                        **self.args.getArgs('boxplot', pop, sp=spIdx,
-                            main='Subpop %s at gen %d' % (pop.subPopName(sp), gen)))
-                else:
-                    r.boxplot(ro.Formula('data ~ owner'), 
-                        data=ro.vectors.DataFrame({'data': data, 'owner': owner}), 
-                        **self.args.getArgs('boxplot', pop, sp=spIdx,
-                            main='Subpop %s at gen %d' % (pop.subPopName(sp), gen)))
-                if self.plotHook is not None:
-                    self.plotHook(r=r, subPop=sp)
-        else:
-            # everything in one plot.
-            data = []
-            owner = []
-            for fldIdx,fld in enumerate(self.infoFields):
-                if len(self.subPops) == 0:
-                    data.extend(pop.indInfo(fld))
-                    owner.extend([fld]*pop.popSize())
-                    continue
-                # multiple subpopulations
-                for spIdx,sp in enumerate(self.subPops):
-                    spData = pop.indInfo(fld, sp)
-                    data.extend(spData)
-                    if len(self.infoFields) == 1:
-                        owner.extend([pop.subPopName(sp)]*len(spData))
-                    else:
-                        owner.extend(['%s, %s' % (fld, pop.subPopName(sp))]*len(spData))
-            #
-            if plotter == 'rpy':
-                r.boxplot(r("data ~ owner"), data=r.data_frame(data=data, owner=owner),
-                    **self.args.getArgs('boxplot', pop))
-            else:
-                r.boxplot(ro.Formula('data ~ owner'), 
-                    data=ro.vectors.DataFrame({'data': data, 'owner': owner}), 
-                    **self.args.getArgs('boxplot', pop))
-            if self.plotHook is not None:
-                self.plotHook(r=r)
-        # call the postHook function if given
-        if self.postHook is not None:
-            self.postHook(r)
-        if self.saveAs != '':
-            file, ext = os.path.splitext(self.saveAs)
-            filename = '%s_%d_%d%s' % (file, gen, rep, ext)
-            saveFigure(**self.args.getArgs('dev_print', pop, file=filename))
         return True
 
