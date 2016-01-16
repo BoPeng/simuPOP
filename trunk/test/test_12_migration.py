@@ -23,6 +23,80 @@ for arg in sys.argv:
 sys.argv=new_argv
 from simuPOP import *
 
+import numpy as np
+from numpy.linalg import inv
+
+def Sp_From_Forward_and_S(FM, S):
+    # calculate predicted subpopulation size from forward migration matrix (FM)
+    # and current population size (S)  S'=F^T S
+    #
+    # We need to normalize FM(i,i) so that row sum is 1
+    return np.array(
+        [[1-sum(x)+k if j==i else k for j,k in enumerate(x)]
+        for i,x in enumerate(FM)]).transpose().dot(np.array(S))
+
+# for example: the following equals 2000, 4000, 4000
+# Sp_From_Forward_and_S([ [0, .05, .05],
+#                         [0.025, 0, 0],
+#                         [0.025, 0, 0] ],
+#         [2000, 4000, 4000]) 
+    
+def BM_From_Forward_and_S(FM, S):
+    # calculate backward migration matrix from forward migration matrix
+    # and current population size
+    #
+    # B = diag(Sp)^-1 F^T diag(S)
+    Sp = Sp_From_Forward_and_S(FM, S)
+    Ft = np.array([[1-sum(x)+k if j==i else k for j,k in enumerate(x)]
+        for i,x in enumerate(FM)]).transpose()
+    return np.diag(1. / Sp).dot(Ft).dot(np.diag(S))
+        
+# the following get
+# [[ 0.9  ,  0.05 ,  0.05 ],
+#       [ 0.025,  0.975,  0.   ],
+#       [ 0.025,  0.   ,  0.975]]
+#
+#BM_From_Forward_and_S([ [0, .05, .05],
+#                         [0.025, 0, 0],
+#                         [0.025, 0, 0] ],
+#         [2000, 4000, 4000]) 
+
+def Sp_From_Backward_and_S(BM, S):
+    # Calculate predicted subpopulation size from backward migration matrix
+    # and current population size: S'=B^T^-1 * S
+    #
+    # normalize
+    B = np.array([[1-sum(x)+k if j==i else k for j,k in enumerate(x)]
+        for i,x in enumerate(BM)])
+    return inv(np.array(B.transpose())).dot(np.array(S))
+
+# the following yield [2000, 4000, 4000]
+#Sp_From_Backward_and_S([[ 0.9  ,  0.05 ,  0.05 ],
+#       [ 0.025,  0.975,  0.   ],
+#       [ 0.025,  0.   ,  0.975]], 
+#    [2000, 4000, 4000])
+
+def FM_From_Backward_and_S(BM, S):
+    #
+    # F = diag(S)^-1 B^T diag(S')
+    #
+    Sp = Sp_From_Backward_and_S(BM, S)
+    Bt = np.array([[1-sum(x)+k if j==i else k for j,k in enumerate(x)]
+        for i,x in enumerate(BM)]).transpose()
+    return np.diag(1. / np.array(S)).dot(Bt).dot(np.diag(Sp))
+
+# the following yields
+# [[ 0.9  ,  0.05 ,  0.05 ],
+#  [ 0.025,  0.975,  0.   ],
+#  [ 0.025,  0.   ,  0.975]]
+
+#FM_From_Backward_and_S([[ 0.9  ,  0.05 ,  0.05 ],
+#       [ 0.025,  0.975,  0.   ],
+#       [ 0.025,  0.   ,  0.975]], 
+#    [2000, 4000, 4000])
+
+
+
 class TestMigrator(unittest.TestCase):
 
     def testmigrateByCounts(self):
@@ -44,7 +118,7 @@ class TestMigrator(unittest.TestCase):
                              [50, 0, 0],
                              [50, 0, 0] ], BY_COUNTS)
 
-    def testmigrateByProportion(self):
+    def testMigrateByProportion(self):
         'Testing migrate by proportion'
         pop = Population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
         # now if we want to inject a mutation whenever fixation happens
@@ -59,6 +133,8 @@ class TestMigrator(unittest.TestCase):
                              [0.25, 0, 0],
                              [0, 0.25, 0] ])
         self.assertEqual(pop.subPopSizes(), (2000, 4500, 3500))
+
+
 
     def testmigrateByIndInfo(self):
         'Testing migrate by indinfo'
@@ -373,6 +449,56 @@ class TestMigrator(unittest.TestCase):
         self.assertEqual(pop.subPopSizes(), (6, 8, 7))
         for ind in (10, 11, 12, 13, 18, 19, 20):
             self.assertEqual(pop.individual(ind).genotype(), [0]*16)
+
+    def testMigrateByBackwardProportion(self):
+        'Testing migrate by proportion'
+        pop = Population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
+        # now if we want to inject a mutation whenever fixation happens
+        self.assertRaises(ValueError, migrate, pop, rate=[1, 0.1])
+        backwardMigrate(pop, mode=BY_PROPORTION,
+            rate =[[ 0.9  ,  0.05 ,  0.05 ],
+                   [ 0.025,  0.975,  0.   ],
+                   [ 0.025,  0.   ,  0.975]]
+        )
+        # is not exactly 2000, 4000, 4000 due to numeric issue.
+        self.assertEqual(pop.subPopSizes(), (1998, 4001, 4001))
+        # 
+        pop = Population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
+        backwardMigrate(pop, mode=BY_PROPORTION,
+            rate = [[ 0.5       ,  0.5       ,  0.        ],
+       [ 0.11111111,  0.66666667,  0.22222222],
+       [ 0.14285714,  0.        ,  0.85714286]])
+        self.assertEqual(pop.subPopSizes(), (2002, 4498, 3500))
+
+
+    def testMigrateByBackwardProbability(self):
+        'Testing migrate by probability'
+        pop = Population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
+        # now if we want to inject a mutation whenever fixation happens
+        backwardMigrate(pop, mode=BY_PROBABILITY,
+            rate = [[ 0.9  ,  0.05 ,  0.05 ],
+                   [ 0.025,  0.975,  0.   ],
+                   [ 0.025,  0.   ,  0.975]])
+        # print pop.subPopSizes()
+        self.assertTrue(abs(pop.subPopSize(0) - 2000) < 100, 
+            "Expression abs(pop.subPopSize(0) - 2000) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(0) - 2000)))
+        self.assertTrue(abs(pop.subPopSize(1) - 4000) < 100, 
+            "Expression abs(pop.subPopSize(1) - 4000) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(1) - 4000)))
+        self.assertTrue(abs(pop.subPopSize(2) - 4000) < 100, 
+            "Expression abs(pop.subPopSize(2) - 4000) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(2) - 4000)))
+    
+        pop = Population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
+        backwardMigrate(pop, mode=BY_PROBABILITY,
+            rate = [[ 0.5       ,  0.5       ,  0.        ],
+       [ 0.11111111,  0.66666667,  0.22222222],
+       [ 0.14285714,  0.        ,  0.85714286]])
+        # print pop.subPopSizes()
+        self.assertTrue(abs(pop.subPopSize(0) - 2000) < 100, 
+            "Expression abs(pop.subPopSize(0) - 2000) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(0) - 2000)))
+        self.assertTrue(abs(pop.subPopSize(1) - 4500) < 100, 
+            "Expression abs(pop.subPopSize(1) - 4500) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(1) - 4500)))
+        self.assertTrue(abs(pop.subPopSize(2) - 3500) < 100, 
+            "Expression abs(pop.subPopSize(2) - 3500) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(2) - 3500)))
 
 
 

@@ -300,7 +300,6 @@ BackwardMigrator::BackwardMigrator(const floatMatrix & rate, int mode,
 		}
 	}
 	// inverse
-	DBG_DO(DBG_MIGRATOR, cerr << "Transpose of backward migration matrix B is " << Bt << endl);
 	boost::numeric::ublas::permutation_matrix<std::size_t> pm(sz);
 	int res = lu_factorize(Bt, pm);
 	if (res != 0)
@@ -309,7 +308,9 @@ BackwardMigrator::BackwardMigrator(const floatMatrix & rate, int mode,
 	// backsubstite to get the inverse		
 	lu_substitute(Bt, pm, m_inverse_rate);
 
+	/*
 	DBG_DO(DBG_MIGRATOR, cerr << "Inverse of B' is " << m_inverse_rate << endl);
+	*/
 }
 
 
