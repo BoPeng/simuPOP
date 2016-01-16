@@ -33,6 +33,8 @@
 #include <list>
 using std::list;
 
+#include <boost/numeric/ublas/matrix.hpp>
+
 #include <iostream>
 using std::cout;
 using std::endl;
@@ -162,6 +164,100 @@ protected:
 	/// default to 0 - rows of rate - 1, 0 - columns of rate - 1
 	const uintList m_to;
 };
+
+
+/** This operator migrates individuals between all available or specified 
+ *  subpopulations, according to a backward migration matrix. It differs from
+ *  \c Migrator in how migration matrixes are interpreted. Due to the limit
+ *  of this model, this operator does not support migration by information
+ *  field, migration by count (\e mode = \c BY_COUNT), migration from virtual
+ *  subpopulations, migration between different number of subpopulations,
+ *  and the creation of new subpopulation, as operator \c Migrator provides.
+ *
+ *  In contrast to a forward migration matrix where $m_{ij}$ is considered
+ *  the probability (proportion or count) of individuals migrating from subpopulation
+ *  \c i to \c j, elements in a reverse migration matrix $m_{ij}$ is considered
+ *  the probability (proportion or count) of individuals migrating from subpopulation
+ *  \c j to \c i, namely the probability (proportion or count) of individuals
+ *  originats from subpopulation \c j. 
+ *
+ *  If migration is applied by probability, the row of the migration matrix
+ *  corresponding to a destination subpopulation is intepreted as probabilities to
+ *  orignate from each source subpopulation. Each individual's source
+ *  subpopulation is assigned randomly according to these probabilities. Note
+ *  that the probability of originating from the present subpopulation is
+ *  automatically calculated so the corresponding matrix elements are ignored.
+ *
+ *  If migration is applied by proportion, the row of the migration matrix
+ *  corresponding to a destination subpopulation is intepreted as proportions
+ *  to originate from each source subpopulation. The number of migrants from each
+ *  source subpopulation is determined before random indidividuals are
+ *  chosen to migrate.
+ *
+ *  Unlike the forward migration matrix that describes how migration should
+ *  be performed, the backward migration matrix describes the result of
+ *  migration. The underlying forward migration matrix is calculated at
+ *  each generation and is in theory not the same across generations.
+ * 
+ *  This operator calculates the corresponding forward migration matrix
+ *  from backward matrix and current population size. This process is not
+ *  always feasible so an error will raise if no valid ending population
+ *  size or forward migration matrix could be determined. Please refer to 
+ *  the simuPOP user's guide for an explanation of the theory behind forward
+ *  and backward migration matrices.
+ */
+class BackwardMigrator : public BaseOperator
+{
+public:
+	/** Create a BackwardMigrator that moves individuals between \e subPop
+	 *  subpopulations randomly according to a backward migration matrix \e rate.
+	 *  The size of the matrix should match the number of subpopulations.
+	 *
+	 *  Depending on the value of parameter \e mode, elements in the migration
+	 *  matrix (\e rate) are interpreted as either the probabilities to originate
+	 *  from source subpopulations (\e mode = \c BY_PROBABILITY) or proportions of
+	 *  individuals originate from the source (virtual) subpopulations (\e mode
+	 *  = \c BY_PROPORTION). Migration by count is not supported by this operator.
+	 *
+	 *  Please refer to operator \c BaseOperator for a detailed explanation for
+	 *  all parameters.
+	 */
+	BackwardMigrator(const floatMatrix & rate = floatMatrix(), int mode = BY_PROBABILITY,
+		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = vectorstr(1, "migrate_to"));
+
+	/// destructor
+	virtual ~BackwardMigrator()
+	{
+	};
+
+	/// HIDDEN Deep copy of a Migrator
+	virtual BaseOperator * clone() const
+	{
+		return new BackwardMigrator(*this);
+	}
+
+
+	/// HIDDEN apply the Migrator to populaiton \e pop.
+	virtual bool apply(Population & pop) const;
+
+	/// HIDDEN
+	string describe(bool format = true) const;
+
+protected:
+	/// migration rate. its meaning is controled by m_mode
+	const matrixf m_rate;
+
+	boost::numeric::ublas::matrix<double> m_inverse_rate;
+
+	bool m_symmetric_matrix;
+
+	/// asProbability (1), asProportion (2),
+	const int m_mode;
+};
+
+
 
 
 /** Split a given list of subpopulations according to either sizes of the
