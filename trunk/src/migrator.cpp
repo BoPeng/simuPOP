@@ -26,6 +26,9 @@
 #include "virtualSubPop.h"
 #include "migrator.h"
 
+#include <boost/numeric/ublas/lu.hpp>
+#include <boost/numeric/ublas/io.hpp>
+
 namespace simuPOP {
 
 Migrator::Migrator(const floatMatrix & rate, int mode, const uintList & toSubPops,
@@ -145,7 +148,6 @@ bool Migrator::apply(Population & pop) const
 		}
 	}
 
-
 	for (size_t from = 0, fromEnd = fromSubPops.size(); from < fromEnd; ++from) {
 		size_t spFrom = fromSubPops[from].subPop();
 		// rateSize might be toSize + 1, the last one is from->from
@@ -246,6 +248,243 @@ bool Migrator::apply(Population & pop) const
 		}
 		if (fromSubPops[from].isVirtual())
 			pop.deactivateVirtualSubPop(spFrom);
+	}   // for all subPop.
+
+	// do migration.
+	size_t oldNumSubPop = pop.numSubPop();
+	pop.setSubPopByIndInfo(infoField(0));
+	// try to keep number of subpopulations.
+	if (pop.numSubPop() < oldNumSubPop) {
+		vectorf split(oldNumSubPop - pop.numSubPop() + 1, 0);
+		split[0] = static_cast<double>(pop.subPopSize(pop.numSubPop() - 1));
+		pop.splitSubPop(pop.numSubPop() - 1, split);
+	}
+	DBG_ASSERT(pop.numSubPop() >= oldNumSubPop, RuntimeError,
+		"Migrator should not decrease number of subpopulations.");
+
+	return true;
+}
+
+
+
+BackwardMigrator::BackwardMigrator(const floatMatrix & rate, int mode, 
+	int begin, int end, int step, const intList & at,
+	const intList & reps, const subPopList & subPops, const stringList & infoFields)
+	: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
+	m_rate(rate.elems()), m_inverse_rate(rate.elems().size(), rate.elems().size()), m_mode(mode), m_symmetric_matrix(true)
+{
+	DBG_FAILIF(!subPops.empty() && subPops.size() != m_rate.size(),
+		ValueError, "Length of param subPop must match rows of rate matrix.");
+	DBG_FAILIF(m_mode != BY_PROBABILITY && m_mode != BY_PROPORTION,
+		ValueError, "Only BY_PROBABILITY and BY_PROPORTION is supported by BackMigrator");
+
+	// find the inverse of B'
+	size_t sz = m_rate.size();
+	boost::numeric::ublas::matrix<double> Bt(sz, sz);
+	for (size_t i = 0; i < sz; ++i) {
+		if (m_rate[i].size() != sz) 
+			throw ValueError("A m by m matrix is required for backward migration matrix.");
+		//
+		for (size_t j = 0; j < sz; ++j) {
+			if (i == j) {
+				Bt(i, i) = accumulate(m_rate[i].begin(), m_rate[i].end(), 0.0) - m_rate[i][i];
+				Bt(i, i) = 1. - Bt(i, i);				
+			} else
+				Bt(i, j) = m_rate[j][i];
+			if (fcmp_lt(Bt(i, j), 0.))
+				throw ValueError((boost::format("Backward migration rate should be positive. %d provided.") % Bt(i,j)).str());
+			if (fcmp_gt(Bt(i, j), 1.))
+				throw ValueError((boost::format("Backward migration rate should be in the range of [0,1], %d provided.") % Bt(i,j)).str());
+			if (j > i && m_rate[i][j] != m_rate[j][i])
+				m_symmetric_matrix = false;
+		}
+	}
+	// inverse
+	DBG_DO(DBG_MIGRATOR, cerr << "Transpose of backward migration matrix B is " << Bt << endl);
+	boost::numeric::ublas::permutation_matrix<std::size_t> pm(sz);
+	int res = lu_factorize(Bt, pm);
+	if (res != 0)
+		throw RuntimeError("Failed to convert backward matrix to forward migration matrix. (Matrix is not inversable).");
+	m_inverse_rate.assign(boost::numeric::ublas::identity_matrix<double>(sz));
+	// backsubstite to get the inverse		
+	lu_substitute(Bt, pm, m_inverse_rate);
+
+	DBG_DO(DBG_MIGRATOR, cerr << "Inverse of B' is " << m_inverse_rate << endl);
+}
+
+
+string BackwardMigrator::describe(bool /* format */) const
+{
+	return "<simuPOP.BackwardMigrator>";
+}
+
+
+bool BackwardMigrator::apply(Population & pop) const
+{
+	// set info of individual
+	size_t info = pop.infoIdx(infoField(0));
+
+	subPopList VSPs = applicableSubPops(pop);
+	if (VSPs.size() <= 1)
+		return true;
+	
+	DBG_FAILIF(VSPs.size() != m_rate.size(),
+		ValueError, "Number of 'from' subpopulations should match number of rows of migration rate matrix.");
+	
+	vectoru subPops;
+	for (size_t i = 0; i < VSPs.size(); ++i) {
+		DBG_FAILIF(VSPs[i].isVirtual(), ValueError, 
+			"BackwardMigrator does not support virtual subpupulations.")
+		DBG_FAILIF(m_rate[i].size() != VSPs.size(), ValueError,
+			"A square matrix is required for BackwardMigrator")
+		subPops.push_back(VSPs[i].subPop());
+	}
+
+	// assign individuals their own subpopulation ID
+	for (size_t sp = 0; sp < pop.numSubPop(); ++sp) {
+		RawIndIterator it = pop.rawIndBegin(sp);
+		RawIndIterator it_end = pop.rawIndEnd(sp);
+		if (numThreads() > 1) {
+#ifdef _OPENMP
+			size_t popSize = it_end - it;
+#  pragma omp parallel firstprivate(it, it_end)
+			{
+				size_t id = omp_get_thread_num();
+				it = it + id * (popSize / numThreads());
+				it_end = id == numThreads() - 1 ? it_end : it + popSize / numThreads();
+				for (; it != it_end; ++it)
+					it->setInfo(static_cast<double>(sp), info);
+			}
+#endif
+		} else {
+			for (; it != it_end; ++it)
+				it->setInfo(static_cast<double>(sp), info);
+		}
+	}
+
+	DBG_FAILIF(pop.hasActivatedVirtualSubPop(), RuntimeError,
+		"Migration can not be applied to activated virtual subpopulations");
+
+	// subpopulation size S (before migration)
+	vectoru S;
+	for (size_t i = 0; i < subPops.size(); ++i)
+		S.push_back(pop.subPopSize(subPops[i]));
+
+	// now, we need to calculate a forward migration matrix from the backward one
+	// the formula is
+
+	// S' = B'^-1 * S 
+	// F = diag(S)^-1 B' diag(S')
+	//
+	// but for the special case of equal population size and symmetric matrix,
+	// two matrices are the same
+	bool simple_case = m_symmetric_matrix;
+	// symmtrix matrix, check if equal population size
+	if (simple_case) {
+		for (size_t i = 1; i < subPops.size(); ++i)
+			if (S[i] != S[i-1])
+				simple_case = false;
+	}
+	
+	size_t sz = m_rate.size();
+	// if not the simple case, we need to calculate rate...
+	matrixf migrationRate;
+	if (simple_case)
+		migrationRate = m_rate;
+	else {
+		// with Bt^-1, we can calculate expected population size
+		vectorf Sp(sz);
+		for (size_t i = 0; i < sz; ++i) {
+			Sp[i] = 0;
+			for (size_t j = 0; j < sz; ++j)
+				Sp[i] += m_inverse_rate(i, j) * S[j];
+		}
+		DBG_DO(DBG_MIGRATOR, cerr << "Expected next population size is " << Sp << endl);
+		for (size_t i = 0; i < sz; ++i) {
+			if (Sp[i] <= 0)
+				throw RuntimeError((boost::format("Failed to calculate forward migration matrix: negative expected population size %f for subpopulation %d")
+					% Sp[i] % i).str());
+		}
+		// now, F = diag(S)^-1 * BT * diag (S')
+		migrationRate = m_rate;
+		for (size_t i = 0; i < sz; ++i)
+			for (size_t j = 0; j < sz; ++j)
+				// m_rate[i][i] might not be defined.
+				migrationRate[i][j] = m_rate[j][i] * Sp[j] / S[i];
+	}
+
+	// check parameters
+	for (size_t i = 0; i < sz; ++i) {
+		for (size_t j = 0; j < sz; ++j) {
+			if (fcmp_lt(migrationRate[i][j], 0.))
+				throw ValueError("Converted forward migration rate should be positive.");
+			if (fcmp_gt(migrationRate[i][j], 1.))
+				throw ValueError("Converted forward migration rate should be in the range of [0,1]");
+		}
+		// look for from=to cell.
+		double sum = accumulate(migrationRate[i].begin(), migrationRate[i].end(), 0.0);
+		//
+		double & self = migrationRate[i][i];
+		sum -= self;
+		if (fcmp_gt(sum, 1.0))
+			throw ValueError("Sum of migrate rate from one subPop should <= 1");
+		// reset to-my-self probability/proportion
+		self = 1.0 - sum;
+
+	}
+	if (! simple_case) {
+		DBG_DO(DBG_MIGRATOR, cerr << "Forward migration matrix is " << migrationRate << endl);
+	}
+
+	for (size_t from = 0, fromEnd = subPops.size(); from < fromEnd; ++from) {
+		size_t spFrom = subPops[from];
+		// rateSize might be toSize + 1, the last one is from->from
+		size_t toIndex;
+
+		size_t spSize = pop.subPopSize(spFrom);
+
+		if (m_mode == BY_PROBABILITY) {
+			WeightedSampler ws(migrationRate[from]);
+
+			// for each individual, migrate according to migration probability
+			for (IndIterator ind = pop.indIterator(spFrom); ind.valid(); ++ind) {
+				//toIndex = getRNG().randIntByFreq( rateSize, &migrationRate[from][0] ) ;
+				toIndex = ws.draw();
+
+				DBG_ASSERT(toIndex < migrationRate[from].size(), ValueError,
+					"Return index out of range.");
+
+				if (toIndex < sz && subPops[toIndex] != spFrom)
+					ind->setInfo(static_cast<double>(subPops[toIndex]), info);
+			}
+		} else {
+			// 2nd, or 3rd method
+			// first find out how many people will move to other subPop
+			// then randomly assign individuals to move
+			vectoru toNum(sz);
+			// in case that to sub is not in from sub, the last added
+			// element is not used. sum of toNum is not spSize.
+			for (size_t i = 0; i < sz; ++i)
+				toNum[i] = static_cast<ULONG>(spSize * migrationRate[from][i]);
+			// create a vector and assign indexes, then random shuffle
+			// and assign info
+			vectoru toIndices(spSize);
+			size_t k = 0;
+			for (size_t i = 0; i < sz && k < spSize; ++i)
+				for (size_t j = 0; j < toNum[i] && k < spSize; ++j)
+					toIndices[k++] = subPops[i];
+
+			// the rest of individuals will stay in their original subpopulation.
+			while (k < spSize)
+				toIndices[k++] = spFrom;
+
+			getRNG().randomShuffle(toIndices.begin(), toIndices.end());
+			IndIterator ind = pop.indIterator(spFrom);
+			// set info
+			for (size_t i = 0; ind.valid(); ++i, ++ind)
+				// The previous migration_to value, if set by a previous vsp, will be overridden.
+				ind->setInfo(static_cast<double>(toIndices[i]), info);
+		}
 	}   // for all subPop.
 
 	// do migration.

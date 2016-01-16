@@ -166,6 +166,7 @@ __all__ = [
     'InfoExec',
     #
     'Migrator',
+    'BackwardMigrator',
     'MergeSubPops',
     'SplitSubPops',
     'ResizeSubPops',
@@ -245,6 +246,7 @@ __all__ = [
     'tagID',
     #
     'migrate',
+    'backwardMigrate',
     'resizeSubPops',
     'splitSubPops',
     'mergeSubPops',
@@ -1131,6 +1133,10 @@ def infoExec(pop, *args, **kwargs):
 def migrate(pop, *args, **kwargs):
     'Function form of operator ``Migrator``.'
     Migrator(*args, **kwargs).apply(pop)
+
+def backwardMigrate(pop, *args, **kwargs):
+    'Function form of operator ``BackwardMigrator``.'
+    BackwardMigrator(*args, **kwargs).apply(pop)
 
 def splitSubPops(pop, *args, **kwargs):
     '''Split subpopulations (*subPops*) of population *pop* according to either
