@@ -358,7 +358,7 @@ if simuOptions['NumThreads'] is not None:
 
 if not simuOptions['Quiet']:
     info = moduleInfo()
-    print("simuPOP Version %s : Copyright (c) 2004-2011 Bo Peng" % (__version__))
+    print("simuPOP Version %s : Copyright (c) 2004-2016 Bo Peng" % (__version__))
     # compile date, compiler etc are macros that are replaced during compile time.
     print("Revision %d (%s) for Python %s (%dbit, %d%s)" % \
             (info['revision'], info['date'], info['python'], info['wordsize'], info['threads'],

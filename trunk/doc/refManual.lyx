@@ -23,6 +23,7 @@ Last modified \\
 \chapter*{Front Matter\label{front}}
 \fi
 
+\usepackage{listings}
 \renewcommand{\lstlistlistingname}{List of Examples}
 \renewcommand{\lstlistingname}{Example}
 
@@ -979,6 +980,13 @@ MigratorRef
 
 
 \backslash
+BackwardMigratorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 SplitSubPopsRef
 \end_layout
 
@@ -1632,6 +1640,13 @@ simuPOPmergeSubPopsRef
 
 \backslash
 simuPOPmigrateRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPbackwardMigrateRef
 \end_layout
 
 \begin_layout Plain Layout

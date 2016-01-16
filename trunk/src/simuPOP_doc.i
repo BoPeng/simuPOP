@@ -55,6 +55,93 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::BackwardMigrator "
+
+Details:
+
+    This operator migrates individuals between all available or
+    specified subpopulations, according to a backward migration
+    matrix. It differs from Migrator in how migration matrixes are
+    interpreted. Due to the limit of this model, this operator does
+    not support migration by information field, migration by count
+    (mode = BY_COUNT), migration from virtual subpopulations,
+    migration between different number of subpopulations, and the
+    creation of new subpopulation, as operator Migrator provides.  In
+    contrast to a forward migration matrix where $m_{ij}$ is
+    considered the probability (proportion or count) of individuals
+    migrating from subpopulation i to j, elements in a reverse
+    migration matrix $m_{ij}$ is considered the probability
+    (proportion or count) of individuals migrating from subpopulation
+    j to i, namely the probability (proportion or count) of
+    individuals originats from subpopulation j.  If migration is
+    applied by probability, the row of the migration matrix
+    corresponding to a destination subpopulation is intepreted as
+    probabilities to orignate from each source subpopulation. Each
+    individual's source subpopulation is assigned randomly according
+    to these probabilities. Note that the probability of originating
+    from the present subpopulation is automatically calculated so the
+    corresponding matrix elements are ignored.  If migration is
+    applied by proportion, the row of the migration matrix
+    corresponding to a destination subpopulation is intepreted as
+    proportions to originate from each source subpopulation. The
+    number of migrants from each source subpopulation is determined
+    before random indidividuals are chosen to migrate.  Unlike the
+    forward migration matrix that describes how migration should be
+    performed, the backward migration matrix describes the result of
+    migration. The underlying forward migration matrix is calculated
+    at each generation and is in theory not the same across
+    generations.  This operator calculates the corresponding forward
+    migration matrix from backward matrix and current population size.
+    This process is not always feasible so an error will raise if no
+    valid ending population size or forward migration matrix could be
+    determined. Please refer to the simuPOP user's guide for an
+    explanation of the theory behind forward and backward migration
+    matrices.
+
+"; 
+
+%feature("docstring") simuPOP::BackwardMigrator::BackwardMigrator "
+
+Usage:
+
+    BackwardMigrator(rate=[], mode=BY_PROBABILITY, begin=0, end=-1,
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
+      infoFields=\"migrate_to\")
+
+Details:
+
+    Create a BackwardMigrator that moves individuals between subPop
+    subpopulations randomly according to a backward migration matrix
+    rate. The size of the matrix should match the number of
+    subpopulations.  Depending on the value of parameter mode,
+    elements in the migration matrix (rate) are interpreted as either
+    the probabilities to originate from source subpopulations (mode =
+    BY_PROBABILITY) or proportions of individuals originate from the
+    source (virtual) subpopulations (mode = BY_PROPORTION). Migration
+    by count is not supported by this operator.  Please refer to
+    operator BaseOperator for a detailed explanation for all
+    parameters.
+
+"; 
+
+%feature("docstring") simuPOP::BackwardMigrator::~BackwardMigrator "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~BackwardMigrator()
+
+"; 
+
+%feature("docstring") simuPOP::BackwardMigrator::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::BackwardMigrator::apply "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::BackwardMigrator::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::BaseMutator "
 
 Details:
@@ -756,7 +843,7 @@ Details:
     distrubution to find the next true event.  Also, for the cases of
     p=0.5, random bits are generated.  This class maintain a two
     dimensional table: a vector of probabilities cross expected number
-    of trials  p1 p2 p3 p4 p5 trial 1 trial 2 ... trial N  We expect
+    of trials p1 p2 p3 p4 p5  trial 1 trial 2 ... trial N  We expect
     that N is big (usually populaiton size) and p_i are small  using
     fast bernulliTrial method for fix p, we can fill up this table
     very quickly column by column  This class will provide easy access
@@ -3320,9 +3407,9 @@ Details:
     this class implements a C++ iterator class that iterate through
     individuals in a (sub)population. If allInds are true, the
     visiblility of individuals will not be checked. Note that
-    IndividualIterator *will* iterate through only visible
-    individuals, and allInds is only provided when we know in advance
-    that all individuals are visible. This is a way to obtain better
+    IndividualIteratorwill iterate through only visible individuals,
+    and allInds is only provided when we know in advance that all
+    individuals are visible. This is a way to obtain better
     performance in simple cases.
 
 "; 
@@ -4608,8 +4695,7 @@ Details:
     them and assign affection status accordingly. ADDITIVE,
     multiplicative, and a heterogeneour multi-locus model are
     supported. Please refer to Neil Rish (1989) \"Linkage Strategies
-    for  Genetically Complex Traits\" for some analysis of these
-    models.
+    for Genetically Complex Traits\" for some analysis of these models.
 
 "; 
 
@@ -5265,11 +5351,11 @@ Details:
     it is applied to this population. If stopOnKeyStroke is False
     (default), it will always pause a population when it is applied,
     if this parameter is set to True, the operator will pause a
-    population if *any* key has been pressed. If a specific character
-    is set, the operator will stop when this key has been pressed.
-    This allows, for example, the use of several pause operators to
-    pause different populations.  After a population has been paused,
-    a message will be displayed (unless prompt is set to False) and
+    population if any key has been pressed. If a specific character is
+    set, the operator will stop when this key has been pressed. This
+    allows, for example, the use of several pause operators to pause
+    different populations.  After a population has been paused, a
+    message will be displayed (unless prompt is set to False) and
     tells you how to proceed. You can press 's' to stop the evolution
     of this population, 'S' to stop the evolution of all populations,
     or 'p' to enter a Python shell. The current population will be
@@ -5771,9 +5857,8 @@ Details:
     parameter ploidy. This operator is by default applied to
     individuals in the first subpopulation but you can apply it to a
     different or more than one (virtual) subpopulations using
-    parameter *subPops* (``AllAvail`` is also accepted). Please refer
-    to class BaseOperator for detailed descriptions of other
-    parameters.
+    parameter subPops (AllAvail is also accepted). Please refer to
+    class BaseOperator for detailed descriptions of other parameters.
 
 "; 
 
@@ -7035,9 +7120,9 @@ Details:
 
 %ignore simuPOP::Population::setDict(PyObject *dict);
 
-%ignore simuPOP::Population::varsAsString() const;
+%ignore simuPOP::Population::varsAsString(bool use_pickle=false) const;
 
-%ignore simuPOP::Population::varsFromString(const string &vars);
+%ignore simuPOP::Population::varsFromString(const string &vars, bool use_pickle=false);
 
 %feature("docstring") simuPOP::Population::evaluate "Obsolete or undocumented function."
 
@@ -8512,14 +8597,11 @@ Details:
 
 Note:
 
-    conversion tract length is usually short, and is estimated to be
-    between 337 and 456 bp, with overall range between maybe 50 - 2500
-    bp. This is usually not enough to convert, for example, two
-    adjacent markers from the HapMap dataset.There is no recombination
-    between sex chromosomes (Chromosomes X and Y), although
-    recombination is possible between pesudoautosomal regions on these
-    chromosomes. If such a feature is required, you will have to
-    simulate the pesudoautosomal regions as separate chromosomes.
+    There is no recombination between sex chromosomes (Chromosomes X
+    and Y), although recombination is possible between pesudoautosomal
+    regions on these chromosomes. If such a feature is required, you
+    will have to simulate the pesudoautosomal regions as separate
+    chromosomes.
 
 "; 
 
@@ -9335,13 +9417,11 @@ Usage:
 
 %ignore simuPOP::SharedVariables::asString() const;
 
-%feature("docstring") simuPOP::SharedVariables::fromString "
+%ignore simuPOP::SharedVariables::fromString(const string &vars);
 
-Usage:
+%ignore simuPOP::SharedVariables::topickle() const;
 
-    x.fromString(vars)
-
-"; 
+%ignore simuPOP::SharedVariables::frompickle(const string &vars);
 
 %ignore simuPOP::simpleStmt;
 
@@ -11431,10 +11511,10 @@ Details:
     Individuals without parents are assumed to be in the top-most
     ancestral generation. This is the case for individuals in the top-
     most ancestral generation if the file is saved by function
-    ``Pedigree.save()``, and for individuals who only appear as
-    another individual's parent, if the file is saved by operator
-    ``PedigreeTagger``. The order at which offsprng is specified is
-    not important because this function essentially creates a top-most
+    Pedigree.save(), and for individuals who only appear as another
+    individual's parent, if the file is saved by operator
+    PedigreeTagger. The order at which offsprng is specified is not
+    important because this function essentially creates a top-most
     ancestral generation using IDs without parents, and creates the
     next generation using offspring of these parents, and so on until
     all generations are recreated. That is to say, if you have a

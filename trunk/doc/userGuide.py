@@ -4840,10 +4840,7 @@ from simuPOP.utils import Trajectory, simulateForwardTrajectory
 traj = simulateForwardTrajectory(N=[2000, 4000], fitness=[1, 0.99, 0.98],
     beginGen=0, endGen=100, beginFreq=[0.2, 0.3],
     endFreq=[[0.1, 0.11], [0.2, 0.21]])
-# rpy syntax
-#traj.plot('log/forwardTrajectory.png', plot_ylim=[0, 0.5], col_sp=['red', 'blue'],
-#    plot_main='Simulated Trajectory (forward-time)')
-# matplotlib syntax
+# 
 traj.plot('log/forwardTrajectory.png', set_ylim_top=0.5,
     plot_c_sp=['r', 'b'], set_title_label='Simulated Trajectory (forward-time)')
 pop = sim.Population(size=[2000, 4000], loci=10, infoFields='fitness')
@@ -5076,11 +5073,11 @@ MultiStageModel([
     ExponentialGrowthModel(r=0.01, NT=[2000, 4000]),
     AdmixtureModel(model=('HI', 0, 1, 0.8, 'admixed'), T=10)
 ]).plot('log/MultiStage.png')
-#OutOfAfricaModel(10000).plot('log/OutOfAfrica.png')
+OutOfAfricaModel(10000).plot('log/OutOfAfrica.png')
 #OutOfAfricaModel(10000, scale=10).plot('log/ScaledOutOfAfrica.png')
-#SettlementOfNewWorldModel(10000).plot('log/SettlementOfNewWorld.png')
+SettlementOfNewWorldModel(10000).plot('log/SettlementOfNewWorld.png')
 #SettlementOfNewWorldModel(10000, scale=10).plot('log/ScaledSettlementOfNewWorld.png')
-#CosiModel(20000).plot('log/Cosi.png')
+CosiModel(20000).plot('log/Cosi.png')
 #CosiModel(20000, scale=10).plot('log/ScaledCosi.png')
 #end_ignore
 #end_file
@@ -5203,6 +5200,39 @@ simu.evolve(
             set_ylabel_ylabel='Allele frequency',
             set_ylim_bottom=0, set_ylim_top=1,
             set_title_label_rep=['Genetic drift, replicate %d' % x for x in range(3)],
+        ),
+    ],
+    gen=100
+)
+#end_file
+
+#begin_file log/varPlotter.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+from simuPOP.plotter import VarPlotter
+pop = sim.Population(size=1000, loci=2)
+simu = sim.Simulator(pop, rep=3)
+simu.evolve(
+    initOps=[
+        sim.InitSex(),
+        sim.InitGenotype(genotype=[1, 2, 2, 1])
+    ],
+    matingScheme=sim.RandomMating(ops=sim.Recombinator(rates=0.01)),
+    postOps=[
+        sim.Stat(LD=[0, 1]),
+        # 
+        VarPlotter('LD[0][1]', step=5, update=40, saveAs='log/varplot.png',
+            legend=['Replicate %d' % x for x in range(3)],
+            set_ylabel_ylabel='LD between marker 1 and 2',
+            set_title_label='LD decay',
+            set_ylim_bottom=0, set_ylim_top=0.25,
+            plot_linestyle_rep=['-', ':', '-.'],
         ),
     ],
     gen=100
