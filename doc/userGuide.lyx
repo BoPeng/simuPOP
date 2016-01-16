@@ -24,6 +24,7 @@ Last modified \\
 \chapter*{Front Matter\label{front}}
 \fi
 
+\usepackage{listings}
 \renewcommand{\lstlistlistingname}{List of Examples}
 \renewcommand{\lstlistingname}{Example}
 
@@ -8960,13 +8961,9 @@ Note that
 \end_inset
 
  (equal subpopulation size) so simuPOP will use 
-\series bold
-
 \begin_inset Formula $B$
 \end_inset
 
-
-\series default
  directly in this case.
  Also note that 
 \begin_inset Formula $B$
@@ -8976,7 +8973,7 @@ Note that
 \begin_inset Formula $S'$
 \end_inset
 
-and 
+ and 
 \begin_inset Formula $F$
 \end_inset
 
@@ -27172,31 +27169,12 @@ win
 \end_layout
 
 \begin_layout Standard
-This module uses either rpy or matplotlib as the underlying plotting library.
- rpy is used by defaut because it is easier to use and support more plotting
- options (
-\family typewriter
-InfoPlotter
-\family default
-, 
-\family typewriter
-BoxPlotter
-\family default
-, 
-\family typewriter
-HistPlotter
-\family default
- and 
-\family typewriter
-QQPlotter
-\family default
- are only available for rpy).
- matplotlib will be used if rpy is not available, or if matplotlib is set
- to be the system plotter (
-\family typewriter
-simuOpt.setOptions(plotter='matplotlib')
-\family default
-).
+simuPOP version 1.1.6 and earlier supports both rpy and matplotlib as the
+ underlying plotting library.
+ However, because of bugs in rpy2 and difficulties in supporting rpy, rpy2
+ and matplotlib, rpy/rpy2 support is removed in simuPOP 1.1.7.
+ Please use simuPOP 1.1.6 if you are interested in using rpy2.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -27958,270 +27936,6 @@ Plot of individuals with ancestry marked by different colors
 
 \end_layout
 
-\begin_layout Subsection
-Histograms, QQ plots and boxplots (operator 
-\family typewriter
-plotter.InfoPlotter
-\family default
-, 
-\family typewriter
-plotter.HistPlotter
-\family default
-, 
-\family typewriter
-plotter.QQPlotter
-\family default
-).
-\end_layout
-
-\begin_layout Standard
-Class 
-\family typewriter
-plotter.InfoPlotter
-\family default
- can be used to draw figures for information fields of individuals in one
- or more subpopulations.
- 
-\family typewriter
-plotter.HistPlotter
-\family default
- and 
-\family typewriter
-plotter.QQPlotter
-\family default
- are two special cases of this class that uses functions 
-\family typewriter
-hist
-\family default
- and 
-\family typewriter
-qqnorm
-\family default
- respectively.
- Although an 
-\family typewriter
-InfoPlotter
-\family default
- using a 
-\family typewriter
-boxplot
-\family default
- function could be used, a specialized 
-\family typewriter
-plotter.BoxPlotter
-\family default
- is defined so that mutliple boxplot whiskers could be drawn in the same
- plot.
-\end_layout
-
-\begin_layout Standard
-Using the same evolutionary process as Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "ScatterPlotter"
-
-\end_inset
-
-, Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "HistPlotter"
-
-\end_inset
-
- uses a 
-\family typewriter
-HistPlotter
-\family default
- to plot the histograms (Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:HistPlotter"
-
-\end_inset
-
-), a 
-\family typewriter
-QQPlotter
-\family default
- to plot QQ plot (Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:QQPlotter"
-
-\end_inset
-
-), and a 
-\family typewriter
-BoxPlotter
-\family default
- to plot the boxplots (Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:BoxPlotter"
-
-\end_inset
-
-) of individual ancestry values.
- By defining two virtual subpopulations by sex, the 
-\family typewriter
-HistPlotter
-\family default
- and 
-\family typewriter
-QQPlotter
-\family default
- plots two histograms and two QQ plots, one for males and one for females.
- Different colors are used for these figures.
- Note that these plots use the special expression value for parameter 
-\family typewriter
-main
-\family default
- so that generation number can appear in the titles.
- The same technique is used in the 
-\family typewriter
-dev_print_file
-\family default
- parameter of the 
-\family typewriter
-BoxPlotter
-\family default
-, which overrides the default filename derived from parameter 
-\family typewriter
-saveAs
-\family default
-.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/HistPlotter.log"
-lstparams "caption={Use HistPlotter to plot the histogram of individual ancestries.},label={HistPlotter}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:HistPlotter"
-
-\end_inset
-
-Histogram of individual ancestry values
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename log/HistPlotter_2_0.png
-	lyxscale 40
-	width 80text%
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:QQPlotter"
-
-\end_inset
-
-QQ plot of individual ancestry values
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename log/QQPlotter_2_0.png
-	lyxscale 40
-	width 80text%
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:BoxPlotter"
-
-\end_inset
-
-Boxplot of individual ancestry values
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename log/Gen2.png
-	lyxscale 40
-	width 80text%
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Section
 Module 
 \family typewriter
@@ -28555,14 +28269,6 @@ reference "plotPedigree"
  demonstrates how to use function sampling.indexToID to prepare a pedigree
  and how to use sampling.DrawPedigree to plot it.
  
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/plotPedigree.log"
-lstparams "caption={Prepare and plot Pedigrees},label={plotPedigree}"
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -28577,47 +28283,6 @@ reference "fig:Pedigree"
  generation.
  It is pretty clear that random mating produces bad pedigree structure because
  it is common that one parent would have multiple spouses.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Pedigree"
-
-\end_inset
-
-Structure of a small complete pedigree
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename log/pedigree.png
-	lyxscale 40
-	width 60text%
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsection
@@ -28684,47 +28349,6 @@ lstparams "caption={Draw affected sibpairs from a population},label={sampleAffec
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:affectedSibpair"
-
-\end_inset
-
-Affected sibpairs drawn from a small pedigree
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename log/affectedSibpair.png
-	lyxscale 40
-	width 60text%
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
 Sampling nuclear families (class 
 \family typewriter
@@ -28785,47 +28409,6 @@ reference "fig:nuclearFamily"
 LatexCommand lstinputlisting
 filename "log/sampleNuclearFamily.log"
 lstparams "caption={Draw nuclear families from a population},label={sampleNuclearFamily}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:nuclearFamily"
-
-\end_inset
-
-Nuclear families drawn from a small pedigree
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename log/nuclerFamily.png
-	lyxscale 40
-	width 60text%
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -28910,47 +28493,6 @@ lstparams "caption={Draw three-generation families  from a population},label={sa
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:threeGenFamily"
-
-\end_inset
-
-Three generation families drawn from a small pedigree
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename log/threeGenFamily.png
-	lyxscale 40
-	width 60text%
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
 Sampling different types of samples (class 
 \family typewriter
@@ -29022,43 +28564,6 @@ lstparams "caption={Draw different types of samples from a population},label={co
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:combinedSampling"
-
-\end_inset
-
-An affected sibpair and a nuclear family drawn from a small pedigree
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename log/combinedSampling.png
-	lyxscale 40
-	width 60text%
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
 
 \end_layout
 
@@ -30377,23 +29882,7 @@ The help message of this script could be displayed using the Help button
 simuCDCV.py -h
 \family default
 .
- The help message is displayed in Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "reichHelp"
-
-\end_inset
-
-.
  
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/simuCDCV.hlp"
-lstparams "caption={Help information for the simuCDCV script},label={reichHelp}"
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Enumerate
