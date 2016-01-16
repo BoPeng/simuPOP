@@ -2698,6 +2698,53 @@ pop.evolve(
 )
 #end_file
 
+
+
+#begin_file log/backwardMigrate.py
+#begin_ignore
+import simuOpt
+simuOpt.setOptions(quiet=True)
+#end_ignore
+import simuPOP as sim
+#begin_ignore
+sim.setRNG(seed=12345)
+#end_ignore
+sim.turnOnDebug('DBG_MIGRATOR')
+pop = sim.Population(size=[10000, 5000, 8000], infoFields=['migrate_to', 'migrate_from'])
+def originOfInds(pop):
+    print('Observed backward migration matrix at generation {}'.format(pop.dvars().gen))
+    for sp in range(pop.numSubPop()): 
+        # get source subpop for all individuals in subpopulation i
+        origins = pop.indInfo('migrate_from', sp)
+        spSize = pop.subPopSize(sp)
+        B_sp = [origins.count(j) * 1.0 /spSize for j in range(pop.numSubPop())]
+        print('    ' + ', '.join(['{:.3f}'.format(x) for x in B_sp]))
+    return True
+
+pop.evolve(
+    initOps=sim.InitSex(),
+    preOps=
+        # mark the source subpopulation of each individual
+        [sim.InitInfo(i, subPops=i, infoFields='migrate_from') for i in range(3)] + [
+        # perform migration
+        sim.BackwardMigrator(rate=[
+            [0, 0.04, 0.02],
+            [0.05, 0, 0.02],
+            [0.02, 0.01, 0]
+        ]),
+        # calculate and print observed backward migration matrix 
+        sim.PyOperator(func=originOfInds),
+        # calculate population size
+        sim.Stat(popSize=True),
+        # and print it
+        sim.PyEval(r'"Pop size after migration: {}\n".format(", ".join([str(x) for x in subPopSize]))'),
+        ], 
+    matingScheme=sim.RandomMating(),
+    gen = 5
+)        
+#end_file
+
+
 #begin_file log/splitByInfo.py
 #begin_ignore
 import simuOpt

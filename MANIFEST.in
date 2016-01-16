@@ -10,7 +10,6 @@ include AUTHORS
 include simuPOP_version.py
 include MANIFEST.in 
 include setup.py
-include SConstruct
 
 # source header files
 include config.h

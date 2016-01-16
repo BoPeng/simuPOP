@@ -8748,6 +8748,291 @@ individuals with an invalid destination subpopulation ID (e.g.
 \end_layout
 
 \begin_layout Subsection
+Migration using backward migration matrix (operator 
+\family typewriter
+BackwardMigrator
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+Backward migration matrices are widely used in theoretical population genetics
+ and coalescent based simulations.
+ Instead of specifying the probability of migrating from another subpopulation
+ to another (namely how migration happens), such matrices specify the probabilit
+y that individuals in a subpopulation originate from others (namely the
+ result of migration).
+ simuPOP simulates such models by converting backward migration matrices
+ to foward ones using the theory describes below.
+ Due to the limit of such models, simuPOP cannot simulate migration from/to
+ virtual subpopulatons, creation of new subpopulation, different source
+ and destination subpopulations, and will generate an error if the conversion
+ process fails.
+\end_layout
+
+\begin_layout Standard
+To explain the differences between forward and backward migration matrices,
+ let us assume that there are 
+\begin_inset Formula $d$
+\end_inset
+
+ subpopulations with population sizes 
+\begin_inset Formula $S=\left[S_{1},S_{2},...,S_{d}\right]$
+\end_inset
+
+, and a forward migration matrix 
+\begin_inset Formula 
+\[
+F=\left[\begin{array}{cccc}
+f_{11} & f_{12} & \cdots & f_{1d}\\
+f_{21} & f_{22} & \cdots & f_{2d}\\
+\vdots &  &  & \vdots\\
+f_{d1} & f_{d2} & \cdots & f_{dd}
+\end{array}\right]
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $f_{ij}$
+\end_inset
+
+ is the probability that an individual will migration from subpopulation
+ 
+\begin_inset Formula $i$
+\end_inset
+
+ to 
+\begin_inset Formula $j$
+\end_inset
+
+.
+ After migration happens, subppulation sizes are changed to 
+\begin_inset Formula $S'=\left[S'_{1},S'_{2},...,S'_{d}\right]$
+\end_inset
+
+, and the origin of individuals in each subpopulation can be described by
+ the backward migration matrix 
+\begin_inset Formula 
+\[
+B=\left[\begin{array}{cccc}
+b_{11} & b_{12} & \cdots & b_{1d}\\
+b_{21} & b_{22} & \cdots & b_{2d}\\
+\vdots &  &  & \vdots\\
+b_{d1} & b_{d2} & \cdots & b_{dd}
+\end{array}\right]
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $b_{ij}$
+\end_inset
+
+ is the probability that an individual in subpopulation 
+\begin_inset Formula $i$
+\end_inset
+
+ originates from subpopulation 
+\begin_inset Formula $j$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+These qualities can be derived from original population sizes and the forward
+ migration matrix.
+ That is to say, the size of new subpopulation 
+\begin_inset Formula $k$
+\end_inset
+
+ is the sum of all migrants to this subpopulation 
+\begin_inset Formula 
+\[
+S'_{k}={\displaystyle \sum_{i=1}^{d}}S_{i}f_{ik}
+\]
+
+\end_inset
+
+and the size of the original population 
+\begin_inset Formula $k$
+\end_inset
+
+ is the sum of all migrants from this subpopulation
+\begin_inset Formula 
+\[
+S{}_{k}={\displaystyle \sum_{i=1}^{d}}S'_{i}b_{ik}
+\]
+
+\end_inset
+
+and the composition of subpopulation 
+\begin_inset Formula $k$
+\end_inset
+
+ (e.g.
+ individuals originate from subpopulation 
+\begin_inset Formula $j$
+\end_inset
+
+) is 
+\begin_inset Formula 
+\[
+b_{kj}=\dfrac{S_{j}f_{jk}}{S'_{k}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In matrix form, these formulas can be written as
+\begin_inset Formula 
+\[
+S'=F^{T}S
+\]
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+S=B^{T}S'
+\]
+
+\end_inset
+
+and
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+B=diag(S')^{-1}F^{T}diag(S)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Therefore, given a backward migration matrix 
+\begin_inset Formula $B$
+\end_inset
+
+ and current population size 
+\begin_inset Formula $S$
+\end_inset
+
+, we can derive a forward migration matrix using 
+\begin_inset Formula 
+\[
+S'=\left(B^{T}\right)^{-1}S
+\]
+
+\end_inset
+
+and
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+F=diag(S)^{-1}B^{T}diag(S')
+\]
+
+\end_inset
+
+Note that 
+\begin_inset Formula $F=B$
+\end_inset
+
+ is always true if 
+\begin_inset Formula $B$
+\end_inset
+
+ is symmetric and 
+\begin_inset Formula $S_{i}=S_{j}$
+\end_inset
+
+ (equal subpopulation size) so simuPOP will use 
+\series bold
+
+\begin_inset Formula $B$
+\end_inset
+
+
+\series default
+ directly in this case.
+ Also note that 
+\begin_inset Formula $B$
+\end_inset
+
+ might not be inversable and 
+\begin_inset Formula $S'$
+\end_inset
+
+and 
+\begin_inset Formula $F$
+\end_inset
+
+ might be invalid (e.g.
+ negative population size or forward migration rate) for given 
+\begin_inset Formula $B$
+\end_inset
+
+ and 
+\begin_inset Formula $S$
+\end_inset
+
+.
+ simuPOP will terminate with an error message in these cases.
+ 
+\end_layout
+
+\begin_layout Standard
+The following example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "backwardMigration"
+
+\end_inset
+
+ demonstrates how to use a backward migration matrix to perform migration.
+ It initializes all individuals with indexes of subpopulations they belong
+ to before migration and calculates the percent of individuals from each
+ source population using a PyOperator with function originOfInds.
+ The so-called overseved backward migration matrix is similar to specified
+ migration matrix despite of stochastic effects.
+ This example also uses turnOnDebug function to let the operator print the
+ expected subpopulation size (
+\begin_inset Formula $S'$
+\end_inset
+
+) and calculate forward migration matrix (
+\begin_inset Formula $F$
+\end_inset
+
+) at each generation, which, as expected, vary from generation to generation.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/backwardMigrate.log"
+lstparams "caption={Migration using a backward migration matrix},label={backwardMigration}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Split subpopulations (operators 
 \family typewriter
 SplitSubPops
