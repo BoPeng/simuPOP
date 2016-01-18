@@ -2406,21 +2406,40 @@ string SharedVariables::to_pickle() const
 	if (! pickle)
 		throw RuntimeError("Failed to import module pickle to serialize population variables.");
 
-	// Some items in __builtins__ are not pickable so we will have to remove them
-	// before picking.
-	PyObject * builtins = PyString_FromString("__builtins__");
-	if (PyDict_Contains(m_dict, builtins))
-		PyDict_DelItem(m_dict, builtins);
-	Py_DECREF(builtins);
-
 	// here we use version 2 because this is the latest version that supported by
 	// both python 2 and python 3, also because it is the one that handles simuPOP's
 	// defdict type using its __reduce__ interface.
 	PyObject * pres = PyObject_CallMethod(pickle, "dumps", "(Oi)", m_dict, 2);
 	if (pres == NULL) {
-		PyErr_Print();
 		PyErr_Clear();
-		throw RuntimeError("Failed to call pickle.dumps to save population variables.");
+		/* If the dictionary is not pickleable, we have to go a longer way and test if
+		   each item of the dictionary is pickleable. */
+		PyObject * new_dict = PyDict_Copy(m_dict);
+		// Some items in __builtins__ are not pickable so we will have to remove them
+		// before picking.
+		PyObject *key, *value;
+		Py_ssize_t pos = 0;
+		while (PyDict_Next(m_dict, &pos, &key, &value)) {
+			// try to pickle each item
+			// if the key is not pickleable, remove the key from the copied dictionary
+			if (PyObject_CallMethod(pickle, "dumps", "(Oi)", key, 2) == NULL) {
+				PyErr_Clear();
+				PyDict_DelItem(new_dict, key);
+			}
+			if (PyObject_CallMethod(pickle, "dumps", "(Oi)", value, 2) == NULL) {
+				PyErr_Clear();
+				PyDict_DelItem(new_dict, key);
+			}
+		}
+		// now try to pickale the whole new object, in any case, the original
+		// dictionary is not touched.
+		pres = PyObject_CallMethod(pickle, "dumps", "(Oi)", new_dict, 2);
+		Py_DECREF(new_dict);
+		if (pres == NULL) {
+			PyErr_Print();
+			PyErr_Clear();
+			throw RuntimeError("Failed to call pickle.dumps to save population variables.");
+		}
 	}
 	Py_ssize_t sz = 0;
 	char * buf = NULL;

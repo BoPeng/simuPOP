@@ -1292,6 +1292,14 @@ class TestPopulation(unittest.TestCase):
         pop1 = loadPopulation("popout")
         self.assertEqual(a, pop1.dvars().alleleFreq[0][1])
         self.assertEqual(pop, pop1)
+        #
+        # testing the save of a population with non-pickleable objects
+        pop.dvars().module_os = os
+        self.assertTrue('module_os' in pop.vars())
+        # module_os is not saved because it is a module
+        pop.save('popout')
+        pop1 = loadPopulation('popout')
+        self.assertFalse('module_os' in pop1.vars())
         os.remove('popout')
 
     def testCrossPlatformLoad(self):
