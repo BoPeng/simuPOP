@@ -175,9 +175,16 @@ public:
 	 *  you can use parameter \e prop to specified the exact proportions of
 	 *  alleles \c 0, \c 1, ..., although alleles with small proportions
 	 *  might not be assigned at all. Values of parameter \e prob or \e prop
-	 *  should add up to 1. If parameter \e haplotypes is specified, it should
-	 *  contain a list of haplotypes and parameter \e prob or \e prop specifies
-	 *  frequencies or proportions of each haplotype. If \e loci, \e ploidy
+	 *  should add up to 1. In addition to a vector, parameter \e prob and
+	 *  \e prop can also be a function that accepts optional parameters
+	 *  \e loc, \e subPop or \e vsp and returns a list of requencies for
+	 *  alleles  \c 0, \c 1, etc, or a number for frequency of allele \c 0
+	 *  as a speciail case for each locus, subpopulation (parameter \e subPop),
+	 *  or virtual subpopulations (parameter \e vsp, pass as a tuple). If 
+	 *  parameter \e haplotypes is specified, it should contain a list of 
+	 *  haplotypes and parameter \e prob or \e prop specifies frequencies or
+	 *  proportions of each haplotype (possibly diferently for each subpopulation
+	 *  but not each locus if the function form is used). If \e loci, \e ploidy
 	 *  and/or \e subPop are specified, only specified loci, ploidy, and
 	 *  individuals in these (virtual) subpopulations will be initialized.
 	 *  Parameter \e loci can be a list of loci indexes, names or \c ALL_AVAIL.
@@ -191,8 +198,9 @@ public:
 	 *  similar to function \c Population.setGenotype() except that you can
 	 *  limit the initialization to certain \e loci and \e ploidy.
 	 */
-	InitGenotype(const vectorf & freq = vectorf(),
-		const uintList & genotype = vectoru(), const vectorf & prop = vectorf(),
+	InitGenotype(const floatListFunc & freq = vectorf(),
+		const uintList & genotype = vectoru(),
+		const floatListFunc & prop = vectorf(),
 		const intMatrix & haplotypes = intMatrix(),
 		const lociList & loci = lociList(),
 		const uintList & ploidy = uintList(),
@@ -204,7 +212,6 @@ public:
 	~InitGenotype()
 	{
 	}
-
 
 	/// HIDDEN Deep copy of the operator \c InitGenotype
 	virtual BaseOperator * clone() const
@@ -221,10 +228,13 @@ public:
 	bool apply(Population & pop) const;
 
 private:
+	vectorf getFreqOrProp(size_t loc, const vspID & vsp) const;
+
+private:
 	/// allele frequencies (assume all loci are the same for a subPop
-	const vectorf m_freq;
+	const floatListFunc m_freq;
 	const vectoru m_genotype;
-	const vectorf m_prop;
+	const floatListFunc m_prop;
 	const matrixi m_haplotypes;
 	//
 	const lociList m_loci;

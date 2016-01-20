@@ -156,8 +156,8 @@ bool InitInfo::apply(Population & pop) const
 }
 
 
-InitGenotype::InitGenotype(const vectorf & freq,
-	const uintList & genotype, const vectorf & prop,
+InitGenotype::InitGenotype(const floatListFunc & freq,
+	const uintList & genotype, const floatListFunc & prop,
 	const intMatrix & haplotypes,
 	const lociList & loci,
 	const uintList & ploidy,
@@ -169,21 +169,21 @@ InitGenotype::InitGenotype(const vectorf & freq,
 	m_haplotypes(haplotypes.elems()), m_loci(loci),
 	m_ploidy(ploidy)
 {
-	for (size_t i = 0; i < m_freq.size(); ++i)
-		PARAM_FAILIF(fcmp_lt(m_freq[i], 0) || fcmp_gt(m_freq[i], 1), ValueError,
+	for (size_t i = 0; i < m_freq.elems().size(); ++i)
+		PARAM_FAILIF(fcmp_lt(m_freq.elems()[i], 0) || fcmp_gt(m_freq.elems()[i], 1), ValueError,
 			"Allele frequency should be between 0 and 1");
-	for (size_t i = 0; i < m_prop.size(); ++i)
-		PARAM_FAILIF(fcmp_lt(m_prop[i], 0) || fcmp_gt(m_prop[i], 1), ValueError,
+	for (size_t i = 0; i < m_prop.elems().size(); ++i)
+		PARAM_FAILIF(fcmp_lt(m_prop.elems()[i], 0) || fcmp_gt(m_prop.elems()[i], 1), ValueError,
 			"Allele proportion should be between 0 and 1");
-	PARAM_FAILIF(!m_haplotypes.empty() && !m_freq.empty() && m_haplotypes.size() != m_freq.size(),
+	PARAM_FAILIF(!m_haplotypes.empty() && !m_freq.elems().empty() && m_haplotypes.size() != m_freq.size(),
 		ValueError, "Haplotype frequency, if specified, should be specified for each haplotype.")
-	PARAM_FAILIF(!m_haplotypes.empty() && !m_prop.empty() && m_haplotypes.size() != m_prop.size(),
+	PARAM_FAILIF(!m_haplotypes.empty() && !m_prop.elems().empty() && m_haplotypes.size() != m_prop.size(),
 		ValueError, "Haplotype proportion, if specified, should be specified for each haplotype.")
-	PARAM_FAILIF(!m_freq.empty() && fcmp_ne(accumulate(m_freq.begin(), m_freq.end(), 0.), 1.0), ValueError,
+	PARAM_FAILIF(!m_freq.elems().empty() && fcmp_ne(accumulate(m_freq.elems().begin(), m_freq.elems().end(), 0.), 1.0), ValueError,
 		"Allele frequencies should add up to one.");
-	PARAM_FAILIF(!m_prop.empty() && fcmp_ne(accumulate(m_prop.begin(), m_prop.end(), 0.), 1.0), ValueError,
+	PARAM_FAILIF(!m_prop.elems().empty() && fcmp_ne(accumulate(m_prop.elems().begin(), m_prop.elems().end(), 0.), 1.0), ValueError,
 		"Allele proportions should add up to one.");
-	PARAM_ASSERT(!m_haplotypes.empty() || (!m_freq.empty() + !m_genotype.empty() + !m_prop.empty() == 1), ValueError,
+	PARAM_ASSERT(!m_haplotypes.empty() || (m_freq.valid() + !m_genotype.empty() + m_prop.valid() == 1), ValueError,
 		"Please specify one and only one of parameters freq, prop (or haplotypes) and genotype.");
 }
 
@@ -192,15 +192,52 @@ string InitGenotype::describe(bool /* format */) const
 {
 	string desc = "<simuPOP.InitGenotype> initialize individual genotype ";
 
-	if (!m_freq.empty())
+	if (m_freq.valid())
 		desc += string("acccording to ") + (m_haplotypes.empty() ? " allele " : " haplotype ") + "frequencies.";
-	else if (m_prop.empty())
+	else if (m_prop.valid())
 		desc += string("according to proportion of ") + (m_haplotypes.empty() ? " alleles." : " haplotypes.");
 	else
 		desc += "using specified genotype.";
 	return desc;
 }
 
+
+vectorf InitGenotype::getFreqOrProp(size_t locus, const vspID & vsp) const
+{
+	pyFunc func = m_freq.func().isValid() ? m_freq.func() : m_prop.func();
+
+	PyObject * args = PyTuple_New(func.numArgs());
+	for (size_t i = 0; i < func.numArgs(); ++i) {
+		const string & arg = func.arg(i);
+		if (arg == "loc")
+			PyTuple_SET_ITEM(args, i, PyInt_FromLong(locus));
+		else if (arg == "subPop")
+			PyTuple_SET_ITEM(args, i, PyInt_FromLong(vsp.subPop()));
+		else if (arg == "vsp") {
+			PyObject * v = PyTuple_New(2);
+			PyTuple_SET_ITEM(v, 0, PyInt_FromLong(vsp.subPop()));
+			if (vsp.isVirtual())
+				PyTuple_SET_ITEM(v, 1, PyInt_FromLong(vsp.virtualSubPop()));
+			else {
+				Py_INCREF(Py_None);
+				PyTuple_SET_ITEM(v, 1, Py_None);
+			}
+			// it steals reference count of v
+			PyTuple_SET_ITEM(args, i, v);
+		}
+	}
+	vectorf freq = func(PyObj_As_Array, args);
+	if (freq.size() == 1 && freq.back() != 1.0)
+		freq.push_back(1.0 - freq[0]);
+	for (size_t i = 0; i < freq.size(); ++i) {
+		if (fcmp_lt(freq[i], 0) || fcmp_gt(freq[i], 1))
+			throw RuntimeError("Returned allele frequency should be between 0 and 1.");
+	}
+	if (fcmp_ne(std::accumulate(freq.begin(), freq.end(), 0.0), 1.0))
+		throw RuntimeError("Returned allele frequency should add up to 1.");
+	Py_XDECREF(args);
+	return freq;
+}
 
 bool InitGenotype::apply(Population & pop) const
 {
@@ -224,6 +261,19 @@ bool InitGenotype::apply(Population & pop) const
 	subPopList::const_iterator sp_end = subPops.end();
 	size_t sz = m_genotype.size();
 
+	// check function
+	int by_locus = false;
+	if (m_freq.func().isValid() || m_prop.func().isValid()) {
+		pyFunc func = m_freq.func().isValid() ? m_freq.func() : m_prop.func();
+		//
+		for (size_t fp = 0; fp < func.numArgs(); ++fp) {
+			if (func.arg(fp) == "loc")
+				by_locus = true;
+			else if (func.arg(fp) != "subPop" && func.arg(fp) != "vsp")
+				throw ValueError("Unacceptable parameter " + func.arg(fp));
+		}
+	}
+
 	DBG_WARNIF(sz >= 1 && sz != loci.size() && sz != loci.size() * pop.ploidy(),
 		(boost::format("Genotype [%1%] specified in operator InitGenotype has %2% alleles, which does not match"
 			           " number of loci of individuals. This sequence will be truncated or repeated and may lead to erroneous results.")
@@ -233,59 +283,98 @@ bool InitGenotype::apply(Population & pop) const
 		pop.activateVirtualSubPop(*sp);
 		if (!m_genotype.empty()) {
 			// multi-thread write to compressed mutant is not allowed.
-			{
-				IndIterator it = pop.indIterator(sp->subPop());
-				for (size_t ii = 0; it.valid(); ++it, ++ii)
-					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
-						for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++idx)
-							it->setAllele(TO_ALLELE(m_genotype[idx % sz]), *loc, static_cast<int>(*p));
-
-			}
-		} else if (!m_prop.empty()) {
+			IndIterator it = pop.indIterator(sp->subPop());
+			for (size_t ii = 0; it.valid(); ++it, ++ii)
+				for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
+					for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++idx)
+						it->setAllele(TO_ALLELE(m_genotype[idx % sz]), *loc, static_cast<int>(*p));
+		} else if (m_prop.valid()) {
 			WeightedSampler ws;
 			size_t sz = pop.subPopSize(*sp);
+			// different for each locus
 			if (m_haplotypes.empty()) {
 				// initialize by allele. Gurantee proportion at each locus.
 				for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc) {
-					ws.set(m_prop.begin(), m_prop.end(), sz * ploidy.size());
+					if (m_prop.elems().empty()) {
+						vectorf prop = getFreqOrProp(*loc, *sp);
+						ws.set(prop.begin(), prop.end(), sz * ploidy.size());
+					} else
+						ws.set(m_prop.elems().begin(), m_prop.elems().end(), sz * ploidy.size());
 					IndIterator it = pop.indIterator(sp->subPop());
 					for (; it.valid(); ++it)
 						for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
 							it->setAllele(TO_ALLELE(ws.draw()), *loc, static_cast<int>(*p));
 				}
+			// use haplotype
 			} else {
-				ws.set(m_prop.begin(), m_prop.end(), sz * ploidy.size());
-				{
-					IndIterator it = pop.indIterator(sp->subPop());
-					for (; it.valid(); ++it)
-						for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) {
-							const vectori & haplotype = m_haplotypes[ws.draw()];
-							size_t hapSz = haplotype.size();
-							size_t j = 0;
-							for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++j)
-								it->setAllele(TO_ALLELE(haplotype[j % hapSz]), *loc, static_cast<int>(*p));
-						}
-				}
-			}
-		} else {
-			// openMP is disabled here because of unknown cause of initialization error for binary module
-			{
 				IndIterator it = pop.indIterator(sp->subPop());
-				// m_freq can be empty if ....
-				WeightedSampler ws(m_freq.empty() ? vectorf(m_haplotypes.size(), 1. / m_haplotypes.size()) : m_freq);
+				if (m_prop.elems().empty()) {
+					if (by_locus)
+						throw ValueError("Return value of user provided function cannot have parameter loc when haplotypes are provided.");
+					vectorf prop = getFreqOrProp(0, *sp);
+					ws.set(prop.begin(), prop.end(), sz * ploidy.size());
+				} else
+					ws.set(m_prop.elems().begin(), m_prop.elems().end(), sz * ploidy.size());
 				for (; it.valid(); ++it)
 					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) {
-						if (m_haplotypes.empty()) {
-							for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc)
+						const vectori & haplotype = m_haplotypes[ws.draw()];
+						size_t hapSz = haplotype.size();
+						size_t j = 0;
+						for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++j)
+							it->setAllele(TO_ALLELE(haplotype[j % hapSz]), *loc, static_cast<int>(*p));
+					}
+			}
+		} else {
+			// use allele frequency
+			if (m_haplotypes.empty()) {
+				// if a funciton is provided.
+				if (m_freq.func().isValid()) {
+					for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc) {
+						WeightedSampler ws(getFreqOrProp(*loc, *sp));
+						//
+						IndIterator it = pop.indIterator(sp->subPop());
+						for (; it.valid(); ++it) {
+							for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) {
 								it->setAllele(TO_ALLELE(ws.draw()), *loc, static_cast<int>(*p));
-						} else {
-							const vectori & haplotype = m_haplotypes[ws.draw()];
-							size_t hapSz = haplotype.size();
-							size_t j = 0;
-							for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++j)
-								it->setAllele(TO_ALLELE(haplotype[j % hapSz]), *loc, static_cast<int>(*p));
+							}
 						}
 					}
+				} else {
+					// use specified frequencies
+					IndIterator it = pop.indIterator(sp->subPop());
+					WeightedSampler ws(m_freq.elems());
+					for (; it.valid(); ++it) {
+						for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) {
+							for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc)
+								it->setAllele(TO_ALLELE(ws.draw()), *loc, static_cast<int>(*p));
+						}
+					}
+				}
+			// if user provides haplotypes
+			} else {
+				WeightedSampler ws;
+				IndIterator it = pop.indIterator(sp->subPop());
+				// m_freq can be empty if ....
+				if (!m_freq.valid()) {
+					vectorf freq = vectorf(m_haplotypes.size(), 1. / m_haplotypes.size());
+					ws.set(freq.begin(), freq.end());
+				} else if (m_freq.elems().empty()) {
+					if (by_locus)
+						throw ValueError("Return value of user provided function cannot have parameter loc when haplotypes are provided.");
+					vectorf freq = getFreqOrProp(0, *sp);
+					ws.set(freq.begin(), freq.end());
+				} else
+					ws.set(m_freq.elems().begin(), m_freq.elems().end());
+				//
+				for (; it.valid(); ++it) {
+					for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p) {
+						const vectori & haplotype = m_haplotypes[ws.draw()];
+						size_t hapSz = haplotype.size();
+						size_t j = 0;
+						for (vectoru::const_iterator loc = loci.begin(); loc != loci.end(); ++loc, ++j)
+							it->setAllele(TO_ALLELE(haplotype[j % hapSz]), *loc, static_cast<int>(*p));
+					}
+				}
 			}
 		}
 		pop.deactivateVirtualSubPop(sp->subPop());

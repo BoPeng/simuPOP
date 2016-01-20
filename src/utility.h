@@ -329,6 +329,11 @@ public:
 	}
 
 
+	bool hasArg(const string & arg) const
+	{
+		return std::find(m_args.begin(), m_args.end(), arg) != m_args.end();
+	}
+
 	string name() const
 	{
 		return m_name;
@@ -1032,6 +1037,11 @@ public:
 		return m_elems[i];
 	}
 
+	/// CPPONLY
+	bool valid() const
+	{
+		return !m_elems.empty() || m_func.func() != NULL;
+	}
 
 	/// CPPONLY
 	bool empty() const
