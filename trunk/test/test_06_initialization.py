@@ -248,6 +248,95 @@ class TestInitialization(unittest.TestCase):
             pop.subPopSize([2,1])), loci=[2,4,5], subPop=[[0,0], [2,1]])
         self.assertGenotype(pop, 0, loci=[0,1,3,6,7])
 
+    def testInitGenotypeByFunc(self):
+        'Test initialize genotype by function'
+        pop = Population(size=[500, 1000, 500], loci=[2,4,2])
+        # initialize all
+        initGenotype(pop, freq=lambda : [.2, .3, .5])
+        self.assertGenotypeFreq(pop, [.15, .25, .45],
+            [.25, .35, .55])
+        #
+        self.clearGenotype(pop)
+        #pop.dumpArray()
+        initGenotype(pop, freq=lambda : [.2, .3, .4, .1], loci=[2,4,6])
+        self.assertGenotypeFreq(pop, [.15, .25, .35, .05],
+            [.25, .35, .45, .15], loci=[2,4,6])
+        self.assertGenotype(pop, 0, loci=[0,1,3,5,7])
+        #
+        self.clearGenotype(pop)
+        #
+        initGenotype(pop, freq=lambda subPop: [.2,.8] if subPop == 0 else ([.8,.2] if subPop==1 else [.5,.5]))
+        self.assertGenotypeFreq(pop, [.15, .75], [.25, .85], subPop=[0])
+        self.assertGenotypeFreq(pop, [.75, .15], [.85, .25], subPop=[1])
+        self.assertGenotypeFreq(pop, [.45, .45], [.55, .55], subPop=[2])
+        #
+        # ploidy in InitByFreq'
+        pop = Population(size=[500, 1000, 500], loci=[2,4,2])
+        self.clearGenotype(pop)
+        initGenotype(pop, freq=lambda:[.2, .3, .5], loci=[2,4,6], ploidy=[0])
+        self.assertGenotypeFreq(pop, [.15, .25, .45], [.25, .35, .55],
+            loci=[2,4,6], atPloidy=0)
+        self.assertGenotype(pop, 0, loci=[0,3,5,7])
+        self.assertGenotype(pop, 0, atPloidy=1)
+        # virtual subPop
+        pop = Population(size=[5000, 10000, 5000], loci=[2,4,2], infoFields=['x'])
+        for ind in pop.individuals():
+            ind.setInfo(random.randint(10, 20), 'x')
+        pop.setVirtualSplitter(InfoSplitter('x', values=list(range(10, 15))))
+        initGenotype(pop, freq=
+            lambda subPop: [[0.2, 0.3, 0.5], [0.2,0.8], [0.5, 0.5]][subPop],
+            subPops=[[0,0],[1,1], [2,0]], loci=[2, 4, 6])
+        self.assertGenotypeFreq(pop, [.15, .25, .45], [.25, .35, .55], 
+            subPop=[[0,0]], loci=[2,4,6])
+        self.assertGenotypeFreq(pop, [.15, .75], [.25, .85], 
+            subPop=[[1,1]], loci=[2,4,6])
+        self.assertGenotypeFreq(pop, [.45, .45], [.55, .55], 
+            subPop=[[2,0]], loci=[2,4,6])
+        # corner case
+        self.clearGenotype(pop)
+        initGenotype(pop,
+            freq=lambda subPop: [[0, 0, 1], [0, 1], [1]][subPop],
+            subPops=[[0,0],[1,1], [2,1]])
+        for ind in pop.individuals([0,0]):
+            if moduleInfo()['alleleType'] == 'binary':
+                for allele in ind.genotype():
+                     self.assertEqual(allele, 1) 
+            else:
+                for allele in ind.genotype():
+                     self.assertEqual(allele, 2) 
+        for ind in pop.individuals([1,1]):
+            for allele in ind.genotype():
+                 self.assertEqual(allele, 1)
+        for ind in pop.individuals([2,1]):
+            for allele in ind.genotype():
+                 self.assertEqual(allele, 0)
+        self.clearGenotype(pop)
+        self.assertRaises(ValueError,initGenotype, pop, freq=[-1,2])
+        # passing by VSP
+        self.clearGenotype(pop)
+        #def ff(vsp):
+        #    print(vsp)
+        #    return  [[0, 0, 1], [0, 1], [1]][vsp[0]]
+        initGenotype(pop,
+            freq=lambda vsp: [[0, 0, 1], [0, 1], [1]][vsp[0]],
+            subPops=[[0,0],[1,1], [2,1]])
+        for ind in pop.individuals([0,0]):
+            if moduleInfo()['alleleType'] == 'binary':
+                for allele in ind.genotype():
+                     self.assertEqual(allele, 1) 
+            else:
+                for allele in ind.genotype():
+                     self.assertEqual(allele, 2) 
+        for ind in pop.individuals([1,1]):
+            for allele in ind.genotype():
+                 self.assertEqual(allele, 1)
+        for ind in pop.individuals([2,1]):
+            for allele in ind.genotype():
+                 self.assertEqual(allele, 0)
+        self.clearGenotype(pop)
+        self.assertRaises(ValueError,initGenotype, pop, freq=[-1,2])
+
+        
     def testInitByHaplotypes(self):
         'Testing initialization by haplotypes (operator InitGenotype)'
         pop = Population(size=[500, 1000, 500], loci=[2,4,2], infoFields=['x'])

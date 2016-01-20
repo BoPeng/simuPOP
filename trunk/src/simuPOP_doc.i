@@ -1878,6 +1878,8 @@ Usage:
 
 %ignore simuPOP::floatListFunc::floatListFunc(double val);
 
+%ignore simuPOP::floatListFunc::valid() const;
+
 %ignore simuPOP::floatListFunc::empty() const;
 
 %ignore simuPOP::floatListFunc::size() const;
@@ -3724,20 +3726,26 @@ Details:
     can use parameter prop to specified the exact proportions of
     alleles 0, 1, ..., although alleles with small proportions might
     not be assigned at all. Values of parameter prob or prop should
-    add up to 1. If parameter haplotypes is specified, it should
-    contain a list of haplotypes and parameter prob or prop specifies
-    frequencies or proportions of each haplotype. If loci, ploidy
-    and/or subPop are specified, only specified loci, ploidy, and
-    individuals in these (virtual) subpopulations will be initialized.
-    Parameter loci can be a list of loci indexes, names or ALL_AVAIL.
-    If the length of a haplotype is not enough to fill all loci, the
-    haplotype will be reused. If a list (or a single) haplotypes are
-    specified without freq or prop, they are used with equal
-    probability.  In the last case, if a sequence of genotype is
-    specified, it will be used repeatedly to initialize all alleles
-    sequentially. This works similar to function
-    Population.setGenotype() except that you can limit the
-    initialization to certain loci and ploidy.
+    add up to 1. In addition to a vector, parameter prob and prop can
+    also be a function that accepts optional parameters loc, subPop or
+    vsp and returns a list of requencies for alleles 0, 1, etc, or a
+    number for frequency of allele 0 as a speciail case for each
+    locus, subpopulation (parameter subPop), or virtual subpopulations
+    (parameter vsp, pass as a tuple). If parameter haplotypes is
+    specified, it should contain a list of haplotypes and parameter
+    prob or prop specifies frequencies or proportions of each
+    haplotype (possibly diferently for each subpopulation but not each
+    locus if the function form is used). If loci, ploidy and/or subPop
+    are specified, only specified loci, ploidy, and individuals in
+    these (virtual) subpopulations will be initialized. Parameter loci
+    can be a list of loci indexes, names or ALL_AVAIL. If the length
+    of a haplotype is not enough to fill all loci, the haplotype will
+    be reused. If a list (or a single) haplotypes are specified
+    without freq or prop, they are used with equal probability.  In
+    the last case, if a sequence of genotype is specified, it will be
+    used repeatedly to initialize all alleles sequentially. This works
+    similar to function Population.setGenotype() except that you can
+    limit the initialization to certain loci and ploidy.
 
 "; 
 
@@ -7428,6 +7436,14 @@ Description:
 Usage:
 
     x.numArgs()
+
+"; 
+
+%feature("docstring") simuPOP::pyFunc::hasArg "
+
+Usage:
+
+    x.hasArg(arg)
 
 "; 
 

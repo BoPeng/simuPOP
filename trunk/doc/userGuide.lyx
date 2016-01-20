@@ -7502,6 +7502,50 @@ InitGenotype(genotype=[1, 2, 2, 1])
  to the second copy.
 \end_layout
 
+\begin_layout Itemize
+By multiple allele frequency or proportion returned by a function passed
+ to parameter 
+\family typewriter
+freq
+\family default
+ or 
+\family typewriter
+prop
+\family default
+ (new in version ).
+ This function can accept parameters 
+\family typewriter
+loc
+\family default
+, 
+\family typewriter
+subPop
+\family default
+ or 
+\family typewriter
+vsp
+\family default
+ and returns locus, subpopopulation or virtual subpopulation specific allele
+ frequencies.
+ For example, if you would like to initialize genotypes with random allele
+ frequency, you can set 
+\family typewriter
+freq=lambda : random.random()
+\family default
+ so that a new frequency will be drawn from a uniform distribution for each
+ new locus.
+ Note that simuPOP expects the return value from this function to be a list
+ of frequencies for alleles 0, 1, ..., but treats a single return value 
+\emph on
+x
+\emph default
+ as [
+\emph on
+x, 1-x
+\emph default
+] for simplicity.
+\end_layout
+
 \begin_layout Standard
 Parameter 
 \family typewriter
