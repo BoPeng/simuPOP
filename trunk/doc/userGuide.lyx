@@ -7503,7 +7503,7 @@ InitGenotype(genotype=[1, 2, 2, 1])
 \end_layout
 
 \begin_layout Itemize
-By multiple allele frequency or proportion returned by a function passed
+By multiple allele frequencies or proportions returned by a function passed
  to parameter 
 \family typewriter
 freq
@@ -7512,7 +7512,7 @@ freq
 \family typewriter
 prop
 \family default
- (new in version ).
+ (new in version 1.1.7).
  This function can accept parameters 
 \family typewriter
 loc
@@ -7532,9 +7532,9 @@ vsp
 \family typewriter
 freq=lambda : random.random()
 \family default
- so that a new frequency will be drawn from a uniform distribution for each
+ so that a new frequency is drawn from an uniform distribution for each
  new locus.
- Note that simuPOP expects the return value from this function to be a list
+ Note that simuPOP expects the return value of this function to be a list
  of frequencies for alleles 0, 1, ..., but treats a single return value 
 \emph on
 x
