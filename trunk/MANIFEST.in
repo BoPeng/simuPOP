@@ -322,7 +322,6 @@ prune boost_1_49_0/boost/signals2
 prune boost_1_49_0/boost/spirit
 prune boost_1_49_0/boost/test
 prune boost_1_49_0/boost/thread
-prune boost_1_49_0/boost/typeof
 prune boost_1_49_0/boost/units
 prune boost_1_49_0/boost/variant
 prune boost_1_49_0/boost/wave

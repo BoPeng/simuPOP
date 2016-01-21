@@ -1,10 +1,10 @@
 package:
   name: simupop
-  version: !!str 1.1.6
+  version: !!str 1.1.7
 
 source:
-  fn: simuPOP-1.1.6.tar.gz
-  url: https://binstar.org/simupop/simuPOP/1.1.6/download/simuPOP-1.1.6-src.tar.gz
+  fn: simuPOP-1.1.7.tar.gz
+  url: https://binstar.org/bpeng/simuPOP/1.1.7/download/simuPOP-1.1.7-src.tar.gz
   md5: 
    #  patches:
    # List any patch files here
