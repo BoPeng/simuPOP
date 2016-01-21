@@ -202,6 +202,10 @@ string InitGenotype::describe(bool /* format */) const
 }
 
 
+#if PY_VERSION_HEX >= 0x03000000
+#  define PyInt_FromLong(x) PyLong_FromLong(x)
+#endif
+
 vectorf InitGenotype::getFreqOrProp(size_t locus, const vspID & vsp) const
 {
 	pyFunc func = m_freq.func().isValid() ? m_freq.func() : m_prop.func();

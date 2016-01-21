@@ -92,8 +92,13 @@ typedef vector<bool> BitSet;
 
 // this is used to compare loci positions when loci are provided by
 // (chr, pos) pair.
-#define PRECISION(f)  ((round(f)*100000.)/100000.)
-//double(size_t(f)) == f ? f : (size_t((f) * 10000. + 0.5) / 10000.))
+#if defined (_WIN32) || defined (_WIN64)
+// windows VC does not have round function
+#define PRECISION(f) (double(size_t(f)) == f ? f : (size_t((f) * 100000. + 0.5) / 100000.))
+#else
+#define PRECISION(f)  (round(f*100000.)/100000.)
+#endif
+
 
 namespace simuPOP {
 
