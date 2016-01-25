@@ -8803,12 +8803,12 @@ BackwardMigrator
 \begin_layout Standard
 Backward migration matrices are widely used in theoretical population genetics
  and coalescent based simulations.
- Instead of specifying the probability of migrating from another subpopulation
+ Instead of specifying the probability of migrating from one subpopulation
  to another (namely how migration happens), such matrices specify the probabilit
 y that individuals in a subpopulation originate from others (namely the
  result of migration).
  simuPOP simulates such models by converting backward migration matrices
- to foward ones using the theory describes below.
+ to foward ones using the theory described below.
  Due to the limit of such models, simuPOP cannot simulate migration from/to
  virtual subpopulatons, creation of new subpopulation, different source
  and destination subpopulations, and will generate an error if the conversion
