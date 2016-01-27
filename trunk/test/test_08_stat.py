@@ -514,6 +514,10 @@ class TestStat(unittest.TestCase):
         # change order, but the result should be the same
         stat(pop, structure=[5, 3, 2])
         self.assertAlmostEqual(pop.dvars().F_st,  0.0261665)
+        # or remove some loci
+        pop.removeLoci(keep=[5,2,3])
+        stat(pop, structure=ALL_AVAIL)
+        self.assertAlmostEqual(pop.dvars().F_st,  0.0261665)
 
     def testHaploFreq(self):
         'Testing calculation of haplotype frequency'
