@@ -494,6 +494,26 @@ class TestStat(unittest.TestCase):
         self.assertAlmostEqual(pop.dvars().F_is, -0.2290202)
         self.assertAlmostEqual(pop.dvars().F_it, -0.1034594)
         self.assertAlmostEqual(pop.dvars().F_st,  0.1021633)
+        #
+        # test Fst with a subset of loci, and with unordered loci etc
+        pop = Population(size=[500,100,1000],
+            ploidy=2, loci = [10])
+        pop.setVirtualSplitter(RangeSplitter([[0,125], [125, 375], [375, 500],
+            [0, 50], [50, 80], [80, 100],
+            [0, 100],[100, 600], [600, 1000]]))
+        for genotype, subPop in zip(
+            [[0,0,1],[0,1,1],[1,1,0],[0,1,0],[0,0,1],[1,1,1],[0,1,1],[0,1,1],[1,0, 1]],
+            [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)]):
+            initGenotype(pop, genotype=genotype, subPops=[subPop])
+        stat(pop, structure=ALL_AVAIL)
+        self.assertAlmostEqual(pop.dvars().F_st,  0.0258261)
+        stat(pop, structure=[2])
+        self.assertAlmostEqual(pop.dvars().F_st,  0.0263055)
+        stat(pop, structure=[2, 3, 5])
+        self.assertAlmostEqual(pop.dvars().F_st,  0.0261665)
+        # change order, but the result should be the same
+        stat(pop, structure=[5, 3, 2])
+        self.assertAlmostEqual(pop.dvars().F_st,  0.0261665)
 
     def testHaploFreq(self):
         'Testing calculation of haplotype frequency'
