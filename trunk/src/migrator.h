@@ -33,7 +33,8 @@
 #include <list>
 using std::list;
 
-#include <boost/numeric/ublas/matrix.hpp>
+#include "boost_pch.hpp"
+
 
 #include <iostream>
 using std::cout;

@@ -18,6 +18,7 @@ include config_win32.h
 include config_linux.h 
 include config_mac.h
 include src/simuPOP_cfg.h
+include src/boost_pch.h
 include src/mutant_vector.h
 include src/utility.h
 include src/genoStru.h

@@ -41,6 +41,7 @@ http://simupop.sourceforge.net/main/GetInvolved for details.
 """
 import os, sys, platform, shutil, glob, re, tempfile, subprocess
 import distutils.sysconfig
+from distutils.ccompiler import new_compiler
 from distutils.errors import CompileError
 from distutils.errors import DistutilsExecError
 
@@ -185,6 +186,9 @@ else:
 USE_ICC = False
 if distutils.sysconfig.get_config_var('CC') is not None:
     USE_ICC = 'icc' in distutils.sysconfig.get_config_var('CC')
+
+if not USE_ICC and USE_OPENMP:
+    COMMON_MACROS.append(('_GLIBCXX_PARALLEL', None))
 
 # simuPOP works with these boost versions. Newer versions will be used if these
 # versions are not available, and will most likely work just fine.
@@ -385,7 +389,7 @@ SOURCE_FILES = [
 
 # since it is troublesome to link to external gsl library,
 # I embed some GSL files with simuPOP. 
-LIB_FILES = [ 
+GSL_LIB_FILES = [ 
     'gsl/sys/infnan.c',
     'gsl/sys/coerce.c',
     'gsl/sys/fdiv.c',
@@ -470,7 +474,9 @@ LIB_FILES = [
     'gsl/cdf/gamma.c',
     'gsl/cdf/poisson.c',
     'gsl/error.c' 
-] + [x for x in glob.glob(os.path.join(boost_serialization_dir, '*.cpp')) if 'xml' not in x and 'binary' not in x]\
+]
+
+LIB_FILES = [x for x in glob.glob(os.path.join(boost_serialization_dir, '*.cpp')) if 'xml' not in x and 'binary' not in x]\
   + [x for x in glob.glob(os.path.join(boost_iostreams_dir, '*.cpp')) if 'bzip' not in x]\
   + glob.glob(os.path.join(boost_regex_dir, '*.cpp'))
 
@@ -551,32 +557,39 @@ SWIG_OUTDIR = 'src'
 if not os.path.isdir('build'):
     os.mkdir('build')
                 
+COMMON_MACROS = [
+    ('BOOST_UBLAS_NDEBUG', None),
+    ('_HAS_ITERATOR_DEBUGGING', 0)
+    ]
+    
+if os.name == 'nt':
+    COMMON_MACROS.extend([('BOOST_ALL_NO_LIB', None),
+        ('NO_ZLIB', 0), ('NO_BZIP' , 1),
+        # this one disables a lot of warnings about VC Checked iterators.
+        #('_SCL_SECURE_NO_WARNINGS', None)
+    ])
+
 MACROS = {
     'std':    [('SIMUPOP_MODULE', 'simuPOP_std'), 
-                ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 0)],
+                ('_SECURE_SCL', 1)],
     'op':     [('SIMUPOP_MODULE', 'simuPOP_op'), ('OPTIMIZED', None), 
-                ('NDEBUG', None), ('BOOST_UBLAS_NDEBUG', None),
-                ('_SECURE_SCL', 0), ('_HAS_ITERATOR_DEBUGGING', 0)],
+                ('NDEBUG', None), ('_SECURE_SCL', 0)],
     'la':     [('SIMUPOP_MODULE', 'simuPOP_la'), ('LONGALLELE', None), 
-                ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 0)],
+                ('_SECURE_SCL', 1)],
     'laop':   [('SIMUPOP_MODULE', 'simuPOP_laop'), ('LONGALLELE', None),
-                ('OPTIMIZED', None),('NDEBUG', None), ('BOOST_UBLAS_NDEBUG', None),
-                ('_SECURE_SCL', 0), ('_HAS_ITERATOR_DEBUGGING', 0)],
+                ('OPTIMIZED', None),('NDEBUG', None), ('_SECURE_SCL', 0)],
     'ba':     [('SIMUPOP_MODULE', 'simuPOP_ba'), ('BINARYALLELE', None), 
-                ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 0)],
+                ('_SECURE_SCL', 1)],
     'baop':   [('SIMUPOP_MODULE', 'simuPOP_baop'), ('BINARYALLELE', None),
-                ('OPTIMIZED', None),('NDEBUG', None), ('BOOST_UBLAS_NDEBUG', None),
-                ('_SECURE_SCL', 0), ('_HAS_ITERATOR_DEBUGGING', 0)],
+                ('OPTIMIZED', None),('NDEBUG', None), ('_SECURE_SCL', 0)],
     'mu':     [('SIMUPOP_MODULE', 'simuPOP_mu'), ('MUTANTALLELE', None), 
-                ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 0)],
+                ('_SECURE_SCL', 1)],
     'muop':   [('SIMUPOP_MODULE', 'simuPOP_muop'), ('MUTANTALLELE', None),
-                ('OPTIMIZED', None),('NDEBUG', None), ('BOOST_UBLAS_NDEBUG', None),
-                ('_SECURE_SCL', 0), ('_HAS_ITERATOR_DEBUGGING', 0)],
+                ('OPTIMIZED', None),('NDEBUG', None), ('_SECURE_SCL', 0)],
     'lin':    [('SIMUPOP_MODULE', 'simuPOP_lin'), ('LINEAGE', None), 
-                ('_SECURE_SCL', 1), ('_HAS_ITERATOR_DEBUGGING', 0)],
+                ('_SECURE_SCL', 1)],
     'linop':  [('SIMUPOP_MODULE', 'simuPOP_linop'), ('LINEAGE', None),
-                ('OPTIMIZED', None),('NDEBUG', None), ('BOOST_UBLAS_NDEBUG', None),
-                ('_SECURE_SCL', 0), ('_HAS_ITERATOR_DEBUGGING', 0)],
+                ('OPTIMIZED', None),('NDEBUG', None), ('_SECURE_SCL', 0)],
  
 }
  
@@ -640,7 +653,8 @@ def is_maverick():
 if is_maverick():
     common_extra_link_args = ['-stdlib=libstdc++']
     common_extra_include_dirs = ['/usr/include/c++/4.2.1']
-    common_extra_compile_args = ['-Wno-error=unused-command-line-argument-hard-error-in-future']
+    #common_extra_compile_args = ['-Wno-error=unused-command-line-argument-hard-error-in-future']
+    common_extra_compile_args = ['-Wno-error=unused-command-line-argument']
 elif os.name == 'nt':  
     common_extra_link_args = []
     common_extra_include_dirs = []
@@ -660,12 +674,18 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     res['src'] =  ['src/simuPOP_' + modu + '_wrap.cpp']
     for src in SOURCE_FILES:
         res['src'].append('build/%s/%s' % (modu, src))
-    res['src'].extend(LIB_FILES)
+    #
+    # For some reason that I have not got a change to investigate, including GSL_LIB_FILES
+    # to LIB_FILES would lead to symbol not found and some error like that. I suspect
+    # that this is related to the order the library is linked, or some MACRO that is only
+    # used when the GSL files are compiled with simuPOP modules.
+    #
+    res['src'].extend(GSL_LIB_FILES)
     # lib
     if os.name == 'nt':    # Windows, build zlib from source
-        res['libraries'] = []
+        res['libraries'] = ['simuPOP_shared']
     else:
-        res['libraries'] = ['z']
+        res['libraries'] = ['z', 'simuPOP_shared']
         if USE_OPENMP:
             if USE_ICC:
                 res['libraries'].append('iomp5')
@@ -711,18 +731,8 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     if USE_ICC:
         res['extra_compile_args'].extend(['-wd981', '-wd191'])
     # define_macros (deep copy)
-    res['define_macros'] = [x for x in MACROS[modu]]
-    res['define_macros'].extend([('SIMUPOP_VER', SIMUPOP_VER), ('SIMUPOP_REV', SIMUPOP_REV)])
-    if os.name == 'nt':
-        res['define_macros'].extend([('BOOST_ALL_NO_LIB', None),
-            ('NO_ZLIB', 0), ('NO_BZIP' , 1),
-            # this one disables a lot of warnings about VC Checked iterators.
-            #('_SCL_SECURE_NO_WARNINGS', None)
-            ])
-    else:
-        if not USE_ICC:
-            if USE_OPENMP:
-                res['define_macros'].append(('_GLIBCXX_PARALLEL', None))
+    res['define_macros'] = COMMON_MACROS + MACROS[modu]
+
     res['undef_macros'] = []
     return res
 
@@ -746,7 +756,40 @@ if __name__ == '__main__':
     SIMUPOP_VER, SIMUPOP_REV = simuPOP_version()
     # create source file for each module
     MODULES = ['std', 'op', 'la', 'laop', 'ba', 'baop', 'mu', 'muop', 'lin', 'linop']
-     
+    COMMON_MACROS.extend([
+        ('SIMUPOP_VER', SIMUPOP_VER),
+        ('SIMUPOP_REV', SIMUPOP_REV)
+        ])
+
+    try:
+        if os.name != 'nt' and (not os.path.isfile('src/boost_pch.h.pch') or \
+            os.path.getmtime('src/boost_pch.h.pch') > os.path.getmtime('src/boost_pch.h')):
+            c = new_compiler(verbose=1)
+            # allow compiling .h file 
+            c.src_extensions.append('.hpp')
+            c.compile(['src/boost_pch.hpp'], output_dir='src',
+                include_dirs=['.', 'gsr', boost_include_dir] + common_extra_include_dirs,
+                extra_preargs = common_extra_compile_args,
+                macros=COMMON_MACROS)
+    except Exception as e:
+        # it is ok if boost_pch cannot be precompiled.
+        print('Failed to pre-compile boost headers: {}'.format(e))
+
+    try:
+        # try to get 
+        print('Building a static library')
+        c = new_compiler(verbose=1)
+        # -w suppress all warnings caused by the use of boost libraries
+        objects = c.compile(LIB_FILES, extra_postargs=['-w', '-unknownnn'],
+            include_dirs=['gsl', 'gsl/specfunc', 'build', '.', boost_include_dir] + common_extra_include_dirs,
+            output_dir='build',
+            extra_preargs = common_extra_compile_args,
+            macros = COMMON_MACROS
+        )
+        c.create_static_lib(objects, "simuPOP_shared", output_dir='build')
+    except Exception as e:
+        sys.exit("Failed to build a shared supporting library: {}".format(e))
+
     #
     # Generate Wrapping files
     #
@@ -803,7 +846,7 @@ if __name__ == '__main__':
         Extension('simuPOP._gsl',
             sources = GSL_FILES + ['src/gsl_wrap.c'],
             include_dirs = ['gsl', 'gsl/specfunc', 'build', '.'] + common_extra_include_dirs,
-            extra_compile_args = common_extra_compile_args,
+            extra_compile_args = common_extra_compile_args + ['-w'],
             extra_link_args = common_extra_link_args,
         )
     ]

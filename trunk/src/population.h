@@ -46,14 +46,7 @@ using std::equal_to;
 #include <deque>
 using std::deque;
 
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/serialization/utility.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/split_member.hpp>
-#include <boost/serialization/split_free.hpp>
-#include <boost/serialization/version.hpp>
-
+#include "boost_pch.hpp"
 #include "individual.h"
 #include "virtualSubPop.h"
 

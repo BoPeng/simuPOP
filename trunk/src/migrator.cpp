@@ -26,9 +26,7 @@
 #include "virtualSubPop.h"
 #include "migrator.h"
 
-#include <boost/numeric/ublas/lu.hpp>
-#include <boost/numeric/ublas/io.hpp>
-
+#include "boost_pch.hpp"
 namespace simuPOP {
 
 Migrator::Migrator(const floatMatrix & rate, int mode, const uintList & toSubPops,

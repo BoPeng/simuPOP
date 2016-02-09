@@ -34,11 +34,7 @@
 #include "utility.h"
 #include "simuPOP_cfg.h"
 
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/version.hpp>
-#include <boost/serialization/split_member.hpp>
-#include <boost/serialization/split_free.hpp>
-
+#include "boost_pch.hpp"
 #include <iterator>
 using std::ostream;
 using std::ostream_iterator;
