@@ -25,7 +25,7 @@
 
 #include "genoStru.h"
 
-#include "boost/lambda/lambda.hpp"
+#include "boost_pch.hpp"
 
 using namespace boost::lambda;
 

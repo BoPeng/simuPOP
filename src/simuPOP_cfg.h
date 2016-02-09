@@ -498,7 +498,8 @@ public:
 }
 
 #pragma GCC system_header
-#include <boost/format.hpp>
+#include "boost_pch.hpp"
+
 
 namespace simuPOP {
 

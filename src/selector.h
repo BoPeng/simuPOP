@@ -32,7 +32,7 @@
 #include "utility.h"
 #include "operator.h"
 
-#include "boost/tuple/tuple.hpp"
+#include "boost_pch.hpp"
 #include <numeric>
 using std::min;
 

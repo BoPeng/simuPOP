@@ -52,7 +52,7 @@ using std::fstream;
 using std::ifstream;
 using std::ofstream;
 
-#include "boost/lexical_cast.hpp"
+#include "boost_pch.hpp"
 
 // for data type lociList
 #include "genoStru.h"
@@ -105,7 +105,7 @@ using std::ofstream;
 #include "boost/pending/lowest_bit.hpp"
 using boost::lowest_bit;
 
-#include "boost/regex.hpp"
+
 using boost::regex;
 using boost::regex_match;
 using boost::cmatch;
