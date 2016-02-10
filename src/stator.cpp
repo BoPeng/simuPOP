@@ -724,9 +724,11 @@ bool statNumOfSegSites::apply(Population & pop) const
 	if (m_loci.empty())
 		return true;
 
-	// get actual list of loci
+#ifndef MUTANTALLELE
+	// get actual list of loci, only used for non-mutant modules
 	const vectoru & loci = m_loci.elems(&pop);
 	DBG_DO(DBG_STATOR, cerr << "Count number of segregating sites for " << loci.size() << " loci " << endl);
+#endif
 
 	std::set<size_t> allFixedSites;
 	std::set<size_t> allSegSites;
