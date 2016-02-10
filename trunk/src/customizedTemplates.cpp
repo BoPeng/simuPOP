@@ -91,7 +91,7 @@ getarrayitem_template<GenoIterator>(struct arrayobject_template<GenoIterator> * 
 /// CPPONLY
 template <typename T>
 int
-setarrayitem_template(struct arrayobject_template<T> * ap, Py_ssize_t i, PyObject * v)
+setarrayitem_template(struct arrayobject_template<T> * /* ap */, Py_ssize_t /* i */, PyObject * /* v */)
 {
 	return -1;
 }
@@ -641,7 +641,7 @@ extern PyTypeObject LineageArraytype;
 
 /// CPPONLY
 template<typename T>
-bool is_carrayobject_template(PyObject * op)
+bool is_carrayobject_template(PyObject * /* op */)
 {
 	return false;
 }
@@ -665,7 +665,7 @@ bool is_carrayobject_template<LineageIterator>(PyObject * op)
 
 /// CPPONLY
 template<typename T>
-PyObject * newcarrayobject_template(T begin, T end)
+PyObject * newcarrayobject_template(T /* begin */, T /* end */)
 {
 	return(NULL);
 }

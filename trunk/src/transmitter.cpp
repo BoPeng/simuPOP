@@ -620,7 +620,10 @@ void Recombinator::initialize(const Individual & ind) const
 	// prepare m_bt
 	vectorf vecP;
 	//
+#ifndef OPTIMIZED	
+	// this is only used in non-optimized mode for checking
 	const vectoru & loci = m_loci.elems(&ind);
+#endif
 
 	DBG_FAILIF(m_intensity < 0 && (m_rates.empty() && !loci.empty()), ValueError,
 		"You should specify m_intensity, or m_rates "

@@ -269,7 +269,7 @@ BackwardMigrator::BackwardMigrator(const floatMatrix & rate, int mode,
 	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops, const stringList & infoFields)
 	: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
-	m_rate(rate.elems()), m_inverse_rate(rate.elems().size(), rate.elems().size()), m_mode(mode), m_symmetric_matrix(true)
+	m_rate(rate.elems()), m_inverse_rate(rate.elems().size(), rate.elems().size()), m_symmetric_matrix(true), m_mode(mode)
 {
 	DBG_FAILIF(!subPops.empty() && subPops.size() != m_rate.size(),
 		ValueError, "Length of param subPop must match rows of rate matrix.");

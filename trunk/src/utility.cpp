@@ -2409,7 +2409,9 @@ string SharedVariables::to_pickle() const
 	// here we use version 2 because this is the latest version that supported by
 	// both python 2 and python 3, also because it is the one that handles simuPOP's
 	// defdict type using its __reduce__ interface.
-	PyObject * pres = PyObject_CallMethod(pickle, "dumps", "(Oi)", m_dict, 2);
+	char dumps[] = "dumps";
+	char Oi[] = "(Oi)";
+	PyObject * pres = PyObject_CallMethod(pickle, dumps, Oi, m_dict, 2);
 	if (pres == NULL) {
 		PyErr_Clear();
 		/* If the dictionary is not pickleable, we have to go a longer way and test if
@@ -2422,18 +2424,19 @@ string SharedVariables::to_pickle() const
 		while (PyDict_Next(m_dict, &pos, &key, &value)) {
 			// try to pickle each item
 			// if the key is not pickleable, remove the key from the copied dictionary
-			if (PyObject_CallMethod(pickle, "dumps", "(Oi)", key, 2) == NULL) {
+			// to avoid a warning
+			if (PyObject_CallMethod(pickle, dumps, Oi, key, 2) == NULL) {
 				PyErr_Clear();
 				PyDict_DelItem(new_dict, key);
 			}
-			if (PyObject_CallMethod(pickle, "dumps", "(Oi)", value, 2) == NULL) {
+			if (PyObject_CallMethod(pickle, dumps, Oi, value, 2) == NULL) {
 				PyErr_Clear();
 				PyDict_DelItem(new_dict, key);
 			}
 		}
 		// now try to pickale the whole new object, in any case, the original
 		// dictionary is not touched.
-		pres = PyObject_CallMethod(pickle, "dumps", "(Oi)", new_dict, 2);
+		pres = PyObject_CallMethod(pickle, dumps, Oi, new_dict, 2);
 		Py_DECREF(new_dict);
 		if (pres == NULL) {
 			PyErr_Print();
@@ -2508,7 +2511,9 @@ void SharedVariables::from_pickle(const string & vars)
 		Py_XDECREF(m_dict);
 	}
 	m_ownVars = true;
-	m_dict = PyObject_CallMethod(pickle, "loads", "(O)", args);
+	char loads[] = "loads";
+	char O[] = "(O)";
+	m_dict = PyObject_CallMethod(pickle, loads, O, args);
 	if (m_dict == NULL) {
 		PyErr_Print();
 		PyErr_Clear();
@@ -3059,7 +3064,7 @@ OstreamManager & ostreamManager()
 
 // all flags will be cleared to 0
 StreamProvider::StreamProvider(const string & output, const pyFunc & func, const string & mode)
-	: m_filename(output), m_filenameExpr(), m_func(func), m_flags(0), m_filePtr(NULL), m_mode(mode)
+	: m_filename(output), m_filenameExpr(), m_func(func), m_flags(0), m_mode(mode), m_filePtr(NULL)
 {
 	if (!m_filename.empty() && m_filename[0] == '!') {
 		m_filenameExpr.setExpr(m_filename.substr(1));

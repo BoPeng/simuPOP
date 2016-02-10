@@ -389,7 +389,7 @@ SOURCE_FILES = [
 
 # since it is troublesome to link to external gsl library,
 # I embed some GSL files with simuPOP. 
-GSL_LIB_FILES = [ 
+LIB_FILES = [ 
     'gsl/sys/infnan.c',
     'gsl/sys/coerce.c',
     'gsl/sys/fdiv.c',
@@ -474,9 +474,7 @@ GSL_LIB_FILES = [
     'gsl/cdf/gamma.c',
     'gsl/cdf/poisson.c',
     'gsl/error.c' 
-]
-
-LIB_FILES = [x for x in glob.glob(os.path.join(boost_serialization_dir, '*.cpp')) if 'xml' not in x and 'binary' not in x]\
+] + [x for x in glob.glob(os.path.join(boost_serialization_dir, '*.cpp')) if 'xml' not in x and 'binary' not in x]\
   + [x for x in glob.glob(os.path.join(boost_iostreams_dir, '*.cpp')) if 'bzip' not in x]\
   + glob.glob(os.path.join(boost_regex_dir, '*.cpp'))
 
@@ -675,12 +673,6 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     for src in SOURCE_FILES:
         res['src'].append('build/%s/%s' % (modu, src))
     #
-    # For some reason that I have not got a change to investigate, including GSL_LIB_FILES
-    # to LIB_FILES would lead to symbol not found and some error like that. I suspect
-    # that this is related to the order the library is linked, or some MACRO that is only
-    # used when the GSL files are compiled with simuPOP modules.
-    #
-    res['src'].extend(GSL_LIB_FILES)
     # lib
     if os.name == 'nt':    # Windows, build zlib from source
         res['libraries'] = ['simuPOP_shared']
@@ -761,6 +753,10 @@ if __name__ == '__main__':
         ('SIMUPOP_REV', SIMUPOP_REV)
         ])
 
+    if os.name != 'nt':
+        NO_WARNING_ARG = ['-w']
+    else:
+        NO_WARNING_ARG = []
     try:
         if os.name != 'nt' and (not os.path.isfile('src/boost_pch.h.pch') or \
             os.path.getmtime('src/boost_pch.h.pch') > os.path.getmtime('src/boost_pch.h')):
@@ -769,7 +765,7 @@ if __name__ == '__main__':
             c.src_extensions.append('.hpp')
             c.compile(['src/boost_pch.hpp'], output_dir='src',
                 include_dirs=['.', 'gsr', boost_include_dir] + common_extra_include_dirs,
-                extra_preargs = common_extra_compile_args,
+                extra_preargs = common_extra_compile_args + NO_WARNING_ARG,
                 macros=COMMON_MACROS)
     except Exception as e:
         # it is ok if boost_pch cannot be precompiled.
@@ -780,10 +776,10 @@ if __name__ == '__main__':
         print('Building a static library')
         c = new_compiler(verbose=1)
         # -w suppress all warnings caused by the use of boost libraries
-        objects = c.compile(LIB_FILES, extra_postargs=['-w', '-unknownnn'],
+        objects = c.compile(LIB_FILES,
             include_dirs=['gsl', 'gsl/specfunc', 'build', '.', boost_include_dir] + common_extra_include_dirs,
             output_dir='build',
-            extra_preargs = common_extra_compile_args,
+            extra_preargs = common_extra_compile_args + NO_WARNING_ARG,
             macros = COMMON_MACROS
         )
         c.create_static_lib(objects, "simuPOP_shared", output_dir='build')

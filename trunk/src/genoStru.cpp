@@ -714,7 +714,6 @@ const GenoStructure GenoStruTrait::gsAddLociByNameFromStru(size_t idx, vectoru &
 		vectorstr::iterator pch1 = find(gs1.m_chromNames.begin(), gs1.m_chromNames.end(), gs2.m_chromNames[ch2]);
 		// if there is no matching chromosome, add the chromosome from gs2
 		if (pch1 == gs1.m_chromNames.end()) {
-			size_t ch1 = pch1 - gs1.m_chromNames.begin();
 			loci.push_back(gs2.m_numLoci[ch2]);
 			chromNames.push_back(gs2.m_chromNames[ch2]);
 			chromTypes.push_back(gs2.m_chromTypes[ch2]);
