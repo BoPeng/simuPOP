@@ -24,18 +24,9 @@ sys.argv=new_argv
 from simuPOP import *
 from time import sleep
 
-hasRPy = True
-try:
-    from simuPOP.plotter import *
-except (ImportError, RuntimeError, AttributeError):
-    print("simuRPy can not be imported. Either rpy or r is not installed properly.")
-    hasRPy = False
-
 class TestPlotter(unittest.TestCase):
     def testDerivedArgs(self):
         'Testing class derivedARgs'
-        if not hasRPy:
-            return True
         pop = Population(0)
         pop.dvars().gen = 100
         args = DerivedArgs(
@@ -93,8 +84,6 @@ class TestPlotter(unittest.TestCase):
 
     def testVarPlotterBase(self):
         'Testing byRep parameter of VarPlotter'
-        if not hasRPy:
-            return True
         simu = Simulator(
             Population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             rep=3)
@@ -113,8 +102,6 @@ class TestPlotter(unittest.TestCase):
 
     def testVarPlotterByRep(self):
         'Testing byRep parameter of VarPlotter'
-        if not hasRPy:
-            return True
         simu = Simulator(
             Population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             rep=3)
@@ -138,8 +125,6 @@ class TestPlotter(unittest.TestCase):
 
     def testVarPlotterByDim(self):
         'Testing byDim paramter of VarPlotter'
-        if not hasRPy:
-            return True
         simu = Simulator(
             Population(size=[200, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             rep=3)
@@ -162,8 +147,6 @@ class TestPlotter(unittest.TestCase):
 
     def testVarPlotterSelectedRep(self):
         'Testing byDim paramter of VarPlotter using selected replicates'
-        if not hasRPy:
-            return True
         simu = Simulator(
             Population(size=[50, 50, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             rep=5)
@@ -184,8 +167,6 @@ class TestPlotter(unittest.TestCase):
 
     def testVarPlotterTogether(self):
         'Testing plotting all lines together using VarPlotter'
-        if not hasRPy:
-            return True
         simu = Simulator(
             Population(size=[50, 50, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             rep=3)
@@ -209,8 +190,6 @@ class TestPlotter(unittest.TestCase):
 
     def testVarPlotterByRepDim(self):
         'Testing byDim paramter of VarPlotter'
-        if not hasRPy:
-            return True
         simu = Simulator(
             Population(size=[200, 100], ploidy=2, loci=[3, 4], infoFields = ['migrate_to']),
             rep=2)
@@ -234,8 +213,6 @@ class TestPlotter(unittest.TestCase):
 
     def testVarPlotterSaveAs(self):
         'Testing saveAs parameter of VarPlotter'
-        if not hasRPy:
-            return True
         simu = Simulator(
             Population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             rep=3)
@@ -293,8 +270,6 @@ class TestPlotter(unittest.TestCase):
 
     def testVarPlotterPar(self):
         'Testing parameter passing of VarPlotter'
-        if not hasRPy:
-            return True
         simu = Simulator(
             Population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields=['migrate_to']),
             rep=2)
@@ -317,8 +292,6 @@ class TestPlotter(unittest.TestCase):
 
     def testVarPlotterHook(self):
         'Testing ylim parameter of VarPlotter'
-        if not hasRPy:
-            return True
         simu = Simulator(
             Population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields=['migrate_to']),
             rep=3)
@@ -351,8 +324,6 @@ class TestPlotter(unittest.TestCase):
 
     def testScatterPlotter(self):
         'Testing ScatterPlotter'
-        if not hasRPy:
-            return True
         import random
         pop = Population([100, 200], infoFields=['x', 'y'])
         initSex(pop)
@@ -373,8 +344,6 @@ class TestPlotter(unittest.TestCase):
 
     def testScatterPlotterSP(self):
         'Testing ScatterPlotter with multiple virtual subpopulations'
-        if not hasRPy:
-            return True
         import random
         pop = Population([100, 200], infoFields=['x', 'y'])
         initSex(pop)
@@ -399,8 +368,6 @@ class TestPlotter(unittest.TestCase):
 
     def testScatterPlotterSubSet(self):
         'Testing ScatterPlotter with partial individuals'
-        if not hasRPy:
-            return True
         import random
         pop = Population([100, 200], infoFields=['x', 'y'])
         initSex(pop)
@@ -421,275 +388,6 @@ class TestPlotter(unittest.TestCase):
                     legend = ['Male', 'Female']),
                 #Pause(),
             ],
-            gen = 5,
-        )
-        sleep(1)
-        r.dev_off()
-
-    def testInfoPlotterBase(self):
-        'Testing basic histogram using InfoPlotter'
-        if not hasRPy:
-            return True
-        import random
-        pop = Population([500, 1000], infoFields=['x'])
-        initSex(pop)
-        pop.setIndInfo([random.random() for i in range(100)], 'x')
-        pop.evolve(
-            matingScheme=RandomMating(ops=[MendelianGenoTransmitter(),
-                InheritTagger(PATERNAL, infoFields='x')]),
-            postOps = HistPlotter(infoFields='x', main='histogram of x in green',
-                    angle=60, col='green', step=2),
-                #Pause(),
-            gen = 5,
-        )
-        sleep(1)
-        r.dev_off()
-
-    def testInfoPlotterFields(self):
-        'Testing Stat plotter with multiple fields and subpopulations'
-        if not hasRPy:
-            return True
-        import random
-        pop = Population([500, 1000], infoFields=['x', 'y'])
-        initSex(pop)
-        pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
-        pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
-        pop.setIndInfo([random.random() for i in range(300)], 'y')
-        pop.setVirtualSplitter(SexSplitter())
-        pop.evolve(
-            matingScheme=RandomMating(ops=[MendelianGenoTransmitter(),
-                InheritTagger(PATERNAL, infoFields='x'),
-                InheritTagger(MATERNAL, infoFields='y'),
-            ]),
-            postOps = [
-                HistPlotter(infoFields=['x', 'y'],
-                    subPops = [(0, 0), (0, 1)],
-                    col_fld=['red', 'green'],
-                    density_sp=[5, 20], step=2,
-                    main_spfld=['Field x, Male', 'Field y, Male',
-                        'Field x, Female', 'Field y, Female'],
-                ),
-                #Pause(),
-            ],
-            gen = 5,
-        )
-        sleep(1)
-        r.dev_off()
-
-    def testInfoPlotterQQplot(self):
-        'Testing barplotter with multiple fields and subpopulations'
-        if not hasRPy:
-            return True
-        import random
-        pop = Population([500, 100], infoFields=['x', 'y'])
-        initSex(pop)
-        pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
-        pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
-        pop.setIndInfo([random.random() for i in range(300)], 'y')
-        pop.setVirtualSplitter(SexSplitter())
-        def qqline(r, data=None, **kwargs):
-            r.qqline(data)
-        pop.evolve(
-            matingScheme=RandomMating(ops=[MendelianGenoTransmitter(),
-                InheritTagger(PATERNAL, infoFields='x'),
-                InheritTagger(MATERNAL, infoFields='y'),
-            ]),
-            postOps = [
-                QQPlotter(infoFields=['x', 'y'],
-                    subPops = [(0, 0), (0, 1)],
-                    col_fld=['red', 'green'],
-                    pch_sp=[1, 2],
-                    main_spfld=['Field x, Male', 'Field y, Male',
-                        'Field x, Female', 'Field y, Female'],
-                    plotHook=qqline, step=2
-                ),
-                #Pause(),
-            ],
-            gen = 5,
-        )
-        sleep(1)
-        r.dev_off()
-
-    def testInfoPlotterNoFunc(self):
-        'Testing the Stat plotter when no function is specified'
-        if not hasRPy:
-            return True
-        import random
-        pop = Population([500, 100], infoFields=['x', 'y'])
-        initSex(pop)
-        pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
-        pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
-        pop.setIndInfo([random.random() for i in range(300)], 'y')
-        pop.setVirtualSplitter(SexSplitter())
-        def qqplot(r, data=None, field=None, subPop=None, **kwargs):
-            r.qqnorm(data, main='QQ drawn in plotHook fld: %s sp: %s' % (field, subPop))
-            r.qqline(data)
-        pop.evolve(
-            matingScheme=RandomMating(ops=[MendelianGenoTransmitter(),
-                InheritTagger(PATERNAL, infoFields='x'),
-                InheritTagger(MATERNAL, infoFields='y'),
-            ]),
-            postOps = [
-                InfoPlotter(infoFields=['x', 'y'],
-                    subPops = [(0, 0), (0, 1)],
-                    plotHook=qqplot, step=2
-                ),
-                #Pause(),
-            ],
-            gen = 5,
-        )
-        sleep(1)
-        r.dev_off()
-
-
-    def testBoxPlotterBase(self):
-        'Testing the base boxplotter'
-        if not hasRPy:
-            return True
-        import random
-        pop = Population([500, 100], infoFields=['x'])
-        initSex(pop)
-        pop.setIndInfo([random.random() for i in range(100)], 'x')
-        pop.evolve(
-            matingScheme=RandomMating(ops=[MendelianGenoTransmitter(),
-                InheritTagger(PATERNAL, infoFields='x')]),
-            postOps = [
-                BoxPlotter(infoFields='x', xlab='x', main='boxplot for field x',
-                    step=2), 
-                #Pause(),
-            ],
-            gen = 5,
-        )
-        sleep(1)
-        r.dev_off()
-
-    def testBoxPlotterFields(self):
-        'Testing barplotter with multiple fields and subpopulations'
-        if not hasRPy:
-            return True
-        import random
-        pop = Population([500, 100], infoFields=['x', 'y'])
-        initSex(pop)
-        pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
-        pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
-        pop.setIndInfo([random.random() for i in range(300)], 'y')
-        pop.setVirtualSplitter(SexSplitter())
-        pop.evolve(
-            matingScheme=RandomMating(ops=[MendelianGenoTransmitter(),
-                InheritTagger(PATERNAL, infoFields='x'),
-                InheritTagger(MATERNAL, infoFields='y'),
-            ]),
-            postOps = BoxPlotter(infoFields=['x', 'y'], step=2),
-                #Pause(),
-            gen = 5,
-        )
-        sleep(1)
-        r.dev_off()
-
-    def testBoxPlotterFieldsAndSubPop(self):
-        'Testing BoxPlotter with both fields and subpopulation'
-        if not hasRPy:
-            return True
-        import random
-        pop = Population([500, 100], infoFields=['x', 'y'],
-            subPopNames=['sp1', 'sp2'])
-        initSex(pop)
-        pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
-        pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
-        pop.setIndInfo([random.random() for i in range(300)], 'y')
-        pop.setVirtualSplitter(SexSplitter())
-        pop.evolve(
-            matingScheme=RandomMating(ops=[MendelianGenoTransmitter(),
-                InheritTagger(PATERNAL, infoFields='x'),
-                InheritTagger(MATERNAL, infoFields='y'),
-            ]),
-            postOps = [
-                BoxPlotter(infoFields=['x', 'y'], 
-                    subPops=[(0, 0), (0, 1)], style='quantile',
-                    step=2, main='Boxplot with 2 fields x 2 subpops',
-                    col='green', horizontal=True,
-                ),
-                #Pause(),
-            ],
-            gen = 5,
-        )
-        sleep(1)
-        r.dev_off()
-
-    def testBoxPlotterByField(self):
-        'Testing BoxPlotter separated by information field'
-        if not hasRPy:
-            return True
-        import random
-        pop = Population([500, 100], infoFields=['x', 'y'],
-            subPopNames=['sp1', 'sp2'])
-        initSex(pop)
-        pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
-        pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
-        pop.setIndInfo([random.random() for i in range(300)], 'y')
-        pop.setVirtualSplitter(SexSplitter())
-        pop.evolve(
-            matingScheme=RandomMating(ops=[MendelianGenoTransmitter(),
-                InheritTagger(PATERNAL, infoFields='x'),
-                InheritTagger(MATERNAL, infoFields='y'),
-            ]),
-            postOps = BoxPlotter(infoFields=['x', 'y'], byField=True,
-                    subPops=[(0,0), (0,1)],
-                    step=2, col_fld=['yellow', 'green'],
-                ),
-                #Pause(),
-            gen = 5,
-        )
-        sleep(1)
-        r.dev_off()
-
-    def testBoxPlotterBySubPop(self):
-        'Testing BoxPlotter separated by subpopulation'
-        if not hasRPy:
-            return True
-        import random
-        pop = Population([500, 100], infoFields=['x', 'y'], subPopNames=['', ''])
-        initSex(pop)
-        pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
-        pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
-        pop.setIndInfo([random.random() for i in range(300)], 'y')
-        pop.setVirtualSplitter(SexSplitter())
-        pop.evolve(
-            matingScheme=RandomMating(ops=[MendelianGenoTransmitter(),
-                InheritTagger(PATERNAL, infoFields='x'),
-                InheritTagger(MATERNAL, infoFields='y'),
-            ]),
-            postOps = BoxPlotter(infoFields=['x', 'y'], bySubPop=True,
-                    subPops=[(0,0), (0,1)],
-                    step=2, horizontal_sp=[True, False],
-                ),
-                #Pause(),
-            gen = 5,
-        )
-        sleep(1)
-        r.dev_off()
-
-    def testBoxPlotterByFieldSubPop(self):
-        'Testing BoxPlotter separated by both field and subpopulation'
-        if not hasRPy:
-            return True
-        import random
-        pop = Population([500, 100], infoFields=['x', 'y'], subPopNames=['', ''])
-        initSex(pop)
-        pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
-        pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
-        pop.setIndInfo([random.random() for i in range(300)], 'y')
-        pop.setVirtualSplitter(SexSplitter())
-        pop.evolve(
-            matingScheme=RandomMating(ops=[MendelianGenoTransmitter(),
-                InheritTagger(PATERNAL, infoFields='x'),
-                InheritTagger(MATERNAL, infoFields='y'),
-            ]),
-            postOps = BoxPlotter(infoFields=['x', 'y'], bySubPop=True,
-                    subPops=[(0,0), (0,1)], byField=True,
-                    step=2, col_spfld = ['red', 'green', 'yellow', 'blue'],
-                ),
-                #Pause(),
             gen = 5,
         )
         sleep(1)
