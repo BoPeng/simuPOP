@@ -187,9 +187,6 @@ USE_ICC = False
 if distutils.sysconfig.get_config_var('CC') is not None:
     USE_ICC = 'icc' in distutils.sysconfig.get_config_var('CC')
 
-if not USE_ICC and USE_OPENMP:
-    COMMON_MACROS.append(('_GLIBCXX_PARALLEL', None))
-
 # simuPOP works with these boost versions. Newer versions will be used if these
 # versions are not available, and will most likely work just fine.
 boost_versions = ['1_35_0', '1_36_0', '1_37_0', '1_38_0', '1_39_0', '1_40_0',
@@ -557,9 +554,12 @@ if not os.path.isdir('build'):
                 
 COMMON_MACROS = [
     ('BOOST_UBLAS_NDEBUG', None),
-    ('_HAS_ITERATOR_DEBUGGING', 0)
+    ('_HAS_ITERATOR_DEBUGGING', 0),
     ]
-    
+ 
+if not USE_ICC and USE_OPENMP:
+    COMMON_MACROS.append(('_GLIBCXX_PARALLEL', None))
+
 if os.name == 'nt':
     COMMON_MACROS.extend([('BOOST_ALL_NO_LIB', None),
         ('NO_ZLIB', 0), ('NO_BZIP' , 1),
@@ -567,28 +567,20 @@ if os.name == 'nt':
         #('_SCL_SECURE_NO_WARNINGS', None)
     ])
 
+STD_MACROS = [('_SECURE_SCL', 1)]
+OPT_MACROS = [('NDEBUG', None), ('_SECURE_SCL', 0), ('OPTIMIZED', None)]
+
 MACROS = {
-    'std':    [('SIMUPOP_MODULE', 'simuPOP_std'), 
-                ('_SECURE_SCL', 1)],
-    'op':     [('SIMUPOP_MODULE', 'simuPOP_op'), ('OPTIMIZED', None), 
-                ('NDEBUG', None), ('_SECURE_SCL', 0)],
-    'la':     [('SIMUPOP_MODULE', 'simuPOP_la'), ('LONGALLELE', None), 
-                ('_SECURE_SCL', 1)],
-    'laop':   [('SIMUPOP_MODULE', 'simuPOP_laop'), ('LONGALLELE', None),
-                ('OPTIMIZED', None),('NDEBUG', None), ('_SECURE_SCL', 0)],
-    'ba':     [('SIMUPOP_MODULE', 'simuPOP_ba'), ('BINARYALLELE', None), 
-                ('_SECURE_SCL', 1)],
-    'baop':   [('SIMUPOP_MODULE', 'simuPOP_baop'), ('BINARYALLELE', None),
-                ('OPTIMIZED', None),('NDEBUG', None), ('_SECURE_SCL', 0)],
-    'mu':     [('SIMUPOP_MODULE', 'simuPOP_mu'), ('MUTANTALLELE', None), 
-                ('_SECURE_SCL', 1)],
-    'muop':   [('SIMUPOP_MODULE', 'simuPOP_muop'), ('MUTANTALLELE', None),
-                ('OPTIMIZED', None),('NDEBUG', None), ('_SECURE_SCL', 0)],
-    'lin':    [('SIMUPOP_MODULE', 'simuPOP_lin'), ('LINEAGE', None), 
-                ('_SECURE_SCL', 1)],
-    'linop':  [('SIMUPOP_MODULE', 'simuPOP_linop'), ('LINEAGE', None),
-                ('OPTIMIZED', None),('NDEBUG', None), ('_SECURE_SCL', 0)],
- 
+    'std':    [('SIMUPOP_MODULE', 'simuPOP_std')] + STD_MACROS,
+    'op':     [('SIMUPOP_MODULE', 'simuPOP_op') ] + OPT_MACROS,
+    'la':     [('SIMUPOP_MODULE', 'simuPOP_la'),   ('LONGALLELE', None)] + STD_MACROS,
+    'laop':   [('SIMUPOP_MODULE', 'simuPOP_laop'), ('LONGALLELE', None)] + OPT_MACROS,
+    'ba':     [('SIMUPOP_MODULE', 'simuPOP_ba'),   ('BINARYALLELE', None)] + STD_MACROS,
+    'baop':   [('SIMUPOP_MODULE', 'simuPOP_baop'), ('BINARYALLELE', None)] + OPT_MACROS,
+    'mu':     [('SIMUPOP_MODULE', 'simuPOP_mu'),   ('MUTANTALLELE', None)] + STD_MACROS,
+    'muop':   [('SIMUPOP_MODULE', 'simuPOP_muop'), ('MUTANTALLELE', None)] + OPT_MACROS,
+    'lin':    [('SIMUPOP_MODULE', 'simuPOP_lin'),  ('LINEAGE', None)] + STD_MACROS,
+    'linop':  [('SIMUPOP_MODULE', 'simuPOP_linop'),('LINEAGE', None)] + OPT_MACROS
 }
  
 WRAP_INFO = {
@@ -648,19 +640,52 @@ def is_maverick():
 # copyGenotype for binary modules. Fortunately, the compiler provides options to 
 # continue to use libstdc++. Hopefully this quick fix can work a little bit longer.
 #
-if is_maverick():
-    common_extra_link_args = ['-stdlib=libstdc++']
-    common_extra_include_dirs = ['/usr/include/c++/4.2.1']
-    #common_extra_compile_args = ['-Wno-error=unused-command-line-argument-hard-error-in-future']
-    common_extra_compile_args = ['-Wno-error=unused-command-line-argument']
-elif os.name == 'nt':  
+
+common_library_dirs = ['build']
+
+if os.name == 'nt':  
+    # I have a portable stdint.h for msvc, to avoid distributing
+    # zdll1.dll, I also build zlib from source
+    # zdll.lib is under win32
+    common_library_dirs.append('win32')
+    common_extra_link_args = []
+    if PY3:
+        # Python3 uses VC 2010, which has stdint
+        common_extra_include_dirs = ['win32/zlib-1.2.3']
+    else:
+        common_extra_include_dirs = ['win32', 'win32/zlib-1.2.3']
+    # msvc does not have O3 option, /GR is to fix a C4541 warning
+    # /EHsc is for VC exception handling,
+    # /wd4819 disables warning messages for non-unicode character in boost/uitlity/enable_if.hpp
+    # /wd4996 disables warning messages for unsafe function call in boost/serialization
+    # /wd4068 disables warning messages for unknown pragma set by gcc 
+    common_extra_compile_args = ['/O2', '/GR', '/EHsc', '/wd4819', '/wd4996', '/wd4068']
+    # Enable openMP if USE_OPENMP = True
+    if USE_OPENMP:
+        if USE_ICC:
+            common_extra_compile_args.append('/Qopenmp')   
+        else:
+            common_extra_compile_args.append('/openmp')
+else:
     common_extra_link_args = []
     common_extra_include_dirs = []
-    common_extra_compile_args = []
-else:
-    common_extra_link_args = ['-static-libgcc', '-static-libstdc++']
-    common_extra_include_dirs = []
-    common_extra_compile_args = []
+    common_extra_compile_args = ['-O3', '-Wall', '-Wno-unknown-pragmas', '-Wno-unused-parameter']
+    if is_maverick():
+        common_extra_link_args.append('-stdlib=libstdc++')
+        common_extra_include_dirs.append('/usr/include/c++/4.2.1')
+        common_extra_compile_args.append('-Wno-error=unused-command-line-argument')
+    else:
+        common_extra_link_args.extend(['-static-libgcc', '-static-libstdc++'])
+    if not USE_ICC:   # for gcc, turn on extra warning message
+        common_extra_compile_args.append('-Wextra')
+    if USE_OPENMP:
+        if USE_ICC:
+            common_extra_compile_args.append('-openmp')
+        else:
+            common_extra_compile_args.append('-fopenmp')
+    # if Intel ICC is used, turn off remark 981
+    if USE_ICC:
+        common_extra_compile_args.extend(['-wd981', '-wd191'])
 
 #
 def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
@@ -675,9 +700,9 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     #
     # lib
     if os.name == 'nt':    # Windows, build zlib from source
-        res['libraries'] = ['simuPOP_shared']
+        res['libraries'] = []
     else:
-        res['libraries'] = ['z', 'simuPOP_shared']
+        res['libraries'] = ['z']
         if USE_OPENMP:
             if USE_ICC:
                 res['libraries'].append('iomp5')
@@ -686,44 +711,12 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
                 res['libraries'].append('gomp')
     res['libraries'].extend(boost_lib_names)
     res['include_dirs'] = ['.', 'gsl', boost_inc_path] + common_extra_include_dirs
-    res['library_dirs'] = ['build']
-    if os.name == 'nt':
-        # I have a portable stdint.h for msvc, to avoid distributing
-        # zdll1.dll, I also build zlib from source
-        if PY3:
-            # Python3 uses VC 2010, which has stdint
-            res['include_dirs'].extend(['win32/zlib-1.2.3'])
-        else:
-            res['include_dirs'].extend(['win32', 'win32/zlib-1.2.3'])
-        # zdll.lib is under win32
-        res['library_dirs'].append('win32')
-    if os.name == 'nt':
-        # msvc does not have O3 option, /GR is to fix a C4541 warning
-        # /EHsc is for VC exception handling,
-        # /wd4819 disables warning messages for non-unicode character in boost/uitlity/enable_if.hpp
-        # /wd4996 disables warning messages for unsafe function call in boost/serialization
-        # /wd4068 disables warning messages for unknown pragma set by gcc 
-        res['extra_compile_args'] = ['/O2', '/GR', '/EHsc', '/wd4819', '/wd4996', '/wd4068'] + common_extra_compile_args
-        # Enable openMP if USE_OPENMP = True
-        if USE_OPENMP:
-            if USE_ICC:
-                res['extra_compile_args'].append('/Qopenmp')   
-            else:
-                res['extra_compile_args'].append('/openmp') 
-    else:
-        res['extra_compile_args'] = ['-O3', '-Wall', '-Wno-unknown-pragmas', '-Wno-unused-parameter'] + common_extra_compile_args
-        if not USE_ICC:   # for gcc, turn on extra warning message
-            res['extra_compile_args'].append('-Wextra')
-        if USE_OPENMP:
-            if USE_ICC:
-                res['extra_compile_args'].append('-openmp')
-            else:
-                res['extra_compile_args'].append('-fopenmp')
-    # if Intel ICC is used, turn off remark 981
-    if USE_ICC:
-        res['extra_compile_args'].extend(['-wd981', '-wd191'])
     # define_macros (deep copy)
     res['define_macros'] = COMMON_MACROS + MACROS[modu]
+    if 'op' in modu:
+        res['libraries'].append('simuPOP_shop')
+    else:
+        res['libraries'].append('simuPOP_shstd')
 
     res['undef_macros'] = []
     return res
@@ -753,40 +746,51 @@ if __name__ == '__main__':
         ('SIMUPOP_REV', SIMUPOP_REV)
         ])
 
-    if os.name != 'nt':
-        NO_WARNING_ARG = ['-w']
+    #distutils.log.set_verbosity(distutils.log.FATAL)
+    if os.name == 'nt':
+        NO_WARNING_ARG = [] # ['/nowarn'] is for vc 2015 only
     else:
-        NO_WARNING_ARG = []
+        NO_WARNING_ARG = ['-w']
     try:
-        distutils.log.set_verbosity(distutils.log.INFO)
-        if os.name != 'nt' and (not os.path.isfile('src/boost_pch.h.pch') or \
-            os.path.getmtime('src/boost_pch.h.pch') > os.path.getmtime('src/boost_pch.h')):
-            c = new_compiler(verbose=1)
-            # allow compiling .h file 
-            c.src_extensions.append('.hpp')
-            c.obj_extension = '.hpp.gch'
-            c.compile(['src/boost_pch.hpp'], output_dir='.',
-                include_dirs=['.', 'gsr', boost_include_dir] + common_extra_include_dirs,
-                extra_preargs = common_extra_compile_args + NO_WARNING_ARG,
-                macros=COMMON_MACROS)
-            if not os.path.isfile('src/boost_pch.hpp.pch'):
-                raise RuntimeError('Failed to pre-compile boost headers')
+        if not os.path.isfile('src/boost_pch.h.pch') or \
+            os.path.getmtime('src/boost_pch.h.pch') > os.path.getmtime('src/boost_pch.h'):
+            if os.name == 'nt':
+                pass
+            else:
+                c = new_compiler(verbose=1)
+                # allow compiling .h file 
+                c.src_extensions.append('.hpp')
+                c.obj_extension = '.hpp.gch'
+                c.compile(['src/boost_pch.hpp'], output_dir='.',
+                    include_dirs=['.', 'gsr', boost_include_dir] + common_extra_include_dirs,
+                    extra_preargs = common_extra_compile_args + NO_WARNING_ARG,
+                    macros=COMMON_MACROS)
+                if not os.path.isfile('src/boost_pch.hpp.pch'):
+                    raise RuntimeError('Failed to pre-compile boost headers')
     except Exception as e:
         # it is ok if boost_pch cannot be precompiled.
         print('Failed to pre-compile boost headers: {}'.format(e))
 
     try:
         # try to get 
-        print('Building a static library')
+        print('Building static libraries')
         c = new_compiler(verbose=1)
         # -w suppress all warnings caused by the use of boost libraries
         objects = c.compile(LIB_FILES,
             include_dirs=['gsl', 'gsl/specfunc', 'build', '.', boost_include_dir] + common_extra_include_dirs,
             output_dir='build',
             extra_preargs = common_extra_compile_args + NO_WARNING_ARG,
-            macros = COMMON_MACROS
+            macros = COMMON_MACROS + STD_MACROS
         )
-        c.create_static_lib(objects, "simuPOP_shared", output_dir='build')
+        c.create_static_lib(objects, "simuPOP_shstd", output_dir='build')
+        #
+        objects = c.compile(LIB_FILES,
+            include_dirs=['gsl', 'gsl/specfunc', 'build', '.', boost_include_dir] + common_extra_include_dirs,
+            output_dir='build',
+            extra_preargs = common_extra_compile_args + NO_WARNING_ARG,
+            macros = COMMON_MACROS + OPT_MACROS
+        )
+        c.create_static_lib(objects, "simuPOP_shop", output_dir='build')
     except Exception as e:
         sys.exit("Failed to build a shared supporting library: {}".format(e))
 
@@ -846,7 +850,7 @@ if __name__ == '__main__':
         Extension('simuPOP._gsl',
             sources = GSL_FILES + ['src/gsl_wrap.c'],
             include_dirs = ['gsl', 'gsl/specfunc', 'build', '.'] + common_extra_include_dirs,
-            extra_compile_args = common_extra_compile_args + ['-w'],
+            extra_compile_args = common_extra_compile_args + NO_WARNING_ARG,
             extra_link_args = common_extra_link_args,
         )
     ]
@@ -855,10 +859,10 @@ if __name__ == '__main__':
         EXT_MODULES.append(
             Extension('simuPOP._simuPOP_%s' % modu,
                 sources = info['src'],
-                extra_compile_args = info['extra_compile_args'],
+                extra_compile_args = common_extra_compile_args,
                 # src for config.h etc, build for swigpyrun.h
                 include_dirs = info['include_dirs'] + ['src', 'build'],
-                library_dirs = info['library_dirs'],
+                library_dirs = common_library_dirs,
                 libraries = info['libraries'],
                 define_macros = info['define_macros'],
                 undef_macros = info['undef_macros'],
