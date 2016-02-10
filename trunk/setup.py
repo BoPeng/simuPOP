@@ -44,7 +44,7 @@ import distutils.sysconfig
 from distutils.ccompiler import new_compiler
 from distutils.errors import CompileError
 from distutils.errors import DistutilsExecError
-
+import distutils.log
 
 USE_SETUPTOOLS = False
 try:
@@ -758,15 +758,19 @@ if __name__ == '__main__':
     else:
         NO_WARNING_ARG = []
     try:
+        distutils.log.set_verbosity(distutils.log.INFO)
         if os.name != 'nt' and (not os.path.isfile('src/boost_pch.h.pch') or \
             os.path.getmtime('src/boost_pch.h.pch') > os.path.getmtime('src/boost_pch.h')):
             c = new_compiler(verbose=1)
             # allow compiling .h file 
             c.src_extensions.append('.hpp')
-            c.compile(['src/boost_pch.hpp'], output_dir='src',
+            c.obj_extension = '.hpp.gch'
+            c.compile(['src/boost_pch.hpp'], output_dir='.',
                 include_dirs=['.', 'gsr', boost_include_dir] + common_extra_include_dirs,
                 extra_preargs = common_extra_compile_args + NO_WARNING_ARG,
                 macros=COMMON_MACROS)
+            if not os.path.isfile('src/boost_pch.hpp.pch'):
+                raise RuntimeError('Failed to pre-compile boost headers')
     except Exception as e:
         # it is ok if boost_pch cannot be precompiled.
         print('Failed to pre-compile boost headers: {}'.format(e))
