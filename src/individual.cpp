@@ -423,7 +423,6 @@ PyObject * Individual::lineage(const uintList & ply, const uintList & ch)
 PyObject * Individual::mutAtLoci(const lociList & lociList)
 {
 	ssize_t ply = ploidy();
-	bool autosome_only = chromX() == -1 && chromY() == -1;
 
 	PyObject * mutDict = PyDefDict_New();
 	PyObject * dkey = NULL;
@@ -434,6 +433,7 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 
 	if (lociList.allAvail()) {
 #ifdef MUTANTALLELE
+		bool autosome_only = chromX() == -1 && chromY() == -1;
 		if (autosome_only) {
 
 			vectorm::const_val_iterator m_ptr = m_genoPtr.get_val_iterator();
@@ -501,6 +501,7 @@ PyObject * Individual::mutAtLoci(const lociList & lociList)
 #endif
 	} else {
 #ifdef MUTANTALLELE
+		bool autosome_only = chromX() == -1 && chromY() == -1;
 		if (autosome_only) {
 			const vectoru & loci = lociList.elems(this);
 

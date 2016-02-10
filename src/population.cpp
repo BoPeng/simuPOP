@@ -1045,7 +1045,7 @@ void Population::sortIndividuals(const stringList & infoList, bool reverse)
 	for (size_t i = 0; i < infoFields.size(); ++i)
 		fields[i] = infoIdx(infoFields[i]);
 	for (size_t sp = 0; sp < numSubPop(); ++sp)
-		parallelSort(rawIndBegin(sp), rawIndEnd(sp), indCompare(fields, reverse=reverse));
+		parallelSort(rawIndBegin(sp), rawIndEnd(sp), indCompare(fields, reverse));
 	setIndOrdered(false);
 }
 
@@ -1552,7 +1552,7 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name, i
 		// if sp is being merged
 		if (find(sps.begin(), sps.end(), sp) != sps.end()) {
 			merged_size += subPopSize(sp);
-			if (sp == toSubPop) {
+			if (sp == static_cast<size_t>(toSubPop)) {
 				merged_idx = new_size.size();
 				new_size.push_back(0);
 				if (!m_subPopNames.empty())
@@ -1578,7 +1578,7 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name, i
 	// find the new subpop order
 	vectoru sp_order;
 	// subpopulations before toSubPop
-	for (size_t sp = 0; sp < toSubPop; ++sp)
+	for (size_t sp = 0; sp < static_cast<size_t>(toSubPop); ++sp)
 		if (find(sps.begin(), sps.end(), sp) == sps.end())
 			sp_order.push_back(sp);
 	// all merged subpopulations 

@@ -209,6 +209,8 @@ public:
 	/// CPPONLY
 	string infoField(size_t idx, const GenoStruTrait * trait = NULL) const
 	{
+		// suppress a warning about unused variable
+		(void)trait;
 		DBG_ASSERT(idx < m_infoFields.elems(trait).size(), IndexError,
 			(boost::format("Given info index %1% is out of range of 0 ~ %2%") % idx % m_infoFields.elems().size()).str());
 		return m_infoFields.elems()[idx];
