@@ -749,8 +749,10 @@ if __name__ == '__main__':
     #distutils.log.set_verbosity(distutils.log.FATAL)
     if os.name == 'nt':
         NO_WARNING_ARG = [] # ['/nowarn'] is for vc 2015 only
+        SHLIB_ARG = []
     else:
         NO_WARNING_ARG = ['-w']
+        SHLIB_ARG = ['-fPIC']
     try:
         if not os.path.isfile('src/boost_pch.h.pch') or \
             os.path.getmtime('src/boost_pch.h.pch') > os.path.getmtime('src/boost_pch.h'):
@@ -779,7 +781,7 @@ if __name__ == '__main__':
         objects = c.compile(LIB_FILES,
             include_dirs=['gsl', 'gsl/specfunc', 'build', '.', boost_include_dir] + common_extra_include_dirs,
             output_dir='build',
-            extra_preargs = common_extra_compile_args + NO_WARNING_ARG,
+            extra_preargs = common_extra_compile_args + NO_WARNING_ARG + SHLIB_ARG,
             macros = COMMON_MACROS + STD_MACROS
         )
         c.create_static_lib(objects, "simuPOP_shstd", output_dir='build')
@@ -787,7 +789,7 @@ if __name__ == '__main__':
         objects = c.compile(LIB_FILES,
             include_dirs=['gsl', 'gsl/specfunc', 'build', '.', boost_include_dir] + common_extra_include_dirs,
             output_dir='build',
-            extra_preargs = common_extra_compile_args + NO_WARNING_ARG,
+            extra_preargs = common_extra_compile_args + NO_WARNING_ARG + SHLIB_ARG,
             macros = COMMON_MACROS + OPT_MACROS
         )
         c.create_static_lib(objects, "simuPOP_shop", output_dir='build')
