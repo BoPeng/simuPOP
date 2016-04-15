@@ -521,7 +521,7 @@ GSL_FILES = [
 # build zlib from source for windows system to avoid distributing zlib1.dll
 # along with simuPOP.
 if os.name == 'nt':
-    LIB_FILES.extend([os.path.join('win32', 'zlib-1.2.3', x) for x in [
+    LIB_FILES.extend([os.path.join('development/win32', 'zlib-1.2.3', x) for x in [
         'adler32.c',
         'compress.c',
         'crc32.c',
@@ -647,13 +647,13 @@ if os.name == 'nt':
     # I have a portable stdint.h for msvc, to avoid distributing
     # zdll1.dll, I also build zlib from source
     # zdll.lib is under win32
-    common_library_dirs.append('win32')
+    common_library_dirs.append('development/win32')
     common_extra_link_args = []
     if PY3:
         # Python3 uses VC 2010, which has stdint
-        common_extra_include_dirs = ['win32/zlib-1.2.3']
+        common_extra_include_dirs = ['development/win32/zlib-1.2.3']
     else:
-        common_extra_include_dirs = ['win32', 'win32/zlib-1.2.3']
+        common_extra_include_dirs = ['development/win32', 'development/win32/zlib-1.2.3']
     # msvc does not have O3 option, /GR is to fix a C4541 warning
     # /EHsc is for VC exception handling,
     # /wd4819 disables warning messages for non-unicode character in boost/uitlity/enable_if.hpp
@@ -734,8 +734,8 @@ if os.name == 'nt':    # Windows
     machine = platform.uname()[4].lower()
     if machine == '':  # have to guess
         machine = 'x86'
-    shutil.copy('win32/%s/vcomp90.dll' % machine, 'src/vcomp90.dll')
-    shutil.copy('win32/%s/msvcr90.dll' % machine, 'src/msvcr90.dll')
+    shutil.copy('development/win32/%s/vcomp90.dll' % machine, 'src/vcomp90.dll')
+    shutil.copy('development/win32/%s/msvcr90.dll' % machine, 'src/msvcr90.dll')
 
 if __name__ == '__main__':
     SIMUPOP_VER, SIMUPOP_REV = simuPOP_version()
