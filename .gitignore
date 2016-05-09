@@ -1,0 +1,7 @@
+*.swp
+__pycache__
+boost*
+build/
+dist/
+*.egg-info
+*wrap.cpp
