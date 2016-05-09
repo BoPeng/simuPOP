@@ -290,19 +290,6 @@ def simuPOP_version():
     import simuPOP_version
     SIMUPOP_VER = simuPOP_version.SIMUPOP_VER
     SIMUPOP_REV = simuPOP_version.SIMUPOP_REV
-    if SIMUPOP_VER.endswith('svn'):
-        rev = SIMUPOP_REV
-        try:
-            fout = subprocess.Popen('svnversion .', shell=True, stdout=subprocess.PIPE).stdout
-            rev = fout.readline().strip()
-            if ':' in rev:
-                rev = rev.split(':')[1]
-            rev = rev.rstrip('M')
-        except:
-            pass
-        # if 'svnversion' exists and the revision has changed
-        if rev != '':
-            SIMUPOP_REV = rev
     return SIMUPOP_VER, SIMUPOP_REV
 
 
