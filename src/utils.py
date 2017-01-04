@@ -3060,14 +3060,16 @@ class Exporter(PyOperator):
             self.output = self.output._with_output
         if isinstance(self.output, str):
             if self.output.startswith('!'):
-                self.output = eval(self.output[1:], pop.vars(), pop.vars())
-            if self.output.startswith('>>'):
+                output = eval(self.output[1:], pop.vars(), pop.vars())
+            else:
+                output = self.output
+            if output.startswith('>>'):
                 mode = 'a'
             else:
                 mode = 'w'
             if bin_mode:
                 mode += 'b'
-            with open(self.output.lstrip('>'), mode) as out:
+            with open(output.lstrip('>'), mode) as out:
                 self.exporter.export(pop, out.write,
                     self._determineSubPops(pop), self.infoFields, gui=self.gui)
         elif callable(self.output):

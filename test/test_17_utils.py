@@ -1280,6 +1280,19 @@ class TestUtils(unittest.TestCase):
         os.remove('pop.phy')
         os.remove('pop.phy.gz')
 
+    def testExportDyncOutput(self):
+        'Testing the Exporter operator with output starting with !'
+        pop = Population(100)
+        pop.evolve(
+            initOps=[InitSex()],
+            preOps=
+                Exporter(format='CSV', output='!"output%d.csv" % gen'),
+            matingScheme=RandomMating(),
+            gen=5
+        )
+        for i in range(5):
+            self.assertTrue(os.path.isfile('output{}.csv'.format(i)))
+            os.remove('output{}.csv'.format(i))
 
 if __name__ == '__main__':
     unittest.main()
