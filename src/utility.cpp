@@ -888,8 +888,10 @@ public:
 		// change the container.
 		std::vector<PyObject *>::iterator iv = to_be_removed.begin();
 		std::vector<PyObject *>::iterator iv_end = to_be_removed.end();
-		for (; iv != iv_end; ++iv)
+		for (; iv != iv_end; ++iv) {
 			Py_DECREF(*iv);
+			deregister_ref(*iv);
+		}
 	}
 
 private:
