@@ -2459,14 +2459,16 @@ class CSVExporter:
     '''An exporter to export given population in csv format'''
     def __init__(self, header=True, genoFormatter=None, infoFormatter=None,
         sexFormatter={MALE: 'M', FEMALE: 'F'},
-        affectionFormatter={True: 'A', False: 'U'}, delimiter=','):
+        affectionFormatter={True: 'A', False: 'U'}, delimiter=',',
+        subPopFormatter=None):
         self.header = header
         self.genoFormatter = genoFormatter
         self.infoFormatter = infoFormatter
         self.sexFormatter = sexFormatter
         self.affectionFormatter = affectionFormatter
         self.delimiter = delimiter
-    
+        self.subPopFormatter = subPopFormatter
+
     def _genoFromDict(self, geno):
         return self.genoFormatter[geno]
 
@@ -2509,6 +2511,11 @@ class CSVExporter:
             elif colPerGenotype > 1:
                 for loc in range(pop.totNumLoci()):
                     names.extend(['%s_%d' % (pop.locusName(loc), x+1) for x in range(colPerGenotype)])
+            if self.subPopFormatter is not None:
+                if type(self.subPopFormatter) is bool:
+                    names.append('pop')
+                elif type(self.subPopFormatter) is str:
+                    names.append(self.subPopFormatter)
             # output header
             output(self.delimiter.join(names) + '\n')
         elif type(self.header) == type(''):
@@ -2540,6 +2547,8 @@ class CSVExporter:
                         values.extend(['%s' % x for x in val])
                     else:
                         values.append(str(val))
+                if self.subPopFormatter is not None:
+                    values.append(str(vsp))
                 # output
                 output(self.delimiter.join(values) + '\n')
                 count += 1
@@ -2965,6 +2974,12 @@ class Exporter(PyOperator):
 
     delimiter
         Delimiter used to separate values, default to ','.
+
+    subPopFormatter
+        How to output population membership. Acceptable values include
+        ``None`` (no output), a string that will be used for the column name, or
+        ``True`` which uses 'pop' as the column name. If present, the column is
+        written with the string represenation of the (virtual) subpopulation.
 
     This operator supports the usual applicability parameters such as begin,
     end, step, at, reps, and subPops. If subPops are specified, only
