@@ -1284,6 +1284,7 @@ class TestUtils(unittest.TestCase):
         #
         # cleanup
         os.remove('pop.phy')
+        os.remove('pop1.phy')
         os.remove('pop.phy.gz')
 
     def testExportDyncOutput(self):
