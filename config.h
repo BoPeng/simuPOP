@@ -263,15 +263,19 @@
 
 /* Define if you have the acosh function.  */
 /* #undef HAVE_ACOSH */
+#define HAVE_ACOSH
 
 /* Define if you have the asinh function.  */
 /* #undef HAVE_ASINH */
+#define HAVE_ASINH
 
 /* Define if you have the atanh function.  */
 /* #undef HAVE_ATANH */
+#define HAVE_ATANH
 
 /* Define if you have the expm1 function.  */
 /* #undef HAVE_EXPM1 */
+#define HAVE_EXPM1
 
 /* Define if you have the finite function.  */
 /* #undef HAVE_FINITE */
@@ -281,12 +285,15 @@
 
 /* Define if you have the isinf function.  */
 /* #undef HAVE_ISINF */
+#define HAVE_ISINF
 
 /* Define if you have the isnan function.  */
 /* #undef HAVE_ISNAN */
+#define HAVE_ISNAN
 
 /* Define if you have the log1p function.  */
 /* #undef HAVE_LOG1P */
+#define HAVE_LOG1P
 
 /* Define if you have the memcpy function.  */
 #  define HAVE_MEMCPY 1
