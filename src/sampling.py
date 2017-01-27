@@ -99,7 +99,7 @@ def isSequence(obj):
     return hasattr(obj, '__iter__')
 
 def isNumber(obj):
-    return isinstance(obj, (int, long, float))
+    return isinstance(obj, (int, float))
 
 def indexToID(pop, idField='ind_id', fatherField='father_id', motherField='mother_id',
               fatherIndex='father_idx', motherIndex='mother_idx', reset=False):
@@ -196,10 +196,10 @@ class RandomSampler(BaseSampler):
         if not isSequence(self.sizes):
             size = self.sizes
             if size > self.pop.popSize():
-                print 'Warning: sample size %d is greater than population size %d.' % (size, self.pop.popSize())
+                print('Warning: sample size %d is greater than population size %d.' % (size, self.pop.popSize()))
                 size = self.pop.popSize()
             # randomly choose size individuals
-            values = range(self.pop.popSize())
+            values = list(range(self.pop.popSize()))
             random_shuffle(values)
             indexes = values[:size]
         else:
@@ -207,9 +207,9 @@ class RandomSampler(BaseSampler):
             for sp in range(self.pop.numSubPop()):
                 size = self.sizes[sp]
                 if size > self.pop.subPopSize(sp):
-                    print 'Warning: sample size (%d) at subpopulation %d is greater than subpopulation size %d ' \
-                        % (size, sp, self.pop.subPopSize(sp))
-                values = range(self.pop.subPopBegin(sp), self.pop.subPopEnd(sp))
+                    print('Warning: sample size (%d) at subpopulation %d is greater than subpopulation size %d ' \
+                        % (size, sp, self.pop.subPopSize(sp)))
+                values = list(range(self.pop.subPopBegin(sp), self.pop.subPopEnd(sp)))
                 random_shuffle(values)
                 indexes.extend(values[:size])
         return self.pop.extractIndividuals(indexes = indexes)
@@ -269,12 +269,12 @@ class CaseControlSampler(BaseSampler):
                     self.unaffected.append(idx)
             #
             if self.cases > len(self.affected):
-                print 'Warning: number of cases %d is greater than number of affectedected individuals %d.' \
-                    % (self.cases, len(self.affected))
+                print('Warning: number of cases %d is greater than number of affectedected individuals %d.' \
+                    % (self.cases, len(self.affected)))
             #
             if self.controls > len(self.unaffected):
-                print 'Warning: number of controls %d is greater than number of affectedected individuals %d.' \
-                    % (self.controls, len(self.unaffected))
+                print('Warning: number of controls %d is greater than number of affectedected individuals %d.' \
+                    % (self.controls, len(self.unaffected)))
         else:
             if len(self.cases) != self.pop.numSubPop():
                 raise ValueError('If an list of cases is given, it should be specified for all subpopulations')
@@ -291,12 +291,12 @@ class CaseControlSampler(BaseSampler):
                         unaff.append(idx)
                 #
                 if self.cases[sp] > len(aff):
-                    print 'Warning: number of cases %d is greater than number of affectedected individuals %d in subpopulation %d.' \
-                        % (self.cases[sp], len(aff), sp)
+                    print('Warning: number of cases %d is greater than number of affectedected individuals %d in subpopulation %d.' \
+                        % (self.cases[sp], len(aff), sp))
                 #
                 if self.controls[sp] > len(unaff):
-                    print 'Warning: number of controls %d is greater than number of affectedected individuals %d in subpopulation %d.' \
-                        % (self.controls[sp], len(unaff), sp)
+                    print('Warning: number of controls %d is greater than number of affectedected individuals %d in subpopulation %d.' \
+                        % (self.controls[sp], len(unaff), sp))
                 self.affected.append(aff)
                 self.unaffected.append(unaff)
 
@@ -395,8 +395,8 @@ class PedigreeSampler(BaseSampler):
         #
         if not isSequence(self.families):
             if self.families > len(self.selectedIDs):
-                print 'Warning: number of requested Pedigrees %d is greater than what exists (%d).' \
-                    % (self.families, len(self.selectedIDs))
+                print('Warning: number of requested Pedigrees %d is greater than what exists (%d).' \
+                    % (self.families, len(self.selectedIDs)))
             # a tuple might be returned
             self.selectedIDs = list(self.selectedIDs)
             random_shuffle(self.selectedIDs)
@@ -411,14 +411,14 @@ class PedigreeSampler(BaseSampler):
                 if cnt == self.families:
                     break
             if cnt != self.families:
-                print 'Warning: not enough non-overlapping Pedigrees are found (requested %d, found %d).' \
-                    % (self.families, cnt)
+                print('Warning: not enough non-overlapping Pedigrees are found (requested %d, found %d).' \
+                    % (self.families, cnt))
         else:
             IDs = set()
             for sp in range(self.pop.numSubPop()):
                 if self.families[sp] > len(self.selectedIDs[sp]):
-                    print 'Warning: number of requested Pedigrees %d is greater than what exists (%d) in subpopulation %d.' \
-                        % (self.families[sp], len(self.selectedIDs[sp]), sp)
+                    print('Warning: number of requested Pedigrees %d is greater than what exists (%d) in subpopulation %d.' \
+                        % (self.families[sp], len(self.selectedIDs[sp]), sp))
                 #
                 # a tuple might be returned
                 self.selectedIDs[sp] = list(self.selectedIDs[sp])
@@ -433,8 +433,8 @@ class PedigreeSampler(BaseSampler):
                     if cnt == self.families[sp]:
                         break
                 if cnt != self.families[sp]:
-                    print 'Warning: not enough non-overlapping Pedigrees are found (requested %d, found %d).' \
-                        % (self.families, cnt)
+                    print('Warning: not enough non-overlapping Pedigrees are found (requested %d, found %d).' \
+                        % (self.families, cnt))
         # get family members
         return self.pop.extractIndividuals(IDs = list(IDs), idField = self.idField)
 
@@ -601,11 +601,11 @@ class NuclearFamilySampler(PedigreeSampler):
             return True
         # find all families with at least minOffFields...
         if not isSequence(self.families):
-            self.selectedIDs = filter(qualify, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields))
+            self.selectedIDs = list(filter(qualify, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields)))
         else:
             self.selectedIDs = []
             for sp in range(self.pedigree.numSubPop()):
-                self.selectedIDs.append(filter(qualify, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields, subPops=sp)))
+                self.selectedIDs.append(list(filter(qualify, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields, subPops=sp))))
 
 
 def drawNuclearFamilySample(pop, families, numOffspring, affectedParents=0,
@@ -752,11 +752,11 @@ class ThreeGenFamilySampler(PedigreeSampler):
             return True
         # find all families with at least minOffFields...
         if not isSequence(self.families):
-            self.selectedIDs = filter(qualify, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields + minGrandOffFields))
+            self.selectedIDs = list(filter(qualify, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields + minGrandOffFields)))
         else:
             self.selectedIDs = []
             for sp in range(self.pedigree.numSubPop()):
-                self.selectedIDs.append(filter(quality, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields + minGrandOffFields, subPops=sp)))
+                self.selectedIDs.append(list(filter(quality, self.pedigree.individualsWithRelatives(['spouse'] + minOffFields + minGrandOffFields, subPops=sp))))
 
 
 def drawThreeGenFamilySample(pop, families, numOffspring, pedSize, numOfAffected=0,

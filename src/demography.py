@@ -201,7 +201,7 @@ class DemographicModel:
 
     def _isSize(self, x):
         if sys.version_info.major == 2:
-            return isinstance(x, (int, long, float)) or x is None
+            return isinstance(x, (int, float)) or x is None
         else:
             return isinstance(x, (int, float)) or x is None
 
@@ -321,7 +321,7 @@ class DemographicModel:
                         for z in x:
                             if isinstance(z[0], int):
                                 split_sizes[0].append(z[0])
-                            elif sys.version_info.major == 2 and isinstance(z[0], long):
+                            elif sys.version_info.major == 2 and isinstance(z[0], int):
                                 split_sizes[0].append(z[0])
                             elif isinstance(z[0], float):
                                 split_sizes[0].append(int(z[0]*y))
@@ -379,11 +379,11 @@ class DemographicModel:
     def _recordPopSize(self, pop):
         gen = pop.dvars().gen
         if (not hasattr(self, '_last_size')) or self._last_size != pop.subPopSizes():
-            print('%d: %s' % (gen, 
+            print(('%d: %s' % (gen, 
                 ', '.join(
                     ['%d%s' % (x, ' (%s)' % y if y else '') for x, y in \
                         zip(pop.subPopSizes(), pop.subPopNames())])
-                ))
+                )))
             self._last_size = pop.subPopSizes()
         #
         if self.draw_figure:
@@ -442,7 +442,7 @@ class DemographicModel:
             ax.spines['top'].set_visible(False)
             ax.xaxis.set_ticks_position('bottom')
             ax.yaxis.set_ticks_position('left')
-            for name, region in self.pop_regions.items():
+            for name, region in list(self.pop_regions.items()):
                 region = region.reshape(region.size / 4, 4)
                 points = np.append(region[:, 0:2],
                     region[::-1, 2:4], axis=0)
@@ -508,7 +508,7 @@ class DemographicModel:
 
     def _save_size(self, gen, sz):
         if self.size_cache:
-            prev = [x for x in self.size_cache.keys() if x < gen]
+            prev = [x for x in list(self.size_cache.keys()) if x < gen]
             if prev and self.size_cache[max(prev)] == sz:
                 return sz
         self.size_cache[gen] = sz
@@ -523,7 +523,7 @@ class DemographicModel:
         # if we look further, keep contant size
         if gen > max(self.size_cache.keys()):
             return self.size_cache[max(self.size_cache.keys())]
-        prev = [x for x in self.size_cache.keys() if x < gen]
+        prev = [x for x in list(self.size_cache.keys()) if x < gen]
         if prev:
             return self.size_cache[max(prev)]
         else:
@@ -1113,7 +1113,7 @@ class DemographicEvent:
 
     def _identifySubPops(self, pop):
         if self.subPops is ALL_AVAIL:
-            return range(pop.numSubPop())
+            return list(range(pop.numSubPop()))
         #
         ret = []
         names = pop.subPopNames()
@@ -1511,8 +1511,8 @@ class AdmixtureEvent(DemographicEvent):
         if toSubPop is None:
             # Now, we need to select specified number of individuals from the subpopulations
             indexes = []
-            for sz, sp in zip(num_migrants, range(pop.numSubPop())):
-                indexes.extend(range(pop.subPopBegin(sp), pop.subPopBegin(sp) + sz))
+            for sz, sp in zip(num_migrants, list(range(pop.numSubPop()))):
+                indexes.extend(list(range(pop.subPopBegin(sp), pop.subPopBegin(sp) + sz)))
             sample = pop.extractIndividuals(indexes=indexes)
             sample.mergeSubPops(name=self.subPopName)
             pop.addIndFrom(sample)

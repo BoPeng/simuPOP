@@ -57,6 +57,7 @@ from simuOpt import simuOptions
 
 from simuPOP import moduleInfo, MALE, FEMALE, Population, PointMutator, getRNG,\
     ALL_AVAIL, PyOperator, stat
+import collections
 
 def viewVars(var, gui=None):
     '''
@@ -299,21 +300,21 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
     ``affectionFormatter`` but can still be used.
     '''
     if moduleInfo()['debug']['DBG_COMPATIBILITY']:
-        print >> sys.stderr, 'WARNING: Function saveCSV is deprecated. Use export(format="csv") instead.'
+        print('WARNING: Function saveCSV is deprecated. Use export(format="csv") instead.', file=sys.stderr)
     # handle obsolete parameters affectionCode, sexCode and genoCode
-    if kwargs.has_key('genoCode'):
+    if 'genoCode' in kwargs:
         if moduleInfo()['debug']['DBG_COMPATIBILITY']:
-            print >> sys.stderr, 'WARNING: Parameter genoCode is obsolete. Use genoFormatter instead.'
+            print('WARNING: Parameter genoCode is obsolete. Use genoFormatter instead.', file=sys.stderr)
         genoFormatter = kwargs['genoCode']
-    if kwargs.has_key('sexCode'):
+    if 'sexCode' in kwargs:
         if moduleInfo()['debug']['DBG_COMPATIBILITY']:
-            print >> sys.stderr, 'WARNING: Parameter sexCode is obsolete. Use sexFormatter instead.'
+            print('WARNING: Parameter sexCode is obsolete. Use sexFormatter instead.', file=sys.stderr)
         sexFormatter = kwargs['sexCode']
-    if kwargs.has_key('affectionCode'):
+    if 'affectionCode' in kwargs:
         if moduleInfo()['debug']['DBG_COMPATIBILITY']:
-            print >> sys.stderr, 'WARNING: Parameter genoCode is obsolete. Use sexFormatter instead.'
+            print('WARNING: Parameter genoCode is obsolete. Use sexFormatter instead.', file=sys.stderr)
         affectionFormatter = kwargs['affectionCode']
-    for key in kwargs.keys():
+    for key in list(kwargs.keys()):
         if key not in ('genoCode', 'sexCode', 'affectionCode'):
             raise ValueError("Unrecognized keyword parameter %s" % key)
     # parameter pop
@@ -321,7 +322,7 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
         raise ValueError("Passed population should either be a population object")
     # parameter loci
     if loci is ALL_AVAIL:
-        loci = range(0, pop.totNumLoci())
+        loci = list(range(0, pop.totNumLoci()))
     elif type(loci) == type(1):
         loci = [loci]
     if not type(loci) in [type([]) or type(())]:
@@ -341,10 +342,10 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
         else:
             out = sys.stdout
     except IOError:
-        raise IOError, "Can not open file " + filename +" to write."
+        raise IOError("Can not open file " + filename +" to write.")
     # parameter subPops
     if subPops is ALL_AVAIL:
-        subPops = range(pop.numSubPop())
+        subPops = list(range(pop.numSubPop()))
     #
     # figure out columns per genotype
     ploidy = pop.ploidy()
@@ -355,9 +356,9 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
         elif isinstance(genoFormatter, dict):
             if len(genoFormatter) == 0:
                 raise ValueError("genoFormatter cannot be empty")
-            value = genoFormatter.values()[0]
+            value = list(genoFormatter.values())[0]
         else:
-            if not callable(genoFormatter):
+            if not isinstance(genoFormatter, collections.Callable):
                 raise ValueError("genoFormatter should be a None, a dictionary or a callable function")
             value = genoFormatter(tuple([pop.individual(0).allele(0, p) for p in range(ploidy)]))
         try:
@@ -380,11 +381,11 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
             for loc in loci:
                 names.extend(['%s_%d' % (pop.locusName(loc), x+1) for x in range(colPerGenotype)])
         # output header
-        print >> out, sep.join(names)
+        print(sep.join(names), file=out)
     elif type(header) == type(''):
-        print >> out, header
+        print(header, file=out)
     elif type(header) in [type(()), type([])]:
-        print >> out, sep.join(header)
+        print(sep.join(header), file=out)
     for subPop in subPops:
         for ind in pop.individuals(subPop):
             # information fields
@@ -415,7 +416,7 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
                     else:
                         values.append(str(code))
             # output
-            print >> out, sep.join(values)
+            print(sep.join(values), file=out)
     # clode output
     if filename:
         out.close()
@@ -532,7 +533,7 @@ class _tkProgressBar(_baseProgressBar):
             Message displayed when the job is finished.
         '''
         _baseProgressBar.__init__(self, message, totalCount)
-        import Tkinter as tk
+        import tkinter as tk
         self.width = 300
         self.height = 30
         self.max = 100
@@ -674,7 +675,7 @@ class ProgressBar:
                 self.gui = 'Tkinter'
         if self.gui == 'Tkinter':
             try:
-                import Tkinter
+                import tkinter
             except ImportError:
                 self.gui = False
         if self.gui == 'wxPython':
@@ -737,7 +738,7 @@ class Trajectory:
 
     def _freq(self, gen):
         '''Return frequencies at all subpopulations at generation *gen*.'''
-        if not self.traj.has_key(gen):
+        if gen not in self.traj:
             # assuming no subpopulations
             return [[0.] * self.nLoci]
         assert len(self.traj[gen][0]) == self.nLoci
@@ -749,7 +750,7 @@ class Trajectory:
         assumed to be zero if *gen* is out of range of the simulated
         Trajectory.
         '''
-        if not self.traj.has_key(gen):
+        if gen not in self.traj:
             # assuming no subpopulations
             return [0.] * self.nLoci
         assert len(self.traj[gen][subPop]) == self.nLoci
@@ -766,7 +767,7 @@ class Trajectory:
         (``ControlledOffspringGenerator``).
         '''
         def trajFunc(gen):
-            if not self.traj.has_key(gen):
+            if gen not in self.traj:
                 return [0.] * self.nLoci
             freq = []
             for spFreq in self.traj[gen]:
@@ -776,7 +777,7 @@ class Trajectory:
 
     def mutants(self):
         '''Return a list of mutants in the form of (loc, gen, subPop)'''
-        gens = self.traj.keys()
+        gens = list(self.traj.keys())
         gens.sort()
         if len(gens) == 0:
             return []
@@ -856,7 +857,7 @@ class Trajectory:
 
     def _mat_plot(self, filename, **kwargs):
         import matplotlib.pylab as plt
-        import plotter
+        from . import plotter
         #
         args = plotter.DerivedArgs(
             defaultFuncs=['plot'],
@@ -875,7 +876,7 @@ class Trajectory:
         fig = plt.figure(**args.getArgs('figure', None))
         ax = fig.add_subplot(111)
         #
-        gens = self.traj.keys()
+        gens = list(self.traj.keys())
         gens.sort()
         #plotter.r.par(**args.getArgs('par', None))
         #plotter.r.plot(gens[0], 0,
@@ -899,7 +900,7 @@ class Trajectory:
                                     break
                             if start == len(line) - 1:
                                 continue
-                            ax.plot(range(beginGen - len(line) + start, gen), line[start:],
+                            ax.plot(list(range(beginGen - len(line) + start, gen)), line[start:],
                                 **args.getArgs('plot', None, sp=sp, loc=loc))
                     # the first point
                     allLines[sp] = [[x] for x in self.traj[gen][sp]]
@@ -916,8 +917,8 @@ class Trajectory:
                 if start == len(line) - 1:
                     continue
                 beginGen = gen - len(line) + start
-                print(args.getArgs('plot', None, sp=sp, loc=loc))
-                ax.plot(range(beginGen, gen), line[start:],
+                print((args.getArgs('plot', None, sp=sp, loc=loc)))
+                ax.plot(list(range(beginGen, gen)), line[start:],
                         **args.getArgs('plot', None, sp=sp, loc=loc))
         #
         fig.savefig(filename)
@@ -986,7 +987,7 @@ class TrajectorySimulator:
             to output intermediate results with debug information.
         '''
         # a vector of subpopulation sizes is needed
-        if type(N) in [type(1), type(1L)]:
+        if type(N) in [type(1), type(1)]:
             self.N = [N]
         else: # N is a list or a function
             self.N = N
@@ -1005,10 +1006,10 @@ class TrajectorySimulator:
     def _Nt(self, gen):
         'Get Nt(gen) depending on the type of N'
         # _Nt() expects parameter gen
-        if callable(self.N):
+        if isinstance(self.N, collections.Callable):
             nt = self.N(gen)
             # the return value of a demographic function sometimes is not integer.
-            if type(nt) in [int, long, float]:
+            if type(nt) in [int, int, float]:
                 return [int(nt)]
             else:
                 return [int(x) for x in nt]
@@ -1075,7 +1076,7 @@ class TrajectorySimulator:
         '''
         assert len(freq) == self.nLoci
         # _fitness() expects parameters gen and a subpopulation index
-        if callable(self.fitness):
+        if isinstance(self.fitness, collections.Callable):
             fit = self.fitness(gen, subPop)
         else:
             fit = self.fitness
@@ -1533,7 +1534,7 @@ class TrajectorySimulator:
         
         if not self.maxMutAge >= self.minMutAge:
             raise ValueError('maxMutAge should >= minMutAge')
-        if endGen == 0 and (callable(self.N) or callable(self.fitness)):
+        if endGen == 0 and (isinstance(self.N, collections.Callable) or isinstance(self.fitness, collections.Callable)):
             raise ValueError('endGen should be > 0 if N or fitness is defined in the form of function')
         if endGen > 0 and endGen < self.maxMutAge:
             raise ValueError('endGen should be >= maxMutAge')
@@ -1951,7 +1952,7 @@ class FStatImporter:
             # file is opened. get basic parameters
             try:
                 # get numSubPop(), totNumLoci(), maxAllele(), digit
-                [np, nl, nu, nd] = map(int, input.readline().split())
+                [np, nl, nu, nd] = list(map(int, input.readline().split()))
             except ValueError:
                 raise ValueError("The first line does not have 4 numbers. Are you sure this is a FSTAT file?")
             # now, ignore nl lines, if loci is empty try to see if we have info here
@@ -2329,7 +2330,7 @@ class PhylipImporter:
         with open(filename, 'r') as input:
             # file is opened. get basic parameters
             try:
-                [nSeq, nLoci] = map(int, input.readline().split())
+                [nSeq, nLoci] = list(map(int, input.readline().split()))
             except ValueError:
                 raise ValueError("The first line does not have 2 numbers for number of sequence and loci. Are you sure this is a Phylip file?")
             if nSeq // self.ploidy * self.ploidy != nSeq:
@@ -2488,16 +2489,16 @@ class CSVExporter:
                 _genoFunc = self._genoDirect
                 colPerGenotype = ploidy
             elif isinstance(self.genoFormatter, dict):
-                value = self.genoFormatter.values()[0]
-                colPerGenotype = 1 if type(value) in [type(''), type(1), type(1L)] else len(value)
+                value = list(self.genoFormatter.values())[0]
+                colPerGenotype = 1 if type(value) in [type(''), type(1), type(1)] else len(value)
                 _genoFunc = self._genoFromDict
             else:
-                if not callable(self.genoFormatter):
+                if not isinstance(self.genoFormatter, collections.Callable):
                     raise ValueError("genoFormatter should be a None, a dictionary or a callable function")
                 value = self.genoFormatter(tuple([pop.individual(0).allele(0, p) for p in range(ploidy)]))
-                colPerGenotype = 1 if type(value) in [type(''), type(1), type(1L)] else len(value)
+                colPerGenotype = 1 if type(value) in [type(''), type(1), type(1)] else len(value)
                 _genoFunc = self._genoCallable
-            print colPerGenotype, ploidy
+            print(colPerGenotype, ploidy)
         #
         # header
         if self.header is True:
@@ -2572,7 +2573,7 @@ class MSExporter:
             #
             # first line: command, nseq, nblocks
             #
-            stat(pop, popSize=True, alleleFreq=range(pop.numLoci(0)), vars=['alleleNum'], 
+            stat(pop, popSize=True, alleleFreq=list(range(pop.numLoci(0))), vars=['alleleNum'], 
                 subPops=subPops)
             output('simuPOP_export %d 1\n' % (pop.dvars().popSize * pop.ploidy()))
             # some random random number seeds
@@ -2609,7 +2610,7 @@ class MSExporter:
             prog = ProgressBar('Exporting', sum(sz), gui=gui)
             count = 0
             # find segregating sites
-            stat(pop, alleleFreq=range(pop.numLoci(0)), subPops=subPops, vars='alleleNum_sp')
+            stat(pop, alleleFreq=list(range(pop.numLoci(0))), subPops=subPops, vars='alleleNum_sp')
             for vsp in subPops:
                 seg_sites = [x for x in range(pop.numLoci(0)) if len(pop.dvars(vsp).alleleNum[x]) != 1]
                 output('\n//\nsegsites: %d\n' % len(seg_sites))
@@ -3025,7 +3026,7 @@ class Exporter(PyOperator):
     def _determineSubPops(self, pop):
         # this is basically subPopList::expandFrom(pop)
         if self.subPops is ALL_AVAIL:
-            return range(pop.numSubPop())
+            return list(range(pop.numSubPop()))
         elif type(self.subPops) == type(0):
             return [self.subPops]
         elif type(self.subPops) == type(''):
@@ -3087,7 +3088,7 @@ class Exporter(PyOperator):
             with open(output.lstrip('>'), mode) as out:
                 self.exporter.export(pop, out.write,
                     self._determineSubPops(pop), self.infoFields, gui=self.gui)
-        elif callable(self.output):
+        elif isinstance(self.output, collections.Callable):
             # it is a regular python function, call it with output
             if bin_mode:
                 self.exporter.export(pop, _binaryWriter(self.output),

@@ -119,10 +119,10 @@ class DerivedArgs:
                 return ['%s_%s' % (x, base) for x in self.defaultFuncs]
         #
         existingParams = []
-        for key in self.params.keys():
+        for key in list(self.params.keys()):
             existingParams.extend(funcForm(key))
         #
-        for key,value in kwargs.iteritems():
+        for key,value in kwargs.items():
             funcs = funcForm(key)
             exist = False
             for func in funcs:
@@ -142,7 +142,7 @@ class DerivedArgs:
         if func not in self.allFuncs:
             raise ValueError('%s is not among the allowed functions' % func)
         ret = {}
-        for key,value in self.params.iteritems():
+        for key,value in self.params.items():
             # this is a prefixed parameter
             par = None
             if True in [key.startswith(x + '_') for x in self.allFuncs]:
@@ -156,7 +156,7 @@ class DerivedArgs:
                 continue
             # is this a suffixed parameter?
             if True in [par.endswith('_' + x) for x in self.suffixes]:
-                for suffix,idx in kwargs.iteritems():
+                for suffix,idx in kwargs.items():
                     if not suffix in self.suffixes:
                         continue
                     if par.endswith('_' + suffix):
@@ -168,11 +168,11 @@ class DerivedArgs:
             else:
                 ret[par] = value
         # unrecognized keyword arguments?
-        for key,value in kwargs.iteritems():
-            if not key in self.suffixes and not ret.has_key(key):
+        for key,value in kwargs.items():
+            if not key in self.suffixes and key not in ret:
                 ret[key] = value
         # evalulate the values if needed
-        for key in ret.keys():
+        for key in list(ret.keys()):
             if type(ret[key]) == type('') and ret[key].startswith('!') and pop is not None:
                 ret[key] = pop.evaluate(ret[key][1:])
         return ret
@@ -203,7 +203,7 @@ class DerivedArgs:
             index.update(kwargs)
             vals = self.getArgs(func, pop, **index)
             for arg in args:
-                if vals.has_key(arg):
+                if arg in vals:
                     ret[arg].append(vals[arg])
         #
         for arg in args:
