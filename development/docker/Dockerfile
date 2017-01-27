@@ -1,6 +1,6 @@
 #
-# Docker image for variant tools
-#
+# Docker image for simuPOP
+
 FROM    ubuntu:latest
 
 MAINTAINER Bo Peng <bpeng@mdanderson.org>

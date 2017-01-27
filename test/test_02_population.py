@@ -1165,6 +1165,9 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.subPopName(1), 'B')
         for i in range(2, 6):
             self.assertEqual(pop.subPopName(i), '')
+        # apply this function to an empty information would crash simuPOP (issue #19)
+        pop = Population(size=0, infoFields='a')
+        pop.setSubPopByIndInfo('a')
 
     def testSortIndividuals(self):
         'Testing Population::sortIndividuals(infoFields)'

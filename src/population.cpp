@@ -1057,6 +1057,10 @@ void Population::setSubPopByIndInfo(const string & field)
 
 	size_t info = infoIdx(field);
 	DBG_DO(DBG_POPULATION, cerr << "Sorting individuals." << endl);
+
+	// if the population is empty, return directly (#19)
+	if (rawIndBegin() == rawIndEnd())
+		return;
 	// sort individuals first
 	parallelSort(rawIndBegin(), rawIndEnd(), indCompare(info));
 	setIndOrdered(false);
