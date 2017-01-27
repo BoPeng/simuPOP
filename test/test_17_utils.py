@@ -1036,6 +1036,12 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(self.lineOfFile('pop.csv', 2), 'M,U,2,4,2,4,2,4\n')
         # cleanup
         os.remove('pop.csv')
+        export(pop, format='csv', output='pop.csv', subPopFormatter='mine')
+        self.assertEqual(self.lineOfFile('pop.csv', 1), 'sex,aff,a_1,a_2,b_1,b_2,c_1,c_2,d_1,d_2,e_1,e_2,f_1,f_2,mine\n')
+        self.assertEqual(self.lineOfFile('pop.csv', 2), 'M,U,0,0,1,1,0,0,1,1,0,0,1,1,0\n')
+        self.assertEqual(self.lineOfFile('pop.csv', 6), 'M,U,0,0,1,1,0,0,1,1,0,0,1,1,1\n')
+        # cleanup
+        #os.remove('pop.csv')
 
     def testExportPED(self):
         '''Testing export population in PED format'''
@@ -1278,8 +1284,22 @@ class TestUtils(unittest.TestCase):
         #
         # cleanup
         os.remove('pop.phy')
+        os.remove('pop1.phy')
         os.remove('pop.phy.gz')
 
+    def testExportDyncOutput(self):
+        'Testing the Exporter operator with output starting with !'
+        pop = Population(100)
+        pop.evolve(
+            initOps=[InitSex()],
+            preOps=
+                Exporter(format='CSV', output='!"output%d.csv" % gen'),
+            matingScheme=RandomMating(),
+            gen=5
+        )
+        for i in range(5):
+            self.assertTrue(os.path.isfile('output{}.csv'.format(i)))
+            os.remove('output{}.csv'.format(i))
 
 if __name__ == '__main__':
     unittest.main()

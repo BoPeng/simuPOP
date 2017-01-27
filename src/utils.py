@@ -2459,14 +2459,16 @@ class CSVExporter:
     '''An exporter to export given population in csv format'''
     def __init__(self, header=True, genoFormatter=None, infoFormatter=None,
         sexFormatter={MALE: 'M', FEMALE: 'F'},
-        affectionFormatter={True: 'A', False: 'U'}, delimiter=','):
+        affectionFormatter={True: 'A', False: 'U'}, delimiter=',',
+        subPopFormatter=None):
         self.header = header
         self.genoFormatter = genoFormatter
         self.infoFormatter = infoFormatter
         self.sexFormatter = sexFormatter
         self.affectionFormatter = affectionFormatter
         self.delimiter = delimiter
-    
+        self.subPopFormatter = subPopFormatter
+
     def _genoFromDict(self, geno):
         return self.genoFormatter[geno]
 
@@ -2509,6 +2511,11 @@ class CSVExporter:
             elif colPerGenotype > 1:
                 for loc in range(pop.totNumLoci()):
                     names.extend(['%s_%d' % (pop.locusName(loc), x+1) for x in range(colPerGenotype)])
+            if self.subPopFormatter is not None:
+                if type(self.subPopFormatter) is bool:
+                    names.append('pop')
+                elif type(self.subPopFormatter) is str:
+                    names.append(self.subPopFormatter)
             # output header
             output(self.delimiter.join(names) + '\n')
         elif type(self.header) == type(''):
@@ -2540,6 +2547,8 @@ class CSVExporter:
                         values.extend(['%s' % x for x in val])
                     else:
                         values.append(str(val))
+                if self.subPopFormatter is not None:
+                    values.append(str(vsp))
                 # output
                 output(self.delimiter.join(values) + '\n')
                 count += 1
@@ -2966,6 +2975,12 @@ class Exporter(PyOperator):
     delimiter
         Delimiter used to separate values, default to ','.
 
+    subPopFormatter
+        How to output population membership. Acceptable values include
+        ``None`` (no output), a string that will be used for the column name, or
+        ``True`` which uses 'pop' as the column name. If present, the column is
+        written with the string represenation of the (virtual) subpopulation.
+
     This operator supports the usual applicability parameters such as begin,
     end, step, at, reps, and subPops. If subPops are specified, only
     individuals from specified (virtual) subPops are exported. Similar to
@@ -3060,14 +3075,16 @@ class Exporter(PyOperator):
             self.output = self.output._with_output
         if isinstance(self.output, str):
             if self.output.startswith('!'):
-                self.output = eval(self.output[1:], pop.vars(), pop.vars())
-            if self.output.startswith('>>'):
+                output = eval(self.output[1:], pop.vars(), pop.vars())
+            else:
+                output = self.output
+            if output.startswith('>>'):
                 mode = 'a'
             else:
                 mode = 'w'
             if bin_mode:
                 mode += 'b'
-            with open(self.output.lstrip('>'), mode) as out:
+            with open(output.lstrip('>'), mode) as out:
                 self.exporter.export(pop, out.write,
                     self._determineSubPops(pop), self.infoFields, gui=self.gui)
         elif callable(self.output):

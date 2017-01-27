@@ -13,10 +13,6 @@ include setup.py
 
 # source header files
 include config.h
-include config_solaris.h 
-include config_win32.h 
-include config_linux.h 
-include config_mac.h
 include src/simuPOP_cfg.h
 include src/boost_pch.hpp
 include src/mutant_vector.h
