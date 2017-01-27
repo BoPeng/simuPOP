@@ -919,7 +919,7 @@ class _tkParamDialog(_paramDialog):
                     val = _getParamValue(self.options[g], items, self.options)
                 else:
                     val = _getParamValue(self.options[g], self.entryWidgets[g].get(), self.options)
-            except Exception,e:
+            except Exception as e:
                 for lab in self.labelWidgets:
                     if lab is not None:
                         lab.configure(fg='black')
@@ -1091,7 +1091,7 @@ class _wxParamDialog(_paramDialog):
                     val = _getParamValue(self.options[g], items, self.options)
                 else:
                     val = _getParamValue(self.options[g], self.entryWidgets[g].GetValue(), self.options)
-            except Exception, e:
+            except Exception as e:
                 # incorrect value
                 # set to red
                 # clear other red colors
@@ -1792,7 +1792,7 @@ class Params:
                         self.processedArgs.extend([idx, idx+1])
                         opt['value'] = val
                         opt['processed'] = True
-                    except Exception, e:
+                    except Exception as e:
                         print("ERROR: Failed to assign parameter %s with value '%s'" % (opt['name'],
                             cmdArgs[idx+1]))
                         print(e)
@@ -1804,7 +1804,7 @@ class Params:
                         self.processedArgs.append(idx)
                         opt['value'] = val
                         opt['processed'] = True
-                    except Exception, e:
+                    except Exception as e:
                         print("ERROR: Failed to assign parameter %s with value '%s'" % (opt['name'],
                             cmdArgs[idx][(len(name)+3):]))
                         print(e)
@@ -1824,7 +1824,7 @@ class Params:
                         self.processedArgs.extend([idx, idx+1])
                         opt['value'] = val
                         opt['processed'] = True
-                    except Exception, e:
+                    except Exception as e:
                         print("ERROR: Failed to assign parameter %s with value '%s'" % (opt['name'],
                             cmdArgs[idx+1]))
                         print(e)
@@ -1842,7 +1842,7 @@ class Params:
                         self.processedArgs.append(idx)
                         opt['value'] = val
                         opt['processed'] = True
-                    except Exception, e:
+                    except Exception as e:
                         print("ERROR: Failed to assign parameter %s with value '%s'" % (opt['name'],
                             cmdArgs[idx]))
                         print(e)
