@@ -168,40 +168,49 @@ class InitGenotype : public BaseOperator
 {
 public:
 	/** This function creates an initializer that initializes individual
-	 *  genotypes with random alleles or haplotypes with specified frequencies
-	 *  (parameter \e freq) or proportions (parameter \e prop). If parameter
-	 *  \e haplotypes is not specified, \e freq specifies the allele
-	 *  frequencies of alleles \c 0, \c 1, ... respectively. Alternatively,
-	 *  you can use parameter \e prop to specified the exact proportions of
-	 *  alleles \c 0, \c 1, ..., although alleles with small proportions
-	 *  might not be assigned at all. Values of parameter \e prob or \e prop
-	 *  should add up to 1. In addition to a vector, parameter \e prob and
-	 *  \e prop can also be a function that accepts optional parameters
-	 *  \e loc, \e subPop or \e vsp and returns a list of requencies for
-	 *  alleles  \c 0, \c 1, etc, or a number for frequency of allele \c 0
-	 *  as a speciail case for each locus, subpopulation (parameter \e subPop),
-	 *  or virtual subpopulations (parameter \e vsp, pass as a tuple). If 
-	 *  parameter \e haplotypes is specified, it should contain a list of 
-	 *  haplotypes and parameter \e prob or \e prop specifies frequencies or
-	 *  proportions of each haplotype (possibly diferently for each subpopulation
-	 *  but not each locus if the function form is used). If \e loci, \e ploidy
-	 *  and/or \e subPop are specified, only specified loci, ploidy, and
-	 *  individuals in these (virtual) subpopulations will be initialized.
+	 *  genotypes with random alleles, genotypes, or haplotypes with specified
+	 *  frequencies (parameter \e freq) or proportions (parameter \e prop).
+	 *  If parameter \e genotypes or \e haplotypes is not specified, \e freq
+	 *  specifies the allele frequencies of alleles \c 0, \c 1, \c 2...
+	 *  respectively. Alternatively, you can use parameter \e prop to
+	 *  specified the exact proportions of alleles \c 0, \c 1, ..., although
+	 *  alleles with small proportions might not be assigned at all.
+
+	 *  Values of parameter \e prob or \e prop should add up to 1. In addition
+	 *  to a vector, parameter \e prob and \e prop can also be a function that
+	 *  accepts optional parameters \e loc, \e subPop or \e vsp and returns a
+	 *  list of requencies for alleles  \c 0, \c 1, etc, or a number for frequency
+	 *  of allele \c 0 as a speciail case for each locus, subpopulation (parameter
+	 *  \e subPop), or virtual subpopulations (parameter \e vsp, pass as a tuple).
+
+	 *  If parameter \e genotypes is specified, it should contain a list of genotypes
+	 *  (alleles on different strand of chromosomes) with length equal to population
+	 *  ploidy. Parameter \e prob and \e prop then specifies frequencies or proportions
+	 *  of each genotype, which can vary for each subpopulation but not each locus if
+	 *  the function form of parameters is used.
+
+	 *  If parameter \e haplotypes is specified, it should contain a list of 
+	 *  haplotypes (alleles on the same strand of chromosome) and parameter \e prob
+	 *  or \e prop specifies frequencies or proportions of each haplotype.
+
+	 *  If \e loci, \e ploidy and/or \e subPop are specified, only specified loci,
+	 *  ploidy, and individuals in these (virtual) subpopulations will be initialized.
 	 *  Parameter \e loci can be a list of loci indexes, names or \c ALL_AVAIL.
 	 *  If the length of a haplotype is not enough to fill all loci, the
 	 *  haplotype will be reused. If a list (or a single) haplotypes are
 	 *  specified without \e freq or \e prop, they are used with equal
 	 *  probability.
 	 *
-	 *  In the last case, if a sequence of genotype is specified, it will be
-	 *  used repeatedly to initialize all alleles sequentially. This works
-	 *  similar to function \c Population.setGenotype() except that you can
-	 *  limit the initialization to certain \e loci and \e ploidy.
+	 *  In the last case, if a sequence of genotype is specified through parameter
+	 *  \e genotype (not \e genotypes), it will be used repeatedly to initialize all
+	 *  alleles sequentially. This works similar to function \c Population.setGenotype()
+	 *  except that you can limit the initialization to certain \e loci and \e ploidy.
 	 */
 	InitGenotype(const floatListFunc & freq = vectorf(),
 		const uintList & genotype = vectoru(),
 		const floatListFunc & prop = vectorf(),
 		const intMatrix & haplotypes = intMatrix(),
+		const intMatrix & genotypes = intMatrix(),
 		const lociList & loci = lociList(),
 		const uintList & ploidy = uintList(),
 		int begin = 0, int end = 1, int step = 1, const intList & at = vectori(),
@@ -236,6 +245,7 @@ private:
 	const vectoru m_genotype;
 	const floatListFunc m_prop;
 	const matrixi m_haplotypes;
+	const matrixi m_genotypes;
 	//
 	const lociList m_loci;
 

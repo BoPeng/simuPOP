@@ -350,6 +350,42 @@ class TestInitialization(unittest.TestCase):
         self.assertGenotypeFreq(pop, [.8, .2], [.8, .2], loci=[2, 3])
         self.assertGenotypeFreq(pop, [.2, .8], [.2, .8], loci=[4, 5])
         
+    def testInitByGenotypes(self):
+        'Testing initialization by genotypes (operator InitGenotype)'
+        pop = Population(size=[500, 1000, 500], loci=[2,4,2], infoFields=['x'])
+        initGenotype(pop, genotypes=[[0, 0], [1, 1]])
+        # either 0 or 1 with equal frequency
+        for ind in pop.individuals():
+            for loc in range(8):
+                self.assertEqual(ind.allele(loc, 0), ind.allele(loc, 1))
+        self.assertGenotypeFreq(pop, [.45, .45], [.55, .55], loci=list(range(8)))
+        #
+        initGenotype(pop, genotypes=[[0, 0], [0, 1], [1, 1]], prop=[0, 0.2, 0.8])
+        # either 0 or 1 with equal frequency
+        for ind in pop.individuals():
+            for loc in range(8):
+                self.assertFalse(ind.allele(loc, 0) == 0 and ind.allele(loc, 1) == 0)
+        # by locus
+        initGenotype(pop, genotypes=[[0, 0], [0, 1], [1, 1]], freq=[0, 0.2, 0.8], loci=[1, 2])
+        initGenotype(pop, genotypes=[[0, 0], [0, 1], [1, 1]], freq=[0.8, 0.2, 0], loci=[3, 4])
+        # either 0 or 1 with equal frequency
+        for ind in pop.individuals():
+            for loc in [1,2]:
+                self.assertFalse(ind.allele(loc, 0) == 0 and ind.allele(loc, 1) == 0)
+            for loc in [3,4]:
+                self.assertFalse(ind.allele(loc, 0) == 1 and ind.allele(loc, 1) == 1)
+        # by subpop
+        initGenotype(pop, genotypes=[[0, 0], [0, 1], [1, 1]], freq=[0, 0.2, 0.8], subPops=0)
+        initGenotype(pop, genotypes=[[0, 0], [0, 1], [1, 1]], freq=[0.8, 0.2, 0], subPops=1)
+        # either 0 or 1 with equal frequency
+        for ind in pop.individuals(0):
+            for loc in range(8):
+                self.assertFalse(ind.allele(loc, 0) == 0 and ind.allele(loc, 1) == 0)
+        for ind in pop.individuals(1):
+            for loc in range(8):
+                self.assertFalse(ind.allele(loc, 0) == 1 and ind.allele(loc, 1) == 1)
+
+
     def testInitLineage(self):
         'Testing initializing lineage of individuals'
         if moduleInfo()['alleleType'] != 'lineage':
