@@ -791,7 +791,7 @@ class TestUtils(unittest.TestCase):
         return res
 
     def testExportFStat(self):
-        '''Testing export population in genepop format'''
+        '''Testing export population in fstat format'''
         pop = Population(size=[4, 5], loci=[2, 4], ploidy=2, 
             lociNames=['a', 'b', 'c', 'd', 'e', 'f'], infoFields=['loc', 'pheno']) 
         initGenotype(pop, haplotypes=[0,1])
