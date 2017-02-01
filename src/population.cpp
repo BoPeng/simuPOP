@@ -138,6 +138,8 @@ Population::Population(const Population & rhs) :
 		LINEAGE_EXPR(m_lineage.resize(m_popSize * genoSize()));
 		// have 0 length for mpi/non-head node
 		m_info.resize(rhs.m_popSize * infoSize());
+	} catch (const std::exception & e) {
+		throw ValueError(string("Failed to copy Population (") + e.what() + ")\n");
 	} catch (...) {
 		throw RuntimeError("Failed to copy Population, likely a memory allocation failure.");
 	}
@@ -4109,6 +4111,8 @@ void Population::load(const string & filename)
 	try {
 		boost::archive::text_iarchive ia(ifs);
 		ia >> *this;
+	} catch (const std::exception & e) {
+		throw ValueError("Failed to load Population " + filename + " (" + e.what() + ")\n");
 	} catch (...) {
 		throw ValueError("Failed to load Population " + filename + ".\n");
 	}
