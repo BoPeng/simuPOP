@@ -791,7 +791,7 @@ public:
 
 
 	/// Initialize a parent chooser for subpopulation \e subPop of \e population pop
-	virtual void initialize(Population & /* pop */, size_t /* subPop */)
+	virtual void initialize(Population & pop, size_t subPop)
 	{
 	}
 

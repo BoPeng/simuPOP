@@ -14,7 +14,7 @@ import gzip
 import unittest, os, sys
 from simuOpt import setOptions
 # this line also tests the use of parameter version in setOptions
-setOptions(quiet=True, gui=False, version='1.0.1')
+setOptions(quiet=True, gui='batch', version='1.0.1')
 new_argv = []
 for arg in sys.argv:
     if arg in ['short', 'long', 'binary', 'mutant', 'lineage']:

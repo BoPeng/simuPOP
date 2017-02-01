@@ -879,8 +879,6 @@ class TestTransmitters(unittest.TestCase):
         initSex(pop)
         initGenotype(pop, genotype=[a1]*4+[a2]*4)
         # for ALL_AVAIL, rates should have a length of totNumLoci
-        self.assertRaises(Recombinator, rates=[0.1, 0.2])
-        self.assertRaises(Recombinator, rates=[0.1, 0.2, 0.1])
         pop.evolve(
             postOps = Stat( haploFreq = [[0,1], [2,3]]),
             matingScheme = RandomMating(ops=Recombinator(rates = [0, 0.8, 0.5, 0.8])),
@@ -908,8 +906,6 @@ class TestTransmitters(unittest.TestCase):
         initSex(pop)
         initGenotype(pop, genotype=[a1]*15+[a2]*15)
         # for ALL_AVAIL, rates should have a length of totNumLoci
-        self.assertRaises(Recombinator, rates=[0.1, 0.2])
-        self.assertRaises(Recombinator, rates=[0.1, 0.2, 0.1])
         pop.evolve(
             postOps = Stat( haploFreq = [[1,2], [3,4], [8,9], [13, 14]]),
             matingScheme = RandomMating(ops=Recombinator(

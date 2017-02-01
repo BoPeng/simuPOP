@@ -266,15 +266,14 @@ class TestOperator(unittest.TestCase):
         with open('test1.txt') as test1txt:
             self.assertEqual(test1txt.read(), 'func2'*50)
         # runtime error only raise in python 3
-        if sys.version_info.major > 2:
-            simu = Simulator(Population(), rep=5)
-            with open('test1.txt', 'wb') as out:
-                # each replicate
-                self.assertRaises(RuntimeError, simu.evolve,
-                    matingScheme=CloneMating(),
-                    postOps = [
-                    PyOutput("func2", output=out),
-                ], gen=10)
+        simu = Simulator(Population(), rep=5)
+        with open('test1.txt', 'wb') as out:
+            # each replicate
+            self.assertRaises(RuntimeError, simu.evolve,
+                matingScheme=CloneMating(),
+                postOps = [
+                PyOutput("func2", output=out),
+            ], gen=10)
         #
         simu = Simulator(Population(), rep=5)
         with open('test1.txt', 'wb') as out:

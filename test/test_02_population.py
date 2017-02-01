@@ -1763,9 +1763,9 @@ class TestPopulation(unittest.TestCase):
         'Testing population::evolve(dryrun=True'
         pop = Population(100, loci=3)
         tmp = sys.stdout 
-        sys.stdout = open(os.devnull, 'w')
-        pop.evolve(preOps=InitSex(),
-            matingScheme=RandomMating(), dryrun=True)
+        with open(os.devnull, 'w') as sys.stdout:
+            pop.evolve(preOps=InitSex(),
+                matingScheme=RandomMating(), dryrun=True)
         sys.stdout = tmp
 
     def testLineage(self):

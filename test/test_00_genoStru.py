@@ -242,7 +242,7 @@ class TestGenoStru(unittest.TestCase):
         self.assertEqual(pop.indexesOfLoci(loci=[('', 1), ('', 3)]), (5, 7))
         #
         pop = Population(size=10, loci=[5,5], chromNames=['a', 'b'], lociPos=[x*0.1 for x in range(10)])
-        self.assertEqual(pop.indexesOfLoci([('a', 0.3), ('b', 0.90001)]), (3, 9))
+        self.assertEqual(pop.indexesOfLoci([('a', 0.3), ('b', 0.9)]), (3, 9))
         self.assertRaises(ValueError, pop.indexesOfLoci, loci=[('a', .1), ('c', .3)])
         # single number?
         pop = Population(size=10, loci=[5,5], chromNames=['a', 'b'], lociPos=[x*0.1 for x in range(10)])

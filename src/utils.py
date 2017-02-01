@@ -641,10 +641,11 @@ class _wxProgressBar(_baseProgressBar):
 class ProgressBar:
     '''The ``ProgressBar`` class defines a progress bar. This class will use a
     text-based progress bar that outputs progressing dots (.) with intermediate
-    numbers (e.g. 5 for 50%) under a non-GUI mode (``gui=False``). In the GUI
-    mode, a Tkinter or wxPython progress dialog will be used (``gui=Tkinter``
-    or ``gui=wxPython``). The default mode is determined by the global gui mode
-    of simuPOP (see also ``simuOpt.setOptions``).
+    numbers (e.g. 5 for 50%) under a non-GUI mode (``gui=False``) or not displaying
+    any progress bar if ``gui='batch'``. In the GUI mode, a Tkinter or wxPython 
+    progress dialog will be used (``gui=Tkinter``  or ``gui=wxPython``). The default
+    mode is determined by the global gui mode of simuPOP
+    (see also ``simuOpt.setOptions``).
 
     This class is usually used as follows::
 
@@ -667,6 +668,12 @@ class ProgressBar:
             self.gui = simuOptions['GUI']
         else:
             self.gui = gui
+
+        if self.gui == 'batch':
+            self.update = lambda count=None: None
+            self.done = lambda : None
+            return
+
         if self.gui in ['wxPython', True]:
             try:
                 import wx
@@ -2994,7 +3001,7 @@ class Exporter(PyOperator):
     The Exporter class will make use of a progress bar to show the progress. The
     interface of the progress bar is by default determined by the global GUI status
     but you can also set it to, for example, ``gui=False`` to forcefully use a 
-    text-based progress bar.
+    text-based progress bar, or ``gui='batch'`` to suppress the progress bar.
     '''
     def __init__(self, format, output, begin=0, end=-1, step=1, at=[],
         reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[], gui=None, *args, **kwargs):
