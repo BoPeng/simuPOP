@@ -4506,8 +4506,8 @@ void statEffectiveSize::LDNe(const LDLIST & ld, int cutoff, size_t S, vectorf & 
 		for (size_t i = 0; i < 3; ++i) {
 			res[i] = std::numeric_limits<double>::infinity();
 			res_mono[i] = std::numeric_limits<double>::infinity();
-			return;
 		}
+		return;
 	}
 	r2 /= weight;
 	DBG_DO(DBG_STATOR, cerr << "r2=" << r2 << " wegith=" << weight << endl);
