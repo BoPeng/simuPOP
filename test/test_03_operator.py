@@ -907,6 +907,25 @@ class TestOperator(unittest.TestCase):
         self.assertLessEqual(Functor.instance_count, 1)
         
 
+    def testNonListOpList(self):
+        '''Test if simuPOP accepts list of operators such as tuple, set, and DictKey'''
+        pop = Population(10, loci=2)
+        p1 = InitSex()
+        p2 = InitGenotype(freq=[0.6, 0.4])
+        for ops in [
+            # single
+            p1,
+            # sequence
+            [p1, p2],
+            (p1, p2),
+            # iterator
+            (x for x in [p1, p1, p2]),
+            # set
+            {p1, p2},
+            {'1': p1, '2': p2} .values(),
+        ]:
+            pop.evolve( initOps=ops, gen=1)
+
     def testWrapperOp(self):
         # test memory leak of Function or class that involves self
         # simuPOP automatically clears memory but the first instance

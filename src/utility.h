@@ -1321,6 +1321,9 @@ void * pyIndPointer(PyObject * p);
 void * pyPopPointer(PyObject * p);
 
 /// CPPONLY
+void * pyOpPointer(PyObject * p);
+
+/// CPPONLY
 string shorten(const string & val, size_t length = 40);
 
 // ////////////////////////////////////////////////////////////

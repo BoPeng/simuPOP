@@ -261,6 +261,7 @@ bool BaseOperator::applicableToOffspring(const Population & pop, RawIndIterator 
 	pairu pp = pop.subPopIndPair(offspring - pop.rawIndBegin());
 
 	subPopList subPops = m_subPops.expandFrom(pop);
+
 	subPopList::const_iterator sp = subPops.begin();
 	subPopList::const_iterator spEnd = subPops.end();
 
@@ -273,6 +274,40 @@ bool BaseOperator::applicableToOffspring(const Population & pop, RawIndIterator 
 }
 
 
+opList::opList(PyObject * obj) : m_elems(0)
+{
+	if (!obj)
+		return;
+	void * op = pyOpPointer(obj);
+	// if this is a valid operator
+	if (op)
+		m_elems.push_back(reinterpret_cast<BaseOperator *>(op)->clone());
+	else if (PySequence_Check(obj)) {
+		m_elems.resize(PySequence_Size(obj));
+		// assign values
+		for (size_t i = 0, iEnd = m_elems.size(); i < iEnd; ++i) {
+			PyObject * item = PySequence_GetItem(obj, i);
+			void * op = pyOpPointer(item);
+			DBG_ASSERT(op, ValueError, "Invalid operator passed.");
+			m_elems[i] = reinterpret_cast<BaseOperator *>(op)->clone();
+			Py_DECREF(item);
+		}
+	} else {
+		// anything like set, dict_values, iterator can be retrieved this way.
+		PyObject * iter = PyObject_GetIter(obj);
+		DBG_ASSERT(iter, ValueError, "Invalid operator passed.");
+		PyObject * item = NULL;
+		while (item == PyIter_Next(iter)) {
+			void * op = pyOpPointer(item);
+			DBG_ASSERT(op, ValueError, "Invalid operator passed.");
+			m_elems.push_back(reinterpret_cast<BaseOperator *>(op)->clone());
+			Py_DECREF(item);
+		}
+		Py_DECREF(iter);
+	}
+}
+
+
 opList::opList(const vectorop & ops) : m_elems(0)
 {
 	vectorop::const_iterator it = ops.begin();
@@ -280,12 +315,6 @@ opList::opList(const vectorop & ops) : m_elems(0)
 
 	for (; it != itEnd; ++it)
 		m_elems.push_back((*it)->clone());
-}
-
-
-opList::opList(const BaseOperator & op) : m_elems(0)
-{
-	m_elems.push_back(op.clone());
 }
 
 
@@ -390,9 +419,9 @@ bool Pause::apply(Population & pop) const
 
 
 IfElse::IfElse(PyObject * cond, const opList & ifOps, const opList & elseOps,
-	const stringFunc & output, int begin, int end, int step, const intList & at,
-	const intList & reps, const subPopList & subPops,
-	const stringList & infoFields) :
+               const stringFunc & output, int begin, int end, int step, const intList & at,
+               const intList & reps, const subPopList & subPops,
+               const stringList & infoFields) :
 	BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 	m_cond(PyString_Check(cond) ? PyObj_AsString(cond) : string()),
 	m_func(PyCallable_Check(cond) ? cond : NULL),
@@ -591,9 +620,9 @@ bool TerminateIf::apply(Population & pop) const
 
 
 RevertIf::RevertIf(PyObject * cond, const string & fromPop, const opList & ops,
-	const stringFunc & output, int begin, int end, int step, const intList & at,
-	const intList & reps, const subPopList & subPops,
-	const stringList & infoFields) :
+                   const stringFunc & output, int begin, int end, int step, const intList & at,
+                   const intList & reps, const subPopList & subPops,
+                   const stringList & infoFields) :
 	BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 	m_cond(PyString_Check(cond) ? PyObj_AsString(cond) : string()),
 	m_func(PyCallable_Check(cond) ? cond : NULL),
@@ -672,9 +701,9 @@ bool RevertIf::apply(Population & pop) const
 
 
 DiscardIf::DiscardIf(PyObject * cond, const string & exposeInd,
-	const stringFunc & output, int begin, int end, int step, const intList & at,
-	const intList & reps, const subPopList & subPops,
-	const stringList & infoFields) :
+                     const stringFunc & output, int begin, int end, int step, const intList & at,
+                     const intList & reps, const subPopList & subPops,
+                     const stringList & infoFields) :
 	BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 	m_cond(PyString_Check(cond) ? PyObj_AsString(cond) : string()),
 	m_func(PyCallable_Check(cond) ? cond : NULL),
@@ -908,7 +937,7 @@ bool TicToc::apply(Population & pop) const
 		if (m_counter == m_countPerSec) {
 			m_lastTime = time(NULL);
 			DBG_DO(DBG_OPERATOR, cerr << "Skipped clock check at " <<
-				difftime(m_lastTime, m_startTime) << endl);
+				    difftime(m_lastTime, m_startTime) << endl);
 			m_counter = 0;
 		} else {
 			m_lastTime += static_cast<time_t>(1. / m_countPerSec);
@@ -965,7 +994,7 @@ bool TicToc::applyDuringMating(Population & pop, Population & offPop, RawIndIter
 		if (m_counter == m_countPerSec) {
 			m_lastTime = time(NULL);
 			DBG_DO(DBG_OPERATOR, cerr << "Skipped clock check at " <<
-				difftime(m_lastTime, m_startTime) << endl);
+				    difftime(m_lastTime, m_startTime) << endl);
 			m_counter = 0;
 		} else {
 			m_lastTime += static_cast<time_t>(1. / m_countPerSec);
@@ -1000,9 +1029,9 @@ bool TicToc::applyDuringMating(Population & pop, Population & offPop, RawIndIter
 
 
 PyOperator::PyOperator(PyObject * func, PyObject * param,
-	int begin, int end, int step, const intList & at,
-	const intList & reps, const subPopList & subPops,
-	const stringList & infoFields) :
+                       int begin, int end, int step, const intList & at,
+                       const intList & reps, const subPopList & subPops,
+                       const stringList & infoFields) :
 	BaseOperator(">", begin, end, step, at, reps, subPops, infoFields),
 	m_func(func), m_param(param, true)
 {

@@ -219,6 +219,7 @@ extern const unsigned long MaxRandomNumber;
 
 #define PopSWIGType "simuPOP::Population *"
 #define IndSWIGType "simuPOP::Individual *"
+#define OpSWIGType "simuPOP::BaseOperator *"
 
 // For genotypic structure
 enum Sex {

@@ -149,7 +149,7 @@ public:
 	 *    this parameter.
 	 */
 	BaseOperator(const stringFunc & output, int begin, int end, int step, const intList & at,
-		const intList & reps, const subPopList & subPops, const stringList & infoFields) :
+	             const intList & reps, const subPopList & subPops, const stringList & infoFields) :
 		m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at.elems()),
 		m_flags(0), m_reps(reps), m_subPops(subPops),
 		m_ostream(output.value(), output.func(), output.mode()), m_infoFields(infoFields)
@@ -204,7 +204,8 @@ public:
 	{
 		return m_infoFields.elems(trait).size();
 	}
-	
+
+
 	/// get the information field specified by user (or by default)
 	/// CPPONLY
 	string infoField(size_t idx, const GenoStruTrait * trait = NULL) const
@@ -365,9 +366,10 @@ public:
 	typedef vectorop::const_iterator const_iterator;
 
 public:
-	opList(const vectorop & ops = vectorop());
+	opList(PyObject * obj = NULL);
 
-	opList(const BaseOperator & op);
+	/// CPPONLY
+	opList(const vectorop & ops);
 
 	/// CPPONLY
 	opList(const opList & rhs);
@@ -452,10 +454,10 @@ public:
 	 *  specified in parameter \e stopOnKeyStroke.
 	 */
 	Pause(char stopOnKeyStroke = false, bool prompt = true,
-		const stringFunc & output = ">",
-		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
-		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = vectorstr()) :
+	      const stringFunc & output = ">",
+	      int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+	      const intList & reps = intList(), const subPopList & subPops = subPopList(),
+	      const stringList & infoFields = vectorstr()) :
 		BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 		m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke)
 	{
@@ -500,8 +502,8 @@ public:
 	/** Create a \c NoneOp.
 	 */
 	NoneOp(const stringFunc & output = ">",
-		int begin = 0, int end = 0, int step = 1, const intList & at = vectori(),
-		const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
+	       int begin = 0, int end = 0, int step = 1, const intList & at = vectori(),
+	       const intList & reps = intList(), const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
 		BaseOperator("", begin, end, step, at, reps, subPops, infoFields)
 	{
 		(void)output;  // avoid warning about unused parameter
@@ -638,9 +640,9 @@ public:
 	 *  number, proceeded with an optional \e message.
 	 */
 	TerminateIf(string condition = string(), bool stopAll = false, string message = string(),
-		const stringFunc & output = "", int begin = 0, int end = -1,
-		int step = 1, const intList & at = vectori(), const intList & reps = intList(),
-		const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
+	            const stringFunc & output = "", int begin = 0, int end = -1,
+	            int step = 1, const intList & at = vectori(), const intList & reps = intList(),
+	            const subPopList & subPops = subPopList(), const stringList & infoFields = vectorstr()) :
 		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_expr(condition), m_stopAll(stopAll), m_message(message)
 	{
@@ -826,9 +828,9 @@ public:
 	 *  operator is applied.
 	 */
 	TicToc(const stringFunc & output = ">", const double stopAfter = 0,
-		int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
-		const intList & reps = intList(), const subPopList & subPops = subPopList(),
-		const stringList & infoFields = vectorstr()) :
+	       int begin = 0, int end = -1, int step = 1, const intList & at = vectori(),
+	       const intList & reps = intList(), const subPopList & subPops = subPopList(),
+	       const stringList & infoFields = vectorstr()) :
 		BaseOperator(output, begin, end, step, at, reps, subPops, infoFields),
 		m_stopAfter(stopAfter), m_startTime(0), m_lastTime(0),
 		m_totalCount(0), m_countPerSec(0), m_counter(0)

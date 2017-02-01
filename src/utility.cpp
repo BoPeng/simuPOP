@@ -2533,7 +2533,7 @@ void SharedVariables::from_pickle(const string & vars)
 // DO NOT OWN the dictionaries
 SharedVariables g_main_vars, g_module_vars;
 
-swig_type_info * g_swigPopType, * g_swigIndividual;
+swig_type_info * g_swigPopType, * g_swigIndividual, * g_swigOpType;
 
 SharedVariables & mainVars()
 {
@@ -2567,6 +2567,14 @@ void * pyIndPointer(PyObject * obj)
 	return ptr;
 }
 
+
+void * pyOpPointer(PyObject * obj)
+{
+	void * ptr = 0;
+
+	SWIG_Python_ConvertPtr(obj, &ptr, g_swigOpType, 0);
+	return ptr;
+}
 
 void * pyPopPointer(PyObject * obj)
 {
@@ -4974,11 +4982,11 @@ bool initialize(PyObject * module)
 
 	// get population and Individual type pointer
 	g_swigPopType = SWIG_TypeQuery(PopSWIGType);
+	g_swigOpType = SWIG_TypeQuery(OpSWIGType);
 	g_swigIndividual = SWIG_TypeQuery(IndSWIGType);
 	//
-	// g_swigOperator = SWIG_TypeQuery(OperatorSWIGType);
-	if (g_swigPopType == NULL || g_swigIndividual == NULL)
-		throw SystemError("Can not get population and Individual type pointer, your SWIG version may be run.");
+	if (g_swigPopType == NULL || g_swigIndividual == NULL || g_swigOpType == NULL)
+		throw SystemError("Can not get population, Individual, or Operator type pointer, your SWIG version may be wrong.");
 
 	// load carray function and type
 	if (initCustomizedTypes(module) < 0)
