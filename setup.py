@@ -344,7 +344,6 @@ HEADER_FILES = [
     'tagger.h',
     'pedigree.h',
     'virtualSubPop.h',
-    'sandbox.h',
 ]
 
 SOURCE_FILES = [
@@ -367,7 +366,6 @@ SOURCE_FILES = [
     'tagger.cpp',
     'pedigree.cpp',
     'virtualSubPop.cpp',
-    'sandbox.cpp',
 #    'main.cpp',
 ]
 
@@ -899,9 +897,7 @@ if __name__ == '__main__':
             'simuPOP.gsl',
             'simuPOP.utils', 
             'simuPOP.demography', 
-            'simuPOP.plotter', 
             'simuPOP.sampling', 
-            'simuPOP.sandbox',
         ] + ['simuPOP.simuPOP_%s' % x for x in MODULES],
         ext_modules = EXT_MODULES,
         cmdclass = {'build_py': build_py},

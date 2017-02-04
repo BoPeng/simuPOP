@@ -1159,13 +1159,6 @@ simuPOPSNPMutatorRef
 simuPOPAcgtMutatorRef
 \end_layout
 
-\begin_layout Plain Layout
-
-
-\backslash
-RevertFixedSitesRef
-\end_layout
-
 \end_inset
 
 
@@ -1440,13 +1433,6 @@ IfElseRef
 
 \backslash
 TerminateIfRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-RevertIfRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1787,153 +1773,6 @@ simuOptRef
 simuOptsetOptionsRef
 \end_layout
 
-\begin_layout Plain Layout
-
-
-\backslash
-simuOptParamsRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuOptparamRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuOptvalueNotRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuOptvalueOrRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuOptvalueAndRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuOptvalueOneOfRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuOptvalueTrueFalseRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuOptvalueBetweenRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuOptvalueGTRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuOptvalueGERef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuOptvalueLTRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuOptvalueLERef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuOptvalueEqualRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuOptvalueNotEqualRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuOptvalueIsNumRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuOptvalueIsIntegerRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuOptvalueIsListRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuOptvalueListOfRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuOptvalueSumToRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuOptvalueValidDirRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuOptvalueValidFileRef
-\end_layout
-
 \end_inset
 
 
@@ -2172,42 +2011,6 @@ simuPOPdemographySettlementOfNewWorldModelRef
 
 \backslash
 simuPOPdemographyCosiModelRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Module 
-\family typewriter
-simuPOP.plotter
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPplotterRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPplotterVarPlotterRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPplotterScatterPlotterRef
 \end_layout
 
 \end_inset
