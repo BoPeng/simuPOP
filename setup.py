@@ -58,7 +58,6 @@ if sys.version_info[0] <= 2 and sys.version_info[1] <= 4:
     print("simuPOP supports Python version 2.5 or higher, including Python 3.x. Please upgrade your Python installation and try again.")
     sys.exit(1)
 
-PY3 = sys.version_info[0] == 3
 
 # Change this to False if you would like to compile simuPOP without openMP support
 USE_OPENMP = True
@@ -148,14 +147,9 @@ def windows_compile_parallel(
 
 
 if os.name == 'nt':
-    if PY3:
-        VS10PATH =  os.environ.get('VS100COMNTOOLS')
-        if VS10PATH is None or not os.path.isfile(VS10PATH.replace('Common7\\Tools\\','VC\\lib\\vcomp.lib')):
-            USE_OPENMP = False
-    else:
-        VS9PATH =  os.environ.get('VS90COMNTOOLS')
-        if VS9PATH is None or not os.path.isfile(VS9PATH.replace('Common7\\Tools\\','VC\\lib\\vcomp.lib')):
-            USE_OPENMP = False
+    VS10PATH =  os.environ.get('VS100COMNTOOLS')
+    if VS10PATH is None or not os.path.isfile(VS10PATH.replace('Common7\\Tools\\','VC\\lib\\vcomp.lib')):
+        USE_OPENMP = False
     #
     import distutils.msvccompiler
     import distutils.msvc9compiler
@@ -216,10 +210,7 @@ if boost_dir == '':
             sys.stdout.write('.' * (perc - downloadProgress.counter))
             downloadProgress.counter = perc
         sys.stdout.flush()
-    if PY3:
-        from urllib.request import urlretrieve
-    else:
-        from urllib import urlretrieve
+    from urllib.request import urlretrieve
     import tarfile
     downloadProgress.counter = 0
     try:
@@ -523,12 +514,8 @@ if os.name == 'nt':
     ])
 
 
-SWIG_CPP_FLAGS = '-O -templatereduce -shadow -python -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525 -Ibuild'
-SWIG_CC_FLAGS = '-python -keyword'
-
-if sys.version_info[0] == 3:
-    SWIG_CPP_FLAGS += ' -py3'
-    SWIG_CC_FLAGS += ' -py3'
+SWIG_CPP_FLAGS = '-O -templatereduce -shadow -python -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525 -Ibuild -py3'
+SWIG_CC_FLAGS = '-python -keyword -py3'
 
 SWIG_RUNTIME_FLAGS = '-python -external-runtime'
 # python setup.py reads py_modules from src so we have to produce simuPOP_std.py
@@ -634,11 +621,8 @@ if os.name == 'nt':
     # zdll.lib is under win32
     common_library_dirs.append('development/win32')
     common_extra_link_args = []
-    if PY3:
-        # Python3 uses VC 2010, which has stdint
-        common_extra_include_dirs = ['development/win32/zlib-1.2.3']
-    else:
-        common_extra_include_dirs = ['development/win32', 'development/win32/zlib-1.2.3']
+    # Python3 uses VC 2010, which has stdint
+    common_extra_include_dirs = ['development/win32/zlib-1.2.3']
     # msvc does not have O3 option, /GR is to fix a C4541 warning
     # /EHsc is for VC exception handling,
     # /wd4819 disables warning messages for non-unicode character in boost/uitlity/enable_if.hpp
@@ -883,7 +867,6 @@ if __name__ == '__main__':
             'Natural Language :: English',
             'Operating System :: OS Independent',
             'Programming Language :: C++',
-            'Programming Language :: Python',
             'Programming Language :: Python :: 3',
             'Topic :: Scientific/Engineering :: Bio-Informatics',
         ],
