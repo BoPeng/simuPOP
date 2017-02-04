@@ -297,7 +297,6 @@ __all__ = [
     # modules are not loaded by default because they require rpy or matplotlib
     #
     #'utils',
-    #'plotter',
     #'sampling',
 ]
 
