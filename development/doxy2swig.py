@@ -33,7 +33,7 @@ are where the output interface and latex files will be written.
 
 
 from xml.dom import minidom
-import re, textwrap, sys, types, os.path, sets, inspect
+import re, textwrap, sys, types, os.path, inspect
 from pydoc import *
 
 from docutils import core
@@ -204,12 +204,12 @@ class Doxy2SWIG:
         """Adds text corresponding to `value` into `self.content`."""
         # each argument is a list
         if self.curField == 'Arguments':
-            if type(value) in (types.ListType, types.TupleType):
+            if type(value) in (list, tuple):
                 self.content[-1][self.curField][-1]['Description'] += ' '.join(value)
             else:
                 self.content[-1][self.curField][-1]['Description'] += value
         else:
-            if type(value) in (types.ListType, types.TupleType):
+            if type(value) in (list, tuple):
                 self.content[-1][self.curField] += ' '.join(value)
             else:
                 self.content[-1][self.curField] += value
@@ -291,16 +291,16 @@ class Doxy2SWIG:
         kind = node.attributes['kind'].value
         if kind in ('class', 'struct'):
             prot = node.attributes['prot'].value
-            if prot <> 'public':
+            if prot != 'public':
                 return
             names = ('compoundname', 'briefdescription',
                      'detaileddescription', 'includes')
             first = self.get_specific_nodes(node, names)
             for n in names:
-                if first.has_key(n):
+                if n in first:
                     self.parse(first[n])
             for n in node.childNodes:
-                if n not in first.values():
+                if n not in list(first.values()):
                     self.parse(n)
         elif kind in ('file', 'namespace'):
             nodes = node.getElementsByTagName('sectiondef')
@@ -314,7 +314,7 @@ class Doxy2SWIG:
     def do_parameterlist(self, node):
         if( node.hasChildNodes):
              self.curField = 'Arguments'
-             if not self.content[-1].has_key('Arguments'):
+             if 'Arguments' not in self.content[-1]:
                  self.content[-1]['Arguments'] = []
              self.parse_childnodes(node)
         self.curField = 'Details'
@@ -337,7 +337,7 @@ class Doxy2SWIG:
 
     def do_detaileddescription(self, node):
         self.curField = 'Details'
-        if not self.content[-1].has_key('Details'):
+        if 'Details' not in self.content[-1]:
             self.content[-1]['Details'] = ''
         self.parse_childnodes(node)
 
@@ -389,7 +389,7 @@ class Doxy2SWIG:
                     self.curField = 'Usage'
                 else:
                     self.content.append({'Name': name})
-                    print "Content type unknown??? ", name
+                    print("Content type unknown??? ", name)
                     self.content[-1]['Usage'] = ''
                     self.curField = 'Usage'
                     self.add_text( defn.split(' ')[-1] )
@@ -414,7 +414,7 @@ class Doxy2SWIG:
                     self.add_text( self.swig_text( defName, 0, 0 ) )
 
             for n in node.childNodes:
-                if n not in first.values():
+                if n not in list(first.values()):
                     self.parse(n)
 
 
@@ -529,7 +529,7 @@ class Doxy2SWIG:
             fname = refid + '.xml'
             if not os.path.exists(fname):
                 fname = os.path.join(self.my_dir, fname)
-            print "parsing file: %s" % fname
+            print("parsing file: %s" % fname)
             #try:
             p = Doxy2SWIG(fname)
             p.generate()
@@ -543,27 +543,27 @@ class Doxy2SWIG:
         def myhash(entry):
             'encode an entry to a string for easy comparison'
             ret = entry['Name']
-            if entry.has_key('Description'):
+            if 'Description' in entry:
                 ret += entry['Description']
-            if entry.has_key('Details'):
+            if 'Details' in entry:
                 ret += entry['Details']
             return ret
         seen = []
         self.content = [x for x in self.content if not (myhash(x) in seen or seen.append(myhash(x)))]
-        print "Unique entries: ", len(self.content)
+        print("Unique entries: ", len(self.content))
         #
         for entry in self.content:
             # latex names cannot have _ or number (for all_ind, getInfo2 etc)
             entry['Name'] = entry['Name'].replace('_', '').replace('2','two').replace('3', 'three').replace('0', 'zero').replace('9', 'nine')
-            if (entry.has_key('Details') and '<group>' in entry['Details']):
+            if ('Details' in entry and '<group>' in entry['Details']):
                 piece1 = entry['Details'].split('<group>')
                 try:
                     piece2 = piece1[1].split('</group>')
                     entry['Details'] = piece1[0] + piece2[1]
                 except:
-                    print 'WRONG GROUP INFORMATION: ', entry['Name'], entry['Details']
+                    print('WRONG GROUP INFORMATION: ', entry['Name'], entry['Details'])
                 entry['group'] = piece2[0].strip()
-            elif (entry.has_key('Description') and '<group>' in entry['Description']):
+            elif ('Description' in entry and '<group>' in entry['Description']):
                 piece1 = entry['Description'].split('<group>')
                 piece2 = piece1[1].split('</group>')
                 entry['Description'] = piece1[0] + piece2[1]
@@ -571,26 +571,26 @@ class Doxy2SWIG:
             else:
                 entry['group'] = ''
             #
-            if not entry.has_key('Doc'):
+            if 'Doc' not in entry:
                 entry['Doc'] = ''
-                if entry.has_key('Description') and entry['Description'] != '':
+                if 'Description' in entry and entry['Description'] != '':
                     entry['Doc'] += entry['Description']
-                if entry.has_key('Details') and entry['Details'] != '':
+                if 'Details' in entry and entry['Details'] != '':
                     entry['Doc'] += entry['Details']
             #
             if entry['Doc'] == '':
-                print('Warning: No documentation for ', entry['Name'])
+                print(('Warning: No documentation for ', entry['Name']))
                 entry['Doc'] = 'FIXME: No document'
             #
             entry['ignore'] = 'CPPONLY' in entry['Doc']
             entry['hidden'] = 'HIDDEN' in entry['Doc']
             #
             if entry['ignore'] and '~' in entry['Name']:
-                print "Desctructor of %s has CPPONLY. Please correct it." % entry['Name']
+                print("Desctructor of %s has CPPONLY. Please correct it." % entry['Name'])
                 sys.exit(1)
         # handle Examples
         for entry in self.content:
-            if entry.has_key('Examples') and entry['Examples'].strip() != '':
+            if 'Examples' in entry and entry['Examples'].strip() != '':
                 # get file name
                 filename = entry['Examples'][4:]
                 title = ''
@@ -617,73 +617,73 @@ class Doxy2SWIG:
                 except:
                     entry['ExampleFile'] = None
                     entry['ExampleTitle'] = title
-                    print "File " + filename + " does not exist\n"
+                    print("File " + filename + " does not exist\n")
 
     def post_process(self):
         # remove duplicate entry
         # They might be introduced if a function is list both under 'file' and under 'namespace'
         # Add additional entries manually
         self.content.extend([
-            {'Name': u'simuPOP::Population::dvars',
-             'type': u'memberofclass_simuPOP::Population',
+            {'Name': 'simuPOP::Population::dvars',
+             'type': 'memberofclass_simuPOP::Population',
              'Description': '',
-             'Details': ur'<group>9-var1</group>' \
+             'Details': r'<group>9-var1</group>' \
                 'Return a wrapper of Python dictionary returned by <tt>vars(subPop)</tt> ' \
                 'so that dictionary keys can be accessed as attributes.',
-             'cppArgs': u'(vspID subPop=[])',
-             'Usage': u'x.dvars(subPop=[])',
+             'cppArgs': '(vspID subPop=[])',
+             'Usage': 'x.dvars(subPop=[])',
              },
-            {'Name': u'simuPOP::Simulator::dvars',
-             'type': u'memberofclass_simuPOP::Simulator',
+            {'Name': 'simuPOP::Simulator::dvars',
+             'type': 'memberofclass_simuPOP::Simulator',
              'Description': '',
-             'Details': ur'<group>9-var1</group>' \
+             'Details': r'<group>9-var1</group>' \
                 'Return a wrapper of Python dictionary returned by <tt>vars(rep, subPop)</tt> ' \
                 'so that dictionary keys can be accessed as attributes.',
-             'cppArgs': u'(int rep, vspID subPop=[])',
-             'Usage': u'x.dvars(rep, subPop=[])',
+             'cppArgs': '(int rep, vspID subPop=[])',
+             'Usage': 'x.dvars(rep, subPop=[])',
             }
         ])
-        print "Number of entries: ", len(self.content)
+        print("Number of entries: ", len(self.content))
         self.fix_entries()
         #
-        self.content.sort(lambda x, y: x['Name'] > y['Name'])
+        self.content.sort(key=lambda x: x['Name'])
 
     def write_swig(self, out):
         for entry in self.content:
             if entry['ignore']:
-                if entry.has_key('cppArgs'):
-                    print >> out, '%%ignore %s%s;\n' % (entry['Name'], entry['cppArgs'].strip())
+                if 'cppArgs' in entry:
+                    print('%%ignore %s%s;\n' % (entry['Name'], entry['cppArgs'].strip()), file=out)
                 else:
-                    print >> out, '%%ignore %s;\n' % entry['Name'].strip()
+                    print('%%ignore %s;\n' % entry['Name'].strip(), file=out)
                 continue
             if entry['hidden']:
-                print >> out, '%%feature("docstring") %s "Obsolete or undocumented function."\n' % entry['Name']
+                print('%%feature("docstring") %s "Obsolete or undocumented function."\n' % entry['Name'], file=out)
                 continue
-            print >> out, '%%feature("docstring") %s "\n' % entry['Name']
-            if entry.has_key('Description') and entry['Description'] != '':
-                print >> out, 'Description:'
-                print >> out, '\n    %s\n' % self.swig_text(entry['Description'], 0, 4)
-            if entry.has_key('Usage') and entry['Usage'] != '':
-                print >> out, 'Usage:'
-                print >> out, '\n    %s\n' % self.swig_text(entry['Usage'], 0, 6)
-            if entry.has_key('Details') and entry['Details'] != '':
-                print >> out, 'Details:'
-                print >> out, '\n    %s\n' % self.swig_text(entry['Details'], 0, 4)
-            if entry.has_key('Arguments') and entry['Arguments'] != '':
-                print >> out, 'Arguments:\n'
+            print('%%feature("docstring") %s "\n' % entry['Name'], file=out)
+            if 'Description' in entry and entry['Description'] != '':
+                print('Description:', file=out)
+                print('\n    %s\n' % self.swig_text(entry['Description'], 0, 4), file=out)
+            if 'Usage' in entry and entry['Usage'] != '':
+                print('Usage:', file=out)
+                print('\n    %s\n' % self.swig_text(entry['Usage'], 0, 6), file=out)
+            if 'Details' in entry and entry['Details'] != '':
+                print('Details:', file=out)
+                print('\n    %s\n' % self.swig_text(entry['Details'], 0, 4), file=out)
+            if 'Arguments' in entry and entry['Arguments'] != '':
+                print('Arguments:\n', file=out)
                 for arg in entry['Arguments']:
-                    print >> out, '    %-16s%s' % (arg['Name']+':', self.swig_text(arg['Description'], 0, 20))
-                print >> out
-            if entry.has_key('note') and entry['note'] != '':
-                print >> out, 'Note:'
-                print >> out, '\n    %s\n' % self.swig_text(entry['note'], 0, 4)
-            if entry.has_key('Examples') and entry['Examples'] != '':
-                print >> out, 'Example:'
-                print >> out, '\n%s\n' % entry['Examples'].replace('\\', r'\\\\').replace('"', r'\"')
+                    print('    %-16s%s' % (arg['Name']+':', self.swig_text(arg['Description'], 0, 20)), file=out)
+                print(file=out)
+            if 'note' in entry and entry['note'] != '':
+                print('Note:', file=out)
+                print('\n    %s\n' % self.swig_text(entry['note'], 0, 4), file=out)
+            if 'Examples' in entry and entry['Examples'] != '':
+                print('Example:', file=out)
+                print('\n%s\n' % entry['Examples'].replace('\\', r'\\\\').replace('"', r'\"'), file=out)
             #if len(str) > 2048:
             #    #print 'Entry %s is too long (%d)' % (entry['Name'], len(str))
             #    str = str[0:1970] + '...' + '\n\nPlease refer to the reference manual for more details.\n\n'
-            print >> out, '\"; \n'
+            print('\"; \n', file=out)
 
 
     def replacePythonConstants(self, text):
@@ -701,8 +701,8 @@ class Doxy2SWIG:
             for ms in ['MatingScheme']:
                 text = text.replace('matingScheme=%s' % eval('sim.' + ms+'()'),
                     'matingScheme=%s' % (ms+'()'))
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
             pass
         return text
 
@@ -712,16 +712,18 @@ class Doxy2SWIG:
         # load module
         try:
             # resolve is defined in pydoc
+            from pydoc import resolve
             object, name = resolve(module, True)
-            print 'Scanning module %s' % module
+            print('Scanning module %s' % module)
             #exec('import ' + module)
-        except Exception, e:
-            print "Module %s failed to load. It is description is not documented." % module
-            print "Please compile simuPOP and rerun this program"
-            print
-            print e
+        except Exception as e:
+            print("Module %s failed to load. It is description is not documented." % module)
+            print("Please compile simuPOP and rerun this program")
+            print()
+            print(e)
             return
         #object = eval(module)
+        from pydoc import splitdoc, getdoc, visiblename
         synop, desc = splitdoc(getdoc(object))
         self.content.append({'type': 'docofmodule_' + module, 
             'Name': module, 'ignore': False, 'hidden': False, 'module': module})
@@ -741,7 +743,7 @@ class Doxy2SWIG:
                 try:
                     args, varargs, varkw, defaults = inspect.getargspec(value.__init__)
                 except:
-                    print('Failed to get args for {}'.format(value.__init__))
+                    print(('Failed to get args for {}'.format(value.__init__)))
                     self.content.pop()
                     continue
                 self.content[-1]['Usage'] = key + inspect.formatargspec(
@@ -793,8 +795,8 @@ class Doxy2SWIG:
                 self.uniqueName.append(uname)
                 break
         if uname is None:
-            print name, ' has too many overload names!'
-            print self.uniqueName
+            print(name, ' has too many overload names!')
+            print(self.uniqueName)
             sys.exit(0)
         return uname.replace(':', '').replace('~', 'tld').replace('_', 'us').replace('0', 'o').replace('1', 'l').replace('2', 'z')
 
@@ -852,7 +854,7 @@ class Doxy2SWIG:
         # some versions of textutil adds this automatically, which is a pain.
         txt = txt.replace(r'\setlength{\locallinewidth}{\linewidth}', '')
         if 'unexpected unindent' in txt:
-            print text
+            print(text)
             return ''
         else:
             return txt.lstrip()
@@ -891,33 +893,33 @@ class Doxy2SWIG:
         for entry in [x for x in self.content if x['type'] == 'global_function' and not x['ignore'] and not x['hidden'] \
                 and 'test' not in x['Name']]:
             funcname = self.latexName(entry['Name'].replace('simuPOP::', '', 1))
-            print >> out, '\\newcommand{\\%sRef}{' % funcname
-            print >> out, '\n\\subsection{Function \\texttt{%s}\index{%s}}' % (funcname, funcname)
-            if entry.has_key('Usage') and entry['Usage'] != '':
+            print('\\newcommand{\\%sRef}{' % funcname, file=out)
+            print('\n\\subsection{Function \\texttt{%s}\index{%s}}' % (funcname, funcname), file=out)
+            if 'Usage' in entry and entry['Usage'] != '':
                 func_name = entry['Usage'].split('(')[0]
                 func_body = entry['Usage'][len(func_name):].lstrip('(').rstrip(')')
-                print >> out, '\\par\n\\begin{funcdesc}{%s}{%s}\n\\par' % \
-                    (self.latex_text(func_name), self.latex_text(func_body))
+                print('\\par\n\\begin{funcdesc}{%s}{%s}\n\\par' % \
+                    (self.latex_text(func_name), self.latex_text(func_body)), file=out)
             else:
-                print >> out, '\\par\n\\begin{funcdesc}{%s}{}\n\\par' % funcname
+                print('\\par\n\\begin{funcdesc}{%s}{}\n\\par' % funcname, file=out)
             if entry['Doc'] == '':
-                print('Warning: no documentation for ', entry['Name'])
-                print >> out, r'FIXME: No document.\par'
+                print(('Warning: no documentation for ', entry['Name']))
+                print(r'FIXME: No document.\par', file=out)
             else:
-                print >> out, r'\MakeUppercase %s\par' % self.latex_text(entry['Doc'])
-            if entry.has_key('Arguments') and entry['Arguments'] != '':
+                print(r'\MakeUppercase %s\par' % self.latex_text(entry['Doc']), file=out)
+            if 'Arguments' in entry and entry['Arguments'] != '':
                 for arg in entry['Arguments']:
-                    print >> out, r'{\leftskip 0.3in \parindent=-0.3in \emph{%s: }\MakeUppercase %s\par}' \
-                        % (self.latex_text(arg['Name']), self.latex_text(arg['Doc']))
-            if entry.has_key('note') and entry['note'] != '':
-                print >> out, '\\par\n\\strong{Note: }'
-                print >> out, '    %s\n' % self.latex_text(entry['note'])
-            if entry.has_key('ExampleFile') and entry['ExampleFile'] is not None:
+                    print(r'{\leftskip 0.3in \parindent=-0.3in \emph{%s: }\MakeUppercase %s\par}' \
+                        % (self.latex_text(arg['Name']), self.latex_text(arg['Doc'])), file=out)
+            if 'note' in entry and entry['note'] != '':
+                print('\\par\n\\strong{Note: }', file=out)
+                print('    %s\n' % self.latex_text(entry['note']), file=out)
+            if 'ExampleFile' in entry and entry['ExampleFile'] is not None:
                 label = os.path.split(cons['ExampleFile'])[-1].split('_')[-1]
                 title = self.latex_text(cons['ExampleTitle'])
-                print >> out, '\\lstinputlisting[caption={%s},label={%s}]{%s}' % \
-                    (title, label, entry['ExampleFile'].replace('\\', '/'))
-            print >> out, '\\end{funcdesc}\n}\n'
+                print('\\lstinputlisting[caption={%s},label={%s}]{%s}' % \
+                    (title, label, entry['ExampleFile'].replace('\\', '/')), file=out)
+            print('\\end{funcdesc}\n}\n', file=out)
         # then python modules
         modules = set(
             [x['module'] for x in self.content if (x['type'].startswith('module') or x['type'].startswith('docofmodule')) \
@@ -926,163 +928,163 @@ class Doxy2SWIG:
             # module functions
             #mod = [x for x in self.content if x['type'] == 'docofmodule_' + module][0]
 
-            print >> out, '\\newcommand{\\%sRef}{\\index{%s}' % (module.replace('.', ''), module)
+            print('\\newcommand{\\%sRef}{\\index{%s}' % (module.replace('.', ''), module), file=out)
             doc = [x['Doc'] for x in self.content if x['type'] == 'docofmodule_' + module][0]
-            print >> out, self.latex_formatted_text(doc)
-            print >> out, '}\n'
+            print(self.latex_formatted_text(doc), file=out)
+            print('}\n', file=out)
 
             # module functions
             funcs = [x for x in self.content if x['type'] == 'module_func' and x['module'] == module and not x['ignore'] and not x['hidden']]
             # sort it
-            funcs.sort(lambda x, y: cmp(x['Name'], y['Name']))
+            funcs.sort(key=lambda x: x['Name'])
             # print all functions
             #print >> out, '\\begin{description}'
             for mem in funcs:
-                print >> out, '\\newcommand{\\%s%sRef}{\\index{%s!%s}' % (module.replace('.',''), mem['Name'], module, mem['Name'])
-                print >> out, '\n\\subsection{Function \\texttt{%s}\index{%s}}' % (mem['Name'], mem['Name'])
-                if mem.has_key('Usage') and mem['Usage'] != '':
+                print('\\newcommand{\\%s%sRef}{\\index{%s!%s}' % (module.replace('.',''), mem['Name'], module, mem['Name']), file=out)
+                print('\n\\subsection{Function \\texttt{%s}\index{%s}}' % (mem['Name'], mem['Name']), file=out)
+                if 'Usage' in mem and mem['Usage'] != '':
                     func_name = mem['Usage'].split('(')[0]
                     func_body = mem['Usage'][len(func_name):].lstrip('(').rstrip(')')
-                    print >> out, '\\begin{funcdesc}{%s}{%s}\n' % (self.latex_text(func_name),
-                        self.latex_text(func_body))
+                    print('\\begin{funcdesc}{%s}{%s}\n' % (self.latex_text(func_name),
+                        self.latex_text(func_body)), file=out)
                 else:
-                    print >> out, '\\begin{funcdesc}{%s}{}\n' % mem['Name']
-                print >> out, r' %s' % self.latex_formatted_text(mem['Doc'])
-                if mem.has_key('note') and mem['note'] != '':
-                    print >> out, '\\par\n\\strong{Note: }%s\\par' % self.latex_text(mem['note'])
-                print >> out, '\\end{funcdesc}\n}\n'
+                    print('\\begin{funcdesc}{%s}{}\n' % mem['Name'], file=out)
+                print(r' %s' % self.latex_formatted_text(mem['Doc']), file=out)
+                if 'note' in mem and mem['note'] != '':
+                    print('\\par\n\\strong{Note: }%s\\par' % self.latex_text(mem['note']), file=out)
+                print('\\end{funcdesc}\n}\n', file=out)
             # module classes
             classes = [x for x in self.content if x['type'] == 'module_class' and x['module'] == module and not x['ignore'] and not x['hidden']]
             # sort it
-            classes.sort(lambda x, y: cmp(x['Name'], y['Name']))
+            classes.sort(key=lambda x: x['Name'])
             # print all functions
             for cls in classes:
-                print >> out, '\\newcommand{\\%s%sRef}{' % (module.replace('.', ''), cls['Name'])
-                print >> out, '\n\\subsection{Class \\texttt{%s}\index{module!%s}' % (cls['Name'], cls['Name'])
-                print >> out, '}\n'
-                print >> out, r' %s' % self.latex_formatted_text(cls['Doc'])
-                if cls.has_key('Usage') and cls['Usage'] != '':
+                print('\\newcommand{\\%s%sRef}{' % (module.replace('.', ''), cls['Name']), file=out)
+                print('\n\\subsection{Class \\texttt{%s}\index{module!%s}' % (cls['Name'], cls['Name']), file=out)
+                print('}\n', file=out)
+                print(r' %s' % self.latex_formatted_text(cls['Doc']), file=out)
+                if 'Usage' in cls and cls['Usage'] != '':
                     func_name = cls['Usage'].split('(')[0]
                     func_body = cls['Usage'][len(func_name):].lstrip('(').rstrip(')')
-                    print >> out, '\\begin{classdesc}{%s}{%s}\n' % (self.latex_text(func_name),
-                        self.latex_text(func_body))
+                    print('\\begin{classdesc}{%s}{%s}\n' % (self.latex_text(func_name),
+                        self.latex_text(func_body)), file=out)
                 else:
-                    print >> out, '\\begin{classdesc}{%s}{}\n' % cls['Name']
-                print >> out, self.latex_formatted_text(cls['InitDoc'])
-                if not cls.has_key('Members') or len(cls['Members']) == 0:
-                    print >> out, '\\end{classdesc}\n}\n'
+                    print('\\begin{classdesc}{%s}{}\n' % cls['Name'], file=out)
+                print(self.latex_formatted_text(cls['InitDoc']), file=out)
+                if 'Members' not in cls or len(cls['Members']) == 0:
+                    print('\\end{classdesc}\n}\n', file=out)
                     continue
                 else:
-                    print >> out, '\\par\n\\vspace{3pt}\\par\n'
+                    print('\\par\n\\vspace{3pt}\\par\n', file=out)
                 for mem in cls['Members']:
                     if mem['Doc'] == '':
                         continue
                     usage = self.latex_text(mem['Usage'])
                     usageName = usage.split('(')[0]
                     usageParam = usage[len(usageName):].lstrip('(').rstrip(')')
-                    print >> out, r'\begin{methoddesc}{%s}{%s}' % (usageName, usageParam)
+                    print(r'\begin{methoddesc}{%s}{%s}' % (usageName, usageParam), file=out)
                     if mem['Doc'] != '':
-                        print >> out, '\n\\vspace{3pt} \\MakeUppercase %s\\par\n' % self.latex_formatted_text(mem['Doc'])
+                        print('\n\\vspace{3pt} \\MakeUppercase %s\\par\n' % self.latex_formatted_text(mem['Doc']), file=out)
                     else:
-                        print >> out, '\\hspace{0pt}\\par\n'
-                    print >> out, '\\end{methoddesc}\n'
-                print >> out, '\\end{classdesc}\n}\n'
+                        print('\\hspace{0pt}\\par\n', file=out)
+                    print('\\end{methoddesc}\n', file=out)
+                print('\\end{classdesc}\n}\n', file=out)
         # then classes
         for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore'] and not x['hidden']]:
-            print >> out, '\\newcommand{\\%sRef}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1).replace('.', ''))
+            print('\\newcommand{\\%sRef}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1).replace('.', '')), file=out)
             classname = self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
-            print >> out, '\n\\subsection{Class \\texttt{%s}\\index{class!%s}}\n' % (classname, classname)
-            print >> out, '\\par \\MakeUppercase %s' % self.latex_text(entry['Doc'])
-            if entry.has_key('note') and entry['note'] != '':
-                print >> out, '\\par\n\\strong{Note: }\n\\par'
-                print >> out, '%s' % self.latex_text(entry['note'])
+            print('\n\\subsection{Class \\texttt{%s}\\index{class!%s}}\n' % (classname, classname), file=out)
+            print('\\par \\MakeUppercase %s' % self.latex_text(entry['Doc']), file=out)
+            if 'note' in entry and entry['note'] != '':
+                print('\\par\n\\strong{Note: }\n\\par', file=out)
+                print('%s' % self.latex_text(entry['note']), file=out)
             # only use the first constructor
             constructor = [x for x in self.content if x['type'] == 'constructorofclass_' + entry['Name'] and not x['ignore'] and not x['hidden']]
             if len(constructor) == 0:
-                print >> out, '}\n'
+                print('}\n', file=out)
                 continue
             elif len(constructor) > 1:
-                print "Warning: multiple constructors: %s" % entry['Name']
+                print("Warning: multiple constructors: %s" % entry['Name'])
             #print >> out, '\\vspace{6pt}\n'
             cons = constructor[0]
             #
             #print >> out, '\\par\n\\strong{Initialization}\n\\par'
-            if cons.has_key('Usage') and cons['Usage'] != '':
+            if 'Usage' in cons and cons['Usage'] != '':
                 usage = self.latex_text(cons['Usage'])
                 usageName = usage.split('(')[0]
                 usageParam = usage[len(usageName):].lstrip('(').rstrip(')')
-                print >> out, r'\begin{classdesc}{%s}{%s}' % (usageName, usageParam)
+                print(r'\begin{classdesc}{%s}{%s}' % (usageName, usageParam), file=out)
             else:
-                print >> out, r'\begin{classdesc}{%s}{}' % entry['Name']
+                print(r'\begin{classdesc}{%s}{}' % entry['Name'], file=out)
             if cons['Doc'] != '':
-                print >> out, '\n\\vspace{3pt} \\MakeUppercase %s\\par\n' % self.latex_text(cons['Doc'])
+                print('\n\\vspace{3pt} \\MakeUppercase %s\\par\n' % self.latex_text(cons['Doc']), file=out)
             else:
-                print >> out, '\\hspace{0pt}\\par\n'
-            if cons.has_key('Arguments') and len(cons['Arguments']) > 0:
-                print >> out, '\\par\n\n'
+                print('\\hspace{0pt}\\par\n', file=out)
+            if 'Arguments' in cons and len(cons['Arguments']) > 0:
+                print('\\par\n\n', file=out)
                 # cons['Arguments'].sort(lambda x, y: cmp(x['Name'], y['Name']))
                 for arg in cons['Arguments']:
                     #print >> out, r'{\emph{%s: }\MakeUppercase %s\par}' \
-                    print >> out, r'{\leftskip 0.3in \parindent=-0.3in \emph{%s: }\MakeUppercase %s\par}' \
-                        % (self.latex_text(arg['Name']), self.latex_text(arg['Description']))
-            if cons.has_key('note') and cons['note'] != '':
-                print >> out, '\\par\n\\strong{Note} '
-                print >> out, '%s' % self.latex_text(cons['note'])
+                    print(r'{\leftskip 0.3in \parindent=-0.3in \emph{%s: }\MakeUppercase %s\par}' \
+                        % (self.latex_text(arg['Name']), self.latex_text(arg['Description'])), file=out)
+            if 'note' in cons and cons['note'] != '':
+                print('\\par\n\\strong{Note} ', file=out)
+                print('%s' % self.latex_text(cons['note']), file=out)
             members = [x for x in self.content if x['type'] == 'memberofclass_' + entry['Name'] and \
                        not x['ignore'] and not x['hidden'] and not '~' in x['Name'] and not '__' in x['Name']]
             def sort_member(x, y):
-                if not x.has_key('group'):
-                    print x
-                if not y.has_key('group'):
-                    print y
+                if 'group' not in x:
+                    print(x)
+                if 'group' not in y:
+                    print(y)
                 res = cmp(x['group'], y['group'])
                 if res == 0:
                     return cmp(x['Name'], y['Name'])
                 else:
                     return res
-            members.sort(sort_member)
+            members.sort(key=lambda x: x['group']) # cmp_to_key(sort_member))
             if len(members) == 0:
-                print >> out, '\\end{classdesc}\n}\n'
+                print('\\end{classdesc}\n}\n', file=out)
                 continue
             group = ''
             for mem in members:
                 #print "MEMBER %s, GROUP '%s'" % (mem['Name'], mem['group'])
                 if group != mem['group']:
                     if group != '':
-                        print >> out, '\\vspace{10pt}\n'
+                        print('\\vspace{10pt}\n', file=out)
                     group = mem['group']
-                if mem.has_key('Usage') and mem['Usage'] != '':
+                if 'Usage' in mem and mem['Usage'] != '':
                     usage = self.latex_text(mem['Usage'])
                     assert usage.startswith('x.')
                     usageName = usage.split('(')[0][2:]
                     usageParam = usage[len(usageName)+2:].lstrip('(').rstrip(')')
-                    print >> out, r'\begin{methoddesc}{%s}{%s}' % (usageName, usageParam)
+                    print(r'\begin{methoddesc}{%s}{%s}' % (usageName, usageParam), file=out)
                 else:
-                    print >> out, r'\begin{methoddesc}{%s}{}' % mem['Name'].split(':')[-1]
-                print >> out, '\\MakeUppercase %s\n' % self.latex_text(mem['Doc'])
-                if mem.has_key('Arguments') and mem['Arguments'] != '':
+                    print(r'\begin{methoddesc}{%s}{}' % mem['Name'].split(':')[-1], file=out)
+                print('\\MakeUppercase %s\n' % self.latex_text(mem['Doc']), file=out)
+                if 'Arguments' in mem and mem['Arguments'] != '':
                     # mem['Arguments'].sort(lambda x, y: cmp(x['Name'], y['Name']))
                     for arg in mem['Arguments']:
-                        print >> out, r'{\leftskip 0.3in \parindent=-0.3in \emph{%s: }\MakeUppercase %s\par}' % \
-                            (self.latex_text(arg['Name']), self.latex_text(arg['Description']))
-                if mem.has_key('note') and mem['note'] != '':
-                    print >> out, '\\par\n\\strong{Note:} %s\\par' % self.latex_text(mem['note'])
-                print >> out, r'\end{methoddesc}'
-            if cons.has_key('ExampleFile') and cons['ExampleFile'] is not None:
-                print >> out, '\\strong{Example}\n'
+                        print(r'{\leftskip 0.3in \parindent=-0.3in \emph{%s: }\MakeUppercase %s\par}' % \
+                            (self.latex_text(arg['Name']), self.latex_text(arg['Description'])), file=out)
+                if 'note' in mem and mem['note'] != '':
+                    print('\\par\n\\strong{Note:} %s\\par' % self.latex_text(mem['note']), file=out)
+                print(r'\end{methoddesc}', file=out)
+            if 'ExampleFile' in cons and cons['ExampleFile'] is not None:
+                print('\\strong{Example}\n', file=out)
                 # ../log/ref_xxx.log => xxx.log
                 label = os.path.split(cons['ExampleFile'])[-1].split('_')[-1]
                 title = self.latex_text(cons['ExampleTitle'])
-                print >> out, '\\lstinputlisting[caption={%s},label={%s}]{%s}' % \
-                    (title, label, cons['ExampleFile'].replace('\\', '/'))
-            print >> out, '\\end{classdesc}\n}\n'
+                print('\\lstinputlisting[caption={%s},label={%s}]{%s}' % \
+                    (title, label, cons['ExampleFile'].replace('\\', '/')), file=out)
+            print('\\end{classdesc}\n}\n', file=out)
 
     def wrap_reST(self, input, initial_indent = '   ', subsequent_indent = '   '):
         text = input
         for tag in ['<tt>', '<bf>', '<em>', '<item>']:
             text = re.sub('%s\s*' % tag, tag, text)
         # highlight stuff
-        for keyword in self.auto_keywords.keys():
+        for keyword in list(self.auto_keywords.keys()):
             for tag in ['tt', 'bf']:
                 for cls in self.auto_keywords[keyword]:
                     text = text.replace('<%s>%s</%s>' % (tag, cls, tag),
@@ -1116,7 +1118,7 @@ class Doxy2SWIG:
     def shiftText(self, txt, shift='   '):
         # highlight stuff
         text = txt
-        for keyword in self.auto_keywords.keys():
+        for keyword in list(self.auto_keywords.keys()):
             for tag in ['``', '**']:
                 for cls in self.auto_keywords[keyword]:
                     text = text.replace('%s%s%s' % (tag, cls, tag),
@@ -1128,25 +1130,25 @@ class Doxy2SWIG:
         for entry in [x for x in self.content if x['type'] == 'global_function' and not x['ignore'] and not x['hidden'] \
                 and 'test' not in x['Name']]:
             refName = '%sRef.ref' % entry['Name'].replace('simuPOP::', '', 1).replace('.', '')
-            print 'Writing reference for global function ', refName
+            print('Writing reference for global function ', refName)
             out = open(os.path.join(dir, refName), 'w')
             funcname = entry['Name'].replace('simuPOP::', '', 1)
-            print >> out, '\nFunction %s' % funcname
-            print >> out, '-' * (9 + len(funcname))
-            print >> out
-            print >> out, '\n.. function::',
-            if entry.has_key('Usage') and entry['Usage'] != '':
-                print >> out, entry['Usage']
+            print('\nFunction %s' % funcname, file=out)
+            print('-' * (9 + len(funcname)), file=out)
+            print(file=out)
+            print('\n.. function::', end=' ', file=out)
+            if 'Usage' in entry and entry['Usage'] != '':
+                print(entry['Usage'], file=out)
             else:
-                print >> out, '%s()' % funcname
+                print('%s()' % funcname, file=out)
             #
-            print >> out
+            print(file=out)
             if entry['Doc'] != '':
-                print >> out, self.wrap_reST(entry['Doc'])
+                print(self.wrap_reST(entry['Doc']), file=out)
 
-            if entry.has_key('note') and entry['note'] != '':
-                print >> out, '**Note**:'
-                print >> out, self.wrap_reST(entry['note'])
+            if 'note' in entry and entry['note'] != '':
+                print('**Note**:', file=out)
+                print(self.wrap_reST(entry['note']), file=out)
             out.close()
         # then python modules
         modules = set(
@@ -1160,142 +1162,142 @@ class Doxy2SWIG:
             #print >> out, ':mod:`%s`' % module
             #print >> out, '='*(len(module)+7)
             if module != 'simuPOP':
-                print >> out
-                print >> out, '.. module:: %s\n' % module
+                print(file=out)
+                print('.. module:: %s\n' % module, file=out)
             doc = [x['Doc'] for x in self.content if x['type'] == 'docofmodule_' + module][0]
-            print >> out, doc
+            print(doc, file=out)
             out.close()
             #
             # module functions
             funcs = [x for x in self.content if x['type'] == 'module_func' \
                 and x['module'] == module and not x['ignore'] and not x['hidden']]
             # sort it
-            funcs.sort(lambda x, y: cmp(x['Name'], y['Name']))
+            funcs.sort(key=lambda x: x['Name'])
             # print all functions
             #print >> out, '\\begin{description}'
             for mem in funcs:
                 refName = '%s%sRef.ref' % (module.replace('.', ''), mem['Name'])
-                print 'Writing reference for function ', refName
+                print('Writing reference for function ', refName)
                 out = open(os.path.join(dir, refName), 'w')
                 funcname = mem['Name']
-                print >> out, '\nFunction %s' % funcname
-                print >> out, '-' * (9 + len(funcname))
-                print >> out
-                print >> out, '\n.. function::',
-                if mem.has_key('Usage') and mem['Usage'] != '':
-                    print >> out, mem['Usage']
+                print('\nFunction %s' % funcname, file=out)
+                print('-' * (9 + len(funcname)), file=out)
+                print(file=out)
+                print('\n.. function::', end=' ', file=out)
+                if 'Usage' in mem and mem['Usage'] != '':
+                    print(mem['Usage'], file=out)
                 else:
-                    print >> out, '%s()' % funcname
-                print >> out
-                print >> out, self.shiftText(mem['Doc'])
-                if mem.has_key('note') and mem['note'] != '':
-                    print >> out, '**Note**'
-                    print >> out, self.shiftText(mem['note'])
+                    print('%s()' % funcname, file=out)
+                print(file=out)
+                print(self.shiftText(mem['Doc']), file=out)
+                if 'note' in mem and mem['note'] != '':
+                    print('**Note**', file=out)
+                    print(self.shiftText(mem['note']), file=out)
                 out.close()
             # module classes
             classes = [x for x in self.content if x['type'] == 'module_class' and x['module'] == module and not x['ignore'] and not x['hidden']]
             # sort it
-            classes.sort(lambda x, y: cmp(x['Name'], y['Name']))
+            classes.sort(key=lambda x: x['Name'])
             # print all functions
             for cls in classes:
                 refName = '%s%sRef.ref' % (module.replace('.', ''), cls['Name'])
-                print 'Writing reference for class ', refName
+                print('Writing reference for class ', refName)
                 out = open(os.path.join(dir, refName), 'w')
                 classname = cls['Name']
-                print >> out, '\nclass %s' % classname
-                print >> out, '-' * (6 + len(classname))
-                print >> out
-                print >> out, '.. class:: %s\n' % classname
-                print >> out, self.shiftText(cls['Doc'])
-                print >> out
-                if cls.has_key('Usage') and cls['Usage'] != '':
-                    print >> out, '   .. method:: %s.%s' % (classname, cls['Usage'])
+                print('\nclass %s' % classname, file=out)
+                print('-' * (6 + len(classname)), file=out)
+                print(file=out)
+                print('.. class:: %s\n' % classname, file=out)
+                print(self.shiftText(cls['Doc']), file=out)
+                print(file=out)
+                if 'Usage' in cls and cls['Usage'] != '':
+                    print('   .. method:: %s.%s' % (classname, cls['Usage']), file=out)
                 else:
-                    print >> out, '   .. method:: %s.%s()' % (classname, classname)
-                print >> out
-                print >> out, self.shiftText(cls['InitDoc'], ' '*6)
-                print >> out
+                    print('   .. method:: %s.%s()' % (classname, classname), file=out)
+                print(file=out)
+                print(self.shiftText(cls['InitDoc'], ' '*6), file=out)
+                print(file=out)
                 #
                 for mem in cls['Members']:
                     usage = self.latex_text(mem['Usage'])
-                    if mem.has_key('Usage') and mem['Usage'] != '':
-                        print >> out, '   .. method:: %s.%s' % (classname, mem['Usage'])
+                    if 'Usage' in mem and mem['Usage'] != '':
+                        print('   .. method:: %s.%s' % (classname, mem['Usage']), file=out)
                     else:
-                        print >> out, '   .. method:: %s.%s()' % (classname, mem['Name'])
-                    print >> out
+                        print('   .. method:: %s.%s()' % (classname, mem['Name']), file=out)
+                    print(file=out)
                     if mem['Doc'] != '':
-                        print >> out, self.shiftText(mem['Doc'], ' '*6)
-                    print >> out
+                        print(self.shiftText(mem['Doc'], ' '*6), file=out)
+                    print(file=out)
                 out.close()
         # then classes
         for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore'] and not x['hidden']]:
             refName = '%sRef.ref' % entry['Name'].replace('simuPOP::', '', 1).replace('.', '')
-            print 'Writing reference for class ', refName
+            print('Writing reference for class ', refName)
             out = open(os.path.join(dir, refName), 'w')
             classname = self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
-            print >> out, '\nclass %s' % classname
-            print >> out, '-' * (6 + len(classname))
-            print >> out
-            print >> out, '.. class::', classname
-            print >> out
-            print >> out, self.wrap_reST(entry['Doc'])
-            if entry.has_key('note') and entry['note'] != '':
-                print >> out, '\n   .. note::\n'
-                print >> out, '%s' % self.wrap_reST(entry['note'].strip(), ' '*6, ' '*6)
-            print >> out
+            print('\nclass %s' % classname, file=out)
+            print('-' * (6 + len(classname)), file=out)
+            print(file=out)
+            print('.. class::', classname, file=out)
+            print(file=out)
+            print(self.wrap_reST(entry['Doc']), file=out)
+            if 'note' in entry and entry['note'] != '':
+                print('\n   .. note::\n', file=out)
+                print('%s' % self.wrap_reST(entry['note'].strip(), ' '*6, ' '*6), file=out)
+            print(file=out)
             # only use the first constructor
             constructor = [x for x in self.content if x['type'] == 'constructorofclass_' + entry['Name'] and not x['ignore'] and not x['hidden']]
             if len(constructor) == 0:
                 continue
             elif len(constructor) > 1:
-                print "Warning: multiple constructors: %s" % entry['Name']
+                print("Warning: multiple constructors: %s" % entry['Name'])
             cons = constructor[0]
             #
             #print >> out, '\\par\n\\strong{Initialization}\n\\par'
-            if cons.has_key('Usage') and cons['Usage'] != '':
+            if 'Usage' in cons and cons['Usage'] != '':
                 usage = self.latex_text(cons['Usage'])
-                print >> out, '\n   .. method:: %s\n' % cons['Usage']
+                print('\n   .. method:: %s\n' % cons['Usage'], file=out)
             else:
-                print >> out, '\n   .. method:: %s()\n' % entry['Name']
+                print('\n   .. method:: %s()\n' % entry['Name'], file=out)
             if cons['Doc'] != '':
-                print >> out, '\n%s\n' % self.wrap_reST(cons['Doc'], ' '*6, ' '*6)
-            if cons.has_key('Arguments') and len(cons['Arguments']) > 0:
+                print('\n%s\n' % self.wrap_reST(cons['Doc'], ' '*6, ' '*6), file=out)
+            if 'Arguments' in cons and len(cons['Arguments']) > 0:
                 # cons['Arguments'].sort(lambda x, y: cmp(x['Name'], y['Name']))
                 for arg in cons['Arguments']:
                     #print >> out, r'{\emph{%s: }\MakeUppercase %s\par}' \
-                    print >> out, '      %s\n         %s\n' % (arg['Name'], self.wrap_reST(arg['Description'], '', ' '*9))
-            if cons.has_key('note') and cons['note'] != '':
-                print >> out, '      .. note::\n'
-                print >> out, '%s' % self.wrap_reST(cons['note'], ' '*9, ' '*9)
+                    print('      %s\n         %s\n' % (arg['Name'], self.wrap_reST(arg['Description'], '', ' '*9)), file=out)
+            if 'note' in cons and cons['note'] != '':
+                print('      .. note::\n', file=out)
+                print('%s' % self.wrap_reST(cons['note'], ' '*9, ' '*9), file=out)
             #
             members = [x for x in self.content if x['type'] == 'memberofclass_' + entry['Name'] and \
                        not x['ignore'] and not x['hidden'] and not '~' in x['Name'] and not '__' in x['Name']]
             def sort_member(x, y):
-                if not x.has_key('group'):
-                    print x
-                if not y.has_key('group'):
-                    print y
+                if 'group' not in x:
+                    print(x)
+                if 'group' not in y:
+                    print(y)
                 res = cmp(x['group'], y['group'])
                 if res == 0:
                     return cmp(x['Name'], y['Name'])
                 else:
                     return res
-            members.sort(sort_member)
+            members.sort(key=lambda x: x['group']) # sort_member)
             if len(members) == 0:
                 continue
             group = ''
             for mem in members:
                 if group != mem['group']:
                     group = mem['group']
-                if mem.has_key('Usage') and mem['Usage'] != '':
-                    print >> out, '\n   .. method:: %s.%s\n' % (classname, mem['Usage'].lstrip('x.'))
+                if 'Usage' in mem and mem['Usage'] != '':
+                    print('\n   .. method:: %s.%s\n' % (classname, mem['Usage'].lstrip('x.')), file=out)
                 else:
-                    print >> out, '\n   .. method:: %s.%s()\n' % (classname, mem['Name'].split(':')[-1])
-                print >> out, self.wrap_reST(mem['Doc'], ' '*6, ' '*6)
+                    print('\n   .. method:: %s.%s()\n' % (classname, mem['Name'].split(':')[-1]), file=out)
+                print(self.wrap_reST(mem['Doc'], ' '*6, ' '*6), file=out)
             out.close()
 
     def write_latex_testfile(self, out, ref_file):
-        print >> out, r'''\documentclass[oneside,english]{manual}
+        print(r'''\documentclass[oneside,english]{manual}
 \usepackage[T1]{fontenc}
 \usepackage[latin9]{inputenc}
 \usepackage{listings}
@@ -1329,33 +1331,33 @@ xleftmargin=15pt}
 \maketitle
 
 \lstlistoflistings
-\include{%s}''' % os.path.basename(os.path.splitext(ref_file)[0])
+\include{%s}''' % os.path.basename(os.path.splitext(ref_file)[0]), file=out)
         global_funcs = [x for x in self.content if x['type'] == 'global_function' and not x['ignore'] and not x['hidden'] \
                 and 'test' not in x['Name']]
-        global_funcs.sort(lambda x, y: cmp(x['Name'], y['Name']))
+        global_funcs.sort(key=lambda x: x['Name'])
         for entry in global_funcs:
-             print >> out, r'\%sRef' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
-             print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
+             print(r'\%sRef' % self.latexName(entry['Name'].replace('simuPOP::', '', 1)), file=out)
+             print(r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}', file=out)
         # modules
-        modules = sets.Set(
+        modules = set(
             [x['module'] for x in self.content if x['type'].startswith('module') and not x['ignore'] and not x['hidden']])
         for module in modules:
             funcs = [x for x in self.content if x['type'] == 'module_func' and x['module'] == module and not x['ignore'] and not x['hidden']]
             # sort it
-            funcs.sort(lambda x, y: cmp(x['Name'], y['Name']))
+            funcs.sort(key=lambda x: x['Name'])
             # print all functions
             for mem in funcs:
-                print >> out, r'\%s%sRef' % (module.replace('.',''), mem['Name'])
-                print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
+                print(r'\%s%sRef' % (module.replace('.',''), mem['Name']), file=out)
+                print(r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}', file=out)
             classes = [x for x in self.content if x['type'] == 'module_class' and x['module'] == module and not x['ignore'] and not x['hidden']]
             # print all functions
             for cls in classes:
-                print >> out, r'\%s%sRef' % (module.replace('.', ''), cls['Name'])
-                print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
+                print(r'\%s%sRef' % (module.replace('.', ''), cls['Name']), file=out)
+                print(r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}', file=out)
         for entry in [x for x in self.content if x['type'] in ['class'] and not x['ignore'] and not x['hidden']]:
-             print >> out, r'\%sRef' % self.latexName(entry['Name'].replace('simuPOP::', '', 1).replace('.',''))
-             print >> out, r'\vspace{.1in}\par\rule[.3ex]{\linewidth}{1pt}\par\vspace{0.1in}'
-        print >> out, r'\end{document}'
+             print(r'\%sRef' % self.latexName(entry['Name'].replace('simuPOP::', '', 1).replace('.','')), file=out)
+             print(r'\vspace{.1in}\par\rule[.3ex]{\linewidth}{1pt}\par\vspace{0.1in}', file=out)
+        print(r'\end{document}', file=out)
 
 
     def write(self, output, type, ref_file=''):
@@ -1363,7 +1365,7 @@ xleftmargin=15pt}
         if type == 'reST':
             self.write_reST(output)
             return
-        fout = open(output, 'wb')
+        fout = open(output, 'w')
         if type == 'swig':
             self.write_swig(fout)
         elif type == 'latex_single':
@@ -1375,7 +1377,7 @@ xleftmargin=15pt}
        
 if __name__ == '__main__':
     if '-h' in sys.argv[1:] or '--help' in sys.argv[1:]:
-        print __doc__
+        print(__doc__)
         sys.exit(1)
     # to make my life a bit easier, provide some default parameters
     if os.path.isfile('doxy2swig.py'):
@@ -1412,7 +1414,7 @@ if __name__ == '__main__':
     # clean up, and process CPPONLY etc
     p.post_process()
     # write interface file to output interface file.
-    print 'Writing SWIG interface file to', interface_file
+    print('Writing SWIG interface file to', interface_file)
     p.write(interface_file, type='swig')
     sys.path = [os.path.join(src_path, 'src')] + sys.path
     p.scan_module('simuPOP')
@@ -1432,16 +1434,16 @@ if __name__ == '__main__':
         entry = [x for x in p.content if func in x['Name']][0]
         entry['ignore'] = True
         entry['hidden'] = True
-        p.content.append({'Name': u'simuPOP::%s::%s' % (realClass, realFunc),
-             'type': u'memberofclass_simuPOP::%s' % realClass,
+        p.content.append({'Name': 'simuPOP::%s::%s' % (realClass, realFunc),
+             'type': 'memberofclass_simuPOP::%s' % realClass,
              'Description': '',
-             'Details': ur'<group>%s</group>' % group + entry['Description'].replace('\n', ' '),
+             'Details': r'<group>%s</group>' % group + entry['Description'].replace('\n', ' '),
              'Usage': 'x.' + entry['Usage'].replace(func, realFunc).replace('self, ', '').replace('self)', ')'),
         })
     p.fix_entries()
     # hange a few usages:
     #
-    print 'Writing latex reference file to', latex_file
+    print('Writing latex reference file to', latex_file)
     p.write(latex_file, type='latex_single')
     p.uniqueName = []
     #
@@ -1464,7 +1466,7 @@ if __name__ == '__main__':
     module_class_members = []
     for mod in modules:
         for cls in [x for x in p.content if x['type'] == 'module_class' and x['module'] == mod and not x['ignore'] and not x['hidden']]:
-            if cls.has_key('Members'):
+            if 'Members' in cls:
                 module_class_members.extend(['%s.%s.%s' % (mod, cls['Name'], x['Name']) for x in cls['Members']])
                 #print 'Extending', ['%s.%s' % (cls['Name'], x['Name']) for x in cls['Members']]
     p.auto_keywords =  {'func': list(global_funcs | module_funcs | simuPOP_funcs),
@@ -1473,11 +1475,11 @@ if __name__ == '__main__':
         'mod': list(modules)}
     try:
         lst = open(refFile, 'w')
-        print >> lst, 'auto_keywords = \\'
+        print('auto_keywords = \\', file=lst)
         pprint.pprint(p.auto_keywords, stream = lst)
         lst.close()
     except:
-        print 'Failed to write a list file for cross referencing purposes'
+        print('Failed to write a list file for cross referencing purposes')
     #
     builddir = os.path.join(src_path, 'doc', 'build')
     if not os.path.isdir(builddir):
@@ -1485,10 +1487,10 @@ if __name__ == '__main__':
     p.write(builddir, type='reST')
     # clear unique name
     p.uniqueName = []
-    print 'Writing latex test file to', latex_testfile
+    print('Writing latex test file to', latex_testfile)
     p.write(latex_testfile, type='latex_all', ref_file=latex_file)
     # generating sample document
     os.chdir(os.path.dirname(latex_testfile))
     os.system('pdflatex %s' % os.path.split(latex_testfile)[1])
     # ending statement
-    print 'Done.'
+    print('Done.')

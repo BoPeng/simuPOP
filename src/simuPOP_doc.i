@@ -22,25 +22,11 @@ Details:
 
 "; 
 
+%ignore simuPOP::AffectionSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
+
 %feature("docstring") simuPOP::AffectionSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::AffectionSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
-
-%feature("docstring") simuPOP::AffectionSplitter::numVirtualSubPop "
-
-Description:
-
-    Return 2.
-
-Usage:
-
-    x.numVirtualSubPop()
-
-"; 
-
 %ignore simuPOP::AffectionSplitter::contains(const Population &pop, size_t ind, vspID vsp) const;
-
-%ignore simuPOP::AffectionSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
 
 %feature("docstring") simuPOP::AffectionSplitter::name "
 
@@ -54,6 +40,22 @@ Details:
     set of names are specified.
 
 "; 
+
+%feature("docstring") simuPOP::AffectionSplitter::numVirtualSubPop "
+
+Description:
+
+    Return 2.
+
+Usage:
+
+    x.numVirtualSubPop()
+
+"; 
+
+%ignore simuPOP::AffectionSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
+
+%ignore simuPOP::AlleleVecAsNumArray(GenoIterator begin, GenoIterator end);
 
 %feature("docstring") simuPOP::BackwardMigrator "
 
@@ -124,6 +126,12 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::BackwardMigrator::apply "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::BackwardMigrator::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::BackwardMigrator::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::BackwardMigrator::~BackwardMigrator "
 
 Description:
@@ -135,12 +143,6 @@ Usage:
     x.~BackwardMigrator()
 
 "; 
-
-%feature("docstring") simuPOP::BackwardMigrator::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::BackwardMigrator::apply "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::BackwardMigrator::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::BaseMutator "
 
@@ -230,6 +232,22 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::BaseMutator::apply "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::BaseMutator::clone "Obsolete or undocumented function."
+
+%ignore simuPOP::BaseMutator::context() const;
+
+%ignore simuPOP::BaseMutator::fillContext(const Population &pop, IndAlleleIterator ptr, size_t locus) const;
+
+%ignore simuPOP::BaseMutator::mutRate(size_t loc) const;
+
+%ignore simuPOP::BaseMutator::mutate(Allele, size_t) const;
+
+%ignore simuPOP::BaseMutator::setContext(size_t context);
+
+%ignore simuPOP::BaseMutator::setRate(const vectorf &rates, const lociList &loci);
+
 %feature("docstring") simuPOP::BaseMutator::~BaseMutator "
 
 Description:
@@ -241,22 +259,6 @@ Usage:
     x.~BaseMutator()
 
 "; 
-
-%feature("docstring") simuPOP::BaseMutator::clone "Obsolete or undocumented function."
-
-%ignore simuPOP::BaseMutator::setRate(const vectorf &rates, const lociList &loci);
-
-%ignore simuPOP::BaseMutator::mutRate(size_t loc) const;
-
-%ignore simuPOP::BaseMutator::mutate(Allele, size_t) const;
-
-%ignore simuPOP::BaseMutator::fillContext(const Population &pop, IndAlleleIterator ptr, size_t locus) const;
-
-%ignore simuPOP::BaseMutator::setContext(size_t context);
-
-%ignore simuPOP::BaseMutator::context() const;
-
-%feature("docstring") simuPOP::BaseMutator::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::BaseOperator "
 
@@ -376,40 +378,13 @@ Arguments:
 
 "; 
 
-%feature("docstring") simuPOP::BaseOperator::~BaseOperator "
+%ignore simuPOP::BaseOperator::applicability(bool subPops=true, bool gen=true) const;
 
-Description:
+%ignore simuPOP::BaseOperator::applicableSubPops(const Population &pop) const;
 
-    destroy an operator
+%ignore simuPOP::BaseOperator::applicableToAllOffspring() const;
 
-Usage:
-
-    x.~BaseOperator()
-
-"; 
-
-%feature("docstring") simuPOP::BaseOperator::clone "
-
-Usage:
-
-    x.clone()
-
-Details:
-
-    Return a cloned copy of an operator. This function is available to
-    all operators.
-
-"; 
-
-%ignore simuPOP::BaseOperator::isActive(size_t rep, ssize_t gen, ssize_t end, const vector< bool > &activeRep, bool repOnly=false) const;
-
-%ignore simuPOP::BaseOperator::isActive(ssize_t rep, ssize_t gen) const;
-
-%ignore simuPOP::BaseOperator::infoSize(const GenoStruTrait *trait=NULL) const;
-
-%ignore simuPOP::BaseOperator::infoField(size_t idx, const GenoStruTrait *trait=NULL) const;
-
-%ignore simuPOP::BaseOperator::infoFields() const;
+%ignore simuPOP::BaseOperator::applicableToOffspring(const Population &pop, RawIndIterator offspring) const;
 
 %feature("docstring") simuPOP::BaseOperator::apply "
 
@@ -426,27 +401,54 @@ Details:
 
 %ignore simuPOP::BaseOperator::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
 
-%ignore simuPOP::BaseOperator::getOstream(PyObject *dict=NULL, bool readable=false) const;
+%feature("docstring") simuPOP::BaseOperator::clone "
+
+Usage:
+
+    x.clone()
+
+Details:
+
+    Return a cloned copy of an operator. This function is available to
+    all operators.
+
+"; 
 
 %ignore simuPOP::BaseOperator::closeOstream() const;
 
-%ignore simuPOP::BaseOperator::applicability(bool subPops=true, bool gen=true) const;
-
 %feature("docstring") simuPOP::BaseOperator::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::BaseOperator::noOutput() const;
+%ignore simuPOP::BaseOperator::getOstream(PyObject *dict=NULL, bool readable=false) const;
 
-%ignore simuPOP::BaseOperator::applicableSubPops(const Population &pop) const;
+%ignore simuPOP::BaseOperator::infoField(size_t idx, const GenoStruTrait *trait=NULL) const;
 
-%ignore simuPOP::BaseOperator::applicableToAllOffspring() const;
+%ignore simuPOP::BaseOperator::infoFields() const;
 
-%ignore simuPOP::BaseOperator::applicableToOffspring(const Population &pop, RawIndIterator offspring) const;
-
-%ignore simuPOP::BaseOperator::parallelizable() const;
+%ignore simuPOP::BaseOperator::infoSize(const GenoStruTrait *trait=NULL) const;
 
 %ignore simuPOP::BaseOperator::initialize(const Individual &ind) const;
 
 %ignore simuPOP::BaseOperator::initializeIfNeeded(const Individual &ind) const;
+
+%ignore simuPOP::BaseOperator::isActive(size_t rep, ssize_t gen, ssize_t end, const vector< bool > &activeRep, bool repOnly=false) const;
+
+%ignore simuPOP::BaseOperator::isActive(ssize_t rep, ssize_t gen) const;
+
+%ignore simuPOP::BaseOperator::noOutput() const;
+
+%ignore simuPOP::BaseOperator::parallelizable() const;
+
+%feature("docstring") simuPOP::BaseOperator::~BaseOperator "
+
+Description:
+
+    destroy an operator
+
+Usage:
+
+    x.~BaseOperator()
+
+"; 
 
 %feature("docstring") simuPOP::BasePenetrance "
 
@@ -499,22 +501,6 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::BasePenetrance::~BasePenetrance "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~BasePenetrance()
-
-"; 
-
-%feature("docstring") simuPOP::BasePenetrance::clone "Obsolete or undocumented function."
-
-%ignore simuPOP::BasePenetrance::penet(Population *, RawIndIterator) const;
-
 %feature("docstring") simuPOP::BasePenetrance::apply "
 
 Description:
@@ -527,6 +513,8 @@ Usage:
     x.apply(pop)
 
 "; 
+
+%ignore simuPOP::BasePenetrance::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
 
 %feature("docstring") simuPOP::BasePenetrance::applyToIndividual "
 
@@ -543,9 +531,23 @@ Details:
 
 "; 
 
-%ignore simuPOP::BasePenetrance::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+%feature("docstring") simuPOP::BasePenetrance::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::BasePenetrance::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::BasePenetrance::penet(Population *, RawIndIterator) const;
+
+%feature("docstring") simuPOP::BasePenetrance::~BasePenetrance "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~BasePenetrance()
+
+"; 
 
 %feature("docstring") simuPOP::BaseQuanTrait "
 
@@ -587,22 +589,6 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::BaseQuanTrait::~BaseQuanTrait "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~BaseQuanTrait()
-
-"; 
-
-%feature("docstring") simuPOP::BaseQuanTrait::clone "Obsolete or undocumented function."
-
-%ignore simuPOP::BaseQuanTrait::qtrait(Individual *, size_t, vectorf &) const;
-
 %feature("docstring") simuPOP::BaseQuanTrait::apply "
 
 Description:
@@ -617,7 +603,23 @@ Usage:
 
 %ignore simuPOP::BaseQuanTrait::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
 
+%feature("docstring") simuPOP::BaseQuanTrait::clone "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::BaseQuanTrait::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::BaseQuanTrait::qtrait(Individual *, size_t, vectorf &) const;
+
+%feature("docstring") simuPOP::BaseQuanTrait::~BaseQuanTrait "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~BaseQuanTrait()
+
+"; 
 
 %feature("docstring") simuPOP::BaseSelector "
 
@@ -705,6 +707,16 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::BaseSelector::apply "Obsolete or undocumented function."
+
+%ignore simuPOP::BaseSelector::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+
+%feature("docstring") simuPOP::BaseSelector::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::BaseSelector::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::BaseSelector::indFitness(Population &, RawIndIterator) const;
+
 %feature("docstring") simuPOP::BaseSelector::~BaseSelector "
 
 Description:
@@ -716,16 +728,6 @@ Usage:
     x.~BaseSelector()
 
 "; 
-
-%feature("docstring") simuPOP::BaseSelector::clone "Obsolete or undocumented function."
-
-%ignore simuPOP::BaseSelector::indFitness(Population &, RawIndIterator) const;
-
-%feature("docstring") simuPOP::BaseSelector::apply "Obsolete or undocumented function."
-
-%ignore simuPOP::BaseSelector::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
-
-%feature("docstring") simuPOP::BaseSelector::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::BaseVspSplitter "
 
@@ -760,6 +762,10 @@ Details:
 
 "; 
 
+%ignore simuPOP::BaseVspSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
+
+%ignore simuPOP::BaseVspSplitter::activatedSubPop() const;
+
 %feature("docstring") simuPOP::BaseVspSplitter::clone "
 
 Usage:
@@ -773,33 +779,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::BaseVspSplitter::~BaseVspSplitter "
-
-Usage:
-
-    x.~BaseVspSplitter()
-
-"; 
-
-%ignore simuPOP::BaseVspSplitter::activatedSubPop() const;
-
-%ignore simuPOP::BaseVspSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
-
-%feature("docstring") simuPOP::BaseVspSplitter::numVirtualSubPop "
-
-Usage:
-
-    x.numVirtualSubPop()
-
-Details:
-
-    Return the number of VSPs defined by this splitter.
-
-"; 
-
 %ignore simuPOP::BaseVspSplitter::contains(const Population &pop, size_t ind, vspID vsp) const;
-
-%ignore simuPOP::BaseVspSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
 
 %ignore simuPOP::BaseVspSplitter::deactivate(size_t subPop);
 
@@ -816,6 +796,20 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::BaseVspSplitter::numVirtualSubPop "
+
+Usage:
+
+    x.numVirtualSubPop()
+
+Details:
+
+    Return the number of VSPs defined by this splitter.
+
+"; 
+
+%ignore simuPOP::BaseVspSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
+
 %feature("docstring") simuPOP::BaseVspSplitter::vspByName "
 
 Usage:
@@ -827,6 +821,14 @@ Details:
     Return the index of a virtual subpopulation from its name. If
     multiple virtual subpopulations share the same name, the first vsp
     is returned.
+
+"; 
+
+%feature("docstring") simuPOP::BaseVspSplitter::~BaseVspSplitter "
+
+Usage:
+
+    x.~BaseVspSplitter()
 
 "; 
 
@@ -865,25 +867,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::Bernullitrials::~Bernullitrials "
-
-Usage:
-
-    x.~Bernullitrials()
-
-"; 
-
-%ignore simuPOP::Bernullitrials::trialSize() const;
-
-%feature("docstring") simuPOP::Bernullitrials::probSize "
-
-Usage:
-
-    x.probSize()
-
-"; 
-
-%ignore simuPOP::Bernullitrials::setParameter(const vectorf &prob, size_t trials=0);
+%ignore simuPOP::Bernullitrials::curTrial();
 
 %feature("docstring") simuPOP::Bernullitrials::doTrial "
 
@@ -897,7 +881,38 @@ Usage:
 
 "; 
 
-%ignore simuPOP::Bernullitrials::curTrial();
+%feature("docstring") simuPOP::Bernullitrials::probSize "
+
+Usage:
+
+    x.probSize()
+
+"; 
+
+%feature("docstring") simuPOP::Bernullitrials::probSuccRate "
+
+Description:
+
+    return the succ rate for current trial, used for verification
+    pruposes
+
+Usage:
+
+    x.probSuccRate()
+
+"; 
+
+%ignore simuPOP::Bernullitrials::probabilities();
+
+%ignore simuPOP::Bernullitrials::setParameter(const vectorf &prob, size_t trials=0);
+
+%feature("docstring") simuPOP::Bernullitrials::setTrialSucc "
+
+Usage:
+
+    x.setTrialSucc(idx, succ)
+
+"; 
 
 %feature("docstring") simuPOP::Bernullitrials::trial "
 
@@ -908,14 +923,6 @@ Description:
 Usage:
 
     x.trial()
-
-"; 
-
-%feature("docstring") simuPOP::Bernullitrials::trialSucc "
-
-Usage:
-
-    x.trialSucc(idx)
 
 "; 
 
@@ -935,11 +942,13 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::Bernullitrials::setTrialSucc "
+%ignore simuPOP::Bernullitrials::trialSize() const;
+
+%feature("docstring") simuPOP::Bernullitrials::trialSucc "
 
 Usage:
 
-    x.setTrialSucc(idx, succ)
+    x.trialSucc(idx)
 
 "; 
 
@@ -955,20 +964,13 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::Bernullitrials::probSuccRate "
-
-Description:
-
-    return the succ rate for current trial, used for verification
-    pruposes
+%feature("docstring") simuPOP::Bernullitrials::~Bernullitrials "
 
 Usage:
 
-    x.probSuccRate()
+    x.~Bernullitrials()
 
 "; 
-
-%ignore simuPOP::Bernullitrials::probabilities();
 
 %feature("docstring") simuPOP::BernullitrialsT "
 
@@ -984,16 +986,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::BernullitrialsT::~BernullitrialsT "
-
-Usage:
-
-    x.~Bernullitrials_T()
-
-"; 
-
-%ignore simuPOP::BernullitrialsT::setParameter(const vectorf &prob, size_t N=1024);
-
 %feature("docstring") simuPOP::BernullitrialsT::doTrial "
 
 Description:
@@ -1003,6 +995,45 @@ Description:
 Usage:
 
     x.doTrial()
+
+"; 
+
+%feature("docstring") simuPOP::BernullitrialsT::probFirstSucc "
+
+Usage:
+
+    x.probFirstSucc()
+
+"; 
+
+%feature("docstring") simuPOP::BernullitrialsT::probNextSucc "
+
+Usage:
+
+    x.probNextSucc(pos)
+
+"; 
+
+%feature("docstring") simuPOP::BernullitrialsT::probSuccRate "
+
+Description:
+
+    return the succ rate for current trial, used for verification
+    pruposes
+
+Usage:
+
+    x.probSuccRate()
+
+"; 
+
+%ignore simuPOP::BernullitrialsT::setParameter(const vectorf &prob, size_t N=1024);
+
+%feature("docstring") simuPOP::BernullitrialsT::setTrialSucc "
+
+Usage:
+
+    x.setTrialSucc(idx, succ)
 
 "; 
 
@@ -1026,30 +1057,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::BernullitrialsT::probFirstSucc "
-
-Usage:
-
-    x.probFirstSucc()
-
-"; 
-
-%feature("docstring") simuPOP::BernullitrialsT::probNextSucc "
-
-Usage:
-
-    x.probNextSucc(pos)
-
-"; 
-
-%feature("docstring") simuPOP::BernullitrialsT::setTrialSucc "
-
-Usage:
-
-    x.setTrialSucc(idx, succ)
-
-"; 
-
 %feature("docstring") simuPOP::BernullitrialsT::trialSuccRate "
 
 Description:
@@ -1062,16 +1069,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::BernullitrialsT::probSuccRate "
-
-Description:
-
-    return the succ rate for current trial, used for verification
-    pruposes
+%feature("docstring") simuPOP::BernullitrialsT::~BernullitrialsT "
 
 Usage:
 
-    x.probSuccRate()
+    x.~Bernullitrials_T()
 
 "; 
 
@@ -1140,11 +1142,11 @@ Details:
 
 "; 
 
+%ignore simuPOP::CloneGenoTransmitter::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+
 %feature("docstring") simuPOP::CloneGenoTransmitter::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::CloneGenoTransmitter::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::CloneGenoTransmitter::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
 
 %ignore simuPOP::CloneGenoTransmitter::parallelizable() const;
 
@@ -1158,11 +1160,19 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::CombinedAlleleIterator::valid "
+%feature("docstring") simuPOP::CombinedAlleleIterator::advance "
 
 Usage:
 
-    x.valid()
+    x.advance(T, T::pointer, it, p, valid)
+
+"; 
+
+%feature("docstring") simuPOP::CombinedAlleleIterator::assignIfDiffer "
+
+Usage:
+
+    x.assignIfDiffer(a)
 
 "; 
 
@@ -1182,22 +1192,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::CombinedAlleleIterator::assignIfDiffer "
-
-Usage:
-
-    x.assignIfDiffer(a)
-
-"; 
-
-%feature("docstring") simuPOP::CombinedAlleleIterator::value "
-
-Usage:
-
-    x.value()
-
-"; 
-
 %feature("docstring") simuPOP::CombinedAlleleIterator::ptr "
 
 Usage:
@@ -1206,11 +1200,19 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::CombinedAlleleIterator::advance "
+%feature("docstring") simuPOP::CombinedAlleleIterator::valid "
 
 Usage:
 
-    x.advance(T, T::pointer, it, p, valid)
+    x.valid()
+
+"; 
+
+%feature("docstring") simuPOP::CombinedAlleleIterator::value "
+
+Usage:
+
+    x.value()
 
 "; 
 
@@ -1252,11 +1254,16 @@ Details:
 
 %ignore simuPOP::CombinedParentsChooser::CombinedParentsChooser(const CombinedParentsChooser &rhs);
 
-%feature("docstring") simuPOP::CombinedParentsChooser::~CombinedParentsChooser "
+%feature("docstring") simuPOP::CombinedParentsChooser::chooseParents "
+
+Description:
+
+    Return chosen parents from a population if the parent chooser
+    object is created with a population.
 
 Usage:
 
-    x.~CombinedParentsChooser()
+    x.chooseParents()
 
 "; 
 
@@ -1264,7 +1271,7 @@ Usage:
 
 %feature("docstring") simuPOP::CombinedParentsChooser::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::CombinedParentsChooser::parallelizable() const;
+%ignore simuPOP::CombinedParentsChooser::finalize();
 
 %feature("docstring") simuPOP::CombinedParentsChooser::initialize "
 
@@ -1279,18 +1286,13 @@ Usage:
 
 "; 
 
-%ignore simuPOP::CombinedParentsChooser::finalize();
+%ignore simuPOP::CombinedParentsChooser::parallelizable() const;
 
-%feature("docstring") simuPOP::CombinedParentsChooser::chooseParents "
-
-Description:
-
-    Return chosen parents from a population if the parent chooser
-    object is created with a population.
+%feature("docstring") simuPOP::CombinedParentsChooser::~CombinedParentsChooser "
 
 Usage:
 
-    x.chooseParents()
+    x.~CombinedParentsChooser()
 
 "; 
 
@@ -1333,17 +1335,26 @@ Details:
 
 %ignore simuPOP::CombinedSplitter::CombinedSplitter(const CombinedSplitter &rhs);
 
-%feature("docstring") simuPOP::CombinedSplitter::~CombinedSplitter "
-
-Usage:
-
-    x.~CombinedSplitter()
-
-"; 
+%ignore simuPOP::CombinedSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
 
 %feature("docstring") simuPOP::CombinedSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::CombinedSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
+%ignore simuPOP::CombinedSplitter::contains(const Population &pop, size_t ind, vspID vsp) const;
+
+%feature("docstring") simuPOP::CombinedSplitter::name "
+
+Usage:
+
+    x.name(vsp)
+
+Details:
+
+    Return the name of a VSP vsp, which is the name a VSP defined by
+    one of the combined splitters unless a new set of names is
+    specified. If a vspMap was used, names from different VSPs will be
+    joined by \"or\".
+
+"; 
 
 %feature("docstring") simuPOP::CombinedSplitter::numVirtualSubPop "
 
@@ -1358,22 +1369,13 @@ Details:
 
 "; 
 
-%ignore simuPOP::CombinedSplitter::contains(const Population &pop, size_t ind, vspID vsp) const;
+%ignore simuPOP::CombinedSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
 
-%ignore simuPOP::CombinedSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
-
-%feature("docstring") simuPOP::CombinedSplitter::name "
+%feature("docstring") simuPOP::CombinedSplitter::~CombinedSplitter "
 
 Usage:
 
-    x.name(vsp)
-
-Details:
-
-    Return the name of a VSP vsp, which is the name a VSP defined by
-    one of the combined splitters unless a new set of names is
-    specified. If a vspMap was used, names from different VSPs will be
-    joined by \"or\".
+    x.~CombinedSplitter()
 
 "; 
 
@@ -1409,6 +1411,14 @@ Details:
 
 "; 
 
+%ignore simuPOP::ConditionalMating::ConditionalMating(const ConditionalMating &rhs);
+
+%feature("docstring") simuPOP::ConditionalMating::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::ConditionalMating::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::ConditionalMating::mate(Population &pop, Population &scratch);
+
 %feature("docstring") simuPOP::ConditionalMating::~ConditionalMating "
 
 Description:
@@ -1420,14 +1430,6 @@ Usage:
     x.~ConditionalMating()
 
 "; 
-
-%ignore simuPOP::ConditionalMating::ConditionalMating(const ConditionalMating &rhs);
-
-%feature("docstring") simuPOP::ConditionalMating::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::ConditionalMating::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::ConditionalMating::mate(Population &pop, Population &scratch);
 
 %ignore simuPOP::ConstNumOffModel;
 
@@ -1508,9 +1510,9 @@ Details:
 
 %feature("docstring") simuPOP::ContextMutator::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::ContextMutator::mutate(Allele allele, size_t locus) const;
-
 %feature("docstring") simuPOP::ContextMutator::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::ContextMutator::mutate(Allele allele, size_t locus) const;
 
 %feature("docstring") simuPOP::ControlledOffspringGenerator "
 
@@ -1566,13 +1568,13 @@ Details:
 
 %ignore simuPOP::ControlledOffspringGenerator::ControlledOffspringGenerator(const ControlledOffspringGenerator &rhs);
 
-%ignore simuPOP::ControlledOffspringGenerator::initialize(const Population &pop, size_t subPop);
-
-%ignore simuPOP::ControlledOffspringGenerator::generateOffspring(Population &pop, Population &offPop, Individual *dad, Individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd);
-
 %feature("docstring") simuPOP::ControlledOffspringGenerator::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::ControlledOffspringGenerator::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::ControlledOffspringGenerator::generateOffspring(Population &pop, Population &offPop, Individual *dad, Individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd);
+
+%ignore simuPOP::ControlledOffspringGenerator::initialize(const Population &pop, size_t subPop);
 
 %feature("docstring") simuPOP::DiscardIf "
 
@@ -1616,13 +1618,13 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::DiscardIf::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::DiscardIf::describe "Obsolete or undocumented function."
-
 %feature("docstring") simuPOP::DiscardIf::apply "Obsolete or undocumented function."
 
 %ignore simuPOP::DiscardIf::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad, Individual *mom) const;
+
+%feature("docstring") simuPOP::DiscardIf::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::DiscardIf::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::DiscardIf::~DiscardIf "
 
@@ -1670,9 +1672,11 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::Dumper::apply "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::Dumper::clone "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::Dumper::apply "Obsolete or undocumented function."
+%feature("docstring") simuPOP::Dumper::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::Dumper::~Dumper "
 
@@ -1685,8 +1689,6 @@ Usage:
     x.~Dumper()
 
 "; 
-
-%feature("docstring") simuPOP::Dumper::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::Exception "
 
@@ -1742,6 +1744,32 @@ Usage:
 
 "; 
 
+%ignore simuPOP::Expression::Expression(const Expression &rhs);
+
+%ignore simuPOP::Expression::empty();
+
+%ignore simuPOP::Expression::evaluate() const;
+
+%ignore simuPOP::Expression::expr() const;
+
+%ignore simuPOP::Expression::setExpr(const string &expr=string());
+
+%ignore simuPOP::Expression::setLocalDict(PyObject *dict) const;
+
+%ignore simuPOP::Expression::setStmts(const string &stmts=string());
+
+%ignore simuPOP::Expression::stmts() const;
+
+%ignore simuPOP::Expression::valueAsArray() const;
+
+%ignore simuPOP::Expression::valueAsBool() const;
+
+%ignore simuPOP::Expression::valueAsDouble() const;
+
+%ignore simuPOP::Expression::valueAsInt() const;
+
+%ignore simuPOP::Expression::valueAsString() const;
+
 %feature("docstring") simuPOP::Expression::~Expression "
 
 Usage:
@@ -1749,32 +1777,6 @@ Usage:
     x.~Expression()
 
 "; 
-
-%ignore simuPOP::Expression::Expression(const Expression &rhs);
-
-%ignore simuPOP::Expression::expr() const;
-
-%ignore simuPOP::Expression::stmts() const;
-
-%ignore simuPOP::Expression::setLocalDict(PyObject *dict) const;
-
-%ignore simuPOP::Expression::empty();
-
-%ignore simuPOP::Expression::setExpr(const string &expr=string());
-
-%ignore simuPOP::Expression::setStmts(const string &stmts=string());
-
-%ignore simuPOP::Expression::evaluate() const;
-
-%ignore simuPOP::Expression::valueAsBool() const;
-
-%ignore simuPOP::Expression::valueAsInt() const;
-
-%ignore simuPOP::Expression::valueAsDouble() const;
-
-%ignore simuPOP::Expression::valueAsString() const;
-
-%ignore simuPOP::Expression::valueAsArray() const;
 
 %feature("docstring") simuPOP::FiniteSitesMutator "
 
@@ -1819,18 +1821,6 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::FiniteSitesMutator::~FiniteSitesMutator "
-
-Description:
-
-    destructor.
-
-Usage:
-
-    x.~FiniteSitesMutator()
-
-"; 
-
 %feature("docstring") simuPOP::FiniteSitesMutator::apply "
 
 Usage:
@@ -1848,59 +1838,17 @@ Details:
 
 %feature("docstring") simuPOP::FiniteSitesMutator::describe "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::floatList "
+%feature("docstring") simuPOP::FiniteSitesMutator::~FiniteSitesMutator "
 
-"; 
+Description:
 
-%feature("docstring") simuPOP::floatList::floatList "
-
-Usage:
-
-    floatList(obj=None)
-
-"; 
-
-%ignore simuPOP::floatList::floatList(double val);
-
-%ignore simuPOP::floatList::elems() const;
-
-%feature("docstring") simuPOP::floatListFunc "
-
-"; 
-
-%feature("docstring") simuPOP::floatListFunc::floatListFunc "
+    destructor.
 
 Usage:
 
-    floatListFunc(func)
+    x.~FiniteSitesMutator()
 
 "; 
-
-%ignore simuPOP::floatListFunc::floatListFunc(double val);
-
-%ignore simuPOP::floatListFunc::valid() const;
-
-%ignore simuPOP::floatListFunc::empty() const;
-
-%ignore simuPOP::floatListFunc::size() const;
-
-%ignore simuPOP::floatListFunc::func() const;
-
-%feature("docstring") simuPOP::floatMatrix "
-
-"; 
-
-%feature("docstring") simuPOP::floatMatrix::floatMatrix "
-
-Usage:
-
-    floatMatrix(obj=None)
-
-"; 
-
-%ignore simuPOP::floatMatrix::empty() const;
-
-%ignore simuPOP::floatMatrix::elems() const;
 
 %ignore simuPOP::FuncNumOffModel;
 
@@ -1962,14 +1910,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::FuncSexModel::reset "
-
-Usage:
-
-    x.reset()
-
-"; 
-
 %feature("docstring") simuPOP::FuncSexModel::parallelizable "
 
 Usage:
@@ -1978,31 +1918,13 @@ Usage:
 
 "; 
 
-%ignore simuPOP::GenoStructure;
-
-%ignore simuPOP::GenoStructure::GenoStructure();
-
-%ignore simuPOP::GenoStructure::GenoStructure(UINT ploidy, const vectoru &loci, const vectoru &chromTypes, bool haplodiploid, const vectorf &lociPos, const vectorstr &chromNames, const matrixstr &alleleNames, const vectorstr &lociNames, const vectorstr &infoFields);
-
-%feature("docstring") simuPOP::GenoStructure::~GenoStructure "
-
-Description:
-
-    destructor, do nothing.
+%feature("docstring") simuPOP::FuncSexModel::reset "
 
 Usage:
 
-    x.~GenoStructure()
+    x.reset()
 
 "; 
-
-%ignore simuPOP::GenoStructure::locusPos(UINT locus) const;
-
-%ignore simuPOP::GenoStructure::chromIndex(UINT ch) const;
-
-%ignore simuPOP::GenoStructure::buildLociPosMap() const;
-
-%ignore simuPOP::GenoStructure::setChromTypes(const vectoru &chromTypes);
 
 %feature("docstring") simuPOP::GenoStruTrait "
 
@@ -2045,171 +1967,53 @@ Details:
 
 "; 
 
-%ignore simuPOP::GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru &loci, const vectoru &chromTypes, bool haplodiploid, const vectorf &lociPos, const vectorstr &chromNames, const matrixstr &alleleNames, const vectorstr &lociNames, const vectorstr &infoFields);
-
-%ignore simuPOP::GenoStruTrait::setGenoStructure(const GenoStructure &rhs);
-
-%ignore simuPOP::GenoStruTrait::setGenoStruIdx(size_t idx);
-
-%ignore simuPOP::GenoStruTrait::swapGenoStru(GenoStruTrait &rhs);
-
-%feature("docstring") simuPOP::GenoStruTrait::lociDist "
+%feature("docstring") simuPOP::GenoStruTrait::absLocusIndex "
 
 Usage:
 
-    x.lociDist(locus1, locus2)
+    x.absLocusIndex(chrom, locus)
 
 Details:
 
-    Return the distance between loci locus1 and locus2 on the same
-    chromosome. A negative value will be returned if locus1 is after
-    locus2.
+    return the absolute index of locus locus on chromosome chrom. c.f.
+    chromLocusPair.
 
 "; 
 
-%feature("docstring") simuPOP::GenoStruTrait::lociLeft "Obsolete or undocumented function."
+%ignore simuPOP::GenoStruTrait::allAlleleNames() const;
 
-%feature("docstring") simuPOP::GenoStruTrait::distLeft "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::GenoStruTrait::lociCovered "Obsolete or undocumented function."
-
-%ignore simuPOP::GenoStruTrait::gsAddChromFromStru(size_t idx) const;
-
-%ignore simuPOP::GenoStruTrait::gsAddLociFromStru(size_t idx, vectoru &index1, vectoru &index2) const;
-
-%ignore simuPOP::GenoStruTrait::gsAddLociByNameFromStru(size_t idx, vectoru &index1, vectoru &index2) const;
-
-%ignore simuPOP::GenoStruTrait::gsRemoveLoci(const vectoru &kept);
-
-%ignore simuPOP::GenoStruTrait::gsAddChrom(const vectorf &lociPos, const vectorstr &lociNames, const string &chromName, const matrixstr &alleleNames, size_t chromType) const;
-
-%ignore simuPOP::GenoStruTrait::gsSetAlleleNames(const lociList &loci, const matrixstr &alleleNames);
-
-%ignore simuPOP::GenoStruTrait::gsAddLoci(const vectoru &chrom, const vectorf &pos, const vectorstr &lociNames, const matrixstr &alleleNames, vectoru &newIndex) const;
-
-%ignore simuPOP::GenoStruTrait::genoStru() const;
-
-%ignore simuPOP::GenoStruTrait::genoStruIdx() const;
-
-%feature("docstring") simuPOP::GenoStruTrait::ploidy "
+%feature("docstring") simuPOP::GenoStruTrait::alleleName "
 
 Usage:
 
-    x.ploidy()
+    x.alleleName(allele, locus=0)
 
 Details:
 
-    return the number of homologous sets of chromosomes, specified by
-    the ploidy parameter of the Population function. Return 2 for a
-    haplodiploid population because two sets of chromosomes are stored
-    for both males and females in such a population.
+    return the name of allele allele at lcous specified by the
+    alleleNames parameter of the Population function. locus could be
+    ignored if alleles at all loci share the same names. If the name
+    of an allele is unspecified, its value ('0', '1', '2', etc) is
+    returned.
 
 "; 
 
-%feature("docstring") simuPOP::GenoStruTrait::ploidyName "
+%feature("docstring") simuPOP::GenoStruTrait::alleleNames "
 
 Usage:
 
-    x.ploidyName()
+    x.alleleNames(locus=0)
 
 Details:
 
-    return the ploidy name of this population, can be one of haploid,
-    diploid, haplodiploid, triploid, tetraploid or #-ploid where # is
-    the ploidy number.
+    return a list of allele names at given by the alleleNames
+    parameter of the Population function. locus could be ignored if
+    alleles at all loci share the same names. This list does not have
+    to cover all possible allele states of a population so
+    alleleNames()[allele] might fail (use alleleNames(allele)
+    instead).
 
 "; 
-
-%feature("docstring") simuPOP::GenoStruTrait::numLoci "
-
-Usage:
-
-    x.numLoci(chrom)
-
-Details:
-
-    return the number of loci on chromosome chrom.
-
-"; 
-
-%feature("docstring") simuPOP::GenoStruTrait::numLoci "
-
-Usage:
-
-    x.numLoci()
-
-Details:
-
-    return a list of the number of loci on all chromosomes.
-
-"; 
-
-%ignore simuPOP::GenoStruTrait::chromX() const;
-
-%ignore simuPOP::GenoStruTrait::chromY() const;
-
-%ignore simuPOP::GenoStruTrait::customizedChroms() const;
-
-%ignore simuPOP::GenoStruTrait::mitochondrial() const;
-
-%feature("docstring") simuPOP::GenoStruTrait::sexChrom "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::GenoStruTrait::isHaplodiploid "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::GenoStruTrait::totNumLoci "
-
-Usage:
-
-    x.totNumLoci()
-
-Details:
-
-    return the total number of loci on all chromosomes.
-
-"; 
-
-%feature("docstring") simuPOP::GenoStruTrait::genoSize "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::GenoStruTrait::locusPos "
-
-Usage:
-
-    x.locusPos(locus)
-
-Details:
-
-    return the position of locus locus specified by the lociPos
-    parameter of the Population function.
-
-"; 
-
-%feature("docstring") simuPOP::GenoStruTrait::lociPos "
-
-Usage:
-
-    x.lociPos()
-
-Details:
-
-    return the positions of all loci, specified by the lociPos
-    prameter of the Population function. The default positions are 1,
-    2, 3, 4, ... on each chromosome.
-
-"; 
-
-%feature("docstring") simuPOP::GenoStruTrait::numChrom "
-
-Usage:
-
-    x.numChrom()
-
-Details:
-
-    return the number of chromosomes.
-
-"; 
-
-%ignore simuPOP::GenoStruTrait::chromIndex() const;
 
 %feature("docstring") simuPOP::GenoStruTrait::chromBegin "
 
@@ -2220,6 +2024,18 @@ Usage:
 Details:
 
     return the index of the first locus on chromosome chrom.
+
+"; 
+
+%feature("docstring") simuPOP::GenoStruTrait::chromByName "
+
+Usage:
+
+    x.chromByName(name)
+
+Details:
+
+    return the index of a chromosome by its name.
 
 "; 
 
@@ -2235,18 +2051,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::GenoStruTrait::absLocusIndex "
-
-Usage:
-
-    x.absLocusIndex(chrom, locus)
-
-Details:
-
-    return the absolute index of locus locus on chromosome chrom. c.f.
-    chromLocusPair.
-
-"; 
+%ignore simuPOP::GenoStruTrait::chromIndex() const;
 
 %feature("docstring") simuPOP::GenoStruTrait::chromLocusPair "
 
@@ -2311,66 +2116,132 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::GenoStruTrait::chromByName "
+%ignore simuPOP::GenoStruTrait::chromX() const;
+
+%ignore simuPOP::GenoStruTrait::chromY() const;
+
+%ignore simuPOP::GenoStruTrait::customizedChroms() const;
+
+%ignore simuPOP::GenoStruTrait::decGenoStruRef() const;
+
+%feature("docstring") simuPOP::GenoStruTrait::distLeft "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::GenoStruTrait::genoSize "Obsolete or undocumented function."
+
+%ignore simuPOP::GenoStruTrait::genoStru() const;
+
+%ignore simuPOP::GenoStruTrait::genoStruIdx() const;
+
+%ignore simuPOP::GenoStruTrait::gsAddChrom(const vectorf &lociPos, const vectorstr &lociNames, const string &chromName, const matrixstr &alleleNames, size_t chromType) const;
+
+%ignore simuPOP::GenoStruTrait::gsAddChromFromStru(size_t idx) const;
+
+%ignore simuPOP::GenoStruTrait::gsAddInfoFields(const vectorstr &fields);
+
+%ignore simuPOP::GenoStruTrait::gsAddLoci(const vectoru &chrom, const vectorf &pos, const vectorstr &lociNames, const matrixstr &alleleNames, vectoru &newIndex) const;
+
+%ignore simuPOP::GenoStruTrait::gsAddLociByNameFromStru(size_t idx, vectoru &index1, vectoru &index2) const;
+
+%ignore simuPOP::GenoStruTrait::gsAddLociFromStru(size_t idx, vectoru &index1, vectoru &index2) const;
+
+%ignore simuPOP::GenoStruTrait::gsRemoveLoci(const vectoru &kept);
+
+%ignore simuPOP::GenoStruTrait::gsSetAlleleNames(const lociList &loci, const matrixstr &alleleNames);
+
+%ignore simuPOP::GenoStruTrait::gsSetInfoFields(const vectorstr &fields);
+
+%feature("docstring") simuPOP::GenoStruTrait::hasInfoField "Obsolete or undocumented function."
+
+%ignore simuPOP::GenoStruTrait::incGenoStruRef() const;
+
+%feature("docstring") simuPOP::GenoStruTrait::indexesOfLoci "
 
 Usage:
 
-    x.chromByName(name)
+    x.indexesOfLoci(loci=ALL_AVAIL)
 
 Details:
 
-    return the index of a chromosome by its name.
+    return the indexes of loci with positions positions (list of (chr,
+    pos) pairs). Raise a ValueError if any of the loci cannot be
+    found.
 
 "; 
 
-%feature("docstring") simuPOP::GenoStruTrait::alleleName "
+%feature("docstring") simuPOP::GenoStruTrait::infoField "
 
 Usage:
 
-    x.alleleName(allele, locus=0)
+    x.infoField(idx)
 
 Details:
 
-    return the name of allele allele at lcous specified by the
-    alleleNames parameter of the Population function. locus could be
-    ignored if alleles at all loci share the same names. If the name
-    of an allele is unspecified, its value ('0', '1', '2', etc) is
-    returned.
+    return the name of information field idx.
 
 "; 
 
-%ignore simuPOP::GenoStruTrait::allAlleleNames() const;
-
-%feature("docstring") simuPOP::GenoStruTrait::alleleNames "
+%feature("docstring") simuPOP::GenoStruTrait::infoFields "
 
 Usage:
 
-    x.alleleNames(locus=0)
+    x.infoFields()
 
 Details:
 
-    return a list of allele names at given by the alleleNames
-    parameter of the Population function. locus could be ignored if
-    alleles at all loci share the same names. This list does not have
-    to cover all possible allele states of a population so
-    alleleNames()[allele] might fail (use alleleNames(allele)
-    instead).
+    return a list of the names of all information fields of the
+    population.
 
 "; 
 
-%feature("docstring") simuPOP::GenoStruTrait::locusName "
+%feature("docstring") simuPOP::GenoStruTrait::infoIdx "
 
 Usage:
 
-    x.locusName(locus)
+    x.infoIdx(name)
 
 Details:
 
-    return the name of locus locus specified by the lociNames
-    parameter of the Population function. An empty string will be
-    returned if no name has been given to locus locus.
+    return the index of information field name. Raise an IndexError if
+    name is not one of the information fields.
 
 "; 
+
+%feature("docstring") simuPOP::GenoStruTrait::infoSize "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::GenoStruTrait::isHaplodiploid "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::GenoStruTrait::lociByNames "
+
+Usage:
+
+    x.lociByNames(names)
+
+Details:
+
+    return the indexes of loci with names names. Raise a ValueError if
+    any of the loci cannot be found.
+
+"; 
+
+%ignore simuPOP::GenoStruTrait::lociByPos(const vectorpos &positions) const;
+
+%feature("docstring") simuPOP::GenoStruTrait::lociCovered "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::GenoStruTrait::lociDist "
+
+Usage:
+
+    x.lociDist(locus1, locus2)
+
+Details:
+
+    Return the distance between loci locus1 and locus2 on the same
+    chromosome. A negative value will be returned if locus1 is after
+    locus2.
+
+"; 
+
+%feature("docstring") simuPOP::GenoStruTrait::lociLeft "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::GenoStruTrait::lociNames "
 
@@ -2383,6 +2254,20 @@ Details:
     return the names of all loci specified by the lociNames parameter
     of the Population function. An empty list will be returned if
     lociNames was not specified.
+
+"; 
+
+%feature("docstring") simuPOP::GenoStruTrait::lociPos "
+
+Usage:
+
+    x.lociPos()
+
+Details:
+
+    return the positions of all loci, specified by the lociPos
+    prameter of the Population function. The default positions are 1,
+    2, 3, 4, ... on each chromosome.
 
 "; 
 
@@ -2400,86 +2285,149 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::GenoStruTrait::lociByNames "
+%feature("docstring") simuPOP::GenoStruTrait::locusName "
 
 Usage:
 
-    x.lociByNames(names)
+    x.locusName(locus)
 
 Details:
 
-    return the indexes of loci with names names. Raise a ValueError if
-    any of the loci cannot be found.
+    return the name of locus locus specified by the lociNames
+    parameter of the Population function. An empty string will be
+    returned if no name has been given to locus locus.
 
 "; 
 
-%feature("docstring") simuPOP::GenoStruTrait::indexesOfLoci "
+%feature("docstring") simuPOP::GenoStruTrait::locusPos "
 
 Usage:
 
-    x.indexesOfLoci(loci=ALL_AVAIL)
+    x.locusPos(locus)
 
 Details:
 
-    return the indexes of loci with positions positions (list of (chr,
-    pos) pairs). Raise a ValueError if any of the loci cannot be
-    found.
+    return the position of locus locus specified by the lociPos
+    parameter of the Population function.
 
 "; 
 
-%ignore simuPOP::GenoStruTrait::lociByPos(const vectorpos &positions) const;
+%ignore simuPOP::GenoStruTrait::mitochondrial() const;
 
-%feature("docstring") simuPOP::GenoStruTrait::hasInfoField "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::GenoStruTrait::infoSize "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::GenoStruTrait::infoFields "
+%feature("docstring") simuPOP::GenoStruTrait::numChrom "
 
 Usage:
 
-    x.infoFields()
+    x.numChrom()
 
 Details:
 
-    return a list of the names of all information fields of the
-    population.
+    return the number of chromosomes.
 
 "; 
 
-%feature("docstring") simuPOP::GenoStruTrait::infoField "
+%feature("docstring") simuPOP::GenoStruTrait::numLoci "
 
 Usage:
 
-    x.infoField(idx)
+    x.numLoci(chrom)
 
 Details:
 
-    return the name of information field idx.
+    return the number of loci on chromosome chrom.
 
 "; 
 
-%feature("docstring") simuPOP::GenoStruTrait::infoIdx "
+%feature("docstring") simuPOP::GenoStruTrait::numLoci "
 
 Usage:
 
-    x.infoIdx(name)
+    x.numLoci()
 
 Details:
 
-    return the index of information field name. Raise an IndexError if
-    name is not one of the information fields.
+    return a list of the number of loci on all chromosomes.
 
 "; 
 
-%ignore simuPOP::GenoStruTrait::gsAddInfoFields(const vectorstr &fields);
+%feature("docstring") simuPOP::GenoStruTrait::ploidy "
 
-%ignore simuPOP::GenoStruTrait::gsSetInfoFields(const vectorstr &fields);
+Usage:
+
+    x.ploidy()
+
+Details:
+
+    return the number of homologous sets of chromosomes, specified by
+    the ploidy parameter of the Population function. Return 2 for a
+    haplodiploid population because two sets of chromosomes are stored
+    for both males and females in such a population.
+
+"; 
+
+%feature("docstring") simuPOP::GenoStruTrait::ploidyName "
+
+Usage:
+
+    x.ploidyName()
+
+Details:
+
+    return the ploidy name of this population, can be one of haploid,
+    diploid, haplodiploid, triploid, tetraploid or #-ploid where # is
+    the ploidy number.
+
+"; 
+
+%ignore simuPOP::GenoStruTrait::setGenoStruIdx(size_t idx);
+
+%ignore simuPOP::GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru &loci, const vectoru &chromTypes, bool haplodiploid, const vectorf &lociPos, const vectorstr &chromNames, const matrixstr &alleleNames, const vectorstr &lociNames, const vectorstr &infoFields);
+
+%ignore simuPOP::GenoStruTrait::setGenoStructure(const GenoStructure &rhs);
+
+%feature("docstring") simuPOP::GenoStruTrait::sexChrom "Obsolete or undocumented function."
 
 %ignore simuPOP::GenoStruTrait::swap(GenoStruTrait &rhs);
 
-%ignore simuPOP::GenoStruTrait::incGenoStruRef() const;
+%ignore simuPOP::GenoStruTrait::swapGenoStru(GenoStruTrait &rhs);
 
-%ignore simuPOP::GenoStruTrait::decGenoStruRef() const;
+%feature("docstring") simuPOP::GenoStruTrait::totNumLoci "
+
+Usage:
+
+    x.totNumLoci()
+
+Details:
+
+    return the total number of loci on all chromosomes.
+
+"; 
+
+%ignore simuPOP::GenoStructure;
+
+%ignore simuPOP::GenoStructure::GenoStructure();
+
+%ignore simuPOP::GenoStructure::GenoStructure(UINT ploidy, const vectoru &loci, const vectoru &chromTypes, bool haplodiploid, const vectorf &lociPos, const vectorstr &chromNames, const matrixstr &alleleNames, const vectorstr &lociNames, const vectorstr &infoFields);
+
+%ignore simuPOP::GenoStructure::buildLociPosMap() const;
+
+%ignore simuPOP::GenoStructure::chromIndex(UINT ch) const;
+
+%ignore simuPOP::GenoStructure::locusPos(UINT locus) const;
+
+%ignore simuPOP::GenoStructure::setChromTypes(const vectoru &chromTypes);
+
+%feature("docstring") simuPOP::GenoStructure::~GenoStructure "
+
+Description:
+
+    destructor, do nothing.
+
+Usage:
+
+    x.~GenoStructure()
+
+"; 
 
 %feature("docstring") simuPOP::GenoTransmitter "
 
@@ -2505,7 +2453,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::GenoTransmitter::clone "Obsolete or undocumented function."
+%ignore simuPOP::GenoTransmitter::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
 
 %feature("docstring") simuPOP::GenoTransmitter::clearChromosome "
 
@@ -2522,6 +2470,8 @@ Details:
     type.
 
 "; 
+
+%feature("docstring") simuPOP::GenoTransmitter::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::GenoTransmitter::copyChromosome "
 
@@ -2560,8 +2510,6 @@ Details:
 %feature("docstring") simuPOP::GenoTransmitter::describe "Obsolete or undocumented function."
 
 %ignore simuPOP::GenoTransmitter::initialize(const Individual &ind) const;
-
-%ignore simuPOP::GenoTransmitter::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
 
 %ignore simuPOP::GenoTransmitter::initializeIfNeeded(const Individual &ind) const;
 
@@ -2610,25 +2558,11 @@ Details:
 
 "; 
 
+%ignore simuPOP::GenotypeSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
+
 %feature("docstring") simuPOP::GenotypeSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::GenotypeSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
-
-%feature("docstring") simuPOP::GenotypeSplitter::numVirtualSubPop "
-
-Description:
-
-    number of virtual subpops of subpopulation sp
-
-Usage:
-
-    x.numVirtualSubPop()
-
-"; 
-
 %ignore simuPOP::GenotypeSplitter::contains(const Population &pop, size_t ind, vspID vsp) const;
-
-%ignore simuPOP::GenotypeSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
 
 %feature("docstring") simuPOP::GenotypeSplitter::name "
 
@@ -2643,6 +2577,20 @@ Details:
     be returned if specified.
 
 "; 
+
+%feature("docstring") simuPOP::GenotypeSplitter::numVirtualSubPop "
+
+Description:
+
+    number of virtual subpops of subpopulation sp
+
+Usage:
+
+    x.numVirtualSubPop()
+
+"; 
+
+%ignore simuPOP::GenotypeSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
 
 %ignore simuPOP::GeometricNumOffModel;
 
@@ -2696,19 +2644,19 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::GlobalSeqSexModel::reset "
-
-Usage:
-
-    x.reset()
-
-"; 
-
 %feature("docstring") simuPOP::GlobalSeqSexModel::parallelizable "
 
 Usage:
 
     x.parallelizable()
+
+"; 
+
+%feature("docstring") simuPOP::GlobalSeqSexModel::reset "
+
+Usage:
+
+    x.reset()
 
 "; 
 
@@ -2743,13 +2691,13 @@ Details:
 
 "; 
 
+%ignore simuPOP::HaplodiploidGenoTransmitter::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+
 %feature("docstring") simuPOP::HaplodiploidGenoTransmitter::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::HaplodiploidGenoTransmitter::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::HaplodiploidGenoTransmitter::initialize "Obsolete or undocumented function."
-
-%ignore simuPOP::HaplodiploidGenoTransmitter::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
 
 %feature("docstring") simuPOP::HeteroMating "
 
@@ -2801,6 +2749,14 @@ Details:
 
 "; 
 
+%ignore simuPOP::HeteroMating::HeteroMating(const HeteroMating &rhs);
+
+%feature("docstring") simuPOP::HeteroMating::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::HeteroMating::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::HeteroMating::mate(Population &pop, Population &scratch);
+
 %feature("docstring") simuPOP::HeteroMating::~HeteroMating "
 
 Description:
@@ -2812,14 +2768,6 @@ Usage:
     x.~HeteroMating()
 
 "; 
-
-%ignore simuPOP::HeteroMating::HeteroMating(const HeteroMating &rhs);
-
-%feature("docstring") simuPOP::HeteroMating::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::HeteroMating::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::HeteroMating::mate(Population &pop, Population &scratch);
 
 %feature("docstring") simuPOP::HomoMating "
 
@@ -2859,6 +2807,18 @@ Details:
 
 "; 
 
+%ignore simuPOP::HomoMating::HomoMating(const HomoMating &rhs);
+
+%feature("docstring") simuPOP::HomoMating::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::HomoMating::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::HomoMating::mateSubPop(Population &pop, Population &offPop, size_t subPop, RawIndIterator offBegin, RawIndIterator offEnd);
+
+%ignore simuPOP::HomoMating::subPops() const;
+
+%ignore simuPOP::HomoMating::weight() const;
+
 %feature("docstring") simuPOP::HomoMating::~HomoMating "
 
 Description:
@@ -2870,18 +2830,6 @@ Usage:
     x.~HomoMating()
 
 "; 
-
-%ignore simuPOP::HomoMating::HomoMating(const HomoMating &rhs);
-
-%feature("docstring") simuPOP::HomoMating::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::HomoMating::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::HomoMating::subPops() const;
-
-%ignore simuPOP::HomoMating::weight() const;
-
-%ignore simuPOP::HomoMating::mateSubPop(Population &pop, Population &offPop, size_t subPop, RawIndIterator offBegin, RawIndIterator offEnd);
 
 %feature("docstring") simuPOP::IdTagger "
 
@@ -2922,15 +2870,15 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::IdTagger::~IdTagger "
+%feature("docstring") simuPOP::IdTagger::apply "Obsolete or undocumented function."
 
-Usage:
+%ignore simuPOP::IdTagger::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
 
-    x.~IdTagger()
-
-"; 
+%feature("docstring") simuPOP::IdTagger::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::IdTagger::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::IdTagger::parallelizable() const;
 
 %feature("docstring") simuPOP::IdTagger::reset "
 
@@ -2945,13 +2893,13 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::IdTagger::apply "Obsolete or undocumented function."
+%feature("docstring") simuPOP::IdTagger::~IdTagger "
 
-%ignore simuPOP::IdTagger::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+Usage:
 
-%feature("docstring") simuPOP::IdTagger::clone "Obsolete or undocumented function."
+    x.~IdTagger()
 
-%ignore simuPOP::IdTagger::parallelizable() const;
+"; 
 
 %feature("docstring") simuPOP::IfElse "
 
@@ -2992,6 +2940,14 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::IfElse::apply "Obsolete or undocumented function."
+
+%ignore simuPOP::IfElse::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+
+%feature("docstring") simuPOP::IfElse::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::IfElse::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::IfElse::~IfElse "
 
 Description:
@@ -3001,24 +2957,6 @@ Description:
 Usage:
 
     x.~IfElse()
-
-"; 
-
-%feature("docstring") simuPOP::IfElse::clone "Obsolete or undocumented function."
-
-%ignore simuPOP::IfElse::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
-
-%feature("docstring") simuPOP::IfElse::apply "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::IfElse::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::indCompare;
-
-%feature("docstring") simuPOP::indCompare::indCompare "
-
-Usage:
-
-    indCompare(idx, reverse=False)
 
 "; 
 
@@ -3080,27 +3018,17 @@ Details:
 
 %ignore simuPOP::Individual::Individual(const Individual &ind);
 
-%feature("docstring") simuPOP::Individual::~Individual "
-
-Description:
-
-    destructor. Do nothing.
+%feature("docstring") simuPOP::Individual::affected "
 
 Usage:
 
-    x.~Individual()
+    x.affected()
+
+Details:
+
+    Return True if this individual is affected.
 
 "; 
-
-%ignore simuPOP::Individual::setGenoPtr(GenoIterator pos);
-
-%ignore simuPOP::Individual::setInfoPtr(InfoIterator pos);
-
-%ignore simuPOP::Individual::copyFrom(const Individual &rhs);
-
-%ignore simuPOP::Individual::genoPtr() const;
-
-%ignore simuPOP::Individual::infoPtr() const;
 
 %feature("docstring") simuPOP::Individual::allele "
 
@@ -3131,22 +3059,6 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::Individual::setAllele "
-
-Usage:
-
-    x.setAllele(allele, idx, ploidy=-1, chrom=-1)
-
-Details:
-
-    set allele allele to a locus, using its absolute index idx. If a
-    ploidy ploidy and/or a chromosome indexes are given, idx is
-    relative to the beginning of specified homologous copy of
-    chromosomes (if chrom=-1) or the beginning of the specified
-    homologous copy of specified chromosome (if chrom >= 0).
-
-"; 
-
 %feature("docstring") simuPOP::Individual::alleleLineage "
 
 Usage:
@@ -3164,22 +3076,37 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::Individual::setAlleleLineage "
+%feature("docstring") simuPOP::Individual::cmp "
+
+Description:
+
+    a python function used to compare the individual objects
 
 Usage:
 
-    x.setAlleleLineage(lineage, idx, ploidy=-1, chrom=-1)
-
-Details:
-
-    set lineage lineage to an allele, using its absolute index idx. If
-    a ploidy ploidy and/or a chromosome indexes are given, idx is
-    relative to the beginning of specified homologous copy of
-    chromosomes (if chrom=-1) or the beginning of the specified
-    homologous copy of specified chromosome (if chrom >= 0). This
-    function does nothing for modules without lineage information.
+    x.__cmp__(rhs)
 
 "; 
+
+%ignore simuPOP::Individual::copyFrom(const Individual &rhs);
+
+%ignore simuPOP::Individual::display(ostream &out, int width=1, const vectoru &loci=vectoru(), const vectoru &infoIdx=vectoru());
+
+%ignore simuPOP::Individual::firstOffspring() const;
+
+%ignore simuPOP::Individual::genoAtLoci(const lociList &loci);
+
+%ignore simuPOP::Individual::genoBegin() const;
+
+%ignore simuPOP::Individual::genoBegin(size_t p) const;
+
+%ignore simuPOP::Individual::genoBegin(size_t p, size_t chrom) const;
+
+%ignore simuPOP::Individual::genoEnd() const;
+
+%ignore simuPOP::Individual::genoEnd(size_t p) const;
+
+%ignore simuPOP::Individual::genoPtr() const;
 
 %feature("docstring") simuPOP::Individual::genotype "
 
@@ -3198,6 +3125,52 @@ Details:
     alleles for sex and mitochondrial chromosomes.
 
 "; 
+
+%feature("docstring") simuPOP::Individual::info "
+
+Usage:
+
+    x.info(field)
+
+Details:
+
+    Return the value of an information field filed (by index or name).
+    ind.info(name) is equivalent to ind.name although the function
+    form allows the use of indexes of information fieldes.
+
+"; 
+
+%ignore simuPOP::Individual::infoBegin() const;
+
+%ignore simuPOP::Individual::infoEnd() const;
+
+%ignore simuPOP::Individual::infoPtr() const;
+
+%ignore simuPOP::Individual::intInfo(const uintString &field) const;
+
+%feature("docstring") simuPOP::Individual::lineage "
+
+Usage:
+
+    x.lineage(ploidy=ALL_AVAIL, chroms=ALL_AVAIL)
+
+Details:
+
+    return an editable array (a carray_lineage object) that represents
+    the lineages of all alleles of an individual. If ploidy or chroms
+    is given, only lineages on the specified chromosomes and
+    homologous copy of chromosomes will be returned. If multiple
+    chromosomes are specified, there should not be gaps between
+    chromosomes. This function ignores type of chromosomes so it will
+    return lineage of unused alleles for sex and mitochondrial
+    chromosomes. A None object will be returned for modules without
+    lineage information.
+
+"; 
+
+%ignore simuPOP::Individual::marked() const;
+
+%ignore simuPOP::Individual::mutAtLoci(const lociList &loci);
 
 %feature("docstring") simuPOP::Individual::mutants "
 
@@ -3220,29 +3193,54 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::Individual::lineage "
+%feature("docstring") simuPOP::Individual::setAffected "
 
 Usage:
 
-    x.lineage(ploidy=ALL_AVAIL, chroms=ALL_AVAIL)
+    x.setAffected(affected)
 
 Details:
 
-    return an editable array (a carray_lineage object) that represents
-    the lineages of all alleles of an individual. If ploidy or chroms
-    is given, only lineages on the specified chromosomes and
-    homologous copy of chromosomes will be returned. If multiple
-    chromosomes are specified, there should not be gaps between
-    chromosomes. This function ignores type of chromosomes so it will
-    return lineage of unused alleles for sex and mitochondrial
-    chromosomes. A None object will be returned for modules without
-    lineage information.
+    set affection status to affected (True or False).
 
 "; 
 
-%ignore simuPOP::Individual::mutAtLoci(const lociList &loci);
+%feature("docstring") simuPOP::Individual::setAllele "
 
-%ignore simuPOP::Individual::genoAtLoci(const lociList &loci);
+Usage:
+
+    x.setAllele(allele, idx, ploidy=-1, chrom=-1)
+
+Details:
+
+    set allele allele to a locus, using its absolute index idx. If a
+    ploidy ploidy and/or a chromosome indexes are given, idx is
+    relative to the beginning of specified homologous copy of
+    chromosomes (if chrom=-1) or the beginning of the specified
+    homologous copy of specified chromosome (if chrom >= 0).
+
+"; 
+
+%feature("docstring") simuPOP::Individual::setAlleleLineage "
+
+Usage:
+
+    x.setAlleleLineage(lineage, idx, ploidy=-1, chrom=-1)
+
+Details:
+
+    set lineage lineage to an allele, using its absolute index idx. If
+    a ploidy ploidy and/or a chromosome indexes are given, idx is
+    relative to the beginning of specified homologous copy of
+    chromosomes (if chrom=-1) or the beginning of the specified
+    homologous copy of specified chromosome (if chrom >= 0). This
+    function does nothing for modules without lineage information.
+
+"; 
+
+%ignore simuPOP::Individual::setFirstOffspring(bool first) const;
+
+%ignore simuPOP::Individual::setGenoPtr(GenoIterator pos);
 
 %feature("docstring") simuPOP::Individual::setGenotype "
 
@@ -3261,6 +3259,23 @@ Details:
     mitochondrial chromosomes.
 
 "; 
+
+%feature("docstring") simuPOP::Individual::setInfo "
+
+Usage:
+
+    x.setInfo(value, field)
+
+Details:
+
+    set the value of an information field field (by index or name) to
+    value. ind.setInfo(value, field) is equivalent to ind.field =
+    value although the function form allows the use of indexes of
+    information fieldes.
+
+"; 
+
+%ignore simuPOP::Individual::setInfoPtr(InfoIterator pos);
 
 %feature("docstring") simuPOP::Individual::setLineage "
 
@@ -3281,17 +3296,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::Individual::sex "
-
-Usage:
-
-    x.sex()
-
-Details:
-
-    return the sex of an individual, 1 for male and 2 for female.
-
-"; 
+%ignore simuPOP::Individual::setMarked(bool mark=true) const;
 
 %feature("docstring") simuPOP::Individual::setSex "
 
@@ -3305,102 +3310,35 @@ Details:
 
 "; 
 
-%ignore simuPOP::Individual::firstOffspring() const;
-
-%ignore simuPOP::Individual::setFirstOffspring(bool first) const;
-
-%feature("docstring") simuPOP::Individual::affected "
-
-Usage:
-
-    x.affected()
-
-Details:
-
-    Return True if this individual is affected.
-
-"; 
-
-%feature("docstring") simuPOP::Individual::setAffected "
-
-Usage:
-
-    x.setAffected(affected)
-
-Details:
-
-    set affection status to affected (True or False).
-
-"; 
-
-%ignore simuPOP::Individual::visible() const;
-
 %ignore simuPOP::Individual::setVisible(bool visible) const;
 
-%ignore simuPOP::Individual::marked() const;
-
-%ignore simuPOP::Individual::setMarked(bool mark=true) const;
-
-%feature("docstring") simuPOP::Individual::info "
+%feature("docstring") simuPOP::Individual::sex "
 
 Usage:
 
-    x.info(field)
+    x.sex()
 
 Details:
 
-    Return the value of an information field filed (by index or name).
-    ind.info(name) is equivalent to ind.name although the function
-    form allows the use of indexes of information fieldes.
-
-"; 
-
-%ignore simuPOP::Individual::intInfo(const uintString &field) const;
-
-%feature("docstring") simuPOP::Individual::setInfo "
-
-Usage:
-
-    x.setInfo(value, field)
-
-Details:
-
-    set the value of an information field field (by index or name) to
-    value. ind.setInfo(value, field) is equivalent to ind.field =
-    value although the function form allows the use of indexes of
-    information fieldes.
-
-"; 
-
-%ignore simuPOP::Individual::genoBegin() const;
-
-%ignore simuPOP::Individual::genoEnd() const;
-
-%ignore simuPOP::Individual::genoBegin(size_t p) const;
-
-%ignore simuPOP::Individual::genoEnd(size_t p) const;
-
-%ignore simuPOP::Individual::genoBegin(size_t p, size_t chrom) const;
-
-%ignore simuPOP::Individual::infoBegin() const;
-
-%ignore simuPOP::Individual::infoEnd() const;
-
-%feature("docstring") simuPOP::Individual::cmp "
-
-Description:
-
-    a python function used to compare the individual objects
-
-Usage:
-
-    x.__cmp__(rhs)
+    return the sex of an individual, 1 for male and 2 for female.
 
 "; 
 
 %ignore simuPOP::Individual::swap(Individual &ind, bool swapContent=true);
 
-%ignore simuPOP::Individual::display(ostream &out, int width=1, const vectoru &loci=vectoru(), const vectoru &infoIdx=vectoru());
+%ignore simuPOP::Individual::visible() const;
+
+%feature("docstring") simuPOP::Individual::~Individual "
+
+Description:
+
+    destructor. Do nothing.
+
+Usage:
+
+    x.~Individual()
+
+"; 
 
 %feature("docstring") simuPOP::IndividualIterator "
 
@@ -3424,19 +3362,19 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::IndividualIterator::valid "
-
-Usage:
-
-    x.valid()
-
-"; 
-
 %feature("docstring") simuPOP::IndividualIterator::rawIter "
 
 Usage:
 
     x.rawIter()
+
+"; 
+
+%feature("docstring") simuPOP::IndividualIterator::valid "
+
+Usage:
+
+    x.valid()
 
 "; 
 
@@ -3479,6 +3417,14 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::InfoEval::apply "Obsolete or undocumented function."
+
+%ignore simuPOP::InfoEval::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+
+%feature("docstring") simuPOP::InfoEval::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::InfoEval::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::InfoEval::~InfoEval "
 
 Usage:
@@ -3486,14 +3432,6 @@ Usage:
     x.~InfoEval()
 
 "; 
-
-%feature("docstring") simuPOP::InfoEval::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::InfoEval::apply "Obsolete or undocumented function."
-
-%ignore simuPOP::InfoEval::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
-
-%feature("docstring") simuPOP::InfoEval::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::InfoExec "
 
@@ -3534,37 +3472,19 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::InfoExec::apply "Obsolete or undocumented function."
+
+%ignore simuPOP::InfoExec::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+
+%feature("docstring") simuPOP::InfoExec::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::InfoExec::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::InfoExec::~InfoExec "
 
 Usage:
 
     x.~InfoExec()
-
-"; 
-
-%feature("docstring") simuPOP::InfoExec::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::InfoExec::apply "Obsolete or undocumented function."
-
-%ignore simuPOP::InfoExec::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
-
-%feature("docstring") simuPOP::InfoExec::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::InformationIterator;
-
-%feature("docstring") simuPOP::InformationIterator::InformationIterator "
-
-Usage:
-
-    InformationIterator()
-
-"; 
-
-%feature("docstring") simuPOP::InformationIterator::valid "
-
-Usage:
-
-    x.valid()
 
 "; 
 
@@ -3603,9 +3523,27 @@ Details:
 
 "; 
 
+%ignore simuPOP::InfoSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
+
 %feature("docstring") simuPOP::InfoSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::InfoSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
+%ignore simuPOP::InfoSplitter::contains(const Population &pop, size_t ind, vspID vsp) const;
+
+%feature("docstring") simuPOP::InfoSplitter::name "
+
+Usage:
+
+    x.name(vsp)
+
+Details:
+
+    Return the name of a VSP vsp, which is field = value if VSPs are
+    defined by values in parameter values, or field < value (the first
+    VSP), v1 <= field < v2 and field >= v (the last VSP) if VSPs are
+    defined by cutoff values. A user-specified name, if specified,
+    will be returned instead.
+
+"; 
 
 %feature("docstring") simuPOP::InfoSplitter::numVirtualSubPop "
 
@@ -3621,23 +3559,23 @@ Details:
 
 "; 
 
-%ignore simuPOP::InfoSplitter::contains(const Population &pop, size_t ind, vspID vsp) const;
+%ignore simuPOP::InfoSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
 
-%ignore simuPOP::InfoSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
+%ignore simuPOP::InformationIterator;
 
-%feature("docstring") simuPOP::InfoSplitter::name "
+%feature("docstring") simuPOP::InformationIterator::InformationIterator "
 
 Usage:
 
-    x.name(vsp)
+    InformationIterator()
 
-Details:
+"; 
 
-    Return the name of a VSP vsp, which is field = value if VSPs are
-    defined by values in parameter values, or field < value (the first
-    VSP), v1 <= field < v2 and field >= v (the last VSP) if VSPs are
-    defined by cutoff values. A user-specified name, if specified,
-    will be returned instead.
+%feature("docstring") simuPOP::InformationIterator::valid "
+
+Usage:
+
+    x.valid()
 
 "; 
 
@@ -3681,6 +3619,14 @@ Details:
 
 "; 
 
+%ignore simuPOP::InheritTagger::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+
+%feature("docstring") simuPOP::InheritTagger::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::InheritTagger::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::InheritTagger::parallelizable() const;
+
 %feature("docstring") simuPOP::InheritTagger::~InheritTagger "
 
 Usage:
@@ -3688,14 +3634,6 @@ Usage:
     x.~InheritTagger()
 
 "; 
-
-%feature("docstring") simuPOP::InheritTagger::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::InheritTagger::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
-
-%feature("docstring") simuPOP::InheritTagger::clone "Obsolete or undocumented function."
-
-%ignore simuPOP::InheritTagger::parallelizable() const;
 
 %feature("docstring") simuPOP::InitGenotype "
 
@@ -3713,41 +3651,53 @@ Details:
 Usage:
 
     InitGenotype(freq=[], genotype=[], prop=[], haplotypes=[],
-      loci=ALL_AVAIL, ploidy=ALL_AVAIL, begin=0, end=1, step=1, at=[],
-      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+      genotypes=[], loci=ALL_AVAIL, ploidy=ALL_AVAIL, begin=0, end=1,
+      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
 
 Details:
 
     This function creates an initializer that initializes individual
-    genotypes with random alleles or haplotypes with specified
-    frequencies (parameter freq) or proportions (parameter prop). If
-    parameter haplotypes is not specified, freq specifies the allele
-    frequencies of alleles 0, 1, ... respectively. Alternatively, you
-    can use parameter prop to specified the exact proportions of
-    alleles 0, 1, ..., although alleles with small proportions might
-    not be assigned at all. Values of parameter prob or prop should
-    add up to 1. In addition to a vector, parameter prob and prop can
-    also be a function that accepts optional parameters loc, subPop or
-    vsp and returns a list of requencies for alleles 0, 1, etc, or a
-    number for frequency of allele 0 as a speciail case for each
-    locus, subpopulation (parameter subPop), or virtual subpopulations
-    (parameter vsp, pass as a tuple). If parameter haplotypes is
-    specified, it should contain a list of haplotypes and parameter
-    prob or prop specifies frequencies or proportions of each
-    haplotype (possibly diferently for each subpopulation but not each
-    locus if the function form is used). If loci, ploidy and/or subPop
-    are specified, only specified loci, ploidy, and individuals in
-    these (virtual) subpopulations will be initialized. Parameter loci
-    can be a list of loci indexes, names or ALL_AVAIL. If the length
-    of a haplotype is not enough to fill all loci, the haplotype will
-    be reused. If a list (or a single) haplotypes are specified
-    without freq or prop, they are used with equal probability.  In
-    the last case, if a sequence of genotype is specified, it will be
+    genotypes with random alleles, genotypes, or haplotypes with
+    specified frequencies (parameter freq) or proportions (parameter
+    prop). If parameter genotypes or haplotypes is not specified, freq
+    specifies the allele frequencies of alleles 0, 1, 2...
+    respectively. Alternatively, you can use parameter prop to
+    specified the exact proportions of alleles 0, 1, ..., although
+    alleles with small proportions might not be assigned at all.
+    Values of parameter prob or prop should add up to 1. In addition
+    to a vector, parameter prob and prop can also be a function that
+    accepts optional parameters loc, subPop or vsp and returns a list
+    of requencies for alleles 0, 1, etc, or a number for frequency of
+    allele 0 as a speciail case for each locus, subpopulation
+    (parameter subPop), or virtual subpopulations (parameter vsp, pass
+    as a tuple).  If parameter genotypes is specified, it should
+    contain a list of genotypes (alleles on different strand of
+    chromosomes) with length equal to population ploidy. Parameter
+    prob and prop then specifies frequencies or proportions of each
+    genotype, which can vary for each subpopulation but not each locus
+    if the function form of parameters is used.  If parameter
+    haplotypes is specified, it should contain a list of haplotypes
+    (alleles on the same strand of chromosome) and parameter prob or
+    prop specifies frequencies or proportions of each haplotype.  If
+    loci, ploidy and/or subPop are specified, only specified loci,
+    ploidy, and individuals in these (virtual) subpopulations will be
+    initialized. Parameter loci can be a list of loci indexes, names
+    or ALL_AVAIL. If the length of a haplotype is not enough to fill
+    all loci, the haplotype will be reused. If a list (or a single)
+    haplotypes are specified without freq or prop, they are used with
+    equal probability.  In the last case, if a sequence of genotype is
+    specified through parameter genotype (not genotypes), it will be
     used repeatedly to initialize all alleles sequentially. This works
     similar to function Population.setGenotype() except that you can
     limit the initialization to certain loci and ploidy.
 
 "; 
+
+%feature("docstring") simuPOP::InitGenotype::apply "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::InitGenotype::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::InitGenotype::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::InitGenotype::~InitGenotype "
 
@@ -3756,12 +3706,6 @@ Usage:
     x.~InitGenotype()
 
 "; 
-
-%feature("docstring") simuPOP::InitGenotype::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::InitGenotype::describe "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::InitGenotype::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::InitInfo "
 
@@ -3794,6 +3738,12 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::InitInfo::apply "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::InitInfo::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::InitInfo::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::InitInfo::~InitInfo "
 
 Description:
@@ -3805,12 +3755,6 @@ Usage:
     x.~InitInfo()
 
 "; 
-
-%feature("docstring") simuPOP::InitInfo::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::InitInfo::describe "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::InitInfo::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::InitLineage "
 
@@ -3854,6 +3798,12 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::InitLineage::apply "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::InitLineage::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::InitLineage::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::InitLineage::~InitLineage "
 
 Usage:
@@ -3861,12 +3811,6 @@ Usage:
     x.~InitLineage()
 
 "; 
-
-%feature("docstring") simuPOP::InitLineage::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::InitLineage::describe "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::InitLineage::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::InitSex "
 
@@ -3902,6 +3846,12 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::InitSex::apply "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::InitSex::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::InitSex::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::InitSex::~InitSex "
 
 Description:
@@ -3913,54 +3863,6 @@ Usage:
     x.~InitSex()
 
 "; 
-
-%feature("docstring") simuPOP::InitSex::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::InitSex::describe "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::InitSex::apply "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::intList "
-
-Details:
-
-    A class to specify replicate list. The reason why I cannot simple
-    use vectori() is that users have got used to use a single number
-    to specify a single replicate.
-
-"; 
-
-%feature("docstring") simuPOP::intList::intList "
-
-Usage:
-
-    intList(obj=None)
-
-"; 
-
-%ignore simuPOP::intList::intList(const vectori &reps);
-
-%ignore simuPOP::intList::elems() const;
-
-%ignore simuPOP::intList::allAvail();
-
-%ignore simuPOP::intList::match(ssize_t rep, const vector< bool > *activeRep=NULL) const;
-
-%feature("docstring") simuPOP::intMatrix "
-
-"; 
-
-%feature("docstring") simuPOP::intMatrix::intMatrix "
-
-Usage:
-
-    intMatrix(obj=None)
-
-"; 
-
-%ignore simuPOP::intMatrix::empty() const;
-
-%ignore simuPOP::intMatrix::elems() const;
 
 %feature("docstring") simuPOP::KAlleleMutator "
 
@@ -3996,6 +3898,12 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::KAlleleMutator::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::KAlleleMutator::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::KAlleleMutator::mutate(Allele allele, size_t locus) const;
+
 %feature("docstring") simuPOP::KAlleleMutator::~KAlleleMutator "
 
 Usage:
@@ -4004,53 +3912,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::KAlleleMutator::mutate(Allele allele, size_t locus) const;
-
-%feature("docstring") simuPOP::KAlleleMutator::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::KAlleleMutator::describe "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::lociList "
-
-"; 
-
-%feature("docstring") simuPOP::lociList::lociList "
-
-Usage:
-
-    lociList(obj=Py_True)
-
-"; 
-
-%ignore simuPOP::lociList::lociList(const vectoru &values);
-
-%feature("docstring") simuPOP::lociList::empty "
-
-Usage:
-
-    x.empty()
-
-"; 
-
-%ignore simuPOP::lociList::size() const;
-
-%ignore simuPOP::lociList::name(size_t i) const;
-
-%ignore simuPOP::lociList::allAvail() const;
-
-%ignore simuPOP::lociList::unspecified() const;
-
-%feature("docstring") simuPOP::lociList::dynamic "
-
-Usage:
-
-    x.dynamic()
-
-"; 
-
-%ignore simuPOP::lociList::indexOf(size_t loc) const;
-
-%ignore simuPOP::lociList::elems(const GenoStruTrait *trait=NULL) const;
+%ignore simuPOP::LineageVecAsNumArray(LineageIterator begin, LineageIterator end);
 
 %feature("docstring") simuPOP::MaPenetrance "
 
@@ -4097,6 +3959,14 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::MaPenetrance::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::MaPenetrance::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::MaPenetrance::parallelizable() const;
+
+%ignore simuPOP::MaPenetrance::penet(Population *pop, RawIndIterator ind) const;
+
 %feature("docstring") simuPOP::MaPenetrance::~MaPenetrance "
 
 Usage:
@@ -4104,121 +3974,6 @@ Usage:
     x.~MaPenetrance()
 
 "; 
-
-%feature("docstring") simuPOP::MaPenetrance::clone "Obsolete or undocumented function."
-
-%ignore simuPOP::MaPenetrance::penet(Population *pop, RawIndIterator ind) const;
-
-%feature("docstring") simuPOP::MaPenetrance::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::MaPenetrance::parallelizable() const;
-
-%feature("docstring") simuPOP::MapPenetrance "
-
-Details:
-
-    This penetrance operator assigns individual affection status using
-    a user-specified penetrance dictionary.
-
-"; 
-
-%feature("docstring") simuPOP::MapPenetrance::MapPenetrance "
-
-Usage:
-
-    MapPenetrance(loci, penetrance, ancGens=UNSPECIFIED, begin=0,
-      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-      infoFields=[])
-
-Details:
-
-    Create a penetrance operator that get penetrance value from a
-    dictionary penetrance with genotype at loci as keys, and
-    penetrance as values. For each individual, genotypes at loci are
-    collected one by one (e.g. p0_loc0, p1_loc0, p0_loc1, p1_loc1...
-    for a diploid individual) and are looked up in the dictionary.
-    Parameter loci can be a list of loci indexes, names, list of
-    chromosome position pairs, ALL_AVAIL, or a function with optional
-    parameter pop that will be called at each ganeeration to determine
-    indexes of loci. If a genotype cannot be found, it will be looked
-    up again without phase information (e.g. (1,0) will match key
-    (0,1)). If the genotype still can not be found, a ValueError will
-    be raised. This operator supports sex chromosomes and haplodiploid
-    populations. In these cases, only valid genotypes should be used
-    to generator the dictionary keys.
-
-"; 
-
-%feature("docstring") simuPOP::MapPenetrance::~MapPenetrance "
-
-Usage:
-
-    x.~MapPenetrance()
-
-"; 
-
-%feature("docstring") simuPOP::MapPenetrance::clone "Obsolete or undocumented function."
-
-%ignore simuPOP::MapPenetrance::penet(Population *pop, RawIndIterator ind) const;
-
-%feature("docstring") simuPOP::MapPenetrance::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::MapPenetrance::parallelizable() const;
-
-%feature("docstring") simuPOP::MapSelector "
-
-Details:
-
-    This selector assigns individual fitness values using a user-
-    specified dictionary. This operator can be applied to populations
-    with arbitrary number of homologous chromosomes.
-
-"; 
-
-%feature("docstring") simuPOP::MapSelector::MapSelector "
-
-Usage:
-
-    MapSelector(loci, fitness, begin=0, end=-1, step=1, at=[],
-      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
-
-Details:
-
-    Create a selector that assigns individual fitness values using a
-    dictionary fitness with genotype at loci as keys, and fitness as
-    values. Parameter loci can be a list of indexes, loci names, list
-    of chromosome position pairs, ALL_AVAIL, or a function with
-    optional parameter pop that will be called at each ganeeration to
-    determine indexes of loci. For each individual (parents if this
-    operator is applied before mating, and offspring if this operator
-    is applied during mating), genotypes at loci are collected one by
-    one (e.g. p0_loc0, p1_loc0, p0_loc1, p1_loc1... for a diploid
-    individual, with number of alleles varying for sex and
-    mitochondrial DNAs) and are looked up in the dictionary. If a
-    genotype cannot be found, it will be looked up again without phase
-    information (e.g. (1,0) will match key (0,1)). If the genotype
-    still can not be found, a ValueError will be raised. This operator
-    supports sex chromosomes and haplodiploid populations. In these
-    cases, only valid genotypes should be used to generator the
-    dictionary keys.
-
-"; 
-
-%feature("docstring") simuPOP::MapSelector::~MapSelector "
-
-Usage:
-
-    x.~MapSelector()
-
-"; 
-
-%feature("docstring") simuPOP::MapSelector::clone "Obsolete or undocumented function."
-
-%ignore simuPOP::MapSelector::indFitness(Population &pop, RawIndIterator ind) const;
-
-%feature("docstring") simuPOP::MapSelector::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::MapSelector::parallelizable() const;
 
 %feature("docstring") simuPOP::MaSelector "
 
@@ -4264,6 +4019,14 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::MaSelector::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::MaSelector::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::MaSelector::indFitness(Population &pop, RawIndIterator ind) const;
+
+%ignore simuPOP::MaSelector::parallelizable() const;
+
 %feature("docstring") simuPOP::MaSelector::~MaSelector "
 
 Usage:
@@ -4272,13 +4035,112 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::MaSelector::clone "Obsolete or undocumented function."
+%feature("docstring") simuPOP::MapPenetrance "
 
-%ignore simuPOP::MaSelector::indFitness(Population &pop, RawIndIterator ind) const;
+Details:
 
-%feature("docstring") simuPOP::MaSelector::describe "Obsolete or undocumented function."
+    This penetrance operator assigns individual affection status using
+    a user-specified penetrance dictionary.
 
-%ignore simuPOP::MaSelector::parallelizable() const;
+"; 
+
+%feature("docstring") simuPOP::MapPenetrance::MapPenetrance "
+
+Usage:
+
+    MapPenetrance(loci, penetrance, ancGens=UNSPECIFIED, begin=0,
+      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
+      infoFields=[])
+
+Details:
+
+    Create a penetrance operator that get penetrance value from a
+    dictionary penetrance with genotype at loci as keys, and
+    penetrance as values. For each individual, genotypes at loci are
+    collected one by one (e.g. p0_loc0, p1_loc0, p0_loc1, p1_loc1...
+    for a diploid individual) and are looked up in the dictionary.
+    Parameter loci can be a list of loci indexes, names, list of
+    chromosome position pairs, ALL_AVAIL, or a function with optional
+    parameter pop that will be called at each ganeeration to determine
+    indexes of loci. If a genotype cannot be found, it will be looked
+    up again without phase information (e.g. (1,0) will match key
+    (0,1)). If the genotype still can not be found, a ValueError will
+    be raised. This operator supports sex chromosomes and haplodiploid
+    populations. In these cases, only valid genotypes should be used
+    to generator the dictionary keys.
+
+"; 
+
+%feature("docstring") simuPOP::MapPenetrance::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::MapPenetrance::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::MapPenetrance::parallelizable() const;
+
+%ignore simuPOP::MapPenetrance::penet(Population *pop, RawIndIterator ind) const;
+
+%feature("docstring") simuPOP::MapPenetrance::~MapPenetrance "
+
+Usage:
+
+    x.~MapPenetrance()
+
+"; 
+
+%feature("docstring") simuPOP::MapSelector "
+
+Details:
+
+    This selector assigns individual fitness values using a user-
+    specified dictionary. This operator can be applied to populations
+    with arbitrary number of homologous chromosomes.
+
+"; 
+
+%feature("docstring") simuPOP::MapSelector::MapSelector "
+
+Usage:
+
+    MapSelector(loci, fitness, begin=0, end=-1, step=1, at=[],
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
+
+Details:
+
+    Create a selector that assigns individual fitness values using a
+    dictionary fitness with genotype at loci as keys, and fitness as
+    values. Parameter loci can be a list of indexes, loci names, list
+    of chromosome position pairs, ALL_AVAIL, or a function with
+    optional parameter pop that will be called at each ganeeration to
+    determine indexes of loci. For each individual (parents if this
+    operator is applied before mating, and offspring if this operator
+    is applied during mating), genotypes at loci are collected one by
+    one (e.g. p0_loc0, p1_loc0, p0_loc1, p1_loc1... for a diploid
+    individual, with number of alleles varying for sex and
+    mitochondrial DNAs) and are looked up in the dictionary. If a
+    genotype cannot be found, it will be looked up again without phase
+    information (e.g. (1,0) will match key (0,1)). If the genotype
+    still can not be found, a ValueError will be raised. This operator
+    supports sex chromosomes and haplodiploid populations. In these
+    cases, only valid genotypes should be used to generator the
+    dictionary keys.
+
+"; 
+
+%feature("docstring") simuPOP::MapSelector::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::MapSelector::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::MapSelector::indFitness(Population &pop, RawIndIterator ind) const;
+
+%ignore simuPOP::MapSelector::parallelizable() const;
+
+%feature("docstring") simuPOP::MapSelector::~MapSelector "
+
+Usage:
+
+    x.~MapSelector()
+
+"; 
 
 %feature("docstring") simuPOP::MatingScheme "
 
@@ -4319,6 +4181,20 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::MatingScheme::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::MatingScheme::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::MatingScheme::mate(Population &pop, Population &scratch);
+
+%ignore simuPOP::MatingScheme::mateSubPop(Population &, Population &, size_t, RawIndIterator, RawIndIterator);
+
+%ignore simuPOP::MatingScheme::prepareScratchPop(Population &pop, Population &scratch);
+
+%ignore simuPOP::MatingScheme::subPopSizeSpecified();
+
+%ignore simuPOP::MatingScheme::submitScratch(Population &pop, Population &scratch);
+
 %feature("docstring") simuPOP::MatingScheme::~MatingScheme "
 
 Description:
@@ -4330,20 +4206,6 @@ Usage:
     x.~MatingScheme()
 
 "; 
-
-%feature("docstring") simuPOP::MatingScheme::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::MatingScheme::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::MatingScheme::submitScratch(Population &pop, Population &scratch);
-
-%ignore simuPOP::MatingScheme::mateSubPop(Population &, Population &, size_t, RawIndIterator, RawIndIterator);
-
-%ignore simuPOP::MatingScheme::mate(Population &pop, Population &scratch);
-
-%ignore simuPOP::MatingScheme::prepareScratchPop(Population &pop, Population &scratch);
-
-%ignore simuPOP::MatingScheme::subPopSizeSpecified();
 
 %feature("docstring") simuPOP::MatrixMutator "
 
@@ -4383,6 +4245,12 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::MatrixMutator::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::MatrixMutator::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::MatrixMutator::mutate(Allele allele, size_t locus) const;
+
 %feature("docstring") simuPOP::MatrixMutator::~MatrixMutator "
 
 Description:
@@ -4394,12 +4262,6 @@ Usage:
     x.~MatrixMutator()
 
 "; 
-
-%ignore simuPOP::MatrixMutator::mutate(Allele allele, size_t locus) const;
-
-%feature("docstring") simuPOP::MatrixMutator::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::MatrixMutator::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::MendelianGenoTransmitter "
 
@@ -4431,13 +4293,15 @@ Details:
 
 "; 
 
+%ignore simuPOP::MendelianGenoTransmitter::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+
 %feature("docstring") simuPOP::MendelianGenoTransmitter::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::MendelianGenoTransmitter::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::MendelianGenoTransmitter::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
-
 %feature("docstring") simuPOP::MendelianGenoTransmitter::initialize "Obsolete or undocumented function."
+
+%ignore simuPOP::MendelianGenoTransmitter::parallelizable() const;
 
 %feature("docstring") simuPOP::MendelianGenoTransmitter::transmitGenotype "
 
@@ -4453,8 +4317,6 @@ Details:
     properly, according to offspring sex and ploidy.
 
 "; 
-
-%ignore simuPOP::MendelianGenoTransmitter::parallelizable() const;
 
 %feature("docstring") simuPOP::MergeSubPops "
 
@@ -4484,6 +4346,12 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::MergeSubPops::apply "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::MergeSubPops::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::MergeSubPops::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::MergeSubPops::~MergeSubPops "
 
 Description:
@@ -4495,12 +4363,6 @@ Usage:
     x.~MergeSubPops()
 
 "; 
-
-%feature("docstring") simuPOP::MergeSubPops::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::MergeSubPops::apply "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::MergeSubPops::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::Migrator "
 
@@ -4585,6 +4447,12 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::Migrator::apply "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::Migrator::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::Migrator::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::Migrator::~Migrator "
 
 Description:
@@ -4596,12 +4464,6 @@ Usage:
     x.~Migrator()
 
 "; 
-
-%feature("docstring") simuPOP::Migrator::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::Migrator::apply "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::Migrator::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::MitochondrialGenoTransmitter "
 
@@ -4643,13 +4505,13 @@ Details:
 
 "; 
 
+%ignore simuPOP::MitochondrialGenoTransmitter::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+
 %feature("docstring") simuPOP::MitochondrialGenoTransmitter::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::MitochondrialGenoTransmitter::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::MitochondrialGenoTransmitter::initialize "Obsolete or undocumented function."
-
-%ignore simuPOP::MitochondrialGenoTransmitter::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
 
 %ignore simuPOP::MitochondrialGenoTransmitter::parallelizable() const;
 
@@ -4688,9 +4550,9 @@ Details:
 
 %feature("docstring") simuPOP::MixedMutator::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::MixedMutator::mutate(Allele allele, size_t locus) const;
-
 %feature("docstring") simuPOP::MixedMutator::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::MixedMutator::mutate(Allele allele, size_t locus) const;
 
 %feature("docstring") simuPOP::MlPenetrance "
 
@@ -4735,6 +4597,14 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::MlPenetrance::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::MlPenetrance::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::MlPenetrance::parallelizable() const;
+
+%ignore simuPOP::MlPenetrance::penet(Population *pop, RawIndIterator ind) const;
+
 %feature("docstring") simuPOP::MlPenetrance::~MlPenetrance "
 
 Usage:
@@ -4742,14 +4612,6 @@ Usage:
     x.~MlPenetrance()
 
 "; 
-
-%feature("docstring") simuPOP::MlPenetrance::clone "Obsolete or undocumented function."
-
-%ignore simuPOP::MlPenetrance::penet(Population *pop, RawIndIterator ind) const;
-
-%feature("docstring") simuPOP::MlPenetrance::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::MlPenetrance::parallelizable() const;
 
 %feature("docstring") simuPOP::MlSelector "
 
@@ -4790,6 +4652,14 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::MlSelector::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::MlSelector::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::MlSelector::indFitness(Population &pop, RawIndIterator ind) const;
+
+%ignore simuPOP::MlSelector::parallelizable() const;
+
 %feature("docstring") simuPOP::MlSelector::~MlSelector "
 
 Usage:
@@ -4797,57 +4667,6 @@ Usage:
     x.~MlSelector()
 
 "; 
-
-%feature("docstring") simuPOP::MlSelector::clone "Obsolete or undocumented function."
-
-%ignore simuPOP::MlSelector::indFitness(Population &pop, RawIndIterator ind) const;
-
-%feature("docstring") simuPOP::MlSelector::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::MlSelector::parallelizable() const;
-
-%feature("docstring") simuPOP::NoneOp "
-
-Details:
-
-    This operator does nothing when it is applied to a population. It
-    is usually used as a placeholder when an operator is needed
-    syntactically.
-
-"; 
-
-%feature("docstring") simuPOP::NoneOp::NoneOp "
-
-Usage:
-
-    NoneOp(output=\">\", begin=0, end=0, step=1, at=[],
-      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
-
-Details:
-
-    Create a NoneOp.
-
-"; 
-
-%feature("docstring") simuPOP::NoneOp::~NoneOp "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~NoneOp()
-
-"; 
-
-%feature("docstring") simuPOP::NoneOp::clone "Obsolete or undocumented function."
-
-%ignore simuPOP::NoneOp::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
-
-%feature("docstring") simuPOP::NoneOp::apply "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::NoneOp::describe "Obsolete or undocumented function."
 
 %ignore simuPOP::NoSexModel;
 
@@ -4883,6 +4702,49 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::NoneOp "
+
+Details:
+
+    This operator does nothing when it is applied to a population. It
+    is usually used as a placeholder when an operator is needed
+    syntactically.
+
+"; 
+
+%feature("docstring") simuPOP::NoneOp::NoneOp "
+
+Usage:
+
+    NoneOp(output=\">\", begin=0, end=0, step=1, at=[],
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+Details:
+
+    Create a NoneOp.
+
+"; 
+
+%feature("docstring") simuPOP::NoneOp::apply "Obsolete or undocumented function."
+
+%ignore simuPOP::NoneOp::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+
+%feature("docstring") simuPOP::NoneOp::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::NoneOp::describe "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::NoneOp::~NoneOp "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~NoneOp()
+
+"; 
+
 %ignore simuPOP::NumOfFemalesSexModel;
 
 %feature("docstring") simuPOP::NumOfFemalesSexModel::NumOfFemalesSexModel "
@@ -4910,56 +4772,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::NumOfFemalesSexModel::parallelizable "
-
-Usage:
-
-    x.parallelizable()
-
-"; 
-
-%ignore simuPOP::NumOffModel;
-
-%feature("docstring") simuPOP::NumOffModel::NumOffModel "
-
-Usage:
-
-    NumOffModel()
-
-"; 
-
-%feature("docstring") simuPOP::NumOffModel::~NumOffModel "
-
-Usage:
-
-    x.~NumOffModel()
-
-"; 
-
-%feature("docstring") simuPOP::NumOffModel::getNumOff "
-
-Usage:
-
-    x.getNumOff(gen)
-
-"; 
-
-%feature("docstring") simuPOP::NumOffModel::reset "
-
-Usage:
-
-    x.reset()
-
-"; 
-
-%feature("docstring") simuPOP::NumOffModel::clone "
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::NumOffModel::parallelizable "
 
 Usage:
 
@@ -4998,6 +4810,56 @@ Usage:
 Usage:
 
     x.parallelizable()
+
+"; 
+
+%ignore simuPOP::NumOffModel;
+
+%feature("docstring") simuPOP::NumOffModel::NumOffModel "
+
+Usage:
+
+    NumOffModel()
+
+"; 
+
+%feature("docstring") simuPOP::NumOffModel::clone "
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::NumOffModel::getNumOff "
+
+Usage:
+
+    x.getNumOff(gen)
+
+"; 
+
+%feature("docstring") simuPOP::NumOffModel::parallelizable "
+
+Usage:
+
+    x.parallelizable()
+
+"; 
+
+%feature("docstring") simuPOP::NumOffModel::reset "
+
+Usage:
+
+    x.reset()
+
+"; 
+
+%feature("docstring") simuPOP::NumOffModel::~NumOffModel "
+
+Usage:
+
+    x.~NumOffModel()
 
 "; 
 
@@ -5088,6 +4950,24 @@ Details:
 
 %ignore simuPOP::OffspringGenerator::OffspringGenerator(const OffspringGenerator &rhs);
 
+%feature("docstring") simuPOP::OffspringGenerator::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::OffspringGenerator::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::OffspringGenerator::finalize(const Population &);
+
+%ignore simuPOP::OffspringGenerator::generateOffspring(Population &pop, Population &offPop, Individual *dad, Individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd);
+
+%ignore simuPOP::OffspringGenerator::getSex(UINT count);
+
+%ignore simuPOP::OffspringGenerator::initialize(const Population &pop, size_t subPop);
+
+%ignore simuPOP::OffspringGenerator::initialized();
+
+%ignore simuPOP::OffspringGenerator::numOffspring(ssize_t gen);
+
+%ignore simuPOP::OffspringGenerator::parallelizable() const;
+
 %feature("docstring") simuPOP::OffspringGenerator::~OffspringGenerator "
 
 Usage:
@@ -5095,24 +4975,6 @@ Usage:
     x.~OffspringGenerator()
 
 "; 
-
-%feature("docstring") simuPOP::OffspringGenerator::clone "Obsolete or undocumented function."
-
-%ignore simuPOP::OffspringGenerator::initialize(const Population &pop, size_t subPop);
-
-%ignore simuPOP::OffspringGenerator::generateOffspring(Population &pop, Population &offPop, Individual *dad, Individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd);
-
-%ignore simuPOP::OffspringGenerator::finalize(const Population &);
-
-%feature("docstring") simuPOP::OffspringGenerator::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::OffspringGenerator::initialized();
-
-%ignore simuPOP::OffspringGenerator::numOffspring(ssize_t gen);
-
-%ignore simuPOP::OffspringGenerator::getSex(UINT count);
-
-%ignore simuPOP::OffspringGenerator::parallelizable() const;
 
 %feature("docstring") simuPOP::OffspringTagger "
 
@@ -5143,6 +5005,14 @@ Details:
 
 "; 
 
+%ignore simuPOP::OffspringTagger::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+
+%feature("docstring") simuPOP::OffspringTagger::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::OffspringTagger::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::OffspringTagger::parallelizable() const;
+
 %feature("docstring") simuPOP::OffspringTagger::~OffspringTagger "
 
 Usage:
@@ -5151,49 +5021,19 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::OffspringTagger::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::OffspringTagger::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::OffspringTagger::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
-
-%ignore simuPOP::OffspringTagger::parallelizable() const;
-
-%feature("docstring") simuPOP::opList "
-
-"; 
-
-%feature("docstring") simuPOP::opList::opList "
-
-Usage:
-
-    opList(ops=[])
-
-"; 
-
-%ignore simuPOP::opList::opList(const opList &rhs);
-
-%feature("docstring") simuPOP::opList::~opList "
-
-Usage:
-
-    x.~opList()
-
-"; 
-
-%ignore simuPOP::opList::begin() const;
-
-%ignore simuPOP::opList::end() const;
-
-%ignore simuPOP::opList::size() const;
-
-%ignore simuPOP::opList::empty() const;
-
-%ignore simuPOP::opList::elems() const;
-
 %ignore simuPOP::OstreamManager;
 
 %ignore simuPOP::OstreamManager::OstreamManager();
+
+%ignore simuPOP::OstreamManager::closeAll();
+
+%ignore simuPOP::OstreamManager::closeOstream(const string &filename);
+
+%ignore simuPOP::OstreamManager::getOstream(const string &name, bool readable, bool realAppend, bool useString);
+
+%ignore simuPOP::OstreamManager::hasOstream(const string &filename);
+
+%ignore simuPOP::OstreamManager::listAll();
 
 %feature("docstring") simuPOP::OstreamManager::~OstreamManager "
 
@@ -5202,16 +5042,6 @@ Usage:
     x.~OstreamManager()
 
 "; 
-
-%ignore simuPOP::OstreamManager::getOstream(const string &name, bool readable, bool realAppend, bool useString);
-
-%ignore simuPOP::OstreamManager::hasOstream(const string &filename);
-
-%ignore simuPOP::OstreamManager::listAll();
-
-%ignore simuPOP::OstreamManager::closeOstream(const string &filename);
-
-%ignore simuPOP::OstreamManager::closeAll();
 
 %feature("docstring") simuPOP::ParentChooser "
 
@@ -5233,7 +5063,24 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::ParentChooser::chooseParents "
+
+Description:
+
+    Return chosen parents from a population if the parent chooser
+    object is created with a population.
+
+Usage:
+
+    x.chooseParents()
+
+"; 
+
 %feature("docstring") simuPOP::ParentChooser::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::ParentChooser::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::ParentChooser::finalize();
 
 %feature("docstring") simuPOP::ParentChooser::initialize "
 
@@ -5248,26 +5095,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::ParentChooser::finalize();
-
-%feature("docstring") simuPOP::ParentChooser::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::ParentChooser::parallelizable() const;
-
 %ignore simuPOP::ParentChooser::initialized() const;
 
-%feature("docstring") simuPOP::ParentChooser::chooseParents "
-
-Description:
-
-    Return chosen parents from a population if the parent chooser
-    object is created with a population.
-
-Usage:
-
-    x.chooseParents()
-
-"; 
+%ignore simuPOP::ParentChooser::parallelizable() const;
 
 %feature("docstring") simuPOP::ParentChooser::~ParentChooser "
 
@@ -5318,6 +5148,14 @@ Details:
 
 "; 
 
+%ignore simuPOP::ParentsTagger::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+
+%feature("docstring") simuPOP::ParentsTagger::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::ParentsTagger::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::ParentsTagger::parallelizable() const;
+
 %feature("docstring") simuPOP::ParentsTagger::~ParentsTagger "
 
 Usage:
@@ -5325,14 +5163,6 @@ Usage:
     x.~ParentsTagger()
 
 "; 
-
-%feature("docstring") simuPOP::ParentsTagger::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::ParentsTagger::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::ParentsTagger::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
-
-%ignore simuPOP::ParentsTagger::parallelizable() const;
 
 %feature("docstring") simuPOP::Pause "
 
@@ -5378,6 +5208,12 @@ Note:
 
 "; 
 
+%feature("docstring") simuPOP::Pause::apply "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::Pause::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::Pause::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::Pause::~Pause "
 
 Description:
@@ -5389,12 +5225,6 @@ Usage:
     x.~Pause()
 
 "; 
-
-%feature("docstring") simuPOP::Pause::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::Pause::apply "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::Pause::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::Pedigree "
 
@@ -5451,11 +5281,11 @@ Details:
 
 %ignore simuPOP::Pedigree::Pedigree(const Pedigree &rhs);
 
-%ignore simuPOP::Pedigree::idIdx() const;
+%feature("docstring") simuPOP::Pedigree::addChrom "Obsolete or undocumented function."
 
-%ignore simuPOP::Pedigree::fatherOf(size_t id) const;
+%feature("docstring") simuPOP::Pedigree::addChromFrom "Obsolete or undocumented function."
 
-%ignore simuPOP::Pedigree::motherOf(size_t id) const;
+%feature("docstring") simuPOP::Pedigree::addIndFrom "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::Pedigree::clone "
 
@@ -5469,30 +5299,72 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::Pedigree::save "
+%ignore simuPOP::Pedigree::fatherOf(size_t id) const;
+
+%ignore simuPOP::Pedigree::idIdx() const;
+
+%feature("docstring") simuPOP::Pedigree::identifyAncestors "
 
 Usage:
 
-    x.save(filename, infoFields=[], loci=[])
+    x.identifyAncestors(IDs=ALL_AVAIL, subPops=ALL_AVAIL,
+      ancGens=ALL_AVAIL)
 
 Details:
 
-    Save a pedigree to file filename. This function goes through all
-    individuals of a pedigree and outputs in each line the ID of
-    individual, IDs of his or her parents, sex ('M' or 'F'), affection
-    status ('A' or 'U'), values of specified information fields
-    infoFields and genotypes at specified loci (parameter loci, which
-    can be a list of loci indexes, names, or ALL_AVAIL). Allele
-    numbers, instead of their names are outputed. Two columns are used
-    for each locus if the population is diploid. This file can be
-    loaded using function loadPedigree although additional information
-    such as names of information fields need to be specified. This
-    format differs from a .ped file used in some genetic analysis
-    software in that there is no family ID and IDs of all individuals
-    have to be unique. Note that parental IDs will be set to zero if
-    the parent is not in the pedigree object. Therefore, the parents
-    of individuals in the top-most ancestral generation will always be
-    zero.
+    If a list of individuals (IDs) is given, this function traces
+    backward in time and find all ancestors of these individuals. If
+    IDs is ALL_AVAIL, ancestors of all individuals in the present
+    generation will be located. If a list of (virtual) subpopulations
+    (subPops) or ancestral geneartions (ancGens) is given, the search
+    will be limited to individuals in these subpopulations and
+    generations. This could be used to, for example, find all fathers
+    of IDs. This function returns a list of IDs, which includes valid
+    specified IDs. Invalid IDs will be silently ignored. Note that
+    parameters subPops and ancGens will limit starting IDs if IDs is
+    set to ALL_AVAIL, but specified IDs will not be trimmed according
+    to these parameters.
+
+"; 
+
+%feature("docstring") simuPOP::Pedigree::identifyFamilies "
+
+Usage:
+
+    x.identifyFamilies(pedField=\"\", subPops=ALL_AVAIL,
+      ancGens=ALL_AVAIL)
+
+Details:
+
+    This function goes through all individuals in a pedigree and group
+    related individuals into families. If an information field
+    pedField is given, indexes of families will be assigned to this
+    field of each family member. The return value is a list of family
+    sizes corresponding to families 0, 1, 2, ... etc. If a list of
+    (virtual) subpopulations (parameter subPops) or ancestral
+    generations are specified (parameter ancGens), the search will be
+    limited to individuals in these subpopulations and generations.
+
+"; 
+
+%feature("docstring") simuPOP::Pedigree::identifyOffspring "
+
+Usage:
+
+    x.identifyOffspring(IDs=[], subPops=ALL_AVAIL,
+      ancGens=ALL_AVAIL)
+
+Details:
+
+    This function traces forward in time and find all offspring of
+    individuals specified in parameter IDs. If a list of (virtual)
+    subpopulations (subPops) or ancestral geneartions (ancGens) is
+    given, the search will be limited to individuals in these
+    subpopulations and generations. This could be used to, for
+    example, find all male offspring of IDs. This function returns a
+    list of IDs, which includes valid starting IDs. Invalid IDs are
+    silently ignored. Note that parameters subPops and ancGens will
+    limit search result but will not be used to trim specified IDs.
 
 "; 
 
@@ -5512,7 +5384,28 @@ Details:
 
 %ignore simuPOP::Pedigree::indByID(size_t id) const;
 
-%feature("docstring") simuPOP::Pedigree::numParents "Obsolete or undocumented function."
+%feature("docstring") simuPOP::Pedigree::individualsWithRelatives "
+
+Usage:
+
+    x.individualsWithRelatives(infoFields, sex=[],
+      affectionStatus=[], subPops=ALL_AVAIL, ancGens=ALL_AVAIL)
+
+Details:
+
+    Return a list of IDs of individuals who have non-negative values
+    at information fields infoFields. Additional requirements could be
+    specified by parameters sex and affectionStatus. sex can be
+    ANY_SEX (default), MALE_ONLY, FEMALE_ONLY, SAME_SEX or
+    OPPOSITE_SEX, and affectionStatus can be AFFECTED, UNAFFECTED or
+    ANY_AFFECTION_STATUS (default). This function by default check all
+    individuals in all ancestral generations, but you could limit the
+    search using parameter subPops (a list of (virtual)
+    subpopulations) and ancestral generations ancGens. Relatives fall
+    out of specified subpopulations and ancestral generaions will be
+    considered invalid.
+
+"; 
 
 %feature("docstring") simuPOP::Pedigree::locateRelatives "
 
@@ -5550,6 +5443,49 @@ Details:
     certain ancestral generations you would like to process.
 
 "; 
+
+%feature("docstring") simuPOP::Pedigree::mergeSubPops "Obsolete or undocumented function."
+
+%ignore simuPOP::Pedigree::motherOf(size_t id) const;
+
+%feature("docstring") simuPOP::Pedigree::numParents "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::Pedigree::push "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::Pedigree::removeIndividuals "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::Pedigree::removeSubPops "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::Pedigree::resize "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::Pedigree::save "
+
+Usage:
+
+    x.save(filename, infoFields=[], loci=[])
+
+Details:
+
+    Save a pedigree to file filename. This function goes through all
+    individuals of a pedigree and outputs in each line the ID of
+    individual, IDs of his or her parents, sex ('M' or 'F'), affection
+    status ('A' or 'U'), values of specified information fields
+    infoFields and genotypes at specified loci (parameter loci, which
+    can be a list of loci indexes, names, or ALL_AVAIL). Allele
+    numbers, instead of their names are outputed. Two columns are used
+    for each locus if the population is diploid. This file can be
+    loaded using function loadPedigree although additional information
+    such as names of information fields need to be specified. This
+    format differs from a .ped file used in some genetic analysis
+    software in that there is no family ID and IDs of all individuals
+    have to be unique. Note that parental IDs will be set to zero if
+    the parent is not in the pedigree object. Therefore, the parents
+    of individuals in the top-most ancestral generation will always be
+    zero.
+
+"; 
+
+%feature("docstring") simuPOP::Pedigree::setSubPopByIndInfo "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::Pedigree::traceRelatives "
 
@@ -5590,112 +5526,6 @@ Details:
     individuals in these ancestral generations will be processed.
 
 "; 
-
-%feature("docstring") simuPOP::Pedigree::individualsWithRelatives "
-
-Usage:
-
-    x.individualsWithRelatives(infoFields, sex=[],
-      affectionStatus=[], subPops=ALL_AVAIL, ancGens=ALL_AVAIL)
-
-Details:
-
-    Return a list of IDs of individuals who have non-negative values
-    at information fields infoFields. Additional requirements could be
-    specified by parameters sex and affectionStatus. sex can be
-    ANY_SEX (default), MALE_ONLY, FEMALE_ONLY, SAME_SEX or
-    OPPOSITE_SEX, and affectionStatus can be AFFECTED, UNAFFECTED or
-    ANY_AFFECTION_STATUS (default). This function by default check all
-    individuals in all ancestral generations, but you could limit the
-    search using parameter subPops (a list of (virtual)
-    subpopulations) and ancestral generations ancGens. Relatives fall
-    out of specified subpopulations and ancestral generaions will be
-    considered invalid.
-
-"; 
-
-%feature("docstring") simuPOP::Pedigree::identifyFamilies "
-
-Usage:
-
-    x.identifyFamilies(pedField=\"\", subPops=ALL_AVAIL,
-      ancGens=ALL_AVAIL)
-
-Details:
-
-    This function goes through all individuals in a pedigree and group
-    related individuals into families. If an information field
-    pedField is given, indexes of families will be assigned to this
-    field of each family member. The return value is a list of family
-    sizes corresponding to families 0, 1, 2, ... etc. If a list of
-    (virtual) subpopulations (parameter subPops) or ancestral
-    generations are specified (parameter ancGens), the search will be
-    limited to individuals in these subpopulations and generations.
-
-"; 
-
-%feature("docstring") simuPOP::Pedigree::identifyAncestors "
-
-Usage:
-
-    x.identifyAncestors(IDs=ALL_AVAIL, subPops=ALL_AVAIL,
-      ancGens=ALL_AVAIL)
-
-Details:
-
-    If a list of individuals (IDs) is given, this function traces
-    backward in time and find all ancestors of these individuals. If
-    IDs is ALL_AVAIL, ancestors of all individuals in the present
-    generation will be located. If a list of (virtual) subpopulations
-    (subPops) or ancestral geneartions (ancGens) is given, the search
-    will be limited to individuals in these subpopulations and
-    generations. This could be used to, for example, find all fathers
-    of IDs. This function returns a list of IDs, which includes valid
-    specified IDs. Invalid IDs will be silently ignored. Note that
-    parameters subPops and ancGens will limit starting IDs if IDs is
-    set to ALL_AVAIL, but specified IDs will not be trimmed according
-    to these parameters.
-
-"; 
-
-%feature("docstring") simuPOP::Pedigree::identifyOffspring "
-
-Usage:
-
-    x.identifyOffspring(IDs=[], subPops=ALL_AVAIL,
-      ancGens=ALL_AVAIL)
-
-Details:
-
-    This function traces forward in time and find all offspring of
-    individuals specified in parameter IDs. If a list of (virtual)
-    subpopulations (subPops) or ancestral geneartions (ancGens) is
-    given, the search will be limited to individuals in these
-    subpopulations and generations. This could be used to, for
-    example, find all male offspring of IDs. This function returns a
-    list of IDs, which includes valid starting IDs. Invalid IDs are
-    silently ignored. Note that parameters subPops and ancGens will
-    limit search result but will not be used to trim specified IDs.
-
-"; 
-
-%feature("docstring") simuPOP::Pedigree::removeIndividuals "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::Pedigree::removeSubPops "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::Pedigree::push "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::Pedigree::addChrom "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::Pedigree::addChromFrom "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::Pedigree::addIndFrom "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::Pedigree::mergeSubPops "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::Pedigree::resize "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::Pedigree::setSubPopByIndInfo "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PedigreeMating "
 
@@ -5738,14 +5568,6 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::PedigreeMating::~PedigreeMating "
-
-Usage:
-
-    x.~PedigreeMating()
-
-"; 
-
 %feature("docstring") simuPOP::PedigreeMating::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PedigreeMating::describe "Obsolete or undocumented function."
@@ -5757,6 +5579,14 @@ Usage:
 Usage:
 
     x.parallelizable()
+
+"; 
+
+%feature("docstring") simuPOP::PedigreeMating::~PedigreeMating "
+
+Usage:
+
+    x.~PedigreeMating()
 
 "; 
 
@@ -5818,6 +5648,16 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::PedigreeTagger::apply "Obsolete or undocumented function."
+
+%ignore simuPOP::PedigreeTagger::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+
+%feature("docstring") simuPOP::PedigreeTagger::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::PedigreeTagger::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::PedigreeTagger::parallelizable() const;
+
 %feature("docstring") simuPOP::PedigreeTagger::~PedigreeTagger "
 
 Usage:
@@ -5825,16 +5665,6 @@ Usage:
     x.~PedigreeTagger()
 
 "; 
-
-%feature("docstring") simuPOP::PedigreeTagger::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::PedigreeTagger::describe "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::PedigreeTagger::apply "Obsolete or undocumented function."
-
-%ignore simuPOP::PedigreeTagger::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
-
-%ignore simuPOP::PedigreeTagger::parallelizable() const;
 
 %feature("docstring") simuPOP::PointMutator "
 
@@ -5870,6 +5700,12 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::PointMutator::apply "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::PointMutator::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::PointMutator::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::PointMutator::~PointMutator "
 
 Description:
@@ -5881,12 +5717,6 @@ Usage:
     x.~PointMutator()
 
 "; 
-
-%feature("docstring") simuPOP::PointMutator::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::PointMutator::apply "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::PointMutator::describe "Obsolete or undocumented function."
 
 %ignore simuPOP::PoissonNumOffModel;
 
@@ -5946,11 +5776,22 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::PolyParentsChooser::chooseParents "
+
+Description:
+
+    Return chosen parents from a population if the parent chooser
+    object is created with a population.
+
+Usage:
+
+    x.chooseParents()
+
+"; 
+
 %feature("docstring") simuPOP::PolyParentsChooser::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PolyParentsChooser::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::PolyParentsChooser::parallelizable() const;
 
 %feature("docstring") simuPOP::PolyParentsChooser::initialize "
 
@@ -5965,18 +5806,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::PolyParentsChooser::chooseParents "
-
-Description:
-
-    Return chosen parents from a population if the parent chooser
-    object is created with a population.
-
-Usage:
-
-    x.chooseParents()
-
-"; 
+%ignore simuPOP::PolyParentsChooser::parallelizable() const;
 
 %feature("docstring") simuPOP::Population "
 
@@ -6107,6 +5937,174 @@ Arguments:
 
 %ignore simuPOP::Population::Population(const Population &rhs);
 
+%feature("docstring") simuPOP::Population::absIndIndex "
+
+Usage:
+
+    x.absIndIndex(idx, subPop)
+
+Details:
+
+    return the absolute index of an individual idx in subpopulation
+    subPop.
+
+"; 
+
+%feature("docstring") simuPOP::Population::activateVirtualSubPop "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::Population::addChrom "
+
+Usage:
+
+    x.addChrom(lociPos, lociNames=[], chromName=\"\", alleleNames=[],
+      chromType=AUTOSOME)
+
+Details:
+
+    Add chromosome chromName with given type chromType to a
+    population, with loci lociNames inserted at position lociPos.
+    lociPos should be ordered. lociNames and chromName should not
+    exist in the current population. Allele names could be specified
+    for all loci (a list of names) or differently for each locus (a
+    nested list of names), using parameter alleleNames. Empty loci
+    names will be used if lociNames is not specified. The newly added
+    alleles will have zero lineage in modules wiht lineage
+    information.
+
+"; 
+
+%feature("docstring") simuPOP::Population::addChromFrom "
+
+Usage:
+
+    x.addChromFrom(pop)
+
+Details:
+
+    Add chromosomes in population pop to the current population.
+    population pop should have the same number of individuals as the
+    current population in the current and all ancestral generations.
+    Chromosomes of pop, if named, should not conflict with names of
+    existing chromosome. This function merges genotypes on the new
+    chromosomes from population pop individual by individual.
+
+"; 
+
+%feature("docstring") simuPOP::Population::addIndFrom "
+
+Usage:
+
+    x.addIndFrom(pop)
+
+Details:
+
+    Add all individuals, including ancestors, in pop to the current
+    population. Two populations should have the same genotypic
+    structures and number of ancestral generations. Subpopulations in
+    population pop are kept.
+
+"; 
+
+%feature("docstring") simuPOP::Population::addInfoFields "
+
+Usage:
+
+    x.addInfoFields(fields, init=0)
+
+Details:
+
+    Add a list of information fields fields to a population and
+    initialize their values to init. If an information field alreay
+    exists, it will be re-initialized.
+
+"; 
+
+%feature("docstring") simuPOP::Population::addLoci "
+
+Usage:
+
+    x.addLoci(chrom, pos, lociNames=[], alleleNames=[])
+
+Details:
+
+    Insert loci lociNames at positions pos on chromosome chrom. These
+    parameters should be lists of the same length, although names may
+    be ignored, in which case empty strings will be assumed. Single-
+    value input is allowed for parameter chrom and pos if only one
+    locus is added. Alleles at inserted loci are initialized with zero
+    alleles. Note that loci have to be added to existing chromosomes.
+    If loci on a new chromosome need to be added, function addChrom
+    should be used. Optionally, allele names could be specified either
+    for all loci (a single list) or each loci (a nested list). This
+    function returns indexes of the inserted loci. Newly inserted
+    alleles will have zero lineage in modules with lineage
+    information.
+
+"; 
+
+%feature("docstring") simuPOP::Population::addLociFrom "
+
+Usage:
+
+    x.addLociFrom(pop, byName=False)
+
+Details:
+
+    Add loci from population pop. By default, chromosomes are merged
+    by index and names of merged chromosomes of population pop will be
+    ignored (merge of two chromosomes with different names will yield
+    a warning). If byName is set to True, chromosomes in pop will be
+    merged to chromosomes with identical names. Added loci will be
+    inserted according to their position. Their position and names
+    should not overlap with any locus in the current population.
+    population pop should have the same number of individuals as the
+    current population in the current and all ancestral generations.
+    Allele lineages are also copied from pop in modules with lineage
+    information.
+
+"; 
+
+%ignore simuPOP::Population::alleleIterator(size_t locus);
+
+%ignore simuPOP::Population::alleleIterator(size_t locus, size_t subPop);
+
+%ignore simuPOP::Population::alleleIterator(size_t locus) const;
+
+%feature("docstring") simuPOP::Population::ancestor "
+
+Usage:
+
+    x.ancestor(idx, gen, subPop=[])
+
+Details:
+
+    Return a reference to individual idx in ancestral generation gen.
+    The correct individual will be returned even if the current
+    generation is not the present one (see also useAncestralGen). If a
+    valid subPop is specified, index is relative to that subPop.
+    Virtual subpopulation is not supported. Note that a float idx is
+    acceptable as long as it rounds closely to an integer.
+
+"; 
+
+%ignore simuPOP::Population::ancestor(double idx, ssize_t gen, vspID subPop=vspID()) const;
+
+%feature("docstring") simuPOP::Population::ancestralGens "
+
+Usage:
+
+    x.ancestralGens()
+
+Details:
+
+    Return the actual number of ancestral generations stored in a
+    population, which does not necessarily equal to the number set by
+    setAncestralDepth().
+
+"; 
+
+%ignore simuPOP::Population::clearInfo();
+
 %feature("docstring") simuPOP::Population::clone "
 
 Usage:
@@ -6120,35 +6118,129 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::Population::swap "
-
-Usage:
-
-    x.swap(rhs)
-
-Details:
-
-    Swap the content of two population objects, which can be handy in
-    some particular circumstances. For example, you could swap out a
-    population in a simulator.
-
-"; 
-
-%feature("docstring") simuPOP::Population::~Population "
+%feature("docstring") simuPOP::Population::cmp "
 
 Description:
 
-    destroy a population
+    a python function used to compare the population objects
 
 Usage:
 
-    x.~Population()
+    x.__cmp__(rhs)
 
 "; 
 
-%ignore simuPOP::Population::validate(const string &msg) const;
+%feature("docstring") simuPOP::Population::curAncestralGen "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::Population::deactivateVirtualSubPop "Obsolete or undocumented function."
+
+%ignore simuPOP::Population::dict(vspID subPop=vspID());
+
+%feature("docstring") simuPOP::Population::dvars "
+
+Usage:
+
+    x.dvars(subPop=[])
+
+Details:
+
+    Return a wrapper of Python dictionary returned by vars(subPop) so
+    that dictionary keys can be accessed as attributes.
+
+"; 
+
+%feature("docstring") simuPOP::Population::evaluate "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::Population::execute "Obsolete or undocumented function."
+
+%ignore simuPOP::Population::extract(const lociList &extractedLoci, const stringList &infoFieldList, const subPopList &subPops=subPopList(), const uintList &ancGens=uintList()) const;
+
+%feature("docstring") simuPOP::Population::extractIndividuals "
+
+Usage:
+
+    x.extractIndividuals(indexes=[], IDs=[], idField=\"ind_id\",
+      filter=None)
+
+Details:
+
+    Extract individuals with given absolute indexes (parameter
+    indexes), IDs (parameter IDs, stored in information field idField,
+    default to ind_id), or a filter function (parameter filter). If a
+    list of absolute indexes are specified, the present generation
+    will be extracted and form a one-generational population. If a
+    list of IDs are specified, this function will look through all
+    ancestral generations and extract individuals with given ID.
+    Individuals with shared IDs are allowed. In the last case, a user-
+    defined Python function should be provided. This function should
+    accept parameter \"ind\" or one or more of the information fields.
+    All individuals, including ancestors if there are multiple
+    ancestral generations, will be passed to this function.
+    Individuals that returns True will be extracted. Extracted
+    individuals will be in their original ancestral generations and
+    subpopulations, even if some subpopulations or generations are
+    empty. An IndexError will be raised if an index is out of bound
+    but no error will be given if an invalid ID is encountered.
+
+"; 
+
+%ignore simuPOP::Population::extractMarkedIndividuals() const;
+
+%feature("docstring") simuPOP::Population::extractSubPops "
+
+Usage:
+
+    x.extractSubPops(subPops=ALL_AVAIL, rearrange=False)
+
+Details:
+
+    Extract a list of (virtual) subpopulations from a population and
+    create a new population. If rearrange is False (default),
+    structure and names of extracted subpopulations are kept although
+    extracted subpopulations can have fewer individuals if they are
+    created from extracted virtual subpopulations. (e.g. it is
+    possible to extract all male individuals from a subpopulation
+    using a SexSplitter()). If rearrange is True, each (virtual)
+    subpopulation in subPops becomes a new subpopulation in the
+    extracted population in the order at which they are specified.
+    Because each virtual subpopulation becomes a subpopulation, this
+    function could be used, for example, to separate male and female
+    individuals to two subpopulations ( subPops=[(0,0), (0,1)]). If
+    overlapping (virtual) subpopulations are specified, individuals
+    will be copied multiple times. This function only extract
+    individuals from the present generation.
+
+"; 
+
+%feature("docstring") simuPOP::Population::fitGenoStru "Obsolete or undocumented function."
 
 %ignore simuPOP::Population::fitSubPopStru(const vectoru &newSubPopSizes, const vectorstr &newSubPopNames);
+
+%ignore simuPOP::Population::gen() const;
+
+%ignore simuPOP::Population::genoBegin(bool order);
+
+%ignore simuPOP::Population::genoBegin(size_t subPop, bool order);
+
+%ignore simuPOP::Population::genoEnd(bool order);
+
+%ignore simuPOP::Population::genoEnd(size_t subPop, bool order);
+
+%feature("docstring") simuPOP::Population::genotype "
+
+Usage:
+
+    x.genotype(subPop=[])
+
+Details:
+
+    Return an editable array of the genotype of all individuals in a
+    population (if subPop=[], default), or individuals in a
+    subpopulation subPop. Virtual subpopulation is unsupported.
+
+"; 
+
+%ignore simuPOP::Population::getVars() const;
 
 %ignore simuPOP::Population::hasActivatedVirtualSubPop() const;
 
@@ -6156,31 +6248,168 @@ Usage:
 
 %ignore simuPOP::Population::hasVirtualSubPop() const;
 
-%feature("docstring") simuPOP::Population::virtualSplitter "
+%feature("docstring") simuPOP::Population::indByID "
 
 Usage:
 
-    x.virtualSplitter()
+    x.indByID(id, ancGens=ALL_AVAIL, idField=\"ind_id\")
 
 Details:
 
-    Return the virtual splitter associated with the population, None
-    will be returned if there is no splitter.
+    Return a reference to individual with id stored in information
+    field idField (default to ind_id). This function by default search
+    the present and all ancestral generations (ancGen=ALL_AVAIL), but
+    you can limit the search in specific generations if you know which
+    generations to search (ancGens=[0,1] for present and parental
+    generations) or UNSPECIFIED to search only the current generation.
+    If no individual with id is found, an IndexError will be raised. A
+    float id is acceptable as long as it rounds closely to an integer.
+    Note that this function uses a dynamic searching algorithm which
+    tends to be slow. If you need to look for multiple individuals
+    from a static population, you might want to convert a population
+    object to a pedigree object and use function Pedigree.indByID.
 
 "; 
 
-%feature("docstring") simuPOP::Population::setVirtualSplitter "
+%ignore simuPOP::Population::indGenoBegin(size_t ind) const;
+
+%ignore simuPOP::Population::indGenoEnd(size_t ind) const;
+
+%feature("docstring") simuPOP::Population::indInfo "
 
 Usage:
 
-    x.setVirtualSplitter(splitter)
+    x.indInfo(field, subPop=[])
 
 Details:
 
-    Set a VSP splitter to the population, which defines the same VSPs
-    for all subpopulations. If different VSPs are needed for different
-    subpopulations, a CombinedSplitter can be used to make these VSPs
-    available to all subpopulations.
+    Return the values (as a list) of information field field (by index
+    or name) of all individuals (if subPop=[], default), or
+    individuals in a (virtual) subpopulation (if subPop=sp or (sp,
+    vsp)).
+
+"; 
+
+%ignore simuPOP::Population::indIterator();
+
+%ignore simuPOP::Population::indIterator(size_t subPop);
+
+%ignore simuPOP::Population::indIterator() const;
+
+%ignore simuPOP::Population::indOrdered() const;
+
+%ignore simuPOP::Population::individual(size_t idx, vspID subPop=vspID());
+
+%feature("docstring") simuPOP::Population::individual "
+
+Usage:
+
+    x.individual(idx, subPop=[])
+
+Details:
+
+    Return a refernce to individual idx in the population (if
+    subPop=[], default) or a subpopulation (if subPop=sp). Virtual
+    subpopulation is not supported. Note that a float idx is
+    acceptable as long as it rounds closely to an integer.
+
+"; 
+
+%ignore simuPOP::Population::individual(double idx, vspID subPop=vspID()) const;
+
+%feature("docstring") simuPOP::Population::individuals "
+
+Usage:
+
+    x.individuals(subPop=[])
+
+Details:
+
+    Return an iterator that can be used to iterate through all
+    individuals in a population (if subPop=[], default), or a
+    (virtual) subpopulation (subPop=spID or (spID, vspID)). If you
+    would like to iterate through multiple subpopulations in multiple
+    ancestral generations, please use function
+    Population.allIndividuals().
+
+"; 
+
+%ignore simuPOP::Population::infoBegin(size_t idx);
+
+%ignore simuPOP::Population::infoEnd(size_t idx);
+
+%ignore simuPOP::Population::keepAncestralGens(const uintList &ancGens);
+
+%feature("docstring") simuPOP::Population::lineage "
+
+Usage:
+
+    x.lineage(subPop=[])
+
+Details:
+
+    Return an editable array of the lineage of alleles for all
+    individuals in a population (if subPop=[], default), or
+    individuals in a subpopulation subPop. Virtual subpopulation is
+    unsupported. This function returns None for modules without
+    lineage information.
+
+"; 
+
+%ignore simuPOP::Population::load(const string &filename);
+
+%ignore simuPOP::Population::markIndividuals(vspID subPop, bool mark) const;
+
+%feature("docstring") simuPOP::Population::mergeSubPops "
+
+Usage:
+
+    x.mergeSubPops(subPops=ALL_AVAIL, name=\"\", toSubPop=-1)
+
+Details:
+
+    Merge subpopulations subPops. If subPops is ALL_AVAIL (default),
+    all subpopulations will be merged. subPops do not have to be
+    adjacent to each other. They will all be merged to the
+    subpopulation with the smallest subpopulation ID, unless a
+    subpopulation ID is specified using parameter toSubPop. Indexes of
+    the rest of the subpopulation may be changed. A new name can be
+    assigned to the merged subpopulation through parameter name (an
+    empty name will be ignored). This function returns the ID of the
+    merged subpopulation.
+
+"; 
+
+%feature("docstring") simuPOP::Population::mutants "
+
+Usage:
+
+    x.mutants(subPop=[])
+
+Details:
+
+    Return an iterator that iterate through mutants of all individuals
+    in a population (if subPop=[], default), or individuals in a
+    subpopulation subPop. Virtual subpopulation is unsupported. Each
+    mutant is presented as a tuple of (index, value) where index is
+    the index of mutant (from 0 to totNumLoci()*ploidy()) so you will
+    have to adjust its value to check multiple alleles at a locus.
+    This function ignores type of chromosomes so non-zero alleles in
+    unused alleles of sex and mitochondrial chromosomes are also
+    iterated.
+
+"; 
+
+%feature("docstring") simuPOP::Population::numSubPop "
+
+Usage:
+
+    x.numSubPop()
+
+Details:
+
+    Return the number of subpopulations in a population. Return 1 if
+    there is no subpopulation structure.
 
 "; 
 
@@ -6197,53 +6426,363 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::Population::activateVirtualSubPop "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::Population::deactivateVirtualSubPop "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::Population::cmp "
-
-Description:
-
-    a python function used to compare the population objects
+%feature("docstring") simuPOP::Population::popSize "
 
 Usage:
 
-    x.__cmp__(rhs)
+    x.popSize(ancGen=-1)
+
+Details:
+
+    Return the total number of individuals in all subpopulations of
+    the current generation (default) or the an ancestral generation
+    ancGen.
 
 "; 
 
-%feature("docstring") simuPOP::Population::fitGenoStru "Obsolete or undocumented function."
+%feature("docstring") simuPOP::Population::push "
+
+Usage:
+
+    x.push(pop)
+
+Details:
+
+    Push population pop into the current population. Both populations
+    should have the same genotypic structure. The current population
+    is discarded if ancestralDepth (maximum number of ancestral
+    generations to hold) is zero so no ancestral generation can be
+    kept. Otherise, the current population will become the parental
+    generation of pop. If ancGen of a population is positive and there
+    are already ancGen ancestral generations (c.f. ancestralGens()),
+    the greatest ancestral generation will be discarded. In any case,
+    Populationpop becomes invalid as all its individuals are absorbed
+    by the current population.
+
+"; 
+
+%ignore simuPOP::Population::rawIndBegin();
+
+%ignore simuPOP::Population::rawIndBegin(size_t subPop);
+
+%ignore simuPOP::Population::rawIndBegin() const;
+
+%ignore simuPOP::Population::rawIndEnd();
+
+%ignore simuPOP::Population::rawIndEnd(size_t subPop);
+
+%feature("docstring") simuPOP::Population::recodeAlleles "
+
+Usage:
+
+    x.recodeAlleles(alleles, loci=ALL_AVAIL, alleleNames=[])
+
+Details:
+
+    Recode alleles at loci (can be a list of loci indexes or names, or
+    all loci in a population (ALL_AVAIL)) to other values according to
+    parameter alleles. This parameter can a list of new allele numbers
+    for alleles 0, 1, 2, ... (allele x will be recoded to
+    newAlleles[x], x outside of the range of newAlleles will not be
+    recoded, although a warning will be given if DBG_WARNING is
+    defined) or a Python function, which should accept one or both
+    parameters allele (existing allele) and locus (index of locus).
+    The return value will become the new allele. This function is
+    intended to recode some alleles without listing all alleles in a
+    list. It will be called once for each existing allele so it is not
+    possible to recode an allele to different alleles. A new list of
+    allele names could be specified for these loci. Different sets of
+    names could be specified for each locus if a nested list of names
+    are given. This function recode alleles for all subpopulations in
+    all ancestral generations.
+
+"; 
+
+%feature("docstring") simuPOP::Population::removeIndividuals "
+
+Usage:
+
+    x.removeIndividuals(indexes=[], IDs=[], idField=\"ind_id\",
+      filter=None)
+
+Details:
+
+    remove individual(s) by absolute indexes (parameter index) or
+    their IDs (parameter IDs), or using a filter function (paramter
+    filter). If indexes are used, only individuals at the current
+    generation will be removed. If IDs are used, all individuals with
+    one of the IDs at information field idField (default to \"ind_id\")
+    will be removed. Although \"ind_id\" usually stores unique IDs of
+    individuals, this function is frequently used to remove groups of
+    individuals with the same value at an information field. An
+    IndexError will be raised if an index is out of bound, but no
+    error will be given if an invalid ID is specified. In the last
+    case, a user-defined function should be provided. This function
+    should accept parameter \"ind\" or one or more of the information
+    fields. All individuals, including ancestors if there are multiple
+    ancestral generations, will be passed to this function.
+    Individuals that returns True will be removed. This function does
+    not affect subpopulation structure in the sense that a
+    subpopulation will be kept even if all individuals from it are
+    removed.
+
+"; 
+
+%feature("docstring") simuPOP::Population::removeInfoFields "
+
+Usage:
+
+    x.removeInfoFields(fields)
+
+Details:
+
+    Remove information fields fields from a population.
+
+"; 
+
+%feature("docstring") simuPOP::Population::removeLoci "
+
+Usage:
+
+    x.removeLoci(loci=UNSPECIFIED, keep=UNSPECIFIED)
+
+Details:
+
+    Remove loci (absolute indexes or names) and genotypes at these
+    loci from the current population. Alternatively, a parameter keep
+    can be used to specify loci that will not be removed.
+
+"; 
+
+%ignore simuPOP::Population::removeMarkedIndividuals();
+
+%feature("docstring") simuPOP::Population::removeSubPops "
+
+Usage:
+
+    x.removeSubPops(subPops)
+
+Details:
+
+    Remove (virtual) subpopulation(s) subPops and all their
+    individuals. This function can be used to remove complete
+    subpopulations (with shifted subpopulation indexes) or individuals
+    belonging to virtual subpopulations of a subpopulation. In the
+    latter case, the subpopulations are kept even if all individuals
+    have been removed. This function only handles the present
+    generation.
+
+"; 
+
+%ignore simuPOP::Population::rep();
+
+%feature("docstring") simuPOP::Population::resize "
+
+Usage:
+
+    x.resize(sizes, propagate=False)
+
+Details:
+
+    Resize population by giving new subpopulation sizes sizes.
+    individuals at the end of some subpopulations will be removed if
+    the new subpopulation size is smaller than the old one. New
+    individuals will be appended to a subpopulation if the new size is
+    larger. Their genotypes will be set to zero (default), or be
+    copied from existing individuals if propagate is set to True. More
+    specifically, if a subpopulation with 3 individuals is expanded to
+    7, the added individuals will copy genotypes from individual 1, 2,
+    3, and 1 respectively. Note that this function only resizes the
+    current generation.
+
+"; 
+
+%feature("docstring") simuPOP::Population::save "
+
+Usage:
+
+    x.save(filename)
+
+Details:
+
+    Save population to a file filename, which can be loaded by a
+    global function loadPopulation(filename).
+
+"; 
+
+%feature("docstring") simuPOP::Population::setAncestralDepth "
+
+Usage:
+
+    x.setAncestralDepth(depth)
+
+Details:
+
+    set the intended ancestral depth of a population to depth, which
+    can be 0 (does not store any ancestral generation), -1 (store all
+    ancestral generations), and a positive number (store depth
+    ancestral generations. If there exists more than depth ancestral
+    generations (if depth > 0), extra ancestral generations are
+    removed.
+
+"; 
+
+%ignore simuPOP::Population::setDict(PyObject *dict);
+
+%ignore simuPOP::Population::setGen(size_t gen);
+
+%feature("docstring") simuPOP::Population::setGenotype "
+
+Usage:
+
+    x.setGenotype(geno, subPop=[])
+
+Details:
+
+    Fill the genotype of all individuals in a population (if
+    subPop=[]) or in a (virtual) subpopulation subPop (if subPop=sp or
+    (sp, vsp)) using a list of alleles geno. geno will be reused if
+    its length is less than subPopSize(subPop)*totNumLoci()*ploidy().
+
+"; 
+
+%feature("docstring") simuPOP::Population::setIndInfo "
+
+Usage:
+
+    x.setIndInfo(values, field, subPop=[])
+
+Details:
+
+    Set information field field (specified by index or name) of all
+    individuals (if subPop=[], default), or individuals in a (virtual)
+    subpopulation (subPop=sp or (sp, vsp)) to values. values will be
+    reused if its length is smaller than the size of the population or
+    (virtual) subpopulation.
+
+"; 
+
+%ignore simuPOP::Population::setIndOrdered(bool s) const;
+
+%feature("docstring") simuPOP::Population::setInfoFields "
+
+Usage:
+
+    x.setInfoFields(fields, init=0)
+
+Details:
+
+    Set information fields fields to a population and initialize them
+    with value init. All existing information fields will be removed.
+
+"; 
+
+%feature("docstring") simuPOP::Population::setLineage "
+
+Usage:
+
+    x.setLineage(geno, subPop=[])
+
+Details:
+
+    Fill the lineage of all individuals in a population (if subPop=[])
+    or in a (virtual) subpopulation subPop (if subPop=sp or (sp, vsp))
+    using a list of IDs lineage. lineage will be reused if its length
+    is less than subPopSize(subPop)*totNumLoci()*ploidy(). This
+    function returns directly for modules without lineage information.
+
+"; 
+
+%ignore simuPOP::Population::setRep(size_t rep);
+
+%feature("docstring") simuPOP::Population::setSubPopByIndInfo "
+
+Usage:
+
+    x.setSubPopByIndInfo(field)
+
+Details:
+
+    Rearrange individuals to their new subpopulations according to
+    their integer values at information field field (value returned by
+    Individual::info(field)). individuals with negative values at this
+    field will be removed. Existing subpopulation names are kept. New
+    subpopulations will have empty names.
+
+"; 
+
+%feature("docstring") simuPOP::Population::setSubPopName "
+
+Usage:
+
+    x.setSubPopName(name, subPop)
+
+Details:
+
+    Assign a name name to subpopulation subPop. Note that
+    subpopulation names do not have to be unique.
+
+"; 
 
 %feature("docstring") simuPOP::Population::setSubPopStru "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::Population::numSubPop "
+%feature("docstring") simuPOP::Population::setVirtualSplitter "
 
 Usage:
 
-    x.numSubPop()
+    x.setVirtualSplitter(splitter)
 
 Details:
 
-    Return the number of subpopulations in a population. Return 1 if
-    there is no subpopulation structure.
+    Set a VSP splitter to the population, which defines the same VSPs
+    for all subpopulations. If different VSPs are needed for different
+    subpopulations, a CombinedSplitter can be used to make these VSPs
+    available to all subpopulations.
 
 "; 
 
-%feature("docstring") simuPOP::Population::subPopSize "
+%feature("docstring") simuPOP::Population::sortIndividuals "
 
 Usage:
 
-    x.subPopSize(subPop=[], ancGen=-1)
+    x.sortIndividuals(infoFields, reverse=False)
 
 Details:
 
-    Return the size of a subpopulation (subPopSize(sp)) or a virtual
-    subpopulation (subPopSize([sp, vsp])) in the current generation
-    (default) or a specified ancestral generation ancGen. If no subpop
-    is given, it is the same as popSize(ancGen). Population and
-    virtual subpopulation names can be used.
-    <group>2-subpopsize</grouplociList()>
+    Sort individuals according to values at specified information
+    fields (infoFields). Individuals will be sorted at an increasing
+    order unless reverse is set to true.
+
+"; 
+
+%feature("docstring") simuPOP::Population::splitSubPop "
+
+Usage:
+
+    x.splitSubPop(subPop, sizes, names=[])
+
+Details:
+
+    Split subpopulation subPop into subpopulations of given sizes,
+    which should add up to the size of subpopulation subPop or 1, in
+    which case sizes are treated as proportions. If subPop is not the
+    last subpopulation, indexes of subpopulations after subPop are
+    shifted. If subPop is named, the same name will be given to all
+    new subpopulations unless a new set of names are specified for
+    these subpopulations. This function returns the IDs of split
+    subpopulations.
+
+"; 
+
+%feature("docstring") simuPOP::Population::subPopBegin "
+
+Usage:
+
+    x.subPopBegin(subPop)
+
+Details:
+
+    Return the index of the first individual in subpopulation subPop.
 
 "; 
 
@@ -6259,6 +6798,34 @@ Details:
     IndexError will be raised if subpopulations are not named, or if
     no subpopulation with name name is found. Virtual subpopulation
     name is not supported.
+
+"; 
+
+%feature("docstring") simuPOP::Population::subPopEnd "
+
+Usage:
+
+    x.subPopEnd(subPop)
+
+Details:
+
+    Return the index of the last individual in subpopulation subPop
+    plus 1, so that range(subPopBegin(subPop), subPopEnd(subPop) can
+    iterate through the index of all individuals in subpopulation
+    subPop.
+
+"; 
+
+%feature("docstring") simuPOP::Population::subPopIndPair "
+
+Usage:
+
+    x.subPopIndPair(idx)
+
+Details:
+
+    Return the subpopulation ID and relative index of an individual,
+    given its absolute index idx.
 
 "; 
 
@@ -6292,16 +6859,20 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::Population::setSubPopName "
+%feature("docstring") simuPOP::Population::subPopSize "
 
 Usage:
 
-    x.setSubPopName(name, subPop)
+    x.subPopSize(subPop=[], ancGen=-1)
 
 Details:
 
-    Assign a name name to subpopulation subPop. Note that
-    subpopulation names do not have to be unique.
+    Return the size of a subpopulation (subPopSize(sp)) or a virtual
+    subpopulation (subPopSize([sp, vsp])) in the current generation
+    (default) or a specified ancestral generation ancGen. If no subpop
+    is given, it is the same as popSize(ancGen). Population and
+    virtual subpopulation names can be used.
+    <group>2-subpopsize</grouplociList()>
 
 "; 
 
@@ -6319,722 +6890,21 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::Population::popSize "
+%feature("docstring") simuPOP::Population::swap "
 
 Usage:
 
-    x.popSize(ancGen=-1)
+    x.swap(rhs)
 
 Details:
 
-    Return the total number of individuals in all subpopulations of
-    the current generation (default) or the an ancestral generation
-    ancGen.
+    Swap the content of two population objects, which can be handy in
+    some particular circumstances. For example, you could swap out a
+    population in a simulator.
 
 "; 
 
-%feature("docstring") simuPOP::Population::absIndIndex "
-
-Usage:
-
-    x.absIndIndex(idx, subPop)
-
-Details:
-
-    return the absolute index of an individual idx in subpopulation
-    subPop.
-
-"; 
-
-%feature("docstring") simuPOP::Population::subPopIndPair "
-
-Usage:
-
-    x.subPopIndPair(idx)
-
-Details:
-
-    Return the subpopulation ID and relative index of an individual,
-    given its absolute index idx.
-
-"; 
-
-%feature("docstring") simuPOP::Population::subPopBegin "
-
-Usage:
-
-    x.subPopBegin(subPop)
-
-Details:
-
-    Return the index of the first individual in subpopulation subPop.
-
-"; 
-
-%feature("docstring") simuPOP::Population::subPopEnd "
-
-Usage:
-
-    x.subPopEnd(subPop)
-
-Details:
-
-    Return the index of the last individual in subpopulation subPop
-    plus 1, so that range(subPopBegin(subPop), subPopEnd(subPop) can
-    iterate through the index of all individuals in subpopulation
-    subPop.
-
-"; 
-
-%ignore simuPOP::Population::individual(size_t idx, vspID subPop=vspID());
-
-%feature("docstring") simuPOP::Population::individual "
-
-Usage:
-
-    x.individual(idx, subPop=[])
-
-Details:
-
-    Return a refernce to individual idx in the population (if
-    subPop=[], default) or a subpopulation (if subPop=sp). Virtual
-    subpopulation is not supported. Note that a float idx is
-    acceptable as long as it rounds closely to an integer.
-
-"; 
-
-%feature("docstring") simuPOP::Population::indByID "
-
-Usage:
-
-    x.indByID(id, ancGens=ALL_AVAIL, idField=\"ind_id\")
-
-Details:
-
-    Return a reference to individual with id stored in information
-    field idField (default to ind_id). This function by default search
-    the present and all ancestral generations (ancGen=ALL_AVAIL), but
-    you can limit the search in specific generations if you know which
-    generations to search (ancGens=[0,1] for present and parental
-    generations) or UNSPECIFIED to search only the current generation.
-    If no individual with id is found, an IndexError will be raised. A
-    float id is acceptable as long as it rounds closely to an integer.
-    Note that this function uses a dynamic searching algorithm which
-    tends to be slow. If you need to look for multiple individuals
-    from a static population, you might want to convert a population
-    object to a pedigree object and use function Pedigree.indByID.
-
-"; 
-
-%ignore simuPOP::Population::individual(double idx, vspID subPop=vspID()) const;
-
-%feature("docstring") simuPOP::Population::ancestor "
-
-Usage:
-
-    x.ancestor(idx, gen, subPop=[])
-
-Details:
-
-    Return a reference to individual idx in ancestral generation gen.
-    The correct individual will be returned even if the current
-    generation is not the present one (see also useAncestralGen). If a
-    valid subPop is specified, index is relative to that subPop.
-    Virtual subpopulation is not supported. Note that a float idx is
-    acceptable as long as it rounds closely to an integer.
-
-"; 
-
-%ignore simuPOP::Population::ancestor(double idx, ssize_t gen, vspID subPop=vspID()) const;
-
-%feature("docstring") simuPOP::Population::individuals "
-
-Usage:
-
-    x.individuals(subPop=[])
-
-Details:
-
-    Return an iterator that can be used to iterate through all
-    individuals in a population (if subPop=[], default), or a
-    (virtual) subpopulation (subPop=spID or (spID, vspID)). If you
-    would like to iterate through multiple subpopulations in multiple
-    ancestral generations, please use function
-    Population.allIndividuals().
-
-"; 
-
-%ignore simuPOP::Population::indOrdered() const;
-
-%ignore simuPOP::Population::setIndOrdered(bool s) const;
-
-%ignore simuPOP::Population::indIterator();
-
-%ignore simuPOP::Population::indIterator(size_t subPop);
-
-%ignore simuPOP::Population::indIterator() const;
-
-%ignore simuPOP::Population::rawIndBegin();
-
-%ignore simuPOP::Population::rawIndEnd();
-
-%ignore simuPOP::Population::rawIndBegin(size_t subPop);
-
-%ignore simuPOP::Population::rawIndEnd(size_t subPop);
-
-%ignore simuPOP::Population::rawIndBegin() const;
-
-%ignore simuPOP::Population::alleleIterator(size_t locus);
-
-%ignore simuPOP::Population::alleleIterator(size_t locus, size_t subPop);
-
-%ignore simuPOP::Population::alleleIterator(size_t locus) const;
-
-%ignore simuPOP::Population::genoBegin(bool order);
-
-%ignore simuPOP::Population::genoEnd(bool order);
-
-%ignore simuPOP::Population::genoBegin(size_t subPop, bool order);
-
-%ignore simuPOP::Population::genoEnd(size_t subPop, bool order);
-
-%ignore simuPOP::Population::indGenoBegin(size_t ind) const;
-
-%ignore simuPOP::Population::indGenoEnd(size_t ind) const;
-
-%feature("docstring") simuPOP::Population::genotype "
-
-Usage:
-
-    x.genotype(subPop=[])
-
-Details:
-
-    Return an editable array of the genotype of all individuals in a
-    population (if subPop=[], default), or individuals in a
-    subpopulation subPop. Virtual subpopulation is unsupported.
-
-"; 
-
-%feature("docstring") simuPOP::Population::mutants "
-
-Usage:
-
-    x.mutants(subPop=[])
-
-Details:
-
-    Return an iterator that iterate through mutants of all individuals
-    in a population (if subPop=[], default), or individuals in a
-    subpopulation subPop. Virtual subpopulation is unsupported. Each
-    mutant is presented as a tuple of (index, value) where index is
-    the index of mutant (from 0 to totNumLoci()*ploidy()) so you will
-    have to adjust its value to check multiple alleles at a locus.
-    This function ignores type of chromosomes so non-zero alleles in
-    unused alleles of sex and mitochondrial chromosomes are also
-    iterated.
-
-"; 
-
-%feature("docstring") simuPOP::Population::lineage "
-
-Usage:
-
-    x.lineage(subPop=[])
-
-Details:
-
-    Return an editable array of the lineage of alleles for all
-    individuals in a population (if subPop=[], default), or
-    individuals in a subpopulation subPop. Virtual subpopulation is
-    unsupported. This function returns None for modules without
-    lineage information.
-
-"; 
-
-%feature("docstring") simuPOP::Population::setGenotype "
-
-Usage:
-
-    x.setGenotype(geno, subPop=[])
-
-Details:
-
-    Fill the genotype of all individuals in a population (if
-    subPop=[]) or in a (virtual) subpopulation subPop (if subPop=sp or
-    (sp, vsp)) using a list of alleles geno. geno will be reused if
-    its length is less than subPopSize(subPop)*totNumLoci()*ploidy().
-
-"; 
-
-%feature("docstring") simuPOP::Population::setLineage "
-
-Usage:
-
-    x.setLineage(geno, subPop=[])
-
-Details:
-
-    Fill the lineage of all individuals in a population (if subPop=[])
-    or in a (virtual) subpopulation subPop (if subPop=sp or (sp, vsp))
-    using a list of IDs lineage. lineage will be reused if its length
-    is less than subPopSize(subPop)*totNumLoci()*ploidy(). This
-    function returns directly for modules without lineage information.
-
-"; 
-
-%feature("docstring") simuPOP::Population::sortIndividuals "
-
-Usage:
-
-    x.sortIndividuals(infoFields, reverse=False)
-
-Details:
-
-    Sort individuals according to values at specified information
-    fields (infoFields). Individuals will be sorted at an increasing
-    order unless reverse is set to true.
-
-"; 
-
-%feature("docstring") simuPOP::Population::setSubPopByIndInfo "
-
-Usage:
-
-    x.setSubPopByIndInfo(field)
-
-Details:
-
-    Rearrange individuals to their new subpopulations according to
-    their integer values at information field field (value returned by
-    Individual::info(field)). individuals with negative values at this
-    field will be removed. Existing subpopulation names are kept. New
-    subpopulations will have empty names.
-
-"; 
-
-%feature("docstring") simuPOP::Population::splitSubPop "
-
-Usage:
-
-    x.splitSubPop(subPop, sizes, names=[])
-
-Details:
-
-    Split subpopulation subPop into subpopulations of given sizes,
-    which should add up to the size of subpopulation subPop or 1, in
-    which case sizes are treated as proportions. If subPop is not the
-    last subpopulation, indexes of subpopulations after subPop are
-    shifted. If subPop is named, the same name will be given to all
-    new subpopulations unless a new set of names are specified for
-    these subpopulations. This function returns the IDs of split
-    subpopulations.
-
-"; 
-
-%feature("docstring") simuPOP::Population::removeSubPops "
-
-Usage:
-
-    x.removeSubPops(subPops)
-
-Details:
-
-    Remove (virtual) subpopulation(s) subPops and all their
-    individuals. This function can be used to remove complete
-    subpopulations (with shifted subpopulation indexes) or individuals
-    belonging to virtual subpopulations of a subpopulation. In the
-    latter case, the subpopulations are kept even if all individuals
-    have been removed. This function only handles the present
-    generation.
-
-"; 
-
-%ignore simuPOP::Population::removeMarkedIndividuals();
-
-%feature("docstring") simuPOP::Population::removeIndividuals "
-
-Usage:
-
-    x.removeIndividuals(indexes=[], IDs=[], idField=\"ind_id\",
-      filter=None)
-
-Details:
-
-    remove individual(s) by absolute indexes (parameter index) or
-    their IDs (parameter IDs), or using a filter function (paramter
-    filter). If indexes are used, only individuals at the current
-    generation will be removed. If IDs are used, all individuals with
-    one of the IDs at information field idField (default to \"ind_id\")
-    will be removed. Although \"ind_id\" usually stores unique IDs of
-    individuals, this function is frequently used to remove groups of
-    individuals with the same value at an information field. An
-    IndexError will be raised if an index is out of bound, but no
-    error will be given if an invalid ID is specified. In the last
-    case, a user-defined function should be provided. This function
-    should accept parameter \"ind\" or one or more of the information
-    fields. All individuals, including ancestors if there are multiple
-    ancestral generations, will be passed to this function.
-    Individuals that returns True will be removed. This function does
-    not affect subpopulation structure in the sense that a
-    subpopulation will be kept even if all individuals from it are
-    removed.
-
-"; 
-
-%feature("docstring") simuPOP::Population::mergeSubPops "
-
-Usage:
-
-    x.mergeSubPops(subPops=ALL_AVAIL, name=\"\", toSubPop=-1)
-
-Details:
-
-    Merge subpopulations subPops. If subPops is ALL_AVAIL (default),
-    all subpopulations will be merged. subPops do not have to be
-    adjacent to each other. They will all be merged to the
-    subpopulation with the smallest subpopulation ID, unless a
-    subpopulation ID is specified using parameter toSubPop. Indexes of
-    the rest of the subpopulation may be changed. A new name can be
-    assigned to the merged subpopulation through parameter name (an
-    empty name will be ignored). This function returns the ID of the
-    merged subpopulation.
-
-"; 
-
-%feature("docstring") simuPOP::Population::addIndFrom "
-
-Usage:
-
-    x.addIndFrom(pop)
-
-Details:
-
-    Add all individuals, including ancestors, in pop to the current
-    population. Two populations should have the same genotypic
-    structures and number of ancestral generations. Subpopulations in
-    population pop are kept.
-
-"; 
-
-%feature("docstring") simuPOP::Population::addChromFrom "
-
-Usage:
-
-    x.addChromFrom(pop)
-
-Details:
-
-    Add chromosomes in population pop to the current population.
-    population pop should have the same number of individuals as the
-    current population in the current and all ancestral generations.
-    Chromosomes of pop, if named, should not conflict with names of
-    existing chromosome. This function merges genotypes on the new
-    chromosomes from population pop individual by individual.
-
-"; 
-
-%feature("docstring") simuPOP::Population::addLociFrom "
-
-Usage:
-
-    x.addLociFrom(pop, byName=False)
-
-Details:
-
-    Add loci from population pop. By default, chromosomes are merged
-    by index and names of merged chromosomes of population pop will be
-    ignored (merge of two chromosomes with different names will yield
-    a warning). If byName is set to True, chromosomes in pop will be
-    merged to chromosomes with identical names. Added loci will be
-    inserted according to their position. Their position and names
-    should not overlap with any locus in the current population.
-    population pop should have the same number of individuals as the
-    current population in the current and all ancestral generations.
-    Allele lineages are also copied from pop in modules with lineage
-    information.
-
-"; 
-
-%feature("docstring") simuPOP::Population::addChrom "
-
-Usage:
-
-    x.addChrom(lociPos, lociNames=[], chromName=\"\", alleleNames=[],
-      chromType=AUTOSOME)
-
-Details:
-
-    Add chromosome chromName with given type chromType to a
-    population, with loci lociNames inserted at position lociPos.
-    lociPos should be ordered. lociNames and chromName should not
-    exist in the current population. Allele names could be specified
-    for all loci (a list of names) or differently for each locus (a
-    nested list of names), using parameter alleleNames. Empty loci
-    names will be used if lociNames is not specified. The newly added
-    alleles will have zero lineage in modules wiht lineage
-    information.
-
-"; 
-
-%feature("docstring") simuPOP::Population::addLoci "
-
-Usage:
-
-    x.addLoci(chrom, pos, lociNames=[], alleleNames=[])
-
-Details:
-
-    Insert loci lociNames at positions pos on chromosome chrom. These
-    parameters should be lists of the same length, although names may
-    be ignored, in which case empty strings will be assumed. Single-
-    value input is allowed for parameter chrom and pos if only one
-    locus is added. Alleles at inserted loci are initialized with zero
-    alleles. Note that loci have to be added to existing chromosomes.
-    If loci on a new chromosome need to be added, function addChrom
-    should be used. Optionally, allele names could be specified either
-    for all loci (a single list) or each loci (a nested list). This
-    function returns indexes of the inserted loci. Newly inserted
-    alleles will have zero lineage in modules with lineage
-    information.
-
-"; 
-
-%feature("docstring") simuPOP::Population::resize "
-
-Usage:
-
-    x.resize(sizes, propagate=False)
-
-Details:
-
-    Resize population by giving new subpopulation sizes sizes.
-    individuals at the end of some subpopulations will be removed if
-    the new subpopulation size is smaller than the old one. New
-    individuals will be appended to a subpopulation if the new size is
-    larger. Their genotypes will be set to zero (default), or be
-    copied from existing individuals if propagate is set to True. More
-    specifically, if a subpopulation with 3 individuals is expanded to
-    7, the added individuals will copy genotypes from individual 1, 2,
-    3, and 1 respectively. Note that this function only resizes the
-    current generation.
-
-"; 
-
-%feature("docstring") simuPOP::Population::extractSubPops "
-
-Usage:
-
-    x.extractSubPops(subPops=ALL_AVAIL, rearrange=False)
-
-Details:
-
-    Extract a list of (virtual) subpopulations from a population and
-    create a new population. If rearrange is False (default),
-    structure and names of extracted subpopulations are kept although
-    extracted subpopulations can have fewer individuals if they are
-    created from extracted virtual subpopulations. (e.g. it is
-    possible to extract all male individuals from a subpopulation
-    using a SexSplitter()). If rearrange is True, each (virtual)
-    subpopulation in subPops becomes a new subpopulation in the
-    extracted population in the order at which they are specified.
-    Because each virtual subpopulation becomes a subpopulation, this
-    function could be used, for example, to separate male and female
-    individuals to two subpopulations ( subPops=[(0,0), (0,1)]). If
-    overlapping (virtual) subpopulations are specified, individuals
-    will be copied multiple times. This function only extract
-    individuals from the present generation.
-
-"; 
-
-%ignore simuPOP::Population::extractMarkedIndividuals() const;
-
-%feature("docstring") simuPOP::Population::extractIndividuals "
-
-Usage:
-
-    x.extractIndividuals(indexes=[], IDs=[], idField=\"ind_id\",
-      filter=None)
-
-Details:
-
-    Extract individuals with given absolute indexes (parameter
-    indexes), IDs (parameter IDs, stored in information field idField,
-    default to ind_id), or a filter function (parameter filter). If a
-    list of absolute indexes are specified, the present generation
-    will be extracted and form a one-generational population. If a
-    list of IDs are specified, this function will look through all
-    ancestral generations and extract individuals with given ID.
-    Individuals with shared IDs are allowed. In the last case, a user-
-    defined Python function should be provided. This function should
-    accept parameter \"ind\" or one or more of the information fields.
-    All individuals, including ancestors if there are multiple
-    ancestral generations, will be passed to this function.
-    Individuals that returns True will be extracted. Extracted
-    individuals will be in their original ancestral generations and
-    subpopulations, even if some subpopulations or generations are
-    empty. An IndexError will be raised if an index is out of bound
-    but no error will be given if an invalid ID is encountered.
-
-"; 
-
-%ignore simuPOP::Population::extract(const lociList &extractedLoci, const stringList &infoFieldList, const subPopList &subPops=subPopList(), const uintList &ancGens=uintList()) const;
-
-%feature("docstring") simuPOP::Population::removeLoci "
-
-Usage:
-
-    x.removeLoci(loci=UNSPECIFIED, keep=UNSPECIFIED)
-
-Details:
-
-    Remove loci (absolute indexes or names) and genotypes at these
-    loci from the current population. Alternatively, a parameter keep
-    can be used to specify loci that will not be removed.
-
-"; 
-
-%feature("docstring") simuPOP::Population::recodeAlleles "
-
-Usage:
-
-    x.recodeAlleles(alleles, loci=ALL_AVAIL, alleleNames=[])
-
-Details:
-
-    Recode alleles at loci (can be a list of loci indexes or names, or
-    all loci in a population (ALL_AVAIL)) to other values according to
-    parameter alleles. This parameter can a list of new allele numbers
-    for alleles 0, 1, 2, ... (allele x will be recoded to
-    newAlleles[x], x outside of the range of newAlleles will not be
-    recoded, although a warning will be given if DBG_WARNING is
-    defined) or a Python function, which should accept one or both
-    parameters allele (existing allele) and locus (index of locus).
-    The return value will become the new allele. This function is
-    intended to recode some alleles without listing all alleles in a
-    list. It will be called once for each existing allele so it is not
-    possible to recode an allele to different alleles. A new list of
-    allele names could be specified for these loci. Different sets of
-    names could be specified for each locus if a nested list of names
-    are given. This function recode alleles for all subpopulations in
-    all ancestral generations.
-
-"; 
-
-%feature("docstring") simuPOP::Population::push "
-
-Usage:
-
-    x.push(pop)
-
-Details:
-
-    Push population pop into the current population. Both populations
-    should have the same genotypic structure. The current population
-    is discarded if ancestralDepth (maximum number of ancestral
-    generations to hold) is zero so no ancestral generation can be
-    kept. Otherise, the current population will become the parental
-    generation of pop. If ancGen of a population is positive and there
-    are already ancGen ancestral generations (c.f. ancestralGens()),
-    the greatest ancestral generation will be discarded. In any case,
-    Populationpop becomes invalid as all its individuals are absorbed
-    by the current population.
-
-"; 
-
-%feature("docstring") simuPOP::Population::curAncestralGen "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::Population::ancestralGens "
-
-Usage:
-
-    x.ancestralGens()
-
-Details:
-
-    Return the actual number of ancestral generations stored in a
-    population, which does not necessarily equal to the number set by
-    setAncestralDepth().
-
-"; 
-
-%ignore simuPOP::Population::clearInfo();
-
-%ignore simuPOP::Population::markIndividuals(vspID subPop, bool mark) const;
-
-%feature("docstring") simuPOP::Population::setIndInfo "
-
-Usage:
-
-    x.setIndInfo(values, field, subPop=[])
-
-Details:
-
-    Set information field field (specified by index or name) of all
-    individuals (if subPop=[], default), or individuals in a (virtual)
-    subpopulation (subPop=sp or (sp, vsp)) to values. values will be
-    reused if its length is smaller than the size of the population or
-    (virtual) subpopulation.
-
-"; 
-
-%ignore simuPOP::Population::infoBegin(size_t idx);
-
-%ignore simuPOP::Population::infoEnd(size_t idx);
-
-%feature("docstring") simuPOP::Population::indInfo "
-
-Usage:
-
-    x.indInfo(field, subPop=[])
-
-Details:
-
-    Return the values (as a list) of information field field (by index
-    or name) of all individuals (if subPop=[], default), or
-    individuals in a (virtual) subpopulation (if subPop=sp or (sp,
-    vsp)).
-
-"; 
-
-%feature("docstring") simuPOP::Population::addInfoFields "
-
-Usage:
-
-    x.addInfoFields(fields, init=0)
-
-Details:
-
-    Add a list of information fields fields to a population and
-    initialize their values to init. If an information field alreay
-    exists, it will be re-initialized.
-
-"; 
-
-%feature("docstring") simuPOP::Population::setInfoFields "
-
-Usage:
-
-    x.setInfoFields(fields, init=0)
-
-Details:
-
-    Set information fields fields to a population and initialize them
-    with value init. All existing information fields will be removed.
-
-"; 
-
-%feature("docstring") simuPOP::Population::removeInfoFields "
-
-Usage:
-
-    x.removeInfoFields(fields)
-
-Details:
-
-    Remove information fields fields from a population.
-
-"; 
+%ignore simuPOP::Population::syncIndPointers(bool infoOnly=false) const;
 
 %feature("docstring") simuPOP::Population::updateInfoFieldsFrom "
 
@@ -7053,25 +6923,6 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::Population::setAncestralDepth "
-
-Usage:
-
-    x.setAncestralDepth(depth)
-
-Details:
-
-    set the intended ancestral depth of a population to depth, which
-    can be 0 (does not store any ancestral generation), -1 (store all
-    ancestral generations), and a positive number (store depth
-    ancestral generations. If there exists more than depth ancestral
-    generations (if depth > 0), extra ancestral generations are
-    removed.
-
-"; 
-
-%ignore simuPOP::Population::keepAncestralGens(const uintList &ancGens);
-
 %feature("docstring") simuPOP::Population::useAncestralGen "
 
 Usage:
@@ -7089,22 +6940,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::Population::syncIndPointers(bool infoOnly=false) const;
-
-%feature("docstring") simuPOP::Population::save "
-
-Usage:
-
-    x.save(filename)
-
-Details:
-
-    Save population to a file filename, which can be loaded by a
-    global function loadPopulation(filename).
-
-"; 
-
-%ignore simuPOP::Population::load(const string &filename);
+%ignore simuPOP::Population::validate(const string &msg) const;
 
 %feature("docstring") simuPOP::Population::vars "
 
@@ -7122,27 +6958,34 @@ Details:
 
 "; 
 
-%ignore simuPOP::Population::dict(vspID subPop=vspID());
-
-%ignore simuPOP::Population::getVars() const;
-
-%ignore simuPOP::Population::setDict(PyObject *dict);
-
 %ignore simuPOP::Population::varsAsString(bool use_pickle=false) const;
 
 %ignore simuPOP::Population::varsFromString(const string &vars, bool use_pickle=false);
 
-%feature("docstring") simuPOP::Population::evaluate "Obsolete or undocumented function."
+%feature("docstring") simuPOP::Population::virtualSplitter "
 
-%feature("docstring") simuPOP::Population::execute "Obsolete or undocumented function."
+Usage:
 
-%ignore simuPOP::Population::rep();
+    x.virtualSplitter()
 
-%ignore simuPOP::Population::setRep(size_t rep);
+Details:
 
-%ignore simuPOP::Population::gen() const;
+    Return the virtual splitter associated with the population, None
+    will be returned if there is no splitter.
 
-%ignore simuPOP::Population::setGen(size_t gen);
+"; 
+
+%feature("docstring") simuPOP::Population::~Population "
+
+Description:
+
+    destroy a population
+
+Usage:
+
+    x.~Population()
+
+"; 
 
 %ignore simuPOP::ProbOfMalesSexModel;
 
@@ -7208,17 +7051,25 @@ Details:
 
 %ignore simuPOP::ProductSplitter::ProductSplitter(const ProductSplitter &rhs);
 
-%feature("docstring") simuPOP::ProductSplitter::~ProductSplitter "
-
-Usage:
-
-    x.~ProductSplitter()
-
-"; 
+%ignore simuPOP::ProductSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
 
 %feature("docstring") simuPOP::ProductSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::ProductSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
+%ignore simuPOP::ProductSplitter::contains(const Population &pop, size_t ind, vspID vsp) const;
+
+%feature("docstring") simuPOP::ProductSplitter::name "
+
+Usage:
+
+    x.name(vsp)
+
+Details:
+
+    Return the name of a VSP vsp, which is the names of indivdual VSPs
+    separated by a comma, unless a new set of names is specified for
+    each VSP.
+
+"; 
 
 %feature("docstring") simuPOP::ProductSplitter::numVirtualSubPop "
 
@@ -7233,21 +7084,13 @@ Details:
 
 "; 
 
-%ignore simuPOP::ProductSplitter::contains(const Population &pop, size_t ind, vspID vsp) const;
+%ignore simuPOP::ProductSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
 
-%ignore simuPOP::ProductSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
-
-%feature("docstring") simuPOP::ProductSplitter::name "
+%feature("docstring") simuPOP::ProductSplitter::~ProductSplitter "
 
 Usage:
 
-    x.name(vsp)
-
-Details:
-
-    Return the name of a VSP vsp, which is the names of indivdual VSPs
-    separated by a comma, unless a new set of names is specified for
-    each VSP.
+    x.~ProductSplitter()
 
 "; 
 
@@ -7275,26 +7118,11 @@ Details:
 
 "; 
 
+%ignore simuPOP::ProportionSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
+
 %feature("docstring") simuPOP::ProportionSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::ProportionSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
-
-%feature("docstring") simuPOP::ProportionSplitter::numVirtualSubPop "
-
-Usage:
-
-    x.numVirtualSubPop()
-
-Details:
-
-    Return the number of VSPs defined by this splitter, which is the
-    length of parameter proportions.
-
-"; 
-
 %ignore simuPOP::ProportionSplitter::contains(const Population &pop, size_t ind, vspID vsp) const;
-
-%ignore simuPOP::ProportionSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
 
 %feature("docstring") simuPOP::ProportionSplitter::name "
 
@@ -7309,6 +7137,21 @@ Details:
     specified.
 
 "; 
+
+%feature("docstring") simuPOP::ProportionSplitter::numVirtualSubPop "
+
+Usage:
+
+    x.numVirtualSubPop()
+
+Details:
+
+    Return the number of VSPs defined by this splitter, which is the
+    length of parameter proportions.
+
+"; 
+
+%ignore simuPOP::ProportionSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
 
 %feature("docstring") simuPOP::PyEval "
 
@@ -7356,6 +7199,14 @@ Note:
 
 "; 
 
+%feature("docstring") simuPOP::PyEval::apply "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::PyEval::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::PyEval::describe "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::PyEval::evaluate "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::PyEval::~PyEval "
 
 Usage:
@@ -7363,14 +7214,6 @@ Usage:
     x.~PyEval()
 
 "; 
-
-%feature("docstring") simuPOP::PyEval::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::PyEval::evaluate "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::PyEval::apply "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::PyEval::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PyExec "
 
@@ -7404,173 +7247,15 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::PyExec::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::PyExec::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::PyExec::~PyExec "
 
 Usage:
 
     x.~PyExec()
-
-"; 
-
-%feature("docstring") simuPOP::PyExec::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::PyExec::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::pyFunc;
-
-%feature("docstring") simuPOP::pyFunc::pyFunc "
-
-Usage:
-
-    pyFunc(func)
-
-"; 
-
-%feature("docstring") simuPOP::pyFunc::numArgs "
-
-Description:
-
-    return number of arguments this function accepts. This function
-    does not count tuple parameters.
-
-Usage:
-
-    x.numArgs()
-
-"; 
-
-%feature("docstring") simuPOP::pyFunc::hasArg "
-
-Usage:
-
-    x.hasArg(arg)
-
-"; 
-
-%feature("docstring") simuPOP::pyFunc::name "
-
-Usage:
-
-    x.name()
-
-"; 
-
-%feature("docstring") simuPOP::pyFunc::arg "
-
-Usage:
-
-    x.arg(arg)
-
-"; 
-
-%feature("docstring") simuPOP::pyFunc::isValid "
-
-Usage:
-
-    x.isValid()
-
-"; 
-
-%feature("docstring") simuPOP::pyFunc::func "
-
-Usage:
-
-    x.func()
-
-"; 
-
-%ignore simuPOP::pyGenerator;
-
-%feature("docstring") simuPOP::pyGenerator::pyGenerator "
-
-Usage:
-
-    pyGenerator(gen=None)
-
-"; 
-
-%feature("docstring") simuPOP::pyGenerator::isValid "
-
-Usage:
-
-    x.isValid()
-
-"; 
-
-%feature("docstring") simuPOP::pyGenerator::set "
-
-Usage:
-
-    x.set(gen)
-
-"; 
-
-%feature("docstring") simuPOP::pyGenerator::~pyGenerator "
-
-Usage:
-
-    x.~pyGenerator()
-
-"; 
-
-%feature("docstring") simuPOP::pyGenerator::next "
-
-Usage:
-
-    x.next()
-
-"; 
-
-%feature("docstring") simuPOP::pyIndIterator "
-
-Details:
-
-    this class implements a Python itertor class that can be used to
-    iterate through individuals in a (sub)population. If allInds are
-    true, visiblility of individuals will not be checked. Otherwise, a
-    functor will be used to check if indiviudals belong to a specified
-    virtual subpopulation.  An instance of this class is returned by
-    population::Individuals() and Population::Individuals(subPop)
-
-"; 
-
-%feature("docstring") simuPOP::pyIndIterator::pyIndIterator "
-
-Usage:
-
-    pyIndIterator(begin, end, allInds, func)
-
-"; 
-
-%feature("docstring") simuPOP::pyIndIterator::~pyIndIterator "
-
-Usage:
-
-    x.~pyIndIterator()
-
-"; 
-
-%feature("docstring") simuPOP::pyIndIterator::iter "
-
-Usage:
-
-    x.__iter__()
-
-"; 
-
-%feature("docstring") simuPOP::pyIndIterator::next "
-
-Usage:
-
-    x.next()
-
-"; 
-
-%feature("docstring") simuPOP::pyIndIterator::next "
-
-Usage:
-
-    x.__next__()
 
 "; 
 
@@ -7621,6 +7306,12 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::PyMlPenetrance::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::PyMlPenetrance::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::PyMlPenetrance::penet(Population *pop, RawIndIterator ind) const;
+
 %feature("docstring") simuPOP::PyMlPenetrance::~PyMlPenetrance "
 
 Usage:
@@ -7628,12 +7319,6 @@ Usage:
     x.~PyMlPenetrance()
 
 "; 
-
-%feature("docstring") simuPOP::PyMlPenetrance::clone "Obsolete or undocumented function."
-
-%ignore simuPOP::PyMlPenetrance::penet(Population *pop, RawIndIterator ind) const;
-
-%feature("docstring") simuPOP::PyMlPenetrance::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PyMlSelector "
 
@@ -7685,72 +7370,19 @@ Details:
 
 "; 
 
+%ignore simuPOP::PyMlSelector::apply(Population &pop) const;
+
+%feature("docstring") simuPOP::PyMlSelector::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::PyMlSelector::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::PyMlSelector::indFitness(Population &pop, RawIndIterator ind) const;
+
 %feature("docstring") simuPOP::PyMlSelector::~PyMlSelector "
 
 Usage:
 
     x.~PyMlSelector()
-
-"; 
-
-%feature("docstring") simuPOP::PyMlSelector::clone "Obsolete or undocumented function."
-
-%ignore simuPOP::PyMlSelector::indFitness(Population &pop, RawIndIterator ind) const;
-
-%feature("docstring") simuPOP::PyMlSelector::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::PyMlSelector::apply(Population &pop) const;
-
-%feature("docstring") simuPOP::pyMutantIterator "
-
-Details:
-
-    this class implements a Python itertor class that can be used to
-    iterate through individuals in a (sub)population. If allInds are
-    true, visiblility of individuals will not be checked. Otherwise, a
-    functor will be used to check if indiviudals belong to a specified
-    virtual subpopulation.  An instance of this class is returned by
-    population::Individuals() and Population::Individuals(subPop)
-
-"; 
-
-%feature("docstring") simuPOP::pyMutantIterator::pyMutantIterator "
-
-Usage:
-
-    pyMutantIterator(base, begin, end, step)
-
-"; 
-
-%feature("docstring") simuPOP::pyMutantIterator::~pyMutantIterator "
-
-Usage:
-
-    x.~pyMutantIterator()
-
-"; 
-
-%feature("docstring") simuPOP::pyMutantIterator::iter "
-
-Usage:
-
-    x.__iter__()
-
-"; 
-
-%feature("docstring") simuPOP::pyMutantIterator::next "
-
-Usage:
-
-    x.next()
-
-"; 
-
-%feature("docstring") simuPOP::pyMutantIterator::next "
-
-Usage:
-
-    x.__next__()
 
 "; 
 
@@ -7795,43 +7427,27 @@ Details:
 
 %feature("docstring") simuPOP::PyMutator::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::PyMutator::mutate(Allele allele, size_t locus) const;
-
 %feature("docstring") simuPOP::PyMutator::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::pyObject;
+%ignore simuPOP::PyMutator::mutate(Allele allele, size_t locus) const;
 
-%feature("docstring") simuPOP::pyObject::pyObject "
+%ignore simuPOP::PyObjAsArray(PyObject *obj, vectorf &val);
 
-Usage:
+%ignore simuPOP::PyObjAsBool(PyObject *obj, bool &val);
 
-    pyObject(obj, defToNone=False)
+%ignore simuPOP::PyObjAsDouble(PyObject *obj, double &val);
 
-"; 
+%ignore simuPOP::PyObjAsInt(PyObject *obj, long &val);
 
-%feature("docstring") simuPOP::pyObject::~pyObject "
+%ignore simuPOP::PyObjAsIntArray(PyObject *obj, vectori &val);
 
-Usage:
+%ignore simuPOP::PyObjAsSizeT(PyObject *obj, size_t &val);
 
-    x.~pyObject()
+%ignore simuPOP::PyObjAsSizeTArray(PyObject *obj, vectoru &val);
 
-"; 
+%ignore simuPOP::PyObjAsString(PyObject *str);
 
-%feature("docstring") simuPOP::pyObject::object "
-
-Usage:
-
-    x.object()
-
-"; 
-
-%feature("docstring") simuPOP::pyObject::isValid "
-
-Usage:
-
-    x.isValid()
-
-"; 
+%ignore simuPOP::PyObjAsString(PyObject *obj, string &val);
 
 %feature("docstring") simuPOP::PyOperator "
 
@@ -7883,11 +7499,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::PyOperator::clone "Obsolete or undocumented function."
-
 %feature("docstring") simuPOP::PyOperator::apply "Obsolete or undocumented function."
 
 %ignore simuPOP::PyOperator::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+
+%feature("docstring") simuPOP::PyOperator::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PyOperator::describe "Obsolete or undocumented function."
 
@@ -7919,6 +7535,10 @@ Details:
 
 %feature("docstring") simuPOP::PyOutput::apply "Obsolete or undocumented function."
 
+%feature("docstring") simuPOP::PyOutput::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::PyOutput::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::PyOutput::~PyOutput "
 
 Description:
@@ -7930,10 +7550,6 @@ Usage:
     x.~PyOutput()
 
 "; 
-
-%feature("docstring") simuPOP::PyOutput::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::PyOutput::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PyParentsChooser "
 
@@ -7972,11 +7588,24 @@ Details:
 
 %ignore simuPOP::PyParentsChooser::PyParentsChooser(const PyParentsChooser &rhs);
 
+%feature("docstring") simuPOP::PyParentsChooser::chooseParents "
+
+Description:
+
+    Return chosen parents from a population if the parent chooser
+    object is created with a population.
+
+Usage:
+
+    x.chooseParents()
+
+"; 
+
 %feature("docstring") simuPOP::PyParentsChooser::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PyParentsChooser::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::PyParentsChooser::parallelizable() const;
+%ignore simuPOP::PyParentsChooser::finalize();
 
 %feature("docstring") simuPOP::PyParentsChooser::initialize "
 
@@ -7991,7 +7620,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::PyParentsChooser::finalize();
+%ignore simuPOP::PyParentsChooser::parallelizable() const;
 
 %feature("docstring") simuPOP::PyParentsChooser::~PyParentsChooser "
 
@@ -8002,19 +7631,6 @@ Description:
 Usage:
 
     x.~PyParentsChooser()
-
-"; 
-
-%feature("docstring") simuPOP::PyParentsChooser::chooseParents "
-
-Description:
-
-    Return chosen parents from a population if the parent chooser
-    object is created with a population.
-
-Usage:
-
-    x.chooseParents()
 
 "; 
 
@@ -8064,60 +7680,11 @@ Details:
 
 %feature("docstring") simuPOP::PyPenetrance::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::PyPenetrance::penet(Population *pop, RawIndIterator ind) const;
-
 %feature("docstring") simuPOP::PyPenetrance::describe "Obsolete or undocumented function."
 
 %ignore simuPOP::PyPenetrance::parallelizable() const;
 
-%feature("docstring") simuPOP::pyPopIterator "
-
-Details:
-
-    This class implements a Python itertor class that can be used to
-    iterate through populations in a population.
-
-"; 
-
-%feature("docstring") simuPOP::pyPopIterator::pyPopIterator "
-
-Usage:
-
-    pyPopIterator(begin, end)
-
-"; 
-
-%feature("docstring") simuPOP::pyPopIterator::~pyPopIterator "
-
-Usage:
-
-    x.~pyPopIterator()
-
-"; 
-
-%feature("docstring") simuPOP::pyPopIterator::iter "
-
-Usage:
-
-    x.__iter__()
-
-"; 
-
-%feature("docstring") simuPOP::pyPopIterator::next "
-
-Usage:
-
-    x.next()
-
-"; 
-
-%feature("docstring") simuPOP::pyPopIterator::next "
-
-Usage:
-
-    x.__next__()
-
-"; 
+%ignore simuPOP::PyPenetrance::penet(Population *pop, RawIndIterator ind) const;
 
 %feature("docstring") simuPOP::PyQuanTrait "
 
@@ -8163,9 +7730,9 @@ Details:
 
 %feature("docstring") simuPOP::PyQuanTrait::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::PyQuanTrait::qtrait(Individual *ind, size_t gen, vectorf &traits) const;
-
 %feature("docstring") simuPOP::PyQuanTrait::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::PyQuanTrait::qtrait(Individual *ind, size_t gen, vectorf &traits) const;
 
 %feature("docstring") simuPOP::PySelector "
 
@@ -8211,9 +7778,9 @@ Details:
 
 %feature("docstring") simuPOP::PySelector::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::PySelector::indFitness(Population &pop, RawIndIterator ind) const;
-
 %feature("docstring") simuPOP::PySelector::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::PySelector::indFitness(Population &pop, RawIndIterator ind) const;
 
 %ignore simuPOP::PySelector::parallelizable() const;
 
@@ -8252,13 +7819,262 @@ Details:
 
 "; 
 
+%ignore simuPOP::PyTagger::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+
 %feature("docstring") simuPOP::PyTagger::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::PyTagger::describe "Obsolete or undocumented function."
 
-%ignore simuPOP::PyTagger::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
-
 %ignore simuPOP::PyTagger::parallelizable() const;
+
+%feature("docstring") simuPOP::RNG "
+
+Details:
+
+    This random number generator class wraps around a number of random
+    number generators from GNU Scientific Library. You can obtain and
+    change the RNG used by the current simuPOP module through the
+    getRNG() function, or create a separate random number generator
+    and use it in your script.
+
+"; 
+
+%feature("docstring") simuPOP::RNG::RNG "
+
+Usage:
+
+    RNG(name=None, seed=0)
+
+Details:
+
+    Create a RNG object using specified name and seed. If rng is not
+    given, environmental variable GSL_RNG_TYPE will be used if it is
+    available. Otherwise, generator mt19937 will be used. If seed is
+    not given, /dev/urandom, /dev/random, or other system random
+    number source will be used to guarantee that random seeds are used
+    even if more than one simuPOP sessions are started simultaneously.
+    Names of supported random number generators are available from
+    moduleInfo()['availableRNGs'].
+
+"; 
+
+%ignore simuPOP::RNG::RNG(const RNG &);
+
+%feature("docstring") simuPOP::RNG::name "
+
+Usage:
+
+    x.name()
+
+Details:
+
+    Return the name of the current random number generator.
+
+"; 
+
+%feature("docstring") simuPOP::RNG::randBinomial "
+
+Usage:
+
+    x.randBinomial(n, p)
+
+Details:
+
+    Generate a random number following a binomial distribution with
+    parameters n and p.
+
+"; 
+
+%feature("docstring") simuPOP::RNG::randBit "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::RNG::randChisq "
+
+Usage:
+
+    x.randChisq(nu)
+
+Details:
+
+    Generate a random number following a Chi-squared distribution with
+    nu degrees of freedom.
+
+"; 
+
+%feature("docstring") simuPOP::RNG::randExponential "
+
+Usage:
+
+    x.randExponential(mu)
+
+Details:
+
+    Generate a random number following a exponential distribution with
+    parameter mu.
+
+"; 
+
+%feature("docstring") simuPOP::RNG::randGamma "
+
+Usage:
+
+    x.randGamma(a, b)
+
+Details:
+
+    Generate a random number following a gamma distribution with a
+    shape parameters a and scale parameter b.
+
+"; 
+
+%feature("docstring") simuPOP::RNG::randGeometric "
+
+Usage:
+
+    x.randGeometric(p)
+
+Details:
+
+    Generate a random number following a geometric distribution with
+    parameter p.
+
+"; 
+
+%feature("docstring") simuPOP::RNG::randInt "
+
+Usage:
+
+    x.randInt(n)
+
+Details:
+
+    return a random number in the range of [0, 1, 2, ... n-1]
+
+"; 
+
+%feature("docstring") simuPOP::RNG::randMultinomial "
+
+Usage:
+
+    x.randMultinomial(N, p)
+
+Details:
+
+    Generate a random number following a multinomial distribution with
+    parameters N and p (a list of probabilities).
+
+"; 
+
+%feature("docstring") simuPOP::RNG::randNormal "
+
+Usage:
+
+    x.randNormal(mu, sigma)
+
+Details:
+
+    Generate a random number following a normal distribution with mean
+    mu and standard deviation sigma.
+
+"; 
+
+%feature("docstring") simuPOP::RNG::randPoisson "
+
+Usage:
+
+    x.randPoisson(mu)
+
+Details:
+
+    Generate a random number following a Poisson distribution with
+    parameter mu.
+
+"; 
+
+%feature("docstring") simuPOP::RNG::randTruncatedBinomial "
+
+Usage:
+
+    x.randTruncatedBinomial(n, p)
+
+Details:
+
+    Generate a positive random number following a zero-truncated
+    binomial distribution with parameters n and p.
+
+"; 
+
+%feature("docstring") simuPOP::RNG::randTruncatedPoisson "
+
+Usage:
+
+    x.randTruncatedPoisson(mu)
+
+Details:
+
+    Generate a positive random number following a zero-truncated
+    Poisson distribution with parameter mu.
+
+"; 
+
+%feature("docstring") simuPOP::RNG::randUniform "
+
+Usage:
+
+    x.randUniform()
+
+Details:
+
+    Generate a random number following a rng_uniform [0, 1)
+    distribution.
+
+"; 
+
+%ignore simuPOP::RNG::randomShuffle(T begin, T end) const;
+
+%feature("docstring") simuPOP::RNG::seed "
+
+Usage:
+
+    x.seed()
+
+Details:
+
+    Return the seed used to initialize the RNG. This can be used to
+    repeat a previous session.
+
+"; 
+
+%feature("docstring") simuPOP::RNG::set "
+
+Usage:
+
+    x.set(name=None, seed=0)
+
+Details:
+
+    Replace the existing random number generator using RNGname with
+    seed seed. If seed is 0, a random seed will be used. If name is
+    empty, use the existing RNG but reset the seed.
+
+"; 
+
+%feature("docstring") simuPOP::RNG::~RNG "
+
+Usage:
+
+    x.~RNG()
+
+"; 
+
+%ignore simuPOP::RNGfunc;
+
+%feature("docstring") simuPOP::RNGfunc::RNGfunc "
+
+Usage:
+
+    RNG_func(rng)
+
+"; 
 
 %feature("docstring") simuPOP::RandomParentChooser "
 
@@ -8298,11 +8114,22 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::RandomParentChooser::chooseParents "
+
+Description:
+
+    Return chosen parents from a population if the parent chooser
+    object is created with a population.
+
+Usage:
+
+    x.chooseParents()
+
+"; 
+
 %feature("docstring") simuPOP::RandomParentChooser::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::RandomParentChooser::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::RandomParentChooser::parallelizable() const;
 
 %feature("docstring") simuPOP::RandomParentChooser::initialize "
 
@@ -8317,18 +8144,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::RandomParentChooser::chooseParents "
-
-Description:
-
-    Return chosen parents from a population if the parent chooser
-    object is created with a population.
-
-Usage:
-
-    x.chooseParents()
-
-"; 
+%ignore simuPOP::RandomParentChooser::parallelizable() const;
 
 %feature("docstring") simuPOP::RandomParentsChooser "
 
@@ -8365,11 +8181,22 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::RandomParentsChooser::chooseParents "
+
+Description:
+
+    Return chosen parents from a population if the parent chooser
+    object is created with a population.
+
+Usage:
+
+    x.chooseParents()
+
+"; 
+
 %feature("docstring") simuPOP::RandomParentsChooser::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::RandomParentsChooser::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::RandomParentsChooser::parallelizable() const;
 
 %feature("docstring") simuPOP::RandomParentsChooser::initialize "
 
@@ -8384,18 +8211,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::RandomParentsChooser::chooseParents "
-
-Description:
-
-    Return chosen parents from a population if the parent chooser
-    object is created with a population.
-
-Usage:
-
-    x.chooseParents()
-
-"; 
+%ignore simuPOP::RandomParentsChooser::parallelizable() const;
 
 %ignore simuPOP::RandomSexModel;
 
@@ -8458,26 +8274,11 @@ Details:
 
 "; 
 
+%ignore simuPOP::RangeSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
+
 %feature("docstring") simuPOP::RangeSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::RangeSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
-
-%feature("docstring") simuPOP::RangeSplitter::numVirtualSubPop "
-
-Usage:
-
-    x.numVirtualSubPop()
-
-Details:
-
-    Return the number of VSPs, which is the number of ranges defined
-    in parameter ranges.
-
-"; 
-
 %ignore simuPOP::RangeSplitter::contains(const Population &pop, size_t ind, vspID vsp) const;
-
-%ignore simuPOP::RangeSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
 
 %feature("docstring") simuPOP::RangeSplitter::name "
 
@@ -8492,6 +8293,21 @@ Details:
     specified.
 
 "; 
+
+%feature("docstring") simuPOP::RangeSplitter::numVirtualSubPop "
+
+Usage:
+
+    x.numVirtualSubPop()
+
+Details:
+
+    Return the number of VSPs, which is the number of ranges defined
+    in parameter ranges.
+
+"; 
+
+%ignore simuPOP::RangeSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
 
 %feature("docstring") simuPOP::Recombinator "
 
@@ -8621,19 +8437,15 @@ Note:
 
 "; 
 
+%ignore simuPOP::Recombinator::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad, Individual *mom) const;
+
 %feature("docstring") simuPOP::Recombinator::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::Recombinator::~Recombinator "
-
-Usage:
-
-    x.~Recombinator()
-
-"; 
 
 %feature("docstring") simuPOP::Recombinator::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::Recombinator::initialize "Obsolete or undocumented function."
+
+%ignore simuPOP::Recombinator::parallelizable() const;
 
 %feature("docstring") simuPOP::Recombinator::transmitGenotype "
 
@@ -8650,9 +8462,13 @@ Details:
 
 "; 
 
-%ignore simuPOP::Recombinator::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad, Individual *mom) const;
+%feature("docstring") simuPOP::Recombinator::~Recombinator "
 
-%ignore simuPOP::Recombinator::parallelizable() const;
+Usage:
+
+    x.~Recombinator()
+
+"; 
 
 %feature("docstring") simuPOP::ResizeSubPops "
 
@@ -8687,6 +8503,12 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::ResizeSubPops::apply "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::ResizeSubPops::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::ResizeSubPops::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::ResizeSubPops::~ResizeSubPops "
 
 Description:
@@ -8698,12 +8520,6 @@ Usage:
     x.~ResizeSubPops()
 
 "; 
-
-%feature("docstring") simuPOP::ResizeSubPops::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::ResizeSubPops::apply "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::ResizeSubPops::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::RevertEvolution "
 
@@ -8747,6 +8563,12 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::RevertFixedSites::apply "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::RevertFixedSites::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::RevertFixedSites::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::RevertFixedSites::~RevertFixedSites "
 
 Description:
@@ -8758,12 +8580,6 @@ Usage:
     x.~RevertFixedSites()
 
 "; 
-
-%feature("docstring") simuPOP::RevertFixedSites::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::RevertFixedSites::apply "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::RevertFixedSites::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::RevertIf "
 
@@ -8801,266 +8617,17 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::RevertIf::apply "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::RevertIf::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::RevertIf::describe "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::RevertIf::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::RevertIf::~RevertIf "
 
 Usage:
 
     x.~RevertIf()
-
-"; 
-
-%feature("docstring") simuPOP::RNG "
-
-Details:
-
-    This random number generator class wraps around a number of random
-    number generators from GNU Scientific Library. You can obtain and
-    change the RNG used by the current simuPOP module through the
-    getRNG() function, or create a separate random number generator
-    and use it in your script.
-
-"; 
-
-%feature("docstring") simuPOP::RNG::RNG "
-
-Usage:
-
-    RNG(name=None, seed=0)
-
-Details:
-
-    Create a RNG object using specified name and seed. If rng is not
-    given, environmental variable GSL_RNG_TYPE will be used if it is
-    available. Otherwise, generator mt19937 will be used. If seed is
-    not given, /dev/urandom, /dev/random, or other system random
-    number source will be used to guarantee that random seeds are used
-    even if more than one simuPOP sessions are started simultaneously.
-    Names of supported random number generators are available from
-    moduleInfo()['availableRNGs'].
-
-"; 
-
-%ignore simuPOP::RNG::RNG(const RNG &);
-
-%feature("docstring") simuPOP::RNG::~RNG "
-
-Usage:
-
-    x.~RNG()
-
-"; 
-
-%feature("docstring") simuPOP::RNG::set "
-
-Usage:
-
-    x.set(name=None, seed=0)
-
-Details:
-
-    Replace the existing random number generator using RNGname with
-    seed seed. If seed is 0, a random seed will be used. If name is
-    empty, use the existing RNG but reset the seed.
-
-"; 
-
-%feature("docstring") simuPOP::RNG::name "
-
-Usage:
-
-    x.name()
-
-Details:
-
-    Return the name of the current random number generator.
-
-"; 
-
-%feature("docstring") simuPOP::RNG::seed "
-
-Usage:
-
-    x.seed()
-
-Details:
-
-    Return the seed used to initialize the RNG. This can be used to
-    repeat a previous session.
-
-"; 
-
-%feature("docstring") simuPOP::RNG::randUniform "
-
-Usage:
-
-    x.randUniform()
-
-Details:
-
-    Generate a random number following a rng_uniform [0, 1)
-    distribution.
-
-"; 
-
-%feature("docstring") simuPOP::RNG::randBit "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::RNG::randInt "
-
-Usage:
-
-    x.randInt(n)
-
-Details:
-
-    return a random number in the range of [0, 1, 2, ... n-1]
-
-"; 
-
-%feature("docstring") simuPOP::RNG::randNormal "
-
-Usage:
-
-    x.randNormal(mu, sigma)
-
-Details:
-
-    Generate a random number following a normal distribution with mean
-    mu and standard deviation sigma.
-
-"; 
-
-%feature("docstring") simuPOP::RNG::randExponential "
-
-Usage:
-
-    x.randExponential(mu)
-
-Details:
-
-    Generate a random number following a exponential distribution with
-    parameter mu.
-
-"; 
-
-%feature("docstring") simuPOP::RNG::randGamma "
-
-Usage:
-
-    x.randGamma(a, b)
-
-Details:
-
-    Generate a random number following a gamma distribution with a
-    shape parameters a and scale parameter b.
-
-"; 
-
-%feature("docstring") simuPOP::RNG::randChisq "
-
-Usage:
-
-    x.randChisq(nu)
-
-Details:
-
-    Generate a random number following a Chi-squared distribution with
-    nu degrees of freedom.
-
-"; 
-
-%feature("docstring") simuPOP::RNG::randGeometric "
-
-Usage:
-
-    x.randGeometric(p)
-
-Details:
-
-    Generate a random number following a geometric distribution with
-    parameter p.
-
-"; 
-
-%feature("docstring") simuPOP::RNG::randBinomial "
-
-Usage:
-
-    x.randBinomial(n, p)
-
-Details:
-
-    Generate a random number following a binomial distribution with
-    parameters n and p.
-
-"; 
-
-%feature("docstring") simuPOP::RNG::randPoisson "
-
-Usage:
-
-    x.randPoisson(mu)
-
-Details:
-
-    Generate a random number following a Poisson distribution with
-    parameter mu.
-
-"; 
-
-%feature("docstring") simuPOP::RNG::randTruncatedPoisson "
-
-Usage:
-
-    x.randTruncatedPoisson(mu)
-
-Details:
-
-    Generate a positive random number following a zero-truncated
-    Poisson distribution with parameter mu.
-
-"; 
-
-%feature("docstring") simuPOP::RNG::randTruncatedBinomial "
-
-Usage:
-
-    x.randTruncatedBinomial(n, p)
-
-Details:
-
-    Generate a positive random number following a zero-truncated
-    binomial distribution with parameters n and p.
-
-"; 
-
-%feature("docstring") simuPOP::RNG::randMultinomial "
-
-Usage:
-
-    x.randMultinomial(N, p)
-
-Details:
-
-    Generate a random number following a multinomial distribution with
-    parameters N and p (a list of probabilities).
-
-"; 
-
-%ignore simuPOP::RNG::randomShuffle(T begin, T end) const;
-
-%ignore simuPOP::RNGfunc;
-
-%feature("docstring") simuPOP::RNGfunc::RNGfunc "
-
-Usage:
-
-    RNG_func(rng)
 
 "; 
 
@@ -9108,6 +8675,12 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::SavePopulation::apply "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::SavePopulation::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::SavePopulation::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::SavePopulation::~SavePopulation "
 
 Description:
@@ -9119,12 +8692,6 @@ Usage:
     x.~SavePopulation()
 
 "; 
-
-%feature("docstring") simuPOP::SavePopulation::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::SavePopulation::apply "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::SavePopulation::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::SelfingGenoTransmitter "
 
@@ -9155,11 +8722,11 @@ Details:
 
 "; 
 
+%ignore simuPOP::SelfingGenoTransmitter::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+
 %feature("docstring") simuPOP::SelfingGenoTransmitter::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::SelfingGenoTransmitter::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::SelfingGenoTransmitter::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
 
 %ignore simuPOP::SeqSexModel;
 
@@ -9223,6 +8790,19 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::SequentialParentChooser::chooseParents "
+
+Description:
+
+    Return chosen parents from a population if the parent chooser
+    object is created with a population.
+
+Usage:
+
+    x.chooseParents()
+
+"; 
+
 %feature("docstring") simuPOP::SequentialParentChooser::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::SequentialParentChooser::describe "Obsolete or undocumented function."
@@ -9240,19 +8820,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::SequentialParentChooser::chooseParents "
-
-Description:
-
-    Return chosen parents from a population if the parent chooser
-    object is created with a population.
-
-Usage:
-
-    x.chooseParents()
-
-"; 
-
 %ignore simuPOP::SexModel;
 
 %feature("docstring") simuPOP::SexModel::SexModel "
@@ -9260,30 +8827,6 @@ Usage:
 Usage:
 
     SexModel()
-
-"; 
-
-%feature("docstring") simuPOP::SexModel::~SexModel "
-
-Usage:
-
-    x.~SexModel()
-
-"; 
-
-%feature("docstring") simuPOP::SexModel::getSex "
-
-Usage:
-
-    x.getSex(count)
-
-"; 
-
-%feature("docstring") simuPOP::SexModel::reset "
-
-Usage:
-
-    x.reset()
 
 "; 
 
@@ -9295,11 +8838,35 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::SexModel::getSex "
+
+Usage:
+
+    x.getSex(count)
+
+"; 
+
 %feature("docstring") simuPOP::SexModel::parallelizable "
 
 Usage:
 
     x.parallelizable()
+
+"; 
+
+%feature("docstring") simuPOP::SexModel::reset "
+
+Usage:
+
+    x.reset()
+
+"; 
+
+%feature("docstring") simuPOP::SexModel::~SexModel "
+
+Usage:
+
+    x.~SexModel()
 
 "; 
 
@@ -9327,25 +8894,11 @@ Details:
 
 "; 
 
+%ignore simuPOP::SexSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
+
 %feature("docstring") simuPOP::SexSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::SexSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
-
-%feature("docstring") simuPOP::SexSplitter::numVirtualSubPop "
-
-Description:
-
-    Return 2.
-
-Usage:
-
-    x.numVirtualSubPop()
-
-"; 
-
 %ignore simuPOP::SexSplitter::contains(const Population &pop, size_t ind, vspID vsp) const;
-
-%ignore simuPOP::SexSplitter::activate(const Population &pop, size_t subPop, size_t virtualSubPop);
 
 %feature("docstring") simuPOP::SexSplitter::name "
 
@@ -9360,34 +8913,55 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::SexSplitter::numVirtualSubPop "
+
+Description:
+
+    Return 2.
+
+Usage:
+
+    x.numVirtualSubPop()
+
+"; 
+
+%ignore simuPOP::SexSplitter::size(const Population &pop, size_t subPop, size_t virtualSubPop) const;
+
 %ignore simuPOP::SharedVariables;
 
 %ignore simuPOP::SharedVariables::SharedVariables();
 
 %ignore simuPOP::SharedVariables::SharedVariables(const SharedVariables &rhs);
 
-%ignore simuPOP::SharedVariables::swap(SharedVariables &rhs);
-
-%feature("docstring") simuPOP::SharedVariables::~SharedVariables "
-
-Description:
-
-    destructor I can not clear dict here since a resize of g_vars will
-    copy this object and hence call this destructore.
-
-Usage:
-
-    x.~SharedVariables()
-
-"; 
+%ignore simuPOP::SharedVariables::asString() const;
 
 %ignore simuPOP::SharedVariables::clear();
 
-%ignore simuPOP::SharedVariables::setDict(PyObject *dict);
+%feature("docstring") simuPOP::SharedVariables::dict "
 
-%ignore simuPOP::SharedVariables::setVar(const string &name, const PyObject *val);
+Usage:
+
+    x.dict()
+
+"; 
+
+%ignore simuPOP::SharedVariables::fromString(const string &vars);
+
+%ignore simuPOP::SharedVariables::frompickle(const string &vars);
 
 %ignore simuPOP::SharedVariables::getVar(const string &name, bool nameError=true) const;
+
+%ignore simuPOP::SharedVariables::getVarAsBool(const string &name, bool nameError=true) const;
+
+%ignore simuPOP::SharedVariables::getVarAsDouble(const string &name, bool nameError=true) const;
+
+%ignore simuPOP::SharedVariables::getVarAsInt(const string &name, bool nameError=true) const;
+
+%ignore simuPOP::SharedVariables::getVarAsIntDict(const string &name, uintDict &res, bool nameError=true) const;
+
+%ignore simuPOP::SharedVariables::getVarAsString(const string &name, bool nameError=true) const;
+
+%ignore simuPOP::SharedVariables::getVectorVarAsIntDict(const string &name, uintDict &res, bool nameError=true) const;
 
 %feature("docstring") simuPOP::SharedVariables::hasVar "
 
@@ -9409,67 +8983,26 @@ Usage:
 
 "; 
 
+%ignore simuPOP::SharedVariables::setDict(PyObject *dict);
+
+%ignore simuPOP::SharedVariables::setVar(const string &name, const PyObject *val);
+
 %ignore simuPOP::SharedVariables::setVar(const string &name, const bool val);
 
-%ignore simuPOP::SharedVariables::getVarAsBool(const string &name, bool nameError=true) const;
-
-%ignore simuPOP::SharedVariables::getVarAsInt(const string &name, bool nameError=true) const;
-
-%ignore simuPOP::SharedVariables::getVarAsDouble(const string &name, bool nameError=true) const;
-
-%ignore simuPOP::SharedVariables::getVarAsString(const string &name, bool nameError=true) const;
-
-%ignore simuPOP::SharedVariables::getVarAsIntDict(const string &name, uintDict &res, bool nameError=true) const;
-
-%ignore simuPOP::SharedVariables::getVectorVarAsIntDict(const string &name, uintDict &res, bool nameError=true) const;
-
-%feature("docstring") simuPOP::SharedVariables::dict "
-
-Usage:
-
-    x.dict()
-
-"; 
-
-%ignore simuPOP::SharedVariables::asString() const;
-
-%ignore simuPOP::SharedVariables::fromString(const string &vars);
+%ignore simuPOP::SharedVariables::swap(SharedVariables &rhs);
 
 %ignore simuPOP::SharedVariables::topickle() const;
 
-%ignore simuPOP::SharedVariables::frompickle(const string &vars);
+%feature("docstring") simuPOP::SharedVariables::~SharedVariables "
 
-%ignore simuPOP::simpleStmt;
+Description:
 
-%feature("docstring") simuPOP::simpleStmt::simpleStmt "
-
-Usage:
-
-    simpleStmt(stmt, indVar)
-
-"; 
-
-%feature("docstring") simuPOP::simpleStmt::var "
+    destructor I can not clear dict here since a resize of g_vars will
+    copy this object and hence call this destructore.
 
 Usage:
 
-    x.var()
-
-"; 
-
-%feature("docstring") simuPOP::simpleStmt::operation "
-
-Usage:
-
-    x.operation()
-
-"; 
-
-%feature("docstring") simuPOP::simpleStmt::value "
-
-Usage:
-
-    x.value()
+    x.~SharedVariables()
 
 "; 
 
@@ -9505,58 +9038,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::Simulator::~Simulator "
-
-Usage:
-
-    x.~Simulator()
-
-"; 
-
 %ignore simuPOP::Simulator::Simulator(const Simulator &rhs);
-
-%feature("docstring") simuPOP::Simulator::clone "
-
-Usage:
-
-    x.clone()
-
-Details:
-
-    Clone a simulator, along with all its populations. Note that
-    Python assign statement simu1 = simu only creates a symbolic link
-    to an existing simulator.
-
-"; 
-
-%feature("docstring") simuPOP::Simulator::numRep "
-
-Usage:
-
-    x.numRep()
-
-Details:
-
-    Return the number of replicates.
-
-"; 
-
-%feature("docstring") simuPOP::Simulator::population "
-
-Usage:
-
-    x.population(rep)
-
-Details:
-
-    Return a reference to the rep-th population of a simulator. The
-    reference will become invalid once the simulator starts evolving
-    or becomes invalid (removed). If an independent copy of the
-    population is needed, you can use population.clone() to create a
-    cloned copy or simulator.extract() to remove the population from
-    the simulator.
-
-"; 
 
 %feature("docstring") simuPOP::Simulator::add "
 
@@ -9574,33 +9056,49 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::Simulator::extract "
+%ignore simuPOP::Simulator::apply(const opList &ops);
+
+%feature("docstring") simuPOP::Simulator::clone "
 
 Usage:
 
-    x.extract(rep)
+    x.clone()
 
 Details:
 
-    Extract the rep-th population from a simulator. This will reduce
-    the number of populations in this simulator by one.
+    Clone a simulator, along with all its populations. Note that
+    Python assign statement simu1 = simu only creates a symbolic link
+    to an existing simulator.
 
 "; 
 
-%feature("docstring") simuPOP::Simulator::populations "
+%feature("docstring") simuPOP::Simulator::cmp "
+
+Description:
+
+    a Pyton function used to compare the simulator objects Note that
+    mating schemes are not tested.
 
 Usage:
 
-    x.populations()
-
-Details:
-
-    Return a Python iterator that can be used to iterate through all
-    populations in a simulator.
+    x.__cmp__(rhs)
 
 "; 
 
 %ignore simuPOP::Simulator::describe(bool format=true) const;
+
+%feature("docstring") simuPOP::Simulator::dvars "
+
+Usage:
+
+    x.dvars(rep, subPop=[])
+
+Details:
+
+    Return a wrapper of Python dictionary returned by vars(rep,
+    subPop) so that dictionary keys can be accessed as attributes.
+
+"; 
 
 %feature("docstring") simuPOP::Simulator::evolve "
 
@@ -9657,7 +9155,60 @@ Details:
 
 "; 
 
-%ignore simuPOP::Simulator::apply(const opList &ops);
+%feature("docstring") simuPOP::Simulator::extract "
+
+Usage:
+
+    x.extract(rep)
+
+Details:
+
+    Extract the rep-th population from a simulator. This will reduce
+    the number of populations in this simulator by one.
+
+"; 
+
+%feature("docstring") simuPOP::Simulator::numRep "
+
+Usage:
+
+    x.numRep()
+
+Details:
+
+    Return the number of replicates.
+
+"; 
+
+%feature("docstring") simuPOP::Simulator::population "
+
+Usage:
+
+    x.population(rep)
+
+Details:
+
+    Return a reference to the rep-th population of a simulator. The
+    reference will become invalid once the simulator starts evolving
+    or becomes invalid (removed). If an independent copy of the
+    population is needed, you can use population.clone() to create a
+    cloned copy or simulator.extract() to remove the population from
+    the simulator.
+
+"; 
+
+%feature("docstring") simuPOP::Simulator::populations "
+
+Usage:
+
+    x.populations()
+
+Details:
+
+    Return a Python iterator that can be used to iterate through all
+    populations in a simulator.
+
+"; 
 
 %feature("docstring") simuPOP::Simulator::vars "
 
@@ -9672,16 +9223,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::Simulator::cmp "
-
-Description:
-
-    a Pyton function used to compare the simulator objects Note that
-    mating schemes are not tested.
+%feature("docstring") simuPOP::Simulator::~Simulator "
 
 Usage:
 
-    x.__cmp__(rhs)
+    x.~Simulator()
 
 "; 
 
@@ -9743,6 +9289,12 @@ Note:
 
 "; 
 
+%feature("docstring") simuPOP::SplitSubPops::apply "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::SplitSubPops::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::SplitSubPops::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::SplitSubPops::~SplitSubPops "
 
 Description:
@@ -9754,12 +9306,6 @@ Usage:
     x.~SplitSubPops()
 
 "; 
-
-%feature("docstring") simuPOP::SplitSubPops::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::SplitSubPops::apply "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::SplitSubPops::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::Stat "
 
@@ -10280,547 +9826,17 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::Stat::apply "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::Stat::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::Stat::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::Stat::~Stat "
 
 Usage:
 
     x.~Stat()
-
-"; 
-
-%feature("docstring") simuPOP::Stat::describe "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::Stat::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::Stat::apply "Obsolete or undocumented function."
-
-%ignore simuPOP::statAlleleFreq;
-
-%feature("docstring") simuPOP::statAlleleFreq::statAlleleFreq "
-
-Usage:
-
-    statAlleleFreq(loci, subPops, vars, suffix)
-
-"; 
-
-%feature("docstring") simuPOP::statAlleleFreq::describe "
-
-Usage:
-
-    x.describe(format=True)
-
-"; 
-
-%feature("docstring") simuPOP::statAlleleFreq::~statAlleleFreq "
-
-Description:
-
-    destructor, nested vectors have to be cleared manually
-
-Usage:
-
-    x.~statAlleleFreq()
-
-"; 
-
-%feature("docstring") simuPOP::statAlleleFreq::apply "
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%ignore simuPOP::statAssociation;
-
-%feature("docstring") simuPOP::statAssociation::statAssociation "
-
-Usage:
-
-    statAssociation(loci, subPops, vars, suffix)
-
-"; 
-
-%feature("docstring") simuPOP::statAssociation::describe "
-
-Usage:
-
-    x.describe(format=True)
-
-"; 
-
-%feature("docstring") simuPOP::statAssociation::apply "
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%ignore simuPOP::statEffectiveSize;
-
-%feature("docstring") simuPOP::statEffectiveSize::statEffectiveSize "
-
-Usage:
-
-    statEffectiveSize(loci, subPops, vars, suffix)
-
-"; 
-
-%feature("docstring") simuPOP::statEffectiveSize::describe "
-
-Usage:
-
-    x.describe(format=True)
-
-"; 
-
-%feature("docstring") simuPOP::statEffectiveSize::apply "
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%feature("docstring") simuPOP::statEffectiveSize::demographicEffectiveSize "
-
-Usage:
-
-    x.demographicEffectiveSize(pop)
-
-"; 
-
-%feature("docstring") simuPOP::statEffectiveSize::temporalEffectiveSize "
-
-Usage:
-
-    x.temporalEffectiveSize(pop)
-
-"; 
-
-%feature("docstring") simuPOP::statEffectiveSize::LDEffectiveSize "
-
-Usage:
-
-    x.LDEffectiveSize(pop)
-
-"; 
-
-%ignore simuPOP::statGenoFreq;
-
-%feature("docstring") simuPOP::statGenoFreq::statGenoFreq "
-
-Usage:
-
-    statGenoFreq(genoFreq, subPops, vars, suffix)
-
-"; 
-
-%feature("docstring") simuPOP::statGenoFreq::describe "
-
-Usage:
-
-    x.describe(format=True)
-
-"; 
-
-%feature("docstring") simuPOP::statGenoFreq::apply "
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%ignore simuPOP::statHaploFreq;
-
-%feature("docstring") simuPOP::statHaploFreq::statHaploFreq "
-
-Usage:
-
-    statHaploFreq(haploFreq, subPops, vars, suffix)
-
-"; 
-
-%feature("docstring") simuPOP::statHaploFreq::describe "
-
-Usage:
-
-    x.describe(format=True)
-
-"; 
-
-%feature("docstring") simuPOP::statHaploFreq::~statHaploFreq "
-
-Usage:
-
-    x.~statHaploFreq()
-
-"; 
-
-%feature("docstring") simuPOP::statHaploFreq::apply "
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%ignore simuPOP::statHaploHomoFreq;
-
-%feature("docstring") simuPOP::statHaploHomoFreq::statHaploHomoFreq "
-
-Usage:
-
-    statHaploHomoFreq(haploHeteroFreq, haploHomoFreq, subPops, vars,
-      suffix)
-
-"; 
-
-%feature("docstring") simuPOP::statHaploHomoFreq::~statHaploHomoFreq "
-
-Usage:
-
-    x.~statHaploHomoFreq()
-
-"; 
-
-%feature("docstring") simuPOP::statHaploHomoFreq::describe "
-
-Usage:
-
-    x.describe(format=True)
-
-"; 
-
-%feature("docstring") simuPOP::statHaploHomoFreq::apply "
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%ignore simuPOP::statHeteroFreq;
-
-%feature("docstring") simuPOP::statHeteroFreq::statHeteroFreq "
-
-Usage:
-
-    statHeteroFreq(heteroFreq, homoFreq, subPops, vars, suffix)
-
-"; 
-
-%feature("docstring") simuPOP::statHeteroFreq::describe "
-
-Usage:
-
-    x.describe(format=True)
-
-"; 
-
-%feature("docstring") simuPOP::statHeteroFreq::apply "
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%ignore simuPOP::statHWE;
-
-%feature("docstring") simuPOP::statHWE::statHWE "
-
-Usage:
-
-    statHWE(loci, subPops, vars, suffix)
-
-"; 
-
-%feature("docstring") simuPOP::statHWE::describe "
-
-Usage:
-
-    x.describe(format=True)
-
-"; 
-
-%feature("docstring") simuPOP::statHWE::apply "
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%ignore simuPOP::statInbreeding;
-
-%feature("docstring") simuPOP::statInbreeding::statInbreeding "
-
-Usage:
-
-    statInbreeding(loci, subPops, vars, suffix)
-
-"; 
-
-%feature("docstring") simuPOP::statInbreeding::describe "
-
-Usage:
-
-    x.describe(format=True)
-
-"; 
-
-%feature("docstring") simuPOP::statInbreeding::apply "
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%ignore simuPOP::statInfo;
-
-%feature("docstring") simuPOP::statInfo::statInfo "
-
-Usage:
-
-    statInfo(sumOfInfo, meanOfInfo, varOfInfo, maxOfInfo, minOfInfo,
-      subPops, vars, suffix)
-
-"; 
-
-%feature("docstring") simuPOP::statInfo::describe "
-
-Usage:
-
-    x.describe(format=True)
-
-"; 
-
-%feature("docstring") simuPOP::statInfo::~statInfo "
-
-Usage:
-
-    x.~statInfo()
-
-"; 
-
-%feature("docstring") simuPOP::statInfo::apply "
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%ignore simuPOP::statLD;
-
-%feature("docstring") simuPOP::statLD::statLD "
-
-Usage:
-
-    statLD(LD, subPops, vars, suffix)
-
-"; 
-
-%feature("docstring") simuPOP::statLD::describe "
-
-Usage:
-
-    x.describe(format=True)
-
-"; 
-
-%feature("docstring") simuPOP::statLD::apply "
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%ignore simuPOP::statNeutrality;
-
-%feature("docstring") simuPOP::statNeutrality::statNeutrality "
-
-Usage:
-
-    statNeutrality(loci, subPops, vars, suffix)
-
-"; 
-
-%feature("docstring") simuPOP::statNeutrality::describe "
-
-Usage:
-
-    x.describe(format=True)
-
-"; 
-
-%feature("docstring") simuPOP::statNeutrality::apply "
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%ignore simuPOP::statNumOfAffected;
-
-%feature("docstring") simuPOP::statNumOfAffected::statNumOfAffected "
-
-Usage:
-
-    statNumOfAffected(numOfAffected, subPops, vars, suffix)
-
-"; 
-
-%feature("docstring") simuPOP::statNumOfAffected::describe "
-
-Usage:
-
-    x.describe(format=True)
-
-"; 
-
-%feature("docstring") simuPOP::statNumOfAffected::apply "
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%ignore simuPOP::statNumOfMales;
-
-%feature("docstring") simuPOP::statNumOfMales::statNumOfMales "
-
-Usage:
-
-    statNumOfMales(numOfMales, subPops, vars, suffix)
-
-"; 
-
-%feature("docstring") simuPOP::statNumOfMales::apply "
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%feature("docstring") simuPOP::statNumOfMales::describe "
-
-Usage:
-
-    x.describe(format=True)
-
-"; 
-
-%ignore simuPOP::statNumOfMutants;
-
-%feature("docstring") simuPOP::statNumOfMutants::statNumOfMutants "
-
-Usage:
-
-    statNumOfMutants(loci, subPops, vars, suffix)
-
-"; 
-
-%feature("docstring") simuPOP::statNumOfMutants::describe "
-
-Usage:
-
-    x.describe(format=True)
-
-"; 
-
-%feature("docstring") simuPOP::statNumOfMutants::apply "
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%ignore simuPOP::statNumOfSegSites;
-
-%feature("docstring") simuPOP::statNumOfSegSites::statNumOfSegSites "
-
-Usage:
-
-    statNumOfSegSites(loci, subPops, vars, suffix)
-
-"; 
-
-%feature("docstring") simuPOP::statNumOfSegSites::describe "
-
-Usage:
-
-    x.describe(format=True)
-
-"; 
-
-%feature("docstring") simuPOP::statNumOfSegSites::apply "
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%ignore simuPOP::statPopSize;
-
-%feature("docstring") simuPOP::statPopSize::statPopSize "
-
-Usage:
-
-    statPopSize(popSize, subPops, vars, suffix)
-
-"; 
-
-%feature("docstring") simuPOP::statPopSize::apply "
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%feature("docstring") simuPOP::statPopSize::describe "
-
-Usage:
-
-    x.describe(format=True)
-
-"; 
-
-%ignore simuPOP::statStructure;
-
-%feature("docstring") simuPOP::statStructure::statStructure "
-
-Usage:
-
-    statStructure(Fst, subPops, vars, suffix)
-
-"; 
-
-%feature("docstring") simuPOP::statStructure::describe "
-
-Usage:
-
-    x.describe(format=True)
-
-"; 
-
-%feature("docstring") simuPOP::statStructure::apply "
-
-Usage:
-
-    x.apply(pop)
 
 "; 
 
@@ -10872,6 +9888,12 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::StepwiseMutator::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::StepwiseMutator::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::StepwiseMutator::mutate(Allele allele, size_t locus) const;
+
 %feature("docstring") simuPOP::StepwiseMutator::~StepwiseMutator "
 
 Usage:
@@ -10879,12 +9901,6 @@ Usage:
     x.~StepwiseMutator()
 
 "; 
-
-%ignore simuPOP::StepwiseMutator::mutate(Allele allele, size_t locus) const;
-
-%feature("docstring") simuPOP::StepwiseMutator::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::StepwiseMutator::describe "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::StopEvolution "
 
@@ -10924,6 +9940,18 @@ Usage:
 
 %ignore simuPOP::StreamElem::StreamElem(const StreamElem &rhs);
 
+%ignore simuPOP::StreamElem::append();
+
+%ignore simuPOP::StreamElem::info();
+
+%ignore simuPOP::StreamElem::makeAppend(bool append);
+
+%ignore simuPOP::StreamElem::makeReadable();
+
+%ignore simuPOP::StreamElem::stream();
+
+%ignore simuPOP::StreamElem::type();
+
 %feature("docstring") simuPOP::StreamElem::~StreamElem "
 
 Description:
@@ -10936,161 +9964,21 @@ Usage:
 
 "; 
 
-%ignore simuPOP::StreamElem::makeReadable();
-
-%ignore simuPOP::StreamElem::makeAppend(bool append);
-
-%ignore simuPOP::StreamElem::stream();
-
-%ignore simuPOP::StreamElem::type();
-
-%ignore simuPOP::StreamElem::info();
-
-%ignore simuPOP::StreamElem::append();
-
 %ignore simuPOP::StreamProvider;
 
 %ignore simuPOP::StreamProvider::StreamProvider(const string &output, const pyFunc &func, const string &mode);
+
+%ignore simuPOP::StreamProvider::closeOstream();
+
+%ignore simuPOP::StreamProvider::getOstream(PyObject *dict=NULL, bool readable=false);
+
+%ignore simuPOP::StreamProvider::noOutput();
 
 %feature("docstring") simuPOP::StreamProvider::~StreamProvider "
 
 Usage:
 
     x.~StreamProvider()
-
-"; 
-
-%ignore simuPOP::StreamProvider::noOutput();
-
-%ignore simuPOP::StreamProvider::getOstream(PyObject *dict=NULL, bool readable=false);
-
-%ignore simuPOP::StreamProvider::closeOstream();
-
-%feature("docstring") simuPOP::stringFunc "
-
-"; 
-
-%feature("docstring") simuPOP::stringFunc::stringFunc "
-
-Usage:
-
-    stringFunc(value)
-
-"; 
-
-%ignore simuPOP::stringFunc::value() const;
-
-%ignore simuPOP::stringFunc::func() const;
-
-%ignore simuPOP::stringFunc::empty() const;
-
-%feature("docstring") simuPOP::stringFunc::mode "
-
-Description:
-
-    COPY.
-
-Usage:
-
-    x.mode()
-
-"; 
-
-%feature("docstring") simuPOP::stringList "
-
-"; 
-
-%feature("docstring") simuPOP::stringList::stringList "
-
-Usage:
-
-    stringList(str=None)
-
-"; 
-
-%ignore simuPOP::stringList::stringList(const string &str);
-
-%ignore simuPOP::stringList::obtainFrom(const stringList &items, const char *allowedItems[], const char *defaultItems[]);
-
-%ignore simuPOP::stringList::allAvail() const;
-
-%ignore simuPOP::stringList::empty() const;
-
-%ignore simuPOP::stringList::contains(const string &str) const;
-
-%ignore simuPOP::stringList::pushback(const string &str);
-
-%ignore simuPOP::stringList::elems(const GenoStruTrait *trait=NULL) const;
-
-%feature("docstring") simuPOP::stringMatrix "
-
-"; 
-
-%feature("docstring") simuPOP::stringMatrix::stringMatrix "
-
-Usage:
-
-    stringMatrix(str=None)
-
-"; 
-
-%ignore simuPOP::stringMatrix::empty() const;
-
-%ignore simuPOP::stringMatrix::elems() const;
-
-%feature("docstring") simuPOP::subPopList "
-
-Details:
-
-    A class to specify (virtual) subpopulation list. Using a dedicated
-    class allows users to specify a single subpopulation, or a list of
-    (virutal) subpoulations easily.
-
-"; 
-
-%feature("docstring") simuPOP::subPopList::subPopList "
-
-Usage:
-
-    subPopList(obj=None)
-
-"; 
-
-%ignore simuPOP::subPopList::subPopList(const vectorvsp &subPops);
-
-%ignore simuPOP::subPopList::allAvail() const;
-
-%ignore simuPOP::subPopList::empty() const;
-
-%ignore simuPOP::subPopList::size() const;
-
-%feature("docstring") simuPOP::subPopList::len "
-
-Usage:
-
-    x.__len__()
-
-"; 
-
-%ignore simuPOP::subPopList::pushback(const vspID subPop);
-
-%ignore simuPOP::subPopList::contains(const vspID subPop) const;
-
-%ignore simuPOP::subPopList::overlap(const size_t subPop) const;
-
-%ignore simuPOP::subPopList::begin() const;
-
-%ignore simuPOP::subPopList::end() const;
-
-%feature("docstring") simuPOP::subPopList::expandFrom "
-
-Description:
-
-    expand ALL_AVAIL and [(ALL_AVAIL, vsp), ...] according to pop
-
-Usage:
-
-    x.expandFrom(pop)
 
 "; 
 
@@ -11127,6 +10015,12 @@ Details:
 
 "; 
 
+%ignore simuPOP::SummaryTagger::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+
+%feature("docstring") simuPOP::SummaryTagger::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::SummaryTagger::describe "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::SummaryTagger::~SummaryTagger "
 
 Usage:
@@ -11134,12 +10028,6 @@ Usage:
     x.~SummaryTagger()
 
 "; 
-
-%feature("docstring") simuPOP::SummaryTagger::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::SummaryTagger::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
-
-%feature("docstring") simuPOP::SummaryTagger::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::SystemError "
 
@@ -11192,11 +10080,11 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::TerminateIf::apply "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::TerminateIf::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::TerminateIf::describe "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::TerminateIf::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::TerminateIf::~TerminateIf "
 
@@ -11242,6 +10130,16 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::TicToc::apply "Obsolete or undocumented function."
+
+%ignore simuPOP::TicToc::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
+
+%feature("docstring") simuPOP::TicToc::clone "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::TicToc::describe "Obsolete or undocumented function."
+
+%ignore simuPOP::TicToc::parallelizable() const;
+
 %feature("docstring") simuPOP::TicToc::~TicToc "
 
 Description:
@@ -11253,76 +10151,6 @@ Usage:
     x.~TicToc()
 
 "; 
-
-%feature("docstring") simuPOP::TicToc::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::TicToc::apply "Obsolete or undocumented function."
-
-%ignore simuPOP::TicToc::applyDuringMating(Population &pop, Population &offPop, RawIndIterator offspring, Individual *dad=NULL, Individual *mom=NULL) const;
-
-%feature("docstring") simuPOP::TicToc::describe "Obsolete or undocumented function."
-
-%ignore simuPOP::TicToc::parallelizable() const;
-
-%feature("docstring") simuPOP::uintList "
-
-"; 
-
-%feature("docstring") simuPOP::uintList::uintList "
-
-Usage:
-
-    uintList(obj=Py_True)
-
-"; 
-
-%ignore simuPOP::uintList::uintList(const vectoru &values);
-
-%ignore simuPOP::uintList::allAvail() const;
-
-%feature("docstring") simuPOP::uintList::unspecified "
-
-Usage:
-
-    x.unspecified()
-
-"; 
-
-%ignore simuPOP::uintList::elems() const;
-
-%feature("docstring") simuPOP::uintListFunc "
-
-"; 
-
-%feature("docstring") simuPOP::uintListFunc::uintListFunc "
-
-Usage:
-
-    uintListFunc(values=[])
-
-"; 
-
-%ignore simuPOP::uintListFunc::func() const;
-
-%ignore simuPOP::uintListFunc::empty() const;
-
-%feature("docstring") simuPOP::uintString "
-
-"; 
-
-%feature("docstring") simuPOP::uintString::uintString "
-
-Usage:
-
-    uintString(value)
-
-"; 
-
-%ignore simuPOP::uintString::empty() const;
-
-%ignore simuPOP::uintString::name() const;
-
-%ignore simuPOP::uintString::value() const;
 
 %ignore simuPOP::UniformNumOffModel;
 
@@ -11366,71 +10194,6 @@ Usage:
 
 "; 
 
-%ignore simuPOP::vspFunctor;
-
-%feature("docstring") simuPOP::vspFunctor::vspFunctor "
-
-Usage:
-
-    vspFunctor()
-
-"; 
-
-%feature("docstring") simuPOP::vspID "
-
-Details:
-
-    A class to specify virtual subpopulation, which is composed of a
-    subpopulation ID and a virtual subpopulation ID.
-
-"; 
-
-%feature("docstring") simuPOP::vspID::vspID "
-
-Usage:
-
-    vspID(id)
-
-Details:
-
-    Create a subpopulation id. Accept id as well as names.
-
-"; 
-
-%ignore simuPOP::vspID::vspID(const vectori &subPop, bool allAvailSP=false, bool allAvailVSP=false, const string &spName=string(), const string &vspName=string());
-
-%feature("docstring") simuPOP::vspID::~vspID "
-
-Usage:
-
-    x.~vspID()
-
-"; 
-
-%ignore simuPOP::vspID::subPop() const;
-
-%ignore simuPOP::vspID::virtualSubPop() const;
-
-%ignore simuPOP::vspID::valid() const;
-
-%ignore simuPOP::vspID::isVirtual() const;
-
-%ignore simuPOP::vspID::allAvailSP() const;
-
-%ignore simuPOP::vspID::allAvailVSP() const;
-
-%feature("docstring") simuPOP::vspID::resolve "
-
-Usage:
-
-    x.resolve(pop)
-
-"; 
-
-%ignore simuPOP::vspID::spName() const;
-
-%ignore simuPOP::vspID::vspName() const;
-
 %feature("docstring") simuPOP::WeightedSampler "
 
 Details:
@@ -11462,20 +10225,6 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::WeightedSampler::~WeightedSampler "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~WeightedSampler()
-
-"; 
-
-%ignore simuPOP::WeightedSampler::set(IT first, IT last, size_t N=0);
-
 %feature("docstring") simuPOP::WeightedSampler::draw "
 
 Usage:
@@ -11501,7 +10250,203 @@ Details:
 
 "; 
 
+%ignore simuPOP::WeightedSampler::set(IT first, IT last, size_t N=0);
+
+%feature("docstring") simuPOP::WeightedSampler::~WeightedSampler "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~WeightedSampler()
+
+"; 
+
 %feature("docstring") simuPOP::applyDuringMatingOperator "Obsolete or undocumented function."
+
+%ignore simuPOP::armitageTrendTest(const vector< vectoru > &table, const vectorf &weight);
+
+%ignore simuPOP::chisqTest(const vector< vectoru > &table, double &chisq, double &chisq_p);
+
+%ignore simuPOP::cleanupCircularRefs();
+
+%feature("docstring") simuPOP::closeOutput "
+
+Usage:
+
+    closeOutput(output=\"\")
+
+Details:
+
+    Output files specified by '>' are closed immediately after they
+    are written. Those specified by '>>' and '>>>' are closed by a
+    simulator after Simulator.evolve(). However, these files will be
+    kept open if the operators are applied directly to a population
+    using the operators' function form. In this case, function
+    closeOutput can be used to close a specific file output, and close
+    all unclosed files if output is unspecified. An exception will be
+    raised if output does not exist or it has already been closed.
+
+"; 
+
+%ignore simuPOP::cnull();
+
+%ignore simuPOP::debug(DBG_CODE code);
+
+%feature("docstring") simuPOP::describeEvolProcess "
+
+Usage:
+
+    describeEvolProcess(initOps=[], preOps=[],
+      matingScheme=MatingScheme, postOps=[], finalOps=[], gen=-1,
+      numRep=1)
+
+Details:
+
+    This function takes the same parameters as Simulator.evolve and
+    output a description of how an evolutionary process will be
+    executed. It is recommended that you call this function if you
+    have any doubt how your simulation will proceed.
+
+"; 
+
+%feature("docstring") simuPOP::elapsedTime "
+
+Usage:
+
+    elapsedTime(name)
+
+"; 
+
+%ignore simuPOP::fetchAndIncrement(ATOMICLONG *val);
+
+%feature("docstring") simuPOP::floatList "
+
+"; 
+
+%ignore simuPOP::floatList::elems() const;
+
+%feature("docstring") simuPOP::floatList::floatList "
+
+Usage:
+
+    floatList(obj=None)
+
+"; 
+
+%ignore simuPOP::floatList::floatList(double val);
+
+%feature("docstring") simuPOP::floatListFunc "
+
+"; 
+
+%ignore simuPOP::floatListFunc::empty() const;
+
+%feature("docstring") simuPOP::floatListFunc::floatListFunc "
+
+Usage:
+
+    floatListFunc(func)
+
+"; 
+
+%ignore simuPOP::floatListFunc::floatListFunc(double val);
+
+%ignore simuPOP::floatListFunc::func() const;
+
+%ignore simuPOP::floatListFunc::size() const;
+
+%ignore simuPOP::floatListFunc::valid() const;
+
+%feature("docstring") simuPOP::floatMatrix "
+
+"; 
+
+%ignore simuPOP::floatMatrix::elems() const;
+
+%ignore simuPOP::floatMatrix::empty() const;
+
+%feature("docstring") simuPOP::floatMatrix::floatMatrix "
+
+Usage:
+
+    floatMatrix(obj=None)
+
+"; 
+
+%ignore simuPOP::formatDescription(const string &text);
+
+%feature("docstring") simuPOP::getRNG "
+
+Description:
+
+    return the currently used random number generator
+
+Usage:
+
+    getRNG()
+
+"; 
+
+%ignore simuPOP::hweTest(const vectoru &cnt);
+
+%ignore simuPOP::indCompare;
+
+%feature("docstring") simuPOP::indCompare::indCompare "
+
+Usage:
+
+    indCompare(idx, reverse=False)
+
+"; 
+
+%ignore simuPOP::initClock();
+
+%ignore simuPOP::initialize(PyObject *module);
+
+%feature("docstring") simuPOP::intList "
+
+Details:
+
+    A class to specify replicate list. The reason why I cannot simple
+    use vectori() is that users have got used to use a single number
+    to specify a single replicate.
+
+"; 
+
+%ignore simuPOP::intList::allAvail();
+
+%ignore simuPOP::intList::elems() const;
+
+%feature("docstring") simuPOP::intList::intList "
+
+Usage:
+
+    intList(obj=None)
+
+"; 
+
+%ignore simuPOP::intList::intList(const vectori &reps);
+
+%ignore simuPOP::intList::match(ssize_t rep, const vector< bool > *activeRep=NULL) const;
+
+%feature("docstring") simuPOP::intMatrix "
+
+"; 
+
+%ignore simuPOP::intMatrix::elems() const;
+
+%ignore simuPOP::intMatrix::empty() const;
+
+%feature("docstring") simuPOP::intMatrix::intMatrix "
+
+Usage:
+
+    intMatrix(obj=None)
+
+"; 
 
 %feature("docstring") simuPOP::loadPedigree "
 
@@ -11566,173 +10511,49 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::describeEvolProcess "
-
-Usage:
-
-    describeEvolProcess(initOps=[], preOps=[],
-      matingScheme=MatingScheme, postOps=[], finalOps=[], gen=-1,
-      numRep=1)
-
-Details:
-
-    This function takes the same parameters as Simulator.evolve and
-    output a description of how an evolutionary process will be
-    executed. It is recommended that you call this function if you
-    have any doubt how your simulation will proceed.
+%feature("docstring") simuPOP::lociList "
 
 "; 
 
-%feature("docstring") simuPOP::turnOnDebug "
+%ignore simuPOP::lociList::allAvail() const;
+
+%feature("docstring") simuPOP::lociList::dynamic "
 
 Usage:
 
-    turnOnDebug(code=\"\")
-
-Details:
-
-    Set debug code code. More than one code could be specified using a
-    comma separated string. Name of available codes are available from
-    moduleInfo()['debug'].keys().
+    x.dynamic()
 
 "; 
 
-%feature("docstring") simuPOP::turnOffDebug "
+%ignore simuPOP::lociList::elems(const GenoStruTrait *trait=NULL) const;
+
+%feature("docstring") simuPOP::lociList::empty "
 
 Usage:
 
-    turnOffDebug(code=\"DBG_ALL\")
-
-Details:
-
-    Turn off debug code code. More than one code could be specified
-    using a comma separated string. Default to turn off all debug
-    codes.
+    x.empty()
 
 "; 
 
-%ignore simuPOP::debug(DBG_CODE code);
+%ignore simuPOP::lociList::indexOf(size_t loc) const;
 
-%ignore simuPOP::repeatedWarning(const string &message);
-
-%ignore simuPOP::initClock();
-
-%feature("docstring") simuPOP::elapsedTime "
+%feature("docstring") simuPOP::lociList::lociList "
 
 Usage:
 
-    elapsedTime(name)
+    lociList(obj=Py_True)
 
 "; 
 
-%feature("docstring") simuPOP::setOptions "
+%ignore simuPOP::lociList::lociList(const vectoru &values);
 
-Usage:
+%ignore simuPOP::lociList::name(size_t i) const;
 
-    setOptions(numThreads=-1, name=None, seed=0)
+%ignore simuPOP::lociList::size() const;
 
-Details:
-
-    First argument is to set number of thread in openMP. The number of
-    threads can be be positive, integer (number of threads) or 0,
-    which implies all available cores, or a number set by
-    environmental variable OMP_NUM_THREADS. Second and third argument
-    is to set the type or seed of existing random number generator
-    using RNGname with seed. If using openMP, it sets the type or seed
-    of random number generator of each thread.
-
-"; 
-
-%ignore simuPOP::numThreads();
-
-%ignore simuPOP::fetchAndIncrement(ATOMICLONG *val);
-
-%ignore simuPOP::parallelSort(T1 start, T1 end, T2 cmp);
-
-%ignore simuPOP::simuPOPkbhit();
-
-%ignore simuPOP::simuPOPgetch();
-
-%ignore simuPOP::cleanupCircularRefs();
-
-%ignore simuPOP::PyObjAsString(PyObject *str);
-
-%ignore simuPOP::PyObjAsBool(PyObject *obj, bool &val);
-
-%ignore simuPOP::PyObjAsInt(PyObject *obj, long &val);
-
-%ignore simuPOP::PyObjAsSizeT(PyObject *obj, size_t &val);
-
-%ignore simuPOP::PyObjAsDouble(PyObject *obj, double &val);
-
-%ignore simuPOP::PyObjAsString(PyObject *obj, string &val);
-
-%ignore simuPOP::PyObjAsArray(PyObject *obj, vectorf &val);
-
-%ignore simuPOP::PyObjAsIntArray(PyObject *obj, vectori &val);
-
-%ignore simuPOP::PyObjAsSizeTArray(PyObject *obj, vectoru &val);
-
-%ignore simuPOP::AlleleVecAsNumArray(GenoIterator begin, GenoIterator end);
-
-%ignore simuPOP::LineageVecAsNumArray(LineageIterator begin, LineageIterator end);
+%ignore simuPOP::lociList::unspecified() const;
 
 %ignore simuPOP::mainVars();
-
-%ignore simuPOP::moduleVars();
-
-%ignore simuPOP::pyPopObj(void *p);
-
-%ignore simuPOP::pyIndObj(void *p);
-
-%ignore simuPOP::pyIndPointer(PyObject *p);
-
-%ignore simuPOP::pyPopPointer(PyObject *p);
-
-%ignore simuPOP::shorten(const string &val, size_t length=40);
-
-%ignore simuPOP::ostreamManager();
-
-%feature("docstring") simuPOP::closeOutput "
-
-Usage:
-
-    closeOutput(output=\"\")
-
-Details:
-
-    Output files specified by '>' are closed immediately after they
-    are written. Those specified by '>>' and '>>>' are closed by a
-    simulator after Simulator.evolve(). However, these files will be
-    kept open if the operators are applied directly to a population
-    using the operators' function form. In this case, function
-    closeOutput can be used to close a specific file output, and close
-    all unclosed files if output is unspecified. An exception will be
-    raised if output does not exist or it has already been closed.
-
-"; 
-
-%feature("docstring") simuPOP::getRNG "
-
-Description:
-
-    return the currently used random number generator
-
-Usage:
-
-    getRNG()
-
-"; 
-
-%ignore simuPOP::chisqTest(const vector< vectoru > &table, double &chisq, double &chisq_p);
-
-%ignore simuPOP::armitageTrendTest(const vector< vectoru > &table, const vectorf &weight);
-
-%ignore simuPOP::hweTest(const vectoru &cnt);
-
-%ignore simuPOP::propToCount(IT first, IT last, size_t N, vectoru &count);
-
-%ignore simuPOP::formatDescription(const string &text);
 
 %feature("docstring") simuPOP::moduleInfo "
 
@@ -11764,35 +10585,1222 @@ Details:
 
 "; 
 
-%ignore simuPOP::initialize(PyObject *module);
+%ignore simuPOP::moduleVars();
 
-%ignore simuPOP::cnull();
+%ignore simuPOP::numThreads();
+
+%feature("docstring") simuPOP::opList "
+
+"; 
+
+%ignore simuPOP::opList::begin() const;
+
+%ignore simuPOP::opList::elems() const;
+
+%ignore simuPOP::opList::empty() const;
+
+%ignore simuPOP::opList::end() const;
+
+%feature("docstring") simuPOP::opList::opList "
+
+Usage:
+
+    opList(obj=None)
+
+"; 
+
+%ignore simuPOP::opList::opList(const vectorop &ops);
+
+%ignore simuPOP::opList::size() const;
+
+%feature("docstring") simuPOP::opList::~opList "
+
+Usage:
+
+    x.~opList()
+
+"; 
+
+%ignore simuPOP::ostreamManager();
+
+%ignore simuPOP::parallelSort(T1 start, T1 end, T2 cmp);
+
+%ignore simuPOP::propToCount(IT first, IT last, size_t N, vectoru &count);
+
+%ignore simuPOP::pyFunc;
+
+%feature("docstring") simuPOP::pyFunc::arg "
+
+Usage:
+
+    x.arg(arg)
+
+"; 
+
+%feature("docstring") simuPOP::pyFunc::func "
+
+Usage:
+
+    x.func()
+
+"; 
+
+%feature("docstring") simuPOP::pyFunc::hasArg "
+
+Usage:
+
+    x.hasArg(arg)
+
+"; 
+
+%feature("docstring") simuPOP::pyFunc::isValid "
+
+Usage:
+
+    x.isValid()
+
+"; 
+
+%feature("docstring") simuPOP::pyFunc::name "
+
+Usage:
+
+    x.name()
+
+"; 
+
+%feature("docstring") simuPOP::pyFunc::numArgs "
+
+Description:
+
+    return number of arguments this function accepts. This function
+    does not count tuple parameters.
+
+Usage:
+
+    x.numArgs()
+
+"; 
+
+%feature("docstring") simuPOP::pyFunc::pyFunc "
+
+Usage:
+
+    pyFunc(func)
+
+"; 
+
+%ignore simuPOP::pyGenerator;
+
+%feature("docstring") simuPOP::pyGenerator::isValid "
+
+Usage:
+
+    x.isValid()
+
+"; 
+
+%feature("docstring") simuPOP::pyGenerator::next "
+
+Usage:
+
+    x.next()
+
+"; 
+
+%feature("docstring") simuPOP::pyGenerator::pyGenerator "
+
+Usage:
+
+    pyGenerator(gen=None)
+
+"; 
+
+%feature("docstring") simuPOP::pyGenerator::set "
+
+Usage:
+
+    x.set(gen)
+
+"; 
+
+%feature("docstring") simuPOP::pyGenerator::~pyGenerator "
+
+Usage:
+
+    x.~pyGenerator()
+
+"; 
+
+%feature("docstring") simuPOP::pyIndIterator "
+
+Details:
+
+    this class implements a Python itertor class that can be used to
+    iterate through individuals in a (sub)population. If allInds are
+    true, visiblility of individuals will not be checked. Otherwise, a
+    functor will be used to check if indiviudals belong to a specified
+    virtual subpopulation.  An instance of this class is returned by
+    population::Individuals() and Population::Individuals(subPop)
+
+"; 
+
+%feature("docstring") simuPOP::pyIndIterator::iter "
+
+Usage:
+
+    x.__iter__()
+
+"; 
+
+%feature("docstring") simuPOP::pyIndIterator::next "
+
+Usage:
+
+    x.next()
+
+"; 
+
+%feature("docstring") simuPOP::pyIndIterator::next "
+
+Usage:
+
+    x.__next__()
+
+"; 
+
+%feature("docstring") simuPOP::pyIndIterator::pyIndIterator "
+
+Usage:
+
+    pyIndIterator(begin, end, allInds, func)
+
+"; 
+
+%feature("docstring") simuPOP::pyIndIterator::~pyIndIterator "
+
+Usage:
+
+    x.~pyIndIterator()
+
+"; 
+
+%ignore simuPOP::pyIndObj(void *p);
+
+%ignore simuPOP::pyIndPointer(PyObject *p);
+
+%feature("docstring") simuPOP::pyMutantIterator "
+
+Details:
+
+    this class implements a Python itertor class that can be used to
+    iterate through individuals in a (sub)population. If allInds are
+    true, visiblility of individuals will not be checked. Otherwise, a
+    functor will be used to check if indiviudals belong to a specified
+    virtual subpopulation.  An instance of this class is returned by
+    population::Individuals() and Population::Individuals(subPop)
+
+"; 
+
+%feature("docstring") simuPOP::pyMutantIterator::iter "
+
+Usage:
+
+    x.__iter__()
+
+"; 
+
+%feature("docstring") simuPOP::pyMutantIterator::next "
+
+Usage:
+
+    x.next()
+
+"; 
+
+%feature("docstring") simuPOP::pyMutantIterator::next "
+
+Usage:
+
+    x.__next__()
+
+"; 
+
+%feature("docstring") simuPOP::pyMutantIterator::pyMutantIterator "
+
+Usage:
+
+    pyMutantIterator(base, begin, end, step)
+
+"; 
+
+%feature("docstring") simuPOP::pyMutantIterator::~pyMutantIterator "
+
+Usage:
+
+    x.~pyMutantIterator()
+
+"; 
+
+%ignore simuPOP::pyObject;
+
+%feature("docstring") simuPOP::pyObject::isValid "
+
+Usage:
+
+    x.isValid()
+
+"; 
+
+%feature("docstring") simuPOP::pyObject::object "
+
+Usage:
+
+    x.object()
+
+"; 
+
+%feature("docstring") simuPOP::pyObject::pyObject "
+
+Usage:
+
+    pyObject(obj, defToNone=False)
+
+"; 
+
+%feature("docstring") simuPOP::pyObject::~pyObject "
+
+Usage:
+
+    x.~pyObject()
+
+"; 
+
+%ignore simuPOP::pyOpPointer(PyObject *p);
+
+%feature("docstring") simuPOP::pyPopIterator "
+
+Details:
+
+    This class implements a Python itertor class that can be used to
+    iterate through populations in a population.
+
+"; 
+
+%feature("docstring") simuPOP::pyPopIterator::iter "
+
+Usage:
+
+    x.__iter__()
+
+"; 
+
+%feature("docstring") simuPOP::pyPopIterator::next "
+
+Usage:
+
+    x.next()
+
+"; 
+
+%feature("docstring") simuPOP::pyPopIterator::next "
+
+Usage:
+
+    x.__next__()
+
+"; 
+
+%feature("docstring") simuPOP::pyPopIterator::pyPopIterator "
+
+Usage:
+
+    pyPopIterator(begin, end)
+
+"; 
+
+%feature("docstring") simuPOP::pyPopIterator::~pyPopIterator "
+
+Usage:
+
+    x.~pyPopIterator()
+
+"; 
+
+%ignore simuPOP::pyPopObj(void *p);
+
+%ignore simuPOP::pyPopPointer(PyObject *p);
+
+%ignore simuPOP::repeatedWarning(const string &message);
+
+%feature("docstring") simuPOP::setOptions "
+
+Usage:
+
+    setOptions(numThreads=-1, name=None, seed=0)
+
+Details:
+
+    First argument is to set number of thread in openMP. The number of
+    threads can be be positive, integer (number of threads) or 0,
+    which implies all available cores, or a number set by
+    environmental variable OMP_NUM_THREADS. Second and third argument
+    is to set the type or seed of existing random number generator
+    using RNGname with seed. If using openMP, it sets the type or seed
+    of random number generator of each thread.
+
+"; 
+
+%ignore simuPOP::shorten(const string &val, size_t length=40);
+
+%ignore simuPOP::simpleStmt;
+
+%feature("docstring") simuPOP::simpleStmt::operation "
+
+Usage:
+
+    x.operation()
+
+"; 
+
+%feature("docstring") simuPOP::simpleStmt::simpleStmt "
+
+Usage:
+
+    simpleStmt(stmt, indVar)
+
+"; 
+
+%feature("docstring") simuPOP::simpleStmt::value "
+
+Usage:
+
+    x.value()
+
+"; 
+
+%feature("docstring") simuPOP::simpleStmt::var "
+
+Usage:
+
+    x.var()
+
+"; 
+
+%ignore simuPOP::simuPOPgetch();
+
+%ignore simuPOP::simuPOPkbhit();
+
+%ignore simuPOP::statAlleleFreq;
+
+%feature("docstring") simuPOP::statAlleleFreq::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statAlleleFreq::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statAlleleFreq::statAlleleFreq "
+
+Usage:
+
+    statAlleleFreq(loci, subPops, vars, suffix)
+
+"; 
+
+%feature("docstring") simuPOP::statAlleleFreq::~statAlleleFreq "
+
+Description:
+
+    destructor, nested vectors have to be cleared manually
+
+Usage:
+
+    x.~statAlleleFreq()
+
+"; 
+
+%ignore simuPOP::statAssociation;
+
+%feature("docstring") simuPOP::statAssociation::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statAssociation::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statAssociation::statAssociation "
+
+Usage:
+
+    statAssociation(loci, subPops, vars, suffix)
+
+"; 
+
+%ignore simuPOP::statEffectiveSize;
+
+%feature("docstring") simuPOP::statEffectiveSize::LDEffectiveSize "
+
+Usage:
+
+    x.LDEffectiveSize(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statEffectiveSize::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statEffectiveSize::demographicEffectiveSize "
+
+Usage:
+
+    x.demographicEffectiveSize(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statEffectiveSize::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statEffectiveSize::statEffectiveSize "
+
+Usage:
+
+    statEffectiveSize(loci, subPops, vars, suffix)
+
+"; 
+
+%feature("docstring") simuPOP::statEffectiveSize::temporalEffectiveSize "
+
+Usage:
+
+    x.temporalEffectiveSize(pop)
+
+"; 
+
+%ignore simuPOP::statGenoFreq;
+
+%feature("docstring") simuPOP::statGenoFreq::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statGenoFreq::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statGenoFreq::statGenoFreq "
+
+Usage:
+
+    statGenoFreq(genoFreq, subPops, vars, suffix)
+
+"; 
+
+%ignore simuPOP::statHWE;
+
+%feature("docstring") simuPOP::statHWE::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statHWE::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statHWE::statHWE "
+
+Usage:
+
+    statHWE(loci, subPops, vars, suffix)
+
+"; 
+
+%ignore simuPOP::statHaploFreq;
+
+%feature("docstring") simuPOP::statHaploFreq::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statHaploFreq::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statHaploFreq::statHaploFreq "
+
+Usage:
+
+    statHaploFreq(haploFreq, subPops, vars, suffix)
+
+"; 
+
+%feature("docstring") simuPOP::statHaploFreq::~statHaploFreq "
+
+Usage:
+
+    x.~statHaploFreq()
+
+"; 
+
+%ignore simuPOP::statHaploHomoFreq;
+
+%feature("docstring") simuPOP::statHaploHomoFreq::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statHaploHomoFreq::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statHaploHomoFreq::statHaploHomoFreq "
+
+Usage:
+
+    statHaploHomoFreq(haploHeteroFreq, haploHomoFreq, subPops, vars,
+      suffix)
+
+"; 
+
+%feature("docstring") simuPOP::statHaploHomoFreq::~statHaploHomoFreq "
+
+Usage:
+
+    x.~statHaploHomoFreq()
+
+"; 
+
+%ignore simuPOP::statHeteroFreq;
+
+%feature("docstring") simuPOP::statHeteroFreq::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statHeteroFreq::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statHeteroFreq::statHeteroFreq "
+
+Usage:
+
+    statHeteroFreq(heteroFreq, homoFreq, subPops, vars, suffix)
+
+"; 
+
+%ignore simuPOP::statInbreeding;
+
+%feature("docstring") simuPOP::statInbreeding::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statInbreeding::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statInbreeding::statInbreeding "
+
+Usage:
+
+    statInbreeding(loci, subPops, vars, suffix)
+
+"; 
+
+%ignore simuPOP::statInfo;
+
+%feature("docstring") simuPOP::statInfo::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statInfo::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statInfo::statInfo "
+
+Usage:
+
+    statInfo(sumOfInfo, meanOfInfo, varOfInfo, maxOfInfo, minOfInfo,
+      subPops, vars, suffix)
+
+"; 
+
+%feature("docstring") simuPOP::statInfo::~statInfo "
+
+Usage:
+
+    x.~statInfo()
+
+"; 
+
+%ignore simuPOP::statLD;
+
+%feature("docstring") simuPOP::statLD::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statLD::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statLD::statLD "
+
+Usage:
+
+    statLD(LD, subPops, vars, suffix)
+
+"; 
+
+%ignore simuPOP::statNeutrality;
+
+%feature("docstring") simuPOP::statNeutrality::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statNeutrality::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statNeutrality::statNeutrality "
+
+Usage:
+
+    statNeutrality(loci, subPops, vars, suffix)
+
+"; 
+
+%ignore simuPOP::statNumOfAffected;
+
+%feature("docstring") simuPOP::statNumOfAffected::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statNumOfAffected::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statNumOfAffected::statNumOfAffected "
+
+Usage:
+
+    statNumOfAffected(numOfAffected, subPops, vars, suffix)
+
+"; 
+
+%ignore simuPOP::statNumOfMales;
+
+%feature("docstring") simuPOP::statNumOfMales::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statNumOfMales::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statNumOfMales::statNumOfMales "
+
+Usage:
+
+    statNumOfMales(numOfMales, subPops, vars, suffix)
+
+"; 
+
+%ignore simuPOP::statNumOfMutants;
+
+%feature("docstring") simuPOP::statNumOfMutants::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statNumOfMutants::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statNumOfMutants::statNumOfMutants "
+
+Usage:
+
+    statNumOfMutants(loci, subPops, vars, suffix)
+
+"; 
+
+%ignore simuPOP::statNumOfSegSites;
+
+%feature("docstring") simuPOP::statNumOfSegSites::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statNumOfSegSites::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statNumOfSegSites::statNumOfSegSites "
+
+Usage:
+
+    statNumOfSegSites(loci, subPops, vars, suffix)
+
+"; 
+
+%ignore simuPOP::statPopSize;
+
+%feature("docstring") simuPOP::statPopSize::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statPopSize::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statPopSize::statPopSize "
+
+Usage:
+
+    statPopSize(popSize, subPops, vars, suffix)
+
+"; 
+
+%ignore simuPOP::statStructure;
+
+%feature("docstring") simuPOP::statStructure::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statStructure::describe "
+
+Usage:
+
+    x.describe(format=True)
+
+"; 
+
+%feature("docstring") simuPOP::statStructure::statStructure "
+
+Usage:
+
+    statStructure(Fst, subPops, vars, suffix)
+
+"; 
+
+%feature("docstring") simuPOP::stringFunc "
+
+"; 
+
+%ignore simuPOP::stringFunc::empty() const;
+
+%ignore simuPOP::stringFunc::func() const;
+
+%feature("docstring") simuPOP::stringFunc::mode "
+
+Description:
+
+    COPY.
+
+Usage:
+
+    x.mode()
+
+"; 
+
+%feature("docstring") simuPOP::stringFunc::stringFunc "
+
+Usage:
+
+    stringFunc(value)
+
+"; 
+
+%ignore simuPOP::stringFunc::value() const;
+
+%feature("docstring") simuPOP::stringList "
+
+"; 
+
+%ignore simuPOP::stringList::allAvail() const;
+
+%ignore simuPOP::stringList::contains(const string &str) const;
+
+%ignore simuPOP::stringList::elems(const GenoStruTrait *trait=NULL) const;
+
+%ignore simuPOP::stringList::empty() const;
+
+%ignore simuPOP::stringList::obtainFrom(const stringList &items, const char *allowedItems[], const char *defaultItems[]);
+
+%ignore simuPOP::stringList::pushback(const string &str);
+
+%feature("docstring") simuPOP::stringList::stringList "
+
+Usage:
+
+    stringList(str=None)
+
+"; 
+
+%ignore simuPOP::stringList::stringList(const string &str);
+
+%feature("docstring") simuPOP::stringMatrix "
+
+"; 
+
+%ignore simuPOP::stringMatrix::elems() const;
+
+%ignore simuPOP::stringMatrix::empty() const;
+
+%feature("docstring") simuPOP::stringMatrix::stringMatrix "
+
+Usage:
+
+    stringMatrix(str=None)
+
+"; 
+
+%feature("docstring") simuPOP::subPopList "
+
+Details:
+
+    A class to specify (virtual) subpopulation list. Using a dedicated
+    class allows users to specify a single subpopulation, or a list of
+    (virutal) subpoulations easily.
+
+"; 
+
+%ignore simuPOP::subPopList::allAvail() const;
+
+%ignore simuPOP::subPopList::begin() const;
+
+%ignore simuPOP::subPopList::contains(const vspID subPop) const;
+
+%ignore simuPOP::subPopList::empty() const;
+
+%ignore simuPOP::subPopList::end() const;
+
+%feature("docstring") simuPOP::subPopList::expandFrom "
+
+Description:
+
+    expand ALL_AVAIL and [(ALL_AVAIL, vsp), ...] according to pop
+
+Usage:
+
+    x.expandFrom(pop)
+
+"; 
+
+%feature("docstring") simuPOP::subPopList::len "
+
+Usage:
+
+    x.__len__()
+
+"; 
+
+%ignore simuPOP::subPopList::overlap(const size_t subPop) const;
+
+%ignore simuPOP::subPopList::pushback(const vspID subPop);
+
+%ignore simuPOP::subPopList::size() const;
+
+%feature("docstring") simuPOP::subPopList::subPopList "
+
+Usage:
+
+    subPopList(obj=None)
+
+"; 
+
+%ignore simuPOP::subPopList::subPopList(const vectorvsp &subPops);
+
+%feature("docstring") simuPOP::turnOffDebug "
+
+Usage:
+
+    turnOffDebug(code=\"DBG_ALL\")
+
+Details:
+
+    Turn off debug code code. More than one code could be specified
+    using a comma separated string. Default to turn off all debug
+    codes.
+
+"; 
+
+%feature("docstring") simuPOP::turnOnDebug "
+
+Usage:
+
+    turnOnDebug(code=\"\")
+
+Details:
+
+    Set debug code code. More than one code could be specified using a
+    comma separated string. Name of available codes are available from
+    moduleInfo()['debug'].keys().
+
+"; 
+
+%feature("docstring") simuPOP::uintList "
+
+"; 
+
+%ignore simuPOP::uintList::allAvail() const;
+
+%ignore simuPOP::uintList::elems() const;
+
+%feature("docstring") simuPOP::uintList::uintList "
+
+Usage:
+
+    uintList(obj=Py_True)
+
+"; 
+
+%ignore simuPOP::uintList::uintList(const vectoru &values);
+
+%feature("docstring") simuPOP::uintList::unspecified "
+
+Usage:
+
+    x.unspecified()
+
+"; 
+
+%feature("docstring") simuPOP::uintListFunc "
+
+"; 
+
+%ignore simuPOP::uintListFunc::empty() const;
+
+%ignore simuPOP::uintListFunc::func() const;
+
+%feature("docstring") simuPOP::uintListFunc::uintListFunc "
+
+Usage:
+
+    uintListFunc(values=[])
+
+"; 
+
+%feature("docstring") simuPOP::uintString "
+
+"; 
+
+%ignore simuPOP::uintString::empty() const;
+
+%ignore simuPOP::uintString::name() const;
+
+%feature("docstring") simuPOP::uintString::uintString "
+
+Usage:
+
+    uintString(value)
+
+"; 
+
+%ignore simuPOP::uintString::value() const;
+
+%ignore simuPOP::vspFunctor;
+
+%feature("docstring") simuPOP::vspFunctor::vspFunctor "
+
+Usage:
+
+    vspFunctor()
+
+"; 
+
+%feature("docstring") simuPOP::vspID "
+
+Details:
+
+    A class to specify virtual subpopulation, which is composed of a
+    subpopulation ID and a virtual subpopulation ID.
+
+"; 
+
+%ignore simuPOP::vspID::allAvailSP() const;
+
+%ignore simuPOP::vspID::allAvailVSP() const;
+
+%ignore simuPOP::vspID::isVirtual() const;
+
+%feature("docstring") simuPOP::vspID::resolve "
+
+Usage:
+
+    x.resolve(pop)
+
+"; 
+
+%ignore simuPOP::vspID::spName() const;
+
+%ignore simuPOP::vspID::subPop() const;
+
+%ignore simuPOP::vspID::valid() const;
+
+%ignore simuPOP::vspID::virtualSubPop() const;
+
+%feature("docstring") simuPOP::vspID::vspID "
+
+Usage:
+
+    vspID(id)
+
+Details:
+
+    Create a subpopulation id. Accept id as well as names.
+
+"; 
+
+%ignore simuPOP::vspID::vspID(const vectori &subPop, bool allAvailSP=false, bool allAvailVSP=false, const string &spName=string(), const string &vspName=string());
+
+%ignore simuPOP::vspID::vspName() const;
+
+%feature("docstring") simuPOP::vspID::~vspID "
+
+Usage:
+
+    x.~vspID()
+
+"; 
 
 %ignore std::powthree(unsigned n);
-
-%feature("docstring") simuPOP::Population::dvars "
-
-Usage:
-
-    x.dvars(subPop=[])
-
-Details:
-
-    Return a wrapper of Python dictionary returned by vars(subPop) so
-    that dictionary keys can be accessed as attributes.
-
-"; 
-
-%feature("docstring") simuPOP::Simulator::dvars "
-
-Usage:
-
-    x.dvars(rep, subPop=[])
-
-Details:
-
-    Return a wrapper of Python dictionary returned by vars(rep,
-    subPop) so that dictionary keys can be accessed as attributes.
-
-"; 
 
