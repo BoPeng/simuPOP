@@ -1,4 +1,4 @@
-digraph simuPOP_doc [clusterrank=true] {
+digraph simuPOP_doc {
 	/* source nodes */
 	source_h [label="Source (*.h)", shape=parallelogram,fontcolor=blue, rank=source];
 	refManual_lyx [label="refManual (LyX)", shape=parallelogram,fontcolor=blue, rank=source];
