@@ -5,7 +5,7 @@
 
 # You can set these variables from the command line.
 
-PYTHON       = python
+PYTHON       = python2.7
 LYX          = lyx
 SVNROOT      = http://svn.python.org/projects
 SPHINXOPTS   =
