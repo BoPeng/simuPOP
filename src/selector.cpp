@@ -536,6 +536,268 @@ double PyMlSelector::getFitnessValue(const LocGenotype & geno) const
 	return fitness;
 }
 
+#ifdef LONGALLELE
+
+
+double MutSpaceSelector::indFitness(Population & /* pop */, RawIndIterator ind) const
+{
+	if (ind->sex() == MALE && ind->chromType(0) == CHROMOSOME_X) {
+		if (m_mode == MULTIPLICATIVE) {
+			return randomSelMulFitnessExt(ind->genoBegin(0), ind->genoEnd(0), true);
+		} else if (m_mode == ADDITIVE) {
+			if (m_additive)
+				return randomSelAddFitness(ind->genoBegin(0), ind->genoEnd(0), true);
+			else
+				return randomSelAddFitnessExt(ind->genoBegin(0), ind->genoEnd(0), true);
+		} else if (m_mode == EXPONENTIAL) {
+			if (m_additive)
+				return randomSelExpFitness(ind->genoBegin(0), ind->genoEnd(0), true);
+			else
+				return randomSelExpFitnessExt(ind->genoBegin(0), ind->genoEnd(0), true);
+		}
+	} else {
+		if (m_mode == MULTIPLICATIVE) {
+			return randomSelMulFitnessExt(ind->genoBegin(), ind->genoEnd(), false);
+		} else if (m_mode == ADDITIVE) {
+			if (m_additive)
+				return randomSelAddFitness(ind->genoBegin(), ind->genoEnd(), false);
+			else
+				return randomSelAddFitnessExt(ind->genoBegin(), ind->genoEnd(), false);
+		} else if (m_mode == EXPONENTIAL) {
+			if (m_additive)
+				return randomSelExpFitness(ind->genoBegin(), ind->genoEnd(), false);
+			else
+				return randomSelExpFitnessExt(ind->genoBegin(), ind->genoEnd(), false);
+		}
+	}
+	return 0;
+}
+
+
+bool MutSpaceSelector::apply(Population & pop) const
+{
+	m_newMutants.clear();
+	if (!BaseSelector::apply(pop))
+		return false;
+	// output NEW mutant...
+	if (!m_newMutants.empty() && !noOutput()) {
+		ostream & out = getOstream(pop.dict());
+		vectoru::const_iterator it = m_newMutants.begin();
+		vectoru::const_iterator it_end = m_newMutants.end();
+		for (; it != it_end; ++it) {
+			SelCoef s = m_selFactory[*it];
+			out << *it << '\t' << s.first << '\t' << s.second << '\n';
+		}
+		closeOstream();
+	}
+	return true;
+}
+
+
+MutSpaceSelector::SelCoef MutSpaceSelector::getFitnessValue(size_t mutant) const
+{
+	size_t sz = m_selDist.size();
+	double s = 0;
+	double h = 0.5;
+
+	if (sz == 0) {
+		// call a function
+		const pyFunc & func = m_selDist.func();
+		PyObject * res;
+		if (func.numArgs() == 0)
+			res = func("()");
+		else {
+			DBG_FAILIF(func.arg(0) != "loc", ValueError,
+				"Only parameter loc is accepted for this user-defined function.");
+			res = func("(i)", mutant);
+		}
+		if (PyNumber_Check(res)) {
+			s = PyFloat_AsDouble(res);
+		} else if (PySequence_Check(res)) {
+			size_t sz = PySequence_Size(res);
+			DBG_FAILIF(sz == 0, RuntimeError, "Function return an empty list.");
+			PyObject * item = PySequence_GetItem(res, 0);
+			s = PyFloat_AsDouble(item);
+			Py_DECREF(item);
+			if (sz > 1) {
+				item = PySequence_GetItem(res, 1);
+				h = PyFloat_AsDouble(item);
+				Py_DECREF(item);
+			}
+		}
+		Py_DECREF(res);
+	} else {
+		int mode = static_cast<int>(m_selDist[0]);
+		if (mode == CONSTANT) {
+			// constant
+			s = m_selDist[1];
+			if (m_selDist.size() > 2)
+				h = m_selDist[2];
+		} else {
+			// a gamma distribution
+			s = getRNG().randGamma(m_selDist[1], m_selDist[2]);
+			if (m_selDist.size() > 3)
+				h = m_selDist[3];
+		}
+	}
+	m_selFactory[mutant] = SelCoef(s, h);
+	m_newMutants.push_back(mutant);
+	if (m_additive && h != 0.5)
+		m_additive = false;
+	return SelCoef(s, h);
+}
+
+
+double MutSpaceSelector::randomSelAddFitness(GenoIterator it, GenoIterator it_end, bool chrX) const
+{
+	double s = 0;
+
+	for (; it != it_end; ++it) {
+		if (*it == 0u)
+			continue;
+		SelMap::iterator sit = m_selFactory.find(static_cast<unsigned int>(*it));
+		if (sit == m_selFactory.end())
+			s += getFitnessValue(*it).first / 2.;
+		else
+			s += sit->second.first / 2;
+	}
+	if (chrX)
+		// fitness of variant on chromosome X is as if it is homogeneous
+		s += s;
+	return 1 - s > 0 ? 1 - s : 0;
+}
+
+
+double MutSpaceSelector::randomSelExpFitness(GenoIterator it, GenoIterator it_end, bool chrX) const
+{
+	double s = 0;
+
+	for (; it != it_end; ++it) {
+		if (*it == 0u)
+			continue;
+		SelMap::iterator sit = m_selFactory.find(static_cast<unsigned int>(*it));
+		if (sit == m_selFactory.end())
+			s += getFitnessValue(*it).first / 2.;
+		else
+			s += sit->second.first / 2;
+	}
+	if (chrX)
+		// fitness of variant on chromosome X is as if it is homogeneous
+		s += s;
+	return exp(-s);
+}
+
+
+double MutSpaceSelector::randomSelMulFitnessExt(GenoIterator it, GenoIterator it_end, bool chrX) const
+{
+	MutCounter cnt;
+
+	for (; it != it_end; ++it) {
+		if (*it == 0u)
+			continue;
+		MutCounter::iterator mit = cnt.find(*it);
+		if (mit == cnt.end())
+			cnt[*it] = 1;
+		else
+			++mit->second;
+	}
+
+	double s = 1;
+	MutCounter::iterator mit = cnt.begin();
+	MutCounter::iterator mit_end = cnt.end();
+	for (; mit != mit_end; ++mit) {
+		SelMap::iterator sit = m_selFactory.find(mit->first);
+		if (sit == m_selFactory.end()) {
+			SelCoef sf = getFitnessValue(mit->first);
+			if (mit->second == 1 && !chrX)
+				s *= 1 - sf.first * sf.second;
+			else
+				s *= 1 - sf.first;
+		} else {
+			if (mit->second == 1 && !chrX)
+				s *= 1 - sit->second.first * sit->second.second;
+			else
+				s *= 1 - sit->second.first;
+		}
+	}
+	return s;
+}
+
+
+double MutSpaceSelector::randomSelAddFitnessExt(GenoIterator it, GenoIterator it_end, bool chrX) const
+{
+	MutCounter cnt;
+
+	for (; it != it_end; ++it) {
+		if (*it == 0u)
+			continue;
+		MutCounter::iterator mit = cnt.find(*it);
+		if (mit == cnt.end())
+			cnt[*it] = 1;
+		else
+			++mit->second;
+	}
+
+	double s = 0;
+	MutCounter::iterator mit = cnt.begin();
+	MutCounter::iterator mit_end = cnt.end();
+	for (; mit != mit_end; ++mit) {
+		SelMap::iterator sit = m_selFactory.find(mit->first);
+		if (sit == m_selFactory.end()) {
+			SelCoef sf = getFitnessValue(mit->first);
+			if (mit->second == 1 && !chrX)
+				s += sf.first * sf.second;
+			else
+				s += sf.first;
+		} else {
+			if (mit->second == 1 && !chrX)
+				s += sit->second.first * sit->second.second;
+			else
+				s += sit->second.first;
+		}
+	}
+	return 1 - s > 0 ? 1 - s : 0;
+}
+
+
+double MutSpaceSelector::randomSelExpFitnessExt(GenoIterator it, GenoIterator it_end, bool chrX) const
+{
+	MutCounter cnt;
+
+	for (; it != it_end; ++it) {
+		if (*it == 0u)
+			continue;
+		MutCounter::iterator mit = cnt.find(*it);
+		if (mit == cnt.end())
+			cnt[*it] = 1;
+		else
+			++mit->second;
+	}
+
+	double s = 0;
+	MutCounter::iterator mit = cnt.begin();
+	MutCounter::iterator mit_end = cnt.end();
+	for (; mit != mit_end; ++mit) {
+		SelMap::iterator sit = m_selFactory.find(mit->first);
+		if (sit == m_selFactory.end()) {
+			SelCoef sf = getFitnessValue(mit->first);
+			if (mit->second == 1 && !chrX)
+				s += sf.first * sf.second;
+			else
+				s += sf.first;
+		} else {
+			if (mit->second == 1 && !chrX)
+				s += sit->second.first * sit->second.second;
+			else
+				s += sit->second.first;
+		}
+	}
+	return exp(-s);
+}
+
+
+
+#endif
 
 }
 

@@ -795,5 +795,244 @@ bool FiniteSitesMutator::apply(Population & pop) const
 	return true;
 }
 
+#ifdef LONGALLELE
+
+bool MutSpaceRevertFixedSites::apply(Population & pop) const
+{
+	if (pop.popSize() == 0 || pop.totNumLoci() == 0)
+		return true;
+
+	bool chX = pop.chromType(0) == CHROMOSOME_X;
+
+	RawIndIterator it = pop.rawIndBegin();
+	RawIndIterator it_end = pop.rawIndEnd();
+	std::set<Allele> commonAlleles(it->genoBegin(0), it->genoEnd(0));
+	commonAlleles.erase(0);
+	if (commonAlleles.size() == 0)
+		return true;
+
+	for (; it != it_end; ++it) {
+		// common = commonAlleles & geno0
+		std::set<Allele> common;
+		std::set<Allele> alleles1(it->genoBegin(0), it->genoEnd(0));
+		set_intersection(commonAlleles.begin(),
+			commonAlleles.end(), alleles1.begin(), alleles1.end(),
+			std::inserter(common, common.begin()));
+		// commonAlleles = common & geno1
+		if (chX && it->sex() == MALE) {
+			// commonAlleles = common
+			commonAlleles.swap(common);
+		} else {
+			commonAlleles.clear();
+			std::set<Allele> alleles2(it->genoBegin(1), it->genoEnd(1));
+			set_intersection(common.begin(),
+				common.end(), alleles2.begin(), alleles2.end(),
+				std::inserter(commonAlleles, commonAlleles.begin()));
+		}
+		if (commonAlleles.size() == 0)
+			return true;
+	}
+	if (!noOutput()) {
+		ostream & out = getOstream(pop.dict());
+		out << pop.gen();
+		std::set<Allele>::iterator beg = commonAlleles.begin();
+		std::set<Allele>::iterator end = commonAlleles.end();
+		for (; beg != end ; ++beg)
+			out << '\t' << *beg;
+		out << endl;
+	}
+	it = pop.rawIndBegin();
+	vectora new_alleles(pop.totNumLoci());
+	for (; it != it_end; ++it) {
+		for (size_t p = 0; p < 2; ++p) {
+			if (p == 1 && chX && it->sex() == MALE)
+				continue;
+			std::set<Allele> old_alleles(it->genoBegin(p), it->genoEnd(p));
+			old_alleles.erase(0);
+			std::fill(new_alleles.begin(), new_alleles.end(), Allele(0));
+			set_difference(old_alleles.begin(), old_alleles.end(),
+				commonAlleles.begin(), commonAlleles.end(), new_alleles.begin());
+			std::copy(new_alleles.begin(), new_alleles.end(),
+				it->genoBegin(p));
+		}
+	}
+	return true;
+}
+
+
+size_t MutSpaceMutator::locateVacantLocus(Population & /* pop */, size_t beg, size_t end, std::set<size_t> & mutants) const
+{
+	size_t loc = getRNG().randInt(static_cast<ULONG>(end - beg)) + beg;
+
+	std::set<size_t>::iterator it = std::find(mutants.begin(), mutants.end(), loc);
+
+	if (it == mutants.end())
+		return loc;
+	// look forward and backward
+	size_t loc1 = loc + 1;
+	std::set<size_t>::iterator it1(it);
+	++it1;
+	for (; it1 != mutants.end() && loc1 != end; ++it1, ++loc1) {
+		if (*it1 != loc1)
+			return loc1;
+	}
+	size_t loc2 = loc - 1;
+	std::set<size_t>::reverse_iterator it2(it);
+	--it2;
+	for (; it2 != mutants.rend() && loc2 != beg; --it2, --loc2) {
+		if (*it2 != loc2)
+			return loc2;
+	}
+	// still cannot find
+	return 0;
+}
+
+
+bool MutSpaceMutator::apply(Population & pop) const
+{
+	const matrixi & ranges = m_ranges.elems();
+	vectoru width(ranges.size());
+
+	width[0] = ranges[0][1] - ranges[0][0];
+	for (size_t i = 1; i < width.size(); ++i)
+		width[i] = ranges[i][1] - ranges[i][0] + width[i - 1];
+
+	size_t ploidyWidth = width.back();
+	size_t indWidth = pop.ploidy() * ploidyWidth;
+
+	ostream * out = NULL;
+	if (!noOutput())
+		out = &getOstream(pop.dict());
+
+	// build a set of existing mutants
+	std::set<size_t> mutants;
+	bool saturated = false;
+
+	subPopList subPops = applicableSubPops(pop);
+	subPopList::const_iterator sp = subPops.begin();
+	subPopList::const_iterator spEnd = subPops.end();
+	bool chrX = pop.chromType(0) == CHROMOSOME_X;
+	for (; sp != spEnd; ++sp) {
+		DBG_FAILIF(sp->isVirtual(), ValueError, "This operator does not support virtual subpopulation.");
+		for (size_t indIndex = 0; indIndex < pop.subPopSize(sp->subPop()); ++indIndex) {
+			size_t loc = 0;
+			while (true) {
+				// using a geometric distribution to determine mutants
+				loc += getRNG().randGeometric(m_rate);
+				if (loc > indWidth)
+					break;
+				Individual & ind = pop.individual(indIndex);
+				size_t p = (loc - 1) / ploidyWidth;
+				// chromosome and position on chromosome?
+				size_t mutLoc = (loc - 1) - p * ploidyWidth;
+				// handle chromosome X
+				if (p == 1 && chrX && ind.sex() == MALE) {
+					if (out)
+						(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t4\n";
+					continue;
+				}
+				size_t ch = 0;
+				for (size_t reg = 0; reg < width.size(); ++reg) {
+					if (mutLoc < width[reg]) {
+						ch = reg;
+						break;
+					}
+				}
+				mutLoc += ranges[ch][0];
+				if (ch > 0)
+					mutLoc -= width[ch - 1];
+
+				if (m_model == 2) {
+					// under an infinite-site model
+					if (saturated) {
+						if (out)
+							(*out)	<< pop.gen() << '\t' << mutLoc << '\t' << indIndex
+							        << "\t3\n";
+						continue;
+					}
+					bool ok = false;
+					// if the first time
+					if (mutants.empty()) {
+						// first try our luck...
+						ok = find(pop.genoBegin(false), pop.genoEnd(false), TO_ALLELE(mutLoc)) == pop.genoEnd(false);
+						if (!ok) {
+							std::set<size_t> existing(pop.genoBegin(false), pop.genoEnd(false));
+							mutants.swap(existing);
+							mutants.erase(0);
+							saturated = mutants.size() == ploidyWidth;
+							if (saturated)
+								cerr << "Failed to introduce new mutants at generation " << pop.gen() << " because all loci have existing mutants." << endl;
+						}
+					}
+					if (!ok && mutants.find(mutLoc) != mutants.end()) {
+						size_t newLoc = locateVacantLocus(pop, ranges[ch][0], ranges[ch][1], mutants);
+						// nothing is found
+						if (out)
+							(*out)	<< pop.gen() << '\t' << mutLoc << '\t' << indIndex
+							        << (newLoc == 0 ? "\t3\n" : "\t2\n");
+						if (newLoc != 0)
+							mutLoc = newLoc;
+						else {
+							cerr << "Failed to introduce a new mutant at generation " << pop.gen() << " because all loci have existing mutants." << endl;
+							// ignore this mutation, and subsequent mutations...
+							saturated = true;
+							continue;
+						}
+						// if there is no existing mutant, new mutant is allowed
+					}
+					mutants.insert(mutLoc);
+				}
+				GenoIterator geno = ind.genoBegin(p, ch);
+				size_t nLoci = pop.numLoci(ch);
+				if (*(geno + nLoci - 1) != 0u) {
+					// if the number of mutants at this individual exceeds reserved numbers
+					DBG_DO(DBG_MUTATOR, cerr << "Adding 10 loci to region " << ch << endl);
+					vectorf added(10);
+					for (size_t j = 0; j < 10; ++j)
+						added[j] = static_cast<double>(nLoci + j + 1);
+					vectoru addedChrom(10, ch);
+					pop.addLoci(addedChrom, added);
+					// individual might be shifted...
+					ind = pop.individual(indIndex);
+					geno = ind.genoBegin(p, ch);
+					nLoci += 10;
+				}
+				// find the first non-zero location
+				for (size_t j = 0; j < nLoci; ++j) {
+					if (*(geno + j) == 0u) {
+						// record mutation here
+						DBG_FAILIF(mutLoc >= ModuleMaxAllele, RuntimeError,
+							"Location can not be saved because it exceed max allowed allele.");
+						*(geno + j) = TO_ALLELE(mutLoc);
+						if (out)
+							(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t0\n";
+						break;
+					} else if (static_cast<size_t>(*(geno + j)) == mutLoc) {
+						// back mutation
+						//  from A b c d 0
+						//  to   d b c d 0
+						//  to   d b c 0 0
+						for (size_t k = j + 1; k < nLoci; ++k)
+							if (*(geno + k) == 0u) {
+								*(geno + j) = *(geno + k - 1);
+								*(geno + k - 1) = 0;
+								if (out)
+									(*out) << pop.gen() << '\t' << mutLoc << '\t' << indIndex << "\t1\n";
+								break;
+							}
+						DBG_DO(DBG_MUTATOR, cerr << "Back mutation happens at generation " << pop.gen() << " on individual " << indIndex << endl);
+						break;
+					}
+				}
+			}   // while
+		}       // each individual
+	}           // each subpopulation
+	if (out)
+		closeOstream();
+	return true;
+}
+
+
+#endif
 
 }

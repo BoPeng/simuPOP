@@ -1066,6 +1066,13 @@ MitochondrialGenoTransmitterRef
 RecombinatorRef
 \end_layout
 
+\begin_layout Plain Layout
+
+
+\backslash
+MutSpaceRecombinatorRef
+\end_layout
+
 \end_inset
 
 
@@ -1157,6 +1164,20 @@ simuPOPSNPMutatorRef
 
 \backslash
 simuPOPAcgtMutatorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+MutSpaceRevertFixedSitesRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+MutSpaceMutatorRef
 \end_layout
 
 \end_inset
@@ -1324,6 +1345,13 @@ PySelectorRef
 
 \backslash
 PyMlSelectorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+MutSpaceSelectorRef
 \end_layout
 
 \end_inset

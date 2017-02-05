@@ -675,5 +675,83 @@ private:
 
 };
 
+
+#ifdef LONGALLELE
+
+/** This during mating operator recombine chromosomes, which records mutant
+ *  locations, using a fixed recombination rate (per base pair).
+ */
+class MutSpaceRecombinator : public GenoTransmitter
+{
+public:
+	/** Create a Recombinator (a mendelian genotype transmitter with
+	 *  recombination and gene conversion) that passes genotypes from parents
+	 *  (or a parent in case of self-fertilization) to offspring. A
+	 *  recombination \e rate in the unit of base pair is needed.
+	 */
+	MutSpaceRecombinator(double rate, const intMatrix & ranges,
+		const stringFunc & output = "", int begin = 0, int end = -1, int step = 1,
+		const intList & at = vectori(),
+		const intList & reps = intList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = vectorstr())
+		: GenoTransmitter(output, begin, end, step, at, reps, subPops, infoFields),
+		m_rate(rate), m_ranges(ranges)
+	{
+		DBG_FAILIF(rate > 0.5 || rate < 0, ValueError, "Recombination rate should be between 0 and 0.5");
+#  ifdef BINARYALLELE
+		DBG_FAILIF(true, ValueError, "This operator does not work in binary allele type.");
+#  endif
+	}
+
+	/// HIDDEN Deep copy of a Recombinator
+	virtual BaseOperator * clone() const
+	{
+		return new MutSpaceRecombinator(*this);
+	}
+
+
+	virtual ~MutSpaceRecombinator()
+	{
+	}
+
+
+	/// HIDDEN
+	string describe(bool format = true) const
+	{
+		(void)format;  // avoid warning about unused parameter
+		return "<simuPOP.MutSpaceRecombinator>";
+	}
+
+
+	/** CPPONLY
+	 *  Apply the Recombinator during mating
+	 */
+	virtual bool applyDuringMating(Population & pop, Population & offPop,
+		RawIndIterator offspring,
+		Individual * dad, Individual * mom) const;
+
+private:
+#  if TR1_SUPPORT == 0
+	typedef std::map<unsigned int, int> MutCounter;
+#  else
+	// this is faster than std::map
+	typedef std::tr1::unordered_map<unsigned int, int> MutCounter;
+#  endif
+	// use when m_rate = 0.5
+	void transmitGenotype0(Population & pop, Population & offPop, const Individual & parent,
+		size_t offIndex, int ploidy) const;
+
+	// use when m_rate < 1e-4
+	void transmitGenotype1(Population & pop, Population & offPop, const Individual & parent,
+		size_t offIndex, int ploidy) const;
+
+private:
+	/// recombination rate
+	const double m_rate;
+	const intMatrix m_ranges;
+};
+
+#endif
+
 }
 #endif

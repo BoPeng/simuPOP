@@ -1353,5 +1353,244 @@ bool Recombinator::applyDuringMating(Population & pop, Population & offPop, RawI
 	return true;
 }
 
+#ifdef LONGALLELE
+
+void MutSpaceRecombinator::transmitGenotype0(Population & pop, Population & offPop, const Individual & parent,
+                                             size_t offIndex, int ploidy) const
+{
+	size_t nCh = parent.numChrom();
+
+	// chromosome X is not passed to male offspring
+
+	// count duplicates...
+	for (size_t ch = 0; ch < parent.numChrom(); ++ch) {
+		MutCounter cnt;
+		vectoru alleles;
+		alleles.reserve(parent.numLoci(ch));
+		if (nCh == 1) {
+			// this is faster... for a most common case
+			GenoIterator it = parent.genoBegin();
+			GenoIterator it_end = parent.genoEnd();
+			for (; it != it_end; ++it) {
+				if (*it == 0u)
+					continue;
+				MutCounter::iterator mit = cnt.find(*it);
+				if (mit == cnt.end())
+					cnt[*it] = 1;
+				else
+					++mit->second;
+			}
+		} else {
+			GenoIterator it = parent.genoBegin(0, ch);
+			GenoIterator it_end = parent.genoEnd(0, ch);
+			for (; it != it_end; ++it) {
+				if (*it == 0u)
+					break;
+				MutCounter::iterator mit = cnt.find(*it);
+				if (mit == cnt.end())
+					cnt[*it] = 1;
+				else
+					++mit->second;
+			}
+			it = parent.genoBegin(1, ch);
+			it_end = parent.genoEnd(1, ch);
+			for (; it != it_end; ++it) {
+				if (*it == 0u)
+					break;
+				MutCounter::iterator mit = cnt.find(*it);
+				if (mit == cnt.end())
+					cnt[*it] = 1;
+				else
+					++mit->second;
+			}
+		}
+		// no valid allele
+		if (cnt.empty()) {
+			GenoIterator it = offPop.individual(offIndex).genoBegin(ploidy, ch);
+			GenoIterator it_end = offPop.individual(offIndex).genoEnd(ploidy, ch);
+			std::fill(it, it_end, 0);
+			continue;
+		}
+		// keep 1 count with probability 0.5, keep 2 count with probability 1
+		MutCounter::iterator mit = cnt.begin();
+		MutCounter::iterator mit_end = cnt.end();
+		for (; mit != mit_end; ++mit) {
+			if (mit->second == 2 || getRNG().randBit())
+				alleles.push_back(mit->first);
+		}
+		// not enough size
+		if (alleles.size() + 1 > offPop.numLoci(ch)) {
+			DBG_DO(DBG_TRANSMITTER, cerr << "Extending size of chromosome " << ch <<
+				" to " << alleles.size() + 2 << endl);
+			size_t sz = alleles.size() - offPop.numLoci(ch) + 2;
+			vectorf added(sz);
+			for (size_t j = 0; j < sz; ++j)
+				added[j] = static_cast<double>(offPop.numLoci(ch) + j + 1);
+			vectoru addedChrom(sz, ch);
+			offPop.addLoci(addedChrom, added);
+			pop.addLoci(addedChrom, added);
+		}
+		//
+		GenoIterator it = offPop.individual(offIndex).genoBegin(ploidy, ch);
+		GenoIterator it_end = offPop.individual(offIndex).genoEnd(ploidy, ch);
+		for (size_t i = 0; i < alleles.size(); ++i, ++it)
+			*it = TO_ALLELE(alleles[i]);
+		// fill the rest with 0.
+		std::fill(it, it_end, 0);
+	}
+}
+
+
+void MutSpaceRecombinator::transmitGenotype1(Population & pop, Population & offPop, const Individual & parent,
+                                             size_t offIndex, int ploidy) const
+{
+	const matrixi & ranges = m_ranges.elems();
+
+	for (size_t ch = 0; ch < parent.numChrom(); ++ch) {
+		size_t width = ranges[ch][1] - ranges[ch][0];
+		size_t beg = 0;
+		size_t end = getRNG().randGeometric(m_rate);
+		int p = getRNG().randBit() ? 0 : 1;
+		// no recombination
+		if (end >= width) {
+			copyChromosome(parent, p, offPop.individual(offIndex), ploidy, ch);
+			continue;
+		}
+		// we are in trouble... get some properties of alleles to reduce comparison
+		vectoru alleles;
+		size_t minAllele[2];
+		size_t maxAllele[2];
+		size_t cnt[2];
+		cnt[0] = 0;
+		cnt[1] = 0;
+		minAllele[0] = ranges[ch][1];
+		minAllele[1] = ranges[ch][1];
+		maxAllele[0] = ranges[ch][0];
+		maxAllele[1] = ranges[ch][0];
+		GenoIterator it = parent.genoBegin(0, ch);
+		GenoIterator it_end = parent.genoEnd(0, ch);
+		for (; it != it_end; ++it) {
+			if (*it == 0u)
+				break;
+			++cnt[0];
+			if (*it < minAllele[0])
+				minAllele[0] = *it;
+			if (*it > maxAllele[0])
+				maxAllele[0] = *it;
+		}
+		it = parent.genoBegin(1, ch);
+		it_end = parent.genoEnd(1, ch);
+		for (; it != it_end; ++it) {
+			if (*it == 0u)
+				break;
+			++cnt[1];
+			if (*it < minAllele[1])
+				minAllele[1] = *it;
+			if (*it > maxAllele[1])
+				maxAllele[1] = *it;
+		}
+		minAllele[0] -= ranges[ch][0];
+		minAllele[1] -= ranges[ch][0];
+		maxAllele[0] -= ranges[ch][0];
+		maxAllele[1] -= ranges[ch][0];
+		do {
+			// copy piece
+			// this algorithm is NOT efficient, but we count the rareness of recombination. :-)
+			if (cnt[p] > 0 && end >= minAllele[p] && beg <= maxAllele[p]) {
+				it = parent.genoBegin(p, ch);
+				it_end = parent.genoEnd(p, ch);
+				for (; it != it_end; ++it) {
+					if (*it == 0u)
+						break;
+					if (*it >= beg + ranges[ch][0] && *it < end + ranges[ch][0]) {
+						alleles.push_back(*it);
+						--cnt[p];
+					}
+				}
+			}
+			// change ploidy
+			p = (p + 1) % 2;
+			// next step
+			beg = end;
+			end += getRNG().randGeometric(m_rate);
+		} while (end < width && (cnt[0] > 0 || cnt[1] > 0));
+		// last piece
+		if (cnt[0] > 0 || cnt[1] > 0) {
+			it = parent.genoBegin(p, ch);
+			it_end = parent.genoEnd(p, ch);
+			for (; it != it_end; ++it) {
+				if (*it >= beg + static_cast<size_t>(ranges[ch][0]) &&
+				    *it < static_cast<size_t>(ranges[ch][1]))
+					alleles.push_back(*it);
+			}
+		}
+		// set alleles
+		// not enough size
+		if (alleles.size() + 1 > offPop.numLoci(ch)) {
+			DBG_DO(DBG_TRANSMITTER, cerr << "Extending size of chromosome " << ch <<
+				" to " << alleles.size() + 2 << endl);
+			size_t sz = alleles.size() - offPop.numLoci(ch) + 2;
+			vectorf added(sz);
+			for (size_t j = 0; j < sz; ++j)
+				added[j] = static_cast<double>(offPop.numLoci(ch) + j + 1);
+			vectoru addedChrom(sz, ch);
+			offPop.addLoci(addedChrom, added);
+			pop.addLoci(addedChrom, added);
+		}
+		//
+		it = offPop.individual(offIndex).genoBegin(ploidy, ch);
+		it_end = offPop.individual(offIndex).genoEnd(ploidy, ch);
+		for (size_t i = 0; i < alleles.size(); ++i, ++it)
+			*it = TO_ALLELE(alleles[i]);
+		// fill the rest with 0.
+		std::fill(it, it_end, 0);
+	}
+}
+
+
+bool MutSpaceRecombinator::applyDuringMating(Population & pop, Population & offPop,
+                                             RawIndIterator offspring,
+                                             Individual * dad, Individual * mom) const
+{
+	// if offspring does not belong to subPops, do nothing, but does not fail.
+	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
+		return true;
+
+	initializeIfNeeded(*offspring);
+
+	if (pop.chromType(0) == CHROMOSOME_X) {
+		// for mom
+		if (m_rate == 0)
+			copyChromosome(*mom, getRNG().randBit(), *offspring, 0, 0);
+		else if (m_rate == 0.5)
+			transmitGenotype0(pop, offPop, *mom, offspring - offPop.rawIndBegin(), 0);
+		else
+			transmitGenotype1(pop, offPop, *mom, offspring - offPop.rawIndBegin(), 0);
+
+		// for dad, pass X to daughter
+		if (offspring->sex() == MALE)
+			return true;
+		else
+			copyChromosome(*dad, 0, *offspring, 1, 0);
+		return true;
+	}
+
+	// standard genotype transmitter
+	if (m_rate == 0) {
+		for (int ch = 0; static_cast<size_t>(ch) < pop.numChrom(); ++ch) {
+			copyChromosome(*mom, getRNG().randBit(), *offspring, 0, ch);
+			copyChromosome(*dad, getRNG().randBit(), *offspring, 1, ch);
+		}
+	} else if (m_rate == 0.5) {
+		transmitGenotype0(pop, offPop, *mom, offspring - offPop.rawIndBegin(), 0);
+		transmitGenotype0(pop, offPop, *dad, offspring - offPop.rawIndBegin(), 1);
+	} else {
+		transmitGenotype1(pop, offPop, *mom, offspring - offPop.rawIndBegin(), 0);
+		transmitGenotype1(pop, offPop, *dad, offspring - offPop.rawIndBegin(), 1);
+	}
+	return true;
+}
+
+#endif
 
 }
