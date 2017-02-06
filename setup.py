@@ -566,20 +566,6 @@ WRAP_INFO = {
     'linop':  ['src/simuPOP_linop_wrap.cpp', 'src/simuPOP_linop.i', '-DLINEAGE -DOPTIMIZED'],
 }
 
-if os.name == 'nt':
-    # NOTE:
-    # In theory, we should distribute
-    # 1. 'msvcr80.dll' for simuPOP 1.5.x for python 2.5 and earlier. MS Visual
-    #     studio 2003.net should be used.
-    # 2. 'msvcr90.dll' should be distributed for simuPOP 1.5.x for python 2.6
-    #     and later.
-    # 3. These two files are for simuPOP 1.6.x, for python 2.6 and later.
-    # We do not distribute msvcr80.dll because there is little need to support
-    # python 2.5 under windows.
-    PACKAGE_DATA = ['vcomp90.dll', 'msvcr90.dll']
-else:
-    PACKAGE_DATA = []
-
 DESCRIPTION = """
 simuPOP is a forward-time population genetics simulation environment.
 The core of simuPOP is a scripting language (Python) that provides 
@@ -853,7 +839,6 @@ if __name__ == '__main__':
         platforms = ['all'],
         #
         package_dir = {'simuPOP': 'src'}, 
-        package_data = {'simuPOP': PACKAGE_DATA},
         py_modules = [
             'simuOpt', 
             'simuPOP.__init__',
