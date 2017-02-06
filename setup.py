@@ -34,9 +34,7 @@ you should be able to run this script and install simuPOP using:
 
 If your copy of simuPOP is checked out from the subversion server, you will
 need to download a supported version of boost (see variable boost_versions
-below) and uncompress it under the simuPOP source directory. You also need to
-install swig >= 1.3.35 for the generation of Python wrapper files. Please see
-http://simupop.sourceforge.net/main/GetInvolved for details.
+below) and uncompress it under the simuPOP source directory.
 
 """
 import os, sys, platform, shutil, glob, re, tempfile, subprocess
@@ -243,9 +241,6 @@ boost_serialization_dir = os.path.join(boost_dir, 'libs', 'serialization', 'src'
 boost_iostreams_dir = os.path.join(boost_dir, 'libs', 'iostreams', 'src')
 boost_regex_dir = os.path.join(boost_dir, 'libs', 'regex', 'src')
 
-# if you need to use full path name for swig, change it here.
-SWIG = 'swig'
-
 ############################################################################
 #
 # THE FOLLOWING IS NOT SUPPOSED TO BE MODIFIED
@@ -257,22 +252,6 @@ try:
    from distutils.command.build_py import build_py_2to3 as build_py
 except ImportError:
    from distutils.command.build_py import build_py
-
-
-def swig_version():
-    ''' get the version of swig '''
-    fout = subprocess.Popen(SWIG + ' -version', shell=True, stdout=subprocess.PIPE).stdout
-    try:
-        output = fout.readlines()[1].decode('utf8')
-    except:
-        sys.exit('SWIG is not installed')
-    #
-    try:
-        version = re.match('SWIG Version\s*(\d+).(\d+).(\d+).*', output).groups()
-    except:
-        print('Can not obtain swig version, please install swig')
-        sys.exit(1)
-    return [int(x) for x in version]
 
 
 def simuPOP_version():
@@ -495,7 +474,7 @@ GSL_FILES = [
 # build zlib from source for windows system to avoid distributing zlib1.dll
 # along with simuPOP.
 if os.name == 'nt':
-    LIB_FILES.extend([os.path.join('development/win32', 'zlib-1.2.3', x) for x in [
+    LIB_FILES.extend([os.path.join('development', 'win32', 'zlib-1.2.3', x) for x in [
         'adler32.c',
         'compress.c',
         'crc32.c',
@@ -600,9 +579,6 @@ def is_maverick():
 common_library_dirs = ['build']
 
 if os.name == 'nt':  
-    # I have a portable stdint.h for msvc, to avoid distributing
-    # zdll1.dll, I also build zlib from source
-    # zdll.lib is under win32
     common_library_dirs.append('development/win32')
     common_extra_link_args = []
     # Python3 uses VC 2010, which has stdint
@@ -683,14 +659,6 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
 ############################################################################
 import filecmp
 
-if os.name == 'nt':    # Windows
-    # copy platform dependent dll files
-    machine = platform.uname()[4].lower()
-    if machine == '':  # have to guess
-        machine = 'x86'
-    shutil.copy('development/win32/%s/vcomp90.dll' % machine, 'src/vcomp90.dll')
-    shutil.copy('development/win32/%s/msvcr90.dll' % machine, 'src/msvcr90.dll')
-
 if __name__ == '__main__':
     SIMUPOP_VER, SIMUPOP_REV = simuPOP_version()
     # create source file for each module
@@ -731,42 +699,6 @@ if __name__ == '__main__':
     except Exception as e:
         sys.exit("Failed to build a shared supporting library: {}".format(e))
 
-    #
-    # Generate Wrapping files
-    #
-    # if any of the wrap files does not exist
-    # or if the wrap files are older than any of the source files.
-    if (not os.path.isfile('src/gsl_wrap.c') or (not os.path.isfile('src/swigpyrun.h')) or \
-        False in [os.path.isfile(WRAP_INFO[x][0]) for x in MODULES]) or \
-        (max( [os.path.getmtime('src/' + x) for x in HEADER_FILES] ) > \
-         min( [os.path.getmtime(WRAP_INFO[x][0]) for x in MODULES])):
-        (v1, v2, v3) = swig_version()
-        if (v1, v2, v3) < (1, 3, 35):
-            print('Swig >= 1.3.35 is required, please upgrade it.')
-            sys.exit(1)
-        if sys.version_info[0] >= 3 and sys.version_info[1] >= 2 and (v1, v2, v3) < (2, 0, 4):
-            print('Swig >= 2.0.4 is required for Python 3.2 or higher')
-            sys.exit(1)
-        if v1 >= 3:
-            SWIG_CC_FLAGS += ' -DSWIG_PYTHON_LEGACY_BOOL'
-            SWIG_CPP_FLAGS += ' -DSWIG_PYTHON_LEGACY_BOOL'
-        # generate header file 
-        print("Generating external runtime header file src/swigpyrun.h...")
-        print('%s %s src/swigpyrun.h' % (SWIG, SWIG_RUNTIME_FLAGS))
-        os.system('%s %s src/swigpyrun.h' % (SWIG, SWIG_RUNTIME_FLAGS))
-        # try the first option set with the first library
-        for lib in MODULES:
-            print("Generating wrapper file " + WRAP_INFO[lib][0])
-            if os.system('%s %s -outdir %s %s -o %s %s' % (SWIG, SWIG_CPP_FLAGS, \
-                SWIG_OUTDIR, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
-                print("Calling swig failed. Please check your swig version.")
-                sys.exit(1)
-        print("Generating wrapper file src/gsl_wrap.c")
-        if os.system('%s %s -outdir %s %s -o %s %s' % (SWIG, SWIG_CC_FLAGS, \
-            SWIG_OUTDIR, '', 'src/gsl_wrap.c', 'src/gsl.i')) != 0:
-            print("Calling swig failed. Please check your swig version.")
-            sys.exit(1)
-        print("\nAll wrap files are generated successfully.\n")
     # under solaris, there is no stdint.h so I need to replace stdint.h
     # in the wrap files with inttypes.h
     if sys.platform == 'sunos5':
@@ -797,7 +729,6 @@ if __name__ == '__main__':
             Extension('simuPOP._simuPOP_%s' % modu,
                 sources = info['src'],
                 extra_compile_args = common_extra_compile_args,
-                # src for config.h etc, build for swigpyrun.h
                 include_dirs = info['include_dirs'] + ['src', 'build'],
                 library_dirs = common_library_dirs,
                 libraries = info['libraries'],

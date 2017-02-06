@@ -287,10 +287,8 @@ include doc/userGuide.py
 include doc/refManual.pdf
 
 # win32 files
-include win32/stdint.h
-recursive-include win32/x86 *.dll
-recursive-include win32/amd64 *.dll
-recursive-include win32/zlib-1.2.3 *.h *.c
+include development/win32/stdint.h
+recursive-include development/win32/zlib-1.2.3 *.h *.c
 
 # bundle boost 1.49.0
 recursive-include boost_1_49_0/boost *.hpp *.ipp
