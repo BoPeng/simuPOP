@@ -74,14 +74,12 @@ def linux_compile_parallel(
         extra_preargs=None,
         extra_postargs=None,
         depends=None):
-
     # Copied from distutils.ccompiler.CCompiler
     macros, objects, extra_postargs, pp_opts, build = self._setup_compile(
         output_dir, macros, include_dirs, sources, depends, extra_postargs)
     cc_args = self._get_cc_args(pp_opts, debug, extra_preargs)
     #
     def _single_compile(obj):
-
         try:
             src, ext = build[obj]
         except KeyError:
@@ -638,13 +636,14 @@ if os.name == 'nt':
 else:
     common_extra_link_args = []
     common_extra_include_dirs = []
+    if os.path.isdir('/opt/conda'):
+        common_extra_include_dirs.append('/opt/conda/include')
+        common_library_dirs.append('/opt/conda/lib')
     common_extra_compile_args = ['-O3', '-Wall', '-Wno-unknown-pragmas', '-Wno-unused-parameter']
     if is_maverick():
         common_extra_link_args.append('-stdlib=libstdc++')
         common_extra_include_dirs.append('/usr/include/c++/4.2.1')
         common_extra_compile_args.append('-Wno-error=unused-command-line-argument')
-    else:
-        common_extra_link_args.extend(['-static-libgcc', '-static-libstdc++'])
     if not USE_ICC:   # for gcc, turn on extra warning message
         common_extra_compile_args.append('-Wextra')
     if USE_OPENMP:
@@ -722,25 +721,6 @@ if __name__ == '__main__':
     else:
         NO_WARNING_ARG = ['-w']
         SHLIB_ARG = ['-fPIC']
-    try:
-        if not os.path.isfile('src/boost_pch.h.pch') or \
-            os.path.getmtime('src/boost_pch.h.pch') > os.path.getmtime('src/boost_pch.h'):
-            if os.name == 'nt':
-                pass
-            else:
-                c = new_compiler(verbose=1)
-                # allow compiling .h file 
-                c.src_extensions.append('.hpp')
-                c.obj_extension = '.hpp.gch'
-                c.compile(['src/boost_pch.hpp'], output_dir='.',
-                    include_dirs=['.', 'gsr', boost_include_dir] + common_extra_include_dirs,
-                    extra_preargs = common_extra_compile_args + NO_WARNING_ARG,
-                    macros=COMMON_MACROS)
-                if not os.path.isfile('src/boost_pch.hpp.pch'):
-                    raise RuntimeError('Failed to pre-compile boost headers')
-    except Exception as e:
-        # it is ok if boost_pch cannot be precompiled.
-        print('Failed to pre-compile boost headers: {}'.format(e))
 
     try:
         # try to get 
