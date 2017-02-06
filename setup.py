@@ -471,26 +471,6 @@ GSL_FILES = [
     'gsl/cdf/poisson.c',
 ]
 
-# build zlib from source for windows system to avoid distributing zlib1.dll
-# along with simuPOP.
-if os.name == 'nt':
-    LIB_FILES.extend([os.path.join('development', 'win32', 'zlib-1.2.3', x) for x in [
-        'adler32.c',
-        'compress.c',
-        'crc32.c',
-        'gzio.c',
-        'uncompr.c',
-        'deflate.c',
-        'trees.c',
-        'zutil.c',
-        'inflate.c',
-        'infback.c',
-        'inftrees.c',
-        'inffast.c'
-        ]
-    ])
-
-
 SWIG_CPP_FLAGS = '-O -templatereduce -shadow -python -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525 -Ibuild -py3'
 SWIG_CC_FLAGS = '-python -keyword -py3'
 
@@ -577,12 +557,16 @@ def is_maverick():
 #
 
 common_library_dirs = ['build']
+common_extra_link_args = []
+common_extra_include_dirs = []
 
 if os.name == 'nt':  
-    common_library_dirs.append('development/win32')
-    common_extra_link_args = []
-    # Python3 uses VC 2010, which has stdint
-    common_extra_include_dirs = ['development/win32/zlib-1.2.3']
+    #common_library_dirs.append('development/win32')
+    if 'LOCALAPPDATA' in os.environ:
+        conda_lib = os.path.join(os.environ['LOCALAPPDATA'], 'Continuum', 'Anaconda3', 'Library')
+        if os.path.isdir(conda_lib):
+            common_extra_include_dirs.append(os.path.join(conda_lib, 'include'))
+            common_library_dirs.append(os.path.join(conda_lib, 'lib'))
     # msvc does not have O3 option, /GR is to fix a C4541 warning
     # /EHsc is for VC exception handling,
     # /wd4819 disables warning messages for non-unicode character in boost/uitlity/enable_if.hpp
@@ -596,8 +580,6 @@ if os.name == 'nt':
         else:
             common_extra_compile_args.append('/openmp')
 else:
-    common_extra_link_args = []
-    common_extra_include_dirs = []
     if os.path.isdir('/opt/conda'):
         common_extra_include_dirs.append('/opt/conda/include')
         common_library_dirs.append('/opt/conda/lib')
@@ -629,8 +611,8 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
         res['src'].append('build/%s/%s' % (modu, src))
     #
     # lib
-    if os.name == 'nt':    # Windows, build zlib from source
-        res['libraries'] = []
+    if os.name == 'nt':
+        res['libraries'] = ['z']
     else:
         res['libraries'] = ['z']
         if USE_OPENMP:
