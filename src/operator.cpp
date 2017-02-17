@@ -128,7 +128,7 @@ bool BaseOperator::isActive(size_t rep, ssize_t gen, ssize_t end,
 	}
 
 	// finally, check start, end, every
-	if (end < 0) {                                                            // if we do not know ending generation.
+	if (end < 0) {                                                          // if we do not know ending generation.
 		// can not determine starting gen.
 		if (m_beginGen < 0 || m_beginGen > gen)
 			return false;
@@ -138,7 +138,7 @@ bool BaseOperator::isActive(size_t rep, ssize_t gen, ssize_t end,
 			return true;
 		else
 			return false;
-	}                                                                                         // know ending generation
+	}                                                                                        // know ending generation
 	else {
 		ssize_t realStartGen = m_beginGen >= 0 ? m_beginGen : m_beginGen + end + 1;
 		ssize_t realEndGen = m_endGen >= 0 ? m_endGen : m_endGen + end + 1;
@@ -613,7 +613,7 @@ bool TerminateIf::apply(Population & pop) const
 		}
 		if (m_stopAll)
 			throw StopEvolution(m_message);
-		return false;                                             // return false, this replicate will be stopped
+		return false;                                            // return false, this replicate will be stopped
 	} else
 		return true;
 }
@@ -712,9 +712,17 @@ DiscardIf::DiscardIf(PyObject * cond, const string & exposeInd,
 {
 	(void)output;  // avoid warning about unused parameter
 	if (!PyString_Check(cond) && !PyCallable_Check(cond)) {
-		bool c;
-		PyObj_As_Bool(cond, c);
-		const_cast<DiscardIf *>(this)->m_fixedCond = c ? 1 : 0;
+		double res;
+		if (cond == Py_True)
+			res = 1.;
+		else if (cond == Py_False)
+			res = 0.;
+		else {
+			PyObj_As_Double(cond, res);
+			DBG_FAILIF(res < 0 || res > 1, RuntimeError,
+				"A fixed condition should be either True or False, or a float number between 0 and 1");
+		}
+		const_cast<DiscardIf *>(this)->m_fixedCond = res;
 	}
 }
 
@@ -749,9 +757,9 @@ bool DiscardIf::apply(Population & pop) const
 
 		IndIterator it = pop.indIterator(subPops[idx].subPop());
 		for (; it.valid(); ++it) {
-			bool res = false;
+			double res = 0;
 			if (m_fixedCond != -1)
-				res = m_fixedCond == 1;
+				res = m_fixedCond;
 			else if (m_func.isValid()) {
 				PyObject * args = PyTuple_New(m_func.numArgs());
 
@@ -771,10 +779,16 @@ bool DiscardIf::apply(Population & pop) const
 					}
 				}
 				PyObject * resObj = m_func(args);
-				DBG_FAILIF(resObj != Py_True && resObj != Py_False, RuntimeError,
-					"A callback function for operator DiscardIf has to return either True or False");
+				if (resObj == Py_True)
+					res = 1.;
+				else if (resObj == Py_False)
+					res = 0.;
+				else {
+					PyObj_As_Double(resObj, res);
+					DBG_FAILIF(res < 0 || res > 1, RuntimeError,
+						"A callback function for operator DiscardIf has to return either True or False, or a float number between 0 and 1");
+				}
 				Py_XDECREF(args);
-				res = resObj == Py_True;
 			} else {
 				if (!m_dict)
 					m_dict = PyDict_New();
@@ -817,9 +831,22 @@ bool DiscardIf::apply(Population & pop) const
 
 				m_cond.setLocalDict(m_dict);
 				// evaluate
-				res = m_cond.valueAsBool();
+				PyObject * resObj = m_cond.evaluate();
+				if (resObj == NULL)
+					throw RuntimeError("Evaluation of expression failed");
+
+				if (resObj == Py_True)
+					res = 1.;
+				else if (resObj == Py_False)
+					res = 0.;
+				else {
+					PyObj_As_Double(resObj, res);
+					DBG_FAILIF(res < 0 || res > 1, RuntimeError,
+						"A callback function for operator DiscardIf has to return either True or False, or a float number between 0 and 1");
+				}
+				Py_XDECREF(resObj);
 			}
-			it->setMarked(res);
+			it->setMarked(res == 1. || getRNG().randUniform() < res);
 		}
 		if (subPops[idx].isVirtual())
 			pop.deactivateVirtualSubPop(subPops[idx].subPop());
@@ -836,10 +863,10 @@ bool DiscardIf::applyDuringMating(Population & pop, Population & offPop, RawIndI
 	if (!applicableToAllOffspring() && !applicableToOffspring(offPop, offspring))
 		return true;
 
-	bool res = false;
+	double res = 0;
 
 	if (m_fixedCond != -1)
-		res = m_fixedCond == 1;
+		res = m_fixedCond;
 	else if (m_func.isValid()) {
 		PyObject * args = PyTuple_New(m_func.numArgs());
 
@@ -862,7 +889,16 @@ bool DiscardIf::applyDuringMating(Population & pop, Population & offPop, RawIndI
 				PyTuple_SET_ITEM(args, i, PyFloat_FromDouble(offspring->info(arg)));
 			}
 		}
-		res = m_func(PyObj_As_Bool, args);
+		PyObject * resObj = m_func(args);
+		if (resObj == Py_True)
+			res = 1.;
+		else if (resObj == Py_False)
+			res = 0.;
+		else {
+			PyObj_As_Double(resObj, res);
+			DBG_FAILIF(res < 0 || res > 1, RuntimeError,
+				"A callback function for operator DiscardIf has to return either True or False, or a float number between 0 and 1");
+		}
 		Py_XDECREF(args);
 	} else {
 		if (!m_dict)
@@ -906,7 +942,19 @@ bool DiscardIf::applyDuringMating(Population & pop, Population & offPop, RawIndI
 
 		m_cond.setLocalDict(m_dict);
 		// evaluate
-		res = m_cond.valueAsBool();
+		PyObject * resObj = m_cond.evaluate();
+		if (resObj == NULL)
+			throw RuntimeError("Evaluation of expression failed");
+
+		if (resObj == Py_True)
+			res = 1.;
+		else if (resObj == Py_False)
+			res = 0.;
+		else {
+			PyObj_As_Double(resObj, res);
+			DBG_FAILIF(res < 0 || res > 1, RuntimeError,
+				"A callback function for operator DiscardIf has to return either True or False, or a float number between 0 and 1");
+		}
 	}
 	// discard if result is True
 	return !res;

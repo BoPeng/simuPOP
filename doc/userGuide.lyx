@@ -17828,7 +17828,7 @@ lstparams "caption={Terminate the evolution of all populations in a simulator},l
 \end_layout
 
 \begin_layout Subsection
-Conditional during mating operator (operator 
+Conditional removal of individuals (operator 
 \family typewriter
 DiscardIf
 \family default
@@ -17840,16 +17840,30 @@ Operator
 \family typewriter
 DiscardIf
 \family default
- accepts a condition or a Python function.
+ accepts a fixed condition or probability, or a condition or a Python function
+ that returns either 
+\family typewriter
+True
+\family default
+/
+\family typewriter
+False
+\family default
+ or a probability to remove an individual.
  When it is applied during mating, it will evaluate the condition or call
  the function for each offspring, and discard the offspring if the return
- value of the expression or function is True.
+ value of the expression or function is True, or remove at a probability
+ if the return value is a number between 0 and 1.
  The python expression accepts information fields as variables so operator
  
 \family typewriter
 DiscardIf('age > 80')
 \family default
- will discard all individuals with age > 80.
+ will discard all individuals with age > 80, and 
+\family typewriter
+DiscardIf('1-fitness')
+\family default
+ will remove individuals according to 1 minus their fitness.
  Optionally, the offspring itself can be used in the expression if parameter
  exposeInd is used to set the variable name of the offspring.
  
@@ -17883,6 +17897,11 @@ DiscardIf(lambda age: age > 80)
 
 \begin_layout Standard
 A constant expression is also allowed in this operator.
+ A fixed condition or number is acceptable so 
+\family typewriter
+DiscardIf(0.1)
+\family default
+ will randomly remove 10% of all individuals.
  Although it does not make sense to use 
 \family typewriter
 DiscardIf(True)
