@@ -804,6 +804,7 @@ private:
 	Expression m_cond;
 	pyFunc m_func;
 	double m_fixedCond;
+	string m_fixedField;
 
 	const string m_exposeInd;
 	mutable PyObject * m_dict;

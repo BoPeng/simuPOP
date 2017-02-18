@@ -1993,6 +1993,9 @@ class TestPopulation(unittest.TestCase):
         discardIf(pop, cond=lambda a: a-0.3, subPops=1)
         self.assertTrue(pop.subPopSize(1) > 450)
         self.assertTrue(pop.subPopSize(1) < 550)
+        # error handling
+        self.assertRaises(Exception, discardIf, pop, cond='a2')
+
 
     def testMutants(self):
         'Testing function Population.mutants'

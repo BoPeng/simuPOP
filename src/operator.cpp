@@ -25,6 +25,7 @@
 
 #include "operator.h"
 #include <sstream>
+#include <locale>
 using std::ostringstream;
 
 #if PY_VERSION_HEX >= 0x03000000
@@ -707,7 +708,7 @@ DiscardIf::DiscardIf(PyObject * cond, const string & exposeInd,
 	BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
 	m_cond(PyString_Check(cond) ? PyObj_AsString(cond) : string()),
 	m_func(PyCallable_Check(cond) ? cond : NULL),
-	m_fixedCond(-1), m_exposeInd(exposeInd), m_dict(NULL),
+	m_fixedCond(-1), m_fixedField(), m_exposeInd(exposeInd), m_dict(NULL),
 	m_lastValues()
 {
 	(void)output;  // avoid warning about unused parameter
@@ -723,6 +724,19 @@ DiscardIf::DiscardIf(PyObject * cond, const string & exposeInd,
 				"A fixed condition should be either True or False, or a float number between 0 and 1");
 		}
 		const_cast<DiscardIf *>(this)->m_fixedCond = res;
+	} else if (PyString_Check(cond)) {
+		string res;
+		PyObj_As_String(cond, res);
+		//
+		std::locale loc;
+		bool simple_name = true;
+		for (size_t i = 0; i < res.length(); ++i)
+			if (!std::isalnum(res[i])) {
+				simple_name = false;
+				break;
+			}
+		if (simple_name)
+			const_cast<DiscardIf *>(this)->m_fixedField = res;
 	}
 }
 
@@ -760,6 +774,8 @@ bool DiscardIf::apply(Population & pop) const
 			double res = 0;
 			if (m_fixedCond != -1)
 				res = m_fixedCond;
+			else if (!m_fixedField.empty())
+				res = it->info(m_fixedField);
 			else if (m_func.isValid()) {
 				PyObject * args = PyTuple_New(m_func.numArgs());
 
@@ -867,6 +883,8 @@ bool DiscardIf::applyDuringMating(Population & pop, Population & offPop, RawIndI
 
 	if (m_fixedCond != -1)
 		res = m_fixedCond;
+	else if (!m_fixedField.empty())
+		res = offspring->info(m_fixedField);
 	else if (m_func.isValid()) {
 		PyObject * args = PyTuple_New(m_func.numArgs());
 
