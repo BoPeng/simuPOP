@@ -70,10 +70,14 @@ if __name__ == '__main__':
         for allele in ['binary', 'short', 'long', 'mutant', 'lineage']:
             for numThreads in [1, 4]:
                 print('%s %s %s -j%d' % (sys.executable, sys.argv[0], allele, numThreads))
-                os.system('%s %s %s -j%d' % (sys.executable, sys.argv[0], allele, numThreads))
+                ret = os.system('%s %s %s -j%d' % (sys.executable, sys.argv[0], allele, numThreads))
+                if ret:
+                    sys.exit('Test failed')
     else:
         from simuPOP import moduleInfo
         print('\n\n===== Testing %s module (%d threads) =====\n\n' % (moduleInfo()['alleleType'],
                 moduleInfo()['threads']))
         test_runner = unittest.TextTestRunner(verbosity=2)
-        test_runner.run(importTests())
+        result = test_runner.run(importTests())
+        if result.errors or result.failures:
+            sys.exit('Test failed')
