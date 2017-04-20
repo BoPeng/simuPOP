@@ -4,4 +4,3 @@ boost*
 build/
 dist/
 *.egg-info
-*wrap.cpp

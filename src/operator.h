@@ -756,15 +756,20 @@ public:
 	 *  variable with name spacied by \e exposeInd. If the expression is
 	 *  evaluated to be \c True, individuals (if applied before or after
 	 *  mating) or offspring (if applied during mating) will be removed or
-	 *  discard. If a function is passed to \e cond, it should accept paramters
-	 *  \e ind and \e pop or names of information fields when it is applied to
-	 *  a population (pre or post mating), or parameters \e off, \e dad,
-	 *  \e mom, \e pop (parental population), or names of information fields
-	 *  if the operator is applied during mating. Individuals will be discarded
-	 *  if this function returns \c True. A constant expression (e.g. \c True)
-	 *  is also acceptable). Because this operator supports parameter
-	 *  \e subPops, only individuals belonging to specified (virtual)
-	 *  subpopulations will be screened.
+	 *  discard. Otherwise the return value should be either \c False (not
+	 *  discard), or a float number between \c 0 and \c 1 as the probability
+	 *  that the individual is removed. If a function is passed to \e cond, it
+	 *  should accept paramters \e ind and \e pop or names of information
+	 *  fields when it is applied to a population (pre or post mating), or
+	 *  parameters \e off, \e dad, \e mom, \e pop (parental population), or
+	 *  names of information fields if the operator is applied during mating.
+	 *  Individuals will be discarded if this function returns \c True or
+	 *  at a probability if a float number between 0 and 1 is returned. A
+	 *  constant expression (e.g. \c True, \c False, \c 0.4) is also
+	 *  acceptable, with the last example (\c cond=0.1) that removes
+	 *  10% of individuals at randomly. This operator supports parameter
+	 *  \e subPops and will remove only individuals belonging to specified
+	 *  (virtual) subpopulations.
 	 */
 	DiscardIf(PyObject * cond, const string & exposeInd = string(),
 		const stringFunc & output = "", int begin = 0, int end = -1,
@@ -798,7 +803,8 @@ public:
 private:
 	Expression m_cond;
 	pyFunc m_func;
-	int m_fixedCond;
+	double m_fixedCond;
+	string m_fixedField;
 
 	const string m_exposeInd;
 	mutable PyObject * m_dict;

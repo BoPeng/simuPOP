@@ -1950,6 +1950,52 @@ class TestPopulation(unittest.TestCase):
         discardIf(pop, True, subPops=[(0,0)])
         for ind in pop.individuals():
             self.assertTrue(ind.b != 3)
+        #
+        # test discard by probability
+        pop = Population(1000)
+        discardIf(pop, cond='0.5')
+        self.assertTrue(pop.popSize() > 450)
+        self.assertTrue(pop.popSize() < 550)
+        # probability from expression
+        pop = Population(1000, loci=2, infoFields='a')
+        initInfo(pop, [0.2], infoFields='a')
+        discardIf(pop, cond='a+0.05')
+        self.assertTrue(pop.popSize() > 700)
+        self.assertTrue(pop.popSize() < 800)
+        #
+        pop = Population([1000, 1000], loci=2, infoFields='a')
+        initInfo(pop, [0.2], infoFields='a', subPops=0)
+        initInfo(pop, [0.8], infoFields='a', subPops=1)
+        discardIf(pop, cond='a', subPops=0)
+        self.assertTrue(pop.subPopSize(0) > 750)
+        self.assertTrue(pop.subPopSize(0) < 850)
+        self.assertEqual(pop.subPopSize(1), 1000)
+        #
+        discardIf(pop, cond='a', subPops=1)
+        self.assertTrue(pop.subPopSize(1) > 150)
+        self.assertTrue(pop.subPopSize(1) < 250)
+        #
+        #
+        pop = Population(1000, loci=2, infoFields='a')
+        initInfo(pop, [0.2], infoFields='a')
+        discardIf(pop, cond=lambda a: a + 0.1)
+        self.assertTrue(pop.popSize() > 650)
+        self.assertTrue(pop.popSize() < 750)
+        #
+        pop = Population([1000, 1000], loci=2, infoFields='a')
+        initInfo(pop, [0.2], infoFields='a', subPops=0)
+        initInfo(pop, [0.8], infoFields='a', subPops=1)
+        discardIf(pop, cond=lambda a: a, subPops=0)
+        self.assertTrue(pop.subPopSize(0) > 750)
+        self.assertTrue(pop.subPopSize(0) < 850)
+        self.assertEqual(pop.subPopSize(1), 1000)
+        #
+        discardIf(pop, cond=lambda a: a-0.3, subPops=1)
+        self.assertTrue(pop.subPopSize(1) > 450)
+        self.assertTrue(pop.subPopSize(1) < 550)
+        # error handling
+        self.assertRaises(Exception, discardIf, pop, cond='a2')
+
 
     def testMutants(self):
         'Testing function Population.mutants'

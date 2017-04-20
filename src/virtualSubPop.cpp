@@ -248,7 +248,9 @@ subPopList subPopList::expandFrom(const Population & pop) const
 							for (int vsp = 0; vsp < static_cast<int>(pop.numVirtualSubPop()); ++vsp)
 								vsps.push_back(vspID(sp, vsp));
 					} else if (it->vspName().empty()) {
-						// valid or invalid...
+						DBG_FAILIF(it->virtualSubPop() >= pop.numVirtualSubPop(), ValueError,
+							(boost::format("Virtual subpop index out of range: %1% specified with %2% vsps"
+							) % it->virtualSubPop() % pop.numVirtualSubPop()).str());
 						vsps.push_back(vspID(sp, it->virtualSubPop()));
 					} else {
 						// with a name

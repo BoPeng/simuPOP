@@ -1,0 +1,52 @@
+digraph simuPOP_doc {
+	/* source nodes */
+	source_h [label="Source (*.h)", shape=parallelogram,fontcolor=blue, rank=source];
+	refManual_lyx [label="refManual (LyX)", shape=parallelogram,fontcolor=blue, rank=source];
+	userGuide_lyx [label="userGuide (LyX)", shape=parallelogram,fontcolor=blue, rank=source];
+	userGuide_py [label="examples (.py)", shape=parallelogram,fontcolor=blue, rank=source];
+	
+	/* end result nodes */
+	source_html [label="Source (HTML)", shape=box, style=filled, rank=sink];
+	simuPOP_py [label="simuPOP (docstring)", shape=box, rank=sink];
+	refManual_html [label="refManual (HTML)", shape=box, style=filled, rank=sink];
+	userGuide_html [label="userGuide (HTML)", shape=box, style=filled, rank=sink];
+	refManual_pdf [label="refManual (PDF)", shape=box, style=filled, rank=sink];
+	userGuide_pdf [label="userGuide (PDF)", shape=box, style=filled, rank=sink];
+
+	/* intermediate nodes */
+	source_xml [label="Source (XML)", shape=box];
+	source_i [label="simuPOP_doc.i (interface file)", shape=box];
+	reference_rst [label="reference (rst)", shape=box];
+	reference_tex [label="reference (LaTex)", shape=box];
+	refManual_rst [label="refManual (rst)", shape=box];
+	userGuide_rst [label="userGuide (rst)", shape=box];
+	refManual_tex [label="refManual (LaTex)", shape=box];
+	userGuide_tex [label="userGuide (LaTex)", shape=box];
+	userGuide_log [label="examples (.py .log)", shape=box];
+
+	/* processing  */
+	source_h -> source_html [label=doxygen];
+	source_h -> source_xml [label=doxygen];
+	source_xml -> source_i [label=doxy2swig];
+	source_xml -> reference_rst [label=doxy2swig];
+	source_xml -> reference_tex [label=doxy2swig];
+	source_i -> simuPOP_py [label=swig];
+
+	/* processing html */
+	userGuide_tex -> userGuide_rst [label=convert, color=red];
+	refManual_tex -> refManual_rst [label=convert, color=red];
+	reference_rst -> refManual_html [label=Sphinx];
+	refManual_rst -> refManual_html [label=Sphinx];
+	userGuide_rst -> userGuide_html [label=Sphinx];
+	userGuide_py -> userGuide_log [label=runUserGuide];
+	userGuide_log -> userGuide_html;
+
+	/* processing pdf */
+	userGuide_lyx -> userGuide_tex [label=LyX];
+	refManual_lyx -> refManual_tex [label=LyX];
+	reference_tex -> refManual_pdf [label=pdflatex];
+	refManual_tex -> refManual_pdf [label=pdflatex];
+	userGuide_tex -> userGuide_pdf [label=pdflatex];
+	userGuide_log -> userGuide_pdf;
+
+}
