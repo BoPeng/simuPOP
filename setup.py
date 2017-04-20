@@ -611,6 +611,16 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
         res['src'].append('build/%s/%s' % (modu, src))
     #
     # lib
+    res['libraries'] = []
+    res['libraries'].extend(boost_lib_names)
+    res['include_dirs'] = ['.', 'gsl', boost_inc_path] + common_extra_include_dirs
+    # define_macros (deep copy)
+    res['define_macros'] = COMMON_MACROS + MACROS[modu]
+    if 'op' in modu:
+        res['libraries'].append('simuPOP_shop')
+    else:
+        res['libraries'].append('simuPOP_shstd')
+
     if os.name == 'nt':
         res['libraries'] = ['z']
     else:
@@ -621,15 +631,6 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
                 res['libraries'].append('tbb')
             else:
                 res['libraries'].append('gomp')
-    res['libraries'].extend(boost_lib_names)
-    res['include_dirs'] = ['.', 'gsl', boost_inc_path] + common_extra_include_dirs
-    # define_macros (deep copy)
-    res['define_macros'] = COMMON_MACROS + MACROS[modu]
-    if 'op' in modu:
-        res['libraries'].append('simuPOP_shop')
-    else:
-        res['libraries'].append('simuPOP_shstd')
-
     res['undef_macros'] = []
     return res
 
