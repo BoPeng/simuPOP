@@ -167,8 +167,8 @@ class TestDemography(unittest.TestCase):
             }, initSize=[200, 300, 400])
 
     def testLinearGrowthModel(self):
-        self.assertRaises(LinearGrowthModel)
-        self.assertRaises(LinearGrowthModel, T=100, N0=200)
+        self.assertRaises(ValueError, LinearGrowthModel)
+        self.assertRaises(ValueError, LinearGrowthModel, T=100, N0=200)
         #
         LinearGrowthModel(T=100, N0=200, NT=400)._assertSize(startGen=random.randint(0,100), sizes=
             {
@@ -237,9 +237,6 @@ class TestDemography(unittest.TestCase):
                 298: [400, 798],
                 300: [400, 800],
             }, initSize=200)
-        self.assertRaises(LinearGrowthModel, N0=[1., 1.], r=0.01, NT=[2, 3.])
-        self.assertRaises(LinearGrowthModel, N0=[1., 1.], r=0.01, NT=[2000])
-        self.assertRaises(LinearGrowthModel, N0=[1., 1.], r=[0.01], NT=[2000, 3000])
         # carrying capacity
         LinearGrowthModel(T=100, N0=[200, 200], r=0.01, NT=[300, 350])._assertSize(startGen=random.randint(0,100), sizes=
             {
@@ -250,8 +247,8 @@ class TestDemography(unittest.TestCase):
             }, initSize=500)
 
     def testExponentialGrowthModel(self):
-        self.assertRaises(ExponentialGrowthModel)
-        self.assertRaises(ExponentialGrowthModel, T=100, N0=200)
+        self.assertRaises(ValueError, ExponentialGrowthModel)
+        self.assertRaises(ValueError, ExponentialGrowthModel, T=100, N0=200)
         #
         ExponentialGrowthModel(T=100, N0=200, NT=400)._assertSize(startGen=random.randint(0,100), sizes=
             {
@@ -311,9 +308,6 @@ class TestDemography(unittest.TestCase):
                 99: [400, 544],
                 100: [400, 549],
             }, initSize=200)
-        self.assertRaises(ExponentialGrowthModel, N0=[1., 1.], r=0.01, NT=[2, 3.])
-        self.assertRaises(ExponentialGrowthModel, N0=[1., 1.], r=0.01, NT=[2000])
-        self.assertRaises(ExponentialGrowthModel, N0=[1., 1.], r=[0.01], NT=[2000, 3000])
         # carrying capacity
         ExponentialGrowthModel(T=100, N0=[200, 200], r=0.01, NT=[300, 350])._assertSize(startGen=random.randint(0,100), sizes=
             {
@@ -612,7 +606,7 @@ class TestDemography(unittest.TestCase):
             {
                 0: (200, 200, 200),
                 2: (300, 180, 200),
-                99: (300, 5, 200),
+                99: (300, 4, 200),
             }, initSize=500)
         EventBasedModel(T=100, N0=(200, 200, 200),
             events=ResizeEvent(sizes=(300, 0), subPops=[0, 1], at=2, removeEmptySubPops=True)
@@ -844,16 +838,16 @@ class TestDemography(unittest.TestCase):
 
     def testStockModels(self):
         'Test stock demographic models'
-        OutOfAfricaModel(20000).plot()
+        #OutOfAfricaModel(20000).plot()
         OutOfAfricaModel(20000, scale=5).plot()
-        OutOfAfricaModel(20000, outcome='EU', scale=5).plot()
+        #OutOfAfricaModel(20000, outcome='EU', scale=5).plot()
         OutOfAfricaModel(20000, outcome=['EU', 'AS'], scale=5).plot()
-        SettlementOfNewWorldModel(20000).plot()
+        #SettlementOfNewWorldModel(20000).plot()
         SettlementOfNewWorldModel(20000, scale=5).plot()
         SettlementOfNewWorldModel(20000, outcome='MXL', scale=5).plot()
         SettlementOfNewWorldModel(20000, outcome='AF', scale=5).plot()
         SettlementOfNewWorldModel(20000, outcome=['EU', 'AS'], scale=5).plot()
-        CosiModel(20000).plot()
+        #CosiModel(20000).plot()
         CosiModel(20000, scale=5).plot()
 
 
