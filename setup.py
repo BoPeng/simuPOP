@@ -470,8 +470,8 @@ GSL_FILES = [
     'gsl/cdf/poisson.c',
 ]
 
-SWIG_CPP_FLAGS = '-O -templatereduce -shadow -python -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525 -Ibuild -py3'
-SWIG_CC_FLAGS = '-python -keyword -py3'
+SWIG_CPP_FLAGS = '-O -templatereduce -shadow -python -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525 -Ibuild -py3  -DSWIG_PYTHON_LEGACY_BOOL'
+SWIG_CC_FLAGS = '-python -keyword -py3  -DSWIG_PYTHON_LEGACY_BOOL'
 
 SWIG_RUNTIME_FLAGS = '-python -external-runtime'
 # python setup.py reads py_modules from src so we have to produce simuPOP_std.py
@@ -676,6 +676,30 @@ if __name__ == '__main__':
         c.create_static_lib(objects, "simuPOP_shop", output_dir='build')
     except Exception as e:
         sys.exit("Failed to build a shared supporting library: {}".format(e))
+
+    #
+    # Generate Wrapping files
+    #
+    # if any of the wrap files does not exist
+    # or if the wrap files are older than any of the source files.
+    if not os.path.isfile('src/gsl_wrap.c') or (not os.path.isfile('src/swigpyrun.h')) or \
+            False in [os.path.isfile(WRAP_INFO[x][0]) for x in MODULES]:
+        # generate header file 
+        print("Generating external runtime header file src/swigpyrun.h...")
+        os.system('swig {} src/swigpyrun.h'.format(SWIG_RUNTIME_FLAGS))
+        # try the first option set with the first library
+        for lib in MODULES:
+            print("Generating wrapper file " + WRAP_INFO[lib][0])
+            if os.system('swig {} -outdir {} {} -o {} {}'.format(SWIG_CPP_FLAGS, \
+                SWIG_OUTDIR, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
+                print("Calling swig failed. Please check your swig version.")
+                sys.exit(1)
+        print("Generating wrapper file src/gsl_wrap.c")
+        if os.system('swig {} -outdir {} {} -o {} {}'.format(SWIG_CC_FLAGS, \
+            SWIG_OUTDIR, '', 'src/gsl_wrap.c', 'src/gsl.i')) != 0:
+            print("Calling swig failed. Please check your swig version.")
+            sys.exit(1)
+        print("\nAll wrap files are generated successfully.\n")
 
     # under solaris, there is no stdint.h so I need to replace stdint.h
     # in the wrap files with inttypes.h
