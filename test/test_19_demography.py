@@ -842,35 +842,6 @@ class TestDemography(unittest.TestCase):
                 5: (200, 100, 400),
             }, initSize=[200, 300, 400]) 
 
-    def testRevertAndDemo(self):
-        'Test the use of demographic model with RevertIf operator'
-        pop = Population(100, loci=1)
-        initpop = pop.clone()
-        pop.evolve(initOps=InitSex(), matingScheme=RandomMating(), gen=10)
-        pop.save('burnin.pop')
-        pop1 = initpop.clone()
-        gens = pop1.evolve(
-            preOps=RevertIf(True, 'burnin.pop', at=0),
-            matingScheme=RandomMating(),
-            gen=20
-        )
-        self.assertEqual(gens, 10)
-        # in this case, the evolution starts at generation 10
-        # and evolve for another 20 generations.
-        pop1 = initpop.clone()
-        self.assertEqual(pop1.evolve(
-            preOps=RevertIf(True, 'burnin.pop', at=0),
-            matingScheme=RandomMating(subPopSize=LinearGrowthModel(T=20, r=0.1))
-        ), 20)
-        #
-        pop1 = initpop.clone()
-        self.assertEqual(pop1.evolve(
-            initOps=InitSex(),
-            postOps=RevertIf(True, 'burnin.pop', at=0),
-            matingScheme=RandomMating(subPopSize=LinearGrowthModel(T=20, r=0.1))
-        ), 10)
-
-
     def testStockModels(self):
         'Test stock demographic models'
         OutOfAfricaModel(20000).plot()
