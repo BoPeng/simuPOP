@@ -815,7 +815,7 @@ PyObject * Individual::genoAtLoci(const lociList & lociList)
 }
 
 
-void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
+void Individual::setAllele(ULONG allele, size_t idx, int p, int chrom)
 {
 	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
 		"A valid ploidy index has to be specified if chrom is non-positive");
@@ -824,7 +824,7 @@ void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 #ifdef MUTANTALLELE
 		(m_genoPtr + idx).assignIfDiffer(allele);
 #else
-		*(m_genoPtr + idx) = allele;
+		*(m_genoPtr + idx) = TO_ALLELE(allele);
 #endif
 	} else if (chrom < 0) {
 		CHECKRANGEABSLOCUS(idx);
@@ -832,7 +832,7 @@ void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 #ifdef MUTANTALLELE
 		(m_genoPtr + idx + p * totNumLoci()).assignIfDiffer(allele);
 #else
-		*(m_genoPtr + idx + p * totNumLoci()) = allele;
+		*(m_genoPtr + idx + p * totNumLoci()) = TO_ALLELE(allele);
 #endif
 	} else {
 		CHECKRANGELOCUS(static_cast<size_t>(chrom), idx);
@@ -841,7 +841,7 @@ void Individual::setAllele(Allele allele, size_t idx, int p, int chrom)
 #ifdef MUTANTALLELE
 		(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)).assignIfDiffer(allele);
 #else
-		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)) = allele;
+		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)) = TO_ALLELE(allele);
 #endif
 	}
 }

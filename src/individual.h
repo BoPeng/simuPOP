@@ -301,7 +301,7 @@ public:
 	 *  specified chromosome (if \e chrom >= 0).
 	 *  <group>1-allele</group>
 	 */
-	void setAllele(Allele allele, size_t idx, int ploidy = -1, int chrom = -1);
+	void setAllele(ULONG allele, size_t idx, int ploidy = -1, int chrom = -1);
 
 	/** return the lineage of the allele at a locus, using its absolute index
 	 *  \e idx. If a ploidy \e ploidy and/or a chromosome indexes is given,
