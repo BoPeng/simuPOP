@@ -734,7 +734,7 @@ class TestTransmitters(unittest.TestCase):
             "Expression abs(simu.dvars(0).haploFreq[(5,6)][(1,1)] - 0.5) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % (abs(simu.dvars(0).haploFreq[(5,6)][(1,1)] - 0.5)))
         #
         # length 2
-        pop = Population(10000, loci=[3,4])
+        pop = Population(100000, loci=[3,4])
         initSex(pop)
         initGenotype(pop, genotype=[a1]*7+[a2]*7)
         simu = Simulator(pop)
@@ -929,7 +929,7 @@ class TestTransmitters(unittest.TestCase):
             a1, a2 = 0, 1
         else:
             a1, a2 = 1, 2
-        pop = Population(10000, loci=[2,3,2], lociPos=[0,1,0,2,4,0,4] )
+        pop = Population(100000, loci=[2,3,2], lociPos=[0,1,0,2,4,0,4] )
         initSex(pop)
         initGenotype(pop, genotype=[a1]*7+[a2]*7)
         simu = Simulator(pop)
@@ -958,31 +958,29 @@ class TestTransmitters(unittest.TestCase):
             matingScheme = SelfMating(ops=Recombinator(intensity = 0.00001) ),
             gen=1 )
         # test for uniform rare case
-        pop = Population(100000, loci=[7], lociPos=[0,1,2,3,4,5,6] )
+        pop = Population(100000, loci=[7], lociPos=[0,1,2,3,4,5,6], infoFields='parent_id')
         initSex(pop)
         initGenotype(pop, genotype=[a1]*7+[a2]*7)
         #turnOnDebug('DBG_TRANSMITTER')
-        simu = Simulator(pop)
-        simu.evolve( postOps = Stat( haploFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]),
-            matingScheme = RandomMating(ops=Recombinator(intensity = 0.001) ),
+        pop.evolve( postOps = Stat( haploFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]),
+            matingScheme = RandomMating(ops=Recombinator(intensity = 0.001, infoFields='parent_id', output='>>test.log') ),
             gen=1 )
-        #turnOffDebug('DBG_TRANSMITTER')
         # the supposed proportions are 1-1: 0.5-r/2, 1-2: r/2, 2-1: r/2, 2-2: 0.5-r/2
         #print simu.dvars(0).haploFreq
-        self.assertNotEqual(simu.dvars(0).haploFreq[(0,1)][(a1,a2)], 0)
-        self.assertNotEqual(simu.dvars(0).haploFreq[(2,3)][(a1,a2)], 0)
-        self.assertNotEqual(simu.dvars(0).haploFreq[(3,4)][(a1,a2)], 0) 
-        self.assertNotEqual(simu.dvars(0).haploFreq[(4,5)][(a1,a2)], 0)
-        self.assertTrue((simu.dvars(0).haploFreq[(0,1)][(a1,a2)] - 0.0005) < 0.0003, 
-            "Expression (simu.dvars(0).haploFreq[(0,1)][(a1,a2)] - 0.0005) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(0,1)][(a1,a2)] - 0.05)))
-        self.assertTrue((simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.0005) < 0.0003, 
-            "Expression (simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.0005)  (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.1)   ))
-        self.assertTrue((simu.dvars(0).haploFreq[(3,4)][(a1,a2)] - 0.0005) < 0.0003, 
-            "Expression (simu.dvars(0).haploFreq[(3,4)][(a1,a2)] - 0.0005)  (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(3,4)][(a1,a2)] - 0.1)   ))
-        self.assertTrue((simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.0005) < 0.0003, 
-            "Expression (simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.0005) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25)))
-        self.assertTrue((simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.0005) < 0.0003, 
-            "Expression (simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.0005)  (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.2)   ))
+        self.assertNotEqual(pop.dvars().haploFreq[(0,1)][(a1,a2)], 0)
+        self.assertNotEqual(pop.dvars().haploFreq[(2,3)][(a1,a2)], 0)
+        self.assertNotEqual(pop.dvars().haploFreq[(3,4)][(a1,a2)], 0) 
+        self.assertNotEqual(pop.dvars().haploFreq[(4,5)][(a1,a2)], 0)
+        self.assertTrue(abs(pop.dvars().haploFreq[(0,1)][(a1,a2)] - 0.0005) < 0.0003, 
+            "Expression (pop.dvars().haploFreq[(0,1)][(a1,a2)] - 0.0005) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((pop.dvars().haploFreq[(0,1)][(a1,a2)])))
+        self.assertTrue(abs(pop.dvars().haploFreq[(2,3)][(a1,a2)] - 0.0005) < 0.0003, 
+            "Expression (pop.dvars().haploFreq[(2,3)][(a1,a2)] - 0.0005)  (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((pop.dvars().haploFreq[(2,3)][(a1,a2)])   ))
+        self.assertTrue(abs(pop.dvars().haploFreq[(3,4)][(a1,a2)] - 0.0005) < 0.0003, 
+            "Expression (pop.dvars().haploFreq[(3,4)][(a1,a2)] - 0.0005)  (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((pop.dvars().haploFreq[(3,4)][(a1,a2)])   ))
+        self.assertTrue(abs(pop.dvars().haploFreq[(4,5)][(a1,a2)] - 0.0005) < 0.0003, 
+            "Expression (pop.dvars().haploFreq[(4,5)][(a1,a2)] - 0.0005) (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((pop.dvars().haploFreq[(4,5)][(a1,a2)])))
+        self.assertTrue(abs(pop.dvars().haploFreq[(5,6)][(a1,a2)] - 0.0005) < 0.0003, 
+            "Expression (pop.dvars().haploFreq[(5,6)][(a1,a2)] - 0.0005)  (test value %f) be less than 0.01. This test may occasionally fail due to the randomness of outcome." % ((pop.dvars().haploFreq[(5,6)][(a1,a2)])   ))
   
 
 
@@ -1055,7 +1053,7 @@ class TestTransmitters(unittest.TestCase):
 
     def testRecProportion(self):
         'Testing table 4 of H&C 3nd edition P49 '
-        N = 10000
+        N = 100000
         r = 0.1
         genoDad = [[0,0],[0,0],[0,0],[0,0],[0,1],[0,1],[0,1],[1,0],[1,0],[1,1]]
         genoMom = [[0,0],[0,1],[1,0],[1,1],[0,1],[1,0],[1,1],[1,0],[1,1],[1,1]]

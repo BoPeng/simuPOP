@@ -1118,7 +1118,11 @@ void Recombinator::transmitGenotype(const Individual & parent,
 		size_t gt = 0, gtEnd = 0;
 		size_t step = getRNG().randGeometric(m_rates[0]);
 		// in theory step would not be zero...
-		size_t pos = step > m_recBeforeLoci.size() ? Bernullitrials_T::npos : step;
+		//
+		// pos is index on recBeforeLoci, and the first element on recBeforeLoci is actally
+		// the second on genotype. (recBeforeLoci = [1, 2, 3, 4...]
+		// so the first event should be step - 1.
+		size_t pos = step >= m_recBeforeLoci.size() ? Bernullitrials_T::npos : step - 1;
 		// if there is some recombination
 		ssize_t convCount = -1;
 		size_t convEnd;
@@ -1228,7 +1232,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 #else       // binary alleles
 		size_t gt = 0, gtEnd = 0;
 		size_t step = getRNG().randGeometric(m_rates[0]);
-		size_t pos = step > m_recBeforeLoci.size() ? Bernullitrials_T::npos : step;
+		size_t pos = step >= m_recBeforeLoci.size() ? Bernullitrials_T::npos : step - 1;
 		// if there is some recombination
 		ssize_t convCount = -1;
 		size_t convEnd;
