@@ -1117,7 +1117,8 @@ void Recombinator::transmitGenotype(const Individual & parent,
 #ifndef BINARYALLELE
 		size_t gt = 0, gtEnd = 0;
 		size_t step = getRNG().randGeometric(m_rates[0]);
-		size_t pos = (step == 0 || step > m_recBeforeLoci.size()) ? Bernullitrials_T::npos : (step - 1);
+		// in theory step would not be zero...
+		size_t pos = step > m_recBeforeLoci.size() ? Bernullitrials_T::npos : step;
 		// if there is some recombination
 		ssize_t convCount = -1;
 		size_t convEnd;
@@ -1144,7 +1145,8 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			// next recombination point...
 			while (pos != Bernullitrials_T::npos) {
 				size_t step = getRNG().randGeometric(m_rates[0]);
-				if (step == 0 || step + pos >= m_recBeforeLoci.size())
+				// recombination before the last "fake" locus should not be counted
+				if (step + pos >= m_recBeforeLoci.size() - 1)
 					break;
 				else
 					pos += step;
@@ -1226,7 +1228,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 #else       // binary alleles
 		size_t gt = 0, gtEnd = 0;
 		size_t step = getRNG().randGeometric(m_rates[0]);
-		size_t pos = (step == 0 || step > m_recBeforeLoci.size()) ? Bernullitrials_T::npos : (step - 1);
+		size_t pos = step > m_recBeforeLoci.size() ? Bernullitrials_T::npos : step;
 		// if there is some recombination
 		ssize_t convCount = -1;
 		size_t convEnd;
@@ -1249,7 +1251,7 @@ void Recombinator::transmitGenotype(const Individual & parent,
 			// next recombination point...
 			while (pos != Bernullitrials_T::npos) {
 				size_t step = getRNG().randGeometric(m_rates[0]);
-				if (step == 0 || step + pos >= m_recBeforeLoci.size())
+				if (step + pos >= m_recBeforeLoci.size() - 1)
 					break;
 				else
 					pos += step;
