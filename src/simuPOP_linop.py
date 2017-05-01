@@ -2255,7 +2255,7 @@ class Individual(GenoStruTrait):
         return _simuPOP_linop.Individual_alleleChar(self, idx, ploidy, chrom)
 
 
-    def setAllele(self, allele: 'Allele', idx: 'size_t', ploidy: 'int'=-1, chrom: 'int'=-1) -> "void":
+    def setAllele(self, allele: 'ULONG', idx: 'size_t', ploidy: 'int'=-1, chrom: 'int'=-1) -> "void":
         """
 
 
@@ -5111,15 +5111,20 @@ class DiscardIf(BaseOperator):
             evaluation in the expression as an variable with name spacied by
             exposeInd. If the expression is evaluated to be True, individuals
             (if applied before or after mating) or offspring (if applied
-            during mating) will be removed or discard. If a function is passed
-            to cond, it should accept paramters ind and pop or names of
-            information fields when it is applied to a population (pre or post
-            mating), or parameters off, dad, mom, pop (parental population),
-            or names of information fields if the operator is applied during
-            mating. Individuals will be discarded if this function returns
-            True. A constant expression (e.g. True) is also acceptable).
-            Because this operator supports parameter subPops, only individuals
-            belonging to specified (virtual) subpopulations will be screened.
+            during mating) will be removed or discard. Otherwise the return
+            value should be either False (not discard), or a float number
+            between 0 and 1 as the probability that the individual is removed.
+            If a function is passed to cond, it should accept paramters ind
+            and pop or names of information fields when it is applied to a
+            population (pre or post mating), or parameters off, dad, mom, pop
+            (parental population), or names of information fields if the
+            operator is applied during mating. Individuals will be discarded
+            if this function returns True or at a probability if a float
+            number between 0 and 1 is returned. A constant expression (e.g.
+            True, False, 0.4) is also acceptable, with the last example
+            (cond=0.1) that removes 10% of individuals at randomly. This
+            operator supports parameter subPops and will remove only
+            individuals belonging to specified (virtual) subpopulations.
 
 
         """

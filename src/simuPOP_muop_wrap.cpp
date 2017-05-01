@@ -5409,10 +5409,7 @@ namespace swig {
 SWIGINTERN int
 SWIG_AsVal_bool (PyObject *obj, bool *val)
 {
-  int r;
-  if (!PyBool_Check(obj))
-    return SWIG_ERROR;
-  r = PyObject_IsTrue(obj);
+  int r = PyObject_IsTrue(obj);
   if (r == -1)
     return SWIG_ERROR;
   if (val) *val = r ? true : false;
@@ -5577,22 +5574,6 @@ SWIG_AsVal_bool (PyObject *obj, bool *val)
       }
     
 
-SWIGINTERN int
-SWIG_AsVal_unsigned_SS_char (PyObject * obj, unsigned char *val)
-{
-  unsigned long v;
-  int res = SWIG_AsVal_unsigned_SS_long (obj, &v);
-  if (SWIG_IsOK(res)) {
-    if ((v > UCHAR_MAX)) {
-      return SWIG_OverflowError;
-    } else {
-      if (val) *val = static_cast< unsigned char >(v);
-    }
-  }  
-  return res;
-}
-
-
 namespace swig {
     template <>  struct traits<simuPOP::vspID > {
       typedef pointer_category category;
@@ -5738,6 +5719,22 @@ SWIG_AsVal_char (PyObject * obj, char *val)
 	};
       }
     
+
+SWIGINTERN int
+SWIG_AsVal_unsigned_SS_char (PyObject * obj, unsigned char *val)
+{
+  unsigned long v;
+  int res = SWIG_AsVal_unsigned_SS_long (obj, &v);
+  if (SWIG_IsOK(res)) {
+    if ((v > UCHAR_MAX)) {
+      return SWIG_OverflowError;
+    } else {
+      if (val) *val = static_cast< unsigned char >(v);
+    }
+  }  
+  return res;
+}
+
 
 namespace swig {
   template <> struct traits< long > {
@@ -17999,13 +17996,13 @@ fail:
 SWIGINTERN PyObject *_wrap_Individual_setAllele(PyObject *SWIGUNUSEDPARM(self), PyObject *args, PyObject *kwargs) {
   PyObject *resultobj = 0;
   simuPOP::Individual *arg1 = (simuPOP::Individual *) 0 ;
-  Allele arg2 ;
+  ULONG arg2 ;
   size_t arg3 ;
   int arg4 = (int) -1 ;
   int arg5 = (int) -1 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  unsigned char val2 ;
+  unsigned long val2 ;
   int ecode2 = 0 ;
   size_t val3 ;
   int ecode3 = 0 ;
@@ -18028,11 +18025,11 @@ SWIGINTERN PyObject *_wrap_Individual_setAllele(PyObject *SWIGUNUSEDPARM(self), 
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Individual_setAllele" "', argument " "1"" of type '" "simuPOP::Individual *""'"); 
   }
   arg1 = reinterpret_cast< simuPOP::Individual * >(argp1);
-  ecode2 = SWIG_AsVal_unsigned_SS_char(obj1, &val2);
+  ecode2 = SWIG_AsVal_unsigned_SS_long(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Individual_setAllele" "', argument " "2"" of type '" "Allele""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Individual_setAllele" "', argument " "2"" of type '" "ULONG""'");
   } 
-  arg2 = static_cast< Allele >(val2);
+  arg2 = static_cast< ULONG >(val2);
   ecode3 = SWIG_AsVal_size_t(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Individual_setAllele" "', argument " "3"" of type '" "size_t""'");
@@ -57014,15 +57011,20 @@ static PyMethodDef SwigMethods[] = {
 		"    evaluation in the expression as an variable with name spacied by\n"
 		"    exposeInd. If the expression is evaluated to be True, individuals\n"
 		"    (if applied before or after mating) or offspring (if applied\n"
-		"    during mating) will be removed or discard. If a function is passed\n"
-		"    to cond, it should accept paramters ind and pop or names of\n"
-		"    information fields when it is applied to a population (pre or post\n"
-		"    mating), or parameters off, dad, mom, pop (parental population),\n"
-		"    or names of information fields if the operator is applied during\n"
-		"    mating. Individuals will be discarded if this function returns\n"
-		"    True. A constant expression (e.g. True) is also acceptable).\n"
-		"    Because this operator supports parameter subPops, only individuals\n"
-		"    belonging to specified (virtual) subpopulations will be screened.\n"
+		"    during mating) will be removed or discard. Otherwise the return\n"
+		"    value should be either False (not discard), or a float number\n"
+		"    between 0 and 1 as the probability that the individual is removed.\n"
+		"    If a function is passed to cond, it should accept paramters ind\n"
+		"    and pop or names of information fields when it is applied to a\n"
+		"    population (pre or post mating), or parameters off, dad, mom, pop\n"
+		"    (parental population), or names of information fields if the\n"
+		"    operator is applied during mating. Individuals will be discarded\n"
+		"    if this function returns True or at a probability if a float\n"
+		"    number between 0 and 1 is returned. A constant expression (e.g.\n"
+		"    True, False, 0.4) is also acceptable, with the last example\n"
+		"    (cond=0.1) that removes 10% of individuals at randomly. This\n"
+		"    operator supports parameter subPops and will remove only\n"
+		"    individuals belonging to specified (virtual) subpopulations.\n"
 		"\n"
 		"\n"
 		""},
