@@ -428,7 +428,6 @@ LIB_FILES = [
   + [x for x in glob.glob(os.path.join(boost_iostreams_dir, '*.cpp')) if 'bzip' not in x]\
   + glob.glob(os.path.join(boost_regex_dir, '*.cpp'))
 
-
 GSL_FILES = [
     'gsl/error.c', 
     'gsl/sys/infnan.c',
@@ -602,9 +601,6 @@ else:
 #
 def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     #
-    boost_inc_path = boost_include_dir
-    boost_lib_names = []
-    boost_lib_path = None
     res = {}
     res['src'] =  ['src/simuPOP_' + modu + '_wrap.cpp']
     for src in SOURCE_FILES:
@@ -612,19 +608,18 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     #
     # lib
     res['libraries'] = []
-    res['include_dirs'] = ['.', 'gsl', boost_inc_path] + common_extra_include_dirs
+    res['include_dirs'] = ['.', 'gsl', boost_include_dir] + common_extra_include_dirs
     # define_macros (deep copy)
     res['define_macros'] = COMMON_MACROS + MACROS[modu]
     if 'op' in modu:
         res['libraries'].append('simuPOP_shop')
     else:
         res['libraries'].append('simuPOP_shstd')
-    res['libraries'].extend(boost_lib_names)
 
     if os.name == 'nt':
-        res['libraries'] = ['z']
+        res['libraries'].append('z')
     else:
-        res['libraries'] = ['z']
+        res['libraries'].append('z')
         if USE_OPENMP:
             if USE_ICC:
                 res['libraries'].append('iomp5')
