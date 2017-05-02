@@ -836,20 +836,20 @@ class TestDemography(unittest.TestCase):
                 5: (200, 100, 400),
             }, initSize=[200, 300, 400]) 
 
-    def testStockModels(self):
-        'Test stock demographic models'
-        #OutOfAfricaModel(20000).plot()
-        OutOfAfricaModel(20000, scale=5).plot()
-        #OutOfAfricaModel(20000, outcome='EU', scale=5).plot()
-        OutOfAfricaModel(20000, outcome=['EU', 'AS'], scale=5).plot()
-        #SettlementOfNewWorldModel(20000).plot()
-        SettlementOfNewWorldModel(20000, scale=5).plot()
-        SettlementOfNewWorldModel(20000, outcome='MXL', scale=5).plot()
-        SettlementOfNewWorldModel(20000, outcome='AF', scale=5).plot()
-        SettlementOfNewWorldModel(20000, outcome=['EU', 'AS'], scale=5).plot()
-        #CosiModel(20000).plot()
-        CosiModel(20000, scale=5).plot()
-
+#     def testStockModels(self):
+#         'Test stock demographic models'
+#         #OutOfAfricaModel(20000).plot()
+#         OutOfAfricaModel(20000, scale=5).plot()
+#         #OutOfAfricaModel(20000, outcome='EU', scale=5).plot()
+#         OutOfAfricaModel(20000, outcome=['EU', 'AS'], scale=5).plot()
+#         #SettlementOfNewWorldModel(20000).plot()
+#         SettlementOfNewWorldModel(20000, scale=5).plot()
+#         SettlementOfNewWorldModel(20000, outcome='MXL', scale=5).plot()
+#         SettlementOfNewWorldModel(20000, outcome='AF', scale=5).plot()
+#         SettlementOfNewWorldModel(20000, outcome=['EU', 'AS'], scale=5).plot()
+#         CosiModel(20000).plot()
+#         CosiModel(20000, scale=5).plot()
+# 
 
 if __name__ == '__main__':
     unittest.main()

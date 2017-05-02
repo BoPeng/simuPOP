@@ -37,6 +37,24 @@ _proc_status = '/proc/%d/status' % os.getpid()
 _scale = {'kB': 1024.0, 'mB': 1024.0*1024.0,
           'KB': 1024.0, 'MB': 1024.0*1024.0}
 
+
+def repeated(func, times=100, *args, **kwargs):
+    accu = []
+    for i in range(times):
+        res = func(*args, **kwargs)
+        if isinstance(res, (int, float)):
+            accu.append(res)
+        else:
+            if not accu:
+                accu = [[x] for x in res]
+            else:
+                [x.append(y) for x,y in zip(accu, res)]
+    if isinstance(accu[0], (int, float)):
+        return sum(accu)/len(accu)
+    else:
+        return [sum(x)/len(x) for x in accu]
+
+
 def _VmB(VmKey):
     '''Private.
     '''

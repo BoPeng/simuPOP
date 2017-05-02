@@ -26,6 +26,25 @@ from simuPOP import *
 import numpy as np
 from numpy.linalg import inv
 
+
+def repeated(func, times=100, *args, **kwargs):
+    accu = []
+    for i in range(times):
+        res = func(*args, **kwargs)
+        if isinstance(res, (int, float)):
+            accu.append(res)
+        else:
+            if not accu:
+                accu = [[x] for x in res]
+            else:
+                [x.append(y) for x,y in zip(accu, res)]
+    if isinstance(accu[0], (int, float)):
+        return sum(accu)/len(accu)
+    else:
+        return [sum(x)/len(x) for x in accu]
+
+
+
 def Sp_From_Forward_and_S(FM, S):
     # calculate predicted subpopulation size from forward migration matrix (FM)
     # and current population size (S)  S'=F^T S
@@ -171,56 +190,60 @@ class TestMigrator(unittest.TestCase):
 
     def testmigrateByProbability(self):
         'Testing migrate by probability'
-        pop = Population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
-        # now if we want to inject a mutation whenever fixation happens
-        migrate(pop, mode=BY_PROBABILITY,
-            rate = [ [0, .05, .05],
+        def migrateSize():
+            pop = Population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
+            # now if we want to inject a mutation whenever fixation happens
+            migrate(pop, mode=BY_PROBABILITY,
+                rate = [ [0, .05, .05],
                              [0.025, 0, 0],
                              [0.025, 0, 0] ])
+            return pop.subPopSizes()
+        
+        tested = repeated(migrateSize, times=100)
         # print pop.subPopSizes()
-        self.assertTrue(abs(pop.subPopSize(0) - 2000) < 100, 
-            "Expression abs(pop.subPopSize(0) - 2000) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(0) - 2000)))
-        self.assertTrue(abs(pop.subPopSize(1) - 4000) < 100, 
-            "Expression abs(pop.subPopSize(1) - 4000) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(1) - 4000)))
-        self.assertTrue(abs(pop.subPopSize(2) - 4000) < 100, 
-            "Expression abs(pop.subPopSize(2) - 4000) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(2) - 4000)))
-        migrate(pop, mode=BY_PROBABILITY,
+        self.assertTrue(abs(tested[0] - 2000) < 20)
+        self.assertTrue(abs(tested[1] - 4000) < 20)
+        self.assertTrue(abs(tested[2] - 4000) < 20)
+
+        def migrateSize():
+            pop = Population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
+            migrate(pop, mode=BY_PROBABILITY,
             rate = [ [0, .25, .25],
                              [0.25, 0, 0],
                              [0, 0.25, 0] ])
+            return pop.subPopSizes()
         # print pop.subPopSizes()
-        self.assertTrue(abs(pop.subPopSize(0) - 2000) < 100, 
-            "Expression abs(pop.subPopSize(0) - 2000) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(0) - 2000)))
-        self.assertTrue(abs(pop.subPopSize(1) - 4500) < 100, 
-            "Expression abs(pop.subPopSize(1) - 4500) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(1) - 4500)))
-        self.assertTrue(abs(pop.subPopSize(2) - 3500) < 100, 
-            "Expression abs(pop.subPopSize(2) - 3500) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(2) - 3500)))
+        tested = repeated(migrateSize, times=100)
+        self.assertTrue(abs(tested[0] - 2000) < 20)
+        self.assertTrue(abs(tested[1] - 4500) < 20)
+        self.assertTrue(abs(tested[2] - 3500) < 20)
 
     def testmigrateFromTo(self):
         'Testing parameter from and to of Migrators'
-        pop = Population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
-        # now if we want to inject a mutation whenever fixation happens
-        migrate(pop, mode=BY_PROBABILITY,
-            subPops = [0], toSubPops = [1,2],
-            rate = [.05, .05] )
-        # print pop.subPopSizes()
-        self.assertTrue(abs(pop.subPopSize(0) - 1800) < 50, 
-            "Expression abs(pop.subPopSize(0) - 1800) (test value %f) be less than 50. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(0) - 1800)))
-        self.assertTrue(abs(pop.subPopSize(1) - 4100) < 50, 
-            "Expression abs(pop.subPopSize(1) - 4100) (test value %f) be less than 50. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(1) - 4100)))
-        self.assertTrue(abs(pop.subPopSize(2) - 4100) < 50, 
-            "Expression abs(pop.subPopSize(2) - 4100) (test value %f) be less than 50. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(2) - 4100)))
+        def migrateSize():
+            pop = Population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
+            # now if we want to inject a mutation whenever fixation happens
+            migrate(pop, mode=BY_PROBABILITY,
+                subPops = [0], toSubPops = [1,2],
+                rate = [.05, .05] )
+            return pop.subPopSizes()
+
+        tested = repeated(migrateSize, times=100)
+        self.assertTrue(abs(tested[0] - 1800) < 10)
+        self.assertTrue(abs(tested[1] - 4100) < 10)
+        self.assertTrue(abs(tested[2] - 4100) < 10)
         # other parameter form can be used as well
-        pop = Population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
-        migrate(pop, mode=BY_PROBABILITY,
-            subPops = 0, toSubPops = [1,2],
-            rate = [[.05, .05]] )
-        self.assertTrue(abs(pop.subPopSize(0) - 1800) < 50, 
-            "Expression abs(pop.subPopSize(0) - 1800) (test value %f) be less than 50. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(0) - 1800)))
-        self.assertTrue(abs(pop.subPopSize(1) - 4100) < 50, 
-            "Expression abs(pop.subPopSize(1) - 4100) (test value %f) be less than 50. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(1) - 4100)))
-        self.assertTrue(abs(pop.subPopSize(2) - 4100) < 50, 
-            "Expression abs(pop.subPopSize(2) - 4100) (test value %f) be less than 50. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(2) - 4100)))
+
+        def migrateSize():
+            pop = Population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
+            migrate(pop, mode=BY_PROBABILITY,
+                subPops = 0, toSubPops = [1,2],
+                rate = [[.05, .05]] )
+            return pop.subPopSizes()
+        tested = repeated(migrateSize, times=100)
+        self.assertTrue(abs(tested[0] - 1800) < 10)
+        self.assertTrue(abs(tested[1] - 4100) < 10)
+        self.assertTrue(abs(tested[2] - 4100) < 10)
 
 
     def testmigrateBySexAndCounts(self):
@@ -306,43 +329,53 @@ class TestMigrator(unittest.TestCase):
 
     def testmigrateBySexAndProbability(self):
         'Testing migrate by sex and probability'
+        def migrateSize():
+            pop = Population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
+            initSex(pop, maleFreq=0, subPops=[0])
+            initSex(pop, maleFreq=1, subPops=[1])
+            initSex(pop, maleFreq=1, subPops=[2])
+            pop.setVirtualSplitter(SexSplitter())
+            # now if we want to inject a mutation whenever fixation happens
+            migrate(pop, mode=BY_PROBABILITY,
+                rate = [ [0, .1, .1],
+                             [0.1, 0, 0],
+                             [0.1, 0, 0]],
+                subPops = [(0,0), (1,0), (2,0)])
+            return pop.subPopSizes()
+
+        tested = repeated(migrateSize, 100)
+        # 2000 female -> 0
+        # 4000 male -> 400 to 0
+        # 4000 male -> 400 to 0
+        self.assertTrue(abs(tested[0] - 2800) < 100) 
+        self.assertTrue(abs(tested[1] - 3600) < 100) 
+        self.assertTrue(abs(tested[2] - 3600) < 100)
+        #
         pop = Population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
         initSex(pop, maleFreq=0, subPops=[0])
         initSex(pop, maleFreq=1, subPops=[1])
         initSex(pop, maleFreq=1, subPops=[2])
         pop.setVirtualSplitter(SexSplitter())
-        # now if we want to inject a mutation whenever fixation happens
-        migrate(pop, mode=BY_PROBABILITY,
-            rate = [ [0, .1, .1],
-                             [0.1, 0, 0],
-                             [0.1, 0, 0]],
-            subPops = [(0,0), (1,0), (2,0)])
-        # 2000 female -> 0
-        # 4000 male -> 400 to 0
-        # 4000 male -> 400 to 0
-        self.assertTrue(abs(pop.subPopSize(0) - 2800) < 100, 
-            "Expression abs(pop.subPopSize(0) - 2800) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(0) - 2800)))
-        self.assertTrue(abs(pop.subPopSize(1) - 3600) < 100, 
-            "Expression abs(pop.subPopSize(1) - 3600) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(1) - 3600)))
-        self.assertTrue(abs(pop.subPopSize(2) - 3600) < 100, 
-            "Expression abs(pop.subPopSize(2) - 3600) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(2) - 3600)))
         v = pop.subPopSizes()
         vf = pop.subPopSize([0, 1])
         vm = pop.subPopSize([0, 0])
-        migrate(pop, mode=BY_PROBABILITY,
-            rate = [ [0, 0.1, 0.1],
-                             [0.1, 0, 0],
-                             [0, 0.1, 0] ],
-            subPops = [(0,1), (1,1), (2,1)])
+        def migrateSize(pop):
+            pop = pop.clone()
+            pop.setVirtualSplitter(SexSplitter())
+            migrate(pop, mode=BY_PROBABILITY,
+                rate = [ [0, 0.1, 0.1],
+                         [0.1, 0, 0],
+                         [0, 0.1, 0] ],
+                subPops = [(0,1), (1,1), (2,1)])
+            return pop.subPopSizes()
+
+        tested = repeated(migrateSize, 100, pop)
         # 2000 female, 800 male -> 200 female to each
         # 3600 male no
         # 3600 male no
-        self.assertTrue(abs(pop.subPopSize(0) - vm - vf*0.8) < 100, 
-            "Expression abs(pop.subPopSize(0) - vm - vf*0.8) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(0) - vm - vf*0.8)))
-        self.assertTrue(abs(pop.subPopSize(1) - v[1] - vf*0.1) < 100, 
-            "Expression abs(pop.subPopSize(1) - v[1] - vf*0.1) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(1) - v[1] - vf*0.1)))
-        self.assertTrue(abs(pop.subPopSize(2) - v[1] - vf*0.1) < 100, 
-            "Expression abs(pop.subPopSize(2) - v[1] - vf*0.1) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(2) - v[1] - vf*0.1)))
+        self.assertTrue(abs(tested[0] - vm - vf*0.8) < 20, "{} not close to {}".format(tested[0], vm + vf*0.8))
+        self.assertTrue(abs(tested[1] - v[1] - vf*0.1) < 20, "{} not close to {}".format(tested[1], v[1] + vf*0.1))
+        self.assertTrue(abs(tested[2] - v[2] - vf*0.1) < 20, "{} not close to {}".format(tested[2], v[2] + vf*0.1))
 
 
     def testMigrConstAlleleFreq(self):
@@ -473,32 +506,34 @@ class TestMigrator(unittest.TestCase):
 
     def testMigrateByBackwardProbability(self):
         'Testing migrate by probability'
-        pop = Population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
-        # now if we want to inject a mutation whenever fixation happens
-        backwardMigrate(pop, mode=BY_PROBABILITY,
-            rate = [[ 0.9  ,  0.05 ,  0.05 ],
-                   [ 0.025,  0.975,  0.   ],
-                   [ 0.025,  0.   ,  0.975]])
+        def migrateSize():
+            pop = Population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
+            # now if we want to inject a mutation whenever fixation happens
+            backwardMigrate(pop, mode=BY_PROBABILITY,
+                rate = [[ 0.9  ,  0.05 ,  0.05 ],
+                       [ 0.025,  0.975,  0.   ],
+                       [ 0.025,  0.   ,  0.975]])
+            return pop.subPopSizes()
+        #
+        tested = repeated(migrateSize, times=100)
         # print pop.subPopSizes()
-        self.assertTrue(abs(pop.subPopSize(0) - 2000) < 100, 
-            "Expression abs(pop.subPopSize(0) - 2000) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(0) - 2000)))
-        self.assertTrue(abs(pop.subPopSize(1) - 4000) < 100, 
-            "Expression abs(pop.subPopSize(1) - 4000) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(1) - 4000)))
-        self.assertTrue(abs(pop.subPopSize(2) - 4000) < 100, 
-            "Expression abs(pop.subPopSize(2) - 4000) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(2) - 4000)))
+        self.assertTrue(abs(tested[0] - 2000) < 20) 
+        self.assertTrue(abs(tested[1] - 4000) < 20) 
+        self.assertTrue(abs(tested[2] - 4000) < 20) 
     
-        pop = Population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
-        backwardMigrate(pop, mode=BY_PROBABILITY,
-            rate = [[ 0.5       ,  0.5       ,  0.        ],
-       [ 0.11111111,  0.66666667,  0.22222222],
-       [ 0.14285714,  0.        ,  0.85714286]])
+        def migrateSize():
+            pop = Population(size=[2000,4000,4000], loci=[2], infoFields=['migrate_to'])
+            backwardMigrate(pop, mode=BY_PROBABILITY,
+                rate = [[ 0.5       ,  0.5       ,  0.        ],
+               [ 0.11111111,  0.66666667,  0.22222222],
+               [ 0.14285714,  0.        ,  0.85714286]])
+            return pop.subPopSizes()
+
+        tested = repeated(migrateSize, times=100)
         # print pop.subPopSizes()
-        self.assertTrue(abs(pop.subPopSize(0) - 2000) < 100, 
-            "Expression abs(pop.subPopSize(0) - 2000) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(0) - 2000)))
-        self.assertTrue(abs(pop.subPopSize(1) - 4500) < 100, 
-            "Expression abs(pop.subPopSize(1) - 4500) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(1) - 4500)))
-        self.assertTrue(abs(pop.subPopSize(2) - 3500) < 100, 
-            "Expression abs(pop.subPopSize(2) - 3500) (test value %f) be less than 100. This test may occasionally fail due to the randomness of outcome." % (abs(pop.subPopSize(2) - 3500)))
+        self.assertTrue(abs(tested[0] - 2000) < 20) 
+        self.assertTrue(abs(tested[1] - 4500) < 20)
+        self.assertTrue(abs(tested[2] - 3500) < 20)
 
 
 
