@@ -75,6 +75,7 @@ __all__ = [
     'FEMALE_ONLY',
     'SAME_SEX',
     'OPPOSITE_SEX',
+    'PAIR_ONLY',
     #
     'MULTIPLICATIVE',
     'ADDITIVE',

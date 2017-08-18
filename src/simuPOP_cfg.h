@@ -282,7 +282,8 @@ enum SexChoice {
 	MALE_ONLY = 61,
 	FEMALE_ONLY = 62,
 	SAME_SEX = 63,
-	OPPOSITE_SEX = 64
+	OPPOSITE_SEX = 64,
+	PAIR_ONLY = 65,
 };
 
 // this one does not use 71, 72 to allow users to specify affection

@@ -398,11 +398,16 @@ public:
 	/** Return the size of a subpopulation (<tt>subPopSize(sp)</tt>) or a
 	 *  virtual subpopulation (<tt>subPopSize([sp, vsp])</tt>) in the current
 	 *  generation (default) or a specified ancestral generation \e ancGen. If
-	 *  no \e subpop is given, it is the same as <tt>popSize(ancGen)</tt>.
-	 *  Population and virtual subpopulation names can be used.
+	 *  no \e subpop is given, it is the same as <tt>popSize(ancGen, sex)</tt>. 
+	 *  Population and virtual subpopulation names can be used. This function
+	 *  by default returns number of all individuals (<tt>sex=ANY_SEX</tt>), but it
+	 *  will return number of males (if <tt>sex=MALE_ONLY</tt>), number of females
+	 *  (if <tt>sex=MALE_ONLY</tt>), and number of male/female pairs (if
+	 *  <tt>sex=PAIR_ONLY</tt>) which is essentially less of the number of males
+	 *  and females.
 	 *  <group>2-subpopsize</grouplociList()>
 	 */
-	size_t subPopSize(vspID subPop = vspID(), int ancGen = -1) const;
+	size_t subPopSize(vspID subPop = vspID(), int ancGen = -1, SexChoice sex = ANY_SEX) const;
 
 
 	/** Return the index of the first subpopulation with name \e name. An
@@ -458,19 +463,14 @@ public:
 
 	/** Return the total number of individuals in all subpopulations of the
 	 *  current generation (default) or the an ancestral generation \e ancGen.
+	 *  This function by default returns number of all individuals 
+	 *  (<tt>sex=ANY_SEX</tt>), but it will return number of males  (if
+	 *  <tt>sex=MALE_ONLY</tt>), number of females (if <tt>sex=MALE_ONLY</tt>),
+	 *  and number of male/female pairs (if <tt>sex=PAIR_ONLY</tt>) which is
+	 *  essentially less of the number of males and females.
 	 *  <group>2-subpopsize</group>
 	 */
-	size_t popSize(int ancGen = -1) const
-	{
-		if (ancGen < 0 || ancGen == m_curAncestralGen)
-			return m_popSize;
-		DBG_FAILIF(ancGen > ancestralGens(), IndexError,
-			(boost::format("Ancestral generation %1% out of range of 0 ~ %2%") % ancGen %
-			 ancestralGens()).str());
-		const vectoru & sizes = m_ancestralPops[ancGen - 1].m_subPopSize;
-		return accumulate(sizes.begin(), sizes.end(), size_t(0));
-	}
-
+	size_t popSize(int ancGen = -1, SexChoice sex = ANY_SEX) const;
 
 	/** return the absolute index of an individual \e idx in subpopulation \e subPop.
 	 *  <group>2-subpop</group>

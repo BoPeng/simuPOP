@@ -108,7 +108,7 @@ Usage:
 
     BackwardMigrator(rate=[], mode=BY_PROBABILITY, begin=0, end=-1,
       step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-      infoFields=\"migrate_to\")
+      infoFields=[\"migrate_to\"])
 
 Details:
 
@@ -163,7 +163,7 @@ Usage:
 
     BaseMutator(rates=[], loci=ALL_AVAIL, mapIn=[], mapOut=[],
       context=0, output=\"\", begin=0, end=-1, step=1, at=[],
-      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=\"ind_id\",
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[\"ind_id\"],
       lineageMode=FROM_INFO)
 
 Details:
@@ -1482,7 +1482,7 @@ Usage:
     ContextMutator(rates=[], loci=ALL_AVAIL, mutators=[],
       contexts=[], mapIn=[], mapOut=[], output=\"\", begin=0, end=-1,
       step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-      infoFields=\"ind_id\", lineageMode=FROM_INFO)
+      infoFields=[\"ind_id\"], lineageMode=FROM_INFO)
 
 Details:
 
@@ -1801,7 +1801,7 @@ Usage:
 
     FiniteSitesMutator(rate, ranges, model=1, output=\"\", begin=0,
       end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-      infoFields=\"ind_id\", lineageMode=FROM_INFO)
+      infoFields=[\"ind_id\"], lineageMode=FROM_INFO)
 
 Details:
 
@@ -2862,7 +2862,7 @@ Details:
 Usage:
 
     IdTagger(begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
-      subPops=ALL_AVAIL, output=\"\", infoFields=\"ind_id\")
+      subPops=ALL_AVAIL, output=\"\", infoFields=[\"ind_id\"])
 
 Details:
 
@@ -3777,7 +3777,7 @@ Usage:
 
     InitLineage(lineage=[], mode=PER_ALLELE, loci=ALL_AVAIL,
       ploidy=ALL_AVAIL, begin=0, end=1, step=1, at=[], reps=ALL_AVAIL,
-      subPops=ALL_AVAIL, infoFields=\"ind_id\")
+      subPops=ALL_AVAIL, infoFields=[\"ind_id\"])
 
 Details:
 
@@ -3886,7 +3886,7 @@ Usage:
 
     KAlleleMutator(k, rates=[], loci=ALL_AVAIL, mapIn=[], mapOut=[],
       output=\"\", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
-      subPops=ALL_AVAIL, infoFields=\"ind_id\", lineageMode=FROM_INFO)
+      subPops=ALL_AVAIL, infoFields=[\"ind_id\"], lineageMode=FROM_INFO)
 
 Details:
 
@@ -4232,7 +4232,7 @@ Usage:
 
     MatrixMutator(rate, loci=ALL_AVAIL, mapIn=[], mapOut=[],
       output=\"\", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
-      subPops=ALL_AVAIL, infoFields=\"ind_id\", lineageMode=FROM_INFO)
+      subPops=ALL_AVAIL, infoFields=[\"ind_id\"], lineageMode=FROM_INFO)
 
 Details:
 
@@ -4427,7 +4427,7 @@ Usage:
 
     Migrator(rate=[], mode=BY_PROBABILITY, toSubPops=ALL_AVAIL,
       begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
-      subPops=ALL_AVAIL, infoFields=\"migrate_to\")
+      subPops=ALL_AVAIL, infoFields=[\"migrate_to\"])
 
 Details:
 
@@ -4536,7 +4536,7 @@ Usage:
     MixedMutator(rates=[], loci=ALL_AVAIL, mutators=[], prob=[],
       mapIn=[], mapOut=[], context=0, output=\"\", begin=0, end=-1,
       step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-      infoFields=\"ind_id\", lineageMode=FROM_INFO)
+      infoFields=[\"ind_id\"], lineageMode=FROM_INFO)
 
 Details:
 
@@ -5687,9 +5687,9 @@ Details:
 
 Usage:
 
-    PointMutator(loci, allele, ploidy=[], 0, inds=[], output=\"\",
+    PointMutator(loci, allele, ploidy=0, inds=[], output=\"\",
       begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=0,
-      infoFields=\"ind_id\", lineageMode=FROM_INFO)
+      infoFields=[\"ind_id\"], lineageMode=FROM_INFO)
 
 Details:
 
@@ -6435,13 +6435,17 @@ Details:
 
 Usage:
 
-    x.popSize(ancGen=-1)
+    x.popSize(ancGen=-1, sex=ANY_SEX)
 
 Details:
 
     Return the total number of individuals in all subpopulations of
     the current generation (default) or the an ancestral generation
-    ancGen.
+    ancGen. This function by default returns number of all individuals
+    (sex=ANY_SEX), but it will return number of males (if
+    sex=MALE_ONLY), number of females (if sex=MALE_ONLY), and number
+    of male/female pairs (if sex=PAIR_ONLY) which is essentially less
+    of the number of males and females.
 
 "; 
 
@@ -6868,15 +6872,19 @@ Details:
 
 Usage:
 
-    x.subPopSize(subPop=[], ancGen=-1)
+    x.subPopSize(subPop=[], ancGen=-1, sex=ANY_SEX)
 
 Details:
 
     Return the size of a subpopulation (subPopSize(sp)) or a virtual
     subpopulation (subPopSize([sp, vsp])) in the current generation
     (default) or a specified ancestral generation ancGen. If no subpop
-    is given, it is the same as popSize(ancGen). Population and
-    virtual subpopulation names can be used.
+    is given, it is the same as popSize(ancGen, sex). Population and
+    virtual subpopulation names can be used. This function by default
+    returns number of all individuals (sex=ANY_SEX), but it will
+    return number of males (if sex=MALE_ONLY), number of females (if
+    sex=MALE_ONLY), and number of male/female pairs (if sex=PAIR_ONLY)
+    which is essentially less of the number of males and females.
     <group>2-subpopsize</grouplociList()>
 
 "; 
@@ -7406,7 +7414,7 @@ Usage:
 
     PyMutator(rates=[], loci=ALL_AVAIL, func=None, context=0,
       mapIn=[], mapOut=[], output=\"\", begin=0, end=-1, step=1, at=[],
-      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=\"ind_id\",
+      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[\"ind_id\"],
       lineageMode=FROM_INFO)
 
 Details:
@@ -8557,7 +8565,7 @@ Usage:
 
     RevertFixedSites(loci=ALL_AVAIL, output=\"\", begin=0, end=-1,
       step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-      infoFields=\"ind_id\")
+      infoFields=[\"ind_id\"])
 
 Details:
 
@@ -9867,7 +9875,7 @@ Usage:
     StepwiseMutator(rates=[], loci=ALL_AVAIL, incProb=0.5,
       maxAllele=0, mutStep=[], mapIn=[], mapOut=[], output=\"\",
       begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
-      subPops=ALL_AVAIL, infoFields=\"ind_id\", lineageMode=FROM_INFO)
+      subPops=ALL_AVAIL, infoFields=[\"ind_id\"], lineageMode=FROM_INFO)
 
 Details:
 

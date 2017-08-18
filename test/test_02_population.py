@@ -101,6 +101,20 @@ class TestPopulation(unittest.TestCase):
     def testPopSize(self):
         'Testing Population.popSize, Population.subPopSizes and Population.subPopSize'
         pop = self.getPop(size=[80, 20, 30, 50], ancGen=5)
+        initSex(pop, sex=[MALE, FEMALE, MALE])
+        pop.useAncestralGen(2)
+        initSex(pop, sex=[MALE, FEMALE, FEMALE])
+        pop.useAncestralGen(0)
+        self.assertEqual(pop.popSize(sex=MALE_ONLY), 120)
+        self.assertEqual(pop.popSize(sex=FEMALE_ONLY), 60)
+        self.assertEqual(pop.popSize(sex=PAIR_ONLY), 60)
+        self.assertEqual(pop.popSize(2, sex=MALE_ONLY), 60)
+        self.assertEqual(pop.popSize(2, sex=FEMALE_ONLY), 120)
+        self.assertEqual(pop.popSize(2, sex=PAIR_ONLY), 60)
+
+    def testPopSizeBySex(self):
+        'Testing Population.popSize by male, female, pair'
+        pop = self.getPop(size=[80, 20, 30, 50], ancGen=5)
         pop.mergeSubPops([1, 2])
         pop.removeIndividuals([1, 59, 130])
         initSex(pop)

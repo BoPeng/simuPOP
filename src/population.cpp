@@ -1000,12 +1000,55 @@ void Population::setSubPopStru(const vectoru & newSubPopSizes,
 }
 
 
-size_t Population::subPopSize(vspID subPopID, int ancGen) const
+size_t Population::popSize(int ancGen, SexChoice sex) const
+{
+	if (sex == ANY_SEX) {
+		if (ancGen < 0 || ancGen == m_curAncestralGen)
+			return m_popSize;
+		DBG_FAILIF(ancGen > ancestralGens(), IndexError,
+			(boost::format("Ancestral generation %1% out of range of 0 ~ %2%") % ancGen %
+			 ancestralGens()).str());
+		const vectoru & sizes = m_ancestralPops[ancGen - 1].m_subPopSize;
+		return accumulate(sizes.begin(), sizes.end(), size_t(0));
+	} else {
+		size_t nMale = 0;
+		size_t nFemale = 0;
+		if (ancGen < 0 || ancGen == m_curAncestralGen) {
+			ConstRawIndIterator it = rawIndBegin();
+			ConstRawIndIterator itEnd = rawIndEnd();
+			for (; it != itEnd; ++it)
+				nMale += it->sex() == MALE;
+			nFemale = m_popSize - nMale;
+		} else {
+			int curGen = m_curAncestralGen;
+			const_cast<Population *>(this)->useAncestralGen(ancGen);
+			ConstRawIndIterator it = rawIndBegin();
+			ConstRawIndIterator itEnd = rawIndEnd();
+			for (; it != itEnd; ++it)
+				nMale += it->sex() == MALE;
+			nFemale = m_popSize - nMale;
+			const_cast<Population *>(this)->useAncestralGen(curGen);
+		}
+		if (sex == MALE_ONLY)
+			return nMale;
+		else if (sex == FEMALE_ONLY)
+			return nFemale;
+		else if (sex == PAIR_ONLY)
+			return nMale > nFemale ? nFemale : nMale;
+		else {
+			DBG_FAILIF(true, ValueError,
+				"sex can only be one of ANY_SEX, MALE_ONLY, FEMALE_ONLY, and PAIR_ONLY.");
+		}
+	}
+}
+
+
+size_t Population::subPopSize(vspID subPopID, int ancGen, SexChoice sex) const
 {
 	vspID subPop = subPopID.resolve(*this);
 
 	if (!subPop.valid())
-		return popSize(ancGen);
+		return popSize(ancGen, sex);
 
 	DBG_FAILIF(ancGen > ancestralGens(),
 		IndexError, (boost::format("Ancestral generation %1% out of range of 0 ~ %2%") % ancGen % ancestralGens()).str());
