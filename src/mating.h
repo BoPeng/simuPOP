@@ -1713,8 +1713,8 @@ public:
 	 *  has no father or mother. In this case, you can set \c weightBy to
 	 *  \c PAIR_ONLY so a (virtual) subpopulation will appear to have zero size,
 	 *  and will thus contribute no offspring to the offspring population. Note
-	 *  that the size of parental (virtual) subpopulation in this mode (and in the
-	 *  modes of \c MALE_ONLY, \c FEMALE_ONLY) during the calculation of the
+	 *  that the perceived parental (virtual) subpopulation size in this mode (and
+	 *  in modes of \c MALE_ONLY, \c FEMALE_ONLY) during the calculation of the
 	 *  size of the offspring subpopulation will be roughly half of the actual
 	 *  population size so you might have to use \c weight=-2 if you would like
 	 *  to have an offspring subpopulation that is roughly the same size of the

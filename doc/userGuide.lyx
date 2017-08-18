@@ -1,7 +1,9 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 474
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
 \begin_document
 \begin_header
+\save_transient_properties true
+\origin unavailable
 \textclass manual
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
@@ -50,16 +52,16 @@ Last modified \\
 \language_package default
 \inputencoding auto
 \fontencoding global
-\font_roman default
-\font_sans default
-\font_typewriter beramono
-\font_math auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "beramono" "default"
+\font_math "auto" "auto"
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
-\font_sf_scale 100
-\font_tt_scale 70
+\font_sf_scale 100 100
+\font_tt_scale 70 100
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -141,6 +143,11 @@ width "100col%"
 special "none"
 height "1pt"
 height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
 status collapsed
 
 \begin_layout Plain Layout
@@ -268,6 +275,12 @@ http://simupop.sourceforge.net
 
 \series bold
 How to cite simuPOP:
+\series default
+
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -1189,6 +1202,10 @@ UNIFORM_DISTRIBUTION
 \begin_layout Itemize
 simuPOP uses the abbreviated form of the following words in function and
  parameter names:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -1248,6 +1265,10 @@ stmts
 \begin_layout Itemize
 simuPOP uses both singular and plural forms of parameters, according to
  the following rules:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -3000,6 +3021,10 @@ __init__
 Population
 \family default
 : 
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -3041,6 +3066,10 @@ GenoStruTrait
 \family default
  member functions from these classes.
  
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -3749,7 +3778,10 @@ simuPOP does not assume any unit for loci positions.
  The scale of this intensity will vary by the unit assumed.
 \end_layout
 
-\begin_layout --Separator--
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
 
 \end_layout
 
@@ -3947,7 +3979,7 @@ Customized chromosomes are used to model more complex types of chromosomes.
  (see section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Pre-defined-genotype-transmitters"
+reference "subsec:Pre-defined-genotype-transmitters"
 
 \end_inset
 
@@ -4027,7 +4059,7 @@ ion), one copy of autosome from his father (with recombination), an X chromosome
 Information fields
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:stru-infoFields"
+name "subsec:stru-infoFields"
 
 \end_inset
 
@@ -4122,7 +4154,7 @@ ancGen=1
 , see Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Ancestral-populations"
+reference "subsec:Ancestral-populations"
 
 \end_inset
 
@@ -4897,7 +4929,7 @@ lstparams "caption={Advanced virtual subpopulation usages.},label={advancedVSP}"
 \begin_layout Subsection
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Individuals"
+name "subsec:Individuals"
 
 \end_inset
 
@@ -4962,7 +4994,7 @@ ancestor(idx, [subPop], gen)
  
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Ancestral-populations"
+reference "subsec:Ancestral-populations"
 
 \end_inset
 
@@ -5144,7 +5176,7 @@ lstparams "caption={Add and use of information fields in a population},label={po
 \begin_layout Subsection
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Ancestral-populations"
+name "subsec:Ancestral-populations"
 
 \end_inset
 
@@ -5570,7 +5602,7 @@ lstparams "caption={Extract individuals, loci and information fields from an exi
 \begin_layout Subsection
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Population-Variables"
+name "subsec:Population-Variables"
 
 \end_inset
 
@@ -5768,7 +5800,7 @@ lstparams "caption={Expression evaluation in the local namespace of a population
 \begin_layout Subsection
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Save-and-Load"
+name "subsec:Save-and-Load"
 
 \end_inset
 
@@ -6994,7 +7026,7 @@ refers to (virtual) subpopulations in the offspring population
  Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Pre-defined-genotype-transmitters"
+reference "subsec:Pre-defined-genotype-transmitters"
 
 \end_inset
 
@@ -7008,14 +7040,14 @@ reference "sec:Genotype-transmitters"
  list all genotype transmitters, Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Customized-genotype-transmitter"
+reference "subsec:Customized-genotype-transmitter"
 
 \end_inset
 
  demonstrates how to define your own genotype transmitter, Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:vspSelection"
+reference "subsec:vspSelection"
 
 \end_inset
 
@@ -7026,7 +7058,7 @@ reference "sub:vspSelection"
 Function form of an operator
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Function-form"
+name "subsec:Function-form"
 
 \end_inset
 
@@ -8273,7 +8305,7 @@ subPopSize
  This parameter has been described in detail in section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:offspring-size"
+reference "subsec:offspring-size"
 
 \end_inset
 
@@ -8336,7 +8368,7 @@ This section will introduce several operators that allow you to move dndividuals
  Please refer to 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:offspring-size"
+reference "subsec:offspring-size"
 
 \end_inset
 
@@ -8628,7 +8660,7 @@ simuPOP.demography
  
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Predefined-migration-models"
+reference "subsec:Predefined-migration-models"
 
 \end_inset
 
@@ -8908,7 +8940,7 @@ and the size of the original population
  is the sum of all migrants from this subpopulation
 \begin_inset Formula 
 \[
-S{}_{k}={\displaystyle \sum_{i=1}^{d}}S'_{i}b_{ik}
+S_{k}={\displaystyle \sum_{i=1}^{d}}S'_{i}b_{ik}
 \]
 
 \end_inset
@@ -9148,7 +9180,7 @@ reference "splitByProp"
  function in such case (see section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Advanced-demo-func"
+reference "subsec:Advanced-demo-func"
 
 \end_inset
 
@@ -10486,6 +10518,10 @@ AcgtMutator
 \family default
  to remind you the alphabetic order of these nucleotides.
  This mutation model is specified by a rate matrix
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -10559,6 +10595,10 @@ model='JC69'
 \end_inset
 
  ]
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -10609,6 +10649,10 @@ model='K80'
 \end_inset
 
 ]
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -10682,6 +10726,10 @@ model='F81'
 
 ].
  
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -10748,6 +10796,10 @@ model='HKY85'
 \end_inset
 
 ]
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -10784,6 +10836,10 @@ model='T92'
 \end_inset
 
 ]
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -10843,6 +10899,10 @@ model='TN93'
 \end_inset
 
 ]
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -10926,6 +10986,10 @@ model='GTR'
 \end_inset
 
 ]
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -11007,6 +11071,10 @@ model='general'
 \end_inset
 
 ].
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -14205,7 +14273,7 @@ lstparams "caption={Frequency dependent selection},label={freqDependentSelection
 \begin_layout Subsection
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:vspSelection"
+name "subsec:vspSelection"
 
 \end_inset
 
@@ -15981,7 +16049,10 @@ haploFreq
  these haplotypes might not be biologically meaningful.
 \end_layout
 
-\begin_layout --Separator--
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
 
 \end_layout
 
@@ -18585,7 +18656,7 @@ KAlleleMutator
  (see Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Function-form"
+reference "subsec:Function-form"
 
 \end_inset
 
@@ -18761,7 +18832,7 @@ works in the Python interpreter, it is expected that it runs slower than
  Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Using-C++"
+reference "subsec:Using-C++"
 
 \end_inset
 
@@ -18878,7 +18949,7 @@ New during-mating operators can be defined similarly.
  Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Customized-genotype-transmitter"
+reference "subsec:Customized-genotype-transmitter"
 
 \end_inset
 
@@ -19029,7 +19100,7 @@ ion or a virtual subpopulation, and population part or all of the corresponding
 Control the size of the offspring generation
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:offspring-size"
+name "subsec:offspring-size"
 
 \end_inset
 
@@ -19281,7 +19352,7 @@ lstparams "caption={Change of  population size caused by natural selection},labe
 Advanced use of demographic functions 
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Advanced-demo-func"
+name "subsec:Advanced-demo-func"
 
 \end_inset
 
@@ -19333,7 +19404,7 @@ lstparams "caption={Use a demographic function to split parental population},lab
 Determine the number of offspring during mating
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:number-of-offspring"
+name "subsec:number-of-offspring"
 
 \end_inset
 
@@ -19706,7 +19777,7 @@ lstparams "caption={Dynamic population size determined by number of offspring},l
 Determine sex of offspring
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:offspring-sex"
+name "subsec:offspring-sex"
 
 \end_inset
 
@@ -20646,6 +20717,66 @@ lstparams "caption={A weighting scheme used by heterogeneous mating schemes.},la
 
 \end_layout
 
+\begin_layout Standard
+As a special case that can be quite annoying during the simulation of small
+ populations, a (virtual) subpopulation can have no male and/or female.
+ If the parental (virtual) subpopulation is empty, it will produce no offspring
+ regardless of its weight.
+ However, if the parental (virtual) subpopulation is not empty, it will
+ be expected to produce some offspring, which is not possible if a sexual
+ mating scheme is used.
+ In this case, you can use a parameter 
+\family typewriter
+weightBy
+\family default
+ to specify how parental (virtual) population sizes are calculated.
+ This parameter accepts values 
+\family typewriter
+ANY_SEX
+\family default
+ (default), 
+\family typewriter
+MALE_ONLY
+\family default
+, 
+\family typewriter
+FEMALE_ONLY
+\family default
+, 
+\family typewriter
+PAIR_ONLY
+\family default
+, and use all individuals, number of male individuals, number of female
+ individuals, and number of male/female pairs (basically the less of numbers
+ of males and females) as the size of parental (virtual) subpopulation,
+ respectively.
+ When 
+\family typewriter
+weightBy=PAIR_ONLY
+\family default
+ is used, parental (virtual) subpopulations with only males or females will
+ appear to be empty and produce no offspring.
+ Note that in this mode (also 
+\family typewriter
+MALE_ONLY
+\family default
+, 
+\family typewriter
+FEMALE_ONLY
+\family default
+), the perceived parental population sizes are no longer the actual parental
+ population sizes so you might need to adjust parameter 
+\family typewriter
+weight
+\family default
+ (e.g.
+ 
+\family typewriter
+weight=-2
+\family default
+) to produce correct number of offspring.
+\end_layout
+
 \begin_layout Subsection
 Conditional mating schemes
 \end_layout
@@ -21340,7 +21471,7 @@ subPopSize
  (see Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:offspring-size"
+reference "subsec:offspring-size"
 
 \end_inset
 
@@ -21465,14 +21596,14 @@ sexMode
  We have examined the last two parameters in detail in sections 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:number-of-offspring"
+reference "subsec:number-of-offspring"
 
 \end_inset
 
  and 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:offspring-sex"
+reference "subsec:offspring-sex"
 
 \end_inset
 
@@ -21599,7 +21730,7 @@ lstparams "caption={A controlled random mating scheme},label={controlledOffGener
 Genotype transmitters *
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Pre-defined-genotype-transmitters"
+name "subsec:Pre-defined-genotype-transmitters"
 
 \end_inset
 
@@ -21934,7 +22065,7 @@ lstparams "caption={Use built-in parent choosers in a Python parent chooser},lab
 Using C++ to implement a parent chooser **
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Using-C++"
+name "subsec:Using-C++"
 
 \end_inset
 
@@ -24336,7 +24467,7 @@ simuPOP.demography
 Predefined migration models 
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Predefined-migration-models"
+name "subsec:Predefined-migration-models"
 
 \end_inset
 
@@ -25294,6 +25425,10 @@ reference "fig:multi-stage"
 \end_inset
 
 
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -25730,6 +25865,10 @@ reference "fig:Out-of-Africa"
 \end_inset
 
 ), 
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -25801,6 +25940,10 @@ reference "fig:Settlement-of-New"
 ) ( Gutenkunst, 2009, PLoS Genetics).
  In this model, the simulated CHB and MX populations are mixed to produce
  an admixed population at the last generation.
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -25863,6 +26006,10 @@ Settlement of New World model for Mexican America population
 \end_deeper
 \begin_layout Itemize
 The demographic model developed by cosi (Schaffner, 2005, genome research).
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -27617,6 +27764,10 @@ reference "reich"
 
 \begin_layout Enumerate
 First comment block
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -27643,6 +27794,10 @@ This line tells a Unix shell which program should be used to process this
 \end_deeper
 \begin_layout Enumerate
 Module doc string
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -27664,6 +27819,10 @@ simuOpt.getParam()
 \end_deeper
 \begin_layout Enumerate
 Loading simuPOP and other Python modules
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -27688,6 +27847,10 @@ optimized
 \end_deeper
 \begin_layout Enumerate
 Parameter description list
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -27703,6 +27866,10 @@ A list of parameter description dictionaries are given here.
 \end_deeper
 \begin_layout Enumerate
 Helper functions and classes
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -27713,6 +27880,10 @@ Helper functions and classes are given before the main simulation function.
 \end_deeper
 \begin_layout Enumerate
 Main simulation function
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -27729,6 +27900,12 @@ The main simulation function preforms the main functionality of the whole
 Script execution part conditioned by 
 \family typewriter
 __name__ == '__main__'
+\family default
+
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -27833,6 +28010,10 @@ reference "fig:simuCDCV-dialog"
 \end_inset
 
 .
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
