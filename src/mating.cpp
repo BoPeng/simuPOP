@@ -1559,9 +1559,10 @@ bool PedigreeMating::parallelizable() const
 
 HeteroMating::HeteroMating(const vectormating & matingSchemes,
 	const uintListFunc & subPopSize,
-	bool shuffleOffspring)
+	bool shuffleOffspring, SexChoice weightBy)
 	: MatingScheme(subPopSize),
-	m_shuffleOffspring(shuffleOffspring)
+	m_shuffleOffspring(shuffleOffspring),
+    m_weightBy(weightBy)
 {
 	vectormating::const_iterator it = matingSchemes.begin();
 	vectormating::const_iterator it_end = matingSchemes.end();
@@ -1671,19 +1672,27 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 			w_neg[0] = 0.;
 		}
 
+		vectoru vspSize(m.size());
+		vectoru parentSize(m.size());
 		// the default case (all zero)
-		if (fcmp_eq(std::accumulate(w_pos.begin(), w_pos.end(), 0.), 0.)) {
-			// weight is subpopulation size
-			for (size_t i = 0; i < m.size(); ++i)
-				// if there is no negative weight...
-				if (w_neg[i] == 0) {
-					size_t spSize = pop.subPopSize(sps[i]);
-					DBG_WARNIF(spSize == 0, "WARNING: One of the parental (virtual) subpopulation is empty and will not "
-						                    "produce any offspring.");
-					w_pos[i] = static_cast<double>(spSize);
-				}
+		bool all_zero = fcmp_eq(std::accumulate(w_pos.begin(), w_pos.end(), 0.), 0.);
+        for (size_t i = 0; i < m.size(); ++i) {
+            parentSize[i] = pop.subPopSize(sps[i], -1, m_weightBy);
+            if (all_zero) {
+                // if there is no negative weight, use population size as weight
+                if (w_neg[i] == 0)
+                    w_pos[i] = static_cast<double>(parentSize[i]);
+            } else {
+                if (parentSize[i] == 0) {
+                    DBG_WARNIF(parentSize[i] == 0, "WARNING: One of the parental (virtual) subpopulation is empty and will not "
+                                "produce any offspring.");
+                    w_pos[i] = 0;
+                    w_neg[i] = 0;
+                }
+            }
 		}
-		DBG_DO(DBG_DEVEL, cerr	<< "Positive mating scheme weights: " << w_pos << '\n'
+		DBG_DO(DBG_DEVEL, cerr	<< "Parental Population Size: " << parentSize << "\n"
+                                << "Positive mating scheme weights: " << w_pos << '\n'
 			                    << "Negative mating scheme weights: " << w_neg << endl);
 
 		// weight.
@@ -1693,12 +1702,11 @@ bool HeteroMating::mate(Population & pop, Population & scratch)
 		DBG_FAILIF(fcmp_eq(overall_pos, 0.) && fcmp_eq(overall_neg, 0.), ValueError,
 			"Overall weight is zero");
 		//
-		vectoru vspSize(m.size());
 		size_t all = scratch.subPopSize(sp);
 		// first count negative ones
 		for (size_t i = 0; i < m.size(); ++i) {
 			if (fcmp_gt(w_neg[i], 0.)) {
-				vspSize[i] = static_cast<ULONG>(pop.subPopSize(sps[i]) * w_neg[i]);
+				vspSize[i] = static_cast<ULONG>(parentSize[i] * w_neg[i]);
 				DBG_ASSERT(all >= vspSize[i], ValueError,
 					(boost::format("Mating scheme with a negative weight of %1% would like to produce %2%"
 						           " offspring, but there are only %3% unclaimed offspring left.") % w_neg[i] % vspSize[i] % all).str());

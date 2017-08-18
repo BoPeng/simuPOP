@@ -5999,7 +5999,7 @@ class HeteroMating(MatingScheme):
         Usage:
 
             HeteroMating(matingSchemes, subPopSize=[],
-              shuffleOffspring=True)
+              shuffleOffspring=True, weightBy=ANY_SEX)
 
         Details:
 
@@ -6019,19 +6019,33 @@ class HeteroMating(MatingScheme):
             weight) can be given to each mating scheme to determine how many
             offspring it will produce. The default for all mating schemes are
             0. In this case, the number of offspring each mating scheme
-            produces is proportional to the size of its parental (virtual)
-            subpopulation. If all weights are negative, the numbers of
+            produces is proportional to the number of individuals in its
+            parental (virtual) subpopulation (default to all parents, but can
+            be father for weightBy=MALE_ONLY, mother for weightBy=FEMALE_ONLY,
+            or father mother pairs (less of number of father and mothers) for
+            weightBy=PAIR_ONLY). If all weights are negative, the numbers of
             offspring are determined by the multiplication of the absolute
             values of the weights and their respective parental (virtual)
             subpopulation sizes. If all weights are positive, the number of
             offspring produced by each mating scheme is proportional to these
             weights. Mating schemes with zero weight in this case will produce
             no offspring. If both negative and positive weights are present,
-            negative weights are processed before positive ones.  If multiple
-            mating schemes are applied to the same subpopulation, offspring
-            produced by these mating schemes are shuffled randomly. If this is
-            not desired, you can turn off offspring shuffling by setting
-            parameter shuffleOffspring to False.
+            negative weights are processed before positive ones.  A sexual
+            mating scheme might fail if a parental (virtual) subpopulation has
+            no father or mother. In this case, you can set weightBy to
+            PAIR_ONLY so a (virtual) subpopulation will appear to have zero
+            size, and will thus contribute no offspring to the offspring
+            population. Note that the size of parental (virtual) subpopulation
+            in this mode (and in the modes of MALE_ONLY, FEMALE_ONLY) during
+            the calculation of the size of the offspring subpopulation will be
+            roughly half of the actual population size so you might have to
+            use weight=-2 if you would like to have an offspring subpopulation
+            that is roughly the same size of the parental (virtual)
+            subpopulation.  If multiple mating schemes are applied to the same
+            subpopulation, offspring produced by these mating schemes are
+            shuffled randomly. If this is not desired, you can turn off
+            offspring shuffling by setting parameter shuffleOffspring to
+            False.
 
 
         """
@@ -7462,7 +7476,7 @@ class InitLineage(BaseOperator):
 
             InitLineage(lineage=[], mode=PER_ALLELE, loci=ALL_AVAIL,
               ploidy=ALL_AVAIL, begin=0, end=1, step=1, at=[], reps=ALL_AVAIL,
-              subPops=ALL_AVAIL, infoFields=["ind_id"])
+              subPops=ALL_AVAIL, infoFields="ind_id")
 
         Details:
 
@@ -7527,7 +7541,7 @@ class IdTagger(BaseOperator):
         Usage:
 
             IdTagger(begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
-              subPops=ALL_AVAIL, output="", infoFields=["ind_id"])
+              subPops=ALL_AVAIL, output="", infoFields="ind_id")
 
         Details:
 
@@ -7940,7 +7954,7 @@ class Migrator(BaseOperator):
 
             Migrator(rate=[], mode=BY_PROBABILITY, toSubPops=ALL_AVAIL,
               begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
-              subPops=ALL_AVAIL, infoFields=["migrate_to"])
+              subPops=ALL_AVAIL, infoFields="migrate_to")
 
         Details:
 
@@ -8029,7 +8043,7 @@ class BackwardMigrator(BaseOperator):
 
             BackwardMigrator(rate=[], mode=BY_PROBABILITY, begin=0, end=-1,
               step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-              infoFields=["migrate_to"])
+              infoFields="migrate_to")
 
         Details:
 
@@ -8237,7 +8251,7 @@ class BaseMutator(BaseOperator):
 
             BaseMutator(rates=[], loci=ALL_AVAIL, mapIn=[], mapOut=[],
               context=0, output="", begin=0, end=-1, step=1, at=[],
-              reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=["ind_id"],
+              reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields="ind_id",
               lineageMode=FROM_INFO)
 
         Details:
@@ -8339,7 +8353,7 @@ class MatrixMutator(BaseMutator):
 
             MatrixMutator(rate, loci=ALL_AVAIL, mapIn=[], mapOut=[],
               output="", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
-              subPops=ALL_AVAIL, infoFields=["ind_id"], lineageMode=FROM_INFO)
+              subPops=ALL_AVAIL, infoFields="ind_id", lineageMode=FROM_INFO)
 
         Details:
 
@@ -8387,7 +8401,7 @@ class KAlleleMutator(BaseMutator):
 
             KAlleleMutator(k, rates=[], loci=ALL_AVAIL, mapIn=[], mapOut=[],
               output="", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
-              subPops=ALL_AVAIL, infoFields=["ind_id"], lineageMode=FROM_INFO)
+              subPops=ALL_AVAIL, infoFields="ind_id", lineageMode=FROM_INFO)
 
         Details:
 
@@ -8439,7 +8453,7 @@ class StepwiseMutator(BaseMutator):
             StepwiseMutator(rates=[], loci=ALL_AVAIL, incProb=0.5,
               maxAllele=0, mutStep=[], mapIn=[], mapOut=[], output="",
               begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
-              subPops=ALL_AVAIL, infoFields=["ind_id"], lineageMode=FROM_INFO)
+              subPops=ALL_AVAIL, infoFields="ind_id", lineageMode=FROM_INFO)
 
         Details:
 
@@ -8493,7 +8507,7 @@ class PyMutator(BaseMutator):
 
             PyMutator(rates=[], loci=ALL_AVAIL, func=None, context=0,
               mapIn=[], mapOut=[], output="", begin=0, end=-1, step=1, at=[],
-              reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=["ind_id"],
+              reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields="ind_id",
               lineageMode=FROM_INFO)
 
         Details:
@@ -8546,7 +8560,7 @@ class MixedMutator(BaseMutator):
             MixedMutator(rates=[], loci=ALL_AVAIL, mutators=[], prob=[],
               mapIn=[], mapOut=[], context=0, output="", begin=0, end=-1,
               step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-              infoFields=["ind_id"], lineageMode=FROM_INFO)
+              infoFields="ind_id", lineageMode=FROM_INFO)
 
         Details:
 
@@ -8593,7 +8607,7 @@ class ContextMutator(BaseMutator):
             ContextMutator(rates=[], loci=ALL_AVAIL, mutators=[],
               contexts=[], mapIn=[], mapOut=[], output="", begin=0, end=-1,
               step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-              infoFields=["ind_id"], lineageMode=FROM_INFO)
+              infoFields="ind_id", lineageMode=FROM_INFO)
 
         Details:
 
@@ -8648,9 +8662,9 @@ class PointMutator(BaseOperator):
 
         Usage:
 
-            PointMutator(loci, allele, ploidy=0, inds=[], output="",
+            PointMutator(loci, allele, ploidy=[], 0, inds=[], output="",
               begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=0,
-              infoFields=["ind_id"], lineageMode=FROM_INFO)
+              infoFields="ind_id", lineageMode=FROM_INFO)
 
         Details:
 
@@ -8698,7 +8712,7 @@ class RevertFixedSites(BaseOperator):
 
             RevertFixedSites(loci=ALL_AVAIL, output="", begin=0, end=-1,
               step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-              infoFields=["ind_id"])
+              infoFields="ind_id")
 
         Details:
 
@@ -8740,7 +8754,7 @@ class FiniteSitesMutator(BaseOperator):
 
             FiniteSitesMutator(rate, ranges, model=1, output="", begin=0,
               end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-              infoFields=["ind_id"], lineageMode=FROM_INFO)
+              infoFields="ind_id", lineageMode=FROM_INFO)
 
         Details:
 

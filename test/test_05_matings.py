@@ -345,6 +345,65 @@ class TestMatingSchemes(unittest.TestCase):
         self.assertEqual(marks.count(0.), 500)
         self.assertEqual(marks.count(1.), 500)
 
+    def testWeightingSchemeBySex(self):
+        'Testing weighting schemes of heterogeneous mating schemes'
+        pop = Population(size=[1000], loci=2, infoFields='mark')
+        pop.setVirtualSplitter(RangeSplitter([[0, 500], [200, 1000]]))
+        # weighting scheme of -0.5, 2, 3
+        pop.evolve(
+            initOps=InitSex(sex=[MALE, FEMALE]),
+            matingScheme=HeteroMating([
+                RandomMating(subPops=0, weight=-0.5,
+                    ops=[InfoExec('mark=0'), MendelianGenoTransmitter()]),
+                RandomMating(subPops=[(0, 0)], weight=1,
+                    ops=[InfoExec('mark=1'), MendelianGenoTransmitter()]),
+                RandomMating(subPops=[(0, 1)], weight=2,
+                    ops=[InfoExec('mark=2'), MendelianGenoTransmitter()])
+            ], weightBy=MALE_ONLY),
+            gen = 1
+        )
+        marks = list(pop.indInfo('mark'))
+        self.assertEqual(marks.count(0.), 250)
+        self.assertEqual(marks.count(1.), 250)
+        self.assertEqual(marks.count(2.), 500)
+        #
+        pop = Population(size=[1000], loci=2, infoFields='mark')
+        pop.setVirtualSplitter(SexSplitter())
+        # weighting scheme of -0.5, 2, 3
+        #turnOnDebug('DBG_DEVEL,DBG_WARNING')
+        pop.evolve(
+            initOps=InitSex(sex=[MALE, FEMALE]),
+            matingScheme=HeteroMating([
+                RandomMating(subPops=0, weight=-0.5,
+                    ops=[InfoExec('mark=0'), MendelianGenoTransmitter()]),
+                RandomMating(subPops=[(0, 0)], weight=1,
+                    ops=[InfoExec('mark=1'), MendelianGenoTransmitter()]),
+                RandomMating(subPops=0, weight=2,
+                    ops=[InfoExec('mark=2'), MendelianGenoTransmitter()])
+            ], weightBy=PAIR_ONLY),
+            gen = 1
+        )
+        marks = list(pop.indInfo('mark'))
+        self.assertEqual(marks.count(0.), 250)
+        self.assertEqual(marks.count(1.), 0)
+        self.assertEqual(marks.count(2.), 750)
+        #
+        pop.evolve(
+            initOps=InitSex(sex=[MALE, FEMALE]),
+            matingScheme=HeteroMating([
+                RandomMating(subPops=0, weight=2,
+                    ops=[InfoExec('mark=0'), MendelianGenoTransmitter()]),
+                RandomMating(subPops=[(0, 0)], weight=1,
+                    ops=[InfoExec('mark=1'), MendelianGenoTransmitter()]),
+                RandomMating(subPops=[(0, 1)], weight=2,
+                    ops=[InfoExec('mark=2'), MendelianGenoTransmitter()])
+            ], weightBy=PAIR_ONLY),
+            gen = 1
+        )
+        marks = list(pop.indInfo('mark'))
+        self.assertEqual(marks.count(0.), 1000)
+        self.assertEqual(marks.count(1.), 0)
+        self.assertEqual(marks.count(2.), 0)
 
     def testPolygamousMating(self):
         'Testing polygamous mating scheme'

@@ -33817,20 +33817,24 @@ SWIGINTERN PyObject *_wrap_new_HeteroMating(PyObject *SWIGUNUSEDPARM(self), PyOb
   simuPOP::uintListFunc const &arg2_defvalue = simuPOP::uintListFunc() ;
   simuPOP::uintListFunc *arg2 = (simuPOP::uintListFunc *) &arg2_defvalue ;
   bool arg3 = (bool) true ;
+  SexChoice arg4 = (SexChoice) ANY_SEX ;
   int res1 = SWIG_OLDOBJ ;
   void *argp2 = 0 ;
   int res2 = 0 ;
   bool val3 ;
   int ecode3 = 0 ;
+  int val4 ;
+  int ecode4 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
   char *  kwnames[] = {
-    (char *) "matingSchemes",(char *) "subPopSize",(char *) "shuffleOffspring", NULL 
+    (char *) "matingSchemes",(char *) "subPopSize",(char *) "shuffleOffspring",(char *) "weightBy", NULL 
   };
   simuPOP::HeteroMating *result = 0 ;
   
-  if (!PyArg_ParseTupleAndKeywords(args,kwargs,(char *)"O|OO:new_HeteroMating",kwnames,&obj0,&obj1,&obj2)) SWIG_fail;
+  if (!PyArg_ParseTupleAndKeywords(args,kwargs,(char *)"O|OOO:new_HeteroMating",kwnames,&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   {
     std::vector< simuPOP::HomoMating*,std::allocator< simuPOP::HomoMating * > > *ptr = (std::vector< simuPOP::HomoMating*,std::allocator< simuPOP::HomoMating * > > *)0;
     res1 = swig::asptr(obj0, &ptr);
@@ -33859,10 +33863,17 @@ SWIGINTERN PyObject *_wrap_new_HeteroMating(PyObject *SWIGUNUSEDPARM(self), PyOb
     } 
     arg3 = static_cast< bool >(val3);
   }
+  if (obj3) {
+    ecode4 = SWIG_AsVal_int(obj3, &val4);
+    if (!SWIG_IsOK(ecode4)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "new_HeteroMating" "', argument " "4"" of type '" "SexChoice""'");
+    } 
+    arg4 = static_cast< SexChoice >(val4);
+  }
   {
     try
     {
-      result = (simuPOP::HeteroMating *)new simuPOP::HeteroMating((simuPOP::vectormating const &)*arg1,(simuPOP::uintListFunc const &)*arg2,arg3);
+      result = (simuPOP::HeteroMating *)new simuPOP::HeteroMating((simuPOP::vectormating const &)*arg1,(simuPOP::uintListFunc const &)*arg2,arg3,arg4);
     }
     catch(simuPOP::StopIteration e)
     {
@@ -57665,7 +57676,7 @@ static PyMethodDef SwigMethods[] = {
 		"Usage:\n"
 		"\n"
 		"    HeteroMating(matingSchemes, subPopSize=[],\n"
-		"      shuffleOffspring=True)\n"
+		"      shuffleOffspring=True, weightBy=ANY_SEX)\n"
 		"\n"
 		"Details:\n"
 		"\n"
@@ -57685,19 +57696,33 @@ static PyMethodDef SwigMethods[] = {
 		"    weight) can be given to each mating scheme to determine how many\n"
 		"    offspring it will produce. The default for all mating schemes are\n"
 		"    0. In this case, the number of offspring each mating scheme\n"
-		"    produces is proportional to the size of its parental (virtual)\n"
-		"    subpopulation. If all weights are negative, the numbers of\n"
+		"    produces is proportional to the number of individuals in its\n"
+		"    parental (virtual) subpopulation (default to all parents, but can\n"
+		"    be father for weightBy=MALE_ONLY, mother for weightBy=FEMALE_ONLY,\n"
+		"    or father mother pairs (less of number of father and mothers) for\n"
+		"    weightBy=PAIR_ONLY). If all weights are negative, the numbers of\n"
 		"    offspring are determined by the multiplication of the absolute\n"
 		"    values of the weights and their respective parental (virtual)\n"
 		"    subpopulation sizes. If all weights are positive, the number of\n"
 		"    offspring produced by each mating scheme is proportional to these\n"
 		"    weights. Mating schemes with zero weight in this case will produce\n"
 		"    no offspring. If both negative and positive weights are present,\n"
-		"    negative weights are processed before positive ones.  If multiple\n"
-		"    mating schemes are applied to the same subpopulation, offspring\n"
-		"    produced by these mating schemes are shuffled randomly. If this is\n"
-		"    not desired, you can turn off offspring shuffling by setting\n"
-		"    parameter shuffleOffspring to False.\n"
+		"    negative weights are processed before positive ones.  A sexual\n"
+		"    mating scheme might fail if a parental (virtual) subpopulation has\n"
+		"    no father or mother. In this case, you can set weightBy to\n"
+		"    PAIR_ONLY so a (virtual) subpopulation will appear to have zero\n"
+		"    size, and will thus contribute no offspring to the offspring\n"
+		"    population. Note that the size of parental (virtual) subpopulation\n"
+		"    in this mode (and in the modes of MALE_ONLY, FEMALE_ONLY) during\n"
+		"    the calculation of the size of the offspring subpopulation will be\n"
+		"    roughly half of the actual population size so you might have to\n"
+		"    use weight=-2 if you would like to have an offspring subpopulation\n"
+		"    that is roughly the same size of the parental (virtual)\n"
+		"    subpopulation.  If multiple mating schemes are applied to the same\n"
+		"    subpopulation, offspring produced by these mating schemes are\n"
+		"    shuffled randomly. If this is not desired, you can turn off\n"
+		"    offspring shuffling by setting parameter shuffleOffspring to\n"
+		"    False.\n"
 		"\n"
 		"\n"
 		""},
@@ -58931,7 +58956,7 @@ static PyMethodDef SwigMethods[] = {
 		"\n"
 		"    InitLineage(lineage=[], mode=PER_ALLELE, loci=ALL_AVAIL,\n"
 		"      ploidy=ALL_AVAIL, begin=0, end=1, step=1, at=[], reps=ALL_AVAIL,\n"
-		"      subPops=ALL_AVAIL, infoFields=[\"ind_id\"])\n"
+		"      subPops=ALL_AVAIL, infoFields=\"ind_id\")\n"
 		"\n"
 		"Details:\n"
 		"\n"
@@ -58974,7 +58999,7 @@ static PyMethodDef SwigMethods[] = {
 		"Usage:\n"
 		"\n"
 		"    IdTagger(begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,\n"
-		"      subPops=ALL_AVAIL, output=\"\", infoFields=[\"ind_id\"])\n"
+		"      subPops=ALL_AVAIL, output=\"\", infoFields=\"ind_id\")\n"
 		"\n"
 		"Details:\n"
 		"\n"
@@ -59243,7 +59268,7 @@ static PyMethodDef SwigMethods[] = {
 		"\n"
 		"    Migrator(rate=[], mode=BY_PROBABILITY, toSubPops=ALL_AVAIL,\n"
 		"      begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,\n"
-		"      subPops=ALL_AVAIL, infoFields=[\"migrate_to\"])\n"
+		"      subPops=ALL_AVAIL, infoFields=\"migrate_to\")\n"
 		"\n"
 		"Details:\n"
 		"\n"
@@ -59290,7 +59315,7 @@ static PyMethodDef SwigMethods[] = {
 		"\n"
 		"    BackwardMigrator(rate=[], mode=BY_PROBABILITY, begin=0, end=-1,\n"
 		"      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,\n"
-		"      infoFields=[\"migrate_to\"])\n"
+		"      infoFields=\"migrate_to\")\n"
 		"\n"
 		"Details:\n"
 		"\n"
@@ -59466,7 +59491,7 @@ static PyMethodDef SwigMethods[] = {
 		"\n"
 		"    BaseMutator(rates=[], loci=ALL_AVAIL, mapIn=[], mapOut=[],\n"
 		"      context=0, output=\"\", begin=0, end=-1, step=1, at=[],\n"
-		"      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[\"ind_id\"],\n"
+		"      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=\"ind_id\",\n"
 		"      lineageMode=FROM_INFO)\n"
 		"\n"
 		"Details:\n"
@@ -59557,7 +59582,7 @@ static PyMethodDef SwigMethods[] = {
 		"\n"
 		"    MatrixMutator(rate, loci=ALL_AVAIL, mapIn=[], mapOut=[],\n"
 		"      output=\"\", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,\n"
-		"      subPops=ALL_AVAIL, infoFields=[\"ind_id\"], lineageMode=FROM_INFO)\n"
+		"      subPops=ALL_AVAIL, infoFields=\"ind_id\", lineageMode=FROM_INFO)\n"
 		"\n"
 		"Details:\n"
 		"\n"
@@ -59597,7 +59622,7 @@ static PyMethodDef SwigMethods[] = {
 		"\n"
 		"    KAlleleMutator(k, rates=[], loci=ALL_AVAIL, mapIn=[], mapOut=[],\n"
 		"      output=\"\", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,\n"
-		"      subPops=ALL_AVAIL, infoFields=[\"ind_id\"], lineageMode=FROM_INFO)\n"
+		"      subPops=ALL_AVAIL, infoFields=\"ind_id\", lineageMode=FROM_INFO)\n"
 		"\n"
 		"Details:\n"
 		"\n"
@@ -59633,7 +59658,7 @@ static PyMethodDef SwigMethods[] = {
 		"    StepwiseMutator(rates=[], loci=ALL_AVAIL, incProb=0.5,\n"
 		"      maxAllele=0, mutStep=[], mapIn=[], mapOut=[], output=\"\",\n"
 		"      begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,\n"
-		"      subPops=ALL_AVAIL, infoFields=[\"ind_id\"], lineageMode=FROM_INFO)\n"
+		"      subPops=ALL_AVAIL, infoFields=\"ind_id\", lineageMode=FROM_INFO)\n"
 		"\n"
 		"Details:\n"
 		"\n"
@@ -59677,7 +59702,7 @@ static PyMethodDef SwigMethods[] = {
 		"\n"
 		"    PyMutator(rates=[], loci=ALL_AVAIL, func=None, context=0,\n"
 		"      mapIn=[], mapOut=[], output=\"\", begin=0, end=-1, step=1, at=[],\n"
-		"      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[\"ind_id\"],\n"
+		"      reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=\"ind_id\",\n"
 		"      lineageMode=FROM_INFO)\n"
 		"\n"
 		"Details:\n"
@@ -59712,7 +59737,7 @@ static PyMethodDef SwigMethods[] = {
 		"    MixedMutator(rates=[], loci=ALL_AVAIL, mutators=[], prob=[],\n"
 		"      mapIn=[], mapOut=[], context=0, output=\"\", begin=0, end=-1,\n"
 		"      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,\n"
-		"      infoFields=[\"ind_id\"], lineageMode=FROM_INFO)\n"
+		"      infoFields=\"ind_id\", lineageMode=FROM_INFO)\n"
 		"\n"
 		"Details:\n"
 		"\n"
@@ -59740,7 +59765,7 @@ static PyMethodDef SwigMethods[] = {
 		"    ContextMutator(rates=[], loci=ALL_AVAIL, mutators=[],\n"
 		"      contexts=[], mapIn=[], mapOut=[], output=\"\", begin=0, end=-1,\n"
 		"      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,\n"
-		"      infoFields=[\"ind_id\"], lineageMode=FROM_INFO)\n"
+		"      infoFields=\"ind_id\", lineageMode=FROM_INFO)\n"
 		"\n"
 		"Details:\n"
 		"\n"
@@ -59774,9 +59799,9 @@ static PyMethodDef SwigMethods[] = {
 		"\n"
 		"Usage:\n"
 		"\n"
-		"    PointMutator(loci, allele, ploidy=0, inds=[], output=\"\",\n"
+		"    PointMutator(loci, allele, ploidy=[], 0, inds=[], output=\"\",\n"
 		"      begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=0,\n"
-		"      infoFields=[\"ind_id\"], lineageMode=FROM_INFO)\n"
+		"      infoFields=\"ind_id\", lineageMode=FROM_INFO)\n"
 		"\n"
 		"Details:\n"
 		"\n"
@@ -59814,7 +59839,7 @@ static PyMethodDef SwigMethods[] = {
 		"\n"
 		"    RevertFixedSites(loci=ALL_AVAIL, output=\"\", begin=0, end=-1,\n"
 		"      step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,\n"
-		"      infoFields=[\"ind_id\"])\n"
+		"      infoFields=\"ind_id\")\n"
 		"\n"
 		"Details:\n"
 		"\n"
@@ -59847,7 +59872,7 @@ static PyMethodDef SwigMethods[] = {
 		"\n"
 		"    FiniteSitesMutator(rate, ranges, model=1, output=\"\", begin=0,\n"
 		"      end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,\n"
-		"      infoFields=[\"ind_id\"], lineageMode=FROM_INFO)\n"
+		"      infoFields=\"ind_id\", lineageMode=FROM_INFO)\n"
 		"\n"
 		"Details:\n"
 		"\n"
