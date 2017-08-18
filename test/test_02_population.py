@@ -99,20 +99,6 @@ class TestPopulation(unittest.TestCase):
         self.assertRaises(IndexError, pop.subPopName, [0, 5])
 
     def testPopSize(self):
-        'Testing Population.popSize, Population.subPopSizes and Population.subPopSize'
-        pop = self.getPop(size=[80, 20, 30, 50], ancGen=5)
-        initSex(pop, sex=[MALE, FEMALE, MALE])
-        pop.useAncestralGen(2)
-        initSex(pop, sex=[MALE, FEMALE, FEMALE])
-        pop.useAncestralGen(0)
-        self.assertEqual(pop.popSize(sex=MALE_ONLY), 120)
-        self.assertEqual(pop.popSize(sex=FEMALE_ONLY), 60)
-        self.assertEqual(pop.popSize(sex=PAIR_ONLY), 60)
-        self.assertEqual(pop.popSize(2, sex=MALE_ONLY), 60)
-        self.assertEqual(pop.popSize(2, sex=FEMALE_ONLY), 120)
-        self.assertEqual(pop.popSize(2, sex=PAIR_ONLY), 60)
-
-    def testPopSizeBySex(self):
         'Testing Population.popSize by male, female, pair'
         pop = self.getPop(size=[80, 20, 30, 50], ancGen=5)
         pop.mergeSubPops([1, 2])
@@ -138,6 +124,36 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.subPopSize((1,0)), pop.dvars().numOfMales)
         pop.useAncestralGen(0)
         self.assertEqual(pop.subPopSize((1,0), ancGen=2), pop.dvars().numOfMales)
+
+    def testPopSizeBySex(self):
+        'Testing Population.popSize, Population.subPopSizes and Population.subPopSize'
+        pop = self.getPop(size=[90, 10, 30, 50], ancGen=5)
+        initSex(pop, sex=[MALE, FEMALE, MALE])
+        pop.useAncestralGen(2)
+        initSex(pop, sex=[MALE, FEMALE, FEMALE])
+        pop.useAncestralGen(0)
+        self.assertEqual(pop.popSize(sex=MALE_ONLY), 120)
+        self.assertEqual(pop.popSize(sex=FEMALE_ONLY), 60)
+        self.assertEqual(pop.popSize(sex=PAIR_ONLY), 60)
+        self.assertEqual(pop.popSize(2, sex=MALE_ONLY), 60)
+        self.assertEqual(pop.popSize(2, sex=FEMALE_ONLY), 120)
+        self.assertEqual(pop.popSize(2, sex=PAIR_ONLY), 60)
+        # VSP
+        pop.setVirtualSplitter(SexSplitter())
+        self.assertEqual(pop.subPopSize(2, sex=MALE_ONLY), 20)
+        self.assertEqual(pop.subPopSize(2, sex=FEMALE_ONLY), 10)
+        self.assertEqual(pop.subPopSize(2, sex=PAIR_ONLY), 10)
+        self.assertEqual(pop.subPopSize(2, 2, sex=MALE_ONLY), 10)
+        self.assertEqual(pop.subPopSize(2, 2, sex=FEMALE_ONLY), 20)
+        self.assertEqual(pop.subPopSize(2, 2, sex=PAIR_ONLY), 10)
+        #
+        self.assertEqual(pop.subPopSize((2, 'Male'), sex=MALE_ONLY), 20)
+        self.assertEqual(pop.subPopSize((2, 'Male'), sex=FEMALE_ONLY), 0)
+        self.assertEqual(pop.subPopSize((2, 'Male'), sex=PAIR_ONLY), 0)
+        self.assertEqual(pop.subPopSize((0, 'Female'), 2, sex=MALE_ONLY), 0)
+        self.assertEqual(pop.subPopSize((0, 'Female'), 2, sex=FEMALE_ONLY), 60)
+        self.assertEqual(pop.subPopSize((0, 'Female'), 2, sex=PAIR_ONLY), 0)
+
 
     def testLociPos(self):
         'Testing lociPos parameter of Population::Population'

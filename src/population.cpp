@@ -1053,28 +1053,64 @@ size_t Population::subPopSize(vspID subPopID, int ancGen, SexChoice sex) const
 	DBG_FAILIF(ancGen > ancestralGens(),
 		IndexError, (boost::format("Ancestral generation %1% out of range of 0 ~ %2%") % ancGen % ancestralGens()).str());
 
-	if (ancGen < 0 || ancGen == m_curAncestralGen) {
-		CHECKRANGESUBPOP(subPop.subPop());
-		CHECKRANGEVIRTUALSUBPOP(subPop.virtualSubPop());
-		if (subPop.isVirtual())
-			return m_vspSplitter->size(*this, subPop.subPop(), subPop.virtualSubPop());
-		else
-			return m_subPopSize[subPop.subPop()];
-	} else if (subPop.isVirtual()) {
-		int curGen = m_curAncestralGen;
-		const_cast<Population *>(this)->useAncestralGen(ancGen);
-		CHECKRANGESUBPOP(subPop.subPop());
-		CHECKRANGEVIRTUALSUBPOP(subPop.virtualSubPop());
-		size_t size = m_vspSplitter->size(*this, subPop.subPop(), subPop.virtualSubPop());
-		const_cast<Population *>(this)->useAncestralGen(curGen);
-		return size;
-	} else {
-		const vectoru & sizes = m_ancestralPops[ancGen - 1].m_subPopSize;
-		DBG_FAILIF(static_cast<size_t>(subPop.subPop()) >= sizes.size(), IndexError,
-			(boost::format("Subpopulation index %1% out of range of 0 ~ %2%"
-				           " at ancestral generation %3%") % subPop.subPop() % (sizes.size() - 1) % ancGen).str());
-		return sizes[subPop.subPop()];
-	}
+    if (sex == ANY_SEX) {
+        if (ancGen < 0 || ancGen == m_curAncestralGen) {
+            CHECKRANGESUBPOP(subPop.subPop());
+            CHECKRANGEVIRTUALSUBPOP(subPop.virtualSubPop());
+            if (subPop.isVirtual())
+                return m_vspSplitter->size(*this, subPop.subPop(), subPop.virtualSubPop());
+            else
+                return m_subPopSize[subPop.subPop()];
+        } else if (subPop.isVirtual()) {
+            int curGen = m_curAncestralGen;
+            const_cast<Population *>(this)->useAncestralGen(ancGen);
+            CHECKRANGESUBPOP(subPop.subPop());
+            CHECKRANGEVIRTUALSUBPOP(subPop.virtualSubPop());
+            size_t size = m_vspSplitter->size(*this, subPop.subPop(), subPop.virtualSubPop());
+            const_cast<Population *>(this)->useAncestralGen(curGen);
+            return size;
+        } else {
+            const vectoru & sizes = m_ancestralPops[ancGen - 1].m_subPopSize;
+            DBG_FAILIF(static_cast<size_t>(subPop.subPop()) >= sizes.size(), IndexError,
+                (boost::format("Subpopulation index %1% out of range of 0 ~ %2%"
+                               " at ancestral generation %3%") % subPop.subPop() % (sizes.size() - 1) % ancGen).str());
+            return sizes[subPop.subPop()];
+        }
+    } else {
+        // we need to count males and females
+        size_t nMale = 0;
+		size_t nFemale = 0;
+        int curGen = m_curAncestralGen;
+		if (ancGen >= 0 && ancGen != m_curAncestralGen)
+            const_cast<Population *>(this)->useAncestralGen(ancGen);
+        CHECKRANGESUBPOP(subPop.subPop());
+        CHECKRANGEVIRTUALSUBPOP(subPop.virtualSubPop());
+
+        activateVirtualSubPop(subPop);
+
+        ConstIndIterator it = indIterator(subPop.subPop());
+        for (; it.valid(); ++it) {
+            if (it->sex() == MALE)
+                nMale += 1;
+            else
+                nFemale += 1;
+        }
+        deactivateVirtualSubPop(subPop.subPop());
+        // switch back to current ancestral generation
+		if (curGen != m_curAncestralGen)
+			const_cast<Population *>(this)->useAncestralGen(curGen);
+
+		if (sex == MALE_ONLY)
+			return nMale;
+		else if (sex == FEMALE_ONLY)
+			return nFemale;
+		else if (sex == PAIR_ONLY)
+			return nMale > nFemale ? nFemale : nMale;
+		else {
+			DBG_FAILIF(true, ValueError,
+				"sex can only be one of ANY_SEX, MALE_ONLY, FEMALE_ONLY, and PAIR_ONLY.");
+		}
+    }
 	// avoid a warning message.
 	return 0;
 }
