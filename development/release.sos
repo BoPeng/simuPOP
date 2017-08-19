@@ -1,0 +1,22 @@
+#!/usr/bin/env sos-runner
+#fileformat=SOS1.0
+
+[doxygen]
+depends: executable('doxygen')
+run: workdir='..'
+  doxygen
+
+[src-doc]
+depends: executable('doxygen')
+run: workdir='..'
+  doxygen Doxy_doc
+
+[swig]
+depends: sos_step('doxygen'), executable('lyx'), executable('pdflatex')
+run: workdir='..'
+  python development/doxy2swig.py
+
+[examples]
+depends: Py_Module('simuPOP')
+run: workdir='../doc'
+  python runSampleCode.py
