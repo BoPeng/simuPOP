@@ -4857,8 +4857,8 @@ traj = simulateForwardTrajectory(N=[2000, 4000], fitness=[1, 0.99, 0.98],
     beginGen=0, endGen=100, beginFreq=[0.2, 0.3],
     endFreq=[[0.1, 0.11], [0.2, 0.21]])
 # 
-traj.plot('log/forwardTrajectory.png', set_ylim_top=0.5,
-    plot_c_sp=['r', 'b'], set_title_label='Simulated Trajectory (forward-time)')
+#traj.plot('log/forwardTrajectory.png', set_ylim_top=0.5,
+#    plot_c_sp=['r', 'b'], set_title_label='Simulated Trajectory (forward-time)')
 pop = sim.Population(size=[2000, 4000], loci=10, infoFields='fitness')
 pop.evolve(
     initOps=[
@@ -4903,8 +4903,8 @@ def fitness(gen, sp):
 traj = simulateBackwardTrajectory(N=Nt, fitness=fitness, nLoci=2,
      endGen=1000, endFreq=[0.1, 0.2])
 # matplotlib syntax
-traj.plot('log/backTrajectory.png', set_ylim_top=0.3, set_ylim_bottom=0,
-        plot_c_loc=['r', 'b'], set_title_label='Simulated Trajectory (backward-time)')
+#traj.plot('log/backTrajectory.png', set_ylim_top=0.3, set_ylim_bottom=0,
+#        plot_c_loc=['r', 'b'], set_title_label='Simulated Trajectory (backward-time)')
 
 print('Trajectory simulated with length %s ' % len(traj.traj))
 pop = sim.Population(size=Nt(0), loci=[1]*2)
