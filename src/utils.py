@@ -2499,7 +2499,7 @@ class MSExporter:
             # find segregating sites
             seg_sites = [x for x in range(pop.numLoci(0)) if len(pop.dvars().alleleNum[x]) != 1]
             output('\n//\nsegsites: %d\n' % len(seg_sites))
-            output('positions: %s\n' % ' '.join(['%.4f' % pop.locusPos(x) for x in seg_sites]))
+            output('positions: %s\n' % ' '.join([str(pop.locusPos(x)) for x in seg_sites]))
             #
             #  genotype
             for vsp in subPops:
@@ -2529,7 +2529,7 @@ class MSExporter:
             for vsp in subPops:
                 seg_sites = [x for x in range(pop.numLoci(0)) if len(pop.dvars(vsp).alleleNum[x]) != 1]
                 output('\n//\nsegsites: %d\n' % len(seg_sites))
-                output('positions: %s\n' % ' '.join(['%.4f' % pop.locusPos(x) for x in seg_sites]))
+                output('positions: %s\n' % ' '.join([str(pop.locusPos(x)) for x in seg_sites]))
                 #
                 #  genotype
                 for ind in pop.individuals(vsp):
@@ -2557,7 +2557,7 @@ class MSExporter:
                 seg_sites = [x for x in range(pop.chromBegin(ch), pop.chromEnd(ch)) \
                     if len(pop.dvars().alleleNum[x]) != 1]
                 output('\n//\nsegsites: %d\n' % len(seg_sites))
-                output('positions: %s\n' % ' '.join(['%.4f' % pop.locusPos(x) for x in seg_sites]))
+                output('positions: %s\n' % ' '.join([str(pop.locusPos(x)) for x in seg_sites]))
                 #
                 #  genotype
                 for vsp in subPops:
