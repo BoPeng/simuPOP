@@ -742,7 +742,7 @@ if __name__ == '__main__':
     if  USE_SETUPTOOLS :
         setup_params = dict(packages = find_packages(), include_package_data = True,
                         exclude_package_data = {'':['README.txt']}, zip_safe = False,
-                        install_requires = ['distribute'])
+                        install_requires = ['setuptools'])
     else :
         setup_params = dict(packages = ['simuPOP'])
 
