@@ -579,9 +579,9 @@ if os.name == 'nt':
         else:
             common_extra_compile_args.append('/openmp')
 else:
-    if os.path.isdir('/opt/conda'):
-        common_extra_include_dirs.append('/opt/conda/include')
-        common_library_dirs.append('/opt/conda/lib')
+    if 'CONDA_PREFIX' in os.environ:
+        common_extra_include_dirs.append(os.environ['CONDA_PREFIX'] + '/include')
+        common_library_dirs.append(os.environ['CONDA_PREFIX'] + 'lib')
     common_extra_compile_args = ['-O3', '-Wall', '-Wno-unknown-pragmas', '-Wno-unused-parameter']
     if is_maverick():
         common_extra_link_args.append('-stdlib=libstdc++')
