@@ -28,3 +28,10 @@ or the [Python 2.x branch of simuPOP](https://github.com/BoPeng/simuPOP/tree/pyt
 (e.g. `simuOpt.Param`, `simuPOP.plotting`) in simuPOP 1.1.7 and earlier are removed in simuPOP 1.1.8+, so simuPOP 1.1.7 would be your best
 bet for the execution of legendary simuPOP scripts.
 
+## Change Log since 1.1.7
+
+### simuPOP 1.1.9
+* [#28](https://github.com/BoPeng/simuPOP/issues/28): Fix a segmentation fault when providing a non-existent VSP index
+* [#31](https://github.com/BoPeng/simuPOP/issues/31): Allow operator DiscardIf to accept a probability in addition to `True`/`False`
+* [#35](https://github.com/BoPeng/simuPOP/issues/35): Add a `weightBy` parameter to allow `HeteroMating` to produce offspring subpopulation with weights determined by not only the size of the parental subpopulation, but also by for example number of mating pairs.
+* [#49](https://github.com/BoPeng/simuPOP/issues/49): Fix output of loci positions in MS and other formats.
