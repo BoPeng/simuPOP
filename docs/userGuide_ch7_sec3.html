@@ -1,0 +1,899 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Module simuPOP.demography &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Module simuPOP.sampling" href="userGuide_ch7_sec4.html" />
+    <link rel="prev" title="Module simuPOP.utils" href="userGuide_ch7_sec2.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-simupop-demography">
+<h1>Module <a class="reference internal" href="refManual_ch4_sec3.html#module-simuPOP.demography" title="simuPOP.demography"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.demography</span></code></a><a class="headerlink" href="#module-simupop-demography" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="predefined-migration-models">
+<span id="subsec-predefined-migration-models"></span><h2>Predefined migration models<a class="headerlink" href="#predefined-migration-models" title="Permalink to this headline">¶</a></h2>
+<p>The following functions are defined to generate migration matrixes for popular
+migration models.</p>
+<ul>
+<li><p class="first"><code class="docutils literal notranslate"><span class="pre">migrIslandRates(r,</span> <span class="pre">n)</span></code> returns a <span class="math notranslate nohighlight">\(n\times n\)</span> migration matrix</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\left(\begin{array}{ccccc}
+1-r &amp; \frac{r}{n-1} &amp; ... &amp; ... &amp; \frac{r}{n-1}\\
+\frac{r}{n-1} &amp; 1-r &amp; ... &amp; ... &amp; \frac{r}{n-1}\\
+ &amp;  &amp; ...\\
+\frac{r}{n-1} &amp; ... &amp; ... &amp; 1-r &amp; \frac{r}{n-1}\\
+\frac{r}{n-1} &amp; ... &amp; ... &amp; \frac{r}{n-1} &amp; 1-r
+\end{array}\right)\end{split}\]</div>
+<p>for a traditional <strong>island model</strong> where individuals have equal probability of
+migrating to any other subpopulations. This model is also called a <strong>migrant-
+pool island model</strong>.</p>
+</li>
+<li><p class="first"><code class="docutils literal notranslate"><span class="pre">migrHierarchicalIslandRates(r1,</span> <span class="pre">r2,</span> <span class="pre">n)</span></code> models a <strong>hierarchical island
+model</strong> in which local populations are grouped into neighborhoods within which
+there is considerable gene flow and between which there is less gene flow.
+<span class="math notranslate nohighlight">\(n\)</span> should be a list of group size. <span class="math notranslate nohighlight">\(r_{1}\)</span> is the within-group
+migration rate and <span class="math notranslate nohighlight">\(r_{2}\)</span> is the cross-group migration rate. That is to
+say, an individual in an island has probability <span class="math notranslate nohighlight">\(1-r_{1}-r_{2}\)</span> to stay,
+<span class="math notranslate nohighlight">\(r_{1}\)</span> to be a migratant to other islands in the group (migration rate
+depending on the size of group), and <span class="math notranslate nohighlight">\(r_{2}\)</span> to be a migrant to other
+islands in another group (migration rate depending on the number of islands in
+other groups). Both <span class="math notranslate nohighlight">\(r_{1}\)</span> and <span class="math notranslate nohighlight">\(r_{2}\)</span> can vary across groups of
+islands. For example, <code class="docutils literal notranslate"><span class="pre">migrHierarchicalIslandRates([r11,</span> <span class="pre">r12],</span> <span class="pre">r2,</span> <span class="pre">[3,</span> <span class="pre">2])</span></code>
+returns a <span class="math notranslate nohighlight">\(5\times5\)</span> migration matrix</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\left(\begin{array}{ccccc}
+1-r_{11}-r_{2} &amp; \frac{r_{11}}{2} &amp; \frac{r_{11}}{2} &amp; \frac{r_{2}}{2} &amp; \frac{r_{2}}{2}\\
+\frac{r_{11}}{2} &amp; 1-r_{11}-r_{2} &amp; \frac{r_{11}}{2} &amp; \frac{r_{2}}{2} &amp; \frac{r_{2}}{2}\\
+\frac{r_{11}}{2} &amp; \frac{r_{11}}{2} &amp; 1-r_{11}-r_{2} &amp; \frac{r_{2}}{2} &amp; \frac{r_{2}}{2}\\
+\frac{r_{2}}{3} &amp; \frac{r_{2}}{3} &amp; \frac{r_{2}}{3} &amp; 1-r_{12}-r_{2} &amp; r_{12}\\
+\frac{r_{2}}{3} &amp; \frac{r_{2}}{3} &amp; \frac{r_{2}}{3} &amp; r_{12} &amp; 1-r_{12}-r_{2}
+\end{array}\right)\end{split}\]</div>
+</li>
+<li><p class="first"><code class="docutils literal notranslate"><span class="pre">migrSteppingStoneRates(r,</span> <span class="pre">n,</span> <span class="pre">circular=False)</span></code> returns a <span class="math notranslate nohighlight">\(n\times n\)</span>
+migration matrix</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\left(\begin{array}{ccccc}
+1-r &amp; r\\
+r/2 &amp; 1-r &amp; r/2\\
+ &amp;  &amp; ...\\
+ &amp;  &amp; r/2 &amp; 1-r &amp; r/2\\
+ &amp;  &amp;  &amp; r &amp; 1-r
+\end{array}\right)\end{split}\]</div>
+<p>and if <code class="docutils literal notranslate"><span class="pre">circular=True</span></code>, returns</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\left(\begin{array}{ccccc}
+1-r &amp; r/2 &amp;  &amp;  &amp; r/2\\
+r/2 &amp; 1-r &amp; r/2\\
+ &amp;  &amp; ...\\
+ &amp;  &amp; r/2 &amp; 1-r &amp; r/2\\
+r/2 &amp;  &amp;  &amp; r/2 &amp; 1-r
+\end{array}\right)\end{split}\]</div>
+</li>
+<li><p class="first"><code class="docutils literal notranslate"><span class="pre">migr2DSteppingStoneRates(r,</span> <span class="pre">m,</span> <span class="pre">n,</span> <span class="pre">diagonal=False,</span> <span class="pre">circular=False)</span></code>models
+a 2D stepping stone model in which local populations are arranged into a lattice
+of <span class="math notranslate nohighlight">\(m\times n\)</span> (<span class="math notranslate nohighlight">\(m\)</span> rows, <span class="math notranslate nohighlight">\(n\)</span> columns) patches. The population
+thus needs to have <span class="math notranslate nohighlight">\(m\times n\)</span> subpopulations with subpopulation indexes
+counted by row. In this model, an individual in a center patch has a probability
+of <span class="math notranslate nohighlight">\(1-r\)</span> to stay, and <span class="math notranslate nohighlight">\(r/4\)</span> to migrate to its neighbor patches if
+<code class="docutils literal notranslate"><span class="pre">diagonal</span></code> is set to False, or <span class="math notranslate nohighlight">\(r/8\)</span> to migrate to 8 neighbors
+(including diagnal ones) if <code class="docutils literal notranslate"><span class="pre">range</span></code> is set to 8. If <code class="docutils literal notranslate"><span class="pre">circular</span></code> is set to
+<code class="docutils literal notranslate"><span class="pre">False</span></code>, the corner patch has a probability of <span class="math notranslate nohighlight">\(r/2\)</span> or <span class="math notranslate nohighlight">\(r/3\)</span> (if
+range=8) to migrate, and a side patch has a probability <span class="math notranslate nohighlight">\(r/3\)</span> or
+<span class="math notranslate nohighlight">\(r/5\)</span> to migrate. If <code class="docutils literal notranslate"><span class="pre">circular</span></code> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the lattice will be
+conceptually connected to a ball so that there is no boundary effect. For
+example, for a 3 by 2 lattice</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\left(\begin{array}{cc}
+0 &amp; 1\\
+2 &amp; 3\\
+4 &amp; 5
+\end{array}\right)\end{split}\]</div>
+<p>with <code class="docutils literal notranslate"><span class="pre">diagonal=False</span></code> and <code class="docutils literal notranslate"><span class="pre">circular=False</span></code>, the migration matrix will be</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\left(\begin{array}{cccccc}
+1-r &amp; \frac{r}{2} &amp; \frac{r}{2}\\
+\frac{r}{2} &amp; 1-r &amp;  &amp; \frac{r}{2}\\
+\frac{r}{3} &amp;  &amp; 1-r &amp; \frac{r}{3} &amp; \frac{r}{3}\\
+ &amp; \frac{r}{3} &amp; \frac{r}{3} &amp; 1-r &amp;  &amp; \frac{r}{3}\\
+ &amp;  &amp; \frac{r_{2}}{2} &amp;  &amp; 1-r &amp; \frac{r}{2}\\
+ &amp;  &amp;  &amp; \frac{r}{2} &amp; \frac{r}{2} &amp; 1-r
+\end{array}\right)\end{split}\]</div>
+</li>
+</ul>
+<p>Many more migration models have been proposed and studied, sometimes under
+different names with slightly different definitions. If you cannot find your
+model there, it should not be too difficult to construct a migration rate matrix
+for it. I will be glad to add such functions to this module if you could provide
+a reference and your implementation of the model.</p>
+</div>
+<div class="section" id="uniform-interface-of-demographic-models">
+<h2>Uniform interface of demographic models<a class="headerlink" href="#uniform-interface-of-demographic-models" title="Permalink to this headline">¶</a></h2>
+<p>A realistic demographic models can be very complex that involves population
+growth, population bottleneck, subdivided populations, migration, population
+split and admixture for a typical demographic model for human populations, and
+carrying capacity, fecunity, sex distribution and many more factors for more
+complex ones (e.g. models for animal populations under continuous habitat). The
+goal of this module is to provide a common interface for demographic models,
+classes for frequently used demographic models, and several pre-defined
+demographic models for human populations. More complex demographic models will
+be added if needed.</p>
+<p>A demographic model usually consists of the following components:</p>
+<ul class="simple">
+<li>An initial population size that is used to initialize a population (the
+<code class="docutils literal notranslate"><span class="pre">size</span></code> parameter of <code class="docutils literal notranslate"><span class="pre">sim.Population</span></code>)</li>
+<li>One or more operators to split and merge populations (e.g. Operators
+<a class="reference internal" href="refManual_ch3_sec4.html#SplitSubPops" title="SplitSubPops"><code class="xref py py-class docutils literal notranslate"><span class="pre">SplitSubPops</span></code></a>)</li>
+<li>One or more operators to migrate individuals across subpopulations (e.g.
+operator <a class="reference internal" href="refManual_ch3_sec4.html#Migrator" title="Migrator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Migrator</span></code></a>)</li>
+<li>Determine sizes of subpopulations before mating (parameter <code class="docutils literal notranslate"><span class="pre">subPopSize</span></code> of a
+mating scheme)</li>
+<li>Number of generations to evolve (parameter <code class="docutils literal notranslate"><span class="pre">gen</span></code> of the <code class="docutils literal notranslate"><span class="pre">evolve</span></code> function)
+or operators to terminate the evolution conditionally (e.g. operator
+<a class="reference internal" href="refManual_ch3_sec12.html#TerminateIf" title="TerminateIf"><code class="xref py py-class docutils literal notranslate"><span class="pre">TerminateIf</span></code></a>)</li>
+</ul>
+<p>Using an object-oriented approach, a demographic model defined in this module
+encapsulates all these in a single object. More specifically, a demographic
+object <code class="docutils literal notranslate"><span class="pre">model</span></code> is a callable Python object that</p>
+<ul class="simple">
+<li>has attribute <code class="docutils literal notranslate"><span class="pre">model.init_size</span></code> and <code class="docutils literal notranslate"><span class="pre">model.info_fields</span></code> to determine the
+initial population size and required information fields to construct an initial
+population (e.g., <code class="docutils literal notranslate"><span class="pre">sim.Population(size=model.init_size,</span>
+<span class="pre">infoFields=model.info_fields</span> <span class="pre">+</span> <span class="pre">['my_fields'])</span></code>)</li>
+<li>handles population split, merge, migration etc internally before mating when
+it is passed to parameter <code class="docutils literal notranslate"><span class="pre">subPopSize</span></code> of a mating scheme. (e.g.
+<a class="reference internal" href="refManual_ch2_sec4.html#RandomMating" title="RandomMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomMating</span></code></a>(<code class="docutils literal notranslate"><span class="pre">subPopSize=model</span></code>))</li>
+<li>has attribute <code class="docutils literal notranslate"><span class="pre">model.num_gens</span></code> to determine the number of generations to
+evolve (e.g. <code class="docutils literal notranslate"><span class="pre">pop.evolve(...,</span> <span class="pre">gen=model.num_gens)</span></code>). The model can optionally
+terminate the evolution by returnning an empty offspring population size before
+mating.</li>
+<li>provides a function <code class="docutils literal notranslate"><span class="pre">model.plot(filename='',</span> <span class="pre">title='')</span></code> to plot the
+demographic function. It by default prints out population sizes whenever
+population size changes. If a <code class="docutils literal notranslate"><span class="pre">filename</span></code> is specified and if module
+<code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> is available, it will plot the demographic model and save it to
+filename. A <code class="docutils literal notranslate"><span class="pre">title</span></code> can be specified for the figure. This function actually
+use the demographic model to evolve a haploid population using
+<a class="reference internal" href="refManual_ch2_sec4.html#RandomSelection" title="RandomSelection"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSelection</span></code></a> mating scheme, which is a good way to test if your
+demographic model works properly.</li>
+<li>saves population sizes of evolved generations, which makes it possible to
+revert an evolutionary process to an previous state using operator
+<code class="xref py py-class docutils literal notranslate"><span class="pre">RevertIf</span></code>.</li>
+</ul>
+<p>A demographic model can be defined in two ways. The first approach is to specify
+the size of subpopulations at each generation, and the second approach is to
+specify the events that change population sizes. The <a class="reference internal" href="refManual_ch4_sec3.html#module-simuPOP.demography" title="simuPOP.demography"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.demography</span></code></a>
+module provides functions and classes to define demographic models using both
+approaches and you can use the one that is most convenient for your model.</p>
+</div>
+<div class="section" id="demographic-models-defined-by-outcomes">
+<h2>Demographic models defined by outcomes<a class="headerlink" href="#demographic-models-defined-by-outcomes" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="refManual_ch4_sec3.html#module-simuPOP.demography" title="simuPOP.demography"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.demography</span></code></a> module defines a number of widely used demographic
+models, including linear and exponential population growth with carrying
+capacity, shrink, split and merge, and bottleneck.</p>
+<p>For example,</p>
+<ul>
+<li><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">InstantChangeModel</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">N0</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">NG</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<blockquote>
+<div>defines an instant population growth model that expands a population of size
+from 1000 to 2000 instantly at generation 500</div></blockquote>
+<ul>
+<li><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">InstantChangeModel</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">N0</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">600</span><span class="p">],</span> <span class="n">NG</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">])</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<blockquote>
+<div>defines a bottleneck model that introduces a bottleneck of size 100 between
+generation 500 and 600 to a population of size 1000</div></blockquote>
+<ul>
+<li><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">InstantChangeModel</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">N0</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">NG</span><span class="o">=</span><span class="p">[[</span><span class="mi">400</span><span class="p">,</span> <span class="mi">600</span><span class="p">]])</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<blockquote>
+<div>defines a bottleneck model that split a population of size into two
+subpopulations of sizes 400 and 600 at generation 500</div></blockquote>
+<ul>
+<li><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ExponentialGrowthModel</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">N0</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">NT</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<blockquote>
+<div>expands a population of size 1000 to 10000 in 100 generations</div></blockquote>
+<ul>
+<li><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ExponentialGrowthModel</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">N0</span><span class="o">=</span><span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">800</span><span class="p">],</span> <span class="n">r</span><span class="o">=</span><span class="p">[</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span>
+    <span class="n">ops</span><span class="o">=</span><span class="n">Migrator</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<blockquote>
+<div>expands a population of two subpopulation sizes at rate <code class="docutils literal notranslate"><span class="pre">0.02</span></code> and <code class="docutils literal notranslate"><span class="pre">0.01</span></code>
+for <code class="docutils literal notranslate"><span class="pre">100</span></code> generations, with migration between these two subpopulations. The
+initial population will be resized (split if necessary) to two populations of
+sizes 200 and 800.</div></blockquote>
+<ul>
+<li><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LinearGrowthModel</span><span class="p">(</span><span class="n">N0</span><span class="o">=</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">),</span> <span class="n">r</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">NT</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<blockquote>
+<div>expands a population of size <code class="docutils literal notranslate"><span class="pre">200</span></code> at a rate 0f <code class="docutils literal notranslate"><span class="pre">0.02</span></code> (add 4 individuals at
+each generation) until it reaches size <code class="docutils literal notranslate"><span class="pre">1000</span></code>. Here the initial size is
+expressed as a size name tuple, which directs the demographic model to assign
+the name <code class="docutils literal notranslate"><span class="pre">A</span></code> to the initial population. Such named size is acceptable for all
+places where population size is needed.</div></blockquote>
+<p>Here we specify only two of the three parameters for linear and exponential
+growth models and allow simuPOP to figure out the rest. If all three parameters
+are specified, the ending population size will be interpretted as carraying
+capacity, namely population growth (or decline of negative rates are specified)
+will stop after it reaches the specified size.</p>
+<p>A demographic model does not have to have a fixed initial population size. If an
+initial population size is not provided, its size will be determined from the
+population when it is first applied to. For example</p>
+<ul>
+<li><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">InstantChangeModel</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">NT</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<blockquote>
+<div>split a population into two equally sized subpopulations at generation 50. The
+ending population size is set to <code class="docutils literal notranslate"><span class="pre">[0.5,</span> <span class="pre">0.5]</span></code>, which means 50% of the size at
+time <code class="docutils literal notranslate"><span class="pre">G</span></code>.</div></blockquote>
+<ul>
+<li><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">InstantChangeModel</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">NT</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">100</span><span class="p">])</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<blockquote>
+<div>forks a population of size 100 from the main population at generation 50.
+<code class="docutils literal notranslate"><span class="pre">NT=[None,</span> <span class="pre">100]</span></code> is equivalent to <code class="docutils literal notranslate"><span class="pre">NT=[1.0,</span> <span class="pre">100]</span></code> in this case.</div></blockquote>
+<ul>
+<li><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">InstantChangeModel</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">removEmptySubPops</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<blockquote>
+<div>removes all empty subpopulations from the existing subpopulation. Here we do not
+specify an input population size because the the size of the input population
+will be kept.</div></blockquote>
+<ul>
+<li><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">InstantChangeMoel</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">N0</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">removEmptySubPops</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<blockquote>
+<div>removes the second of the three subpopulations while keep other two
+subpopulations intact. The input population of this demographic model must have
+three subpopulations.</div></blockquote>
+<ul>
+<li><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ExponentialGrowthModel</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">NT</span><span class="o">=</span><span class="p">[</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">20000</span><span class="p">])</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<blockquote>
+<div>expands a population of two subpopulations to sizes <code class="docutils literal notranslate"><span class="pre">10000</span></code> and <code class="docutils literal notranslate"><span class="pre">20000</span></code> in
+<code class="docutils literal notranslate"><span class="pre">100</span></code> generations. An error will be raised if the population does not have two
+subpopulations.</div></blockquote>
+<ul>
+<li><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ExponentialGrowthModel</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">N0</span><span class="o">=</span><span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mi">400</span><span class="p">],</span> <span class="n">NT</span><span class="o">=</span><span class="p">[</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">20000</span><span class="p">],</span>
+    <span class="n">ops</span><span class="o">=</span><span class="n">Migrator</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<blockquote>
+<div>split a population into two subpopulations. The first one keeps all individuals
+(100%), the second one with 400 individuals, and then expands them, with
+migration, to sizes <code class="docutils literal notranslate"><span class="pre">10000</span></code> and <code class="docutils literal notranslate"><span class="pre">20000</span></code> in <code class="docutils literal notranslate"><span class="pre">100</span></code> generations.</div></blockquote>
+<p>The demography model also defines two models for population admxture. The HI
+model (Hybrid Isolation) model creates a separate subpopulation with <span class="math notranslate nohighlight">\(\mu\)</span>
+and <span class="math notranslate nohighlight">\(1-\mu\)</span> individuals from two specified subpopulations. The CGF
+(Continuous Gene Flow) model replaces <span class="math notranslate nohighlight">\(1-\mu\)</span> individuals from the doner
+population at each generation, thus keep both the recipient and doner population
+constant in size. For example,</p>
+<ul>
+<li><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AdmixtureModel</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;HI&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;Admixed&#39;</span><span class="p">),</span> <span class="n">T</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<blockquote>
+<div>Creates a separate population with 50% of individuals from subpopulation 1 and
+50% of individuals from subpopulation 3, regardless if population sizes 1 and 3
+have the same number of individuals. An optional name Admixed is assigned to the
+new subpopulation. The admixed population will evolve independently for 10
+generations.</div></blockquote>
+<ul>
+<li><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AdmixtureModel</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;CGF&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">),</span> <span class="n">T</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<blockquote>
+<div>Replaces 10% of individuals in subpopulation 1 with individuals from
+subpopulation 3 for 10 generations.</div></blockquote>
+<p>As you can imagine, these models do not provide a valid <code class="docutils literal notranslate"><span class="pre">init_size</span></code> to
+initialize a population. As a matter of fact, they are mostly stacked to other
+demographic models to form more complex demographic models, in model
+<code class="docutils literal notranslate"><span class="pre">MultiStageModel</span></code>. For example,</p>
+<ul>
+<li><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MultiStageModel</span><span class="p">([</span>
+    <span class="n">InstantChangeModel</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">N0</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">600</span><span class="p">],</span> <span class="n">NG</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">]),</span>
+    <span class="n">ExponentialGrowthModel</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">NT</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<blockquote>
+<div>defines a demographic model with a bottleneck followed by exponential population
+growth. <code class="docutils literal notranslate"><span class="pre">N0</span></code> of the second stage is not specified because it is determined
+from its previous stage.</div></blockquote>
+<ul>
+<li><div class="first highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MultiStageModel</span><span class="p">([</span>
+    <span class="n">LinearGrowthModel</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">N0</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mf">0.01</span><span class="p">),</span>
+    <span class="n">ExponentialGrowthModel</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">N0</span><span class="o">=</span><span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">],</span> <span class="n">r</span><span class="o">=</span><span class="mf">0.001</span><span class="p">),</span>
+    <span class="n">ExponentialGrowthModel</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">NT</span><span class="o">=</span><span class="p">[</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">4000</span><span class="p">]),</span>
+    <span class="n">AdmixtureModel</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;HI&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="s1">&#39;admixed&#39;</span><span class="p">),</span> <span class="n">T</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<blockquote>
+<div><p>defines a demographic model that expands a single population linearly for 100
+generations, split into two subpopulations and grow exponentially at a rate of
+0.001, and growth at a higher rate of 0.01 until they reaches sizes 2000 and
+4000 respectively. This stage is tricky because one of the subpopulations will
+reach its carrying capacity sooner and keep a contant population size
+afterwards. As the last step, the two populations admixed and formed a new
+subpopulation called <code class="docutils literal notranslate"><span class="pre">admixed</span></code>. The model is depicted in figure
+<a class="reference internal" href="#fig-multi-stage"><span class="std std-ref">fig_multi_stage</span></a></p>
+<p><strong>Figure</strong>: <em>A linear and two stage exponential population growth model, followed by population admixture</em></p>
+<div class="figure" id="fig-multi-stage">
+<a class="reference internal image-reference" href="log/MultiStage.png"><img alt="log/MultiStage.png" src="log/MultiStage.png" style="width: 680px;" /></a>
+</div>
+</div></blockquote>
+<p>Example <a class="reference internal" href="#demomodel"><span class="std std-ref">demoModel</span></a> defines a demographic model use it to
+evolve a population. The demographic model is depicted in Figure
+<a class="reference internal" href="#fig-demomodel-example"><span class="std std-ref">fig_demoModel_example</span></a>.</p>
+<p id="demomodel"><strong>Example</strong>: <em>A demographic model for human population</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.demography</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">MultiStageModel</span><span class="p">([</span>
+<span class="gp">... </span>    <span class="n">InstantChangeModel</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="c1"># start with an ancestral population of size 1000</span>
+<span class="gp">... </span>        <span class="n">N0</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="s1">&#39;Ancestral&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="c1"># change population size at 50 and 60</span>
+<span class="gp">... </span>        <span class="n">G</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">60</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="c1"># change to population size 200 and back to 1000</span>
+<span class="gp">... </span>        <span class="n">NG</span><span class="o">=</span><span class="p">[(</span><span class="mi">200</span><span class="p">,</span> <span class="s1">&#39;bottleneck&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="s1">&#39;Post-Bottleneck&#39;</span><span class="p">)]),</span>
+<span class="gp">... </span>    <span class="n">ExponentialGrowthModel</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">T</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="c1"># split the population into two subpopulations</span>
+<span class="gp">... </span>        <span class="n">N0</span><span class="o">=</span><span class="p">[(</span><span class="mi">400</span><span class="p">,</span> <span class="s1">&#39;P1&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="s1">&#39;P2&#39;</span><span class="p">)],</span>
+<span class="gp">... </span>        <span class="c1"># expand to size 4000 and 5000 respectively</span>
+<span class="gp">... </span>        <span class="n">NT</span><span class="o">=</span><span class="p">[</span><span class="mi">4000</span><span class="p">,</span> <span class="mi">5000</span><span class="p">])]</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># model.init_size returns the initial population size</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># migrate_to is required for migration</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">init_size</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">infoFields</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">info_fields</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">subPopSize</span><span class="o">=</span><span class="n">model</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">finalOps</span><span class="o">=</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;alleleFreq_sp&#39;</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">num_gens</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">250</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># print out population size and frequency</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">subPopNames</span><span class="p">()):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> (</span><span class="si">%d</span><span class="s1">): </span><span class="si">%.4f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">pop</span><span class="o">.</span><span class="n">subPopSize</span><span class="p">(</span><span class="n">name</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span><span class="o">.</span><span class="n">alleleFreq</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+<span class="gp">...</span>
+<span class="go">P1 (4000): 0.6185</span>
+<span class="go">P2 (5000): 0.7218</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># get a visual presentation of the demographic model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">&#39;log/demoModel.png&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">title</span><span class="o">=</span><span class="s1">&#39;A bottleneck + exponential growth demographic model&#39;</span><span class="p">)</span>
+<span class="go">A bottleneck + exponential growth demographic model</span>
+<span class="go">0: 1000 (Ancestral)</span>
+<span class="go">50: 200 (bottleneck)</span>
+<span class="go">60: 1000 (Post-Bottleneck)</span>
+<span class="go">200: 419 (P1), 626 (P2)</span>
+<span class="go">201: 439 (P1), 653 (P2)</span>
+<span class="go">202: 459 (P1), 681 (P2)</span>
+<span class="go">203: 481 (P1), 711 (P2)</span>
+<span class="go">204: 504 (P1), 742 (P2)</span>
+<span class="go">205: 527 (P1), 774 (P2)</span>
+<span class="go">206: 552 (P1), 807 (P2)</span>
+<span class="go">207: 578 (P1), 842 (P2)</span>
+<span class="go">208: 605 (P1), 879 (P2)</span>
+<span class="go">209: 634 (P1), 917 (P2)</span>
+<span class="go">210: 664 (P1), 957 (P2)</span>
+<span class="go">211: 695 (P1), 998 (P2)</span>
+<span class="go">212: 728 (P1), 1041 (P2)</span>
+<span class="go">213: 762 (P1), 1086 (P2)</span>
+<span class="go">214: 798 (P1), 1133 (P2)</span>
+<span class="go">215: 836 (P1), 1183 (P2)</span>
+<span class="go">216: 875 (P1), 1234 (P2)</span>
+<span class="go">217: 916 (P1), 1287 (P2)</span>
+<span class="go">218: 960 (P1), 1343 (P2)</span>
+<span class="go">219: 1005 (P1), 1401 (P2)</span>
+<span class="go">220: 1052 (P1), 1462 (P2)</span>
+<span class="go">221: 1102 (P1), 1525 (P2)</span>
+<span class="go">222: 1154 (P1), 1591 (P2)</span>
+<span class="go">223: 1208 (P1), 1660 (P2)</span>
+<span class="go">224: 1265 (P1), 1732 (P2)</span>
+<span class="go">225: 1325 (P1), 1807 (P2)</span>
+<span class="go">226: 1387 (P1), 1885 (P2)</span>
+<span class="go">227: 1452 (P1), 1967 (P2)</span>
+<span class="go">228: 1521 (P1), 2052 (P2)</span>
+<span class="go">229: 1592 (P1), 2141 (P2)</span>
+<span class="go">230: 1667 (P1), 2234 (P2)</span>
+<span class="go">231: 1746 (P1), 2331 (P2)</span>
+<span class="go">232: 1828 (P1), 2432 (P2)</span>
+<span class="go">233: 1915 (P1), 2537 (P2)</span>
+<span class="go">234: 2005 (P1), 2647 (P2)</span>
+<span class="go">235: 2099 (P1), 2761 (P2)</span>
+<span class="go">236: 2198 (P1), 2881 (P2)</span>
+<span class="go">237: 2302 (P1), 3006 (P2)</span>
+<span class="go">238: 2410 (P1), 3136 (P2)</span>
+<span class="go">239: 2524 (P1), 3272 (P2)</span>
+<span class="go">240: 2643 (P1), 3414 (P2)</span>
+<span class="go">241: 2767 (P1), 3562 (P2)</span>
+<span class="go">242: 2898 (P1), 3716 (P2)</span>
+<span class="go">243: 3034 (P1), 3877 (P2)</span>
+<span class="go">244: 3177 (P1), 4045 (P2)</span>
+<span class="go">245: 3327 (P1), 4220 (P2)</span>
+<span class="go">246: 3484 (P1), 4403 (P2)</span>
+<span class="go">247: 3648 (P1), 4593 (P2)</span>
+<span class="go">248: 3820 (P1), 4792 (P2)</span>
+<span class="go">249: 4000 (P1), 5000 (P2)</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;/var/folders/ys/gnzk0qbx5wbdgm531v82xxljv5yqy8/T/tmpdvg5jvxd&quot;</span>, line <span class="m">2</span>, in <span class="n">&lt;module&gt;</span>
+    <span class="c1">#begin_ignore</span>
+  File <span class="nb">&quot;/Users/bpeng1/anaconda3/envs/sos/lib/python3.6/site-packages/simuPOP/demography.py&quot;</span>, line <span class="m">446</span>, in <span class="n">plot</span>
+    <span class="n">region</span> <span class="o">=</span> <span class="n">region</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="gr">TypeError</span>: <span class="n">&#39;float&#39; object cannot be interpreted as an integer</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="demoModel.py">Download demoModel.py</a></p>
+<p><strong>Figure</strong>: <em>A exponential population growth followed by bottleneck demographic model</em></p>
+<div class="figure" id="fig-demomodel-example">
+<a class="reference internal image-reference" href="log/demoModel.png"><img alt="log/demoModel.png" src="log/demoModel.png" style="width: 680px;" /></a>
+</div>
+</div>
+<div class="section" id="demographic-models-defined-by-population-changes-events">
+<h2>Demographic models defined by population changes (events)<a class="headerlink" href="#demographic-models-defined-by-population-changes-events" title="Permalink to this headline">¶</a></h2>
+<p>Another way to define a demographic model is to specify the events that changes
+population sizes. This approach can be easier to use because it conforms with
+the way many demographic models are specified, also because the events can be
+specified for a subset of subpopulations so you can, for example, split one
+subpopulation without worrying about its impact on other subpopulations.</p>
+<p>A event-based demographic model is defined using</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">EventBasedModel</span><span class="p">(</span><span class="n">events</span><span class="o">=</span><span class="p">[],</span> <span class="n">T</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">N0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ops</span><span class="o">=</span><span class="p">[],</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[])</span>
+</pre></div>
+</div>
+<p>where<code class="docutils literal notranslate"><span class="pre">T</span></code> and <code class="docutils literal notranslate"><span class="pre">N0</span></code> are the duration and initial size of the demographic
+model, respectively, and ops is the operators that will be applied to the
+population (without checking applicability). Parameter <code class="docutils literal notranslate"><span class="pre">events</span></code> acepts one or
+more of <code class="docutils literal notranslate"><span class="pre">DemographicEvent</span></code> and its derived classes. For example,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ExpansionEvent</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">begin</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>expands all subpopulations exponentially at a rate of 0.05, and</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ExpansionEvent</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">begin</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>expands two subpopulations at rates 0.05 and 0.01 respectively, until they reach
+10000 individuals in each subpopulation.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ExpansionEvent</span><span class="p">(</span><span class="n">slopes</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">begin</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>expands the populations linearly by adding 500 individuals to each subpopulation
+at each generation. These events happen at each generation starting from
+generation 500.</p>
+<p>Simiarly, you can split, merge, and resize subpopulations using events
+<code class="docutils literal notranslate"><span class="pre">SplitEvent</span></code>, <code class="docutils literal notranslate"><span class="pre">MergeEvent</span></code>, and <code class="docutils literal notranslate"><span class="pre">ResizeEvent</span></code>. For example,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SplitEvent</span><span class="p">(</span><span class="n">subPops</span><span class="o">=</span><span class="s1">&#39;AF&#39;</span><span class="p">,</span> <span class="n">sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;AF&#39;</span><span class="p">,</span> <span class="s1">&#39;EU&#39;</span><span class="p">],</span> <span class="n">at</span><span class="o">=-</span><span class="mi">4000</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>splits an ancestral population named AF to two populations AF and EU at 4000
+generations before the end of the demographic model. The AF population will be
+expanded automatically if it does not have 1000 individuals.</p>
+<p>Finally, an <code class="docutils literal notranslate"><span class="pre">AdmixtureEvent</span></code> mix two or more subpopulations by certain
+proportions, and either create a new subpopulation or replace an existing
+subpopulation. In particular,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AdmixtureEvent</span><span class="p">(</span><span class="n">subPops</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;MX&#39;</span><span class="p">,</span> <span class="s1">&#39;EU&#39;</span><span class="p">],</span> <span class="n">at</span><span class="o">=-</span><span class="mi">10</span><span class="p">,</span> <span class="n">sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;MXL&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>creates a new admixed population called MXL with 40% of individuals from the MX
+population, and the rest from the EU population. The admixture process happens
+once and follows an Hybrid Isolation model. Alternatively,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AdmixtureEvent</span><span class="p">(</span><span class="n">subPops</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;MX&#39;</span><span class="p">,</span> <span class="s1">&#39;EU&#39;</span><span class="p">],</span> <span class="n">begin</span><span class="o">=-</span><span class="mi">10</span><span class="p">,</span> <span class="n">sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="n">toSubPop</span><span class="o">=</span><span class="s1">&#39;MX&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>will create an admixed population with 80% MX and 20% EU individuals for 10
+generations. Because 20% of the admixed population will be replaced by
+individuals from the EU population, this models a continuous gene flow model of
+admixture. If you would like to control the exact size of the admixed
+population, you can specify the number of individuals as integer numbers instead
+of proportions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AdmixtureEvent</span><span class="p">(</span><span class="n">subPops</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;MX&#39;</span><span class="p">,</span> <span class="s1">&#39;EU&#39;</span><span class="p">],</span> <span class="n">begin</span><span class="o">=-</span><span class="mi">10</span><span class="p">,</span> <span class="n">sizes</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="mi">1400</span><span class="o">*</span><span class="mf">0.8</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="mi">1400</span><span class="o">*</span><span class="mf">0.2</span><span class="p">)],</span> <span class="n">toSubPop</span><span class="o">=</span><span class="s1">&#39;MX&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that the type of elements in parameter <code class="docutils literal notranslate"><span class="pre">sizes</span></code> is important, <code class="docutils literal notranslate"><span class="pre">1.</span></code>
+stands for all subpopulation and <code class="docutils literal notranslate"><span class="pre">1</span></code> stands for one individual from it.</p>
+<p>Example<a class="reference internal" href="#demoeventmodel"><span class="std std-ref">demoEventModel</span></a> defines the same model as
+<a class="reference internal" href="#demomodel"><span class="std std-ref">demoModel</span></a> using an event based demographic model. The result
+is depicted in Figure <a class="reference internal" href="#fig-demoeventmodel-example"><span class="std std-ref">fig_demoEventModel_example</span></a>. These two models look similar but the event-based
+model does not have the same final population sizes as the previous model. This
+is because the population size of the previous model was calculated by
+<span class="math notranslate nohighlight">\(N(t)=N(0)\exp(rt)\)</span> whereas the event based model was calculated using
+<span class="math notranslate nohighlight">\(N(t)=\mbox{round}(N(t-1)\*(1+r))\)</span> for each generation, and the integer
+rounding error accumulates over time.</p>
+<p id="demoeventmodel"><strong>Example</strong>: <em>A event-based demographic model</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.demography</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">math</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">EventBasedModel</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">N0</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="s1">&#39;Ancestral&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">T</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">events</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">ResizeEvent</span><span class="p">(</span><span class="n">at</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">sizes</span><span class="o">=</span><span class="mi">200</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">ResizeEvent</span><span class="p">(</span><span class="n">at</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">sizes</span><span class="o">=</span><span class="mi">1000</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">SplitEvent</span><span class="p">(</span><span class="n">sizes</span><span class="o">=</span><span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">],</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;P1&#39;</span><span class="p">,</span> <span class="s1">&#39;P2&#39;</span><span class="p">],</span> <span class="n">at</span><span class="o">=</span><span class="mi">200</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">ExpansionEvent</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="p">[</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">4000</span><span class="o">/</span><span class="mi">400</span><span class="p">)</span><span class="o">/</span><span class="mi">50</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">5000</span><span class="o">/</span><span class="mi">600</span><span class="p">)</span><span class="o">/</span><span class="mi">50</span><span class="p">],</span> <span class="n">begin</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">]</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># model.init_size returns the initial population size</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># migrate_to is required for migration</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">init_size</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">infoFields</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">info_fields</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">subPopSize</span><span class="o">=</span><span class="n">model</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">finalOps</span><span class="o">=</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;alleleFreq_sp&#39;</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">num_gens</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">250</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># print out population size and frequency</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">subPopNames</span><span class="p">()):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> (</span><span class="si">%d</span><span class="s1">): </span><span class="si">%.4f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">pop</span><span class="o">.</span><span class="n">subPopSize</span><span class="p">(</span><span class="n">name</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span><span class="o">.</span><span class="n">alleleFreq</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+<span class="gp">...</span>
+<span class="go">P1 (4000): 0.6185</span>
+<span class="go">P2 (5000): 0.7218</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># get a visual presentation of the demographic model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">&#39;log/demoEventModel.png&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">title</span><span class="o">=</span><span class="s1">&#39;A event-based bottleneck + exponential growth demographic model&#39;</span><span class="p">)</span>
+<span class="go">A event-based bottleneck + exponential growth demographic model</span>
+<span class="go">0: 1000 (Ancestral)</span>
+<span class="go">50: 200 (Ancestral)</span>
+<span class="go">60: 1000 (Ancestral)</span>
+<span class="go">200: 419 (P1), 626 (P2)</span>
+<span class="go">201: 439 (P1), 653 (P2)</span>
+<span class="go">202: 459 (P1), 681 (P2)</span>
+<span class="go">203: 481 (P1), 711 (P2)</span>
+<span class="go">204: 504 (P1), 742 (P2)</span>
+<span class="go">205: 527 (P1), 774 (P2)</span>
+<span class="go">206: 552 (P1), 807 (P2)</span>
+<span class="go">207: 578 (P1), 842 (P2)</span>
+<span class="go">208: 605 (P1), 879 (P2)</span>
+<span class="go">209: 634 (P1), 917 (P2)</span>
+<span class="go">210: 664 (P1), 957 (P2)</span>
+<span class="go">211: 695 (P1), 998 (P2)</span>
+<span class="go">212: 728 (P1), 1041 (P2)</span>
+<span class="go">213: 762 (P1), 1086 (P2)</span>
+<span class="go">214: 798 (P1), 1133 (P2)</span>
+<span class="go">215: 836 (P1), 1183 (P2)</span>
+<span class="go">216: 875 (P1), 1234 (P2)</span>
+<span class="go">217: 916 (P1), 1287 (P2)</span>
+<span class="go">218: 960 (P1), 1343 (P2)</span>
+<span class="go">219: 1005 (P1), 1401 (P2)</span>
+<span class="go">220: 1052 (P1), 1462 (P2)</span>
+<span class="go">221: 1102 (P1), 1525 (P2)</span>
+<span class="go">222: 1154 (P1), 1591 (P2)</span>
+<span class="go">223: 1208 (P1), 1660 (P2)</span>
+<span class="go">224: 1265 (P1), 1732 (P2)</span>
+<span class="go">225: 1325 (P1), 1807 (P2)</span>
+<span class="go">226: 1387 (P1), 1885 (P2)</span>
+<span class="go">227: 1452 (P1), 1967 (P2)</span>
+<span class="go">228: 1521 (P1), 2052 (P2)</span>
+<span class="go">229: 1592 (P1), 2141 (P2)</span>
+<span class="go">230: 1667 (P1), 2234 (P2)</span>
+<span class="go">231: 1746 (P1), 2331 (P2)</span>
+<span class="go">232: 1828 (P1), 2432 (P2)</span>
+<span class="go">233: 1915 (P1), 2537 (P2)</span>
+<span class="go">234: 2005 (P1), 2647 (P2)</span>
+<span class="go">235: 2099 (P1), 2761 (P2)</span>
+<span class="go">236: 2198 (P1), 2881 (P2)</span>
+<span class="go">237: 2302 (P1), 3006 (P2)</span>
+<span class="go">238: 2410 (P1), 3136 (P2)</span>
+<span class="go">239: 2524 (P1), 3272 (P2)</span>
+<span class="go">240: 2643 (P1), 3414 (P2)</span>
+<span class="go">241: 2767 (P1), 3562 (P2)</span>
+<span class="go">242: 2898 (P1), 3716 (P2)</span>
+<span class="go">243: 3034 (P1), 3877 (P2)</span>
+<span class="go">244: 3177 (P1), 4045 (P2)</span>
+<span class="go">245: 3327 (P1), 4220 (P2)</span>
+<span class="go">246: 3484 (P1), 4403 (P2)</span>
+<span class="go">247: 3648 (P1), 4593 (P2)</span>
+<span class="go">248: 3820 (P1), 4792 (P2)</span>
+<span class="go">249: 4000 (P1), 5000 (P2)</span>
+<span class="go">&gt;&gt;&gt;</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="demoEventModel.py">Download demoEventModel.py</a></p>
+<p><strong>Figure</strong>: <em>A event-based demographic model</em></p>
+<div class="figure" id="fig-demoeventmodel-example">
+<a class="reference internal image-reference" href="Users/bpeng1/simuPOP/simuPOP/doc/log/demoEventModel.png"><img alt="Users/bpeng1/simuPOP/simuPOP/doc/log/demoEventModel.png" src="Users/bpeng1/simuPOP/simuPOP/doc/log/demoEventModel.png" style="width: 680px;" /></a>
+</div>
+</div>
+<div class="section" id="predefined-demographic-models-for-human-populations">
+<h2>Predefined demographic models for human populations<a class="headerlink" href="#predefined-demographic-models-for-human-populations" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="refManual_ch4_sec3.html#module-simuPOP.demography" title="simuPOP.demography"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.demography</span></code></a> module currently defines the following models</p>
+<ul>
+<li><p class="first">Out of Africa model for YRI, CEU and CHB populations (<a class="reference internal" href="#fig-out-of-africa"><span class="std std-ref">fig_Out_of_Africa</span></a>),</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">OutOfAfricaModel</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">&#39;OutOfAfrica.png&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Figure</strong>: <em>Out of Africa model for YRI, CEU, and CHB populations</em></p>
+<div class="figure" id="fig-out-of-africa">
+<a class="reference internal image-reference" href="log/OutOfAfrica.png"><img alt="log/OutOfAfrica.png" src="log/OutOfAfrica.png" style="width: 680px;" /></a>
+</div>
+</li>
+<li><p class="first">The settlement of new world model for Mexican American
+(<a class="reference internal" href="#fig-settlement-of-new"><span class="std std-ref">fig_Settlement_of_New</span></a>) ( Gutenkunst, 2009, PLoS
+Genetics). In this model, the simulated CHB and MX populations are mixed to
+produce an admixed population at the last generation.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SettlementOfNewWorldModel</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">&#39;SettlementOfNewWorld.png&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Figure</strong>: <em>Settlement of New World model for Mexican America population</em></p>
+<div class="figure" id="fig-settlement-of-new">
+<a class="reference internal image-reference" href="log/SettlementOfNewWorld.png"><img alt="log/SettlementOfNewWorld.png" src="log/SettlementOfNewWorld.png" style="width: 680px;" /></a>
+</div>
+</li>
+<li><p class="first">The demographic model developed by cosi (Schaffner, 2005, genome research).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CosiModel</span><span class="p">(</span><span class="mi">20000</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">&#39;Cosi.png&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Figure</strong>: <em>Demographic models for African, Asian and European populations (cosi)</em></p>
+<div class="figure" id="fig-cosi">
+<a class="reference internal image-reference" href="log/Cosi.png"><img alt="log/Cosi.png" src="log/Cosi.png" style="width: 680px;" /></a>
+</div>
+</li>
+</ul>
+<p>These functions all accept a parameter scale. If specified, it will scale all
+population sizes and generation numbers by the specified scaling factor. For
+example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CosiModel</span><span class="p">(</span><span class="mi">20000</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>will result in a demographic model that evolves 2000 instead of 20000
+generations, with all population sizes reduced by a factor of 10. Note that the
+burn-in period of the examples above are relatively short and you might need to
+use a longer burn-in period (e.g. T=100,000 generations for a burn-in period of
+about 80,000 generations).</p>
+</div>
+<div class="section" id="demographic-model-without-predefined-generations-to-evolve">
+<h2>Demographic model without predefined generations to evolve *<a class="headerlink" href="#demographic-model-without-predefined-generations-to-evolve" title="Permalink to this headline">¶</a></h2>
+<p>All migration models accept one or more operators that will be applied to the
+population before population population changes are applied. The most frequently
+application of this operator is to pass a migrator to the model, but we can also
+pass an operator to terminate a demographic model under certain conditions. For
+example, Example <a class="reference internal" href="#demoterminate"><span class="std std-ref">demoTerminate</span></a> defines a demographic
+model that starts with a burn-in stage with indefinite size and will stop if the
+average allele frequency at segregating sites exceeds 0.1. It splits to two
+equally sized subpopulations and expand rate a rate of 0.01 to size 2000 and
+5000 respectively.</p>
+<p id="demoterminate"><strong>Example</strong>: <em>A demographic model with a terminator</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="go">simuPOP Version 1.1.9 : Copyright (c) 2004-2016 Bo Peng</span>
+<span class="go">Revision 4583 (Oct 10 2018) for Python 3.6.6 (64bit, 0thread)</span>
+<span class="go">Random Number Generator is set to mt19937 with random seed 0x81aae4a664e115de.</span>
+<span class="go">This is the standard short allele version with 256 maximum allelic states.</span>
+<span class="go">For more information, please visit http://simupop.sourceforge.net,</span>
+<span class="go">or email simupop-list@lists.sourceforge.net (subscription required).</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP.demography</span> <span class="k">as</span> <span class="nn">demo</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">demo</span><span class="o">.</span><span class="n">MultiStageModel</span><span class="p">([</span>
+<span class="gp">... </span>    <span class="n">demo</span><span class="o">.</span><span class="n">InstantChangeModel</span><span class="p">(</span><span class="n">N0</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">ALL_AVAIL</span><span class="p">,</span> <span class="n">numOfSegSites</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">ALL_AVAIL</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="c1"># terminate if the average allele frequency of segregating sites</span>
+<span class="gp">... </span>            <span class="c1"># are more than 0.1</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">TerminateIf</span><span class="p">(</span><span class="s1">&#39;sum([x[1] for x in alleleFreq.values() if &#39;</span>
+<span class="gp">... </span>                <span class="s1">&#39;x[1] != 0])/(1 if numOfSegSites==0 else numOfSegSites) &gt; 0.1&#39;</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="p">]</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="n">demo</span><span class="o">.</span><span class="n">ExponentialGrowthModel</span><span class="p">(</span><span class="n">N0</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="n">r</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">NT</span><span class="o">=</span><span class="p">[</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">5000</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">]</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">init_size</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">SNPMutator</span><span class="p">(</span><span class="n">u</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="mf">0.001</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">subPopSize</span><span class="o">=</span><span class="n">model</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">ALL_AVAIL</span><span class="p">,</span> <span class="n">numOfSegSites</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">ALL_AVAIL</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">50</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;</span><span class="si">%d</span><span class="s1">: </span><span class="si">%s</span><span class="s1">, </span><span class="si">%.3f</span><span class="s1">\n&quot; % (gen, subPopSize, sum([x[1] for x &#39;</span>
+<span class="gp">... </span>            <span class="s1">&#39;in alleleFreq.values() if x[1] != 0])/(1 if numOfSegSites == 0 &#39;</span>
+<span class="gp">... </span>            <span class="s1">&#39;else numOfSegSites))&#39;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">0: [1000], 0.001</span>
+<span class="go">50: [1000], 0.047</span>
+<span class="go">100: [1000], 0.089</span>
+<span class="go">150: [738, 738], 0.128</span>
+<span class="go">200: [1218, 1218], 0.166</span>
+<span class="go">250: [2000, 2007], 0.199</span>
+<span class="go">300: [2000, 3310], 0.230</span>
+<span class="go">343</span>
+<span class="go">&gt;&gt;&gt;</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="demoTerminate.py">Download demoTerminate.py</a></p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec1.html">Module <code class="docutils literal notranslate"><span class="pre">simuOpt</span></code> (function <code class="docutils literal notranslate"><span class="pre">simuOpt.setOptions</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec2.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.utils</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.demography</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#predefined-migration-models">Predefined migration models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#uniform-interface-of-demographic-models">Uniform interface of demographic models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#demographic-models-defined-by-outcomes">Demographic models defined by outcomes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#demographic-models-defined-by-population-changes-events">Demographic models defined by population changes (events)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#predefined-demographic-models-for-human-populations">Predefined demographic models for human populations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#demographic-model-without-predefined-generations-to-evolve">Demographic model without predefined generations to evolve *</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec4.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.sampling</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec5.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.gsl</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch7.html">Utility Modules</a><ul>
+      <li>Previous: <a href="userGuide_ch7_sec2.html" title="previous chapter">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.utils</span></code></a></li>
+      <li>Next: <a href="userGuide_ch7_sec4.html" title="next chapter">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.sampling</span></code></a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch7_sec3.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

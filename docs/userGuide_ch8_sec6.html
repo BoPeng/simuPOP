@@ -1,0 +1,437 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Option handling &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="&lt;no title&gt;" href="refManual.html" />
+    <link rel="prev" title="Initialize and evolve the population" href="userGuide_ch8_sec5.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="option-handling">
+<h1>Option handling<a class="headerlink" href="#option-handling" title="Permalink to this headline">¶</a></h1>
+<p>Everything seems to be perfect until you need to</p>
+<ol class="arabic simple">
+<li>Run more simulations with different parameters such as initial population
+size and mutaion rate. This requires the script to get its parameters from
+command line (or a configuration file) and executes in batch mode, perhaps on a
+cluster system.</li>
+<li>Allow users who are not familiar with the script to run it. This would better
+be achieved by a graphical user interface.</li>
+<li>Allow other Python scripts to import your script and run the simulation
+function directly.</li>
+</ol>
+<p>Although a number of Python modules such as <code class="docutils literal notranslate"><span class="pre">getopt</span></code> are available, the
+simuPOP <a class="reference internal" href="refManual_ch4_sec1.html#module-simuOpt" title="simuOpt"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuOpt</span></code></a> module is especially designed to allow a simuPOP script
+to be run both in batch and in GUI mode, in standard and optimized mode. Example
+<a class="reference internal" href="#reich"><span class="std std-ref">reich</span></a> makes use of this module.</p>
+<p id="reich"><strong>Example</strong>: <em>A complete simulation script</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1">#</span>
+<span class="c1"># Author:  Bo Peng</span>
+<span class="c1"># Purpose: A real world example for simuPOP user&#39;s guide.</span>
+<span class="c1">#</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Simulation the evolution of allelic spectra (number and frequencies</span>
+<span class="sd">of alleles at a locus), under the influence of sim.population expansion,</span>
+<span class="sd">mutation, and natural selection.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">simuOpt</span>
+<span class="n">simuOpt</span><span class="o">.</span><span class="n">setOptions</span><span class="p">(</span><span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alleleType</span><span class="o">=</span><span class="s1">&#39;long&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">types</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">math</span>
+<span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;demo&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="s1">&#39;instant&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Population growth model&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;How does a sim.Population grow from N0 to N1.&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;chooseOneOf&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;instant&#39;</span><span class="p">,</span> <span class="s1">&#39;exponential&#39;</span><span class="p">]),</span>
+    <span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;N0&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="mi">10000</span><span class="p">,</span>
+     <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Initial sim.population size&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;integer&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;&#39;Initial sim.population size. This size will be maintained</span>
+<span class="s1">                till the end of burnin stage&#39;&#39;&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;validator&#39;</span><span class="p">:</span> <span class="n">simuOpt</span><span class="o">.</span><span class="n">valueGT</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;N1&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="mi">100000</span><span class="p">,</span>
+     <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Final sim.population size&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;integer&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Ending sim.population size (after sim.population expansion)&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;validator&#39;</span><span class="p">:</span> <span class="n">simuOpt</span><span class="o">.</span><span class="n">valueGT</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;G0&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
+     <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Length of burn-in stage&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;integer&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Number of generations of the burn in stage.&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;validator&#39;</span><span class="p">:</span> <span class="n">simuOpt</span><span class="o">.</span><span class="n">valueGT</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;G1&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+     <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Length of expansion stage&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;integer&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Number of geneartions of the sim.population expansion stage&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;validator&#39;</span><span class="p">:</span> <span class="n">simuOpt</span><span class="o">.</span><span class="n">valueGT</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;spec&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.9</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="mf">0.02</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">,</span>
+     <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Initial allelic spectrum&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;numbers&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;&#39;Initial allelic spectrum, should be a list of allele</span>
+<span class="s1">            frequencies, for allele 0, 1, 2, ... respectively.&#39;&#39;&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;validator&#39;</span><span class="p">:</span> <span class="n">simuOpt</span><span class="o">.</span><span class="n">valueListOf</span><span class="p">(</span><span class="n">simuOpt</span><span class="o">.</span><span class="n">valueBetween</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+    <span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;s&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span>
+     <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Selection pressure&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;number&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;&#39;Selection coefficient for homozygtes (aa) genotype.</span>
+<span class="s1">            A recessive selection model is used so the fitness values of</span>
+<span class="s1">            genotypes AA, Aa and aa are 1, 1 and 1-s respectively.&#39;&#39;&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;validator&#39;</span><span class="p">:</span> <span class="n">simuOpt</span><span class="o">.</span><span class="n">valueGT</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+    <span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;mu&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="mf">1e-4</span><span class="p">,</span>
+     <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Mutation rate&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;number&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Mutation rate of a k-allele mutation model&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;validator&#39;</span><span class="p">:</span> <span class="n">simuOpt</span><span class="o">.</span><span class="n">valueBetween</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+     <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Maximum allelic state&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;integer&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Maximum allelic state for a k-allele mutation model&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;validator&#39;</span><span class="p">:</span> <span class="n">simuOpt</span><span class="o">.</span><span class="n">valueGT</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+    <span class="p">},</span>
+<span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">demo_model</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">N0</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">N1</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span> <span class="n">G0</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">G1</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Return a demographic function</span>
+<span class="sd">    type: linear or exponential</span>
+<span class="sd">    N0:   Initial sim.population size.</span>
+<span class="sd">    N1:   Ending sim.population size.</span>
+<span class="sd">    G0:   Length of burn-in stage.</span>
+<span class="sd">    G1:   Length of sim.population expansion stage.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">rate</span> <span class="o">=</span> <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">N1</span><span class="p">)</span> <span class="o">-</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">N0</span><span class="p">))</span><span class="o">/</span><span class="n">G1</span>
+    <span class="k">def</span> <span class="nf">ins_expansion</span><span class="p">(</span><span class="n">gen</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">gen</span> <span class="o">&lt;</span> <span class="n">G0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">N0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">N1</span>
+
+    <span class="k">def</span> <span class="nf">exp_expansion</span><span class="p">(</span><span class="n">gen</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">gen</span> <span class="o">&lt;</span> <span class="n">G0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">N0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">N0</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">((</span><span class="n">gen</span> <span class="o">-</span> <span class="n">G0</span><span class="p">)</span> <span class="o">*</span> <span class="n">rate</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;instant&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ins_expansion</span>
+    <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;exponential&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">exp_expansion</span>
+
+<span class="k">class</span> <span class="nc">ne</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">PyOperator</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Define an operator that calculates effective number of</span>
+<span class="sd">    alleles at given loci. The result is saved in a population</span>
+<span class="sd">    variable ne.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loci</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loci</span> <span class="o">=</span> <span class="n">loci</span>
+        <span class="n">sim</span><span class="o">.</span><span class="n">PyOperator</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calcNe</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">calcNe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pop</span><span class="p">):</span>
+        <span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">alleleFreq</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">loci</span><span class="p">)</span>
+        <span class="n">ne</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">loc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loci</span><span class="p">:</span>
+            <span class="n">freq</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">alleleFreq</span><span class="p">[</span><span class="n">loc</span><span class="p">]</span>
+            <span class="n">sumFreq</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">alleleFreq</span><span class="p">[</span><span class="n">loc</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">sumFreq</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">ne</span><span class="p">[</span><span class="n">loc</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ne</span><span class="p">[</span><span class="n">loc</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">([(</span><span class="n">freq</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">/</span><span class="n">sumFreq</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">freq</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="c1"># save the result to the sim.Population.</span>
+        <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">ne</span> <span class="o">=</span> <span class="n">ne</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+<span class="k">def</span> <span class="nf">simuCDCV</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">N0</span><span class="p">,</span> <span class="n">N1</span><span class="p">,</span> <span class="n">G0</span><span class="p">,</span> <span class="n">G1</span><span class="p">,</span> <span class="n">spec</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Evolve a sim.Population using given demographic model</span>
+<span class="sd">    and observe the evolution of its allelic spectrum.</span>
+<span class="sd">    model: type of demographic model.</span>
+<span class="sd">    N0, N1, G0, G1: parameters of demographic model.</span>
+<span class="sd">    spec: initial allelic spectrum, should be a list of allele</span>
+<span class="sd">        frequencies for each allele.</span>
+<span class="sd">    s: selection pressure.</span>
+<span class="sd">    mu: mutation rate.</span>
+<span class="sd">    k: maximum allele for the k-allele model</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">demo_func</span> <span class="o">=</span> <span class="n">demo_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">N0</span><span class="p">,</span> <span class="n">N1</span><span class="p">,</span> <span class="n">G0</span><span class="p">,</span> <span class="n">G1</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">demo_func</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">demo_func</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;fitness&#39;</span><span class="p">)</span>
+    <span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+        <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+            <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="n">spec</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="p">],</span>
+        <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">subPopSize</span><span class="o">=</span><span class="n">demo_func</span><span class="p">),</span>
+        <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">sim</span><span class="o">.</span><span class="n">KAlleleMutator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">),</span>
+            <span class="n">sim</span><span class="o">.</span><span class="n">MaSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">s</span><span class="p">],</span> <span class="n">wildtype</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+            <span class="n">ne</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,),</span> <span class="n">step</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+            <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;</span><span class="si">%d</span><span class="s1">: </span><span class="si">%.2f</span><span class="s1">\t</span><span class="si">%.2f</span><span class="s1">\n&quot; % (gen, 1 - alleleFreq[0][0], ne[0])&#39;</span><span class="p">,</span>
+                <span class="n">step</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+        <span class="p">],</span>
+        <span class="n">gen</span> <span class="o">=</span> <span class="n">G0</span> <span class="o">+</span> <span class="n">G1</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">pop</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># get parameters</span>
+    <span class="n">par</span> <span class="o">=</span> <span class="n">simuOpt</span><span class="o">.</span><span class="n">Params</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="vm">__doc__</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">par</span><span class="o">.</span><span class="n">getParam</span><span class="p">():</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">sum</span><span class="p">(</span><span class="n">par</span><span class="o">.</span><span class="n">spec</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Initial allelic spectrum should add up to 1.&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># save user input to a configuration file</span>
+    <span class="n">par</span><span class="o">.</span><span class="n">saveConfig</span><span class="p">(</span><span class="s1">&#39;simuCDCV.cfg&#39;</span><span class="p">)</span>
+    <span class="c1">#</span>
+    <span class="n">simuCDCV</span><span class="p">(</span><span class="o">*</span><span class="n">par</span><span class="o">.</span><span class="n">asList</span><span class="p">())</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="simuCDCV.py">Download simuCDCV.py</a></p>
+<p>Example <a class="reference internal" href="#reich"><span class="std std-ref">reich</span></a> uses a programming style that is used by almost all
+simuPOP scripts. I highly recommend this style because it makes your script
+seld-documentary and work well under a variety of environments. A script written
+in this style follows the following order:</p>
+<ol class="arabic">
+<li><p class="first">First comment block</p>
+<p>The first line of the script should always be</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+</pre></div>
+</div>
+<p>This line tells a Unix shell which program should be used to process this script
+if the script to set to be executable. This line is ignored under windows. It is
+customary to put author and date information at the top of a script as Python
+comments.</p>
+</li>
+<li><p class="first">Module doc string</p>
+<p>The first string in a script is the module docstring, which can be referred by
+variable <code class="docutils literal notranslate"><span class="pre">__doc__</span></code> in the script. It is a good idea to describe what this
+script does in detail here. As you will see later, this docstring will be used
+in the <code class="docutils literal notranslate"><span class="pre">simuOpt.getParam()</span></code> function and be outputed in the usage information
+of the script.</p>
+</li>
+<li><p class="first">Loading simuPOP and other Python modules</p>
+<p>simuPOP and other modules are usually imported after module docstring. This is
+where you specify which simuPOP module to use. Although a number of parameters
+could be used, usually only <code class="docutils literal notranslate"><span class="pre">alleleType</span></code> is specified because other parameters
+such as <code class="docutils literal notranslate"><span class="pre">gui</span></code> and <code class="docutils literal notranslate"><span class="pre">optimized</span></code> should better be controlled from command line.</p>
+</li>
+<li><p class="first">Parameter description list</p>
+<p>A list of parameter description dictionaries are given here. This list specifies
+what parameters will be used in this script and describes the type, default
+value, name of command line option, label of the parameter in the parameter
+input dialog in detail. Although some directionary items can be ignored, it is a
+good practice to give detailed information about each parameter here.</p>
+</li>
+<li><p class="first">Helper functions and classes</p>
+<p>Helper functions and classes are given before the main simulation function.</p>
+</li>
+<li><p class="first">Main simulation function</p>
+<p>The main simulation function preforms the main functionality of the whole
+script. It is written as a function so that it can be imported and executed by
+another script. The parameter processing part of the script would be ignored in
+this case.</p>
+</li>
+<li><p class="first">Script execution part conditioned by <code class="docutils literal notranslate"><span class="pre">__name__</span> <span class="pre">==</span> <span class="pre">'__main__'</span></code></p>
+<p>The execution part of a script should always be inside of a <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">__name__</span> <span class="pre">==</span>
+<span class="pre">'__main__'</span></code> block so that the script will not be executed when it is imported
+by another script. The first few lines of this execution block are almost always</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">par</span> <span class="o">=</span> <span class="n">simuOpt</span><span class="o">.</span><span class="n">Params</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="vm">__doc__</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">par</span><span class="o">.</span><span class="n">getParam</span><span class="p">():</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>which creates a simuOpt object and tries to get parameters from command line
+option, a configuration file, a parameter input dialog or interactive user
+input, depending on how this script is executed. Optionally, you can use</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">par</span><span class="o">.</span><span class="n">saveConfig</span><span class="p">(</span><span class="s1">&#39;file.cfg&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>to save the current configuration to a file so that the same parameters could be
+retrieved later using parameter <code class="docutils literal notranslate"><span class="pre">--config</span> <span class="pre">file.cfg</span></code>.</p>
+<p>After simply parameter validation, the main simulation function can be called.
+This example uses <code class="docutils literal notranslate"><span class="pre">simuCDCV(*par.asList())</span></code> because the parameter list in the
+<code class="docutils literal notranslate"><span class="pre">par</span></code> object match the parameter list of function <code class="docutils literal notranslate"><span class="pre">simuCDCV</span></code> exactly. If
+there are a large number of parameters, it may be better to pass the
+<a class="reference internal" href="refManual_ch4_sec1.html#module-simuOpt" title="simuOpt"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuOpt</span></code></a> object directly in the main simulation function.</p>
+</li>
+</ol>
+<p>The script written in this style could be executed in a number of ways.</p>
+<ol class="arabic">
+<li><p class="first">If a user executes the script directly, a Tkinter or wxPython dialog will be
+displayed for users to input parameters. This parameter is shown in Figure
+<a class="reference internal" href="#fig-simucdcv-dialog"><span class="std std-ref">fig_simuCDCV_dialog</span></a>.</p>
+<p><strong>Figure</strong>: <em>Parameter input dialog of the simuCDCV script</em></p>
+<div class="figure" id="fig-simucdcv-dialog">
+<a class="reference internal image-reference" href="Users/bpeng1/simuPOP/simuPOP/doc/figures/simuCDCV.png"><img alt="Users/bpeng1/simuPOP/simuPOP/doc/figures/simuCDCV.png" src="Users/bpeng1/simuPOP/simuPOP/doc/figures/simuCDCV.png" style="width: 5in;" /></a>
+</div>
+</li>
+<li><p class="first">The help message of this script could be displayed using the Help button of
+the parameter input dialog, or using command <code class="docutils literal notranslate"><span class="pre">simuCDCV.py</span> <span class="pre">-h</span></code>.</p>
+</li>
+<li><p class="first">Using parameter <code class="docutils literal notranslate"><span class="pre">--gui=False</span></code>, the script will be run in batch mode. You
+can specify parameters using</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">simuCDCV</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">gui</span><span class="o">=</span><span class="kc">False</span> <span class="o">--</span><span class="n">config</span> <span class="n">file</span><span class="o">.</span><span class="n">cfg</span>
+</pre></div>
+</div>
+<p>if a parameter file is available, or use command line options such as</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">simuCDCV</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">gui</span><span class="o">=</span><span class="kc">False</span> <span class="o">--</span><span class="n">demo</span><span class="o">=</span><span class="s1">&#39;instant&#39;</span> <span class="o">--</span><span class="n">N0</span><span class="o">=</span><span class="mi">10000</span> <span class="o">--</span><span class="n">N1</span><span class="o">=</span><span class="mi">100000</span> \
+    <span class="o">--</span><span class="n">G0</span><span class="o">=</span><span class="mi">500</span> <span class="o">--</span><span class="n">G1</span><span class="o">=</span><span class="mi">500</span> <span class="o">--</span><span class="n">spec</span><span class="o">=</span><span class="s1">&#39;[0.9]+[0.02]*5&#39;</span> <span class="o">--</span><span class="n">s</span><span class="o">=</span><span class="mf">0.01</span> \
+    <span class="o">--</span><span class="n">mu</span><span class="o">=</span><span class="s1">&#39;1e-4&#39;</span> <span class="o">--</span><span class="n">k</span><span class="o">=</span><span class="mi">200</span>
+</pre></div>
+</div>
+<p>Note that parameters with <code class="docutils literal notranslate"><span class="pre">useDefault</span></code> set to <code class="docutils literal notranslate"><span class="pre">True</span></code> can be ignored if the
+default parameter is used. In addition, parameter <code class="docutils literal notranslate"><span class="pre">--optimized</span></code> could be used
+to load the optimized version of a simuPOP module. For this particular
+configuration, the optimized module is 30% faster (62s vs. 40s) than the
+standard module.</p>
+</li>
+<li><p class="first">The simulation function could be imported to another script as follows</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">simuCDCV</span> <span class="k">import</span> <span class="n">simuCDCV</span>
+<span class="n">simuCDCV</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;instant&#39;</span><span class="p">,</span> <span class="n">N0</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">N1</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">G0</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">G1</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+    <span class="n">spec</span><span class="o">=</span><span class="p">[</span><span class="mf">0.9</span><span class="p">]</span><span class="o">+</span><span class="p">[</span><span class="mf">0.02</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>document</p>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch8.html">A real world example</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec1.html">Simulation scenario</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec2.html">Demographic model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec3.html">Mutation and selection models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec4.html">Output statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec5.html">Initialize and evolve the population</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Option handling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch8.html">A real world example</a><ul>
+      <li>Previous: <a href="userGuide_ch8_sec5.html" title="previous chapter">Initialize and evolve the population</a></li>
+      <li>Next: <a href="refManual.html" title="next chapter">&lt;no title&gt;</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch8_sec6.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

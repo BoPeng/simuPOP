@@ -1,0 +1,500 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Genotype transmitters &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Mutation" href="refManual_ch3_sec6.html" />
+    <link rel="prev" title="Demographic models" href="refManual_ch3_sec4.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="genotype-transmitters">
+<h1>Genotype transmitters<a class="headerlink" href="#genotype-transmitters" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class-genotransmitter">
+<h2>class GenoTransmitter<a class="headerlink" href="#class-genotransmitter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="GenoTransmitter">
+<em class="property">class </em><code class="descname">GenoTransmitter</code><a class="headerlink" href="#GenoTransmitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This during mating operator is the base class of all genotype
+transmitters. It is made available to users because it provides a
+few member functions that can be used by derived transmitters, and
+by customized Python during mating operators.</p>
+<dl class="method">
+<dt id="GenoTransmitter.GenoTransmitter">
+<code class="descname">GenoTransmitter</code><span class="sig-paren">(</span><em>output=&quot;&quot;</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#GenoTransmitter.GenoTransmitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a base genotype transmitter.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoTransmitter.clearChromosome">
+<code class="descname">clearChromosome</code><span class="sig-paren">(</span><em>ind</em>, <em>ploidy</em>, <em>chrom</em><span class="sig-paren">)</span><a class="headerlink" href="#GenoTransmitter.clearChromosome" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear (set alleles to zero) chromosome <em>chrom</em> on the <em>ploidy-
+th</em> homologous set of chromosomes of individual <em>ind</em>. It is
+equivalent to <code class="docutils literal notranslate"><span class="pre">ind.setGenotype([0],</span> <span class="pre">ploidy,</span> <span class="pre">chrom)</span></code>, except
+that it also clears allele lineage if it is executed in a module
+with lineage allele type.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoTransmitter.copyChromosome">
+<code class="descname">copyChromosome</code><span class="sig-paren">(</span><em>parent</em>, <em>parPloidy</em>, <em>offspring</em>, <em>ploidy</em>, <em>chrom</em><span class="sig-paren">)</span><a class="headerlink" href="#GenoTransmitter.copyChromosome" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transmit chromosome <em>chrom</em> on the <em>parPloidy</em> set of homologous
+chromosomes from <em>parent</em> to the <em>ploidy</em> set of homologous
+chromosomes of <em>offspring</em>. It is equivalent to
+<code class="docutils literal notranslate"><span class="pre">offspring.setGenotype(parent.genotype(parPloidy,</span> <span class="pre">chrom),</span>
+<span class="pre">polidy,</span> <span class="pre">chrom)</span></code>, except that it also copies allelic lineage
+when it is executed in a module with lineage allele type.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoTransmitter.copyChromosomes">
+<code class="descname">copyChromosomes</code><span class="sig-paren">(</span><em>parent</em>, <em>parPloidy</em>, <em>offspring</em>, <em>ploidy</em><span class="sig-paren">)</span><a class="headerlink" href="#GenoTransmitter.copyChromosomes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transmit the <em>parPloidy</em> set of homologous chromosomes from
+<em>parent</em> to the <em>ploidy</em> set of homologous chromosomes of
+<em>offspring</em>. Customized chromosomes are not copied. It is
+equivalent to
+<code class="docutils literal notranslate"><span class="pre">offspring.setGenotype(parent.genotype(parPloidy),</span> <span class="pre">ploidy)</span></code>,
+except that it also copies allelic lineage when it is executed
+in a module with lineage allele type.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-clonegenotransmitter">
+<h2>class CloneGenoTransmitter<a class="headerlink" href="#class-clonegenotransmitter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="CloneGenoTransmitter">
+<em class="property">class </em><code class="descname">CloneGenoTransmitter</code><a class="headerlink" href="#CloneGenoTransmitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This during mating operator copies parental genotype directly to
+offspring. This operator works for all mating schemes when one or
+two parents are involved. If both parents are passed, maternal
+genotype are copied. In addition to genotypes on all non-customized
+or specified chromosomes, sex and information fields are by default
+also coped copied from parent to offspring.</p>
+<dl class="method">
+<dt id="CloneGenoTransmitter.CloneGenoTransmitter">
+<code class="descname">CloneGenoTransmitter</code><span class="sig-paren">(</span><em>output=&quot;&quot;</em>, <em>chroms=ALL_AVAIL</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#CloneGenoTransmitter.CloneGenoTransmitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a clone genotype transmitter (a during-mating operator)
+that copies genotypes from parents to offspring. If two parents
+are specified, genotypes are copied maternally. After genotype
+transmission, offspring sex and affection status is copied from
+the parent even if sex has been determined by an offspring
+generator. All or specified information fields (parameter
+<em>infoFields</em>, default to <code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>) will also be copied from
+parent to offspring. Parameters <em>subPops</em> is ignored. This
+operator by default copies genotypes on all autosome and sex
+chromosomes (excluding customized chromosomes), unless a
+parameter <em>chroms</em> is used to specify which chromosomes to copy.
+This operator also copies allelic lineage when it is executed in
+a module with lineage allele type.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-mendeliangenotransmitter">
+<h2>class MendelianGenoTransmitter<a class="headerlink" href="#class-mendeliangenotransmitter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="MendelianGenoTransmitter">
+<em class="property">class </em><code class="descname">MendelianGenoTransmitter</code><a class="headerlink" href="#MendelianGenoTransmitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This Mendelian offspring generator accepts two parents and pass
+their genotypes to an offspring following Mendel’s laws. Sex
+chromosomes are handled according to the sex of the offspring,
+which is usually determined in advance by an offspring generator.
+Customized chromosomes are not handled.</p>
+<dl class="method">
+<dt id="MendelianGenoTransmitter.MendelianGenoTransmitter">
+<code class="descname">MendelianGenoTransmitter</code><span class="sig-paren">(</span><em>output=&quot;&quot;</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#MendelianGenoTransmitter.MendelianGenoTransmitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Mendelian genotype transmitter (a during-mating
+operator) that transmits genotypes from parents to offspring
+following Mendel’s laws. Autosomes and sex chromosomes are
+handled but customized chromosomes are ignored. Parameters
+<em>subPops</em> and <em>infoFields</em> are ignored. This operator also
+copies allelic lineage when it is executed in a module with
+lineage allele type.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="MendelianGenoTransmitter.transmitGenotype">
+<code class="descname">transmitGenotype</code><span class="sig-paren">(</span><em>parent</em>, <em>offspring</em>, <em>ploidy</em><span class="sig-paren">)</span><a class="headerlink" href="#MendelianGenoTransmitter.transmitGenotype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transmit genotype from parent to offspring, and fill the
+<em>ploidy</em> homologous set of chromosomes. This function does not
+set genotypes of customized chromosomes and handles sex
+chromosomes properly, according to offspring sex and <code class="docutils literal notranslate"><span class="pre">ploidy</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-selfinggenotransmitter">
+<h2>class SelfingGenoTransmitter<a class="headerlink" href="#class-selfinggenotransmitter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="SelfingGenoTransmitter">
+<em class="property">class </em><code class="descname">SelfingGenoTransmitter</code><a class="headerlink" href="#SelfingGenoTransmitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>A genotype transmitter (during-mating operator) that transmits
+parental genotype of a parent through self-fertilization. That is
+to say, the offspring genotype is formed according to Mendel’s
+laws, only that a parent serves as both maternal and paternal
+parents.</p>
+<dl class="method">
+<dt id="SelfingGenoTransmitter.SelfingGenoTransmitter">
+<code class="descname">SelfingGenoTransmitter</code><span class="sig-paren">(</span><em>output=&quot;&quot;</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#SelfingGenoTransmitter.SelfingGenoTransmitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a self-fertilization genotype transmitter that transmits
+genotypes of a parent to an offspring through self-
+fertilization. Cutsomized chromosomes are not handled.
+Parameters <em>subPops</em> and <em>infoFields</em> are ignored. This operator
+also copies allelic lineage when it is executed in a module with
+lineage allele type.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-haplodiploidgenotransmitter">
+<h2>class HaplodiploidGenoTransmitter<a class="headerlink" href="#class-haplodiploidgenotransmitter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="HaplodiploidGenoTransmitter">
+<em class="property">class </em><code class="descname">HaplodiploidGenoTransmitter</code><a class="headerlink" href="#HaplodiploidGenoTransmitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>A genotype transmitter (during-mating operator) for haplodiploid
+populations. The female parent is considered as diploid and the
+male parent is considered as haploid (only the first homologous
+copy is valid). If the offspring is <code class="docutils literal notranslate"><span class="pre">FEMALE</span></code>, she will get a
+random copy of two homologous chromosomes of her mother, and get
+the only paternal copy from her father. If the offspring is
+<code class="docutils literal notranslate"><span class="pre">MALE</span></code>, he will only get a set of chromosomes from his mother.</p>
+<dl class="method">
+<dt id="HaplodiploidGenoTransmitter.HaplodiploidGenoTransmitter">
+<code class="descname">HaplodiploidGenoTransmitter</code><span class="sig-paren">(</span><em>output=&quot;&quot;</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#HaplodiploidGenoTransmitter.HaplodiploidGenoTransmitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a haplodiploid genotype transmitter (during-mating
+operator) that transmit parental genotypes from parents to
+offspring in a haplodiploid population. Parameters <em>subPops</em> and
+<em>infoFields</em> are ignored. This operator also copies allelic
+lineage when it is executed in a module with lineage allele
+type.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-mitochondrialgenotransmitter">
+<h2>class MitochondrialGenoTransmitter<a class="headerlink" href="#class-mitochondrialgenotransmitter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="MitochondrialGenoTransmitter">
+<em class="property">class </em><code class="descname">MitochondrialGenoTransmitter</code><a class="headerlink" href="#MitochondrialGenoTransmitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This geno transmitter transmits the first homologous copy of a
+<code class="docutils literal notranslate"><span class="pre">Mitochondrial</span></code> chromosome. If no mitochondrial chromosome is
+present, it assumes that the first homologous copy of several (or
+all) <code class="docutils literal notranslate"><span class="pre">Customized</span></code> chromosomes are copies of mitochondrial
+chromosomes. This operator transmits the mitochondrial chromosome
+from the female parent to offspring for sexsual reproduction, and
+any parent to offspring for asexual reproduction. If there are
+multiple chromosomes, the organelles are selected randomly. If this
+transmitter is applied to populations with more than one homologous
+copies of chromosomes, it transmits the first homologous copy of
+chromosomes and clears alleles (set to zero) on other homologous
+copies.</p>
+<dl class="method">
+<dt id="MitochondrialGenoTransmitter.MitochondrialGenoTransmitter">
+<code class="descname">MitochondrialGenoTransmitter</code><span class="sig-paren">(</span><em>output=&quot;&quot;</em>, <em>chroms=ALL_AVAIL</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#MitochondrialGenoTransmitter.MitochondrialGenoTransmitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Createa a mitochondrial genotype transmitter that treats the
+Mitochondiral chromosome, or Customized chromosomes if no
+Mitochondrial chromosome is specified, or a list of chromosomes
+specified by <em>chroms</em>, as human mitochondrial chromosomes. These
+chromosomes should have the same length and the same number of
+loci. This operator transmits these chromosomes randomly from
+the female parent to offspring of both sexes. It also copies
+allelic lineage when it is executed in a module with lineage
+allele type.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-recombinator">
+<h2>class Recombinator<a class="headerlink" href="#class-recombinator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Recombinator">
+<em class="property">class </em><code class="descname">Recombinator</code><a class="headerlink" href="#Recombinator" title="Permalink to this definition">¶</a></dt>
+<dd><p>A genotype transmitter (during-mating operator) that transmits
+parental chromosomes to offspring, subject to recombination and
+gene conversion. This can be used to replace
+<a class="reference internal" href="#MendelianGenoTransmitter" title="MendelianGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MendelianGenoTransmitter</span></code></a> and
+<a class="reference internal" href="#SelfingGenoTransmitter" title="SelfingGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SelfingGenoTransmitter</span></code></a>. It does not work in haplodiploid
+populations, although a customized genotype transmitter that makes
+uses this operator could be defined. Please refer to the  simuPOP
+user’s guide or online cookbook for details.</p>
+<p>Recombination could be applied to all adjacent markers or after
+specified loci. Recombination rate between two adjacent markers
+could be specified directly, or calculated using physical distance
+between them. In the latter case, a recombination intensity is
+multiplied by physical distance between markers.</p>
+<p>Gene conversion is interpreted as double-recombination events. That
+is to say, if a recombination event happens, it has a certain
+probability (can be 1) to become a conversion event, namely
+triggering another recombination event down the chromosome. The
+length of the converted chromosome can be controlled in a number of
+ways.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">simuPOP does not assume any unit to loci positions so
+recombination intensity could be explained differntly (e.g.
+cM/Mb, Morgan/Mb) depending on your intepretation of loci
+positions. For example, if basepair is used for loci position,
+<code class="docutils literal notranslate"><span class="pre">intensity=10^-8</span></code> indicates <code class="docutils literal notranslate"><span class="pre">10^-8</span></code> per basepair, which is
+equivalent to <code class="docutils literal notranslate"><span class="pre">10^-2</span></code> per Mb or 1 cM/Mb. If <code class="docutils literal notranslate"><span class="pre">Mb</span></code> is used for
+physical positions, the same recombination intensity could be
+achieved by <code class="docutils literal notranslate"><span class="pre">intensity=0.01</span></code>.</p>
+</div>
+<dl class="method">
+<dt id="Recombinator.Recombinator">
+<code class="descname">Recombinator</code><span class="sig-paren">(</span><em>rates=[]</em>, <em>intensity=-1</em>, <em>loci=ALL_AVAIL</em>, <em>convMode=NO_CONVERSION</em>, <em>output=&quot;&quot;</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Recombinator.Recombinator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a  Recombinator (a mendelian genotype transmitter with
+recombination and gene conversion) that passes genotypes from
+parents (or a parent in case of self-fertilization) to
+offspring.</p>
+<p>Recombination happens by default between all adjacent markers
+but can be limited to a given set of <em>loci</em>, which can be a list
+of loci indexes, names, list of chromosome position pairs,
+<code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>, or a function with optional parameter <code class="docutils literal notranslate"><span class="pre">pop</span></code>
+that will be called at each ganeeration to determine indexes of
+loci. Each locus in this list specifies a recombination point
+between the locus and the locus immediately <strong>after</strong> it. Loci
+that are the last locus on each chromosome are ignored.</p>
+<p>If a single recombination rate (parameter <em>rates</em>) is specified,
+it will used for all loci (all loci or loci specified by
+parameter <em>loci</em>), regardless of physical distances between
+adjacent loci.</p>
+<p>If a list of recombination rates are specified in <em>rates</em>,
+different recombination rates could be applied after a list of
+specified loci (between loci and their immediate neighbor to the
+right). The loci should be specified by parameter <em>loci</em> as a
+list with the same length as <em>rates</em>, or <em>ALL_AVAIL</em> (default)
+in which case the length of <em>rates</em> should equal to the total
+number of loci. Note that recombination rates specified for the
+last locus on each chromosome are ignored because  simuPOP
+assumes free recombination between chromosomes.</p>
+<p>A recombination intensity (<em>intensity</em>) can be used to specify
+recombination rates that are proportional to physical distances
+between adjacent markers. If the physical distance between two
+markers is <code class="docutils literal notranslate"><span class="pre">d</span></code>, the recombination rate between them will be
+<code class="docutils literal notranslate"><span class="pre">intensity</span> <span class="pre">*</span> <span class="pre">d</span></code>. No unit is assume for loci position and
+recombination intensity.</p>
+<p>Gene conversion is controlled using parameter <em>convMode</em>, which
+can be</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">NoConversion</span></code>: no gene conversion (default).</li>
+<li><code class="docutils literal notranslate"><span class="pre">(NUM_MARKERS,</span> <span class="pre">prob,</span> <span class="pre">n)</span></code>: With probability <em>prob</em>, convert a
+fixed number (<em>n</em>) of markers if a recombination event
+happens.</li>
+<li><code class="docutils literal notranslate"><span class="pre">(GEOMETRIC_DISTRIBUTION,</span> <span class="pre">prob,</span> <span class="pre">p)</span></code>: With probability
+<em>prob</em>, convert a random number of markers if a recombination
+event happens. The number of markes converted follows a
+geometric distribution with probability <em>p</em>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">(TRACT_LENGTH,</span> <span class="pre">prob,</span> <span class="pre">n)</span></code>: With probability <em>prob</em>, convert
+a region of fixed tract length (<em>n</em>) if a recombination event
+happens. The actual number of markers converted depends on
+loci positions of surrounding loci. The starting position of
+this tract is the middle of two adjacent markers. For example,
+if four loci are located at <code class="docutils literal notranslate"><span class="pre">0,</span> <span class="pre">1,</span> <span class="pre">2,</span> <span class="pre">3</span></code> respectively, a
+conversion event happens between <code class="docutils literal notranslate"><span class="pre">0</span></code> and <code class="docutils literal notranslate"><span class="pre">1</span></code>, with a tract
+length 2 will start at 0.5 and end at 2.5, covering the second
+and third loci.</li>
+<li><code class="docutils literal notranslate"><span class="pre">(EXPONENTIAL_DISTRIBUTION,</span> <span class="pre">prob,</span> <span class="pre">p)</span></code>: With probability
+<em>prob</em>, convert a region of random tract length if a
+recombination event happens. The distribution of tract length
+follows a exponential distribution with probability <code class="docutils literal notranslate"><span class="pre">p</span></code>. The
+actual number of markers converted depends on loci positions
+of surrounding loci.</li>
+</ul>
+<p>simuPOP uses this probabilistic model of gene conversion because
+when a recombination event happens, it may become a
+recombination event if the if the Holliday junction is
+resolved/repaired successfully, or a conversion event if the
+junction is not resolved/repaired. The probability, however, is
+more commonly denoted by the ratio of conversion to
+recombination events in the literature. This ratio varies
+greatly from study to study, ranging from 0.1 to 15 (Chen et al,
+Nature Review Genetics, 2007). This translate to 0.1/0.9~0.1 to
+15/16~0.94 of the gene conversion probability.</p>
+<p>A <a class="reference internal" href="#Recombinator" title="Recombinator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Recombinator</span></code></a> usually does not send any output.
+However, if an information field is given (parameter
+<em>infoFields</em>), this operator will treat this information field
+as an unique ID of parents and offspring and output all
+recombination events in the format of <code class="docutils literal notranslate"><span class="pre">offspring_id</span> <span class="pre">parent_id</span>
+<span class="pre">starting_ploidy</span> <span class="pre">loc1</span> <span class="pre">loc2</span> <span class="pre">...</span> <span class="pre">``</span> <span class="pre">where</span> <span class="pre">``starting_ploidy</span></code>
+indicates which homologous copy genotype replication starts from
+(<code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code>), <code class="docutils literal notranslate"><span class="pre">loc1</span></code>, <code class="docutils literal notranslate"><span class="pre">loc2</span></code> etc are loci after which
+recombination events happens. If there are multiple chromosomes
+on the genome, you will see a lot of (fake) recombination events
+because of independent segregation of chromosomes. Such a record
+will be generated for each set of homologous chromosomes so an
+diploid offspring will have two lines of output. Note that
+individual IDs need to be set (using a <a class="reference internal" href="refManual_ch3_sec10.html#IdTagger" title="IdTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">IdTagger</span></code></a>
+operator) before this  Recombinator is applied.</p>
+<p>In addition to genotypes, this operator also copies alleleic
+lineage if it is executed in a module with lineage allele type.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">There is no recombination between sex chromosomes
+(Chromosomes X and Y), although recombination is possible
+between pesudoautosomal regions on these chromosomes. If such
+a feature is required, you will have to simulate the
+pesudoautosomal regions as separate chromosomes.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="Recombinator.transmitGenotype">
+<code class="descname">transmitGenotype</code><span class="sig-paren">(</span><em>parent</em>, <em>offspring</em>, <em>ploidy</em><span class="sig-paren">)</span><a class="headerlink" href="#Recombinator.transmitGenotype" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function transmits genotypes from a <em>parent</em> to the
+<em>ploidy-th</em> homologous set of chromosomes of an <em>offspring</em>. It
+can be used, for example, by a customized genotype transmitter
+to use sex-specific recombination rates to transmit parental
+genotypes to offspring.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="refManual_ch3.html">Operator References</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec1.html">Base class for all operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec2.html">Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec3.html">Expression and Statements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec4.html">Demographic models</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Genotype transmitters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-genotransmitter">class GenoTransmitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-clonegenotransmitter">class CloneGenoTransmitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-mendeliangenotransmitter">class MendelianGenoTransmitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-selfinggenotransmitter">class SelfingGenoTransmitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-haplodiploidgenotransmitter">class HaplodiploidGenoTransmitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-mitochondrialgenotransmitter">class MitochondrialGenoTransmitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-recombinator">class Recombinator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec6.html">Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec7.html">Penetrance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec8.html">Quantitative Trait</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec9.html">Natural selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec10.html">Tagging operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec11.html">Statistics Calculation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec12.html">Conditional operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec13.html">The Python operator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec14.html">Miscellaneous operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec15.html">Function form of operators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="refManual.html">&lt;no title&gt;</a><ul>
+  <li><a href="refManual_ch3.html">Operator References</a><ul>
+      <li>Previous: <a href="refManual_ch3_sec4.html" title="previous chapter">Demographic models</a></li>
+      <li>Next: <a href="refManual_ch3_sec6.html" title="next chapter">Mutation</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/refManual_ch3_sec5.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

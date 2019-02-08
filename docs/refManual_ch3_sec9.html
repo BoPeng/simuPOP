@@ -1,0 +1,431 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Natural selection &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tagging operators" href="refManual_ch3_sec10.html" />
+    <link rel="prev" title="Quantitative Trait" href="refManual_ch3_sec8.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="natural-selection">
+<h1>Natural selection<a class="headerlink" href="#natural-selection" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class-baseselector">
+<span id="index-0"></span><h2>class BaseSelector<a class="headerlink" href="#class-baseselector" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="BaseSelector">
+<em class="property">class </em><code class="descname">BaseSelector</code><a class="headerlink" href="#BaseSelector" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class is the base class to all selectors, namely operators
+that perform natural selection. It defines a common interface for
+all selectors.</p>
+<p>A selector can be applied before mating or during mating. If a
+selector is applied to one or more (virtual) subpopulations of a
+parental population before mating, it sets individual fitness
+values to all involved parents to an information field (default to
+<em>fitness</em>). When a mating scheme that supports natural selection is
+applied to the parental population, it will select parents with
+probabilities that are proportional to individual fitness stored in
+an information field (default to <em>fitness</em>).  Individual fitness is
+considered <strong>relative</strong> fitness and can be any non-negative number.
+This simple process has some implications that can lead to advanced
+usages of natural selection in  simuPOP:</p>
+<ul class="simple">
+<li>It is up to the mating scheme how to handle individual fitness.
+Some mating schemes do not support natural selection at all.</li>
+<li>A mating scheme performs natural selection according to fitness
+values stored in an information field. It does not care how these
+values are set. For example, fitness values can be inherited from
+a parent using a tagging operator, or set directly using a Python
+operator.</li>
+<li>A mating scheme can treat any information field as fitness field.
+If an specified information field does not exist, or if all
+individuals have the same fitness values (e.g. 0), the mating
+scheme selects parents randomly.</li>
+<li>Multiple selectors can be applied to the same parental
+generation. individual fitness is determined by the last fitness
+value it is assigned.</li>
+<li>A selection operator can be applied to virtual subpopulations and
+set fitness values only to part of the individuals.</li>
+<li>individuals with zero fitness in a subpopulation with anyone
+having a positive fitness value will not be selected to produce
+offspring. This can sometimes lead to unexpected behaviors. For
+example, if you only assign fitness value to part of the
+individuals in a subpopulation, the rest of them will be
+effectively discarded. If you migrate individuals with valid
+fitness values to a subpopulation with all individuals having
+zero fitness, the migrants will be the only mating parents.</li>
+<li>It is possible to assign multiple fitness values to different
+information fields so that different homogeneous mating schemes
+can react to different fitness schemes when they are used in a
+heterogeneous mating scheme.</li>
+<li>You can apply a selector to the offspring generation using the
+<em>postOps</em> parameter of <a class="reference internal" href="refManual_ch2_sec1.html#Simulator.evolve" title="Simulator.evolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Simulator.evolve</span></code></a>, these fitness
+values will be used when the offspring generation becomes
+parental generation in the next generation.</li>
+</ul>
+<p>Alternatively, a selector can be used as a during mating operator.
+In this case, it caculates fitness value for each offspring which
+will be treated as <strong>absolute</strong> fitness, namely the probability for
+each offspring to survive. This process uses the fact that an
+individual will be discarded when any of the during mating
+operators returns <em>False</em>. It is important to remember that:</p>
+<ul class="simple">
+<li>individual fitness needs to be between 0 and 1 in this case.</li>
+<li>Fitness values are not stored so the population does not need an
+information field <em>fitness</em>.</li>
+<li>This method applies natural selection to offspring instead of
+parents. These two implementation can be identical or different
+depending on the mating scheme used.</li>
+<li>Seleting offspring is less efficient than the selecting parents,
+especially when fitness values are low.</li>
+<li>Parameter <em>subPops</em> are applied to the offspring population and
+is used to judge if an operator should be applied. It thus does
+not make sense to apply a selector to a virtual subpopulation
+with affected individuals.</li>
+</ul>
+<dl class="method">
+<dt id="BaseSelector.BaseSelector">
+<code class="descname">BaseSelector</code><span class="sig-paren">(</span><em>output=&quot;&quot;</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#BaseSelector.BaseSelector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a base selector object. This operator should not be
+created directly.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-mapselector">
+<h2>class MapSelector<a class="headerlink" href="#class-mapselector" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="MapSelector">
+<em class="property">class </em><code class="descname">MapSelector</code><a class="headerlink" href="#MapSelector" title="Permalink to this definition">¶</a></dt>
+<dd><p>This selector assigns individual fitness values using a user-
+specified dictionary. This operator can be applied to populations
+with arbitrary number of homologous chromosomes.</p>
+<dl class="method">
+<dt id="MapSelector.MapSelector">
+<code class="descname">MapSelector</code><span class="sig-paren">(</span><em>loci</em>, <em>fitness</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#MapSelector.MapSelector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a selector that assigns individual fitness values using a
+dictionary <em>fitness</em> with genotype at <em>loci</em> as keys, and
+fitness as values. Parameter <em>loci</em> can be a list of indexes,
+loci names, list of chromosome position pairs, <code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>, or
+a function with optional parameter <code class="docutils literal notranslate"><span class="pre">pop</span></code> that will be called
+at each ganeeration to determine indexes of loci. For each
+individual (parents if this operator is applied before mating,
+and offspring if this operator is applied during mating),
+genotypes at <em>loci</em> are collected one by one (e.g. p0_loc0,
+p1_loc0, p0_loc1, p1_loc1… for a diploid individual, with
+number of alleles varying for sex and mitochondrial DNAs) and
+are looked up in the dictionary. If a genotype cannot be found,
+it will be looked up again without phase information (e.g.
+<code class="docutils literal notranslate"><span class="pre">(1,0)</span></code> will match key <code class="docutils literal notranslate"><span class="pre">(0,1)</span></code>). If the genotype still can
+not be found, a <code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code> will be raised. This
+operator supports sex chromosomes and haplodiploid populations.
+In these cases, only valid genotypes should be used to generator
+the dictionary keys.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-maselector">
+<h2>class MaSelector<a class="headerlink" href="#class-maselector" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="MaSelector">
+<em class="property">class </em><code class="descname">MaSelector</code><a class="headerlink" href="#MaSelector" title="Permalink to this definition">¶</a></dt>
+<dd><p>This operator is called a ‘multi-allele’ selector because it groups
+multiple alleles into two groups: wildtype and non-wildtype
+alleles. Alleles in each allele group are assumed to have the same
+effect on individual fitness. If we denote all wildtype alleles as
+<code class="docutils literal notranslate"><span class="pre">A</span></code>, and all non-wildtype alleles <code class="docutils literal notranslate"><span class="pre">a</span></code>, this operator assign
+individual fitness according to genotype <code class="docutils literal notranslate"><span class="pre">AA</span></code>, <code class="docutils literal notranslate"><span class="pre">Aa</span></code>, <code class="docutils literal notranslate"><span class="pre">aa</span></code> in
+the diploid case, and <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">a</span></code> in the haploid case.</p>
+<dl class="method">
+<dt id="MaSelector.MaSelector">
+<code class="descname">MaSelector</code><span class="sig-paren">(</span><em>loci</em>, <em>fitness</em>, <em>wildtype=0</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#MaSelector.MaSelector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a multi-allele selector that groups multiple alleles
+into a wildtype group (with alleles <em>wildtype</em>, default to
+<code class="docutils literal notranslate"><span class="pre">[0]</span></code>), and a non-wildtype group. A list of fitness values is
+specified through parameter <em>fitness</em>, for genotypes at one or
+more <em>loci</em>. Parameter <em>loci</em> can be a list of indexes, loci
+names , list of chromosome position pairs, <code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>, or a
+function with optional parameter <code class="docutils literal notranslate"><span class="pre">pop</span></code> that will be called at
+each ganeeration to determine indexes of loci. If we denote
+wildtype alleles using capital letters <code class="docutils literal notranslate"><span class="pre">A</span></code>, <code class="docutils literal notranslate"><span class="pre">B</span></code> … and non-
+wildtype alleles using small letters <code class="docutils literal notranslate"><span class="pre">a</span></code>, <code class="docutils literal notranslate"><span class="pre">b</span></code> …, the
+fitness values should be for</p>
+<ul class="simple">
+<li>genotypes <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">a</span></code> for the haploid single-locus case,</li>
+<li>genotypes <code class="docutils literal notranslate"><span class="pre">AB</span></code>, <code class="docutils literal notranslate"><span class="pre">Ab</span></code>, <code class="docutils literal notranslate"><span class="pre">aB</span></code> and <code class="docutils literal notranslate"><span class="pre">bb</span></code> for haploid
+two=locus cases,</li>
+<li>genotypes <code class="docutils literal notranslate"><span class="pre">AA</span></code>, <code class="docutils literal notranslate"><span class="pre">Aa</span></code> and <code class="docutils literal notranslate"><span class="pre">aa</span></code> for diploid single-locus
+cases,</li>
+<li>genotypes <code class="docutils literal notranslate"><span class="pre">AABB</span></code>, <code class="docutils literal notranslate"><span class="pre">AABb</span></code>, <code class="docutils literal notranslate"><span class="pre">AAbb</span></code>, <code class="docutils literal notranslate"><span class="pre">AaBB</span></code>, <code class="docutils literal notranslate"><span class="pre">AaBb</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Aabb</span></code>, <code class="docutils literal notranslate"><span class="pre">aaBB</span></code>, <code class="docutils literal notranslate"><span class="pre">aaBb</span></code>, and <code class="docutils literal notranslate"><span class="pre">aabb</span></code> for diploid two-
+locus cases,</li>
+<li>and in general 2**n for diploid and 3**n for haploid cases if
+there are <code class="docutils literal notranslate"><span class="pre">n</span></code> loci.</li>
+</ul>
+<p>This operator does not support haplodiploid populations, sex and
+mitochondrial chromosomes.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-mlselector">
+<h2>class MlSelector<a class="headerlink" href="#class-mlselector" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="MlSelector">
+<em class="property">class </em><code class="descname">MlSelector</code><a class="headerlink" href="#MlSelector" title="Permalink to this definition">¶</a></dt>
+<dd><p>This selector is created by a list of selectors. When it is applied
+to an individual, it applies these selectors to the individual,
+obtain a list of fitness values, and compute a combined fitness
+value from them. ADDITIVE, multiplicative, and a heterogeneour
+multi-locus model are supported.</p>
+<dl class="method">
+<dt id="MlSelector.MlSelector">
+<code class="descname">MlSelector</code><span class="sig-paren">(</span><em>ops</em>, <em>mode=MULTIPLICATIVE</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#MlSelector.MlSelector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a multiple-locus selector from a list selection operator
+<em>selectors</em>. When this operator is applied to an individual
+(parents when used before mating and offspring when used during
+mating), it applies these operators to the individual and obtain
+a list of (usually single-locus) fitness values. These fitness
+values are combined to a single fitness value using</p>
+<ul class="simple">
+<li><em>Prod(f_i)</em>, namely the product of individual fitness if
+<em>mode</em> = <code class="docutils literal notranslate"><span class="pre">MULTIPLICATIVE</span></code>,</li>
+<li><em>1-sum(1 - f_i)</em> if <em>mode</em> = <code class="docutils literal notranslate"><span class="pre">ADDITIVE</span></code>,</li>
+<li><em>1-Prod(1 - f_i)</em> if <em>mode</em> = <code class="docutils literal notranslate"><span class="pre">HETEROGENEITY</span></code>, and</li>
+<li><em>exp(- sum(1 - f_i))</em> if <em>mode</em> = <code class="docutils literal notranslate"><span class="pre">EXPONENTIAL</span></code>,</li>
+</ul>
+<p>zero will be returned if the combined fitness value is less than
+zero.</p>
+<p>Applicability parameters (begin, end, step, at, reps, subPops)
+could be used in both <a class="reference internal" href="#MlSelector" title="MlSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlSelector</span></code></a> and selectors in
+parameter <em>ops</em>, but parameters in <a class="reference internal" href="#MlSelector" title="MlSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlSelector</span></code></a> will be
+interpreted first.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-pyselector">
+<h2>class PySelector<a class="headerlink" href="#class-pyselector" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PySelector">
+<em class="property">class </em><code class="descname">PySelector</code><a class="headerlink" href="#PySelector" title="Permalink to this definition">¶</a></dt>
+<dd><p>This selector assigns fitness values by calling a user provided
+function. It accepts a list of loci (parameter <em>loci</em>) and a Python
+function <code class="docutils literal notranslate"><span class="pre">func</span></code> which should be defined with one or more of
+parameters <code class="docutils literal notranslate"><span class="pre">geno</span></code>, <code class="docutils literal notranslate"><span class="pre">mut</span></code>, <code class="docutils literal notranslate"><span class="pre">gen</span></code>, <code class="docutils literal notranslate"><span class="pre">ind</span></code>, <code class="docutils literal notranslate"><span class="pre">pop</span></code> or names of
+information fields. Parameter <em>loci</em> can be a list of loci indexes,
+names, list of chromosome position pairs, <code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>, or a
+function with optional parameter <code class="docutils literal notranslate"><span class="pre">pop</span></code> that will be called at
+each ganeeration to determine indexes of loci. When this operator
+is applied to a population, it passes genotypes or mutants at
+specified loci, generation number, a reference to an individual, a
+reference to the current population (usually used to retrieve
+population variable), and values at specified information fields to
+respective parameters of this function. Genotypes are passed as a
+tuple of alleles arranged locus by locus (in the order of
+A1,A2,B1,B2 for loci A and B). Mutants are passed as a default
+dictionary of loci index (with respect to all genotype of
+individuals, not just the first ploidy) and alleles. The returned
+value will be used to determine the fitness of each individual.</p>
+<dl class="method">
+<dt id="PySelector.PySelector">
+<code class="descname">PySelector</code><span class="sig-paren">(</span><em>func</em>, <em>loci=[]</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>output=&quot;&quot;</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#PySelector.PySelector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Python hybrid selector that passes genotype at
+specified <em>loci</em>, values at specified information fields (if
+requested) and a generation number to a user-defined function
+<em>func</em>. The return value will be treated as individual fitness.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-pymlselector">
+<h2>class PyMlSelector<a class="headerlink" href="#class-pymlselector" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PyMlSelector">
+<em class="property">class </em><code class="descname">PyMlSelector</code><a class="headerlink" href="#PyMlSelector" title="Permalink to this definition">¶</a></dt>
+<dd><p>This selector is a multi-locus Python selector that assigns fitness
+to individuals by combining locus and genotype specific fitness
+values. It differs from a <a class="reference internal" href="#PySelector" title="PySelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySelector</span></code></a> in that the python
+function is responsible for assigning fitness values for each
+gentoype type at each locus, which can potentially be random, and
+locus or gentoype-specific.</p>
+<dl class="method">
+<dt id="PyMlSelector.PyMlSelector">
+<code class="descname">PyMlSelector</code><span class="sig-paren">(</span><em>func</em>, <em>mode=EXPONENTIAL</em>, <em>loci=ALL_AVAIL</em>, <em>output=&quot;&quot;</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#PyMlSelector.PyMlSelector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a selector that assigns individual fitness values by
+combining locus-specific fitness values that are determined by a
+Python call-back function. The callback function accepts
+parameter <em>loc</em>, <em>alleles</em> (both optional) and returns location-
+or genotype-specific fitness values that can be constant or
+random. The fitness values for each genotype will be cached so
+the same fitness values will be assigned to genotypes with
+previously assigned values. Note that a function that does not
+examine the genotype naturally assumes a dominant model where
+genotypes with one or two mutants have the same fitness effect.
+Because genotypes at a locus are passed separately and in no
+particular order, this function is also responsible for
+assigning consistent fitness values for genotypes at the same
+locus (a class is usually used). This operator currently ignores
+chromosome types so unused alleles will be passed for loci on
+sex or mitochondrial chromosomes. It also ignores phase of
+genotype so it will use the same fitness value for genotype
+(a,b) and (b,a).</p>
+<p>Individual fitness will be combined in <code class="docutils literal notranslate"><span class="pre">ADDITIVE</span></code>,
+<code class="docutils literal notranslate"><span class="pre">MULTIPLICATIVE</span></code>, <code class="docutils literal notranslate"><span class="pre">HETEROGENEITY</span></code>, or <code class="docutils literal notranslate"><span class="pre">EXPONENTIAL</span></code> mode
+from fitness values of loci with at least one non-zero allele
+(See <a class="reference internal" href="#MlSelector" title="MlSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlSelector</span></code></a> for details). If an output is given,
+location, genotype, fitness and generation at which the new
+genotype is assgined the value will be written to the output, in
+the format of ‘loc a1 a2 fitness gen’ for loci on autosomes of
+diploid populations.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="refManual_ch3.html">Operator References</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec1.html">Base class for all operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec2.html">Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec3.html">Expression and Statements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec4.html">Demographic models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec5.html">Genotype transmitters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec6.html">Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec7.html">Penetrance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec8.html">Quantitative Trait</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Natural selection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-baseselector">class BaseSelector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-mapselector">class MapSelector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-maselector">class MaSelector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-mlselector">class MlSelector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-pyselector">class PySelector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-pymlselector">class PyMlSelector</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec10.html">Tagging operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec11.html">Statistics Calculation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec12.html">Conditional operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec13.html">The Python operator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec14.html">Miscellaneous operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec15.html">Function form of operators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="refManual.html">&lt;no title&gt;</a><ul>
+  <li><a href="refManual_ch3.html">Operator References</a><ul>
+      <li>Previous: <a href="refManual_ch3_sec8.html" title="previous chapter">Quantitative Trait</a></li>
+      <li>Next: <a href="refManual_ch3_sec10.html" title="next chapter">Tagging operators</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/refManual_ch3_sec9.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

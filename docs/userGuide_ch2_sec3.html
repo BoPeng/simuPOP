@@ -1,0 +1,220 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Features &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="License, Distribution and Installation" href="userGuide_ch2_sec4.html" />
+    <link rel="prev" title="An overview of simuPOP concepts" href="userGuide_ch2_sec2.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="features">
+<h1>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h1>
+<p>simuPOP offers a long list of features, many of which are unique among all
+forward-time population genetics simulation programs. The most distinguishing
+features include:</p>
+<ol class="arabic simple">
+<li>simuPOP provides three types of modules that use 1, 8 or 32/64 bits to store
+an allele. The binary module (1 bit) is suitable for simulating a large number
+of SNP markers, and the long module (32 or 64 bits depending on platform) is
+suitable for simulating some population genetics models such as the infinite
+allele mutation model.</li>
+<li>[NEW in simuPOP 1.0.7] simuPOP provides modules to store a large number of
+rare variants in a compressed manner (the mutant module), and to store origin of
+each allele so that it is easy to track allelic lineage during evolution.</li>
+<li>The core of simuPOP is implemented in C++ which is heavily optimized for
+large-scale simulations. simuPOP can be executed in multiple threads with
+boosted performance on modern multi-core CPUs.</li>
+<li>In addition to autosomes and sex chromosomes, simuPOP supports arbitrary
+types of chromosomes through customizable genotype transmitters. Random maternal
+transmission of mitochondrial DNAs is supported as a special case of this
+feature.</li>
+<li>An arbitrary number of float numbers, called <strong>information fields</strong>, can be
+attached to individuals of a population. For example, information field
+<code class="docutils literal notranslate"><span class="pre">father_idx</span></code> and <code class="docutils literal notranslate"><span class="pre">mother_idx</span></code> can be used to track an individual’s parents,
+and <code class="docutils literal notranslate"><span class="pre">pack_year</span></code> can be used to simulate an environmental factor associated
+with smoking.</li>
+<li>simuPOP does not impose a limit on the number of homologous sets of
+chromosomes, the size of the genome or populations. The size of your simulation
+is only limited by the physical memory of your computer.</li>
+<li>During an evolutionary process, a population can hold more than one most-
+recent generation. Pedigrees can be sampled from such multi-generation
+populations.</li>
+<li>An operator can be native (implemented in C++) or hybrid (Python-assisted). A
+hybrid operator calls a user-provided Python function to implement arbitrary
+genetic effects. For example, a hybrid mutator passes to-be-mutated alleles to a
+function and mutates these alleles according to the returned values.</li>
+<li>simuPOP provides more than 60 operators that cover all important aspects of
+genetic studies. These include mutation (<em>e.g. k</em>-allele, stepwise, generalized
+stepwise and context-sensitive mutation models), migration (arbitrary, can
+create new subpopulation), recombination and gene conversion (uniform or
+nonuniform), selection (single-locus, additive, multiplicative or hybrid multi-
+locus models, support selection of both parents and offspring), penetrance
+(single, multi-locus or hybrid), ascertainment (casecontrol, affected sibpairs,
+random, nuclear and large Pedigrees), statistics calculation (including but not
+limited to allele, genotype, haplotype, heterozygote number and frequency;
+linkage disequilibrium measures, Hardy-Weinberg test), pedigree tracing,
+visualization (using R or other Python modules) and load/save in simuPOP’s
+native format and many external formats such as Linkage.</li>
+<li>Mating schemes can work on virtual subpopulations of a subpopulation. For
+example, positive assortative mating can be implemented by mating individuals
+with similar properties such as ancestry and overlapping generations could be
+simulated by copying individuals acorss generations. The number of offspring per
+mating event can be fixed or can follow a statistical distribution.</li>
+</ol>
+<p>A number of forward-time simulation programs are available. If we exclude early
+forward-time simulation applications developed primarily for teaching purposes,
+notable forward-time simulation programs include <em>easyPOP</em>, <em>FPG</em>, <em>Nemo</em> and
+<em>quantiNemo</em>, <em>genoSIM</em> and <em>genomeSIMLA</em>, <em>FreGene</em>, <em>GenomePop</em>, <em>ForwSim</em>,
+and <em>ForSim</em>. These programs are designed with specific applications and
+specific evolutionary scenarios in mind, and excel in what they are designed
+for. For some applications, these programs may be easier to use than simuPOP.
+For example, using a special look-ahead algorithm, <em>ForwSim</em> is among the
+fastest programs to simulate a standard Wright-Fisher process, and should be
+used if such a simulation is needed. However, these programs are not flexible
+enough to be applied to problems outside of their designed application area. For
+example, none of these programs can be used to study the evolution of a disease
+predisposing mutant, a process that is of great importance in statistical
+genetics and genetic epidemiology. Compared to such programs, simuPOP has the
+following advantages:</p>
+<ul class="simple">
+<li>The scripting interface gives simuPOP the flexibility to create arbitrarily
+complex evolutionary scenarios. For example, it is easy to use simuPOP to
+explicitly introduce a disease predisposing mutant to an evolving population,
+trace the allele frequency of them, and restart the simulation if they got lost
+due to genetic drift.</li>
+<li>The Python interface allows users to define customized genetic effects in
+Python. In contrast, other programs either do not allow customized effects or
+force users to modify code at a lower (e.g. C++) level.</li>
+<li>simuPOP is the only application that embodies the concept of virtual
+subpopulation that allows evolutions at a finer scale. This is required for
+realistic simulations of complex evolutionary scenarios.</li>
+<li>simuPOP allows users to examine an evolutionary process very closely because
+all simuPOP objects are Python objects that can be assessed using their member
+functions. For example, users can keep track of genotype at particular loci
+during evolution. In contrast, other programs work more or less like a black box
+where only limited types of statistics can be outputted.</li>
+</ul>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch2.html">Introduction</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch2_sec1.html">What is simuPOP?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch2_sec2.html">An overview of simuPOP concepts</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch2_sec4.html">License, Distribution and Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch2_sec5.html">How to read this user’s guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch2_sec6.html">Other help sources</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch2.html">Introduction</a><ul>
+      <li>Previous: <a href="userGuide_ch2_sec2.html" title="previous chapter">An overview of simuPOP concepts</a></li>
+      <li>Next: <a href="userGuide_ch2_sec4.html" title="next chapter">License, Distribution and Installation</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch2_sec3.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

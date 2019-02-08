@@ -1,0 +1,356 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Conditional operators &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Miscellaneous operators" href="userGuide_ch5_sec13.html" />
+    <link rel="prev" title="Statistics calculation (operator Stat)" href="userGuide_ch5_sec11.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="conditional-operators">
+<h1>Conditional operators<a class="headerlink" href="#conditional-operators" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="conditional-operator-operator-ifelse">
+<h2>Conditional operator (operator <a class="reference internal" href="refManual_ch3_sec12.html#IfElse" title="IfElse"><code class="xref py py-class docutils literal notranslate"><span class="pre">IfElse</span></code></a>) *<a class="headerlink" href="#conditional-operator-operator-ifelse" title="Permalink to this headline">¶</a></h2>
+<p>Operator <a class="reference internal" href="refManual_ch3_sec12.html#IfElse" title="IfElse"><code class="xref py py-class docutils literal notranslate"><span class="pre">IfElse</span></code></a> provides a simple way to conditionally apply an
+operator. The condition can be a fixed condition, a expression (a string) that
+will be evaluated in a population’s local namespace or a user-defined function
+when it is applied to the population.</p>
+<p>The first case is used to control the execution of certain operators depending
+on user input. For example, Example <a class="reference internal" href="#ifelsefixed"><span class="std std-ref">IfElseFixed</span></a> determines
+whether or not some outputs should be given depending on a variable <code class="docutils literal notranslate"><span class="pre">verbose</span></code>.
+Note that the applicability of the conditional operators are determined by the
+<a class="reference internal" href="refManual_ch3_sec12.html#IfElse" title="IfElse"><code class="xref py py-class docutils literal notranslate"><span class="pre">IfElse</span></code></a> operator and individual opearators. That is to say, the
+parameters <code class="docutils literal notranslate"><span class="pre">begin</span></code>, <code class="docutils literal notranslate"><span class="pre">step</span></code>, <code class="docutils literal notranslate"><span class="pre">end</span></code>, <code class="docutils literal notranslate"><span class="pre">at</span></code>, and <code class="docutils literal notranslate"><span class="pre">reps</span></code> of operators in
+<code class="docutils literal notranslate"><span class="pre">ifOps</span></code> and <code class="docutils literal notranslate"><span class="pre">elseOps</span></code> are only honored when operator <a class="reference internal" href="refManual_ch3_sec12.html#IfElse" title="IfElse"><code class="xref py py-class docutils literal notranslate"><span class="pre">IfElse</span></code></a> is
+applied.</p>
+<p id="ifelsefixed"><strong>Example</strong>: <em>A conditional opeartor with fixed condition</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">IfElse</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">ifOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;Gen: </span><span class="si">%3d</span><span class="s2">, allele freq: </span><span class="si">%.3f</span><span class="s2">\n&#39; % (gen, alleleFreq[0][1])&quot;</span><span class="p">,</span>
+<span class="gp">... </span>                <span class="n">step</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="p">],</span>
+<span class="gp">... </span>        <span class="n">begin</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Gen:  10, allele freq: 0.483</span>
+<span class="go">Gen:  15, allele freq: 0.455</span>
+<span class="go">Gen:  20, allele freq: 0.481</span>
+<span class="go">Gen:  25, allele freq: 0.481</span>
+<span class="go">30</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="IfElseFixed.py">Download IfElseFixed.py</a></p>
+<p>When a string is specified, it will be considered as an expression and be
+evaluated in a population’s namespace. The return value will be used to
+determine if an operator should be executed. For example, you can re-introduce a
+mutant if it gets lost in the population, output a warning when certain
+condition is met, or record the occurance of certain events in a population. For
+example, Example <a class="reference internal" href="#ifelse"><span class="std std-ref">IfElse</span></a> records the number of generations the
+frequency of an allele goes below 0.4 and beyong 0.6 before it gets lost or
+fixed in the population. Note that a list of else-operators can also be executed
+when the condition is not met.</p>
+<p id="ifelse"><strong>Example</strong>: <em>A conditional opeartor with dynamic condition</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Simulator</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">rep</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyExec</span><span class="p">(</span><span class="s1">&#39;below40, above60 = 0, 0&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">IfElse</span><span class="p">(</span><span class="s1">&#39;alleleFreq[0][1] &lt; 0.4&#39;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">PyExec</span><span class="p">(</span><span class="s1">&#39;below40 += 1&#39;</span><span class="p">)),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">IfElse</span><span class="p">(</span><span class="s1">&#39;alleleFreq[0][1] &gt; 0.6&#39;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">PyExec</span><span class="p">(</span><span class="s1">&#39;above60 += 1&#39;</span><span class="p">)),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">IfElse</span><span class="p">(</span><span class="s1">&#39;len(alleleFreq[0]) == 1&#39;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">PyExec</span><span class="p">(</span><span class="s1">&#39;stoppedAt = gen&#39;</span><span class="p">)),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">TerminateIf</span><span class="p">(</span><span class="s1">&#39;len(alleleFreq[0]) == 1&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">]</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">(892, 1898, 4001, 2946)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">pop</span> <span class="ow">in</span> <span class="n">simu</span><span class="o">.</span><span class="n">populations</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Overall: </span><span class="si">%4d</span><span class="s1">, below 40</span><span class="si">%%</span><span class="s1">: </span><span class="si">%4d</span><span class="s1">, above 60</span><span class="si">%%</span><span class="s1">: </span><span class="si">%4d</span><span class="s1">&#39;</span> <span class="o">%</span> \
+<span class="gp">... </span>        <span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">stoppedAt</span><span class="p">,</span> <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">below40</span><span class="p">,</span> <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">above60</span><span class="p">))</span>
+<span class="gp">...</span>
+<span class="go">Overall:  891, below 40%:   20, above 60%:  515</span>
+<span class="go">Overall: 1897, below 40%: 1039, above 60%:   51</span>
+<span class="go">Overall: 4000, below 40%: 2878, above 60%:    0</span>
+<span class="go">Overall: 2945, below 40%:  198, above 60%: 1731</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="IfElse.py">Download IfElse.py</a></p>
+<p>In the last case, a user-defined function can be specified. This function should
+accept parameter <code class="docutils literal notranslate"><span class="pre">pop</span></code> when the operator is applied to a population, and one
+or more parameters <code class="docutils literal notranslate"><span class="pre">pop</span></code>, <code class="docutils literal notranslate"><span class="pre">off</span></code>, <code class="docutils literal notranslate"><span class="pre">dad</span></code> and <code class="docutils literal notranslate"><span class="pre">mom</span></code> when it is applied
+during-mating. The later could be used to apply different during-mating
+operators for different types of parents or offspring. For example, Example
+<a class="reference internal" href="userGuide_ch6_sec7.html#pedigreematingagestructured"><span class="std std-ref">pedigreeMatingAgeStructured</span></a> in Chapter 6
+uses a <a class="reference internal" href="refManual_ch3_sec5.html#CloneGenoTransmitter" title="CloneGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">CloneGenoTransmitter</span></code></a> when only one parent is available (when
+parameter <code class="docutils literal notranslate"><span class="pre">mom</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>), and a <a class="reference internal" href="refManual_ch3_sec5.html#MendelianGenoTransmitter" title="MendelianGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MendelianGenoTransmitter</span></code></a> when two
+parents are available.</p>
+</div>
+<div class="section" id="conditionally-terminate-an-evolutionary-process-operator-terminateif">
+<h2>Conditionally terminate an evolutionary process (operator <a class="reference internal" href="refManual_ch3_sec12.html#TerminateIf" title="TerminateIf"><code class="xref py py-class docutils literal notranslate"><span class="pre">TerminateIf</span></code></a>)<a class="headerlink" href="#conditionally-terminate-an-evolutionary-process-operator-terminateif" title="Permalink to this headline">¶</a></h2>
+<p>Operator <a class="reference internal" href="refManual_ch3_sec12.html#TerminateIf" title="TerminateIf"><code class="xref py py-class docutils literal notranslate"><span class="pre">TerminateIf</span></code></a> has been described and used in several examples
+such as Example <a class="reference internal" href="userGuide_ch6_sec2.html#simugen"><span class="std std-ref">simuGen</span></a>, <a class="reference internal" href="userGuide_ch4_sec3.html#expression"><span class="std std-ref">expression</span></a> and
+<a class="reference internal" href="#ifelse"><span class="std std-ref">IfElse</span></a>. This operator accept an Python expression and terminate
+the evolution of the population being applied if the expression is evaluated to
+be <code class="docutils literal notranslate"><span class="pre">True</span></code>. This operator is well suited for situations where the number of
+generations to evolve cannot be determined in advance.</p>
+<p>If a <a class="reference internal" href="refManual_ch3_sec12.html#TerminateIf" title="TerminateIf"><code class="xref py py-class docutils literal notranslate"><span class="pre">TerminateIf</span></code></a> operator is applied to the offspring generation, the
+evolutionary cycle is considered to be completed. If the evolution is terminated
+before mating, the evolutionary cycle is condered to be incomplete. Such a
+difference can be important if the number of generations that have been involved
+is important for your analysis.</p>
+<p>A less-known feature of operator <a class="reference internal" href="refManual_ch3_sec12.html#TerminateIf" title="TerminateIf"><code class="xref py py-class docutils literal notranslate"><span class="pre">TerminateIf</span></code></a> is its ability to
+terminate the evolution of all replicates, using parameter <code class="docutils literal notranslate"><span class="pre">stopAll=True</span></code>. For
+example, Example <a class="reference internal" href="#terminateif"><span class="std std-ref">TerminateIf</span></a> terminates the evolution of
+all populations when one of the populations gets fixed. The return value of
+<code class="docutils literal notranslate"><span class="pre">simu.evolve</span></code> shows that some populations have evolved one generation less
+than the population being fixed.</p>
+<p id="terminateif"><strong>Example</strong>: <em>Terminate the evolution of all populations in a simulator</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Simulator</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">rep</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">TerminateIf</span><span class="p">(</span><span class="s1">&#39;len(alleleFreq[0]) == 1&#39;</span><span class="p">,</span> <span class="n">stopAll</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">]</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">(88, 88, 88, 88, 87, 87, 87, 87, 87, 87)</span>
+<span class="go">&gt;&gt;&gt;</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="TerminateIf.py">Download TerminateIf.py</a></p>
+</div>
+<div class="section" id="conditional-removal-of-individuals-operator-discardif">
+<h2>Conditional removal of individuals (operator <a class="reference internal" href="refManual_ch3_sec12.html#DiscardIf" title="DiscardIf"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiscardIf</span></code></a>)<a class="headerlink" href="#conditional-removal-of-individuals-operator-discardif" title="Permalink to this headline">¶</a></h2>
+<p>Operator <a class="reference internal" href="refManual_ch3_sec12.html#DiscardIf" title="DiscardIf"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiscardIf</span></code></a> accepts a fixed condition or probability, or a
+condition or a Python function that returns either <code class="docutils literal notranslate"><span class="pre">True</span></code>/<code class="docutils literal notranslate"><span class="pre">False</span></code> or a
+probability to remove an individual. When it is applied during mating, it will
+evaluate the condition or call the function for each offspring, and discard the
+offspring if the return value of the expression or function is True, or remove
+at a probability if the return value is a number between 0 and 1. The python
+expression accepts information fields as variables so operator
+<a class="reference internal" href="refManual_ch3_sec12.html#DiscardIf" title="DiscardIf"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiscardIf</span></code></a>(<code class="docutils literal notranslate"><span class="pre">'age</span> <span class="pre">&gt;</span> <span class="pre">80'</span></code>) will discard all individuals with age &gt; 80,
+and <a class="reference internal" href="refManual_ch3_sec12.html#DiscardIf" title="DiscardIf"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiscardIf</span></code></a>(<code class="docutils literal notranslate"><span class="pre">'1-fitness'</span></code>) will remove individuals according to 1
+minus their fitness. Optionally, the offspring itself can be used in the
+expression if parameter exposeInd is used to set the variable name of the
+offspring.</p>
+<p>Alternatively, a Python function can be passed to this operator. This function
+should be defined with parameters <code class="docutils literal notranslate"><span class="pre">pop</span></code>, <code class="docutils literal notranslate"><span class="pre">off</span></code>, <code class="docutils literal notranslate"><span class="pre">mom</span></code>, <code class="docutils literal notranslate"><span class="pre">dad</span></code> or names of
+information fields. For example, <a class="reference internal" href="refManual_ch3_sec12.html#DiscardIf" title="DiscardIf"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiscardIf</span></code></a>(<code class="docutils literal notranslate"><span class="pre">lambda</span> <span class="pre">age:</span> <span class="pre">age</span> <span class="pre">&gt;</span> <span class="pre">80</span></code>)
+will remove individuals with age &gt; 80.</p>
+<p>A constant expression is also allowed in this operator. A fixed condition or
+number is acceptable so <a class="reference internal" href="refManual_ch3_sec12.html#DiscardIf" title="DiscardIf"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiscardIf</span></code></a>(<code class="docutils literal notranslate"><span class="pre">0.1</span></code>) will randomly remove 10%
+of all individuals. Although it does not make sense to use <a class="reference internal" href="refManual_ch3_sec12.html#DiscardIf" title="DiscardIf"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiscardIf</span></code></a>(<code class="docutils literal notranslate"><span class="pre">True</span></code>) because all offspring will be discarded, it is quite useful to use
+this operator in the context of <a class="reference internal" href="refManual_ch3_sec12.html#DiscardIf" title="DiscardIf"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiscardIf</span></code></a>(<code class="docutils literal notranslate"><span class="pre">True,</span> <span class="pre">subPops=[(0,</span> <span class="pre">0)]</span></code>)
+to remove all individuals in a virtual subpopulation. If virtual subpopulation
+<code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">0)</span></code> is defined as all individuals with age &gt; 80, the last method achieves
+the same effect as the first two methods.</p>
+<p>Example <a class="reference internal" href="#discardif"><span class="std std-ref">DiscardIf</span></a> demonstrates an interesting application of
+this operator. This example evolves a population for one generation. Instead of
+keeping all offspring, it keeps only 500 affected and 500 unaffected offspring.
+This is achieved by defining virtual subpopulations by affection status and
+range, and discard the first 500 offspring if they are unaffected, and the last
+500 offspring if they are affected.</p>
+<p id="discardif"><strong>Example</strong>: <em>Use operator DiscardIf to generate case control samples</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">ProductSplitter</span><span class="p">([</span>
+<span class="gp">... </span>    <span class="n">sim</span><span class="o">.</span><span class="n">AffectionSplitter</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">sim</span><span class="o">.</span><span class="n">RangeSplitter</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">500</span><span class="p">],</span> <span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">1000</span><span class="p">]]),</span>
+<span class="gp">... </span>    <span class="p">])</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">MaPenetrance</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">penetrance</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">DiscardIf</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>                <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;Unaffected, Range [0, 500)&#39;</span><span class="p">),</span>
+<span class="gp">... </span>                <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;Affected, Range [500, 1000)&#39;</span><span class="p">)])</span>
+<span class="gp">... </span>        <span class="p">],</span>
+<span class="gp">... </span>        <span class="n">subPopSize</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">numOfAffected</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">numOfAffected</span><span class="p">,</span> <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">numOfUnaffected</span><span class="p">)</span>
+<span class="go">500 500</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="DiscardIf.py">Download DiscardIf.py</a></p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec1.html">Introduction to operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec2.html">Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec3.html">Expressions and statements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec4.html">Demographic changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec5.html">Genotype transmitters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html">Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec7.html">Penetrance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec8.html">Quantitative trait</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html">Natural Selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec10.html">Tagging operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html">Statistics calculation (operator <code class="docutils literal notranslate"><span class="pre">Stat</span></code>)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Conditional operators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#conditional-operator-operator-ifelse">Conditional operator (operator <code class="docutils literal notranslate"><span class="pre">IfElse</span></code>) *</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#conditionally-terminate-an-evolutionary-process-operator-terminateif">Conditionally terminate an evolutionary process (operator <code class="docutils literal notranslate"><span class="pre">TerminateIf</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#conditional-removal-of-individuals-operator-discardif">Conditional removal of individuals (operator <code class="docutils literal notranslate"><span class="pre">DiscardIf</span></code>)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec13.html">Miscellaneous operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec14.html">Hybrid and Python operators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch5.html">simuPOP Operators</a><ul>
+      <li>Previous: <a href="userGuide_ch5_sec11.html" title="previous chapter">Statistics calculation (operator <code class="docutils literal notranslate"><span class="pre">Stat</span></code>)</a></li>
+      <li>Next: <a href="userGuide_ch5_sec13.html" title="next chapter">Miscellaneous operators</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch5_sec12.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

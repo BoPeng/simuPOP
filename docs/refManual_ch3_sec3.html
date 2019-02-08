@@ -1,0 +1,305 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Expression and Statements &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Demographic models" href="refManual_ch3_sec4.html" />
+    <link rel="prev" title="Initialization" href="refManual_ch3_sec2.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="expression-and-statements">
+<h1>Expression and Statements<a class="headerlink" href="#expression-and-statements" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class-pyoutput">
+<h2>class PyOutput<a class="headerlink" href="#class-pyoutput" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PyOutput">
+<em class="property">class </em><code class="descname">PyOutput</code><a class="headerlink" href="#PyOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>This operator outputs a given string when it is applied to a
+population.</p>
+<dl class="method">
+<dt id="PyOutput.PyOutput">
+<code class="descname">PyOutput</code><span class="sig-paren">(</span><em>msg=&quot;&quot;</em>, <em>output=&quot;&gt;&quot;</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#PyOutput.PyOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a <a class="reference internal" href="#PyOutput" title="PyOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyOutput</span></code></a> operator that outputs a string <em>msg</em>
+to <em>output</em> (default to standard terminal output) when it is
+applied to a population. Please refer to class
+<a class="reference internal" href="refManual_ch3_sec1.html#BaseOperator" title="BaseOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOperator</span></code></a> for a detailed description of common
+operator parameters such as <em>stage</em>, <em>begin</em> and <em>output</em>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-pyeval">
+<h2>class PyEval<a class="headerlink" href="#class-pyeval" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PyEval">
+<em class="property">class </em><code class="descname">PyEval</code><a class="headerlink" href="#PyEval" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#PyEval" title="PyEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyEval</span></code></a> operator evaluates a Python expression in a
+population’s local namespace when it is applied to this population.
+The result is written to an output specified by parameter <em>output</em>.</p>
+<dl class="method">
+<dt id="PyEval.PyEval">
+<code class="descname">PyEval</code><span class="sig-paren">(</span><em>expr=&quot;&quot;</em>, <em>stmts=&quot;&quot;</em>, <em>exposePop=&quot;&quot;</em>, <em>output=&quot;&gt;&quot;</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=Py_False</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#PyEval.PyEval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a <a class="reference internal" href="#PyEval" title="PyEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyEval</span></code></a> operator that evaluates a Python
+expression <em>expr</em> in a population’s local namespaces when it is
+applied to this population. This namespace can either be the
+population’s local namespace (<code class="docutils literal notranslate"><span class="pre">pop.vars()</span></code>), or namespaces
+<code class="docutils literal notranslate"><span class="pre">subPop[sp]</span></code> for (virtual) subpop (<code class="docutils literal notranslate"><span class="pre">pop.vars(subpop)</span></code>) in
+specified <em>subPops</em>. If Python statements <em>stmts</em> is given (a
+single or multi-line string), the statement will be executed
+before <em>expr</em>. If <em>exposePop</em> is set to an non-empty string, the
+current population will be exposed in its own local namespace as
+a variable with this name. This allows the execution of
+expressions such as <code class="docutils literal notranslate"><span class="pre">'pop.individual(0).allele(0)'</span></code>. The
+result of <em>expr</em> will be sent to an output stream specified by
+parameter <code class="docutils literal notranslate"><span class="pre">output</span></code>. The exposed population variable will be
+removed after <em>expr</em> is evaluated. Please refer to class
+<a class="reference internal" href="refManual_ch3_sec1.html#BaseOperator" title="BaseOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOperator</span></code></a> for other parameters.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the statements and expressions are evaluated in a
+population’s local namespace, they have access to a global
+namespace which is the module global namespace. It is
+therefore possible to refer to any module variable in these
+expressions. Such mixed use of local and global variables is,
+however, strongly discouraged.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-pyexec">
+<h2>class PyExec<a class="headerlink" href="#class-pyexec" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PyExec">
+<em class="property">class </em><code class="descname">PyExec</code><a class="headerlink" href="#PyExec" title="Permalink to this definition">¶</a></dt>
+<dd><p>This operator executes given Python statements in a population’s
+local namespace when it is applied to this population.</p>
+<dl class="method">
+<dt id="PyExec.PyExec">
+<code class="descname">PyExec</code><span class="sig-paren">(</span><em>stmts=&quot;&quot;</em>, <em>exposePop=&quot;&quot;</em>, <em>output=&quot;&gt;&quot;</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=Py_False</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#PyExec.PyExec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a <a class="reference internal" href="#PyExec" title="PyExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyExec</span></code></a> operator that executes statements
+<em>stmts</em> in a population’s local namespace when it is applied to
+this population. This namespace can either be the population’s
+local namespace (<code class="docutils literal notranslate"><span class="pre">pop.vars()</span></code>), or namespaces <code class="docutils literal notranslate"><span class="pre">subPop[sp]</span></code>
+for each (virtual) subpop (<code class="docutils literal notranslate"><span class="pre">pop.vars(subpop)</span></code>) in specified
+<em>subPops</em>. If <em>exposePop</em> is given, current population will be
+exposed in its local namespace as a variable named by
+<em>exposePop</em>. Although multiple statements can be executed, it is
+recommended that you use this operator to execute short
+statements and use <a class="reference internal" href="refManual_ch3_sec13.html#PyOperator" title="PyOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyOperator</span></code></a> for more complex once.
+Note that exposed population variables will be removed after the
+statements are executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-infoeval">
+<h2>class InfoEval<a class="headerlink" href="#class-infoeval" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="InfoEval">
+<em class="property">class </em><code class="descname">InfoEval</code><a class="headerlink" href="#InfoEval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unlike operator <a class="reference internal" href="#PyEval" title="PyEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyEval</span></code></a> and <a class="reference internal" href="#PyExec" title="PyExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyExec</span></code></a> that work at
+the population level, in a population’s local namespace, operator
+<a class="reference internal" href="#InfoEval" title="InfoEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoEval</span></code></a> works at the individual level, working with
+individual information fields. When this operator is applied to a
+population, information fields of eligible individuals are put into
+the local namespace of the population. A Python expression is then
+evaluated for each individual. The result is written to an output.</p>
+<dl class="method">
+<dt id="InfoEval.InfoEval">
+<code class="descname">InfoEval</code><span class="sig-paren">(</span><em>expr=&quot;&quot;</em>, <em>stmts=&quot;&quot;</em>, <em>usePopVars=False</em>, <em>exposeInd=&quot;&quot;</em>, <em>output=&quot;&gt;&quot;</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#InfoEval.InfoEval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an operator that evaluate a Python expression <em>expr</em>
+using individual information fields and population variables as
+variables. If <em>exposeInd</em> is not empty, the individual itself
+will be exposed in the population’s local namespace as a
+variable with name specified by <em>exposeInd</em>.</p>
+<p>A Python expression (<em>expr</em>) is evaluated for each individual.
+The results are converted to strings and are written to an
+output specified by parameter <em>output</em>. Optionally, a statement
+(or several statements separated by newline) can be executed
+before <em>expr</em> is evaluated. The evaluation of this statement may
+change the value of information fields.</p>
+<p>Parameter <em>usePopVars</em> is obsolete because population variables
+are always usable in such expressions.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-infoexec">
+<h2>class InfoExec<a class="headerlink" href="#class-infoexec" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="InfoExec">
+<em class="property">class </em><code class="descname">InfoExec</code><a class="headerlink" href="#InfoExec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Operator <a class="reference internal" href="#InfoExec" title="InfoExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoExec</span></code></a> is similar to <a class="reference internal" href="#InfoEval" title="InfoEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoEval</span></code></a> in that
+it works at the individual level, using individual information
+fields as variables. This is usually used to change the value of
+information fields. For example, <code class="docutils literal notranslate"><span class="pre">&quot;b=a*2&quot;</span></code> will set the value of
+information field <code class="docutils literal notranslate"><span class="pre">b</span></code> to <code class="docutils literal notranslate"><span class="pre">a*a</span></code> for all individuals.</p>
+<dl class="method">
+<dt id="InfoExec.InfoExec">
+<code class="descname">InfoExec</code><span class="sig-paren">(</span><em>stmts=&quot;&quot;</em>, <em>usePopVars=False</em>, <em>exposeInd=&quot;&quot;</em>, <em>output=&quot;&quot;</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#InfoExec.InfoExec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an operator that executes Python statements <em>stmts</em> using
+individual information fields and population variables as
+variables. If <em>exposeInd</em> is not empty, the individual itself
+will be exposed in the population’s local namespace as a
+variable with name specified by <em>exposeInd</em>.</p>
+<p>One or more python statements (<em>stmts</em>) are executed for each
+individual. Information fields of these individuals are then
+updated from the corresponding variables. For example, <code class="docutils literal notranslate"><span class="pre">a=1</span></code>
+will set information field <em>a</em> of all individuals to <code class="docutils literal notranslate"><span class="pre">1</span></code>,
+<code class="docutils literal notranslate"><span class="pre">a=b</span></code> will set information field <em>a</em> of all individuals to
+information field <code class="docutils literal notranslate"><span class="pre">b</span></code> or a population variable <code class="docutils literal notranslate"><span class="pre">b</span></code> if <code class="docutils literal notranslate"><span class="pre">b</span></code>
+is not an information field but a population variable, and
+<code class="docutils literal notranslate"><span class="pre">a=ind.sex()</span></code> will set information field <em>a</em> of all
+individuals to its sex (needs <code class="docutils literal notranslate"><span class="pre">exposeInd='ind'</span></code>.</p>
+<p>Parameter <em>usePopVars</em> is obsolete because population variables
+will always be usable.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="refManual_ch3.html">Operator References</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec1.html">Base class for all operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec2.html">Initialization</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Expression and Statements</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-pyoutput">class PyOutput</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-pyeval">class PyEval</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-pyexec">class PyExec</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-infoeval">class InfoEval</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-infoexec">class InfoExec</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec4.html">Demographic models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec5.html">Genotype transmitters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec6.html">Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec7.html">Penetrance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec8.html">Quantitative Trait</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec9.html">Natural selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec10.html">Tagging operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec11.html">Statistics Calculation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec12.html">Conditional operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec13.html">The Python operator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec14.html">Miscellaneous operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec15.html">Function form of operators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="refManual.html">&lt;no title&gt;</a><ul>
+  <li><a href="refManual_ch3.html">Operator References</a><ul>
+      <li>Previous: <a href="refManual_ch3_sec2.html" title="previous chapter">Initialization</a></li>
+      <li>Next: <a href="refManual_ch3_sec4.html" title="next chapter">Demographic models</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/refManual_ch3_sec3.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,1273 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Mating Schemes &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Simulator" href="userGuide_ch6_sec2.html" />
+    <link rel="prev" title="Evolving populations" href="userGuide_ch6.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="mating-schemes">
+<span id="sec-mating-schemes"></span><h1>Mating Schemes<a class="headerlink" href="#mating-schemes" title="Permalink to this headline">¶</a></h1>
+<p id="index-0">Mating schemes are responsible for populating an offspring generation from the
+parental generation. There are currently two types of mating schemes</p>
+<ul class="simple">
+<li>A <strong>homogeneous mating scheme</strong> is the most flexible and most frequently used
+mating scheme and is the center topic of this section. A homogeneous mating is
+composed of a <em>parent chooser</em> that is responsible for choosing parent(s) from a
+(virtual) subpopulation and an <em>offspring generator</em> that is used to populate
+all or part of the offspring generation. During-mating operators are used to
+transmit genotypes from parents to offspring. Figure
+<a class="reference internal" href="#fig-homogeneous-mating-scheme"><span class="std std-ref">fig_homogeneous_mating_scheme</span></a>
+demonstrates this process.</li>
+<li>A <strong>heterogeneous mating scheme</strong> applies several homogeneous mating scheme to
+different (virtual) subpopulations. Because the division of virtual
+subpopulations can be arbitrary, this mating scheme can be used to simulate
+mating in heterogeneous populations such as populations with age structure.</li>
+<li>A <strong>pedigree mating scheme</strong> evolves a population by following the pedigree
+structure of a pedigree. This mating scheme is used to a replay a recorded or
+manually created evolutionary process.</li>
+</ul>
+<p>This section describes some standard features of mating schemes and most pre-
+defined mating schemes. The next section will demonstrate how to build complex
+nonrandom mating schemes from scratch.</p>
+<p><strong>Figure</strong>: <em>A homogeneous mating scheme</em></p>
+<div class="figure" id="fig-homogeneous-mating-scheme">
+<a class="reference internal image-reference" href="Users/bpeng1/simuPOP/simuPOP/doc/figures/HomoMatingScheme.png"><img alt="Users/bpeng1/simuPOP/simuPOP/doc/figures/HomoMatingScheme.png" src="Users/bpeng1/simuPOP/simuPOP/doc/figures/HomoMatingScheme.png" style="width: 680px;" /></a>
+</div>
+<p>A homogeneous mating scheme is responsible to choose parent(s) from a
+subpopulation or a virtual subpopulation, and population part or all of the
+corresponding offspring subpopulation. A parent chooser is used to choose one or
+two parents from the parental generation, and pass it to an offspring generator,
+which produces one or more offspring. During mating operators such as taggers
+and Recombinator can be applied when offspring is generated.</p>
+<div class="section" id="control-the-size-of-the-offspring-generation">
+<span id="subsec-offspring-size"></span><h2>Control the size of the offspring generation<a class="headerlink" href="#control-the-size-of-the-offspring-generation" title="Permalink to this headline">¶</a></h2>
+<p>A mating scheme goes through each subpopulation and populates the subpopulations
+of an offspring generation sequentially. The number of offspring in each
+subpopulation is determined by the mating scheme, following the following rules:</p>
+<ul class="simple">
+<li>A simuPOP mating scheme, by default, produces an offspring generation that has
+the same subpopulation sizes as the parental generation. This does not guarantee
+a constant population size because some operators, such as a <a class="reference internal" href="refManual_ch3_sec4.html#Migrator" title="Migrator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Migrator</span></code></a>
+and <a class="reference internal" href="refManual_ch3_sec12.html#DiscardIf" title="DiscardIf"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiscardIf</span></code></a> can change population or subpopulation sizes.</li>
+<li>If fixed subpopulation sizes are given to parameter <code class="docutils literal notranslate"><span class="pre">subPopSize</span></code>. A mating
+scheme will generate an offspring generation with specified sizes even if an
+operator has changed parental population sizes.</li>
+<li>A <strong>demographic function</strong> can be specified to parameter <code class="docutils literal notranslate"><span class="pre">subPopSize</span></code>. This
+function should take one of the two forms <code class="docutils literal notranslate"><span class="pre">func(gen)</span></code> or <code class="docutils literal notranslate"><span class="pre">func(gen,</span> <span class="pre">pop)</span></code>
+where <code class="docutils literal notranslate"><span class="pre">gen</span></code> is the current generation number and <code class="docutils literal notranslate"><span class="pre">pop</span></code> is the parental
+population just before mating. This function should return an array of new
+subpopulation sizes. A single number can be returned if there is only one
+subpopulation. The <a class="reference internal" href="refManual_ch4_sec3.html#module-simuPOP.demography" title="simuPOP.demography"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.demography</span></code></a> module provides a number of
+demography-related functions for complex evolutionary secenarios. <strong>Please
+consider contributing to this module if you have implemented demographic models
+for particular populations.</strong></li>
+</ul>
+<p>The following examples demonstrate these cases. Example <a class="reference internal" href="#migrsize"><span class="std std-ref">migrSize</span></a> uses a default <a class="reference internal" href="refManual_ch2_sec4.html#RandomMating" title="RandomMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomMating</span></code></a>() scheme that keeps parental
+subpopulation sizes. Because migration between two subpopulations are
+asymmetric, the size of the first subpopulation increases at each generation,
+although the overall population size keeps constant.</p>
+<p id="migrsize"><strong>Example</strong>: <em>Free change of subpopulation sizes</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;migrate_to&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">Migrator</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]]),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">\n&quot; </span><span class="si">% s</span><span class="s1">ubPopSize&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">[843, 657]</span>
+<span class="go">[948, 552]</span>
+<span class="go">[1010, 490]</span>
+<span class="go">3</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="migrSize.py">Download migrSize.py</a></p>
+<p>Example <a class="reference internal" href="#migrfixedsize"><span class="std std-ref">migrFixedSize</span></a> uses the same Migrator to move
+individuals between two subpopulations. Because a constant subpopulation size is
+specified, the offspring generation always has 500 and 1000 individuals in its
+two subpopulations. Note that operators <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> and <a class="reference internal" href="refManual_ch3_sec3.html#PyEval" title="PyEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyEval</span></code></a> are
+applied both before and after mating. It is clear that subpopulation sizes
+changes before mating as a result of migration, although the pre-mating
+population sizes vary because of uncertainties of migration.</p>
+<p id="migrfixedsize"><strong>Example</strong>: <em>Force constant subpopulation sizes</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;migrate_to&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Migrator</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">\n&quot; </span><span class="si">% s</span><span class="s1">ubPopSize&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">subPopSize</span><span class="o">=</span><span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">1000</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">\n&quot; </span><span class="si">% s</span><span class="s1">ubPopSize&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">[843, 657]</span>
+<span class="go">[500, 1000]</span>
+<span class="go">[795, 705]</span>
+<span class="go">[500, 1000]</span>
+<span class="go">[821, 679]</span>
+<span class="go">[500, 1000]</span>
+<span class="go">3</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="migrFixedSize.py">Download migrFixedSize.py</a></p>
+<p>Example <a class="reference internal" href="#demofunc"><span class="std std-ref">demoFunc</span></a> uses a demographic function to control the
+subpopulation size of the offspring generation. This example implements a linear
+population expansion model but arbitrarily complex demographic model can be
+implemented similarly.</p>
+<p id="demofunc"><strong>Example</strong>: <em>Use a demographic function to control population size</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">demo</span><span class="p">(</span><span class="n">gen</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="p">[</span><span class="mi">500</span> <span class="o">+</span> <span class="n">gen</span><span class="o">*</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1000</span> <span class="o">+</span> <span class="n">gen</span><span class="o">*</span><span class="mi">10</span><span class="p">]</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;migrate_to&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">Migrator</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]]),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">subPopSize</span><span class="o">=</span><span class="n">demo</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">\n&quot; </span><span class="si">% s</span><span class="s1">ubPopSize&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">[500, 1000]</span>
+<span class="go">[510, 1010]</span>
+<span class="go">[520, 1020]</span>
+<span class="go">3</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="demoFunc.py">Download demoFunc.py</a></p>
+<p>If the size of the offspring generation can not be determined directly from
+generation number, you can pass the parental population as parameter <code class="docutils literal notranslate"><span class="pre">pop</span></code> to
+the demographic function. For example, Example <a class="reference internal" href="#demofunc1"><span class="std std-ref">demoFunc1</span></a>
+implements a demographic model where a population expand at random numbers at
+each generation.</p>
+<p id="demofunc1"><strong>Example</strong>: <em>Use parental population to determine the size of offspring population</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">demo</span><span class="p">(</span><span class="n">pop</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">subPopSizes</span><span class="p">()]</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;migrate_to&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">subPopSize</span><span class="o">=</span><span class="n">demo</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">\n&quot; </span><span class="si">% s</span><span class="s1">ubPopSize&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">[586, 1075]</span>
+<span class="go">[649, 1128]</span>
+<span class="go">[742, 1214]</span>
+<span class="go">3</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="demoFunc1.py">Download demoFunc1.py</a></p>
+<p>In all the above examples, migration and demographic changes are introduced
+manually to influence the evolution of populations. However, the demographic
+changes might be driven by other factors such as natural selection so that it is
+difficult to predict the size of offspring generations in advance. In this case,
+you can manually remove individuals from parental (or offspring) populations
+using appropriate operators.</p>
+<p>For example, a population in Example <a class="reference internal" href="#demobyselection"><span class="std std-ref">demoBySelection</span></a>
+suffers from a sudden reduction of population size (due to perhaps a famine) at
+generation 3, and a gradual reduction of population size (due to perhaps an
+outburst of an infectious disease) after generation 5. The first event is
+implemented using a <a class="reference internal" href="refManual_ch3_sec4.html#ResizeSubPops" title="ResizeSubPops"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResizeSubPops</span></code></a> operator that directly shrink the
+population size in half. The second event is implemented using a
+<a class="reference internal" href="refManual_ch3_sec7.html#MaPenetrance" title="MaPenetrance"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaPenetrance</span></code></a> and a <a class="reference internal" href="refManual_ch3_sec12.html#DiscardIf" title="DiscardIf"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiscardIf</span></code></a> operator. The first operator
+assigns affection status of each individual using a disease model that involves
+individual genotype. The second operator discard all individuals that are
+affected with the disease. Despite of these unfortunate events, the population
+tries to expand exponentially with offspring population sizes set to 105% of
+their parental populations.</p>
+<p id="demobyselection"><strong>Example</strong>: <em>Change of  population size caused by natural selection</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">demo</span><span class="p">(</span><span class="n">pop</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">popSize</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1.05</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;</span><span class="si">%d</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> --&gt; &quot; % (gen, subPopSize)&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">ResizeSubPops</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">proportions</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">],</span> <span class="n">at</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MaPenetrance</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">penetrance</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">],</span> <span class="n">begin</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">DiscardIf</span><span class="p">(</span><span class="s1">&#39;ind.affected()&#39;</span><span class="p">,</span> <span class="n">exposeInd</span><span class="o">=</span><span class="s1">&#39;ind&#39;</span><span class="p">,</span> <span class="n">begin</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1"> --&gt; &quot; </span><span class="si">% s</span><span class="s1">ubPopSize&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">subPopSize</span><span class="o">=</span><span class="n">demo</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">\n&quot; </span><span class="si">% s</span><span class="s1">ubPopSize&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">0 [10000] --&gt; [10000] --&gt; [10500]</span>
+<span class="go">1 [10500] --&gt; [10500] --&gt; [11025]</span>
+<span class="go">2 [11025] --&gt; [5512] --&gt; [5787]</span>
+<span class="go">3 [5787] --&gt; [5787] --&gt; [6076]</span>
+<span class="go">4 [6076] --&gt; [5188] --&gt; [5447]</span>
+<span class="go">5 [5447] --&gt; [4845] --&gt; [5087]</span>
+<span class="go">6</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="demoBySelection.py">Download demoBySelection.py</a></p>
+</div>
+<div class="section" id="advanced-use-of-demographic-functions">
+<span id="subsec-advanced-demo-func"></span><h2>Advanced use of demographic functions *<a class="headerlink" href="#advanced-use-of-demographic-functions" title="Permalink to this headline">¶</a></h2>
+<p>The parental population passed to a demographic function is usually used to
+determine offspring population size from parental population size. However,
+because this function is called immediately before mating happens, it provides a
+good opportunity for you to prepare the parental generation for mating. Such
+activities could generally be done by operators, but operations related to
+demographic changes could be done here. For example, Example
+<a class="reference internal" href="#advanceddemofunc"><span class="std std-ref">advancedDemoFunc</span></a> uses a demographic function to split
+populations at certain generation. The advantage of this method over the use of
+a <a class="reference internal" href="refManual_ch3_sec4.html#SplitSubPops" title="SplitSubPops"><code class="xref py py-class docutils literal notranslate"><span class="pre">SplitSubPops</span></code></a> operator (for example as in Example <a class="reference internal" href="userGuide_ch5_sec4.html#splitbyprop"><span class="std std-ref">splitByProp</span></a>) is that all demographic information presents in the same
+function so you do not have to worry about changing an operator when your
+demographic model changes.</p>
+<p id="advanceddemofunc"><strong>Example</strong>: <em>Use a demographic function to split parental population</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">demo</span><span class="p">(</span><span class="n">gen</span><span class="p">,</span> <span class="n">pop</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">gen</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="mi">1000</span> <span class="o">+</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">gen</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">gen</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="c1"># this happens right before mating at generation 2</span>
+<span class="gp">... </span>        <span class="n">size</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">popSize</span><span class="p">()</span>
+<span class="gp">... </span>        <span class="n">pop</span><span class="o">.</span><span class="n">splitSubPop</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="n">size</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">size</span> <span class="o">-</span> <span class="n">size</span><span class="o">//</span><span class="mi">2</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="c1"># for generation two and later</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="o">+</span> <span class="mi">50</span> <span class="o">*</span> <span class="n">gen</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">subPopSizes</span><span class="p">()]</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;Gen </span><span class="si">%d</span><span class="s1">:\t</span><span class="si">%s</span><span class="s1"> (before mating)\t&quot; % (gen, subPopSize)&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomSelection</span><span class="p">(</span><span class="n">subPopSize</span><span class="o">=</span><span class="n">demo</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1"> (after mating)\n&quot; </span><span class="si">% s</span><span class="s1">ubPopSize&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Gen 0:       [1000] (before mating)  [1000] (after mating)</span>
+<span class="go">Gen 1:       [1000] (before mating)  [1100] (after mating)</span>
+<span class="go">Gen 2:       [1100] (before mating)  [650, 650] (after mating)</span>
+<span class="go">Gen 3:       [650, 650] (before mating)      [800, 800] (after mating)</span>
+<span class="go">Gen 4:       [800, 800] (before mating)      [1000, 1000] (after mating)</span>
+<span class="go">5</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="advancedDemoFunc.py">Download advancedDemoFunc.py</a></p>
+</div>
+<div class="section" id="determine-the-number-of-offspring-during-mating">
+<span id="subsec-number-of-offspring"></span><h2>Determine the number of offspring during mating<a class="headerlink" href="#determine-the-number-of-offspring-during-mating" title="Permalink to this headline">¶</a></h2>
+<p>simuPOP by default produces only one offspring per mating event. Because more
+parents are involved in the production of offspring, this setting leads to
+larger effective population sizes than mating schemes that produce more
+offspring at each mating event. However, various situations require a larger
+family size or even varying family sizes. In these cases, parameter
+<code class="docutils literal notranslate"><span class="pre">numOffspring</span></code> can be used to control the number of offspring that are
+produced at each mating event. This parameter takes the following types of
+inputs</p>
+<ul class="simple">
+<li>If a single number is given, <code class="docutils literal notranslate"><span class="pre">numOffspring</span></code> offspring are produced at each
+mating event.</li>
+<li>If a Python function is given, this function will be called each time when a
+mating event happens. Generation number can be passed to this function as
+parameter <code class="docutils literal notranslate"><span class="pre">gen</span></code> to allow different numbers of offspring at different
+generations. A python generator function can also be passed to provide an
+iterator interface to yield number of offspring for all mating events.</li>
+<li>If a tuple (or list) with more than one numbers is given, the first number
+must be one of <code class="docutils literal notranslate"><span class="pre">GEOMETRIC_DISTRIBUTION</span></code>, <code class="docutils literal notranslate"><span class="pre">POISSON_DISTRIBUTION</span></code>,
+<code class="docutils literal notranslate"><span class="pre">BINOMIAL_DISTRIBUTION</span></code> and <code class="docutils literal notranslate"><span class="pre">UNIFORM_DISTRIBUTION</span></code>, with one or two
+additional parameters.</li>
+</ul>
+<p>The number of offspring in the last case will then follow a specific statistical
+distribution. More specifically,</p>
+<ul>
+<li><p class="first"><code class="docutils literal notranslate"><span class="pre">numOffspring=(GEOMETRIC_DISTRIBUTION,</span> <span class="pre">p)</span></code>: The number of offspring for each
+mating event follows a geometric distribution with mean <span class="math notranslate nohighlight">\(1/p\)</span> and variance
+<span class="math notranslate nohighlight">\(\left(1-p\right)/p^{2}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\mbox{Pr}\left(k\right)=p\left(1-p\right)^{k-1}\;\textrm{ for }k\geq1\]</div>
+</li>
+<li><p class="first"><code class="docutils literal notranslate"><span class="pre">numOffspring=(POISSON_DISTRIBUTION,</span> <span class="pre">p)</span></code>: The number of offspring for each
+mating event follows a Poisson distribution with mean <span class="math notranslate nohighlight">\(p\)</span> and variance
+<span class="math notranslate nohighlight">\(p\)</span>. The distribution is</p>
+<div class="math notranslate nohighlight">
+\[\mbox{Pr}\left(k\right)=\frac{p^{k}e^{-p}}{k!}\;\textrm{ for }k\geq0\]</div>
+<p>Note that, however, because families with zero offspring are ignored, the
+distribution of the observed number of offspring (excluding zero) follows a
+zero-truncated Poission distribution with probability</p>
+<div class="math notranslate nohighlight">
+\[\mbox{Pr}\left(k\right)=\frac{p^{k}e^{-p}}{k!\left(1-e^{-p}\right)}\;\textrm{ for }k\geq1\]</div>
+<p>The mean number of offspring is therefore <span class="math notranslate nohighlight">\(\frac{1}{1-e^{-p}}p\)</span>, which is
+2.31 for <span class="math notranslate nohighlight">\(p=2\)</span>.</p>
+</li>
+<li><p class="first"><code class="docutils literal notranslate"><span class="pre">numOffspring=(BINOMIAL_DISTRIBUTION,</span> <span class="pre">p,</span> <span class="pre">n):</span></code>The number of offspring for
+each mating event follows a Binomial distribution with mean <span class="math notranslate nohighlight">\(np\)</span> and
+variance <span class="math notranslate nohighlight">\(np\left(1-p\right)\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\mbox{Pr}\left(k\right)=\frac{n!}{k!\left(n-k\right)!}p^{k}\left(1-p\right)^{n-k}\;\textrm{ for }n\geq k\geq0\]</div>
+<p>Because families with zero offspring are ignored, the distribution of the
+observed number of offspring (excluding zero) follows a zero-truncated Bionimial
+distribution, with mean number of offspring being
+<span class="math notranslate nohighlight">\(\frac{np}{\left(1-p\right)^{n}}\)</span>.</p>
+</li>
+<li><p class="first"><code class="docutils literal notranslate"><span class="pre">numOffspring=(UNIFORM_DISTRIBUTION,</span> <span class="pre">a,</span> <span class="pre">b):</span></code> The number of offspring for
+each mating event follows a discrete uniform distribution with lower bound
+<span class="math notranslate nohighlight">\(a\)</span> and upper bound <span class="math notranslate nohighlight">\(b\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\mbox{Pr}\left(k\right)=\frac{1}{b-a+1}\;\textrm{ for }b\geq k\geq a\]</div>
+<p>The lower bound of this distribution can be <code class="docutils literal notranslate"><span class="pre">0</span></code> but is identical to the case
+with <span class="math notranslate nohighlight">\(a=1\)</span>.</p>
+</li>
+</ul>
+<p>Example <a class="reference internal" href="#numoff"><span class="std std-ref">numOff</span></a> demonstrates how to use parameter
+<code class="docutils literal notranslate"><span class="pre">numOffspring</span></code>. In this example, a function <code class="docutils literal notranslate"><span class="pre">checkNumOffspring</span></code> is defined.
+It takes a mating scheme as its input parameter and use it to evolve a
+population with 30 individuals. After evolving a population for one generation,
+parental indexes are used to identify siblings, and then the number of offspring
+per mating event.</p>
+<p id="numoff"><strong>Example</strong>: <em>Control the number of offspring per mating event.</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">checkNumOffspring</span><span class="p">(</span><span class="n">numOffspring</span><span class="p">,</span> <span class="n">ops</span><span class="o">=</span><span class="p">[]):</span>
+<span class="gp">... </span>    <span class="sd">&#39;&#39;&#39;Check the number of offspring for each family using</span>
+<span class="gp">... </span><span class="sd">       information field father_idx</span>
+<span class="gp">... </span><span class="sd">    &#39;&#39;&#39;</span>
+<span class="gp">... </span>    <span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">30</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;father_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;mother_idx&#39;</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="p">],</span>
+<span class="gp">... </span>        <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">ParentsTagger</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="p">]</span> <span class="o">+</span> <span class="n">ops</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">numOffspring</span><span class="o">=</span><span class="n">numOffspring</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">gen</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="c1"># get the parents of each offspring</span>
+<span class="gp">... </span>    <span class="n">parents</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">indInfo</span><span class="p">(</span><span class="s1">&#39;mother_idx&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">pop</span><span class="o">.</span><span class="n">indInfo</span><span class="p">(</span><span class="s1">&#39;father_idx&#39;</span><span class="p">))]</span>
+<span class="gp">... </span>    <span class="c1"># Individuals with identical parents are considered as siblings.</span>
+<span class="gp">... </span>    <span class="n">famSize</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">... </span>    <span class="n">lastParent</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">parents</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">parent</span> <span class="o">==</span> <span class="n">lastParent</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="n">famSize</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="gp">... </span>        <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="n">lastParent</span> <span class="o">=</span> <span class="n">parent</span>
+<span class="gp">... </span>            <span class="n">famSize</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">famSize</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Case 1: produce the given number of offspring</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">checkNumOffspring</span><span class="p">(</span><span class="n">numOffspring</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Case 2: Use a Python function</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">gen</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">checkNumOffspring</span><span class="p">(</span><span class="n">numOffspring</span><span class="o">=</span><span class="n">func</span><span class="p">)</span>
+<span class="go">[5, 7, 5, 5, 6, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Case 3: A geometric distribution</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">checkNumOffspring</span><span class="p">(</span><span class="n">numOffspring</span><span class="o">=</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">GEOMETRIC_DISTRIBUTION</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">))</span>
+<span class="go">[3, 1, 1, 3, 4, 1, 1, 1, 2, 1, 1, 4, 6, 1]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Case 4: A Possition distribution</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">checkNumOffspring</span><span class="p">(</span><span class="n">numOffspring</span><span class="o">=</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">POISSON_DISTRIBUTION</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">))</span>
+<span class="go">[2, 2, 1, 5, 3, 3, 1, 1, 2, 3, 3, 2, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Case 5: A Binomial distribution</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">checkNumOffspring</span><span class="p">(</span><span class="n">numOffspring</span><span class="o">=</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">BINOMIAL_DISTRIBUTION</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="go">[1, 4, 1, 1, 2, 1, 1, 3, 1, 1, 1, 3, 2, 2, 1, 1, 1, 2, 1]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Case 6: A uniform distribution</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">checkNumOffspring</span><span class="p">(</span><span class="n">numOffspring</span><span class="o">=</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">UNIFORM_DISTRIBUTION</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="go">[4, 4, 2, 6, 6, 2, 2, 2, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Case 7: With selection on offspring</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">checkNumOffspring</span><span class="p">(</span><span class="n">numOffspring</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">ops</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">MapSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="p">{(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">):</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span><span class="mf">0.8</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span><span class="mf">0.5</span><span class="p">})])</span>
+<span class="go">[8, 5, 7, 6, 4]</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="numOff.py">Download numOff.py</a></p>
+<p>However, <strong>the actual number of offspring can be less than specified because
+offspring can be discarded during mating.</strong> More specifically, if any during-
+mating generator, such as a during-mating selector, returns <code class="docutils literal notranslate"><span class="pre">False</span></code> during the
+production of offspring, the offspring will be discarded so the total number of
+offspring will be reduced. This is the case in the seventh case of Example
+<a class="reference internal" href="#numoff"><span class="std std-ref">numOff</span></a> where offspring with certain genotypes have lower
+probabilities to survive. If you would like to control size of families in the
+presence of natural selection, you could set a larger <code class="docutils literal notranslate"><span class="pre">numOffspring</span></code> use a
+<a class="reference internal" href="refManual_ch3_sec10.html#OffspringTagger" title="OffspringTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">OffspringTagger</span></code></a> to mark the index of offspring, and discard offspring
+conditionally using operator <a class="reference internal" href="refManual_ch3_sec12.html#DiscardIf" title="DiscardIf"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiscardIf</span></code></a> . Please refer to example
+<a class="reference internal" href="userGuide_ch5_sec10.html#offspringtagger"><span class="std std-ref">OffspringTagger</span></a> for details.</p>
+</div>
+<div class="section" id="dynamic-population-size-determined-by-number-of-offspring">
+<h2>Dynamic population size determined by number of offspring *<a class="headerlink" href="#dynamic-population-size-determined-by-number-of-offspring" title="Permalink to this headline">¶</a></h2>
+<p>What we have described so far requires you to determine the size of offspring
+population in advance. Each mating event produces a number of offspring that is
+determined by parameter <code class="docutils literal notranslate"><span class="pre">NumOffspring</span></code>. The mating process stops when the
+offspring population is filled. This works for most scenarios but there are
+cases where the offspring population size is determined dynamically from a fixed
+number of mating events with random number of offspring. For example, you might
+design a mating scheme where all males in a population mate only once and
+produce random number of offspring.</p>
+<p>These kind of mating schemes can be simulated using a demographic model that
+calculates offspring population size from pre-simulated number of offspring for
+each family. More specifically, we</p>
+<ul class="simple">
+<li>Define a demogrphic function (model) that will be called before mating
+happens.</li>
+<li>This function determines and save the number of offspring for each mating
+event, and return the total number of offspring as offspring population size.</li>
+<li>Pass a function or generator to parameter numOffspring to pass pre-determined
+number of offspring. This function will be called each time when number of
+offspring is needed.</li>
+</ul>
+<p>The number of offspring could be saved and retrieved as global variable but a
+more clever method is to store the numbers of offspring in a demographic model
+(class). Example <a class="reference internal" href="#dynamicnumoff"><span class="std std-ref">dynamicNumOff</span></a> demonstrates this method
+by implementing a demographic model that simulate, save, and return the number
+of offspring. Note that although we determine the number of mating events from
+number of males in the parental population, a random mating scheme will choose
+parents with replacement so it is likely that some parents will be chosen
+multiple times while some others are not chosen at all. Please refer to section
+“Non-random and customized mating schemes” to learn how to define a mating
+scheme that picks parents without replacement.</p>
+<p id="dynamicnumoff"><strong>Example</strong>: <em>Dynamic population size determined by number of offspring</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">RandomNumOff</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="c1"># a demographic model</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">numOff</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">getNumOff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="c1"># return the pre-simulated number of offspring as a generator function</span>
+<span class="gp">... </span>        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">numOff</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">yield</span> <span class="n">item</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pop</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="c1"># define __call__ so that a RandomNumOff object is callable.</span>
+<span class="gp">... </span>        <span class="c1">#</span>
+<span class="gp">... </span>        <span class="c1"># Each male produce from 1 to 3 offspring. For large population, get the</span>
+<span class="gp">... </span>        <span class="c1"># number of males instead of checking the sex of each individual</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">numOff</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">()</span> <span class="k">if</span> <span class="n">ind</span><span class="o">.</span><span class="n">sex</span><span class="p">()</span> <span class="o">==</span> <span class="n">sim</span><span class="o">.</span><span class="n">MALE</span><span class="p">]</span>
+<span class="gp">... </span>        <span class="c1"># return the total population size</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> mating events with number of offspring </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numOff</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">numOff</span><span class="p">))</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numOff</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># create a demogranic model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">numOffModel</span> <span class="o">=</span> <span class="n">RandomNumOff</span><span class="p">()</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="c1"># the model will be called before mating to deteremine</span>
+<span class="gp">... </span>        <span class="c1"># family and population size</span>
+<span class="gp">... </span>        <span class="n">subPopSize</span><span class="o">=</span><span class="n">numOffModel</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="c1"># the getNumOff function (generator) returns number of offspring</span>
+<span class="gp">... </span>        <span class="c1"># for each mating event</span>
+<span class="gp">... </span>        <span class="n">numOffspring</span><span class="o">=</span><span class="n">numOffModel</span><span class="o">.</span><span class="n">getNumOff</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">3</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">5 mating events with number of offspring [3, 2, 2, 3, 3]</span>
+<span class="go">6 mating events with number of offspring [3, 2, 3, 1, 2, 3]</span>
+<span class="go">6 mating events with number of offspring [2, 1, 1, 2, 3, 2]</span>
+<span class="go">3</span>
+<span class="go">&gt;&gt;&gt;</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="dynamicNumOff.py">Download dynamicNumOff.py</a></p>
+</div>
+<div class="section" id="determine-sex-of-offspring">
+<span id="subsec-offspring-sex"></span><h2>Determine sex of offspring<a class="headerlink" href="#determine-sex-of-offspring" title="Permalink to this headline">¶</a></h2>
+<p>Because sex can influence how genotypes are transmitted (e.g. sex chromosomes,
+haplodiploid population), simuPOP determines offspring sex before it passes an
+offspring to a <em>genotype transmitter</em> (during-mating operator) to transmit
+genotype from parents to offspring. The default <code class="docutils literal notranslate"><span class="pre">sexMode</span></code> in almost all mating
+schemes is <code class="docutils literal notranslate"><span class="pre">RandomSex</span></code>, in which case simuPOP assign <code class="docutils literal notranslate"><span class="pre">Male</span></code> or <code class="docutils literal notranslate"><span class="pre">Female</span></code> to
+offspring with equal probability.</p>
+<p>Other sex determination methods are also available:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">sexMode=RANDOM_SEX</span></code>: Sex is determined randomly, with equal probability for
+<code class="docutils literal notranslate"><span class="pre">MALE</span></code> and <code class="docutils literal notranslate"><span class="pre">FEMALE</span></code>. This is the default mode for sexual mating schemes such
+as random mating.</li>
+<li><code class="docutils literal notranslate"><span class="pre">sexMode=NO_SEX</span></code>: Sex is not simulated so everyone is <code class="docutils literal notranslate"><span class="pre">MALE</span></code>. This is the
+default mode for asexual mating schemes.</li>
+<li><code class="docutils literal notranslate"><span class="pre">sexMode=(PROB_OF_MALES,</span> <span class="pre">prob)</span></code>: Produce males with given probability.</li>
+<li><code class="docutils literal notranslate"><span class="pre">sexMode=(NUM_OF_MALES,</span> <span class="pre">n)</span></code>: The first <code class="docutils literal notranslate"><span class="pre">n</span></code> offspring in each family will
+be <code class="docutils literal notranslate"><span class="pre">Male</span></code>. If the number of offspring at a mating event is less than or equal
+to <code class="docutils literal notranslate"><span class="pre">n</span></code>, all offspring will be male.</li>
+<li><code class="docutils literal notranslate"><span class="pre">sexMode=(NUM_OF_FEMALES,</span> <span class="pre">n)</span></code>: The first <code class="docutils literal notranslate"><span class="pre">n</span></code> offspring in each family will
+be <code class="docutils literal notranslate"><span class="pre">Female</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">sexMode=(SEQUENCE_OF_SEX,</span> <span class="pre">s1,</span> <span class="pre">s2,</span> <span class="pre">...)</span></code>: Use sequence <code class="docutils literal notranslate"><span class="pre">s1</span></code>, <code class="docutils literal notranslate"><span class="pre">s2</span></code>, …
+for offspring in each mating event.</li>
+<li><code class="docutils literal notranslate"><span class="pre">sexMode=(GLOBAL_SEQUENCE_OF_SEX,</span> <span class="pre">s1,</span> <span class="pre">s2,</span> <span class="pre">...)</span></code>: Use sequence <code class="docutils literal notranslate"><span class="pre">s1</span></code>,
+<code class="docutils literal notranslate"><span class="pre">s2</span></code>, … for all offspring in a subpopulation. Because other mode of sex
+determination works within each mating event, this is the only way to ensure
+proportion of sex in a subpopulation. For example, <code class="docutils literal notranslate"><span class="pre">(GLOBAL_SEQUENCE_OF_SEX,</span>
+<span class="pre">MALE,</span> <span class="pre">FEMALE)</span></code> will gives <code class="docutils literal notranslate"><span class="pre">MALE</span></code> and <code class="docutils literal notranslate"><span class="pre">FEMALE</span></code> iteratively to all offspring,
+making sure there are equal number of males and females (if there are even
+number of offspring).</li>
+<li><code class="docutils literal notranslate"><span class="pre">sexMode=func</span></code> or <code class="docutils literal notranslate"><span class="pre">sexMode=generator_func</span></code>: In this last case, a Python
+function or a Python generator function can be specified to provide sex to each
+offspring. The function is called whenever an offspring is created. The
+generator function is called for each subpopulation, and provides an iterator
+that provides sex for all offspring in a subpopulation.</li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">NumOfMales</span></code> and <code class="docutils literal notranslate"><span class="pre">NumOfFemales</span></code> are useful in theoretical studies where the
+sex ratio of a population needs to be controlled strictly, or in special mating
+schemes, usually for animal populations, where only a certain number of male or
+female Individuals are allowed in a family. It worth noting that a genotype
+transmitter can override specified offspring sex. This is the case for
+<a class="reference internal" href="refManual_ch3_sec5.html#CloneGenoTransmitter" title="CloneGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">CloneGenoTransmitter</span></code></a> where an offspring inherits both genotype and sex
+from his/her parent.</p>
+<p>Example <a class="reference internal" href="#sexmode"><span class="std std-ref">sexMode</span></a> demonstrates how to use parameter <code class="docutils literal notranslate"><span class="pre">sexMode</span></code>.
+In this example, a function <code class="docutils literal notranslate"><span class="pre">checkSexMode</span></code> is defined. It takes a mating
+scheme as its input parameter and use it to evolve a population with 40
+individuals. After evolving a population for one generation, sexes of all
+offspring are returned as a string.</p>
+<p id="sexmode"><strong>Example</strong>: <em>Determine the sex of offspring</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">checkSexMode</span><span class="p">(</span><span class="n">ms</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="sd">&#39;&#39;&#39;Check the assignment of sex to offspring&#39;&#39;&#39;</span>
+<span class="gp">... </span>    <span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">40</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span> <span class="n">matingScheme</span><span class="o">=</span><span class="n">ms</span><span class="p">,</span> <span class="n">gen</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="c1"># return individual sex as a string</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;M&#39;</span> <span class="k">if</span> <span class="n">ind</span><span class="o">.</span><span class="n">sex</span><span class="p">()</span> <span class="o">==</span> <span class="n">sim</span><span class="o">.</span><span class="n">MALE</span> <span class="k">else</span> <span class="s1">&#39;F&#39;</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">()])</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Case 1: sim.NO_SEX (all male, sim.RandomMating will not continue)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">checkSexMode</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">sexMode</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">NO_SEX</span><span class="p">))</span>
+<span class="go">&#39;MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Case 2: sim.RANDOM_SEX (sim.Male/Female with probability 0.5)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">checkSexMode</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">sexMode</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RANDOM_SEX</span><span class="p">))</span>
+<span class="go">&#39;MFFFFFFMFFFMFFFMMFFMFFMMMFFMMFMFFFFFFFMF&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Case 3: sim.PROB_OF_MALES (Specify probability of male)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">checkSexMode</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">sexMode</span><span class="o">=</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">PROB_OF_MALES</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)))</span>
+<span class="go">&#39;MMFMMFFMMFFMMMMMMMMMFMMFFMMMMMMMMMMMMMMM&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Case 4: sim.NUM_OF_MALES (Specify number of male in each family)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">checkSexMode</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">numOffspring</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sexMode</span><span class="o">=</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">NUM_OF_MALES</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+<span class="go">&#39;MFFMFFMFFMFFMFFMFFMFFMFFMFFMFFMFFMFFMFFM&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Case 5: sim.NUM_OF_FEMALES (Specify number of female in each family)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">checkSexMode</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">numOffspring</span><span class="o">=</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">UNIFORM_DISTRIBUTION</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">sexMode</span><span class="o">=</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">NUM_OF_FEMALES</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">&#39;FFMMFFMMMFFMMFFMMMMFFMMFFMMMMFFMMFFMMFFM&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Case 6: sim.SEQUENCE_OF_SEX</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">checkSexMode</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">numOffspring</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sexMode</span><span class="o">=</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">SEQUENCE_OF_SEX</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">MALE</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">FEMALE</span><span class="p">))</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">&#39;MFMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFMF&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Case 7: sim.GLOBAL_SEQUENCE_OF_SEX</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">checkSexMode</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">numOffspring</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sexMode</span><span class="o">=</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">GLOBAL_SEQUENCE_OF_SEX</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">MALE</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">FEMALE</span><span class="p">))</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">&#39;MFMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFMF&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Case 8: A generator function</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">sexFunc</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">... </span>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">yield</span> <span class="n">sim</span><span class="o">.</span><span class="n">MALE</span>
+<span class="gp">... </span>        <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">yield</span> <span class="n">sim</span><span class="o">.</span><span class="n">FEMALE</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">checkSexMode</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">numOffspring</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sexMode</span><span class="o">=</span><span class="n">sexFunc</span><span class="p">))</span>
+<span class="go">&#39;FMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFMFM&#39;</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="sexMode.py">Download sexMode.py</a></p>
+</div>
+<div class="section" id="monogamous-mating">
+<h2>Monogamous mating<a class="headerlink" href="#monogamous-mating" title="Permalink to this headline">¶</a></h2>
+<p>Monogamous mating (monogamy) in simuPOP refers to mating schemes in which each
+parent mates only once. In an asexual setting, this implies parents are chosen
+without replacement. In sexual mating schemes, this means that parents are
+chosen without replacement, they have only one spouse during their life time so
+that all siblings have the same parents (no half-sibling).</p>
+<p>simuPOP provides a diploid sexual monogamous mating scheme
+<a class="reference internal" href="refManual_ch2_sec4.html#MonogamousMating" title="MonogamousMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">MonogamousMating</span></code></a>. However, without careful planning, this mating scheme
+can easily stop working due to the lack of parents. For example, if a population
+has 40 males and 55 females, only 40 successful mating events can happen and
+result in 40 offspring in the offspring generation. <a class="reference internal" href="refManual_ch2_sec4.html#MonogamousMating" title="MonogamousMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">MonogamousMating</span></code></a>
+will exit if the offspring generation is larger than 40.</p>
+<p>Example <a class="reference internal" href="#monogamous"><span class="std std-ref">monogamous</span></a> demonstrates one scenario of using a
+monogamous mating scheme where sex of parents and offspring are strictly
+specified so that parents will not be exhausted. The sex initializer
+<a class="reference internal" href="refManual_ch3_sec2.html#InitSex" title="InitSex"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitSex</span></code></a> assigns exactly 10 males and 10 females to the initial
+population. Because of the use of <code class="docutils literal notranslate"><span class="pre">numOffspring=2,</span> <span class="pre">sexMode=(NUM_OF_MALES,</span> <span class="pre">1)</span></code>,
+each mating event will produce exactly one male and one female. Unlike a random
+mating scheme that only about 80% of parents are involved in the production of
+an offspring population with the same size, this mating scheme makes use of all
+parents.</p>
+<p id="monogamous"><strong>Example</strong>: <em>Sexual monogamous mating</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;father_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;mother_idx&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(</span><span class="n">sex</span><span class="o">=</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">MALE</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">FEMALE</span><span class="p">)),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">MonogamousMating</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">numOffspring</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">sexMode</span><span class="o">=</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">NUM_OF_MALES</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">ParentsTagger</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="p">],</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">ind</span><span class="o">.</span><span class="n">sex</span><span class="p">()</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">()]</span>
+<span class="go">[1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">father_idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">()]</span>
+<span class="go">[16, 16, 2, 2, 4, 4, 8, 8, 0, 0, 14, 14, 10, 10, 12, 12, 18, 18, 6, 6]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">mother_idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">()]</span>
+<span class="go">[13, 13, 17, 17, 1, 1, 15, 15, 19, 19, 9, 9, 3, 3, 5, 5, 7, 7, 11, 11]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># count the number of distinct parents</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">indInfo</span><span class="p">(</span><span class="s1">&#39;father_idx&#39;</span><span class="p">)))</span>
+<span class="go">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">indInfo</span><span class="p">(</span><span class="s1">&#39;mother_idx&#39;</span><span class="p">)))</span>
+<span class="go">10</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="monogamous.py">Download monogamous.py</a></p>
+</div>
+<div class="section" id="polygamous-mating">
+<h2>Polygamous mating<a class="headerlink" href="#polygamous-mating" title="Permalink to this headline">¶</a></h2>
+<p>In comparison to monogamous mating, parents in a polygamous mate with more than
+one spouse during their life-cycle. Both <em>polygany</em> (one man has more than one
+wife) and <code class="docutils literal notranslate"><span class="pre">polyandry</span></code> (one woman has more than one husband) are supported.</p>
+<p>Other than regular parameters such as <code class="docutils literal notranslate"><span class="pre">numOffspring</span></code>, mating scheme
+<code class="docutils literal notranslate"><span class="pre">PolygamousMating</span></code> accepts parameters <code class="docutils literal notranslate"><span class="pre">polySex</span></code> (default to <code class="docutils literal notranslate"><span class="pre">Male</span></code>) and
+<code class="docutils literal notranslate"><span class="pre">polyNum</span></code> (default to 1). During mating, an individual with <code class="docutils literal notranslate"><span class="pre">polySex</span></code> is
+selected and then mate with <code class="docutils literal notranslate"><span class="pre">polyNum</span></code> randomly selected spouse. Example
+<a class="reference internal" href="#polygamous"><span class="std std-ref">polygamous</span></a> demonstrates the use of this mating schemes. Note
+that this mating scheme support natural selection, but does not yet handle
+varying <code class="docutils literal notranslate"><span class="pre">polyNum</span></code> and selection of parents without replacement.</p>
+<p id="polygamous"><strong>Example</strong>: <em>Sexual polygamous mating</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;father_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;mother_idx&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">PolygamousMating</span><span class="p">(</span><span class="n">polySex</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">MALE</span><span class="p">,</span> <span class="n">polyNum</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">ops</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">ParentsTagger</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">()],</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">father_idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">()][:</span><span class="mi">20</span><span class="p">]</span>
+<span class="go">[67, 67, 42, 42, 91, 91, 25, 25, 65, 65, 47, 47, 18, 18, 16, 16, 96, 96, 57, 57]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">mother_idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">()][:</span><span class="mi">20</span><span class="p">]</span>
+<span class="go">[58, 58, 58, 0, 68, 32, 37, 89, 6, 85, 12, 58, 36, 12, 66, 44, 51, 85, 60, 29]</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="polygamous.py">Download polygamous.py</a></p>
+</div>
+<div class="section" id="asexual-random-mating">
+<h2>Asexual random mating<a class="headerlink" href="#asexual-random-mating" title="Permalink to this headline">¶</a></h2>
+<p>Mating scheme <a class="reference internal" href="refManual_ch2_sec4.html#RandomSelection" title="RandomSelection"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSelection</span></code></a> implements an asexual random mating
+scheme. It randomly select parents from a parental population (with replacement)
+and copy them to an offspring generation. Both genotypes and sex of the parents
+are copied because genotype and sex are sometimes related. This mating scheme
+can be used to simulate the evolution of haploid sequences in a standard haploid
+Wright-Fisher model.</p>
+<p>Example <a class="reference internal" href="#randomselection"><span class="std std-ref">RandomSelection</span></a> applies a
+<a class="reference internal" href="refManual_ch2_sec4.html#RandomSelection" title="RandomSelection"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSelection</span></code></a> mating scheme to a haploid population with 100
+sequences. A <code class="docutils literal notranslate"><span class="pre">parentTagger</span></code> is used to track the parent of each individual.
+Although sex information is not used in this mating scheme, Individual sexes are
+initialized and passed to offspring.</p>
+<p id="randomselection"><strong>Example</strong>: <em>Asexual random mating</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">ploidy</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="n">ancGen</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;parent_idx&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomSelection</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">ParentsTagger</span><span class="p">(</span><span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;parent_idx&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">CloneGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">individual</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">par</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">ancestor</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">parent_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">sex</span><span class="p">(),</span> <span class="n">ind</span><span class="o">.</span><span class="n">genotype</span><span class="p">())</span>
+<span class="go">1 [1, 1, 0, 1, 1, 0, 1, 0, 0, 0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">par</span><span class="o">.</span><span class="n">sex</span><span class="p">(),</span> <span class="n">par</span><span class="o">.</span><span class="n">genotype</span><span class="p">())</span>
+<span class="go">1 [1, 1, 0, 0, 1, 1, 1, 1, 0, 1]</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="RandomSelection.py">Download RandomSelection.py</a></p>
+</div>
+<div class="section" id="mating-in-haplodiploid-populations">
+<h2>Mating in haplodiploid populations<a class="headerlink" href="#mating-in-haplodiploid-populations" title="Permalink to this headline">¶</a></h2>
+<p>Male individuals in a haplodiploid population are derived from unfertilized eggs
+and thus have only one set of chromosomes. Mating in such a population is
+handled by a special mating scheme called <code class="docutils literal notranslate"><span class="pre">haplodiplodMating</span></code>. This mating
+scheme chooses a pair of parents randomly and produces some offspring. It
+transmit maternal chromosomes and paternal chromosomes (the only copy) to female
+offspring, and only maternal chromosomes to male offspring. Example
+<a class="reference internal" href="#haplodiploidmating"><span class="std std-ref">HaplodiploidMating</span></a> demonstrates how to use this
+mating scheme. It uses three initializers because sex has to be initialized
+before two other intializers can initialize genotype by sex.</p>
+<p id="haplodiploidmating"><strong>Example</strong>: <em>Random mating in haplodiploid populations</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">ploidy</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">HAPLODIPLOID</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;father_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;mother_idx&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">SexSplitter</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">genotype</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">10</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;Male&#39;</span><span class="p">)]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">genotype</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">10</span><span class="o">+</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="mi">10</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;Female&#39;</span><span class="p">)])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">Dumper</span><span class="p">(</span><span class="n">structure</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">HaplodiploidMating</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">ops</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">HaplodiploidGenoTransmitter</span><span class="p">(),</span> <span class="n">sim</span><span class="o">.</span><span class="n">ParentsTagger</span><span class="p">()]),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">Dumper</span><span class="p">(</span><span class="n">structure</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">SubPopulation 0 (), 10 Individuals:</span>
+<span class="go">   0: FU 11111 11111 | 22222 22222 |  0 0</span>
+<span class="go">   1: FU 11111 11111 | 22222 22222 |  0 0</span>
+<span class="go">   2: MU 00000 00000 | _____ _____ |  0 0</span>
+<span class="go">   3: MU 00000 00000 | _____ _____ |  0 0</span>
+<span class="go">   4: MU 00000 00000 | _____ _____ |  0 0</span>
+<span class="go">   5: MU 00000 00000 | _____ _____ |  0 0</span>
+<span class="go">   6: MU 00000 00000 | _____ _____ |  0 0</span>
+<span class="go">   7: FU 11111 11111 | 22222 22222 |  0 0</span>
+<span class="go">   8: FU 11111 11111 | 22222 22222 |  0 0</span>
+<span class="go">   9: FU 11111 11111 | 22222 22222 |  0 0</span>
+
+<span class="go">SubPopulation 0 (), 10 Individuals:</span>
+<span class="go">   0: MU 11111 11111 | _____ _____ |  4 9</span>
+<span class="go">   1: MU 11111 22222 | _____ _____ |  4 8</span>
+<span class="go">   2: MU 22222 11111 | _____ _____ |  6 8</span>
+<span class="go">   3: MU 22222 11111 | _____ _____ |  3 8</span>
+<span class="go">   4: MU 22222 22222 | _____ _____ |  2 8</span>
+<span class="go">   5: MU 22222 22222 | _____ _____ |  6 9</span>
+<span class="go">   6: FU 22222 22222 | 00000 00000 |  2 1</span>
+<span class="go">   7: FU 22222 22222 | 00000 00000 |  2 1</span>
+<span class="go">   8: FU 22222 22222 | 00000 00000 |  3 9</span>
+<span class="go">   9: FU 11111 11111 | 00000 00000 |  5 8</span>
+
+<span class="go">1</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="HaplodiploidMating.py">Download HaplodiploidMating.py</a></p>
+<p>Note that this mating scheme does not support recombination and the standard
+Recombinator does not work with haplodiploid populations. Please refer to the
+next Chapter for how to define a customized genotype transmitter to handle such
+a situation.</p>
+</div>
+<div class="section" id="self-fertilization">
+<h2>Self-fertilization<a class="headerlink" href="#self-fertilization" title="Permalink to this headline">¶</a></h2>
+<p>Some plant populations evolve through self-fertilization. That is to say, a
+parent fertilizes with itself during the production of offspring (seeds). In a
+<a class="reference internal" href="refManual_ch2_sec4.html#SelfMating" title="SelfMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">SelfMating</span></code></a> mating scheme, parents are chosen randomly (one at a time),
+and are used twice to produce two homologous sets of offspring chromosomes. The
+standard Recombinator can be used with this mating scheme. Example
+<a class="reference internal" href="#selfmating"><span class="std std-ref">SelfMating</span></a> initializes each chromosome with different
+alleles to demonstrate how these alleles are transmitted in this population.</p>
+<p id="selfmating"><strong>Example</strong>: <em>Selfing mating scheme</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># every chromosomes are different. :-)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">()):</span>
+<span class="gp">... </span>    <span class="n">ind</span><span class="o">.</span><span class="n">setGenotype</span><span class="p">([</span><span class="n">idx</span><span class="o">*</span><span class="mi">2</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">ind</span><span class="o">.</span><span class="n">setGenotype</span><span class="p">([</span><span class="n">idx</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">SelfMating</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">Recombinator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="go">SubPopulation 0 (), 20 Individuals:</span>
+<span class="go">   0: FU  36 36 36 36 36 36 36 36 |  36 36 36 36 36 36 36 36</span>
+<span class="go">   1: FU   6  6  6  6  6  6  6  6 |   7  7  7  7  7  7  7  7</span>
+<span class="go">   2: MU  33 33 33 33 33 33 33 33 |  33 33 33 33 33 33 33 33</span>
+<span class="go">   3: MU  22 22 22 22 22 23 23 23 |  22 22 22 22 22 22 22 22</span>
+<span class="go">   4: FU  27 27 27 27 27 27 27 27 |  27 27 27 27 27 27 27 27</span>
+<span class="go">   5: MU  15 15 15 15 15 15 15 15 |  15 15 15 15 15 15 15 15</span>
+<span class="go">   6: MU  35 35 35 35 34 34 34 34 |  34 34 34 34 34 34 34 34</span>
+<span class="go">   7: FU  11 11 11 11 11 11 11 11 |  10 10 10 10 10 10 10 10</span>
+<span class="go">   8: MU  11 11 11 11 11 11 11 11 |  11 11 11 11 11 11 11 11</span>
+<span class="go">   9: FU  24 24 24 24 24 24 24 24 |  25 25 25 25 25 25 25 25</span>
+
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="SelfMating.py">Download SelfMating.py</a></p>
+</div>
+<div class="section" id="heterogeneous-mating-schemes">
+<h2>Heterogeneous mating schemes *<a class="headerlink" href="#heterogeneous-mating-schemes" title="Permalink to this headline">¶</a></h2>
+<p>Different groups of individuals in a population may have different mating
+patterns. For example, individuals with different properties can have varying
+fecundity, represented by different numbers of offspring generated per mating
+event. This can be extended to aged populations in which only adults (may be
+defined by age &gt; 20 and age &lt; 40) can produce offspring, where other individuals
+will either be copied to the offspring generation or die.</p>
+<p>A heterogeneous mating scheme (<a class="reference internal" href="refManual_ch2_sec3.html#HeteroMating" title="HeteroMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">HeteroMating</span></code></a>) accepts a list of mating
+schemes that are applied to different subpopulation or virtual subpopulations.
+If multiple mating schemes are applied to the same subpopulation, each of them
+only populate part of the offspring subpopulation. This is illustrated in Figure
+<a class="reference internal" href="#fig-heterogenous-mating"><span class="std std-ref">fig_heterogenous_mating</span></a>.</p>
+<p><strong>Figure</strong>: <em>Illustration of a heterogeneous mating scheme</em></p>
+<div class="figure" id="fig-heterogenous-mating">
+<a class="reference internal image-reference" href="Users/bpeng1/simuPOP/simuPOP/doc/figures/MatingScheme.png"><img alt="Users/bpeng1/simuPOP/simuPOP/doc/figures/MatingScheme.png" src="Users/bpeng1/simuPOP/simuPOP/doc/figures/MatingScheme.png" style="width: 680px;" /></a>
+</div>
+<p>A heterogeneous mating scheme that applies homogeneous mating schemes MS0,
+MS0.0, MS0.1, MS1, MS2.0 and MS2.1 to subpopulation 0, the first and second
+virtual subpopulation in subpopulation 0, subpopulation 1, the first and second
+virtual subpopulation in subpopulation 2, respectively. Note that VSP 0 and 1 in
+subpopulation 0 overlap, and do not add up to subpopulation 0.</p>
+<p>For example, Example <a class="reference internal" href="#hateromatingsp"><span class="std std-ref">hateroMatingSP</span></a> applies two random
+mating schemes to two subpopulations. The first mating scheme produces two
+offspring per mating event, and the second mating scheme produces four.</p>
+<p id="hateromatingsp"><strong>Example</strong>: <em>Applying different mating schemes to different subpopulations</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;father_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;mother_idx&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">HeteroMating</span><span class="p">([</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">numOffspring</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">ops</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span> <span class="n">sim</span><span class="o">.</span><span class="n">ParentsTagger</span><span class="p">()]</span>
+<span class="gp">... </span>        <span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">numOffspring</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">ops</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span> <span class="n">sim</span><span class="o">.</span><span class="n">ParentsTagger</span><span class="p">()]</span>
+<span class="gp">... </span>        <span class="p">)</span>
+<span class="gp">... </span>    <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">10</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">father_idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">(</span><span class="mi">0</span><span class="p">)][:</span><span class="mi">10</span><span class="p">]</span>
+<span class="go">[134, 134, 451, 451, 780, 780, 443, 443, 457, 457]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">father_idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">(</span><span class="mi">1</span><span class="p">)][:</span><span class="mi">10</span><span class="p">]</span>
+<span class="go">[1978, 1978, 1978, 1978, 1582, 1582, 1582, 1582, 1322, 1322]</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="HeteroMatingSP.py">Download HeteroMatingSP.py</a></p>
+<p>The real power of heterogeneous mating schemes lies on their ability to apply
+different mating schemes to different virtual subpopulations. For example, due
+to different micro-environmental factors, plants in the same population may
+exercise both self and cross-fertilization. Because of the randomness of such
+environmental factors, it is difficult to divide a population into self and
+cross-mating subpopulations. Applying different mating schemes to groups of
+individuals in the same subpopulation is more appropriate.</p>
+<p>Example <a class="reference internal" href="#hateromatingvsp"><span class="std std-ref">hateroMatingVSP</span></a> applies two mating schemes to
+two VSPs defined by proportions of individuals. In this mating scheme, 20% of
+individuals go through self-mating and 80% of individuals go through random
+mating. This can be seen from the parental indexes of individuals in the
+offspring generation: individuals whose <code class="docutils literal notranslate"><span class="pre">mother_idx</span></code> are <code class="docutils literal notranslate"><span class="pre">-1</span></code> are
+genetically only derived from their fathers.</p>
+<p>It might be surprising that offspring resulted from two mating schemes mix with
+each other so the same VSPs in the next generation include both selfed and
+cross-fertilized offspring. If this not desired, you can set parameter
+<code class="docutils literal notranslate"><span class="pre">shuffleOffspring=False</span></code> in <a class="reference internal" href="refManual_ch2_sec3.html#HeteroMating" title="HeteroMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">HeteroMating</span></code></a>(). Because the number of
+offspring that are produced by each mating scheme is proportional to the size of
+parental (virtual) subpopulation, the first 20% of individuals that are produced
+by self-fertilization will continue to self-fertilize.</p>
+<p id="hateromatingvsp"><strong>Example</strong>: <em>Applying different mating schemes to different virtual subpopulations</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">1000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;father_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;mother_idx&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">ProportionSplitter</span><span class="p">([</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">HeteroMating</span><span class="p">(</span><span class="n">matingSchemes</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">SelfMating</span><span class="p">(</span><span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span>
+<span class="gp">... </span>            <span class="n">ops</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">SelfingGenoTransmitter</span><span class="p">(),</span> <span class="n">sim</span><span class="o">.</span><span class="n">ParentsTagger</span><span class="p">()]</span>
+<span class="gp">... </span>        <span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span>
+<span class="gp">... </span>            <span class="n">ops</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">SelfingGenoTransmitter</span><span class="p">(),</span> <span class="n">sim</span><span class="o">.</span><span class="n">ParentsTagger</span><span class="p">()]</span>
+<span class="gp">... </span>        <span class="p">)</span>
+<span class="gp">... </span>    <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">father_idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">(</span><span class="mi">0</span><span class="p">)][:</span><span class="mi">15</span><span class="p">]</span>
+<span class="go">[789, 666, 145, 125, 681, 183, 727, 308, 392, 11, 183, 223, 208, 29, 309]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">mother_idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">(</span><span class="mi">0</span><span class="p">)][:</span><span class="mi">15</span><span class="p">]</span>
+<span class="go">[370, 272, -1, 520, 121, 91, 220, 519, 101, 271, -1, 263, 663, -1, 286]</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="HeteroMatingVSP.py">Download HeteroMatingVSP.py</a></p>
+<p>Because there is no restriction on the choice of VSPs, mating schemes can be
+applied to overlapped (virtual) subpopulations. For example,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">HeteroMating</span><span class="p">(</span>
+    <span class="n">matingSchemes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">SelfMating</span><span class="p">(</span><span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]),</span>
+        <span class="n">RandomMating</span><span class="p">(</span><span class="n">subPops</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>will apply SelfMating to the first 20% individuals, and RandomMating will be
+applied to all individuals. Similarly,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">HeteroMating</span><span class="p">(</span>
+    <span class="n">matingSchemes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">SelfMating</span><span class="p">(</span><span class="n">subPops</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+        <span class="n">RandomMating</span><span class="p">(</span><span class="n">subPops</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>will allow all individuals to be involved in both <a class="reference internal" href="refManual_ch2_sec4.html#SelfMating" title="SelfMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">SelfMating</span></code></a> and
+<a class="reference internal" href="refManual_ch2_sec4.html#RandomMating" title="RandomMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomMating</span></code></a>.</p>
+<p>This raises the question of how many offspring each mating scheme will produce.
+By default, the number of offspring produced will be proportional to the size of
+parental (virtual) subpopulations. In the last example, because both mating
+schemes are applied to the same subpopulation, half of all offspring will be
+produced by selfing and the other half will be produced by random mating.</p>
+<p>This behavior can be changed by a weighting scheme controlled by parameter
+<code class="docutils literal notranslate"><span class="pre">weight</span></code> of each homogeneous mating scheme. Briefly speaking, a positive
+weight will be compared against other mating schemes. a negative weight is
+considered proportional to the existing (virtual) subpopulation size. Negative
+weights are considered before positive or zero weights.</p>
+<p>This weighting scheme is best explained by an example. Assuming that there are
+three mating schemes working on the same parental subpopulation</p>
+<ul class="simple">
+<li>Mating scheme A works on the whole subpopulation of size 1000</li>
+<li>Mating scheme B works on a virtual subpopulation of size 500</li>
+<li>Mating scheme C works on another virtual subpopulation of size 800</li>
+</ul>
+<p>Assuming the corresponding offspring subpopulation has <span class="math notranslate nohighlight">\(N\)</span> individuals,</p>
+<ul class="simple">
+<li>If all weights are 0, the offspring subpopulation is divided in proportion to
+parental (virtual) subpopulation sizes. In this example, the mating schemes will
+produce <span class="math notranslate nohighlight">\(\frac{10}{23}N\)</span>, <span class="math notranslate nohighlight">\(\frac{5}{23}N\)</span>, <span class="math notranslate nohighlight">\(\frac{8}{23}N\)</span>
+individuals respectively.</li>
+<li>If all weights are negative, they are multiplied to their parental (virtual)
+subpopulation sizes. For example, weight (-1, -2, -0.5) will lead to sizes
+(1000, 1000, 400) in the offspring subpopulation. If <span class="math notranslate nohighlight">\(N\ne2400\)</span> in this
+case, an error will be raised.</li>
+<li>If all weights are positive, the number of offspring produced from each mating
+scheme is proportional to these weights. For example, weights (1, 2, 3) will
+lead to <span class="math notranslate nohighlight">\(\frac{1}{6}N\)</span>, <span class="math notranslate nohighlight">\(\frac{2}{6}N\)</span>, <span class="math notranslate nohighlight">\(\frac{1}{3}N\)</span>
+individuals respectively. In this case, 0 weights will produce no offspring.</li>
+<li>If there are mixed positive and negative weights, the negative weights are
+processed first, and the rest of the individuals are divided using non-negative
+weights. For example, three mating schemes with weights (-0.5, 2, 3) will
+produce 500, <span class="math notranslate nohighlight">\(\frac{2}{5}\left(N-500\right)\)</span>,
+<span class="math notranslate nohighlight">\(\frac{3}{5}\left(N-500\right)\)</span> individuals respectively.</li>
+</ul>
+<p>The last case is demonstrated in Example <a class="reference internal" href="#heteromatingweight"><span class="std std-ref">HeteroMatingWeight</span></a> where three random mating schemes are applied to
+subpopulation <code class="docutils literal notranslate"><span class="pre">0</span></code>, virtual subpopulation<code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">0)</span></code> and virtual subpopulation
+<code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1)</span></code>, with weights <code class="docutils literal notranslate"><span class="pre">-</span></code>0.5, <code class="docutils literal notranslate"><span class="pre">2</span></code>, and <code class="docutils literal notranslate"><span class="pre">3</span></code> respectively. This example
+uses an advanced features that will be described in the next section. Namely,
+three during-mating Python operators are passed to each mating scheme to mark
+their offspring with different numbers.</p>
+<p id="heteromatingweight"><strong>Example</strong>: <em>A weighting scheme used by heterogeneous mating schemes.</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">1000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;mark&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">RangeSplitter</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">1000</span><span class="p">]]))</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">HeteroMating</span><span class="p">([</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">subPops</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">weight</span><span class="o">=-</span><span class="mf">0.5</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">ops</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">InfoExec</span><span class="p">(</span><span class="s1">&#39;mark=0&#39;</span><span class="p">),</span> <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">()]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="n">weight</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">ops</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">InfoExec</span><span class="p">(</span><span class="s1">&#39;mark=1&#39;</span><span class="p">),</span> <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">()]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span> <span class="n">weight</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">ops</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">InfoExec</span><span class="p">(</span><span class="s1">&#39;mark=2&#39;</span><span class="p">),</span> <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">()])</span>
+<span class="gp">... </span>    <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">marks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">indInfo</span><span class="p">(</span><span class="s1">&#39;mark&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">marks</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mf">0.</span><span class="p">)</span>
+<span class="go">500</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">marks</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mf">1.</span><span class="p">)</span>
+<span class="go">200</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">marks</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mf">2.</span><span class="p">)</span>
+<span class="go">300</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="HeteroMatingWeight.py">Download HeteroMatingWeight.py</a></p>
+<p>As a special case that can be quite annoying during the simulation of small
+populations, a (virtual) subpopulation can have no male and/or female. If the
+parental (virtual) subpopulation is empty, it will produce no offspring
+regardless of its weight. However, if the parental (virtual) subpopulation is
+not empty, it will be expected to produce some offspring, which is not possible
+if a sexual mating scheme is used. In this case, you can use a parameter
+<code class="docutils literal notranslate"><span class="pre">weightBy</span></code> to specify how parental (virtual) population sizes are calculated.
+This parameter accepts values <code class="docutils literal notranslate"><span class="pre">ANY_SEX</span></code> (default), <code class="docutils literal notranslate"><span class="pre">MALE_ONLY</span></code>,
+<code class="docutils literal notranslate"><span class="pre">FEMALE_ONLY</span></code>, <code class="docutils literal notranslate"><span class="pre">PAIR_ONLY</span></code>, and use all individuals, number of male
+individuals, number of female individuals, and number of male/female pairs
+(basically the less of numbers of males and females) as the size of parental
+(virtual) subpopulation, respectively. When <code class="docutils literal notranslate"><span class="pre">weightBy=PAIR_ONLY</span></code> is used,
+parental (virtual) subpopulations with only males or females will appear to be
+empty and produce no offspring. Note that in this mode (also <code class="docutils literal notranslate"><span class="pre">MALE_ONLY</span></code>,
+<code class="docutils literal notranslate"><span class="pre">FEMALE_ONLY</span></code>), the perceived parental population sizes are no longer the
+actual parental population sizes so you might need to adjust parameter
+<code class="docutils literal notranslate"><span class="pre">weight</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">weight=-2</span></code>) to produce correct number of offspring.</p>
+</div>
+<div class="section" id="conditional-mating-schemes">
+<h2>Conditional mating schemes<a class="headerlink" href="#conditional-mating-schemes" title="Permalink to this headline">¶</a></h2>
+<p>A <a class="reference internal" href="refManual_ch2_sec3.html#ConditionalMating" title="ConditionalMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConditionalMating</span></code></a> mating scheme allows you to apply different mating
+schemes to populations with different properties. The condition can be a
+constant (True or False), an expression that will be evaluated in the local
+namspace of the parental population, or a function that can take parental
+population as its input paramter (with parameter name <code class="docutils literal notranslate"><span class="pre">pop</span></code>).</p>
+<p>Using variable <code class="docutils literal notranslate"><span class="pre">rep</span></code> and <code class="docutils literal notranslate"><span class="pre">gen</span></code> in the local namespace of the parental
+population, we can use this mating scheme to apply different mating schemes to
+different replicates and/or at different generations. For example,
+<a class="reference internal" href="#matingschemebyrepandgen"><span class="std std-ref">matingSchemeByRepAndGen</span></a> simulates the evolution
+of three replicates. The first replicate uses regular mating scheme, the third
+replicate uses a mating scheme that produces 70% of males, and the second
+replicate do this only for the first 5 generations. Because there are three
+cases, a nested <a class="reference internal" href="refManual_ch2_sec3.html#ConditionalMating" title="ConditionalMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConditionalMating</span></code></a> is used.</p>
+<p id="matingschemebyrepandgen"><strong>Example</strong>: <em>Apply different mating schemes for different replicates at different generations</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Simulator</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">]),</span> <span class="n">rep</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">ConditionalMating</span><span class="p">(</span><span class="s1">&#39;rep == 0&#39;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="c1"># the first replicate use standard random mating</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">ConditionalMating</span><span class="p">(</span><span class="s1">&#39;rep == 1 and gen &gt;= 5&#39;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="c1"># the second replicate produces more males for the first 5 generations</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="c1"># the last replicate produces more males all the time</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">sexMode</span><span class="o">=</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">PROB_OF_MALES</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">))</span>
+<span class="gp">... </span>            <span class="p">)</span>
+<span class="gp">... </span>        <span class="p">),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">numOfMales</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="s2">&quot;&#39;gen=</span><span class="si">%d</span><span class="s2">&#39; </span><span class="si">% g</span><span class="s2">en&quot;</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;\t</span><span class="si">%d</span><span class="s2">&#39; % numOfMales&quot;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOutput</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">reps</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">10</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">gen=0        477     686     718</span>
+<span class="go">gen=1        477     689     698</span>
+<span class="go">gen=2        519     692     713</span>
+<span class="go">gen=3        479     709     704</span>
+<span class="go">gen=4        539     710     688</span>
+<span class="go">gen=5        496     482     698</span>
+<span class="go">gen=6        489     488     701</span>
+<span class="go">gen=7        495     508     715</span>
+<span class="go">gen=8        497     488     688</span>
+<span class="go">gen=9        528     498     698</span>
+<span class="go">(10, 10, 10)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="matingSchemeByRepAndGen.py">Download matingSchemeByRepAndGen.py</a></p>
+<p>A function can be passed as the condition of a <a class="reference internal" href="refManual_ch2_sec3.html#ConditionalMating" title="ConditionalMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConditionalMating</span></code></a> mating
+scheme. This allows you to apply operators such as <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> to examine the
+condition of populations more closely and determine which mating scheme to use.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Mating Schemes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#control-the-size-of-the-offspring-generation">Control the size of the offspring generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#advanced-use-of-demographic-functions">Advanced use of demographic functions *</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#determine-the-number-of-offspring-during-mating">Determine the number of offspring during mating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dynamic-population-size-determined-by-number-of-offspring">Dynamic population size determined by number of offspring *</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#determine-sex-of-offspring">Determine sex of offspring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#monogamous-mating">Monogamous mating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#polygamous-mating">Polygamous mating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#asexual-random-mating">Asexual random mating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mating-in-haplodiploid-populations">Mating in haplodiploid populations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#self-fertilization">Self-fertilization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#heterogeneous-mating-schemes">Heterogeneous mating schemes *</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#conditional-mating-schemes">Conditional mating schemes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec2.html">Simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec3.html">Non-random and customized mating schemes *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec4.html">Age structured populations with overlapping generations **</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec5.html">Tracing allelic lineage *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec6.html">Pedigrees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec7.html">Evolve a population following a specified pedigree structure **</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec8.html">Simulation of mitochondrial DNAs (mtDNAs) *</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch6.html">Evolving populations</a><ul>
+      <li>Previous: <a href="userGuide_ch6.html" title="previous chapter">Evolving populations</a></li>
+      <li>Next: <a href="userGuide_ch6_sec2.html" title="next chapter">Simulator</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch6_sec1.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,536 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Virtual splitters &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Mating Schemes" href="refManual_ch2_sec3.html" />
+    <link rel="prev" title="Individual, Population, pedigree and Simulator" href="refManual_ch2_sec1.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="virtual-splitters">
+<h1>Virtual splitters<a class="headerlink" href="#virtual-splitters" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class-basevspsplitter">
+<h2>class BaseVspSplitter<a class="headerlink" href="#class-basevspsplitter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="BaseVspSplitter">
+<em class="property">class </em><code class="descname">BaseVspSplitter</code><a class="headerlink" href="#BaseVspSplitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class is the base class of all virtual subpopulation (VSP)
+splitters, which provide ways to define groups of individuals in a
+subpopulation who share certain properties. A splitter defines a
+fixed number of named VSPs. They do not have to add up to the whole
+subpopulation, nor do they have to be distinct. After a splitter is
+assigned to a population, many functions and operators can be
+applied to individuals within specified VSPs.</p>
+<p>Each VSP has a name. A default name is determined by each splitter
+but you can also assign a name to each VSP. The name of a VSP can
+be retrieved by function <code class="docutils literal notranslate"><span class="pre">BaseVspSplitter.name()</span></code> or
+<code class="docutils literal notranslate"><span class="pre">Population.subPopName()</span></code>.</p>
+<p>Only one VSP splitter can be assigned to a population, which
+defined VSPs for all its subpopulations. If different splitters are
+needed for different subpopulations, a <a class="reference internal" href="#CombinedSplitter" title="CombinedSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">CombinedSplitter</span></code></a>
+can be used.</p>
+<dl class="method">
+<dt id="BaseVspSplitter.BaseVspSplitter">
+<code class="descname">BaseVspSplitter</code><span class="sig-paren">(</span><em>names=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#BaseVspSplitter.BaseVspSplitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a virtual class that cannot be instantiated.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="BaseVspSplitter.clone">
+<code class="descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#BaseVspSplitter.clone" title="Permalink to this definition">¶</a></dt>
+<dd><p>All VSP splitter defines a <code class="docutils literal notranslate"><span class="pre">clone()</span></code> function to create an
+identical copy of itself.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="BaseVspSplitter.name">
+<code class="descname">name</code><span class="sig-paren">(</span><em>vsp</em><span class="sig-paren">)</span><a class="headerlink" href="#BaseVspSplitter.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of VSP <em>vsp</em> (an index between <code class="docutils literal notranslate"><span class="pre">0</span></code> and
+<code class="docutils literal notranslate"><span class="pre">numVirtualSubPop()</span></code>).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="BaseVspSplitter.numVirtualSubPop">
+<code class="descname">numVirtualSubPop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#BaseVspSplitter.numVirtualSubPop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of VSPs defined by this splitter.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="BaseVspSplitter.vspByName">
+<code class="descname">vspByName</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#BaseVspSplitter.vspByName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the index of a virtual subpopulation from its name. If
+multiple virtual subpopulations share the same name, the first
+vsp is returned.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-sexsplitter">
+<h2>class SexSplitter<a class="headerlink" href="#class-sexsplitter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="SexSplitter">
+<em class="property">class </em><code class="descname">SexSplitter</code><a class="headerlink" href="#SexSplitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This splitter defines two VSPs by individual sex. The first VSP
+consists of all male individuals and the second VSP consists of all
+females in a subpopulation.</p>
+<dl class="method">
+<dt id="SexSplitter.SexSplitter">
+<code class="descname">SexSplitter</code><span class="sig-paren">(</span><em>names=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#SexSplitter.SexSplitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a sex splitter that defines male and female VSPs. These
+VSPs are named <code class="docutils literal notranslate"><span class="pre">Male</span></code> and <code class="docutils literal notranslate"><span class="pre">Female</span></code> unless a new set of names
+are specified by parameter <em>names</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="SexSplitter.name">
+<code class="descname">name</code><span class="sig-paren">(</span><em>vsp</em><span class="sig-paren">)</span><a class="headerlink" href="#SexSplitter.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">&quot;Male&quot;</span></code> if <em>vsp=0</em> and <code class="docutils literal notranslate"><span class="pre">&quot;Female&quot;</span></code> otherwise, unless
+a new set of names are specified.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="SexSplitter.numVirtualSubPop">
+<code class="descname">numVirtualSubPop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#SexSplitter.numVirtualSubPop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-affectionsplitter">
+<h2>class AffectionSplitter<a class="headerlink" href="#class-affectionsplitter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="AffectionSplitter">
+<em class="property">class </em><code class="descname">AffectionSplitter</code><a class="headerlink" href="#AffectionSplitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class defines two VSPs according individual affection status.
+The first VSP consists of unaffected invidiauls and the second VSP
+consists of affected ones.</p>
+<dl class="method">
+<dt id="AffectionSplitter.AffectionSplitter">
+<code class="descname">AffectionSplitter</code><span class="sig-paren">(</span><em>names=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#AffectionSplitter.AffectionSplitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a splitter that defined two VSPs by affection
+status.These VSPs are named <code class="docutils literal notranslate"><span class="pre">Unaffected</span></code> and <code class="docutils literal notranslate"><span class="pre">Affected</span></code>
+unless a new set of names are specified by parameter <em>names</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="AffectionSplitter.name">
+<code class="descname">name</code><span class="sig-paren">(</span><em>vsp</em><span class="sig-paren">)</span><a class="headerlink" href="#AffectionSplitter.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">&quot;Unaffected&quot;</span></code> if <em>vsp=0</em> and <code class="docutils literal notranslate"><span class="pre">&quot;Affected&quot;</span></code> if
+<em>vsp=1</em>, unless a new set of names are specified.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="AffectionSplitter.numVirtualSubPop">
+<code class="descname">numVirtualSubPop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AffectionSplitter.numVirtualSubPop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return 2.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-infosplitter">
+<h2>class InfoSplitter<a class="headerlink" href="#class-infosplitter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="InfoSplitter">
+<em class="property">class </em><code class="descname">InfoSplitter</code><a class="headerlink" href="#InfoSplitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This splitter defines VSPs according to the value of an information
+field of each indivdiual. A VSP is defined either by a value or a
+range of values.</p>
+<dl class="method">
+<dt id="InfoSplitter.InfoSplitter">
+<code class="descname">InfoSplitter</code><span class="sig-paren">(</span><em>field</em>, <em>values=[]</em>, <em>cutoff=[]</em>, <em>ranges=[]</em>, <em>names=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#InfoSplitter.InfoSplitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an infomration splitter using information field <em>field</em>.
+If parameter <em>values</em> is specified, each item in this list
+defines a VSP in which all individuals have this value at
+information field <em>field</em>. If a set of cutoff values are defined
+in parameter <em>cutoff</em>, individuals are grouped by intervals
+defined by these cutoff values. For example, <code class="docutils literal notranslate"><span class="pre">cutoff=[1,2]</span></code>
+defines three VSPs with <code class="docutils literal notranslate"><span class="pre">v</span> <span class="pre">&lt;</span> <span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">&lt;=</span> <span class="pre">v</span> <span class="pre">&lt;</span> <span class="pre">2</span></code> and <code class="docutils literal notranslate"><span class="pre">v</span> <span class="pre">&gt;=2</span></code>
+where <code class="docutils literal notranslate"><span class="pre">v</span></code> is the value of an individual at information field
+<em>field</em>. If parameter <code class="docutils literal notranslate"><span class="pre">ranges</span></code> is specified, each range
+defines a VSP. For example, <code class="docutils literal notranslate"><span class="pre">ranges=[[1,</span> <span class="pre">3],</span> <span class="pre">[2,</span> <span class="pre">5]]</span></code> defines
+two VSPs with <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">&lt;=</span> <span class="pre">v</span> <span class="pre">&lt;</span> <span class="pre">3</span></code> and <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">&lt;=</span> <span class="pre">3</span> <span class="pre">&lt;</span> <span class="pre">5</span></code>. Of course, only
+one of the parameters <em>values</em>, <em>cutoff</em> and <em>ranges</em> should be
+defined, and values in <em>cutoff</em> should be distinct, and in an
+increasing order. A default set of names are given to each VSP
+unless a new set of names is given by parameter <em>names</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="InfoSplitter.name">
+<code class="descname">name</code><span class="sig-paren">(</span><em>vsp</em><span class="sig-paren">)</span><a class="headerlink" href="#InfoSplitter.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of a VSP <em>vsp</em>, which is <code class="docutils literal notranslate"><span class="pre">field</span> <span class="pre">=</span> <span class="pre">value</span></code> if
+VSPs are defined by values in parameter <em>values</em>, or <code class="docutils literal notranslate"><span class="pre">field</span> <span class="pre">&lt;</span>
+<span class="pre">value</span></code> (the first VSP), <code class="docutils literal notranslate"><span class="pre">v1</span> <span class="pre">&lt;=</span> <span class="pre">field</span> <span class="pre">&lt;</span> <span class="pre">v2</span></code> and <code class="docutils literal notranslate"><span class="pre">field</span> <span class="pre">&gt;=</span> <span class="pre">v</span></code>
+(the last VSP) if VSPs are defined by cutoff values. A user-
+specified name, if specified, will be returned instead.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="InfoSplitter.numVirtualSubPop">
+<code class="descname">numVirtualSubPop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#InfoSplitter.numVirtualSubPop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of VSPs defined by this splitter, which is the
+length parameter <em>values</em> or the length of <em>cutoff</em> plus one,
+depending on which parameter is specified.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-proportionsplitter">
+<h2>class ProportionSplitter<a class="headerlink" href="#class-proportionsplitter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ProportionSplitter">
+<em class="property">class </em><code class="descname">ProportionSplitter</code><a class="headerlink" href="#ProportionSplitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This splitter divides subpopulations into several VSPs by
+proportion.</p>
+<dl class="method">
+<dt id="ProportionSplitter.ProportionSplitter">
+<code class="descname">ProportionSplitter</code><span class="sig-paren">(</span><em>proportions=[]</em>, <em>names=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#ProportionSplitter.ProportionSplitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a splitter that divides subpopulations by <em>proportions</em>,
+which should be a list of float numbers (between <code class="docutils literal notranslate"><span class="pre">0</span></code> and
+<code class="docutils literal notranslate"><span class="pre">1</span></code>) that add up to <code class="docutils literal notranslate"><span class="pre">1</span></code>. A default set of names are given to
+each VSP unless a new set of names is given by parameter
+<em>names</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ProportionSplitter.name">
+<code class="descname">name</code><span class="sig-paren">(</span><em>vsp</em><span class="sig-paren">)</span><a class="headerlink" href="#ProportionSplitter.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of VSP <em>vsp</em>, which is <code class="docutils literal notranslate"><span class="pre">&quot;Prop</span> <span class="pre">p&quot;</span></code> where
+<code class="docutils literal notranslate"><span class="pre">p=propotions[vsp]</span></code>. A user specified name will be returned if
+specified.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ProportionSplitter.numVirtualSubPop">
+<code class="descname">numVirtualSubPop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ProportionSplitter.numVirtualSubPop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of VSPs defined by this splitter, which is the
+length of parameter <em>proportions</em>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-rangesplitter">
+<h2>class RangeSplitter<a class="headerlink" href="#class-rangesplitter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="RangeSplitter">
+<em class="property">class </em><code class="descname">RangeSplitter</code><a class="headerlink" href="#RangeSplitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class defines a splitter that groups individuals in certain
+ranges into VSPs.</p>
+<dl class="method">
+<dt id="RangeSplitter.RangeSplitter">
+<code class="descname">RangeSplitter</code><span class="sig-paren">(</span><em>ranges</em>, <em>names=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#RangeSplitter.RangeSplitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a splitter according to a number of individual ranges
+defined in <em>ranges</em>. For example, <code class="docutils literal notranslate"><span class="pre">RangeSplitter(ranges=[[0,</span>
+<span class="pre">20],</span> <span class="pre">[40,</span> <span class="pre">50]])</span></code> defines two VSPs. The first VSP consists of
+individuals <code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span></code>, …, <code class="docutils literal notranslate"><span class="pre">19</span></code>, and the sceond VSP
+consists of individuals <code class="docutils literal notranslate"><span class="pre">40</span></code>, <code class="docutils literal notranslate"><span class="pre">41</span></code>, …, <code class="docutils literal notranslate"><span class="pre">49</span></code>. Note that a
+nested list has to be used even if only one range is defined. A
+default set of names are given to each VSP unless a new set of
+names is given by parameter <em>names</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="RangeSplitter.name">
+<code class="descname">name</code><span class="sig-paren">(</span><em>vsp</em><span class="sig-paren">)</span><a class="headerlink" href="#RangeSplitter.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of VSP <em>vsp</em>, which is <code class="docutils literal notranslate"><span class="pre">&quot;Range</span> <span class="pre">[a,</span> <span class="pre">b)&quot;</span></code> where
+<code class="docutils literal notranslate"><span class="pre">[a,</span> <span class="pre">b)</span></code> is range <code class="docutils literal notranslate"><span class="pre">ranges[vsp]</span></code>. A user specified name will
+be returned if specified.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="RangeSplitter.numVirtualSubPop">
+<code class="descname">numVirtualSubPop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#RangeSplitter.numVirtualSubPop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of VSPs, which is the number of ranges defined
+in parameter <em>ranges</em>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-genotypesplitter">
+<h2>class GenotypeSplitter<a class="headerlink" href="#class-genotypesplitter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="GenotypeSplitter">
+<em class="property">class </em><code class="descname">GenotypeSplitter</code><a class="headerlink" href="#GenotypeSplitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class defines a VSP splitter that defines VSPs according to
+individual genotype at specified loci.</p>
+<dl class="method">
+<dt id="GenotypeSplitter.GenotypeSplitter">
+<code class="descname">GenotypeSplitter</code><span class="sig-paren">(</span><em>loci</em>, <em>alleles</em>, <em>phase=False</em>, <em>names=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#GenotypeSplitter.GenotypeSplitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a splitter that defines VSPs by individual genotype at
+<em>loci</em> (can be indexes or names of one or more loci). Each list
+in a list <em>allele</em> defines a VSP, which is a list of allowed
+alleles at these <em>loci</em>. If only one VSP is defined, the outer
+list of the nested list can be ignored. If phase if true, the
+order of alleles in each list is significant. If more than one
+set of alleles are given, Individuals having either of them is
+qualified.</p>
+<p>For example, in a haploid population, <code class="docutils literal notranslate"><span class="pre">loci=1,</span> <span class="pre">alleles=[0,</span> <span class="pre">1]</span></code>
+defines a VSP with individuals having allele <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code> at
+locus <code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">alleles=[[0,</span> <span class="pre">1],</span> <span class="pre">[2]]</span></code> defines two VSPs with
+indivdiuals in the second VSP having allele <code class="docutils literal notranslate"><span class="pre">2</span></code> at locus
+<code class="docutils literal notranslate"><span class="pre">1</span></code>. If multiple loci are involved, alleles at each locus need
+to be defined. For example, VSP defined by <code class="docutils literal notranslate"><span class="pre">loci=[0,</span> <span class="pre">1],</span>
+<span class="pre">alleles=[0,</span> <span class="pre">1,</span> <span class="pre">1,</span> <span class="pre">1]</span></code> consists of individuals having alleles
+<code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code> or <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">1]</span></code> at loci <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code>.</p>
+<p>In a haploid population, <code class="docutils literal notranslate"><span class="pre">loci=1,</span> <span class="pre">alleles=[0,</span> <span class="pre">1]</span></code> defines a
+VSP with individuals having genotype <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code> or <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">0]</span></code> at
+locus <code class="docutils literal notranslate"><span class="pre">1</span></code>. <code class="docutils literal notranslate"><span class="pre">alleles[[0,</span> <span class="pre">1],</span> <span class="pre">[2,</span> <span class="pre">2]]</span></code> defines two VSPs with
+indivdiuals in the second VSP having genotype <code class="docutils literal notranslate"><span class="pre">[2,</span> <span class="pre">2]</span></code> at
+locus <code class="docutils literal notranslate"><span class="pre">1</span></code>. If <em>phase</em> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the first VSP will
+only has individuals with genotype <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code>. In the multiple
+loci case, alleles should be arranged by haplotypes, for
+example, <code class="docutils literal notranslate"><span class="pre">loci=[0,</span> <span class="pre">1],</span> <span class="pre">alleles=[0,</span> <span class="pre">0,</span> <span class="pre">1,</span> <span class="pre">1],</span> <span class="pre">phase=True</span></code>
+defines a VSP with individuals having genotype <code class="docutils literal notranslate"><span class="pre">-0-0-,</span> <span class="pre">-1-1-</span></code>
+at loci <code class="docutils literal notranslate"><span class="pre">0</span></code> and <code class="docutils literal notranslate"><span class="pre">1</span></code>. If <code class="docutils literal notranslate"><span class="pre">phase=False</span></code> (default), genotypes
+<code class="docutils literal notranslate"><span class="pre">-1-1-,</span> <span class="pre">-0-0-</span></code>, <code class="docutils literal notranslate"><span class="pre">-0-1-</span></code> and <code class="docutils literal notranslate"><span class="pre">-1-0-</span></code> are all allowed.</p>
+<p>A default set of names are given to each VSP unless a new set of
+names is given by parameter <em>names</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenotypeSplitter.name">
+<code class="descname">name</code><span class="sig-paren">(</span><em>vsp</em><span class="sig-paren">)</span><a class="headerlink" href="#GenotypeSplitter.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return name of VSP <em>vsp</em>, which is <code class="docutils literal notranslate"><span class="pre">&quot;Genotype</span>
+<span class="pre">loc1,loc2:genotype&quot;</span></code> as defined by parameters <em>loci</em> and
+<em>alleles</em>. A user provided name will be returned if specified.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenotypeSplitter.numVirtualSubPop">
+<code class="descname">numVirtualSubPop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenotypeSplitter.numVirtualSubPop" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of virtual subpops of subpopulation sp</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-combinedsplitter">
+<h2>class CombinedSplitter<a class="headerlink" href="#class-combinedsplitter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="CombinedSplitter">
+<em class="property">class </em><code class="descname">CombinedSplitter</code><a class="headerlink" href="#CombinedSplitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This splitter takes several splitters and stacks their VSPs
+together. For example, if the first splitter defines <code class="docutils literal notranslate"><span class="pre">3</span></code> VSPs and
+the second splitter defines <code class="docutils literal notranslate"><span class="pre">2</span></code>, the two VSPs from the second
+splitter become the fourth (index <code class="docutils literal notranslate"><span class="pre">3</span></code>) and the fifth (index
+<code class="docutils literal notranslate"><span class="pre">4</span></code>) VSPs of the combined splitter. In addition, a new set of
+VSPs could be defined as the union of one or more of the original
+VSPs. This splitter is usually used to define different types of
+VSPs to a population.</p>
+<dl class="method">
+<dt id="CombinedSplitter.CombinedSplitter">
+<code class="descname">CombinedSplitter</code><span class="sig-paren">(</span><em>splitters=[]</em>, <em>vspMap=[]</em>, <em>names=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#CombinedSplitter.CombinedSplitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a combined splitter using a list of <em>splitters</em>. For
+example, <code class="docutils literal notranslate"><span class="pre">CombinedSplitter([SexSplitter(),</span>
+<span class="pre">AffectionSplitter()])</span></code> defines a combined splitter with four
+VSPs, defined by male (vsp <code class="docutils literal notranslate"><span class="pre">0</span></code>), female (vsp <code class="docutils literal notranslate"><span class="pre">1</span></code>),
+unaffected (vsp <code class="docutils literal notranslate"><span class="pre">2</span></code>) and affected individuals (vsp <code class="docutils literal notranslate"><span class="pre">3</span></code>).
+Optionally, a new set of VSPs could be defined by parameter
+<em>vspMap</em>. Each item in this parameter is a list of VSPs that
+will be combined to a single VSP. For example, <code class="docutils literal notranslate"><span class="pre">vspMap=[(0,</span> <span class="pre">2),</span>
+<span class="pre">(1,</span> <span class="pre">3)]</span></code> in the previous example will define two VSPs defined
+by male or unaffected, and female or affected individuals. VSP
+names are usually determined by splitters, but can also be
+specified using parameter <em>names</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CombinedSplitter.name">
+<code class="descname">name</code><span class="sig-paren">(</span><em>vsp</em><span class="sig-paren">)</span><a class="headerlink" href="#CombinedSplitter.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of a VSP <em>vsp</em>, which is the name a VSP defined
+by one of the combined splitters unless a new set of names is
+specified. If a <em>vspMap</em> was used, names from different VSPs
+will be joined by <code class="docutils literal notranslate"><span class="pre">&quot;or&quot;</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CombinedSplitter.numVirtualSubPop">
+<code class="descname">numVirtualSubPop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombinedSplitter.numVirtualSubPop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of VSPs defined by this splitter, which is the
+sum of the number of VSPs of all combined splitters.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-productsplitter">
+<h2>class ProductSplitter<a class="headerlink" href="#class-productsplitter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ProductSplitter">
+<em class="property">class </em><code class="descname">ProductSplitter</code><a class="headerlink" href="#ProductSplitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This splitter takes several splitters and take their intersections
+as new VSPs. For example, if the first splitter defines <code class="docutils literal notranslate"><span class="pre">3</span></code> VSPs
+and the second splitter defines <code class="docutils literal notranslate"><span class="pre">2</span></code>, <code class="docutils literal notranslate"><span class="pre">6</span></code> VSPs will be defined
+by splitting 3 VSPs defined by the first splitter each to two VSPs.
+This splitter is usually used to define finer VSPs from existing
+VSPs.</p>
+<dl class="method">
+<dt id="ProductSplitter.ProductSplitter">
+<code class="descname">ProductSplitter</code><span class="sig-paren">(</span><em>splitters=[]</em>, <em>names=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#ProductSplitter.ProductSplitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a product splitter using a list of <em>splitters</em>. For
+example, <code class="docutils literal notranslate"><span class="pre">ProductSplitter([SexSplitter(),</span>
+<span class="pre">AffectionSplitter()])</span></code> defines four VSPs by male unaffected,
+male affected, female unaffected, and female affected
+individuals. VSP names are usually determined by splitters, but
+can also be specified using parameter <em>names</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ProductSplitter.name">
+<code class="descname">name</code><span class="sig-paren">(</span><em>vsp</em><span class="sig-paren">)</span><a class="headerlink" href="#ProductSplitter.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of a VSP <em>vsp</em>, which is the names of indivdual
+VSPs separated by a comma, unless a new set of names is
+specified for each VSP.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ProductSplitter.numVirtualSubPop">
+<code class="descname">numVirtualSubPop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ProductSplitter.numVirtualSubPop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of VSPs defined by this splitter, which is the
+sum of the number of VSPs of all combined splitters.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec1.html">Individual, Population, pedigree and Simulator</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Virtual splitters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-basevspsplitter">class BaseVspSplitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-sexsplitter">class SexSplitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-affectionsplitter">class AffectionSplitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-infosplitter">class InfoSplitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-proportionsplitter">class ProportionSplitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-rangesplitter">class RangeSplitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-genotypesplitter">class GenotypeSplitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-combinedsplitter">class CombinedSplitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-productsplitter">class ProductSplitter</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec3.html">Mating Schemes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec4.html">Pre-defined mating schemes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec5.html">Utility Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec6.html">Global functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="refManual.html">&lt;no title&gt;</a><ul>
+  <li><a href="refManual_ch2.html">simuPOP Components</a><ul>
+      <li>Previous: <a href="refManual_ch2_sec1.html" title="previous chapter">Individual, Population, pedigree and Simulator</a></li>
+      <li>Next: <a href="refManual_ch2_sec3.html" title="next chapter">Mating Schemes</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/refManual_ch2_sec2.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

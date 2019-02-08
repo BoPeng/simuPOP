@@ -1,0 +1,346 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Miscellaneous operators &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Hybrid and Python operators" href="userGuide_ch5_sec14.html" />
+    <link rel="prev" title="Conditional operators" href="userGuide_ch5_sec12.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="miscellaneous-operators">
+<h1>Miscellaneous operators<a class="headerlink" href="#miscellaneous-operators" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="an-operator-that-does-nothing-operator-noneop">
+<h2>An operator that does nothing (operator <a class="reference internal" href="refManual_ch3_sec14.html#NoneOp" title="NoneOp"><code class="xref py py-class docutils literal notranslate"><span class="pre">NoneOp</span></code></a>)<a class="headerlink" href="#an-operator-that-does-nothing-operator-noneop" title="Permalink to this headline">¶</a></h2>
+<p>Operator <a class="reference internal" href="refManual_ch3_sec14.html#NoneOp" title="NoneOp"><code class="xref py py-class docutils literal notranslate"><span class="pre">NoneOp</span></code></a> does nothing when it is applied to a population. It
+provides a placeholder when an operator is needed but no action is required.
+Example <a class="reference internal" href="#noneop"><span class="std std-ref">NoneOp</span></a> demonstrates a typical usage of this operator</p>
+<div class="highlight-default notranslate" id="noneop"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">hasSelection</span><span class="p">:</span>
+    <span class="n">sel</span> <span class="o">=</span> <span class="n">MapSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fitness</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.98</span><span class="p">])</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">sel</span> <span class="o">=</span> <span class="n">NoneOp</span><span class="p">()</span>
+<span class="c1">#</span>
+<span class="n">simu</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span><span class="n">sel</span><span class="p">],</span> <span class="c1"># and other operators</span>
+    <span class="n">matingScheme</span><span class="o">=</span><span class="n">RandomMating</span><span class="p">(),</span>
+    <span class="n">gen</span><span class="o">=</span><span class="mi">10</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="dump-the-content-of-a-population-operator-dumper">
+<h2>dump the content of a population (operator <a class="reference internal" href="refManual_ch3_sec14.html#Dumper" title="Dumper"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dumper</span></code></a>)<a class="headerlink" href="#dump-the-content-of-a-population-operator-dumper" title="Permalink to this headline">¶</a></h2>
+<p>Operator <a class="reference internal" href="refManual_ch3_sec14.html#Dumper" title="Dumper"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dumper</span></code></a> and its function form <a class="reference internal" href="refManual_ch3_sec15.html#dump" title="dump"><code class="xref py py-func docutils literal notranslate"><span class="pre">dump</span></code></a> has been used
+extensively in this guide. They are prefect for demonstration and debugging
+purposes because they display all properties of a population in a human readable
+format. They are, however, rarely used in realistic settings because outputting
+a large population to your terminal can be disastrous.</p>
+<p>Even with modestly-sized populations, it is a good idea to dump only parts of
+the population that you are interested. For example, you can use parameter
+<code class="docutils literal notranslate"><span class="pre">genotype=False</span></code> to stop outputting individual genotype, <code class="docutils literal notranslate"><span class="pre">structure=False</span></code>
+to stop outtputing genotypic and population structure information,
+<code class="docutils literal notranslate"><span class="pre">loci=range(5)</span></code> to output genotype only at the first five loci, <code class="docutils literal notranslate"><span class="pre">max=N</span></code> to
+output only the first <code class="docutils literal notranslate"><span class="pre">N</span></code> individuals (default to <code class="docutils literal notranslate"><span class="pre">100</span></code>), <code class="docutils literal notranslate"><span class="pre">subPops=[(0,</span>
+<span class="pre">0)]</span></code> to output, for example, only the first virtual subpopulation in
+subpopulation 0. Multiple virtual subpopulations are allowed and you can even
+use <code class="docutils literal notranslate"><span class="pre">subPops=[(ALL_AVAIL,</span> <span class="pre">0)]</span></code> to go through a specific virtual subpopulation
+of all subpopulations. This operator by default only dump the present generation
+but you can set <code class="docutils literal notranslate"><span class="pre">ancGens</span></code> to a list of generation numbers or <code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code> to
+dump part or all ancestral generations. Finally, if there are more than 10
+alleles, you can set the <code class="docutils literal notranslate"><span class="pre">width</span></code> at which each allele will be printed. The
+following example (Example <a class="reference internal" href="#dumper"><span class="std std-ref">Dumper</span></a>) presents a rather complicated
+usage of this operator.</p>
+<p id="dumper"><strong>Example</strong>: <em>dump the content of a population</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;gen&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">ancGen</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initSex</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">SexSplitter</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop1</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">20</span> <span class="o">+</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">]</span><span class="o">*</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setIndInfo</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;gen&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop1</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">50</span> <span class="o">+</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">]</span><span class="o">*</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop1</span><span class="o">.</span><span class="n">setIndInfo</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;gen&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">pop1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span> <span class="n">subPops</span><span class="o">=</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="nb">max</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">SubPopulation 0,0 (Male), 5 Individuals:</span>
+<span class="go">   2: MU  56 54 52 |  58 54 51 |  2</span>
+<span class="go">   3: MU  52 50 51 |  56 51 50 |  2</span>
+<span class="go">   4: MU  50 53 52 |  52 59 56 |  2</span>
+<span class="go">   5: MU  57 54 56 |  57 57 53 |  2</span>
+<span class="go">   6: MU  59 54 54 |  57 51 50 |  2</span>
+<span class="go">SubPopulation 1,1 (Female), 7 Individuals:</span>
+<span class="go">  10: FU  54 53 57 |  59 59 59 |  2</span>
+<span class="go">  11: FU  55 59 51 |  59 51 58 |  2</span>
+<span class="go">  12: FU  55 58 58 |  57 54 58 |  2</span>
+<span class="go">  14: FU  53 57 52 |  51 54 58 |  2</span>
+<span class="go">  15: FU  51 58 59 |  54 52 54 |  2</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># list all male individuals in all subpopulations</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="n">sim</span><span class="o">.</span><span class="n">ALL_AVAIL</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span>
+<span class="gp">... </span>    <span class="nb">max</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">SubPopulation 0,0 (Male), 5 Individuals:</span>
+<span class="go">   2: MU  56 54 52 |  58 54 51 |  2</span>
+<span class="go">   3: MU  52 50 51 |  56 51 50 |  2</span>
+<span class="go">   4: MU  50 53 52 |  52 59 56 |  2</span>
+<span class="go">   5: MU  57 54 56 |  57 57 53 |  2</span>
+<span class="go">   6: MU  59 54 54 |  57 51 50 |  2</span>
+<span class="go">SubPopulation 1,0 (Male), 3 Individuals:</span>
+<span class="go">  13: MU  55 52 53 |  57 56 52 |  2</span>
+<span class="go">  17: MU  55 51 51 |  57 55 51 |  2</span>
+<span class="go">  19: MU  56 54 53 |  58 58 56 |  2</span>
+
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="Dumper.py">Download Dumper.py</a></p>
+</div>
+<div class="section" id="save-a-population-during-evolution-operator-savepopulation">
+<h2>Save a population during evolution (operator <a class="reference internal" href="refManual_ch3_sec14.html#SavePopulation" title="SavePopulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">SavePopulation</span></code></a>)<a class="headerlink" href="#save-a-population-during-evolution-operator-savepopulation" title="Permalink to this headline">¶</a></h2>
+<p>Because it is usually not feasible to store all parental generations of an
+evolving population, it is a common practise to save snapshots of a population
+during an evolutionary process for further analysis. Operator
+<a class="reference internal" href="refManual_ch3_sec14.html#SavePopulation" title="SavePopulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">SavePopulation</span></code></a> is designed for this purpose. When it is applied to a
+population, it will save the population to a file specified by parameter
+<code class="docutils literal notranslate"><span class="pre">output</span></code>.</p>
+<p>The tricky part is that populations at different generations need to be saved to
+different filenames so the expression version of parameter <code class="docutils literal notranslate"><span class="pre">output</span></code> needs to
+be used (see operator <a class="reference internal" href="refManual_ch3_sec1.html#BaseOperator" title="BaseOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOperator</span></code></a> for details). For example,
+expression <code class="docutils literal notranslate"><span class="pre">'snapshot_%d_%d.pop'</span> <span class="pre">%</span> <span class="pre">(rep,</span> <span class="pre">gen)</span></code> is used in Example
+<a class="reference internal" href="#savepopulation"><span class="std std-ref">SavePopulation</span></a> to save population to files such as
+<code class="docutils literal notranslate"><span class="pre">snapshot_5_20.pop</span></code> during the evolution.</p>
+<p id="savepopulation"><strong>Example</strong>: <em>Save snapshots of an evolving population</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Simulator</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">rep</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">SavePopulation</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;!&#39;snapshot_</span><span class="si">%d</span><span class="s2">_</span><span class="si">%d</span><span class="s2">.pop&#39; % (rep, gen)&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">step</span> <span class="o">=</span> <span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">(50, 50, 50, 50, 50)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="SavePopulation.py">Download SavePopulation.py</a></p>
+</div>
+<div class="section" id="pause-and-resume-an-evolutionary-process-operator-pause">
+<h2>Pause and resume an evolutionary process (operator <a class="reference internal" href="refManual_ch3_sec14.html#Pause" title="Pause"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pause</span></code></a>) *<a class="headerlink" href="#pause-and-resume-an-evolutionary-process-operator-pause" title="Permalink to this headline">¶</a></h2>
+<p>If you are presenting an evolutinary process in public, you might want to
+temporarily stop the evolution so that your audience can have a better look at
+intermediate results or figures. If you have an exceptionally long evolutionary
+process, you might want to examine the status of the evolution process from time
+to time. These can be done using a <a class="reference internal" href="refManual_ch3_sec14.html#Pause" title="Pause"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pause</span></code></a> operator.</p>
+<p>The <a class="reference internal" href="refManual_ch3_sec14.html#Pause" title="Pause"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pause</span></code></a> operator can stop the evolution at specified generations, or
+when you press a key. In the first case, you usually specify the generations to
+Pause (e.g. <a class="reference internal" href="refManual_ch3_sec14.html#Pause" title="Pause"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pause</span></code></a>(<code class="docutils literal notranslate"><span class="pre">step=1000</span></code>)) so that you can examine the status
+of a simulation from time to time. In the second case, you can apply the
+operator at each generation and Pause the simulation when you press a key (e.g.
+<a class="reference internal" href="refManual_ch3_sec14.html#Pause" title="Pause"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pause</span></code></a>(<code class="docutils literal notranslate"><span class="pre">stopOnKeyStroke=True</span></code>)). A specific key can be specified so
+that you can use different keys to stop different populations, as shown in
+Example <a class="reference internal" href="#pause"><span class="std std-ref">Pause</span></a>.</p>
+<p id="pause"><strong>Example</strong>: <em>Pause the evolution of a simulation</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Simulator</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">rep</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">Pause</span><span class="p">(</span><span class="n">stopOnKeyStroke</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">reps</span><span class="o">=</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">(100, 100, 100, 100, 100, 100, 100, 100, 100, 100)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="Pause.py">Download Pause.py</a></p>
+<p>When a simulation is Paused, you are given the options to resume evolution, stop
+the evolution of the Paused population or all populations, or enter an
+interactive Python shell to examine the status of a population, which will be
+available in the Python shell as <code class="docutils literal notranslate"><span class="pre">pop_X_Y</span></code> where <code class="docutils literal notranslate"><span class="pre">X</span></code> and <code class="docutils literal notranslate"><span class="pre">Y</span></code> are
+generation and replicate number of the population, respectively. The evolution
+will resume after you exit the Python shell.</p>
+</div>
+<div class="section" id="measuring-execution-time-of-operators-operator-tictoc">
+<h2>Measuring execution time of operators (operator <a class="reference internal" href="refManual_ch3_sec14.html#TicToc" title="TicToc"><code class="xref py py-class docutils literal notranslate"><span class="pre">TicToc</span></code></a>) *<a class="headerlink" href="#measuring-execution-time-of-operators-operator-tictoc" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="refManual_ch3_sec14.html#TicToc" title="TicToc"><code class="xref py py-class docutils literal notranslate"><span class="pre">TicToc</span></code></a> operator can be used to measure the time between two events
+during an evolutionary process. It outputs the elapsed time since the last time
+it is called, and the overall time since the operator is created. It is very
+flexible in that you can measure the time spent for mating in an evolutionary
+cycle if you apply it before and after mating, and you can measure time spent
+for several evolutionary cycles using generation applicability parameters such
+as <code class="docutils literal notranslate"><span class="pre">step</span></code> and <code class="docutils literal notranslate"><span class="pre">at</span></code>. The latter usage is demonstrated in Example <a class="reference internal" href="#tictoc"><span class="std std-ref">TicToc</span></a>.</p>
+<p id="tictoc"><strong>Example</strong>: <em>Monitor the performance of operators</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Simulator</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">),</span> <span class="n">rep</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">TicToc</span><span class="p">(</span><span class="n">step</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">reps</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">101</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Start stopwatch.</span>
+<span class="go">Elapsed time: 5.00s   Overall time: 5.00s</span>
+<span class="go">Elapsed time: 4.00s   Overall time: 9.00s</span>
+<span class="go">(101, 101)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="TicToc.py">Download TicToc.py</a></p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec1.html">Introduction to operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec2.html">Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec3.html">Expressions and statements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec4.html">Demographic changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec5.html">Genotype transmitters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html">Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec7.html">Penetrance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec8.html">Quantitative trait</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html">Natural Selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec10.html">Tagging operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html">Statistics calculation (operator <code class="docutils literal notranslate"><span class="pre">Stat</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec12.html">Conditional operators</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Miscellaneous operators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#an-operator-that-does-nothing-operator-noneop">An operator that does nothing (operator <code class="docutils literal notranslate"><span class="pre">NoneOp</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dump-the-content-of-a-population-operator-dumper">dump the content of a population (operator <code class="docutils literal notranslate"><span class="pre">Dumper</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#save-a-population-during-evolution-operator-savepopulation">Save a population during evolution (operator <code class="docutils literal notranslate"><span class="pre">SavePopulation</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pause-and-resume-an-evolutionary-process-operator-pause">Pause and resume an evolutionary process (operator <code class="docutils literal notranslate"><span class="pre">Pause</span></code>) *</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#measuring-execution-time-of-operators-operator-tictoc">Measuring execution time of operators (operator <code class="docutils literal notranslate"><span class="pre">TicToc</span></code>) *</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec14.html">Hybrid and Python operators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch5.html">simuPOP Operators</a><ul>
+      <li>Previous: <a href="userGuide_ch5_sec12.html" title="previous chapter">Conditional operators</a></li>
+      <li>Next: <a href="userGuide_ch5_sec14.html" title="next chapter">Hybrid and Python operators</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch5_sec13.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

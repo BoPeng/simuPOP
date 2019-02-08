@@ -1,0 +1,467 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Module simuPOP.sampling &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Module simuPOP.gsl" href="userGuide_ch7_sec5.html" />
+    <link rel="prev" title="Module simuPOP.demography" href="userGuide_ch7_sec3.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-simupop-sampling">
+<h1>Module <a class="reference internal" href="refManual_ch4_sec4.html#module-simuPOP.sampling" title="simuPOP.sampling"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.sampling</span></code></a><a class="headerlink" href="#module-simupop-sampling" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Sampling, in simuPOP term, is the action of extracting individuals from a large,
+potentially multi-generational, population according to certain criteria. the
+<a class="reference internal" href="refManual_ch4_sec4.html#module-simuPOP.sampling" title="simuPOP.sampling"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.sampling</span></code></a> module provides several classes and functions and allows
+you to define more complicated sampling schemes by deriving from its these
+class. For example, you can use <code class="docutils literal notranslate"><span class="pre">drawRandomSample(pop,</span> <span class="pre">size=100)</span></code> to select
+100 random individuals from a population, or use
+<code class="docutils literal notranslate"><span class="pre">drawAffectedSibpairSample(pop,</span> <span class="pre">families=100)</span></code> to select 100 pairs of affected
+invididuals with their parents from a multi-generational population, or a age-
+structured population with parents and offspring in the same generation.</p>
+<p>The <a class="reference internal" href="refManual_ch4_sec4.html#module-simuPOP.sampling" title="simuPOP.sampling"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.sampling</span></code></a> module currently support random, case control,
+affected sibpair, nuclear family and three-generation family sampling types, and
+a combined sampling type that allows you to draw different types of samples. For
+each sampling type <code class="docutils literal notranslate"><span class="pre">X</span></code>, a sampler class and two functions <code class="docutils literal notranslate"><span class="pre">DrawXSample</span></code> and
+<code class="docutils literal notranslate"><span class="pre">DrawXSamples</span></code> are provided The first function returns a population with all
+sampled individuals and the second function returns a list of sample
+populations.</p>
+<p>If you would like to define your own sampling type, you can derive your sampler
+from one of the existing sampler classes. These sampler classes provide member
+functions <code class="docutils literal notranslate"><span class="pre">prepareSample</span></code>, <code class="docutils literal notranslate"><span class="pre">drawSample</span></code> and <code class="docutils literal notranslate"><span class="pre">drawSamples</span></code> and you
+typically only need to extend <code class="docutils literal notranslate"><span class="pre">prepareSample</span></code> of an appropriate base class.</p>
+</div>
+<div class="section" id="sampling-individuals-randomly-class-randomsampler-functions-drawrandomsample-and-drawrandomsamples">
+<h2>Sampling individuals randomly (class <code class="docutils literal notranslate"><span class="pre">RandomSampler</span></code>, functions <code class="docutils literal notranslate"><span class="pre">drawRandomSample</span></code> and <code class="docutils literal notranslate"><span class="pre">drawRandomSamples</span></code>)<a class="headerlink" href="#sampling-individuals-randomly-class-randomsampler-functions-drawrandomsample-and-drawrandomsamples" title="Permalink to this headline">¶</a></h2>
+<p>Functions <code class="docutils literal notranslate"><span class="pre">drawRandomSample</span></code> and <code class="docutils literal notranslate"><span class="pre">drawRandomSamples</span></code> draw random invidiauls
+from a given population. If a simple number is given to parameter <code class="docutils literal notranslate"><span class="pre">size</span></code>,
+population structure will be ignored so individuals will be drawn from all
+subpopulations. If a list of numbers are given, this function will draw
+specified numbers of individuals from each subpopulation. This function does not
+need parental information. If your population does not have an ID field, you
+will not be able to locate extracted individuals in the original population.</p>
+<p>Example <a class="reference internal" href="#randomsample"><span class="std std-ref">randomSample</span></a> demonstrates how to draw a random
+sample from the whole population, and from each subpopulation. Because sample
+populations keep the population structure of the source population (this might
+change when parameter <code class="docutils literal notranslate"><span class="pre">subPops</span></code> is used, see a later section for details), we
+can use <code class="docutils literal notranslate"><span class="pre">sample.subPopSizes()</span></code> to check how many individuals are sampled from
+each subpopulation.</p>
+<p id="randomsample"><strong>Example</strong>: <em>Draw random samples from a structured population</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.sampling</span> <span class="k">import</span> <span class="n">drawRandomSample</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">2000</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># sample from the whole population</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sample</span> <span class="o">=</span> <span class="n">drawRandomSample</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">sizes</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sample</span><span class="o">.</span><span class="n">subPopSizes</span><span class="p">())</span>
+<span class="go">(104, 105, 110, 81, 100)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># sample from each subpopulation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sample</span> <span class="o">=</span> <span class="n">drawRandomSample</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sample</span><span class="o">.</span><span class="n">subPopSizes</span><span class="p">())</span>
+<span class="go">(100, 100, 100, 100, 100)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="randomSample.py">Download randomSample.py</a></p>
+</div>
+<div class="section" id="sampling-cases-and-controls-class-casecontrolsampler-functions-casecontrolsample-and-casecontrolsamples">
+<h2>Sampling cases and controls (class <code class="docutils literal notranslate"><span class="pre">CaseControlSampler</span></code>, functions <code class="docutils literal notranslate"><span class="pre">CaseControlSample</span></code> and <code class="docutils literal notranslate"><span class="pre">CaseControlSamples</span></code>)<a class="headerlink" href="#sampling-cases-and-controls-class-casecontrolsampler-functions-casecontrolsample-and-casecontrolsamples" title="Permalink to this headline">¶</a></h2>
+<p>Functions <code class="docutils literal notranslate"><span class="pre">drawCaseControlSample</span></code> and <code class="docutils literal notranslate"><span class="pre">drawCaseControlSamples</span></code> draw cases
+(affected individuals) and controls (unaffected invidiauls) from a given
+population. If a simple number is given to parameter <code class="docutils literal notranslate"><span class="pre">cases</span></code> and <code class="docutils literal notranslate"><span class="pre">controls</span></code>,
+population structure will be ignored so individuals will be drawn from all
+subpopulations. If a list of numbers are given, this function will draw
+specified number of cases and controls from each subpopulation.</p>
+<p>Example <a class="reference internal" href="#casecontrolsample"><span class="std std-ref">caseControlSample</span></a> demonstrates how to draw
+multiple case-control samples from a population, and perform case-control
+assocition tests using the <code class="docutils literal notranslate"><span class="pre">stat</span></code> function.</p>
+<p id="casecontrolsample"><strong>Example</strong>: <em>Draw case control samples from a population and perform association test</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.sampling</span> <span class="k">import</span> <span class="n">drawCaseControlSamples</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">10000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">maPenetrance</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">penetrance</span><span class="o">=</span><span class="p">[</span><span class="mf">0.11</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.20</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># draw multiple case control sample</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">samples</span> <span class="o">=</span> <span class="n">drawCaseControlSamples</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">cases</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">controls</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">numOfSamples</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">samples</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">association</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">%.6f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">sample</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">Allele_ChiSq_p</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)]))</span>
+<span class="gp">...</span>
+<span class="go">0.694748, 0.333041, 0.001039, 0.078127, 0.774085</span>
+<span class="go">0.261750, 0.954592, 0.031830, 0.737788, 0.865679</span>
+<span class="go">0.954949, 0.371093, 0.092487, 0.622153, 0.075739</span>
+<span class="go">0.654721, 0.433848, 0.002859, 0.696375, 0.956630</span>
+<span class="go">0.439721, 1.000000, 0.069651, 0.471087, 0.238199</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="caseControlSample.py">Download caseControlSample.py</a></p>
+</div>
+<div class="section" id="sampling-pedigrees-functions-indextoid-and-plotpedigree">
+<h2>Sampling Pedigrees (functions <code class="docutils literal notranslate"><span class="pre">indexToID</span></code> and <code class="docutils literal notranslate"><span class="pre">plotPedigree</span></code>)<a class="headerlink" href="#sampling-pedigrees-functions-indextoid-and-plotpedigree" title="Permalink to this headline">¶</a></h2>
+<p>If your sampling scheme involves parental information, you need to prepare your
+population so that it has</p>
+<ul class="simple">
+<li>an ID field (usually <code class="docutils literal notranslate"><span class="pre">'ind_id'</span></code>) that stores a unique ID for each
+individual.</li>
+<li>two information fields (usually <code class="docutils literal notranslate"><span class="pre">'father_id'</span></code>, and <code class="docutils literal notranslate"><span class="pre">'mother_id'</span></code>) that
+stores the ID of parents of each individual. Although simuPOP supports one-
+parent Pedigrees, this feature will not be discussed in this guide.</li>
+</ul>
+<p>The preferred method to prepare such a population is to add information fields
+<code class="docutils literal notranslate"><span class="pre">ind_id</span></code>, <code class="docutils literal notranslate"><span class="pre">father_id</span></code> and <code class="docutils literal notranslate"><span class="pre">mother_id</span></code> to a population and track ID based
+Pedigrees during evolution. More specifically, you can use operators
+<a class="reference internal" href="refManual_ch3_sec10.html#IdTagger" title="IdTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">IdTagger</span></code></a> and <a class="reference internal" href="refManual_ch3_sec10.html#PedigreeTagger" title="PedigreeTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">PedigreeTagger</span></code></a> to assign IDs and record parental
+IDs of each offspring during mating. This method supports age-structured
+population when parents and offspring can be stored in the same generation.</p>
+<p>You can also use information fields <code class="docutils literal notranslate"><span class="pre">father_idx</span></code> and <code class="docutils literal notranslate"><span class="pre">mother_idx</span></code> and
+operator <a class="reference internal" href="refManual_ch3_sec10.html#ParentsTagger" title="ParentsTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParentsTagger</span></code></a> to track indexes of parents in the parental
+generations. Before sampling, you can use function
+<code class="xref py py-func docutils literal notranslate"><span class="pre">indexToID</span></code> to add needed information fields and convert
+index based parental relationship to ID based relationshop. Because parents have
+to stay in ancestral generations, this method does not support age-structured
+population.</p>
+<p>If you have R and rpy installed on your system, you can install the <code class="docutils literal notranslate"><span class="pre">kinship</span></code>
+library of R and use it to analyze Pedigree. The <a class="reference internal" href="refManual_ch4_sec4.html#module-simuPOP.sampling" title="simuPOP.sampling"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.sampling</span></code></a> module
+provides a function <code class="docutils literal notranslate"><span class="pre">plotPedigree</span></code> to use this library to plot Pedigrees.
+Example <span class="xref std std-ref">plotPedigree</span> demonstrates how to use function
+sampling.indexToID to prepare a pedigree and how to use sampling.DrawPedigree to
+plot it.</p>
+<p>Figure <span class="xref std std-ref">fig_Pedigree</span> plots a small three-generational
+population with 15 individuals at each generation. It is pretty clear that
+random mating produces bad pedigree structure because it is common that one
+parent would have multiple spouses.</p>
+</div>
+<div class="section" id="sampling-affected-sibpairs-class-affectedsibpairsampler-functions-drawaffectedsibpairsample-s">
+<h2>Sampling affected sibpairs (class <code class="docutils literal notranslate"><span class="pre">AffectedSibpairSampler</span></code>, functions <code class="docutils literal notranslate"><span class="pre">drawAffectedSibpairSample(s)</span></code>)<a class="headerlink" href="#sampling-affected-sibpairs-class-affectedsibpairsampler-functions-drawaffectedsibpairsample-s" title="Permalink to this headline">¶</a></h2>
+<p>An affected sibpair family consists of two parents and their affected offspring.
+Such families are useful in linkage analysis because of high likelihood of
+shared disease predisposing alleles between siblings. <a class="reference internal" href="refManual_ch4_sec4.html#module-simuPOP.sampling" title="simuPOP.sampling"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.sampling</span></code></a>
+module provides functions <code class="docutils literal notranslate"><span class="pre">drawAffectedSibpairSample</span></code> and
+<code class="docutils literal notranslate"><span class="pre">drawAffectedSibpairSamples</span></code> to draw such families from a population. Example
+<a class="reference internal" href="#sampleaffectedsibpair"><span class="std std-ref">sampleAffectedSibpair</span></a> draws two affected sibpair
+from the pedigree created in Example <span class="xref std std-ref">plotPedigree</span>, with
+samples plotted in Figure <span class="xref std std-ref">fig_affectedSibpair</span>.</p>
+<p id="sampleaffectedsibpair"><strong>Example</strong>: <em>Draw affected sibpairs from a population</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.sampling</span> <span class="k">import</span> <span class="n">indexToID</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;father_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;mother_idx&#39;</span><span class="p">],</span> <span class="n">ancGen</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">numOffspring</span><span class="o">=</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">UNIFORM_DISTRIBUTION</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">ops</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span> <span class="n">sim</span><span class="o">.</span><span class="n">ParentsTagger</span><span class="p">()]),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">MaPenetrance</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">penetrance</span><span class="o">=</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">)),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">indexToID</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># three information fields were added</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">infoFields</span><span class="p">())</span>
+<span class="go">(&#39;father_idx&#39;, &#39;mother_idx&#39;, &#39;ind_id&#39;, &#39;father_id&#39;, &#39;mother_id&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># save this population for future use</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;log/pedigree.pop&#39;</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.sampling</span> <span class="k">import</span> <span class="n">drawAffectedSibpairSample</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">loadPopulation</span><span class="p">(</span><span class="s1">&#39;log/pedigree.pop&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sample</span> <span class="o">=</span> <span class="n">drawAffectedSibpairSample</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">families</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">Warning: number of requested Pedigrees 2 is greater than what exists (0).</span>
+<span class="go">Warning: not enough non-overlapping Pedigrees are found (requested 2, found 0).</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="sampleAffectedSibpair.py">Download sampleAffectedSibpair.py</a></p>
+</div>
+<div class="section" id="sampling-nuclear-families-class-nuclearfamilysampler-functions-drawnuclearfamilysample-and-drawnuclearfamilysamples">
+<h2>Sampling nuclear families (class <code class="docutils literal notranslate"><span class="pre">NuclearFamilySampler</span></code>, functions <code class="docutils literal notranslate"><span class="pre">drawNuclearFamilySample</span></code> and <code class="docutils literal notranslate"><span class="pre">drawNuclearFamilySample</span></code>s)<a class="headerlink" href="#sampling-nuclear-families-class-nuclearfamilysampler-functions-drawnuclearfamilysample-and-drawnuclearfamilysamples" title="Permalink to this headline">¶</a></h2>
+<p>A nuclear family consists of two parents and their offspring. Functions
+<code class="docutils literal notranslate"><span class="pre">drawNuclearFamilySample</span></code> and <code class="docutils literal notranslate"><span class="pre">drawNuclearFamilySamples</span></code> to draw such
+families from a population, with restrictions on number of offspring, number of
+affected parents and number of affected offspring. Although fixed numbers could
+be given, a range with minimal and maximal acceptable numbers are usually
+provided. Example <a class="reference internal" href="#samplenuclearfamily"><span class="std std-ref">sampleNuclearFamily</span></a> draws two
+nuclear families from the pedigree created in Example <span class="xref std std-ref">plotPedigree</span>. The samples are plotted in Figure <span class="xref std std-ref">fig_nuclearFamily</span>.</p>
+<p id="samplenuclearfamily"><strong>Example</strong>: <em>Draw nuclear families from a population</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.sampling</span> <span class="k">import</span> <span class="n">drawNuclearFamilySample</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">loadPopulation</span><span class="p">(</span><span class="s1">&#39;log/pedigree.pop&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sample</span> <span class="o">=</span> <span class="n">drawNuclearFamilySample</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">families</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">numOffspring</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">affectedParents</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">affectedOffspring</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="go">Warning: number of requested Pedigrees 2 is greater than what exists (0).</span>
+<span class="go">Warning: not enough non-overlapping Pedigrees are found (requested 2, found 0).</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># try to separate two families?</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sample</span><span class="o">.</span><span class="n">asPedigree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#= sim.Pedigree(sample, loci=sim.ALL_AVAIL, infoFields=sim.ALL_AVAIL)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sample</span><span class="o">.</span><span class="n">addInfoFields</span><span class="p">(</span><span class="s1">&#39;ped_id&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># return size of families</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sz</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">identifyFamilies</span><span class="p">(</span><span class="n">pedField</span><span class="o">=</span><span class="s1">&#39;ped_id&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sz</span><span class="p">)</span>
+<span class="go">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ped1</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">extractIndividuals</span><span class="p">(</span><span class="n">IDs</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">idField</span><span class="o">=</span><span class="s1">&#39;ped_id&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># print the ID of all individuals in the first pedigree</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">([</span><span class="n">ind</span><span class="o">.</span><span class="n">ind_id</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">ped1</span><span class="o">.</span><span class="n">allIndividuals</span><span class="p">()])</span>
+<span class="go">[]</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="sampleNuclearFamily.py">Download sampleNuclearFamily.py</a></p>
+</div>
+<div class="section" id="sampling-three-generation-families-class-threegenfamilysampler-functions-drawthreegenfamilysample-and-drawthreegenfamilysamples">
+<h2>Sampling three-generation families (class <code class="docutils literal notranslate"><span class="pre">ThreeGenFamilySampler</span></code>, functions <code class="docutils literal notranslate"><span class="pre">drawThreeGenFamilySample</span> <span class="pre">and</span> <span class="pre">drawThreeGenFamilySamples</span></code>)<a class="headerlink" href="#sampling-three-generation-families-class-threegenfamilysampler-functions-drawthreegenfamilysample-and-drawthreegenfamilysamples" title="Permalink to this headline">¶</a></h2>
+<p>A three-generation family consists of two parents, their common offspring,
+offspring’s spouses, and their common offspring (grandchidren). individuals in
+sampled families have either no or two parents. Functions
+<code class="docutils literal notranslate"><span class="pre">drawThreeGenFamilySample</span></code> and <code class="docutils literal notranslate"><span class="pre">drawThreeGenFamilySamples</span></code> to draw such
+families from a population, with restrictions on number of offspring, total
+number of individuals and number of affected individuals in the Pedigree. These
+parameters (<code class="docutils literal notranslate"><span class="pre">numOffspring</span></code>, <code class="docutils literal notranslate"><span class="pre">pedSize</span></code> and <code class="docutils literal notranslate"><span class="pre">numAffected</span></code>) could be a fixed
+number of a range with minimal and maximal acceptable numbers. Example
+<a class="reference internal" href="#samplenuclearfamily"><span class="std std-ref">sampleNuclearFamily</span></a> draws two three generation
+families from the pedigree created in Example <span class="xref std std-ref">plotPedigree</span>. The samples are plotted in Figure <span class="xref std std-ref">fig_nuclearFamily</span>.</p>
+<p id="samplethreegenfamily"><strong>Example</strong>: <em>Draw three-generation families  from a population</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.sampling</span> <span class="k">import</span> <span class="n">drawThreeGenFamilySample</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">loadPopulation</span><span class="p">(</span><span class="s1">&#39;log/pedigree.pop&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sample</span> <span class="o">=</span> <span class="n">drawThreeGenFamilySample</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">families</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">numOffspring</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">pedSize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span> <span class="n">numOfAffected</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="sampleThreeGenFamily.py">Download sampleThreeGenFamily.py</a></p>
+</div>
+<div class="section" id="sampling-different-types-of-samples-class-combinedsampler-functions-drawcombinedsample-and-drawcombinedsamples">
+<h2>Sampling different types of samples (class <code class="docutils literal notranslate"><span class="pre">CombinedSampler</span></code>, functions <code class="docutils literal notranslate"><span class="pre">drawCombinedSample</span></code> and <code class="docutils literal notranslate"><span class="pre">drawCombinedSamples</span></code>)<a class="headerlink" href="#sampling-different-types-of-samples-class-combinedsampler-functions-drawcombinedsample-and-drawcombinedsamples" title="Permalink to this headline">¶</a></h2>
+<p>Samples in real world studies sometimes do not have uniform types so it is
+useful to draw samples of different types from the same population. Although it
+is possible to draw samples using different functions and combine them, handling
+of overlapping individuals, namely individuals who are chosen by multiple
+samplers, can be a headache. The combined sampler of <a class="reference internal" href="refManual_ch4_sec4.html#module-simuPOP.sampling" title="simuPOP.sampling"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.sampling</span></code></a> is
+designed to overcome this problem. This sampler takes a list of sampler objects
+and apply them to a population sequentially. The extracted sample will not have
+overlapping individuals.</p>
+<p>Example <a class="reference internal" href="#combinedsampling"><span class="std std-ref">combinedSampling</span></a> draws an affected sibpair
+family and a nuclear family from the pedigree created in Example
+<span class="xref std std-ref">plotPedigree</span>. The samples are plotted in Figure
+<a class="reference internal" href="#combinedsampling"><span class="std std-ref">combinedSampling</span></a>.</p>
+<p id="combinedsampling"><strong>Example</strong>: <em>Draw different types of samples from a population</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.sampling</span> <span class="k">import</span> <span class="n">drawCombinedSample</span><span class="p">,</span> <span class="n">AffectedSibpairSampler</span><span class="p">,</span> <span class="n">NuclearFamilySampler</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">loadPopulation</span><span class="p">(</span><span class="s1">&#39;log/pedigree.pop&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sample</span> <span class="o">=</span> <span class="n">drawCombinedSample</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">samplers</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>    <span class="n">AffectedSibpairSampler</span><span class="p">(</span><span class="n">families</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">NuclearFamilySampler</span><span class="p">(</span><span class="n">families</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">numOffspring</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">affectedParents</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">affectedOffspring</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="p">])</span>
+<span class="go">Warning: number of requested Pedigrees 1 is greater than what exists (0).</span>
+<span class="go">Warning: not enough non-overlapping Pedigrees are found (requested 1, found 0).</span>
+<span class="go">Warning: number of requested Pedigrees 1 is greater than what exists (0).</span>
+<span class="go">Warning: not enough non-overlapping Pedigrees are found (requested 1, found 0).</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="combinedSampling.py">Download combinedSampling.py</a></p>
+</div>
+<div class="section" id="sampling-from-subpopulations-and-virtual-subpopulations">
+<h2>Sampling from subpopulations and virtual subpopulations *<a class="headerlink" href="#sampling-from-subpopulations-and-virtual-subpopulations" title="Permalink to this headline">¶</a></h2>
+<p>Virtual subpopulations (VSPs) could be specified in the <code class="docutils literal notranslate"><span class="pre">subPops</span></code> parameter of
+sampling classes and functions. This can be used to limit your samples to
+individuals with certain properties. For example, you may want to match the age
+of cases and controls in a case-control association study by selecting your
+samples from a certain age group. For examples, Example <a class="reference internal" href="#samplingvsp"><span class="std std-ref">samplingVSP</span></a> draws 500 cases and 500 controls from two a VSP with individual
+ages between 40 and 60.</p>
+<p id="samplingvsp"><strong>Example</strong>: <em>Draw samples from a virtual subpopulation.</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># create an age-structured population with a disease</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initInfo</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">70</span><span class="p">),</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">InfoSplitter</span><span class="p">(</span><span class="n">cutoff</span><span class="o">=</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">60</span><span class="p">),</span> <span class="n">field</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">maPenetrance</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">penetrance</span><span class="o">=</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.sampling</span> <span class="k">import</span> <span class="n">drawCaseControlSample</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sample</span> <span class="o">=</span> <span class="n">drawCaseControlSample</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">cases</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">controls</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ageInSample</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">indInfo</span><span class="p">(</span><span class="s1">&#39;age&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">ageInSample</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">ageInSample</span><span class="p">))</span>
+<span class="go">40.0 59.0</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="samplingVSP.py">Download samplingVSP.py</a></p>
+<p>If a list of sample sizes is given, specified number of samples will be drawn
+from each subpopulation. For example, if you have an age-structured population
+when individuals with different ages have different risk to a disease, you might
+want to draw affected individuals from different age groups and perform
+association analyses. Function <code class="docutils literal notranslate"><span class="pre">drawCaseControlSample</span></code> cannot be used because
+both groups are affected, but you can <code class="docutils literal notranslate"><span class="pre">drawRandomSample</span></code> from two VSPs defined
+by age. Example <a class="reference internal" href="#samplingseparatevsps"><span class="std std-ref">samplingSeparateVSPs</span></a> demonstrates
+how to use this method.</p>
+<p id="samplingseparatevsps"><strong>Example</strong>: <em>Sampling separately from different virtual subpopulations</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># create an age-structured population with a disease</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initInfo</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">70</span><span class="p">),</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">InfoSplitter</span><span class="p">(</span><span class="n">cutoff</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span> <span class="n">field</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># different age group has different penetrance</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">maPenetrance</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">penetrance</span><span class="o">=</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">maPenetrance</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">penetrance</span><span class="o">=</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">),</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># count the number of affected individuals in each group</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">numOfAffected</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">)],</span> <span class="nb">vars</span><span class="o">=</span><span class="s1">&#39;numOfAffected_sp&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">numOfAffected</span><span class="p">,</span> <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">numOfAffected</span><span class="p">)</span>
+<span class="go">668 2215</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.sampling</span> <span class="k">import</span> <span class="n">drawRandomSample</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sample</span> <span class="o">=</span> <span class="n">drawRandomSample</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># virtual subpopulations are rearranged to different subpopulations.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sample</span><span class="o">.</span><span class="n">subPopSizes</span><span class="p">())</span>
+<span class="go">(500, 500)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="samplingSeparateVSPs.py">Download samplingSeparateVSPs.py</a></p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec1.html">Module <code class="docutils literal notranslate"><span class="pre">simuOpt</span></code> (function <code class="docutils literal notranslate"><span class="pre">simuOpt.setOptions</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec2.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.utils</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec3.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.demography</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.sampling</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sampling-individuals-randomly-class-randomsampler-functions-drawrandomsample-and-drawrandomsamples">Sampling individuals randomly (class <code class="docutils literal notranslate"><span class="pre">RandomSampler</span></code>, functions <code class="docutils literal notranslate"><span class="pre">drawRandomSample</span></code> and <code class="docutils literal notranslate"><span class="pre">drawRandomSamples</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sampling-cases-and-controls-class-casecontrolsampler-functions-casecontrolsample-and-casecontrolsamples">Sampling cases and controls (class <code class="docutils literal notranslate"><span class="pre">CaseControlSampler</span></code>, functions <code class="docutils literal notranslate"><span class="pre">CaseControlSample</span></code> and <code class="docutils literal notranslate"><span class="pre">CaseControlSamples</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sampling-pedigrees-functions-indextoid-and-plotpedigree">Sampling Pedigrees (functions <code class="docutils literal notranslate"><span class="pre">indexToID</span></code> and <code class="docutils literal notranslate"><span class="pre">plotPedigree</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sampling-affected-sibpairs-class-affectedsibpairsampler-functions-drawaffectedsibpairsample-s">Sampling affected sibpairs (class <code class="docutils literal notranslate"><span class="pre">AffectedSibpairSampler</span></code>, functions <code class="docutils literal notranslate"><span class="pre">drawAffectedSibpairSample(s)</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sampling-nuclear-families-class-nuclearfamilysampler-functions-drawnuclearfamilysample-and-drawnuclearfamilysamples">Sampling nuclear families (class <code class="docutils literal notranslate"><span class="pre">NuclearFamilySampler</span></code>, functions <code class="docutils literal notranslate"><span class="pre">drawNuclearFamilySample</span></code> and <code class="docutils literal notranslate"><span class="pre">drawNuclearFamilySample</span></code>s)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sampling-three-generation-families-class-threegenfamilysampler-functions-drawthreegenfamilysample-and-drawthreegenfamilysamples">Sampling three-generation families (class <code class="docutils literal notranslate"><span class="pre">ThreeGenFamilySampler</span></code>, functions <code class="docutils literal notranslate"><span class="pre">drawThreeGenFamilySample</span> <span class="pre">and</span> <span class="pre">drawThreeGenFamilySamples</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sampling-different-types-of-samples-class-combinedsampler-functions-drawcombinedsample-and-drawcombinedsamples">Sampling different types of samples (class <code class="docutils literal notranslate"><span class="pre">CombinedSampler</span></code>, functions <code class="docutils literal notranslate"><span class="pre">drawCombinedSample</span></code> and <code class="docutils literal notranslate"><span class="pre">drawCombinedSamples</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sampling-from-subpopulations-and-virtual-subpopulations">Sampling from subpopulations and virtual subpopulations *</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec5.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.gsl</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch7.html">Utility Modules</a><ul>
+      <li>Previous: <a href="userGuide_ch7_sec3.html" title="previous chapter">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.demography</span></code></a></li>
+      <li>Next: <a href="userGuide_ch7_sec5.html" title="next chapter">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.gsl</span></code></a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch7_sec4.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

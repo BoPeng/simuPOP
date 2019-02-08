@@ -1,0 +1,1100 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Population &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="simuPOP Operators" href="userGuide_ch5.html" />
+    <link rel="prev" title="Individual" href="userGuide_ch4_sec2.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="population">
+<h1>Population<a class="headerlink" href="#population" title="Permalink to this headline">¶</a></h1>
+<p id="index-0">The <code class="docutils literal notranslate"><span class="pre">Population</span></code> object is the most important object of simuPOP. It consists
+of one or more generations of individuals, grouped by subpopulations, and a
+local Python dictionary to hold arbitrary population information. This class
+provides a large number of functions to access and modify population structure,
+individuals and their genotypes and information fields. The following sections
+explain these features in detail.</p>
+<div class="section" id="access-and-change-individual-genotype">
+<h2>Access and change individual genotype<a class="headerlink" href="#access-and-change-individual-genotype" title="Permalink to this headline">¶</a></h2>
+<p>From a user’s point of view, genotypes of all individuals in a population are
+arranged sequentially. Similar to functions <a class="reference internal" href="refManual_ch2_sec1.html#Individual.genotype" title="Individual.genotype"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Individual.genotype</span></code></a>() and
+<a class="reference internal" href="refManual_ch2_sec1.html#Individual.setGenotype" title="Individual.setGenotype"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Individual.setGenotype</span></code></a>(), genotypes of a population can be accessed in
+batch using functions <a class="reference internal" href="refManual_ch2_sec1.html#Population.genotype" title="Population.genotype"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.genotype</span></code></a>() and
+<a class="reference internal" href="refManual_ch2_sec1.html#Population.setGenotype" title="Population.setGenotype"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.setGenotype</span></code></a>(). However, because it is error prone to locate
+an allele of a particular individual in this long array, these functions are
+usually used to perform population-level genotype operations such as clearing
+all alleles (e.g. <code class="docutils literal notranslate"><span class="pre">pop.setGenotype(0)</span></code>) or counting the number of a particular
+allele across all individuals (e.g. <code class="docutils literal notranslate"><span class="pre">pop.genotype().count(1)</span></code>).</p>
+<p>Another way to change alleles across the whole population is to recode existing
+alleles to other numbers. This is sometimes needed if you need to change allele
+states to conform with a particular mutation model, assumptions of other
+software applications or genetic samples. For example, if your dataset uses 1,
+2, 3, 4 for A, C, T, G alleles, and you would like to use alleles 0, 1, 2 and 3
+for A, C, G, T (a convention for simuPOP when nucleotide mutation models are
+involved), you can use</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pop</span><span class="o">.</span><span class="n">recodeAlleles</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">alleleNames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>to convert and rename the alleles (1 allele to 0, 2 allele to 1, etc). This
+operation will be applied to all subpopulations for all ancestral generations,
+but can be restricted to selected loci.</p>
+</div>
+<div class="section" id="subpopulations">
+<h2>Subpopulations<a class="headerlink" href="#subpopulations" title="Permalink to this headline">¶</a></h2>
+<p>A simuPOP population consists of one or more subpopulations. <strong>If a population
+is not structured, it has one subpopulation that is the population itself.</strong>
+Subpopulations serve as barriers of individuals in the sense that mating only
+happens between individuals in the same subpopulation. A number of functions are
+provided to merge, remove, resize subpopulations, and move individuals between
+subpopulations (migration).</p>
+<p>Example <a class="reference internal" href="#subpopname"><span class="std std-ref">subPopName</span></a> demonstrates how to use some of the
+subpopulation related functions.</p>
+<p id="subpop"><strong>Example</strong>: <em>Manipulation of subpopulations</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="n">ploidy</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># individual 0, 1, 2, ... will have an allele 0, 1, 2, ...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setGenotype</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">popSize</span><span class="p">()))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSize</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># merge subpopulations</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">mergeSubPops</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># split subpopulations</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">splitSubPop</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">])</span>
+<span class="go">(1, 2)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSizes</span><span class="p">()</span>
+<span class="go">(3, 2, 7)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># remove subpopulations</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">removeSubPops</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSizes</span><span class="p">()</span>
+<span class="go">(3, 7)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="subPop.py">Download subPop.py</a></p>
+<p>Some population operations change the IDs of subpopulations. For example, if a
+population has three subpopulations 0, 1, and 2, and subpopulation 1 is split
+into two subpouplations, subpopulation 2 will become subpopulation 3. Tracking
+the ID of a subpopulation can be problematic, especially when conditional or
+random subpopulation operations are involved. In this case, you can specify
+names to subpopulations. These names will follow their associated subpopulations
+during population operations so you can identify the ID of a subpopulation by
+its name. Note that simuPOP allows duplicate subpopulation names.</p>
+<p id="subpopname"><strong>Example</strong>: <em>Use of subpopulation names</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="n">subPopNames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">removeSubPops</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopNames</span><span class="p">()</span>
+<span class="go">(&#39;x&#39;, &#39;z&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopByName</span><span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">)</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">splitSubPop</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="go">(1, 2)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopNames</span><span class="p">()</span>
+<span class="go">(&#39;x&#39;, &#39;z&#39;, &#39;z&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setSubPopName</span><span class="p">(</span><span class="s1">&#39;z-1&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopNames</span><span class="p">()</span>
+<span class="go">(&#39;x&#39;, &#39;z-1&#39;, &#39;z&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopByName</span><span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">)</span>
+<span class="go">2</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="subPopName.py">Download subPopName.py</a></p>
+</div>
+<div class="section" id="virtual-subpopulations-and-virtual-splitters">
+<h2>Virtual subpopulations and virtual splitters *<a class="headerlink" href="#virtual-subpopulations-and-virtual-splitters" title="Permalink to this headline">¶</a></h2>
+<p>simuPOP subpopulations can be further divided into virtual subpopulations (VSP),
+which are groups of individuals who share certain properties. For example, all
+male individuals, all unaffected individuals, all individuals with information
+field age &gt; 20, all individuals with genotype 0, 0 at a given locus, can form
+VSPs. VSPs do not have to add up to the whole subpopulation, nor do they have to
+be non-overlapping. Unlike subpopulations that have strict boundaries, VSPs
+change easily with the changes of individual properties.</p>
+<p>VSPs are defined by virtual splitters. <strong>It is a definition for groups of
+individuals in each subpopulation.</strong> A splitter defines the same number of VSPs
+in all subpopulations, although sizes of these VSPs vary across subpopulations
+due to subpopulation differences. For example, a <a class="reference internal" href="refManual_ch2_sec2.html#SexSplitter" title="SexSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SexSplitter</span></code></a>()
+defines two VSPs, the first with all male individuals and the second with all
+female individuals, and a <a class="reference internal" href="refManual_ch2_sec2.html#InfoSplitter" title="InfoSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoSplitter</span></code></a>(<code class="docutils literal notranslate"><span class="pre">field='x',</span> <span class="pre">values=[1,</span> <span class="pre">2,</span>
+<span class="pre">4]</span></code>) defines three VSPs whose members have values <code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span></code> and <code class="docutils literal notranslate"><span class="pre">4</span></code> at
+information field <code class="docutils literal notranslate"><span class="pre">x</span></code>, respectively. This splitter also allows the use of
+cutoff values and ranges to define VSPs. If different types of VSPs are needed,
+a combined splitter can be used to combine VSPs defined by several splitters.</p>
+<p>A VSP is represented by a <code class="docutils literal notranslate"><span class="pre">[sp,</span> <span class="pre">vsp]</span></code> pair where <code class="docutils literal notranslate"><span class="pre">sp</span></code> and <code class="docutils literal notranslate"><span class="pre">vsp</span></code> can be
+subpopulation indexes or names. Its name and size can be obtained using
+functions <code class="docutils literal notranslate"><span class="pre">subPopName()</span></code> and <code class="docutils literal notranslate"><span class="pre">subPopSize()</span></code>. Example <a class="reference internal" href="#virtualsplitter"><span class="std std-ref">virtualSplitter</span></a> demonstrates how to apply virtual splitters to a population,
+and how to check VSP names and sizes.</p>
+<p id="virtualsplitter"><strong>Example</strong>: <em>Define virtual subpopulations in a population</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">400</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">30</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># assign random information fields</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initSex</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initInfo</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># define a virtual splitter by sex</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">SexSplitter</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">numVirtualSubPop</span><span class="p">()</span>    <span class="c1"># Number of defined VSPs</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopName</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>    <span class="c1"># Each VSP has a name</span>
+<span class="go">&#39;Male&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSize</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>    <span class="c1"># Size of VSP 1 in subpopulation 0</span>
+<span class="go">109</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSize</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;Female&#39;</span><span class="p">])</span>    <span class="c1"># Refer to vsp by its name</span>
+<span class="go">109</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># define a virtual splitter by information field &#39;x&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">InfoSplitter</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">numVirtualSubPop</span><span class="p">()</span>    <span class="c1"># Number of defined VSPs</span>
+<span class="go">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopName</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>    <span class="c1"># Each VSP has a name</span>
+<span class="go">&#39;x = 0&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSize</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>    <span class="c1"># Size of VSP 0 in subpopulation 0</span>
+<span class="go">46</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSize</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>    <span class="c1"># Size of VSP 0 in subpopulation 1</span>
+<span class="go">92</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="virtualSplitter.py">Download virtualSplitter.py</a></p>
+<p>VSP provides an easy way to access groups of individuals in a subpopulation and
+allows finer control of an evolutionary process. For example, mating schemes can
+be applied to VSPs which makes it possible to apply different mating schemes to,
+for example, individuals with different ages. By applying migration, mutation
+etc to VSPs, it is easy to implement advanced features such as sex-biased
+migrations, different mutation rates for individuals at different stages of a
+disease. Example <a class="reference internal" href="#virtualsubpop"><span class="std std-ref">virtualSubPop</span></a> demonstrates how to
+initialize genotype and information fields to individuals in male and female
+VSPs.</p>
+<p id="virtualsubpop"><strong>Example</strong>: <em>Applications of virtual subpopulations</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;Sex&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initSex</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">SexSplitter</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># initialize male and females with different genotypes.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">genotype</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">genotype</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># set Sex information field to 0 for all males, and 1 for all females</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setIndInfo</span><span class="p">([</span><span class="n">sim</span><span class="o">.</span><span class="n">MALE</span><span class="p">],</span> <span class="s1">&#39;Sex&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setIndInfo</span><span class="p">([</span><span class="n">sim</span><span class="o">.</span><span class="n">FEMALE</span><span class="p">],</span> <span class="s1">&#39;Sex&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Print individual genotypes, followed by values at information field Sex</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">SubPopulation 0 (), 10 Individuals:</span>
+<span class="go">   0: FU 11 111 | 11 111 |  2</span>
+<span class="go">   1: FU 11 111 | 11 111 |  2</span>
+<span class="go">   2: MU 00 000 | 00 000 |  1</span>
+<span class="go">   3: MU 00 000 | 00 000 |  1</span>
+<span class="go">   4: MU 00 000 | 00 000 |  1</span>
+<span class="go">   5: MU 00 000 | 00 000 |  1</span>
+<span class="go">   6: MU 00 000 | 00 000 |  1</span>
+<span class="go">   7: FU 11 111 | 11 111 |  2</span>
+<span class="go">   8: FU 11 111 | 11 111 |  2</span>
+<span class="go">   9: FU 11 111 | 11 111 |  2</span>
+
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="virtualSubPop.py">Download virtualSubPop.py</a></p>
+</div>
+<div class="section" id="advanced-virtual-subpopulation-splitters">
+<h2>Advanced virtual subpopulation splitters **<a class="headerlink" href="#advanced-virtual-subpopulation-splitters" title="Permalink to this headline">¶</a></h2>
+<p>simuPOP provides a number of virtual splitters that can define VSPs using
+specified properties. For example, <a class="reference internal" href="refManual_ch2_sec2.html#InfoSplitter" title="InfoSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoSplitter</span></code></a>(<code class="docutils literal notranslate"><span class="pre">field='a',</span>
+<span class="pre">values=[1,2,3]</span></code>) defines three VSPs whose individuals have values <code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">3</span></code> at information field <code class="docutils literal notranslate"><span class="pre">a</span></code>, respectively; <a class="reference internal" href="refManual_ch2_sec2.html#SexSplitter" title="SexSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SexSplitter</span></code></a>()
+defines two VSPs of male and female individuals, respectively; and
+<a class="reference internal" href="refManual_ch2_sec2.html#RangeSplitter" title="RangeSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">RangeSplitter</span></code></a>(<code class="docutils literal notranslate"><span class="pre">ranges=[[0,</span> <span class="pre">2000],</span> <span class="pre">[2000,</span> <span class="pre">5000]]</span></code>) defines two VSPs
+using two blocks of individuals.</p>
+<p>A <a class="reference internal" href="refManual_ch2_sec2.html#CombinedSplitter" title="CombinedSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">CombinedSplitter</span></code></a> can be used if your simulation needs more than one
+sets of VSPs. For example, you may want to split your subpopulations both by sex
+and by affection status. In this case, you can define a combined splitter using</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CombinedSplitter</span><span class="p">(</span><span class="n">splitters</span><span class="o">=</span><span class="p">[</span><span class="n">SexSplitter</span><span class="p">(),</span> <span class="n">AffectionSplitter</span><span class="p">()])</span>
+</pre></div>
+</div>
+<p>This splitter simply stacks VSPs defined in <a class="reference internal" href="refManual_ch2_sec2.html#AffectionSplitter" title="AffectionSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AffectionSplitter</span></code></a>() after
+<a class="reference internal" href="refManual_ch2_sec2.html#SexSplitter" title="SexSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SexSplitter</span></code></a>() so that unaffected and affected VSPs are now VSPs 2 and
+3 (0 and 1 are used for male and female VSPs).</p>
+<p>There are also scenarios when you would like to define finer VSPs with
+individuals belonging to more than one VSPs. For example, you may want to have a
+look of frequencies of certain alleles in affected male vs affected females, or
+count the number of males and females with certain value at an information
+field. In this case, a <a class="reference internal" href="refManual_ch2_sec2.html#ProductSplitter" title="ProductSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProductSplitter</span></code></a> can be used to define VSPs using
+interactions of several VSPs. For example,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ProductSplitter</span><span class="p">(</span><span class="n">splitters</span><span class="o">=</span><span class="p">[</span><span class="n">SexSplitter</span><span class="p">(),</span> <span class="n">AffectionSplitter</span><span class="p">()])</span>
+</pre></div>
+</div>
+<p>defines 4 subpopulations by splitting VSPs defined by <a class="reference internal" href="refManual_ch2_sec2.html#SexSplitter" title="SexSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SexSplitter</span></code></a>()
+with affection status. These four VSPs will then have unaffected male, affected
+male, unaffected female and affected female individuals, respectively.</p>
+<p>If you consider <a class="reference internal" href="refManual_ch2_sec2.html#ProductSplitter" title="ProductSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProductSplitter</span></code></a> as an intersection splitter that
+defines new VSPs as intersections of existing VSPs, you may wonder how to define
+unions of VSPs. For example, you can make a case where you want to consider
+Individuals with information field a &lt; 0 or a &gt; 100 together. A regular
+<a class="reference internal" href="refManual_ch2_sec2.html#InfoSplitter" title="InfoSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoSplitter</span></code></a>(<code class="docutils literal notranslate"><span class="pre">field='a',</span> <span class="pre">cutoff=[0,</span> <span class="pre">100]</span></code>) cannot do that because
+it defines three VSPs with <span class="math notranslate nohighlight">\(a&lt;0\)</span>, <span class="math notranslate nohighlight">\(0\leq a&lt;100\)</span> and
+<span class="math notranslate nohighlight">\(a\geq100\)</span>, respectively. The trick here is to use parameter <code class="docutils literal notranslate"><span class="pre">vspMap</span></code> of
+a <a class="reference internal" href="refManual_ch2_sec2.html#CombinedSplitter" title="CombinedSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">CombinedSplitter</span></code></a>. If this parameter is defined, multiple VSPs could
+be groups or reordered to define a new set of VSPs. For example,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CombinedSplitter</span><span class="p">(</span><span class="n">splitters</span><span class="o">=</span><span class="p">[</span><span class="n">InfoSplitter</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">])],</span> <span class="n">vspMap</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>defines two VSPs using VSPs 0 and 2, and VSP 1 defined by the
+<a class="reference internal" href="refManual_ch2_sec2.html#InfoSplitter" title="InfoSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoSplitter</span></code></a> so that the first VSP contains individuals with
+<span class="math notranslate nohighlight">\(a&lt;0\)</span> or <span class="math notranslate nohighlight">\(a\geq100\)</span>.</p>
+<p>Example <a class="reference internal" href="#advancedvsp"><span class="std std-ref">advancedVSP</span></a> demonstrates some advanced usages of
+virtual splitters.</p>
+<p id="advancedvsp"><strong>Example</strong>: <em>Advanced virtual subpopulation usages.</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">4000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">30</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># assign random information fields</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initSex</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initInfo</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># 1, use a combined splitter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">CombinedSplitter</span><span class="p">(</span><span class="n">splitters</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>    <span class="n">sim</span><span class="o">.</span><span class="n">SexSplitter</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">sim</span><span class="o">.</span><span class="n">InfoSplitter</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">... </span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">numVirtualSubPop</span><span class="p">()</span>    <span class="c1"># Number of defined VSPs</span>
+<span class="go">6</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopName</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>    <span class="c1"># Each VSP has a name</span>
+<span class="go">&#39;Male&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSize</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>    <span class="c1"># sim.MALE</span>
+<span class="go">1011</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSize</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>    <span class="c1"># individuals in sp 1 with value 2 at field x</span>
+<span class="go">1048</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># use a product splitter that defines additional VSPs by sex and info</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">ProductSplitter</span><span class="p">(</span><span class="n">splitters</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>    <span class="n">sim</span><span class="o">.</span><span class="n">SexSplitter</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">]),</span>  <span class="c1"># give a new set of names</span>
+<span class="gp">... </span>    <span class="n">sim</span><span class="o">.</span><span class="n">InfoSplitter</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">... </span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">numVirtualSubPop</span><span class="p">()</span>    <span class="c1"># Number of defined VSPs</span>
+<span class="go">8</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopName</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>    <span class="c1"># Each VSP has a name</span>
+<span class="go">&#39;M, x = 0&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSize</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>    <span class="c1"># sim.MALE with value 1 in sp 0</span>
+<span class="go">240</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSize</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>    <span class="c1"># sim.FEMALE with value 1 in sp 1</span>
+<span class="go">453</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># use a combined splitter to join VSPs defined by a</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># product splitter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">CombinedSplitter</span><span class="p">([</span>
+<span class="gp">... </span>    <span class="n">sim</span><span class="o">.</span><span class="n">ProductSplitter</span><span class="p">([</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">SexSplitter</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InfoSplitter</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])])],</span>
+<span class="gp">... </span>    <span class="n">vspMap</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">7</span><span class="p">]],</span>
+<span class="gp">... </span>    <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Male x&lt;=3&#39;</span><span class="p">,</span> <span class="s1">&#39;Female x&lt;=3&#39;</span><span class="p">,</span> <span class="s1">&#39;Female x=4&#39;</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">numVirtualSubPop</span><span class="p">()</span>    <span class="c1"># Number of defined VSPs</span>
+<span class="go">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopName</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>    <span class="c1"># Each VSP has a name</span>
+<span class="go">&#39;Male x&lt;=3&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSize</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>    <span class="c1"># sim.MALE with value 0, 1, 2 at field x</span>
+<span class="go">770</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSize</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>    <span class="c1"># sim.FEMALE with value 0, 1 or 2 at field x</span>
+<span class="go">1493</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="advancedVSP.py">Download advancedVSP.py</a></p>
+</div>
+<div class="section" id="access-individuals-and-their-properties">
+<span id="subsec-individuals"></span><h2>Access individuals and their properties<a class="headerlink" href="#access-individuals-and-their-properties" title="Permalink to this headline">¶</a></h2>
+<p>There are many ways to access individuals of a population. For example, function
+<code class="docutils literal notranslate"><span class="pre">Population.Individual(idx)</span></code> returns a reference to the <code class="docutils literal notranslate"><span class="pre">idx</span></code>-th
+individual in a population. An optional parameter <code class="docutils literal notranslate"><span class="pre">subPop</span></code> can be specified to
+return the <code class="docutils literal notranslate"><span class="pre">idx</span></code>-th individual in the <code class="docutils literal notranslate"><span class="pre">subPop</span></code>-th subpopulation.</p>
+<p>If you would like to access a group of individuals, either from a whole
+population, a subpopulation, or from a virtual subpopulation,
+<a class="reference internal" href="refManual_ch2_sec1.html#Population.individuals" title="Population.individuals"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.individuals</span></code></a>(<code class="docutils literal notranslate"><span class="pre">[subPop]</span></code>) is easier to use. This function
+returns a Python iterator that can be used to iterate through individuals. An
+advantage of this function is that <code class="docutils literal notranslate"><span class="pre">subPop</span></code>can be a virtual subpopulation
+which makes it easy to iterate through Individuals with certain properties (such
+as all male Individuals). If you would like to iterate through multiple virtual
+subpopulations in one or more ancestral generations, you can use another
+function <a class="reference internal" href="refManual_ch2_sec1.html#Population.allIndividuals" title="Population.allIndividuals"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.allIndividuals</span></code></a>(<code class="docutils literal notranslate"><span class="pre">subPops,</span> <span class="pre">ancGens</span></code>).</p>
+<p>If more than one generations are stored in a population, function
+<code class="docutils literal notranslate"><span class="pre">ancestor(idx,</span> <span class="pre">[subPop],</span> <span class="pre">gen)</span></code> can be used to access Individual from an
+ancestral generation (see Section <a class="reference internal" href="#subsec-ancestral-populations"><span class="std std-ref">subsec_Ancestral_populations</span></a> for details). Because there is no group access
+function for ancestors, it may be more convenient to use <code class="docutils literal notranslate"><span class="pre">useAncestralGen</span></code> to
+make an <em>ancestral</em> generation the <em>current</em> generation, and use
+<code class="docutils literal notranslate"><span class="pre">Population.Individuals</span></code>. Note that ancestor() function can always access
+individuals at a certain generation, regardless which generation the current
+generation is. Example <a class="reference internal" href="#batchaccess"><span class="std std-ref">batchAccess</span></a> demonstrates how to use
+all these Individual-access functions.</p>
+<p>If an unique ID is assigned to all individuals in a population, you can look up
+individuals from their IDs using function <a class="reference internal" href="refManual_ch2_sec1.html#Population.indByID" title="Population.indByID"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.indByID</span></code></a>(). The
+information field to save individual ID is usually <code class="docutils literal notranslate"><span class="pre">ind_id</span></code> and you can use
+operator <a class="reference internal" href="refManual_ch3_sec10.html#IdTagger" title="IdTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">IdTagger</span></code></a> and its function form <a class="reference internal" href="refManual_ch3_sec15.html#tagID" title="tagID"><code class="xref py py-func docutils literal notranslate"><span class="pre">tagID</span></code></a> to set this
+field. Note that this function can be used to look up individuals in the present
+and all ancestral generations, although a parameter (<code class="docutils literal notranslate"><span class="pre">ancGen</span></code>) can be used to
+limit search to a specific generation if you know in advance which generation
+the individual locates.</p>
+<p id="accessindividual"><strong>Example</strong>: <em>Access individuals of a population</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># create a sim.population with two generations. The current generation has values</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># 0-9 at information field x, the parental generation has values 10-19.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">ancGen</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setIndInfo</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop1</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop1</span><span class="o">.</span><span class="n">setIndInfo</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">pop1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">individual</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>       <span class="c1"># using absolute index</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span><span class="o">.</span><span class="n">x</span>
+<span class="go">5.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span><span class="o">.</span><span class="n">x</span>       <span class="c1"># the same as ind.x</span>
+<span class="go">5.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># use a for loop, and relative index</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSize</span><span class="p">(</span><span class="mi">1</span><span class="p">)):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">individual</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">5.0</span>
+<span class="go">6.0</span>
+<span class="go">7.0</span>
+<span class="go">8.0</span>
+<span class="go">9.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># It is usually easier to use an iterator</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">5.0</span>
+<span class="go">6.0</span>
+<span class="go">7.0</span>
+<span class="go">8.0</span>
+<span class="go">9.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Access individuals in VSPs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">InfoSplitter</span><span class="p">(</span><span class="n">cutoff</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">17</span><span class="p">],</span> <span class="n">field</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">5.0</span>
+<span class="go">6.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Access all individuals in all ancestral generations</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">([</span><span class="n">ind</span><span class="o">.</span><span class="n">x</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">allIndividuals</span><span class="p">()])</span>
+<span class="go">[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># or only specified subpopulations or ancestral generations</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">([</span><span class="n">ind</span><span class="o">.</span><span class="n">x</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">allIndividuals</span><span class="p">(</span><span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)],</span> <span class="n">ancGens</span><span class="o">=</span><span class="mi">1</span><span class="p">)])</span>
+<span class="go">[10.0, 11.0, 12.0, 13.0, 14.0, 17.0, 18.0, 19.0]</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Access individuals in ancetral generations</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">ancestor</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">x</span>        <span class="c1"># absolute index</span>
+<span class="go">15.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">ancestor</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">x</span>     <span class="c1"># relative index</span>
+<span class="go">15.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Or make ancestral generation the current generation and use &#39;individual&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">useAncestralGen</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">individual</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">x</span>         <span class="c1"># absolute index</span>
+<span class="go">15.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">individual</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">x</span>      <span class="c1"># relative index</span>
+<span class="go">15.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># &#39;ancestor&#39; can still access the &#39;present&#39; (generation 0) generation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">ancestor</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">x</span>
+<span class="go">5.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># access individual by ID</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">addInfoFields</span><span class="p">(</span><span class="s1">&#39;ind_id&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">tagID</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">ind_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">()]</span>
+<span class="go">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># access individual by ID. Note that individual 12 is in the parental generation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">indByID</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span><span class="o">.</span><span class="n">x</span>
+<span class="go">1.0</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="accessIndividual.py">Download accessIndividual.py</a></p>
+<p>Although it is easy to access individuals in a population, it is often more
+efficient to access genotypes and information fields in batch mode. For example,
+functions <code class="docutils literal notranslate"><span class="pre">genotype()</span></code> and<code class="docutils literal notranslate"><span class="pre">setGenotype()</span></code> can read/write genotype of all
+individuals in a population or (virtual) subpopulation, functions <code class="docutils literal notranslate"><span class="pre">indInfo()</span></code>
+and <code class="docutils literal notranslate"><span class="pre">setIndInfo()</span></code> can read/write certain information fields in a population
+or (virtual) subpopulation. The write functions work in a circular manner in the
+sense that provided values are reused if they are not enough to fill all
+genotypes or information fields. Example <a class="reference internal" href="#batchaccess"><span class="std std-ref">batchAccess</span></a>
+demonstrates the use of such functions.</p>
+<p id="batchaccess"><strong>Example</strong>: <em>Access Individual properties in batch mode</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setIndInfo</span><span class="p">([</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)],</span> <span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">indInfo</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="go">(7.0, 5.0, 8.0, 10.0, 7.0, 0.0, 8.0, 4.0, 4.0, 10.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setGenotype</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">genotype</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">[0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">InfoSplitter</span><span class="p">(</span><span class="n">cutoff</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">field</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setGenotype</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span>    <span class="c1"># clear all values</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setGenotype</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">indInfo</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="go">(7.0, 0.0, 8.0, 4.0, 4.0, 10.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">genotype</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">[5, 6, 7, 5, 0, 0, 0, 0, 6, 7, 5, 6, 7, 5, 6, 7, 5, 6, 7, 5, 6, 7, 5, 6]</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="batchAccess.py">Download batchAccess.py</a></p>
+</div>
+<div class="section" id="attach-arbitrary-auxillary-information-using-information-fields">
+<span id="sec-information-fields"></span><h2>Attach arbitrary auxillary information using information fields<a class="headerlink" href="#attach-arbitrary-auxillary-information-using-information-fields" title="Permalink to this headline">¶</a></h2>
+<p>Information fields are usually set during population creation, using the
+<code class="docutils literal notranslate"><span class="pre">infoFields</span></code> parameter of the population constructor. It can also be set or
+added using functions <code class="docutils literal notranslate"><span class="pre">setInfoFields,</span> <span class="pre">addInfoField</span></code>and <code class="docutils literal notranslate"><span class="pre">addInfoFields</span></code>.
+Example <a class="reference internal" href="#popinfo"><span class="std std-ref">popInfo</span></a> demonstrates how to read and write information
+fields from an individual, or from a population in batch mode. Note that
+functions <a class="reference internal" href="refManual_ch2_sec1.html#Population.indInfo" title="Population.indInfo"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.indInfo</span></code></a> and <a class="reference internal" href="refManual_ch2_sec1.html#Population.setIndInfo" title="Population.setIndInfo"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.setIndInfo</span></code></a> can be
+applied to (virtual) subpopulation using a optional parameter subPop.</p>
+<p id="popinfo"><strong>Example</strong>: <em>Add and use of information fields in a population</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setInfoFields</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">addInfoFields</span><span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">addInfoFields</span><span class="p">([</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">infoFields</span><span class="p">()</span>
+<span class="go">(&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># information fields can be accessed in batch mode</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setIndInfo</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;c&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># as well as individually.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="n">ind</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">ind</span><span class="o">.</span><span class="n">c</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">indInfo</span><span class="p">(</span><span class="s1">&#39;e&#39;</span><span class="p">))</span>
+<span class="go">(2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="popInfo.py">Download popInfo.py</a></p>
+</div>
+<div class="section" id="keep-track-of-ancestral-generations">
+<span id="subsec-ancestral-populations"></span><h2>Keep track of ancestral generations<a class="headerlink" href="#keep-track-of-ancestral-generations" title="Permalink to this headline">¶</a></h2>
+<p>A simuPOP population usually holds individuals in one generation. During
+evolution, an offspring generation will replace the parental generation and
+become the present generation (population), after it is populated from a
+parental population. The parental generation is discarded.</p>
+<p>This is usually enough when only the present generation is of interest. However,
+parental generations can provide useful information on how genotype and other
+information are passed from parental to offspring generations. simuPOP provides
+a mechanism to store and access arbitrary number of ancestral generations in a
+population object. Applications of this feature include pedigree tracking,
+reconstruction, and pedigree ascertainments.</p>
+<p>A parameter <code class="docutils literal notranslate"><span class="pre">ancGen</span></code> is used to specify how many generations a population
+object <em>can</em> store (which is usually called the <em>ancestral depth</em> of a
+population). This parameter is default to <code class="docutils literal notranslate"><span class="pre">0</span></code>, meaning keeping no ancestral
+population. You can specify a positive number <code class="docutils literal notranslate"><span class="pre">n</span></code> to store n most recent
+generations; or -<code class="docutils literal notranslate"><span class="pre">1</span></code> to store all generations. Of course, storing all
+generations during an evolutionary process is likely to exhaust the RAM of your
+computer quickly.</p>
+<p>Several member functions can be used to manipulate ancestral generations:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">ancestralGens()</span></code>returns the number of ancestral generations stored in a
+population.</li>
+<li><code class="docutils literal notranslate"><span class="pre">setAncestralDepth(depth)</span></code> resets the number of generations a population can
+store.</li>
+<li><code class="docutils literal notranslate"><span class="pre">push(pop)</span></code> will push population <code class="docutils literal notranslate"><span class="pre">pop</span></code> into the current population.
+<code class="docutils literal notranslate"><span class="pre">pop</span></code> will become the current generation, and the current generation will
+either be removed (if ancGen == 0), or become the parental generation of pop.
+The greatest ancestral generation may be removed. This function is rarely used
+because populations with ancestral generations are usually created during an
+evolutionary process.</li>
+<li><code class="docutils literal notranslate"><span class="pre">useAncestralGen(idx)</span></code> set the present generation to <code class="docutils literal notranslate"><span class="pre">idx</span></code> generation.
+<code class="docutils literal notranslate"><span class="pre">idx</span></code> <code class="docutils literal notranslate"><span class="pre">=</span> <span class="pre">1</span></code> for the parental generation, <code class="docutils literal notranslate"><span class="pre">2</span></code> for grand-parental, …, and
+<code class="docutils literal notranslate"><span class="pre">0</span></code> for the present generation. This is useful because most population
+functions act on the <em>present</em> generation. You should always call
+<code class="docutils literal notranslate"><span class="pre">setAncestralPop(0)</span></code> after you examined the ancestral generations.</li>
+</ul>
+<p>If a population has several ancestral generations, they are referred by their
+indexes 0 (the latest generation), 1 (parental generation), … and <span class="math notranslate nohighlight">\(k\)</span>
+(top-most ancestral generation) where <span class="math notranslate nohighlight">\(k\)</span> equals to <code class="docutils literal notranslate"><span class="pre">ancestralGens()</span></code>.
+In many cases, you can retrieve the properties of ancestral generations
+directly, using functions such as</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">popSize(ancGen=-1),</span> <span class="pre">subPopSizes(ancGen=-1),</span> <span class="pre">subPopSize(subPop,</span> <span class="pre">ancGen=-1)</span></code>:
+population and subpopulation sizes of ancestral generation <code class="docutils literal notranslate"><span class="pre">ancGen</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">ancestor(index,</span> <span class="pre">ancGen)</span></code>: Get a reference to the <code class="docutils literal notranslate"><span class="pre">index</span></code> individual of
+ancestral generation <code class="docutils literal notranslate"><span class="pre">ancGen</span></code>.</li>
+</ul>
+<p>However, most population member functions work at the current generation so you
+will need to switch to an ancestral generation using function
+<code class="docutils literal notranslate"><span class="pre">useAncestralGen()</span></code> if you would like to manipulate an ancestral generation.
+For example, you can remove the second subpopulation of the parental generation
+using functions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pop</span><span class="o">.</span><span class="n">useAncestralGen</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">pop</span><span class="o">.</span><span class="n">removeSubPops</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A typical use of ancestral generations is demonstrated in example <a class="reference internal" href="#extract"><span class="std std-ref">extract</span></a>. In this example, a population is created and is initialized with
+allele frequency 0.5. Its ancestral depth is set to 2 at the beginning of
+generation 18 so that it can hold parental generations at generation 18 and 19.
+The allele frequency at each generation is calculated and displayed, both during
+evolution using a <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> operator, and after evolution using the function
+form this operator. Note that setting the ancestral depth at the end of an
+evolutionary process is a common practice because we are usually only interested
+in the last few generations.</p>
+<p id="ancestralpop"><strong>Example</strong>: <em>Ancestral populations</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ancGen</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">begin</span><span class="o">=-</span><span class="mi">3</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;</span><span class="si">%.3f</span><span class="s2">\n&#39; % alleleFreq[0][0]&quot;</span><span class="p">,</span> <span class="n">begin</span><span class="o">=-</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">0.495</span>
+<span class="go">0.510</span>
+<span class="go">0.506</span>
+<span class="go">20</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># information</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">ancestralGens</span><span class="p">()</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">popSize</span><span class="p">(</span><span class="n">ancGen</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">500</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">SexSplitter</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># number of males in the current and parental generation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSize</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)),</span> <span class="n">pop</span><span class="o">.</span><span class="n">subPopSize</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">ancGen</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">(254, 249)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># start from current generation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">ancestralGens</span><span class="p">(),</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+<span class="gp">... </span>  <span class="n">pop</span><span class="o">.</span><span class="n">useAncestralGen</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="gp">... </span>  <span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">   </span><span class="si">%.3f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">alleleFreq</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+<span class="gp">...</span>
+<span class="go">2   0.495</span>
+<span class="go">1   0.510</span>
+<span class="go">0   0.506</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># restore to the current generation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">useAncestralGen</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="ancestralPop.py">Download ancestralPop.py</a></p>
+</div>
+<div class="section" id="change-genotypic-structure-of-a-population">
+<h2>Change genotypic structure of a population<a class="headerlink" href="#change-genotypic-structure-of-a-population" title="Permalink to this headline">¶</a></h2>
+<p>Several functions are provided to remove, add empty loci or chromosomes, and to
+merge loci or chromosomes from another population. They can be used to trim
+unneeded loci, expand existing population or merge two populations. Example
+<a class="reference internal" href="#extract"><span class="std std-ref">extract</span></a> demonstrates how to use these populations. Note that
+function <a class="reference internal" href="refManual_ch2_sec1.html#Population.addLociFrom" title="Population.addLociFrom"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.addLociFrom</span></code></a> by default merges chromosomes one by one
+according to chromosome index. If <code class="docutils literal notranslate"><span class="pre">byName</span></code> is set to True, it will try to
+match chromosomes by name and merge them. This example also demonstrates the use
+of <code class="docutils literal notranslate"><span class="pre">DBG_WARNING</span></code> flag, which will trigger a warning message when chromosomes
+with different names are merged.</p>
+<p id="addremoveloci"><strong>Example</strong>: <em>Add and remove loci and chromosomes</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuOpt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simuOpt</span><span class="o">.</span><span class="n">setOptions</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="s1">&#39;DBG_WARNING&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="go">Turn on debug &#39;DBG_WARNING&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">chromNames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;chr1&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># 1 1 1,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setGenotype</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># 1 1 1, 0 0 0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">addChrom</span><span class="p">(</span><span class="n">lociPos</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">lociNames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;rs1&#39;</span><span class="p">,</span> <span class="s1">&#39;rs2&#39;</span><span class="p">,</span> <span class="s1">&#39;rs3&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">chromName</span><span class="o">=</span><span class="s1">&#39;chr2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop1</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">chromNames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;chr3&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">lociNames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;rs4&#39;</span><span class="p">,</span> <span class="s1">&#39;rs5&#39;</span><span class="p">,</span> <span class="s1">&#39;rs6&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># 2 2 2,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop1</span><span class="o">.</span><span class="n">setGenotype</span><span class="p">([</span><span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># 1 1 1, 0 0 0, 2 2 2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">addChromFrom</span><span class="p">(</span><span class="n">pop1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># 1 1 1, 0 0 0, 2 0 2 2 0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">addLoci</span><span class="p">(</span><span class="n">chrom</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">pos</span><span class="o">=</span><span class="p">[</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">],</span> <span class="n">lociNames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;rs7&#39;</span><span class="p">,</span> <span class="s1">&#39;rs8&#39;</span><span class="p">])</span>
+<span class="go">(7, 10)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># 1 1 1, 0 0 0, 2 0 2 0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">removeLoci</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># loci names can also be used.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">removeLoci</span><span class="p">([</span><span class="s1">&#39;rs1&#39;</span><span class="p">,</span> <span class="s1">&#39;rs7&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+<span class="go">Ploidy: 2 (diploid)</span>
+<span class="go">Chromosomes:</span>
+<span class="go">1: chr1 (AUTOSOME, 3 loci)</span>
+<span class="go">   (1),  (2),  (3)</span>
+<span class="go">2: chr2 (AUTOSOME, 2 loci)</span>
+<span class="go">  rs2 (1), rs3 (2)</span>
+<span class="go">3: chr3 (AUTOSOME, 3 loci)</span>
+<span class="go">  rs4 (1), rs6 (3), rs8 (3.5)</span>
+<span class="go">population size: 10 (1 subpopulations with 10 Individuals)</span>
+<span class="go">Number of ancestral populations: 0</span>
+
+<span class="go">SubPopulation 0 (), 10 Individuals:</span>
+<span class="go">   0: MU 111 00 220 | 111 00 220</span>
+<span class="go">   1: MU 111 00 220 | 111 00 220</span>
+<span class="go">   2: MU 111 00 220 | 111 00 220</span>
+<span class="go">   3: MU 111 00 220 | 111 00 220</span>
+<span class="go">   4: MU 111 00 220 | 111 00 220</span>
+<span class="go">   5: MU 111 00 220 | 111 00 220</span>
+<span class="go">   6: MU 111 00 220 | 111 00 220</span>
+<span class="go">   7: MU 111 00 220 | 111 00 220</span>
+<span class="go">   8: MU 111 00 220 | 111 00 220</span>
+<span class="go">   9: MU 111 00 220 | 111 00 220</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># add loci from another population</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop2</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">lociPos</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">],</span> <span class="n">chromNames</span><span class="o">=</span><span class="s1">&#39;chr3&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">addLociFrom</span><span class="p">(</span><span class="n">pop2</span><span class="p">)</span>
+<span class="go">WARNING: Chromosome &#39;chr3&#39; is merged to chromosome &#39;chr1&#39;.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">addLociFrom</span><span class="p">(</span><span class="n">pop2</span><span class="p">,</span> <span class="n">byName</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">genotype</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">Ploidy: 2 (diploid)</span>
+<span class="go">Chromosomes:</span>
+<span class="go">1: chr1 (AUTOSOME, 5 loci)</span>
+<span class="go">   (0.1),  (1),  (2),  (2.2),  (3)</span>
+<span class="go">2: chr2 (AUTOSOME, 2 loci)</span>
+<span class="go">  rs2 (1), rs3 (2)</span>
+<span class="go">3: chr3 (AUTOSOME, 5 loci)</span>
+<span class="go">   (0.1), rs4 (1),  (2.2), rs6 (3), rs8 (3.5)</span>
+<span class="go">population size: 10 (1 subpopulations with 10 Individuals)</span>
+<span class="go">Number of ancestral populations: 0</span>
+
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="addRemoveLoci.py">Download addRemoveLoci.py</a></p>
+</div>
+<div class="section" id="remove-or-extract-individuals-and-subpopulations-from-a-population">
+<h2>Remove or extract individuals and subpopulations from a population<a class="headerlink" href="#remove-or-extract-individuals-and-subpopulations-from-a-population" title="Permalink to this headline">¶</a></h2>
+<p>Functions <a class="reference internal" href="refManual_ch2_sec1.html#Population.removeIndividuals" title="Population.removeIndividuals"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.removeIndividuals</span></code></a> and
+<a class="reference internal" href="refManual_ch2_sec1.html#Population.removeSubPops" title="Population.removeSubPops"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.removeSubPops</span></code></a> remove selected individuals or groups of
+individuals from a population. Functions <a class="reference internal" href="refManual_ch2_sec1.html#Population.extractIndividuals" title="Population.extractIndividuals"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.extractIndividuals</span></code></a>
+and <a class="reference internal" href="refManual_ch2_sec1.html#Population.extractSubPops" title="Population.extractSubPops"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.extractSubPops</span></code></a> extract individuals and subpopulations
+from an existing population and form a new one.</p>
+<p>Functions <code class="docutils literal notranslate"><span class="pre">removeIndividauls</span></code> and <code class="docutils literal notranslate"><span class="pre">extractIndividuals</span></code> could be used to
+remove or extract individuals from the present generation by indexes or from all
+ancestral generations by IDs or a Python filter function. This function should
+accept parameter <code class="docutils literal notranslate"><span class="pre">ind</span></code> or one or more information fields. simuPOP will pass
+individual for parameter <code class="docutils literal notranslate"><span class="pre">ind</span></code>, and values at specified information fields
+(<code class="docutils literal notranslate"><span class="pre">age</span></code> in this example) of each individual to this function. The present
+population structure will be kept, even if some subpopulations are left empty.
+For example, you could remove the first thirty individuals of a population using</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pop</span><span class="o">.</span><span class="n">removeIndividuals</span><span class="p">(</span><span class="n">indexes</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>or remove all individuals at age 20 or 30 using</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pop</span><span class="o">.</span><span class="n">removeIndividuals</span><span class="p">(</span><span class="n">IDs</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span> <span class="n">idField</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or remove all individuals with age between 20 and 30 using</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pop</span><span class="o">.</span><span class="n">removeIndividuals</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="k">lambda</span> <span class="n">age</span><span class="p">:</span> <span class="n">age</span> <span class="o">&gt;=</span><span class="mi">20</span> <span class="ow">and</span> <span class="n">age</span> <span class="o">&lt;=</span><span class="mi">30</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>. In the last example, a Python lambda function is defined to avoid the
+definition of a named function.</p>
+<p>Functions <code class="docutils literal notranslate"><span class="pre">removeSubPops</span></code> or <code class="docutils literal notranslate"><span class="pre">extractSubPops</span></code> could be used to remove or
+extract subpopulations, or goups of individuals defined by virtual
+subpopulations from a population. The latter case is very interesting because it
+could be used to remove or extract individuals with similar properties, such as
+all individuals between the ages 40 and 60, as demonstrated in Example
+<a class="reference internal" href="#extract"><span class="std std-ref">extract</span></a>.</p>
+<p id="extract"><strong>Example</strong>: <em>Extract individuals</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">genotype</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initInfo</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">75</span><span class="p">),</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">InfoSplitter</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">60</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># remove individuals</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">removeIndividuals</span><span class="p">(</span><span class="n">indexes</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSizes</span><span class="p">())</span>
+<span class="go">(180, 190)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># remove individuals using IDs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setIndInfo</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">field</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">removeIndividuals</span><span class="p">(</span><span class="n">IDs</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">idField</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># remove indiviuals using a filter function</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initSex</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">removeIndividuals</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ind</span><span class="p">:</span> <span class="n">ind</span><span class="o">.</span><span class="n">sex</span><span class="p">()</span> <span class="o">==</span> <span class="n">sim</span><span class="o">.</span><span class="n">MALE</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">([</span><span class="n">pop</span><span class="o">.</span><span class="n">individual</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">sex</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)])</span>
+<span class="go">[2, 2, 2, 2, 2, 2, 2, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># remove subpopulation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">removeSubPops</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSizes</span><span class="p">())</span>
+<span class="go">(56,)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># remove virtual subpopulation (people with age between 20 and 60)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">removeSubPops</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSizes</span><span class="p">())</span>
+<span class="go">(56,)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># extract another virtual subpopulation (people with age greater than 60)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop1</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">extractSubPops</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">pop1</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="go">SubPopulation 0 (), 0 Individuals:</span>
+
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="extract.py">Download extract.py</a></p>
+</div>
+<div class="section" id="store-arbitrary-population-information-as-population-variables">
+<span id="subsec-population-variables"></span><h2>Store arbitrary population information as population variables<a class="headerlink" href="#store-arbitrary-population-information-as-population-variables" title="Permalink to this headline">¶</a></h2>
+<p id="index-1">Each simuPOP population has a Python dictionary that can be used to store
+arbitrary Python variables. These variables are usually used by various
+operators to share information between them. For example, the <code class="docutils literal notranslate"><span class="pre">Stat</span></code> operator
+calculates population statistics and stores the results in this Python
+dictionary. Other operators such as the <a class="reference internal" href="refManual_ch3_sec3.html#PyEval" title="PyEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyEval</span></code></a> and <code class="docutils literal notranslate"><span class="pre">TerminateIf</span></code>read from this dictionary and act upon its information.</p>
+<p id="index-2">simuPOP provides two functions, namely <code class="docutils literal notranslate"><span class="pre">Population.vars()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Population.dvars()</span></code> to access a population dictionary. These functions return
+the same dictionary object but <code class="xref py py-func docutils literal notranslate"><span class="pre">dvars</span></code>() returns a wrapper class so that
+you can access this dictionary as attributes. For example,
+<code class="docutils literal notranslate"><span class="pre">pop.vars()['alleleFreq'][0]</span></code> is equivalent to <code class="docutils literal notranslate"><span class="pre">pop.dvars().alleleFreq[0]</span></code>.
+Because dictionary <code class="docutils literal notranslate"><span class="pre">subPop[spID]</span></code> is frequently used by operators to store
+variables related to a particular (virtual) subpopulation, function
+<code class="docutils literal notranslate"><span class="pre">pop.vars(subPop)</span></code> is provided as a shortcut to
+<code class="docutils literal notranslate"><span class="pre">pop.vars()['subPop'][spID]</span></code>. Example <a class="reference internal" href="#popvars"><span class="std std-ref">popVars</span></a> demonstrates
+how to set and access population variables.</p>
+<p id="popvars"><strong>Example</strong>: <em>population variables</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pprint</span> <span class="k">import</span> <span class="n">pprint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">vars</span><span class="p">())</span>    <span class="c1"># No variable now</span>
+<span class="go">{}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">myVar</span> <span class="o">=</span> <span class="mi">21</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">vars</span><span class="p">())</span>
+<span class="go">{&#39;myVar&#39;: 21}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">popSize</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># pprint prints in a less messy format</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">vars</span><span class="p">())</span>
+<span class="go">{&#39;alleleFreq&#39;: {0: defdict({0: 0.275, 1: 0.725})},</span>
+<span class="go"> &#39;alleleNum&#39;: {0: defdict({0: 55.0, 1: 145.0})},</span>
+<span class="go"> &#39;myVar&#39;: 21,</span>
+<span class="go"> &#39;popSize&#39;: 100,</span>
+<span class="go"> &#39;subPopSize&#39;: [100]}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># print number of allele 1 at locus 0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">vars</span><span class="p">()[</span><span class="s1">&#39;alleleNum&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+<span class="go">145.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># use the dvars() function to access dictionary keys as attributes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">alleleNum</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+<span class="go">145.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">alleleFreq</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">defdict({0: 0.275, 1: 0.725})</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="popVars.py">Download popVars.py</a></p>
+<p>It is important to understand that this dictionary forms a <strong>local namespace</strong>
+in which Python expressions can be evaluated. This is the basis of how
+expression-based operators work. For example, the <code class="docutils literal notranslate"><span class="pre">PyEval</span></code>operator in
+example <a class="reference internal" href="userGuide_ch2_sec2.html#simple-example"><span class="std std-ref">simple_example</span></a> evaluates expression
+<a href="#id1"><span class="problematic" id="id2">``</span></a><code class="docutils literal notranslate"><span class="pre">'%.2f\\t'</span> <span class="pre">%</span> <span class="pre">LD[0][1]''</span></code> in each population’s local namespace when it is
+applied to that population. This yields different results for different
+population because their LD values are different. In addition to Python
+expressions, Python statements can also be executed in the local namespace of a
+population, using the <code class="docutils literal notranslate"><span class="pre">stmts</span></code> parameter of the <a class="reference internal" href="refManual_ch3_sec3.html#PyEval" title="PyEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyEval</span></code></a> or
+<a class="reference internal" href="refManual_ch3_sec3.html#PyExec" title="PyExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyExec</span></code></a> operator. Example <a class="reference internal" href="#expression"><span class="std std-ref">expression</span></a> demonstrates
+the use of a simuPOP terminator, which terminates the evolution of a population
+when its expression is evaluated as <code class="docutils literal notranslate"><span class="pre">True</span></code>. Note that The <code class="docutils literal notranslate"><span class="pre">evolve()</span></code>function of this example does not specify how many generations to evolve so it
+will stop only after all replicates stop. The return value of this function
+indicates how many generations each replicate has evolved. This example also
+demonstrates how to run multiple replicates of an evolutionary process, which we
+will discuss in detail latter.</p>
+<p id="expression"><strong>Example</strong>: <em>Expression evaluation in the local namespace of a population</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Simulator</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">rep</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">TerminateIf</span><span class="p">(</span><span class="s1">&#39;len(alleleFreq[0]) == 1&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">]</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">(129, 1540, 180, 247, 242)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="expression.py">Download expression.py</a></p>
+</div>
+<div class="section" id="save-and-load-a-population">
+<span id="subsec-save-and-load"></span><h2>Save and load a population<a class="headerlink" href="#save-and-load-a-population" title="Permalink to this headline">¶</a></h2>
+<p id="index-3">simuPOP populations can be saved to and loaded from disk files using
+<code class="docutils literal notranslate"><span class="pre">Population.save(file)</span></code> member function and global function
+<a class="reference internal" href="refManual_ch2_sec6.html#loadPopulation" title="loadPopulation"><code class="xref py py-func docutils literal notranslate"><span class="pre">loadPopulation</span></code></a>. <strong>Virtual splitters are not saved</strong> because they are
+considered as runtime definitions. Although files in any extension can be used,
+extension <code class="docutils literal notranslate"><span class="pre">.pop</span></code> is recommended. Example <a class="reference internal" href="#savepop"><span class="std std-ref">savePop</span></a> demonstrates
+how to save and load a population in the native simuPOP format.</p>
+<p id="savepop"><strong>Example</strong>: <em>Save and load a population</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">chromNames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;chrom1&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;my sim.Population&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;sample.pop&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop1</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">loadPopulation</span><span class="p">(</span><span class="s1">&#39;sample.pop&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop1</span><span class="o">.</span><span class="n">chromName</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">&#39;chrom1&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop1</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;my sim.Population&#39;</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="savePop.py">Download savePop.py</a></p>
+<p>The native simuPOP format is portable across different platforms but is not
+human readable and is not recognized by other applications. If you need to save
+a simuPOP population in a format that is recognizable by a particular software,
+you can use functions <code class="docutils literal notranslate"><span class="pre">importPopulation</span></code>, <code class="docutils literal notranslate"><span class="pre">export</span></code>, and operator
+<code class="docutils literal notranslate"><span class="pre">Exporter</span></code> if you would like to export populations during evolution. These
+functions are defined in module <a class="reference internal" href="refManual_ch4_sec2.html#module-simuPOP.utils" title="simuPOP.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.utils</span></code></a>.</p>
+</div>
+<div class="section" id="import-and-export-datasets-in-unsupported-formats">
+<h2>Import and export datasets in unsupported formats *<a class="headerlink" href="#import-and-export-datasets-in-unsupported-formats" title="Permalink to this headline">¶</a></h2>
+<p>simuPOP provides a few utility functions to import and export populations in
+common formats such as GENEPOP, Phylip, and STRUCTURE (see chapter utility
+modules for details). If you need to import data from a file in a format that is
+not currently supported, you generally need to first scan the file for
+information such as number and names of chromosomes, loci, alleles,
+subpopulation, and individuals. After you create a population without genotype
+information from these parameters, you can scan the file for the second time and
+fill the population with genotypes and other information. Example
+<a class="reference internal" href="#importdata"><span class="std std-ref">importData</span></a> demonstrates how to define a function to import
+from a file that is saved by function <a class="reference internal" href="refManual_ch4_sec2.html#simuPOP.utils.saveCSV" title="simuPOP.utils.saveCSV"><code class="xref py py-func docutils literal notranslate"><span class="pre">saveCSV</span></code></a>.</p>
+<p id="importdata"><strong>Example</strong>: <em>Import a population from another file format</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">importData</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="s1">&#39;Read data from ``filename`` and create a population&#39;</span>
+<span class="gp">... </span>    <span class="n">data</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">header</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">fields</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="c1"># columns 1, 3, 5, ..., without trailing &#39;_1&#39;</span>
+<span class="gp">... </span>    <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">fields</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">),</span> <span class="mi">2</span><span class="p">)]</span>
+<span class="gp">... </span>    <span class="n">popSize</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">... </span>    <span class="n">alleleNames</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+<span class="gp">... </span>        <span class="c1"># get all allele names</span>
+<span class="gp">... </span>        <span class="n">alleleNames</span> <span class="o">|=</span> <span class="nb">set</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]])</span>
+<span class="gp">... </span>        <span class="n">popSize</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="gp">... </span>    <span class="c1"># create a population</span>
+<span class="gp">... </span>    <span class="n">alleleNames</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">alleleNames</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">popSize</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">),</span> <span class="n">lociNames</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">alleleNames</span><span class="o">=</span><span class="n">alleleNames</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="c1"># start from beginning of the file again</span>
+<span class="gp">... </span>    <span class="n">data</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="c1"># discard the first line</span>
+<span class="gp">... </span>    <span class="n">data</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">(),</span> <span class="n">data</span><span class="o">.</span><span class="n">readlines</span><span class="p">()):</span>
+<span class="gp">... </span>        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]</span>
+<span class="gp">... </span>        <span class="n">sex</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">MALE</span> <span class="k">if</span> <span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span> <span class="k">else</span> <span class="n">sim</span><span class="o">.</span><span class="n">FEMALE</span>
+<span class="gp">... </span>        <span class="n">ploidy0</span> <span class="o">=</span> <span class="p">[</span><span class="n">alleleNames</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="n">x</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">),</span> <span class="mi">2</span><span class="p">)]</span>
+<span class="gp">... </span>        <span class="n">ploidy1</span> <span class="o">=</span> <span class="p">[</span><span class="n">alleleNames</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="n">x</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">),</span> <span class="mi">2</span><span class="p">)]</span>
+<span class="gp">... </span>        <span class="n">ind</span><span class="o">.</span><span class="n">setGenotype</span><span class="p">(</span><span class="n">ploidy0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">ind</span><span class="o">.</span><span class="n">setGenotype</span><span class="p">(</span><span class="n">ploidy1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">ind</span><span class="o">.</span><span class="n">setSex</span><span class="p">(</span><span class="n">sex</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="c1"># close the file</span>
+<span class="gp">... </span>    <span class="n">data</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">pop</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.utils</span> <span class="k">import</span> <span class="n">saveCSV</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">lociNames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;rs1&#39;</span><span class="p">,</span> <span class="s1">&#39;rs2&#39;</span><span class="p">,</span> <span class="s1">&#39;rs3&#39;</span><span class="p">,</span> <span class="s1">&#39;rs4&#39;</span><span class="p">,</span> <span class="s1">&#39;rs5&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">alleleNames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initSex</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># output sex but not affection status.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">saveCSV</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;sample.csv&#39;</span><span class="p">,</span> <span class="n">affectionFormatter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">sexFormatter</span><span class="o">=</span><span class="p">{</span><span class="n">sim</span><span class="o">.</span><span class="n">MALE</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">FEMALE</span><span class="p">:</span><span class="mi">2</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># have a look at the file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;sample.csv&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+<span class="go">sex, rs1_1, rs1_2, rs2_1, rs2_2, rs3_1, rs3_2, rs4_1, rs4_2, rs5_1, rs5_2</span>
+<span class="go">2, B, B, B, B, B, A, A, B, B, A</span>
+<span class="go">2, B, A, B, A, B, A, A, A, A, B</span>
+<span class="go">1, B, B, B, B, B, B, B, B, B, A</span>
+<span class="go">1, B, A, B, A, B, B, B, A, A, A</span>
+<span class="go">1, B, B, B, B, B, B, A, A, B, A</span>
+<span class="go">1, A, B, B, A, B, B, B, A, B, B</span>
+<span class="go">1, B, B, B, B, B, B, B, B, A, A</span>
+<span class="go">2, B, B, A, A, B, A, A, A, B, A</span>
+<span class="go">2, A, B, B, B, A, B, B, A, A, B</span>
+<span class="go">2, B, A, A, B, A, A, B, B, B, A</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop1</span> <span class="o">=</span> <span class="n">importData</span><span class="p">(</span><span class="s1">&#39;sample.csv&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">pop1</span><span class="p">)</span>
+<span class="go">Ploidy: 2 (diploid)</span>
+<span class="go">Chromosomes:</span>
+<span class="go">1:  (AUTOSOME, 5 loci)</span>
+<span class="go">  rs1 (1), rs2 (2), rs3 (3), rs4 (4), rs5 (5)</span>
+<span class="go">population size: 10 (1 subpopulations with 10 Individuals)</span>
+<span class="go">Number of ancestral populations: 0</span>
+
+<span class="go">SubPopulation 0 (), 10 Individuals:</span>
+<span class="go">   0: FU BBBAB | BBABA</span>
+<span class="go">   1: FU BBBAA | AAAAB</span>
+<span class="go">   2: MU BBBBB | BBBBA</span>
+<span class="go">   3: MU BBBBA | AABAA</span>
+<span class="go">   4: MU BBBAB | BBBAA</span>
+<span class="go">   5: MU ABBBB | BABAB</span>
+<span class="go">   6: MU BBBBA | BBBBA</span>
+<span class="go">   7: FU BABAB | BAAAA</span>
+<span class="go">   8: FU ABABA | BBBAB</span>
+<span class="go">   9: FU BAABB | ABABA</span>
+
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="importData.py">Download importData.py</a></p>
+<p>Unless there are specific requirements in the order and labeling of individuals,
+exporting a simuPOP population is usually straightforward. Functions that are
+useful in such occasions include structural functions
+<a class="reference internal" href="refManual_ch2_sec1.html#Population.numSubPop" title="Population.numSubPop"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.numSubPop</span></code></a>(), <a class="reference internal" href="refManual_ch2_sec1.html#Population.subPopName" title="Population.subPopName"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.subPopName</span></code></a><code class="docutils literal notranslate"><span class="pre">,</span>
+<span class="pre">Population.popSize()</span></code> and <a class="reference internal" href="refManual_ch2_sec1.html#Population.subPopSizes" title="Population.subPopSizes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.subPopSizes</span></code></a>(), <code class="docutils literal notranslate"><span class="pre">and</span></code>
+individual access functions <a class="reference internal" href="refManual_ch2_sec1.html#Population.individual" title="Population.individual"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.individual</span></code></a>() and
+<a class="reference internal" href="refManual_ch2_sec1.html#Population.individuals" title="Population.individuals"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.individuals</span></code></a>() and individual population access functions
+such as <a class="reference internal" href="refManual_ch2_sec1.html#Individual.allele" title="Individual.allele"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Individual.allele</span></code></a>() and <a class="reference internal" href="refManual_ch2_sec1.html#Individual.info" title="Individual.info"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Individual.info</span></code></a>(). Function
+<code class="docutils literal notranslate"><span class="pre">saveFSTAT</span></code> in the cookbook module <code class="docutils literal notranslate"><span class="pre">fstatUtil</span></code> or <code class="docutils literal notranslate"><span class="pre">saveCSV</span></code> in module
+<a class="reference internal" href="refManual_ch4_sec2.html#module-simuPOP.utils" title="simuPOP.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.utils</span></code></a> are good examples you can follow.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec1.html">Genotypic structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec2.html">Individual</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Population</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#access-and-change-individual-genotype">Access and change individual genotype</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#subpopulations">Subpopulations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#virtual-subpopulations-and-virtual-splitters">Virtual subpopulations and virtual splitters *</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#advanced-virtual-subpopulation-splitters">Advanced virtual subpopulation splitters **</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#access-individuals-and-their-properties">Access individuals and their properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#attach-arbitrary-auxillary-information-using-information-fields">Attach arbitrary auxillary information using information fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#keep-track-of-ancestral-generations">Keep track of ancestral generations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#change-genotypic-structure-of-a-population">Change genotypic structure of a population</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#remove-or-extract-individuals-and-subpopulations-from-a-population">Remove or extract individuals and subpopulations from a population</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#store-arbitrary-population-information-as-population-variables">Store arbitrary population information as population variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#save-and-load-a-population">Save and load a population</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#import-and-export-datasets-in-unsupported-formats">Import and export datasets in unsupported formats *</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch4.html">Individuals and Populations</a><ul>
+      <li>Previous: <a href="userGuide_ch4_sec2.html" title="previous chapter">Individual</a></li>
+      <li>Next: <a href="userGuide_ch5.html" title="next chapter">simuPOP Operators</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch4_sec3.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

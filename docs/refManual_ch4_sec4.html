@@ -1,0 +1,713 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Module simuPOP.sampling &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Module simuPOP.gsl" href="refManual_ch4_sec5.html" />
+    <link rel="prev" title="Module simuPOP.demography" href="refManual_ch4_sec3.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-simuPOP.sampling">
+<span id="module-simupop-sampling"></span><h1>Module <a class="reference internal" href="#module-simuPOP.sampling" title="simuPOP.sampling"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.sampling</span></code></a><a class="headerlink" href="#module-simuPOP.sampling" title="Permalink to this headline">¶</a></h1>
+<p>This module provides classes and functions that could be used to draw samples
+from a simuPOP population. These functions accept a list of parameters such
+as <code class="docutils literal notranslate"><span class="pre">subPops</span></code> ((virtual) subpopulations from which samples will be drawn) and
+<code class="docutils literal notranslate"><span class="pre">numOfSamples</span></code> (number of samples to draw) and return a list of populations. Both
+independent individuals and dependent individuals (Pedigrees) are supported.</p>
+<p>Independent individuals could be drawn from any Population. pedigree
+information is not necessary and is usually ignored. Unique IDs are not needed
+either although such IDs could help you identify samples in the parent
+Population.</p>
+<p>Pedigrees could be drawn from multi-generational populations or age-structured
+populations. All individuals are required to have a unique ID (usually tracked
+by operator <code class="docutils literal notranslate"><span class="pre">IdTagger</span></code> and are stored in information field <code class="docutils literal notranslate"><span class="pre">ind_id</span></code>).
+Parents of individuals are usually tracked by operator <code class="docutils literal notranslate"><span class="pre">PedigreeTagger</span></code> and
+are stored in information fields <code class="docutils literal notranslate"><span class="pre">father_id</span></code> and <code class="docutils literal notranslate"><span class="pre">mother_id</span></code>. If parental
+information is tracked using operator <code class="docutils literal notranslate"><span class="pre">ParentsTagger</span></code> and information fields
+<code class="docutils literal notranslate"><span class="pre">father_idx</span></code> and <code class="docutils literal notranslate"><span class="pre">mother_idx</span></code>, a function <code class="docutils literal notranslate"><span class="pre">sampling.indexToID</span></code> can be
+used to convert index based pedigree to ID based Pedigree. Note that
+<code class="docutils literal notranslate"><span class="pre">ParentsTagger</span></code> can not be used to track Pedigrees in age-structured
+populations because they require parents of each individual resides in a
+parental generation.</p>
+<p>All sampling functions support virtual subpopulations through parameter
+<code class="docutils literal notranslate"><span class="pre">subPops</span></code>, although sample size specification might vary. This feature
+allows you to draw samples with specified properties. For example, you
+could select only female individuals for cases of a female-only disease,
+or select individuals within certain age-range. If you specify a list
+of (virtual) subpopulations, you are usually allowed to draw certain
+number of individuals from each subpopulation.</p>
+<div class="section" id="class-basesampler">
+<h2>class BaseSampler<a class="headerlink" href="#class-basesampler" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.sampling.BaseSampler">
+<em class="property">class </em><code class="descclassname">simuPOP.sampling.</code><code class="descname">BaseSampler</code><a class="headerlink" href="#simuPOP.sampling.BaseSampler" title="Permalink to this definition">¶</a></dt>
+<dd><p>A sampler extracts individuals from a simuPOP population and return them
+as separate populations. This base class defines the common interface of
+all sampling classes, including how samples prepared and returned.</p>
+<dl class="method">
+<dt id="simuPOP.sampling.BaseSampler.BaseSampler">
+<code class="descname">BaseSampler</code><span class="sig-paren">(</span><em>subPops=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.BaseSampler.BaseSampler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a sampler with parameter <code class="docutils literal notranslate"><span class="pre">subPops</span></code>, which will be used
+to prepare population for sampling. <code class="docutils literal notranslate"><span class="pre">subPops</span></code> should be a list of
+(virtual) subpopulations from which samples are drawn. The default
+value is ALL_AVAIL, which means all available subpopulations of a
+Population.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.BaseSampler.drawSample">
+<code class="descname">drawSample</code><span class="sig-paren">(</span><em>pop</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.BaseSampler.drawSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw and return a sample.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.BaseSampler.drawSamples">
+<code class="descname">drawSamples</code><span class="sig-paren">(</span><em>pop</em>, <em>numOfSamples</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.BaseSampler.drawSamples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw multiple samples and return a list of populations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.BaseSampler.prepareSample">
+<code class="descname">prepareSample</code><span class="sig-paren">(</span><em>pop</em>, <em>rearrange</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.BaseSampler.prepareSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare passed population object for sampling according to parameter
+<code class="docutils literal notranslate"><span class="pre">subPops</span></code>. If samples are drawn from the whole population, a
+Population will be trimmed if only selected (virtual) subpopulations
+are used. If samples are drawn separately from specified subpopulations,
+Population <code class="docutils literal notranslate"><span class="pre">pop</span></code> will be rearranged (if <code class="docutils literal notranslate"><span class="pre">rearrange==True</span></code>) so that
+each subpoulation corresponds to one element in parameter <code class="docutils literal notranslate"><span class="pre">subPops</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-randomsampler">
+<h2>class RandomSampler<a class="headerlink" href="#class-randomsampler" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.sampling.RandomSampler">
+<em class="property">class </em><code class="descclassname">simuPOP.sampling.</code><code class="descname">RandomSampler</code><a class="headerlink" href="#simuPOP.sampling.RandomSampler" title="Permalink to this definition">¶</a></dt>
+<dd><p>A sampler that draws individuals randomly.</p>
+<dl class="method">
+<dt id="simuPOP.sampling.RandomSampler.RandomSampler">
+<code class="descname">RandomSampler</code><span class="sig-paren">(</span><em>sizes</em>, <em>subPops=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.RandomSampler.RandomSampler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a random sampler with specified number of individuals.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.RandomSampler.drawSample">
+<code class="descname">drawSample</code><span class="sig-paren">(</span><em>input_pop</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.RandomSampler.drawSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a random sample from passed population.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.RandomSampler.drawSamples">
+<code class="descname">drawSamples</code><span class="sig-paren">(</span><em>pop</em>, <em>numOfSamples</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.RandomSampler.drawSamples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw multiple samples and return a list of populations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.RandomSampler.prepareSample">
+<code class="descname">prepareSample</code><span class="sig-paren">(</span><em>pop</em>, <em>rearrange</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.RandomSampler.prepareSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare passed population object for sampling according to parameter
+<code class="docutils literal notranslate"><span class="pre">subPops</span></code>. If samples are drawn from the whole population, a
+Population will be trimmed if only selected (virtual) subpopulations
+are used. If samples are drawn separately from specified subpopulations,
+Population <code class="docutils literal notranslate"><span class="pre">pop</span></code> will be rearranged (if <code class="docutils literal notranslate"><span class="pre">rearrange==True</span></code>) so that
+each subpoulation corresponds to one element in parameter <code class="docutils literal notranslate"><span class="pre">subPops</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="function-drawrandomsample">
+<h2>Function drawRandomSample<a class="headerlink" href="#function-drawrandomsample" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuPOP.sampling.drawRandomSample">
+<code class="descclassname">simuPOP.sampling.</code><code class="descname">drawRandomSample</code><span class="sig-paren">(</span><em>pop</em>, <em>sizes</em>, <em>subPops=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.drawRandomSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw <code class="docutils literal notranslate"><span class="pre">sizes</span></code> random individuals from a population. If a single <code class="docutils literal notranslate"><span class="pre">sizes</span></code>
+is given, individuals are drawn randomly from the whole population or
+from specified (virtual) subpopulations (parameter <code class="docutils literal notranslate"><span class="pre">subPops</span></code>). Otherwise,
+a list of numbers should be used to specify number of samples from each
+subpopulation, which can be all subpopulations if <code class="docutils literal notranslate"><span class="pre">subPops=ALL_AVAIL</span></code>
+(default), or from each of the specified (virtual) subpopulations. This
+function returns a population with all extracted individuals.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="function-drawrandomsamples">
+<h2>Function drawRandomSamples<a class="headerlink" href="#function-drawrandomsamples" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuPOP.sampling.drawRandomSamples">
+<code class="descclassname">simuPOP.sampling.</code><code class="descname">drawRandomSamples</code><span class="sig-paren">(</span><em>pop</em>, <em>sizes</em>, <em>numOfSamples=1</em>, <em>subPops=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.drawRandomSamples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw <code class="docutils literal notranslate"><span class="pre">numOfSamples</span></code> random samples from a population and return a list of
+populations. Please refer to function <code class="docutils literal notranslate"><span class="pre">drawRandomSample</span></code> for more details
+about parameters <code class="docutils literal notranslate"><span class="pre">sizes</span></code> and <code class="docutils literal notranslate"><span class="pre">subPops</span></code>.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="class-casecontrolsampler">
+<h2>class CaseControlSampler<a class="headerlink" href="#class-casecontrolsampler" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.sampling.CaseControlSampler">
+<em class="property">class </em><code class="descclassname">simuPOP.sampling.</code><code class="descname">CaseControlSampler</code><a class="headerlink" href="#simuPOP.sampling.CaseControlSampler" title="Permalink to this definition">¶</a></dt>
+<dd><p>A sampler that draws affected and unaffected individuals randomly.</p>
+<dl class="method">
+<dt id="simuPOP.sampling.CaseControlSampler.CaseControlSampler">
+<code class="descname">CaseControlSampler</code><span class="sig-paren">(</span><em>cases</em>, <em>controls</em>, <em>subPops=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.CaseControlSampler.CaseControlSampler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ceates a case-control sampler with specified number of cases
+and controls.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.CaseControlSampler.drawSample">
+<code class="descname">drawSample</code><span class="sig-paren">(</span><em>input_pop</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.CaseControlSampler.drawSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a case control sample</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.CaseControlSampler.drawSamples">
+<code class="descname">drawSamples</code><span class="sig-paren">(</span><em>pop</em>, <em>numOfSamples</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.CaseControlSampler.drawSamples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw multiple samples and return a list of populations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.CaseControlSampler.prepareSample">
+<code class="descname">prepareSample</code><span class="sig-paren">(</span><em>input_pop</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.CaseControlSampler.prepareSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find out indexes all affected and unaffected individuales.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="function-drawcasecontrolsample">
+<h2>Function drawCaseControlSample<a class="headerlink" href="#function-drawcasecontrolsample" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuPOP.sampling.drawCaseControlSample">
+<code class="descclassname">simuPOP.sampling.</code><code class="descname">drawCaseControlSample</code><span class="sig-paren">(</span><em>pop</em>, <em>cases</em>, <em>controls</em>, <em>subPops=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.drawCaseControlSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a case-control samples from a population with <code class="docutils literal notranslate"><span class="pre">cases</span></code>
+affected and <code class="docutils literal notranslate"><span class="pre">controls</span></code> unaffected individuals. If single <code class="docutils literal notranslate"><span class="pre">cases</span></code> and
+<code class="docutils literal notranslate"><span class="pre">controls</span></code> are given, individuals are drawn randomly from the whole
+Population or from specified (virtual) subpopulations (parameter
+<code class="docutils literal notranslate"><span class="pre">subPops</span></code>). Otherwise, a list of numbers should be used to specify
+number of cases and controls from each subpopulation, which can be all
+subpopulations if <code class="docutils literal notranslate"><span class="pre">subPops=ALL_AVAIL</span></code> (default), or from each of the
+specified (virtual) subpopulations. This function returns a population with
+all extracted individuals.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="function-drawcasecontrolsamples">
+<h2>Function drawCaseControlSamples<a class="headerlink" href="#function-drawcasecontrolsamples" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuPOP.sampling.drawCaseControlSamples">
+<code class="descclassname">simuPOP.sampling.</code><code class="descname">drawCaseControlSamples</code><span class="sig-paren">(</span><em>pop</em>, <em>cases</em>, <em>controls</em>, <em>numOfSamples=1</em>, <em>subPops=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.drawCaseControlSamples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw <code class="docutils literal notranslate"><span class="pre">numOfSamples</span></code> case-control samples from a population with <code class="docutils literal notranslate"><span class="pre">cases</span></code>
+affected and <code class="docutils literal notranslate"><span class="pre">controls</span></code> unaffected individuals and return a list of
+populations. Please refer to function <code class="docutils literal notranslate"><span class="pre">drawCaseControlSample</span></code> for a
+detailed descriptions of parameters.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="class-pedigreesampler">
+<h2>class PedigreeSampler<a class="headerlink" href="#class-pedigreesampler" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.sampling.PedigreeSampler">
+<em class="property">class </em><code class="descclassname">simuPOP.sampling.</code><code class="descname">PedigreeSampler</code><a class="headerlink" href="#simuPOP.sampling.PedigreeSampler" title="Permalink to this definition">¶</a></dt>
+<dd><p>The base class of all pedigree based sampler.</p>
+<dl class="method">
+<dt id="simuPOP.sampling.PedigreeSampler.PedigreeSampler">
+<code class="descname">PedigreeSampler</code><span class="sig-paren">(</span><em>families</em>, <em>subPops=ALL_AVAIL</em>, <em>idField='ind_id'</em>, <em>fatherField='father_id'</em>, <em>motherField='mother_id'</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.PedigreeSampler.PedigreeSampler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a pedigree sampler with parameters</p>
+<dl class="docutils">
+<dt>families</dt>
+<dd>number of families. This can be a number or a list of numbers. In
+the latter case, specified families are drawn from each
+subpopulation.</dd>
+<dt>subPops</dt>
+<dd>A list of (virtual) subpopulations from which samples are drawn.
+The default value is ALL_AVAIL, which means all available
+subpopulations of a population.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.PedigreeSampler.drawSample">
+<code class="descname">drawSample</code><span class="sig-paren">(</span><em>input_pop</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.PedigreeSampler.drawSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Randomly select Pedigrees</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.PedigreeSampler.drawSamples">
+<code class="descname">drawSamples</code><span class="sig-paren">(</span><em>pop</em>, <em>numOfSamples</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.PedigreeSampler.drawSamples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw multiple samples and return a list of populations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.PedigreeSampler.family">
+<code class="descname">family</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.PedigreeSampler.family" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the family of individual with id.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.PedigreeSampler.prepareSample">
+<code class="descname">prepareSample</code><span class="sig-paren">(</span><em>pop</em>, <em>loci=[]</em>, <em>infoFields=[]</em>, <em>ancGens=True</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.PedigreeSampler.prepareSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare self.pedigree, some pedigree sampler might need additional loci and
+information fields for this sampler.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-affectedsibpairsampler">
+<h2>class AffectedSibpairSampler<a class="headerlink" href="#class-affectedsibpairsampler" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.sampling.AffectedSibpairSampler">
+<em class="property">class </em><code class="descclassname">simuPOP.sampling.</code><code class="descname">AffectedSibpairSampler</code><a class="headerlink" href="#simuPOP.sampling.AffectedSibpairSampler" title="Permalink to this definition">¶</a></dt>
+<dd><p>A sampler that draws a nuclear family with two affected offspring.</p>
+<dl class="method">
+<dt id="simuPOP.sampling.AffectedSibpairSampler.AffectedSibpairSampler">
+<code class="descname">AffectedSibpairSampler</code><span class="sig-paren">(</span><em>families</em>, <em>subPops=ALL_AVAIL</em>, <em>idField='ind_id'</em>, <em>fatherField='father_id'</em>, <em>motherField='mother_id'</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.AffectedSibpairSampler.AffectedSibpairSampler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize an affected sibpair sampler.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.AffectedSibpairSampler.drawSample">
+<code class="descname">drawSample</code><span class="sig-paren">(</span><em>input_pop</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.AffectedSibpairSampler.drawSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Randomly select Pedigrees</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.AffectedSibpairSampler.drawSamples">
+<code class="descname">drawSamples</code><span class="sig-paren">(</span><em>pop</em>, <em>numOfSamples</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.AffectedSibpairSampler.drawSamples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw multiple samples and return a list of populations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.AffectedSibpairSampler.family">
+<code class="descname">family</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.AffectedSibpairSampler.family" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return id, its spouse and their children</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.AffectedSibpairSampler.prepareSample">
+<code class="descname">prepareSample</code><span class="sig-paren">(</span><em>input_pop</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.AffectedSibpairSampler.prepareSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the father or all affected sibpair families</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="function-drawaffectedsibpairsample">
+<h2>Function drawAffectedSibpairSample<a class="headerlink" href="#function-drawaffectedsibpairsample" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuPOP.sampling.drawAffectedSibpairSample">
+<code class="descclassname">simuPOP.sampling.</code><code class="descname">drawAffectedSibpairSample</code><span class="sig-paren">(</span><em>pop</em>, <em>families</em>, <em>subPops=ALL_AVAIL</em>, <em>idField='ind_id'</em>, <em>fatherField='father_id'</em>, <em>motherField='mother_id'</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.drawAffectedSibpairSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw affected sibpair samples from a population. If a single
+<code class="docutils literal notranslate"><span class="pre">families</span></code> is given, affected sibpairs and their parents are drawn
+randomly from the whole population or from specified (virtual)
+subpopulations (parameter <code class="docutils literal notranslate"><span class="pre">subPops</span></code>). Otherwise, a list of numbers should
+be used to specify number of families from each subpopulation, which can be
+all subpopulations if <code class="docutils literal notranslate"><span class="pre">subPops=ALL_AVAIL</span></code> (default), or from each of the
+specified (virtual) subpopulations. This function returns a population that
+contains extracted individuals.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="function-drawaffectedsibpairsamples">
+<h2>Function drawAffectedSibpairSamples<a class="headerlink" href="#function-drawaffectedsibpairsamples" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuPOP.sampling.drawAffectedSibpairSamples">
+<code class="descclassname">simuPOP.sampling.</code><code class="descname">drawAffectedSibpairSamples</code><span class="sig-paren">(</span><em>pop</em>, <em>families</em>, <em>numOfSamples=1</em>, <em>subPops=ALL_AVAIL</em>, <em>idField='ind_id'</em>, <em>fatherField='father_id'</em>, <em>motherField='mother_id'</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.drawAffectedSibpairSamples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw <code class="docutils literal notranslate"><span class="pre">numOfSamples</span></code> affected sibpair samplesa from population <code class="docutils literal notranslate"><span class="pre">pop</span></code> and
+return a list of populations. Please refer to function
+<code class="docutils literal notranslate"><span class="pre">drawAffectedSibpairSample</span></code> for a description of other parameters.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="class-nuclearfamilysampler">
+<h2>class NuclearFamilySampler<a class="headerlink" href="#class-nuclearfamilysampler" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.sampling.NuclearFamilySampler">
+<em class="property">class </em><code class="descclassname">simuPOP.sampling.</code><code class="descname">NuclearFamilySampler</code><a class="headerlink" href="#simuPOP.sampling.NuclearFamilySampler" title="Permalink to this definition">¶</a></dt>
+<dd><p>A sampler that draws nuclear families with specified number of affected
+parents and offspring.</p>
+<dl class="method">
+<dt id="simuPOP.sampling.NuclearFamilySampler.NuclearFamilySampler">
+<code class="descname">NuclearFamilySampler</code><span class="sig-paren">(</span><em>families</em>, <em>numOffspring</em>, <em>affectedParents=0</em>, <em>affectedOffspring=0</em>, <em>subPops=ALL_AVAIL</em>, <em>idField='ind_id'</em>, <em>fatherField='father_id'</em>, <em>motherField='mother_id'</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.NuclearFamilySampler.NuclearFamilySampler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a nuclear family sampler with parameters</p>
+<dl class="docutils">
+<dt>families</dt>
+<dd>number of families. This can be a number or a list of numbers. In the latter
+case, specified families are drawn from each subpopulation.</dd>
+<dt>numOffspring</dt>
+<dd>number of offspring. This can be a fixed number or a range [min, max].</dd>
+<dt>affectedParents</dt>
+<dd>number of affected parents. This can be a fixed number or a range [min, max].</dd>
+<dt>affectedOffspring</dt>
+<dd>number of affected offspring. This can be a fixed number of a range [min, max].</dd>
+<dt>subPops</dt>
+<dd>A list of (virtual) subpopulations from which samples are drawn.
+The default value is ALL_AVAIL, which means all available
+subpopulations of a population.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.NuclearFamilySampler.drawSample">
+<code class="descname">drawSample</code><span class="sig-paren">(</span><em>input_pop</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.NuclearFamilySampler.drawSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Randomly select Pedigrees</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.NuclearFamilySampler.drawSamples">
+<code class="descname">drawSamples</code><span class="sig-paren">(</span><em>pop</em>, <em>numOfSamples</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.NuclearFamilySampler.drawSamples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw multiple samples and return a list of populations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.NuclearFamilySampler.family">
+<code class="descname">family</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.NuclearFamilySampler.family" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return id, its spouse and their children</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.NuclearFamilySampler.prepareSample">
+<code class="descname">prepareSample</code><span class="sig-paren">(</span><em>input_pop</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.NuclearFamilySampler.prepareSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare self.pedigree, some pedigree sampler might need additional loci and
+information fields for this sampler.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="function-drawnuclearfamilysample">
+<h2>Function drawNuclearFamilySample<a class="headerlink" href="#function-drawnuclearfamilysample" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuPOP.sampling.drawNuclearFamilySample">
+<code class="descclassname">simuPOP.sampling.</code><code class="descname">drawNuclearFamilySample</code><span class="sig-paren">(</span><em>pop</em>, <em>families</em>, <em>numOffspring</em>, <em>affectedParents=0</em>, <em>affectedOffspring=0</em>, <em>subPops=ALL_AVAIL</em>, <em>idField='ind_id'</em>, <em>fatherField='father_id'</em>, <em>motherField='mother_id'</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.drawNuclearFamilySample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw nuclear families from a population. Number of offspring, number of
+affected parents and number of affected offspring should be specified using
+parameters <code class="docutils literal notranslate"><span class="pre">numOffspring</span></code>, <code class="docutils literal notranslate"><span class="pre">affectedParents</span></code> and <code class="docutils literal notranslate"><span class="pre">affectedOffspring</span></code>,
+which can all be a single number, or a range <code class="docutils literal notranslate"><span class="pre">[a,</span> <span class="pre">b]</span></code> (<code class="docutils literal notranslate"><span class="pre">b</span></code> is incldued).
+If a single <code class="docutils literal notranslate"><span class="pre">families</span></code> is given, Pedigrees are drawn randomly from the
+whole population or from specified (virtual) subpopulations (parameter
+<code class="docutils literal notranslate"><span class="pre">subPops</span></code>). Otherwise, a list of numbers should be used to specify
+numbers of families from each subpopulation, which can be all
+subpopulations if <code class="docutils literal notranslate"><span class="pre">subPops=ALL_AVAIL</span></code> (default), or from each of the
+specified (virtual) subpopulations. This function returns a population that
+contains extracted individuals.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="function-drawnuclearfamilysamples">
+<h2>Function drawNuclearFamilySamples<a class="headerlink" href="#function-drawnuclearfamilysamples" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuPOP.sampling.drawNuclearFamilySamples">
+<code class="descclassname">simuPOP.sampling.</code><code class="descname">drawNuclearFamilySamples</code><span class="sig-paren">(</span><em>pop</em>, <em>families</em>, <em>numOffspring</em>, <em>affectedParents=0</em>, <em>affectedOffspring=0</em>, <em>numOfSamples=1</em>, <em>subPops=ALL_AVAIL</em>, <em>idField='ind_id'</em>, <em>fatherField='father_id'</em>, <em>motherField='mother_id'</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.drawNuclearFamilySamples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw <code class="docutils literal notranslate"><span class="pre">numOfSamples</span></code> affected sibpair samplesa from population <code class="docutils literal notranslate"><span class="pre">pop</span></code> and
+return a list of populations. Please refer to function
+<code class="docutils literal notranslate"><span class="pre">drawNuclearFamilySample</span></code> for a description of other parameters.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="class-threegenfamilysampler">
+<h2>class ThreeGenFamilySampler<a class="headerlink" href="#class-threegenfamilysampler" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.sampling.ThreeGenFamilySampler">
+<em class="property">class </em><code class="descclassname">simuPOP.sampling.</code><code class="descname">ThreeGenFamilySampler</code><a class="headerlink" href="#simuPOP.sampling.ThreeGenFamilySampler" title="Permalink to this definition">¶</a></dt>
+<dd><p>A sampler that draws three-generation families with specified pedigree
+size and number of affected individuals.</p>
+<dl class="method">
+<dt id="simuPOP.sampling.ThreeGenFamilySampler.ThreeGenFamilySampler">
+<code class="descname">ThreeGenFamilySampler</code><span class="sig-paren">(</span><em>families</em>, <em>numOffspring</em>, <em>pedSize</em>, <em>numOfAffected=0</em>, <em>subPops=ALL_AVAIL</em>, <em>idField='ind_id'</em>, <em>fatherField='father_id'</em>, <em>motherField='mother_id'</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.ThreeGenFamilySampler.ThreeGenFamilySampler" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>families</dt>
+<dd>number of families. This can be a number or a list of numbers. In the latter
+case, specified families are drawn from each subpopulation.</dd>
+<dt>numOffspring</dt>
+<dd>number of offspring. This can be a fixed number or a range [min, max].</dd>
+<dt>pedSize</dt>
+<dd>number of individuals in the Pedigree. This can be a fixed number or
+a range [min, max].</dd>
+<dt>numAfffected</dt>
+<dd>number of affected individuals in the Pedigree. This can be a fixed number
+or a range [min, max]</dd>
+<dt>subPops</dt>
+<dd>A list of (virtual) subpopulations from which samples are drawn.
+The default value is ALL_AVAIL, which means all available
+subpopulations of a population.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.ThreeGenFamilySampler.drawSample">
+<code class="descname">drawSample</code><span class="sig-paren">(</span><em>input_pop</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.ThreeGenFamilySampler.drawSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Randomly select Pedigrees</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.ThreeGenFamilySampler.drawSamples">
+<code class="descname">drawSamples</code><span class="sig-paren">(</span><em>pop</em>, <em>numOfSamples</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.ThreeGenFamilySampler.drawSamples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw multiple samples and return a list of populations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.ThreeGenFamilySampler.family">
+<code class="descname">family</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.ThreeGenFamilySampler.family" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return id, its spouse, their children, children’s spouse and grandchildren</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.ThreeGenFamilySampler.prepareSample">
+<code class="descname">prepareSample</code><span class="sig-paren">(</span><em>input_pop</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.ThreeGenFamilySampler.prepareSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare self.pedigree, some pedigree sampler might need additional loci and
+information fields for this sampler.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="function-drawthreegenfamilysample">
+<h2>Function drawThreeGenFamilySample<a class="headerlink" href="#function-drawthreegenfamilysample" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuPOP.sampling.drawThreeGenFamilySample">
+<code class="descclassname">simuPOP.sampling.</code><code class="descname">drawThreeGenFamilySample</code><span class="sig-paren">(</span><em>pop</em>, <em>families</em>, <em>numOffspring</em>, <em>pedSize</em>, <em>numOfAffected=0</em>, <em>subPops=ALL_AVAIL</em>, <em>idField='ind_id'</em>, <em>fatherField='father_id'</em>, <em>motherField='mother_id'</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.drawThreeGenFamilySample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw three-generation families from a population. Such families consist
+of grant parents, their children, spouse of these children, and grand
+children. Number of offspring, total number of individuals, and total
+number of affected individuals in a pedigree should be specified using
+parameters <code class="docutils literal notranslate"><span class="pre">numOffspring</span></code>, <code class="docutils literal notranslate"><span class="pre">pedSize</span></code> and <code class="docutils literal notranslate"><span class="pre">numOfAffected</span></code>, which can all
+be a single number, or a range <code class="docutils literal notranslate"><span class="pre">[a,</span> <span class="pre">b]</span></code> (<code class="docutils literal notranslate"><span class="pre">b</span></code> is incldued). If a single
+<code class="docutils literal notranslate"><span class="pre">families</span></code> is given, Pedigrees are drawn randomly from the whole
+Population or from specified (virtual) subpopulations (parameter
+<code class="docutils literal notranslate"><span class="pre">subPops</span></code>). Otherwise, a list of numbers should be used to specify
+numbers of families from each subpopulation, which can be all
+subpopulations if <code class="docutils literal notranslate"><span class="pre">subPops=ALL_AVAIL</span></code> (default), or from each of the
+specified (virtual) subpopulations. This function returns a population that
+contains extracted individuals.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="function-drawthreegenfamilysamples">
+<h2>Function drawThreeGenFamilySamples<a class="headerlink" href="#function-drawthreegenfamilysamples" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuPOP.sampling.drawThreeGenFamilySamples">
+<code class="descclassname">simuPOP.sampling.</code><code class="descname">drawThreeGenFamilySamples</code><span class="sig-paren">(</span><em>pop</em>, <em>families</em>, <em>numOffspring</em>, <em>pedSize</em>, <em>numOfAffected=0</em>, <em>numOfSamples=1</em>, <em>subPops=ALL_AVAIL</em>, <em>idField='ind_id'</em>, <em>fatherField='father_id'</em>, <em>motherField='mother_id'</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.drawThreeGenFamilySamples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw <code class="docutils literal notranslate"><span class="pre">numOfSamples</span></code> three-generation pedigree samples from population <code class="docutils literal notranslate"><span class="pre">pop</span></code>
+and return a list of populations. Please refer to function
+<code class="docutils literal notranslate"><span class="pre">drawThreeGenFamilySample</span></code> for a description of other parameters.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="class-combinedsampler">
+<h2>class CombinedSampler<a class="headerlink" href="#class-combinedsampler" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.sampling.CombinedSampler">
+<em class="property">class </em><code class="descclassname">simuPOP.sampling.</code><code class="descname">CombinedSampler</code><a class="headerlink" href="#simuPOP.sampling.CombinedSampler" title="Permalink to this definition">¶</a></dt>
+<dd><p>A combined sampler accepts a list of sampler objects, draw samples and
+combine the returned sample into a single population. An id field is
+required to use this sampler, which will be used to remove extra copies of
+individuals who have been drawn by different samplers.</p>
+<dl class="method">
+<dt id="simuPOP.sampling.CombinedSampler.CombinedSampler">
+<code class="descname">CombinedSampler</code><span class="sig-paren">(</span><em>samplers=[]</em>, <em>idField='ind_id'</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.CombinedSampler.CombinedSampler" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>samplers</dt>
+<dd>A list of samplers</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.CombinedSampler.drawSample">
+<code class="descname">drawSample</code><span class="sig-paren">(</span><em>pop</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.CombinedSampler.drawSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw and return a sample.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.CombinedSampler.drawSamples">
+<code class="descname">drawSamples</code><span class="sig-paren">(</span><em>pop</em>, <em>numOfSamples</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.CombinedSampler.drawSamples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw multiple samples and return a list of populations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.sampling.CombinedSampler.prepareSample">
+<code class="descname">prepareSample</code><span class="sig-paren">(</span><em>pop</em>, <em>rearrange</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.CombinedSampler.prepareSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare passed population object for sampling according to parameter
+<code class="docutils literal notranslate"><span class="pre">subPops</span></code>. If samples are drawn from the whole population, a
+Population will be trimmed if only selected (virtual) subpopulations
+are used. If samples are drawn separately from specified subpopulations,
+Population <code class="docutils literal notranslate"><span class="pre">pop</span></code> will be rearranged (if <code class="docutils literal notranslate"><span class="pre">rearrange==True</span></code>) so that
+each subpoulation corresponds to one element in parameter <code class="docutils literal notranslate"><span class="pre">subPops</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="function-drawcombinedsample">
+<h2>Function drawCombinedSample<a class="headerlink" href="#function-drawcombinedsample" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuPOP.sampling.drawCombinedSample">
+<code class="descclassname">simuPOP.sampling.</code><code class="descname">drawCombinedSample</code><span class="sig-paren">(</span><em>pop</em>, <em>samplers</em>, <em>idField='ind_id'</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.drawCombinedSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw different types of samples using a list of <code class="docutils literal notranslate"><span class="pre">samplers</span></code>. A
+Population consists of all individuals from these samples will
+be returned. An <code class="docutils literal notranslate"><span class="pre">idField</span></code> that stores an unique ID for all individuals
+is needed to remove duplicated individuals who are drawn multiple
+numOfSamples from these samplers.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="function-drawcombinedsamples">
+<h2>Function drawCombinedSamples<a class="headerlink" href="#function-drawcombinedsamples" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuPOP.sampling.drawCombinedSamples">
+<code class="descclassname">simuPOP.sampling.</code><code class="descname">drawCombinedSamples</code><span class="sig-paren">(</span><em>pop</em>, <em>samplers</em>, <em>numOfSamples=1</em>, <em>idField='ind_id'</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.sampling.drawCombinedSamples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw combined samples <code class="docutils literal notranslate"><span class="pre">numOfSamples</span></code> numOfSamples and return a list of populations.
+Please refer to function <code class="docutils literal notranslate"><span class="pre">drawCombinedSample</span></code> for details about
+parameters <code class="docutils literal notranslate"><span class="pre">samplers</span></code> and <code class="docutils literal notranslate"><span class="pre">idField</span></code>.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch4_sec1.html">Module <code class="docutils literal notranslate"><span class="pre">simuOpt</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch4_sec2.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.utils</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch4_sec3.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.demography</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.sampling</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-basesampler">class BaseSampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-randomsampler">class RandomSampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-drawrandomsample">Function drawRandomSample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-drawrandomsamples">Function drawRandomSamples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-casecontrolsampler">class CaseControlSampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-drawcasecontrolsample">Function drawCaseControlSample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-drawcasecontrolsamples">Function drawCaseControlSamples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-pedigreesampler">class PedigreeSampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-affectedsibpairsampler">class AffectedSibpairSampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-drawaffectedsibpairsample">Function drawAffectedSibpairSample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-drawaffectedsibpairsamples">Function drawAffectedSibpairSamples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-nuclearfamilysampler">class NuclearFamilySampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-drawnuclearfamilysample">Function drawNuclearFamilySample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-drawnuclearfamilysamples">Function drawNuclearFamilySamples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-threegenfamilysampler">class ThreeGenFamilySampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-drawthreegenfamilysample">Function drawThreeGenFamilySample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-drawthreegenfamilysamples">Function drawThreeGenFamilySamples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-combinedsampler">class CombinedSampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-drawcombinedsample">Function drawCombinedSample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-drawcombinedsamples">Function drawCombinedSamples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch4_sec5.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.gsl</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="refManual.html">&lt;no title&gt;</a><ul>
+  <li><a href="refManual_ch4.html">Utility Modules</a><ul>
+      <li>Previous: <a href="refManual_ch4_sec3.html" title="previous chapter">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.demography</span></code></a></li>
+      <li>Next: <a href="refManual_ch4_sec5.html" title="next chapter">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.gsl</span></code></a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/refManual_ch4_sec4.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

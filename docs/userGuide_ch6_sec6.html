@@ -1,0 +1,475 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Pedigrees &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Evolve a population following a specified pedigree structure **" href="userGuide_ch6_sec7.html" />
+    <link rel="prev" title="Tracing allelic lineage *" href="userGuide_ch6_sec5.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="pedigrees">
+<h1>Pedigrees<a class="headerlink" href="#pedigrees" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="create-a-pedigree-object">
+<h2>Create a pedigree object<a class="headerlink" href="#create-a-pedigree-object" title="Permalink to this headline">¶</a></h2>
+<p>A <a class="reference internal" href="refManual_ch2_sec1.html#Pedigree" title="Pedigree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pedigree</span></code></a> object is basically a static population object that is used
+to track relationship between individuals. An unique ID is required for all
+individuals so that individuals could be identified easily using their IDs.
+Individuals in a pedigree usually have one or two information fields to record
+the IDs of their parents. Operators <a class="reference internal" href="refManual_ch3_sec10.html#IdTagger" title="IdTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">IdTagger</span></code></a> and
+<a class="reference internal" href="refManual_ch3_sec10.html#PedigreeTagger" title="PedigreeTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">PedigreeTagger</span></code></a> are usually used to maintain these information fields
+which are, although customizable, almost always <code class="docutils literal notranslate"><span class="pre">ind_id</span></code>, <code class="docutils literal notranslate"><span class="pre">father_id</span></code> and
+<code class="docutils literal notranslate"><span class="pre">mother_id</span></code>. After pedigrees are identified, population operations could be
+applied, for example, to extracted identified pedigrees from an existing
+population. This is basically how module <a class="reference internal" href="refManual_ch4_sec4.html#module-simuPOP.sampling" title="simuPOP.sampling"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.sampling</span></code></a> works.</p>
+<p>A new pedigree can be created from a population object with an ID field (default
+to <code class="docutils literal notranslate"><span class="pre">ind_id</span></code>), and two optional parental ID fields (default to <code class="docutils literal notranslate"><span class="pre">father_id</span></code>
+and <code class="docutils literal notranslate"><span class="pre">mother_id</span></code>). For example,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ped</span> <span class="o">=</span> <span class="n">Pedigree</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="n">ALL_AVAIL</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>will create a pedigree object from population <code class="docutils literal notranslate"><span class="pre">pop</span></code> with information fields
+<code class="docutils literal notranslate"><span class="pre">ind_id</span></code>, <code class="docutils literal notranslate"><span class="pre">father_id</span></code> and <code class="docutils literal notranslate"><span class="pre">mother_id</span></code>, copying all available information
+fields. The ID field should have an unique ID for each individual and the
+parental ID fields should record the ID of his or her parents. Genotype
+information and additional information fields can be copied to a pedigree object
+if needed. The population object is unchanged.</p>
+<p>Another method is to directly convert a population object to a pedigree object,
+using member function <code class="docutils literal notranslate"><span class="pre">asPedigree</span></code> of a population class. For example,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pop</span><span class="o">.</span><span class="n">asPedigree</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>will convert the existing population to a pedigree object. Object pop can then
+be able to call all pedigree member functions. Once your task is done, you can
+convert the object back to a population using the <a class="reference internal" href="refManual_ch2_sec1.html#Pedigree.asPopulation" title="Pedigree.asPopulation"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Pedigree.asPopulation</span></code></a>() member function of the object.</p>
+<p>A pedigree object can also be created from a file saved by function
+<a class="reference internal" href="refManual_ch2_sec1.html#Pedigree.save" title="Pedigree.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Pedigree.save</span></code></a>() or operator <a class="reference internal" href="refManual_ch3_sec10.html#PedigreeTagger" title="PedigreeTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">PedigreeTagger</span></code></a> using function
+<a class="reference internal" href="refManual_ch2_sec6.html#loadPedigree" title="loadPedigree"><code class="xref py py-func docutils literal notranslate"><span class="pre">loadPedigree</span></code></a>. Please refer to section <em>save and load pedigrees</em> in
+details.</p>
+</div>
+<div class="section" id="locate-close-and-remote-relatives-of-each-individual">
+<h2>Locate close and remote relatives of each individual<a class="headerlink" href="#locate-close-and-remote-relatives-of-each-individual" title="Permalink to this headline">¶</a></h2>
+<p>A pedigree object provides several functions for you to identify spouse, sibling
+and more distant relatives of each individual. The results are stored to
+additional information fields of each individual. For example, if you would like
+to know the offspring of all individuals, you can call function
+<a class="reference internal" href="refManual_ch2_sec1.html#Pedigree.locateRelatives" title="Pedigree.locateRelatives"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Pedigree.locateRelatives</span></code></a> as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">offFields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;off1&#39;</span><span class="p">,</span> <span class="s1">&#39;off2&#39;</span><span class="p">,</span> <span class="s1">&#39;off3&#39;</span><span class="p">]</span>
+<span class="n">ped</span><span class="o">.</span><span class="n">addInfoFields</span><span class="p">(</span><span class="n">offFields</span><span class="p">)</span>
+<span class="n">ped</span><span class="o">.</span><span class="n">locateRelatives</span><span class="p">(</span><span class="n">OFFSPRING</span><span class="p">,</span> <span class="n">resultFields</span><span class="o">=</span><span class="n">offFields</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This function will locate up to 3 (determined by the length of <code class="docutils literal notranslate"><span class="pre">resultFields</span></code>)
+offspring of each individual and put their IDs in specified informaton fields.
+This function allows you to identify spouses (it is common to have multiple
+spouses when random mating is used), outbred spouse (exclude spouses who share
+at least one of the parents), offspring (all offspring) and common offspring
+with a specified spouse, siblings (share at least one parent) and full siblings
+(share two parents). It also allows you to limit the result by sex and affection
+status (e.g. find only affected female offspring).</p>
+<p>More distant relationship can be derived from these relationship using function
+<a class="reference internal" href="refManual_ch2_sec1.html#Pedigree.traceRelatives" title="Pedigree.traceRelatives"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Pedigree.traceRelatives</span></code></a>. This function accepts a path of information
+fields and follows the path to identify relatives. For example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sibFields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sib1&#39;</span><span class="p">,</span> <span class="s1">&#39;sib2&#39;</span><span class="p">]</span>
+<span class="n">offFields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;off1&#39;</span><span class="p">,</span> <span class="s1">&#39;off2&#39;</span><span class="p">,</span> <span class="s1">&#39;off3&#39;</span><span class="p">]</span>
+<span class="n">cousinFields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;cousin1&#39;</span><span class="p">,</span> <span class="s1">&#39;cousin2&#39;</span><span class="p">,</span> <span class="s1">&#39;cousin3&#39;</span><span class="p">]</span>
+<span class="n">ped</span><span class="o">.</span><span class="n">addInfoFields</span><span class="p">(</span><span class="n">sibFields</span> <span class="o">+</span> <span class="n">offFields</span> <span class="o">+</span> <span class="n">cousinFields</span><span class="p">)</span>
+<span class="n">ped</span><span class="o">.</span><span class="n">locateRelatives</span><span class="p">(</span><span class="n">FULLSIBLING</span><span class="p">,</span> <span class="n">resultFields</span><span class="o">=</span><span class="n">sibFields</span><span class="p">)</span>
+<span class="n">ped</span><span class="o">.</span><span class="n">locateRelatives</span><span class="p">(</span><span class="n">OFFSPRING</span><span class="p">,</span> <span class="n">resultFields</span><span class="o">=</span><span class="n">offFields</span><span class="p">)</span>
+<span class="n">ped</span><span class="o">.</span><span class="n">traceRelatives</span><span class="p">([[</span><span class="s1">&#39;father_id&#39;</span><span class="p">,</span> <span class="s1">&#39;mother_id&#39;</span><span class="p">],</span> <span class="n">sibFields</span><span class="p">,</span> <span class="n">offFields</span><span class="p">],</span>
+    <span class="n">sex</span><span class="o">=</span><span class="p">[</span><span class="n">ANY_SEX</span><span class="p">,</span> <span class="n">MALE_ONLY</span><span class="p">,</span> <span class="n">FEMALE_ONLY</span><span class="p">],</span>
+    <span class="n">resultField</span><span class="o">=</span><span class="n">cousinFields</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>would first identify full siblings and offspring of all individuals and then
+locate father or mother’s male sibling’s daughters. As you can imagine, this
+function can be used to track very complicated relationships.</p>
+<p>This function also provides a function for you to identify individuals with
+specified relatives. Example <a class="reference internal" href="#locaterelative"><span class="std std-ref">locateRelative</span></a> gives an
+example how to locate a grandfather with at least five grandchildren. With such
+information, functions such as <a class="reference internal" href="refManual_ch2_sec1.html#Population.extractIndividuals" title="Population.extractIndividuals"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.extractIndividuals</span></code></a>() could
+be used to extract Pedigrees from a population. This is basically how
+<a class="reference internal" href="refManual_ch4_sec4.html#module-simuPOP.sampling" title="simuPOP.sampling"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.sampling</span></code></a> module works.</p>
+<p id="locaterelative"><strong>Example</strong>: <em>Locate close and distant relatives of individuals</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">ancGen</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;ind_id&#39;</span><span class="p">,</span> <span class="s1">&#39;father_id&#39;</span><span class="p">,</span> <span class="s1">&#39;mother_id&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">numOffspring</span><span class="o">=</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">UNIFORM_DISTRIBUTION</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">PedigreeTagger</span><span class="p">()</span>
+<span class="gp">... </span>        <span class="p">],</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ped</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Pedigree</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">offFields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;off</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">grandOffFields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;grandOff</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ped</span><span class="o">.</span><span class="n">addInfoFields</span><span class="p">([</span><span class="s1">&#39;spouse&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">offFields</span> <span class="o">+</span> <span class="n">grandOffFields</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># only look spouse for fathers...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ped</span><span class="o">.</span><span class="n">locateRelatives</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">OUTBRED_SPOUSE</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;spouse&#39;</span><span class="p">],</span> <span class="n">sex</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">FEMALE_ONLY</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ped</span><span class="o">.</span><span class="n">locateRelatives</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">COMMON_OFFSPRING</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;spouse&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">offFields</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># trace offspring of offspring</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ped</span><span class="o">.</span><span class="n">traceRelatives</span><span class="p">([</span><span class="n">offFields</span><span class="p">,</span> <span class="n">offFields</span><span class="p">],</span> <span class="n">resultFields</span><span class="o">=</span><span class="n">grandOffFields</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">IDs</span> <span class="o">=</span> <span class="n">ped</span><span class="o">.</span><span class="n">individualsWithRelatives</span><span class="p">(</span><span class="n">grandOffFields</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># check on ID.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">grandFather</span> <span class="o">=</span> <span class="n">IDs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">grandMother</span> <span class="o">=</span> <span class="n">ped</span><span class="o">.</span><span class="n">indByID</span><span class="p">(</span><span class="n">grandFather</span><span class="p">)</span><span class="o">.</span><span class="n">spouse</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># some ID might be invalid.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">children</span> <span class="o">=</span> <span class="p">[</span><span class="n">ped</span><span class="o">.</span><span class="n">indByID</span><span class="p">(</span><span class="n">grandFather</span><span class="p">)</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">offFields</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">childrenSpouse</span> <span class="o">=</span> <span class="p">[</span><span class="n">ped</span><span class="o">.</span><span class="n">indByID</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">spouse</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">children</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">childrenParents</span> <span class="o">=</span> <span class="p">[</span><span class="n">ped</span><span class="o">.</span><span class="n">indByID</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">father_id</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">children</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">]</span> \
+<span class="gp">... </span>    <span class="o">+</span> <span class="p">[</span><span class="n">ped</span><span class="o">.</span><span class="n">indByID</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">mother_id</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">children</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">grandChildren</span> <span class="o">=</span> <span class="p">[</span><span class="n">ped</span><span class="o">.</span><span class="n">indByID</span><span class="p">(</span><span class="n">grandFather</span><span class="p">)</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">grandOffFields</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">grandChildrenParents</span> <span class="o">=</span> <span class="p">[</span><span class="n">ped</span><span class="o">.</span><span class="n">indByID</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">father_id</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">grandChildren</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">]</span> \
+<span class="gp">... </span>    <span class="o">+</span> <span class="p">[</span><span class="n">ped</span><span class="o">.</span><span class="n">indByID</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">mother_id</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">grandChildren</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">]</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">idString</span><span class="p">(</span><span class="n">IDs</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">uniqueIDs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">IDs</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="n">uniqueIDs</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">uniqueIDs</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;GrandParents: </span><span class="si">%d</span><span class="s1">, </span><span class="si">%d</span><span class="s1"></span>
+<span class="gp">... </span><span class="s1">Children: </span><span class="si">%s</span><span class="s1"></span>
+<span class="gp">... </span><span class="s1">Spouses of children: </span><span class="si">%s</span><span class="s1"></span>
+<span class="gp">... </span><span class="s1">Parents of children: </span><span class="si">%s</span><span class="s1"></span>
+<span class="gp">... </span><span class="s1">GrandChildren: </span><span class="si">%s</span><span class="s1"></span>
+<span class="gp">... </span><span class="s1">Parents of grandChildren: </span><span class="si">%s</span><span class="s1"> &#39;&#39;&#39;</span> <span class="o">%</span> \
+<span class="gp">... </span><span class="p">(</span><span class="n">grandFather</span><span class="p">,</span> <span class="n">grandMother</span><span class="p">,</span> <span class="n">idString</span><span class="p">(</span><span class="n">children</span><span class="p">),</span> <span class="n">idString</span><span class="p">(</span><span class="n">childrenSpouse</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">idString</span><span class="p">(</span><span class="n">childrenParents</span><span class="p">),</span> <span class="n">idString</span><span class="p">(</span><span class="n">grandChildren</span><span class="p">),</span> <span class="n">idString</span><span class="p">(</span><span class="n">grandChildrenParents</span><span class="p">)))</span>
+<span class="go">GrandParents: 3040, 3847</span>
+<span class="go">Children: 4078, 4079, 4080</span>
+<span class="go">Spouses of children: 4446, 4797</span>
+<span class="go">Parents of children: 3040, 3847</span>
+<span class="go">GrandChildren: 5188, 5189, 5879, 5880, 5881</span>
+<span class="go">Parents of grandChildren: 4078, 4079, 4446, 4797</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># let us look at the structure of this complete pedigree using another method</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">famSz</span> <span class="o">=</span> <span class="n">ped</span><span class="o">.</span><span class="n">identifyFamilies</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># it is amazing that there is a huge family that connects almost everyone</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">famSz</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">famSz</span><span class="p">)</span>
+<span class="go">(533, 2383)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># if we only look at the last two generations, things are much better</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ped</span><span class="o">.</span><span class="n">addInfoFields</span><span class="p">(</span><span class="s1">&#39;ped_id&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">famSz</span> <span class="o">=</span> <span class="n">ped</span><span class="o">.</span><span class="n">identifyFamilies</span><span class="p">(</span><span class="n">pedField</span><span class="o">=</span><span class="s1">&#39;ped_id&#39;</span><span class="p">,</span> <span class="n">ancGens</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">famSz</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">famSz</span><span class="p">)</span>
+<span class="go">(664, 114)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="locateRelative.py">Download locateRelative.py</a></p>
+</div>
+<div class="section" id="identify-pedigrees-related-individuals">
+<h2>Identify pedigrees (related individuals)<a class="headerlink" href="#identify-pedigrees-related-individuals" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="refManual_ch2_sec1.html#Pedigree" title="Pedigree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pedigree</span></code></a> class provides some other functions that allows you to
+identify related individuals. For example,</p>
+<ul class="simple">
+<li>Function <a class="reference internal" href="refManual_ch2_sec1.html#Pedigree.identifyAncestors" title="Pedigree.identifyAncestors"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Pedigree.identifyAncestors</span></code></a> identifies all ancestors of
+specified individuals or all individuals at the present generation. In a
+diaploid population when there is only one parent, you can see that only a small
+portion of ancestors have offspring in the last generation.</li>
+<li>Function <a class="reference internal" href="refManual_ch2_sec1.html#Pedigree.identifyOffspring" title="Pedigree.identifyOffspring"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Pedigree.identifyOffspring</span></code></a> identifies all offspring of
+specified individuals across multiple generations.</li>
+<li>Function <a class="reference internal" href="refManual_ch2_sec1.html#Pedigree.identifyFamilies" title="Pedigree.identifyFamilies"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Pedigree.identifyFamilies</span></code></a> groups all related individuals into
+families and assign a family ID to all family members. You might be surprised by
+how large this kind of family can be when parents are allowed to have multiple
+spouses.</li>
+</ul>
+<p>All these functions support parameters <code class="docutils literal notranslate"><span class="pre">subPops</span></code> and <code class="docutils literal notranslate"><span class="pre">ancGens</span></code> so that you
+can limit your search in specific subpopulations and ancestral generations. For
+example, you can limit your search to all male individuals to find out someone’s
+male offspring. Example <a class="reference internal" href="#locatefamilies"><span class="std std-ref">locateFamilies</span></a> demonstrates how
+to use these functions to analyze the structure of a complete pedigree.</p>
+<p id="locatefamilies"><strong>Example</strong>: <em>Identify all ancestors</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">ancGen</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;ind_id&#39;</span><span class="p">,</span> <span class="s1">&#39;father_id&#39;</span><span class="p">,</span> <span class="s1">&#39;mother_id&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">numOffspring</span><span class="o">=</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">UNIFORM_DISTRIBUTION</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">PedigreeTagger</span><span class="p">()</span>
+<span class="gp">... </span>        <span class="p">],</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">19</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">19</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># we now have the complete pedigree of 20 generations</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">asPedigree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># total number of individuals should be 20 * 1000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># how many families do we have?</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fam</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">identifyFamilies</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">fam</span><span class="p">)</span>
+<span class="go">525</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># but how many families with more than 1 individual?</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># The rest of them must be in the initial generation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fam</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">])</span>
+<span class="go">18</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># let us look backward. allAnc are the ancestors who have offspring in the</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># last generation. You can see this is a small number compared the number of</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># ancestors.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">allAnc</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">identifyAncestors</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">allAnc</span><span class="p">)</span>
+<span class="go">8614</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="locateFamilies.py">Download locateFamilies.py</a></p>
+</div>
+<div class="section" id="save-and-load-pedigrees">
+<h2>Save and load pedigrees<a class="headerlink" href="#save-and-load-pedigrees" title="Permalink to this headline">¶</a></h2>
+<p>A complete pedigree, including ID, sex and affection status of each individual,
+IDs of their parents, and optionally values of some information fields and
+genotypes at some loci could be saved to a file, and be loaded using function
+<a class="reference internal" href="refManual_ch2_sec6.html#loadPedigree" title="loadPedigree"><code class="xref py py-func docutils literal notranslate"><span class="pre">loadPedigree</span></code></a>. The loaded pedigree could be analyzed using pedigree
+functions, or be used to direct the evolution of another evolutionary process
+using a pedigree mating scheme.</p>
+<p>A pedigree could be saved in two ways. In the first method, a pedigree could be
+created using the methods described above and be saved using function
+<a class="reference internal" href="refManual_ch2_sec1.html#Pedigree.save" title="Pedigree.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Pedigree.save</span></code></a>(). However, if the population is large, recording all
+ancestral generations may not be feasible. If this is the case, you can use a
+<a class="reference internal" href="refManual_ch3_sec10.html#PedigreeTagger" title="PedigreeTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">PedigreeTagger</span></code></a> operator to save individual information during the
+evolution. If you do not care about details of the top-most ancestral
+generation, a PedigreeTagger used in a mating scheme should be enough to record
+pedigree information of all offspring. Individual in the top-most generation who
+have offspring in the next generation will be constructed in
+<a class="reference internal" href="refManual_ch2_sec6.html#loadPedigree" title="loadPedigree"><code class="xref py py-func docutils literal notranslate"><span class="pre">loadPedigree</span></code></a>. If you would like to include detailed information about
+all individuals in the top-most ancestral generation, you can use a
+<a class="reference internal" href="refManual_ch3_sec10.html#PedigreeTagger" title="PedigreeTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">PedigreeTagger</span></code></a> in the <code class="docutils literal notranslate"><span class="pre">initOps</span></code> parameter of the
+<a class="reference internal" href="refManual_ch2_sec1.html#Simulator.evolve" title="Simulator.evolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Simulator.evolve</span></code></a>() or <a class="reference internal" href="refManual_ch2_sec1.html#Population.evolve" title="Population.evolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.evolve</span></code></a>() function.</p>
+<p>Example <a class="reference internal" href="#saveloadpedigree"><span class="std std-ref">saveLoadPedigree</span></a> demonstrates how to use these
+functions to analyze the structure of a complete pedigree.</p>
+<p id="saveloadpedigree"><strong>Example</strong>: <em>Save and load a complete pedigree</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;ind_id&#39;</span><span class="p">,</span> <span class="s1">&#39;father_id&#39;</span><span class="p">,</span> <span class="s1">&#39;mother_id&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">ancGen</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PedigreeTagger</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s1">&#39;&gt;&gt;pedigree.ped&#39;</span><span class="p">,</span> <span class="n">outputLoci</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">PedigreeTagger</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s1">&#39;&gt;&gt;pedigree.ped&#39;</span><span class="p">,</span> <span class="n">outputLoci</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="p">],</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;pedigree.ped&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+<span class="go">1 0 0 F U 0 0</span>
+<span class="go">2 0 0 F U 0 1</span>
+<span class="go">3 0 0 M U 1 1</span>
+<span class="go">4 0 0 M U 1 1</span>
+<span class="go">5 4 1 M U 0 1</span>
+<span class="go">6 4 2 F U 1 1</span>
+<span class="go">7 3 2 F U 0 1</span>
+<span class="go">8 3 2 M U 1 1</span>
+<span class="go">9 8 7 F U 1 1</span>
+<span class="go">10 5 6 M U 1 1</span>
+<span class="go">11 5 6 M U 1 1</span>
+<span class="go">12 5 7 F U 0 1</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">asPedigree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;pedigree1.ped&#39;</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;pedigree1.ped&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+<span class="go">1 0 0 F U 0 0</span>
+<span class="go">2 0 0 F U 0 1</span>
+<span class="go">3 0 0 M U 1 1</span>
+<span class="go">4 0 0 M U 1 1</span>
+<span class="go">5 4 1 M U 0 1</span>
+<span class="go">6 4 2 F U 1 1</span>
+<span class="go">7 3 2 F U 0 1</span>
+<span class="go">8 3 2 M U 1 1</span>
+<span class="go">9 8 7 F U 1 1</span>
+<span class="go">10 5 6 M U 1 1</span>
+<span class="go">11 5 6 M U 1 1</span>
+<span class="go">12 5 7 F U 0 1</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ped</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">loadPedigree</span><span class="p">(</span><span class="s1">&#39;pedigree1.ped&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">ped</span><span class="p">,</span> <span class="n">ancGens</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="go">Ploidy: 2 (diploid)</span>
+<span class="go">Chromosomes:</span>
+<span class="go">1:  (AUTOSOME, 1 loci)</span>
+<span class="go">   (1)</span>
+<span class="go">Information fields:</span>
+<span class="go">ind_id father_id mother_id</span>
+<span class="go">population size: 4 (1 subpopulations with 4 Individuals)</span>
+<span class="go">Number of ancestral populations: 2</span>
+
+<span class="go">SubPopulation 0 (), 4 Individuals:</span>
+<span class="go">   0: FU 1 | 1 |  9 8 7</span>
+<span class="go">   1: MU 1 | 1 |  10 5 6</span>
+<span class="go">   2: MU 1 | 1 |  11 5 6</span>
+<span class="go">   3: FU 0 | 1 |  12 5 7</span>
+
+<span class="go">Ancestral population 1</span>
+<span class="go">SubPopulation 0 (), 4 Individuals:</span>
+<span class="go">   0: MU 0 | 1 |  5 4 1</span>
+<span class="go">   1: FU 1 | 1 |  6 4 2</span>
+<span class="go">   2: FU 0 | 1 |  7 3 2</span>
+<span class="go">   3: MU 1 | 1 |  8 3 2</span>
+
+<span class="go">Ancestral population 2</span>
+<span class="go">SubPopulation 0 (), 4 Individuals:</span>
+<span class="go">   0: FU 0 | 0 |  1 0 0</span>
+<span class="go">   1: FU 0 | 1 |  2 0 0</span>
+<span class="go">   2: MU 1 | 1 |  3 0 0</span>
+<span class="go">   3: MU 1 | 1 |  4 0 0</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="saveLoadPedigree.py">Download saveLoadPedigree.py</a></p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec1.html">Mating Schemes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec2.html">Simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec3.html">Non-random and customized mating schemes *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec4.html">Age structured populations with overlapping generations **</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec5.html">Tracing allelic lineage *</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Pedigrees</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#create-a-pedigree-object">Create a pedigree object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#locate-close-and-remote-relatives-of-each-individual">Locate close and remote relatives of each individual</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#identify-pedigrees-related-individuals">Identify pedigrees (related individuals)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#save-and-load-pedigrees">Save and load pedigrees</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec7.html">Evolve a population following a specified pedigree structure **</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec8.html">Simulation of mitochondrial DNAs (mtDNAs) *</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch6.html">Evolving populations</a><ul>
+      <li>Previous: <a href="userGuide_ch6_sec5.html" title="previous chapter">Tracing allelic lineage *</a></li>
+      <li>Next: <a href="userGuide_ch6_sec7.html" title="next chapter">Evolve a population following a specified pedigree structure **</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch6_sec6.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

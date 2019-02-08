@@ -1,0 +1,291 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Loading simuPOP modules &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Online help system" href="userGuide_ch3_sec3.html" />
+    <link rel="prev" title="Pythonic issues" href="userGuide_ch3_sec1.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="loading-simupop-modules">
+<h1>Loading simuPOP modules<a class="headerlink" href="#loading-simupop-modules" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="short-long-binary-mutant-and-lineage-modules-and-their-optimized-versions">
+<h2>Short, long, binary, mutant and lineage modules and their optimized versions<a class="headerlink" href="#short-long-binary-mutant-and-lineage-modules-and-their-optimized-versions" title="Permalink to this headline">¶</a></h2>
+<p>There are ten flavors of the core simuPOP module: short, long, binary, mutant,
+and lineage allele modules, and their optimized versions.</p>
+<ul class="simple">
+<li>The short allele modules use <em>8 bits</em> to store each allele which limits the
+possible allele states to 256. This is enough most of the times so this is the
+default module of simuPOP.</li>
+<li>If you need to a large number of allele states to simulate, for example the
+infinite allele model, you should use the long allele version of the modules,
+which use <em>32 or 64 bits</em> for each allele and can have <span class="math notranslate nohighlight">\(2^{32}\)</span> or
+<span class="math notranslate nohighlight">\(2^{64}\)</span> possible allele states depending on your platform.</li>
+<li>If you would like to simulate a large number of binary (SNP) markers, binary
+libraries can save you a lot of RAM because they use <em>1 bit</em> for each allele.</li>
+<li>If you are simulating long sequence regions with rare variants, you can use
+the mutant module. This module uses compression technology that ignores wildtype
+alleles and is not efficient if you need to traverse all alleles frequently. The
+maximum allele state is 255 for this module. Because this module stores location
+and value of each allele, it uses at least 64 + 8 bits for each allele on a 64
+bit system. The complexity of the storage also prevents simultaneous write
+access to genotypes so this module does not benefit much from running in multi-
+thread mode.</li>
+<li>If you are interested in tracing the lineage of each allele (e.g. the ID of
+individuals to whom the allele was introduced), you can use the lineage module
+for which each allele is attached with information about its origin. The maximum
+allele state is 255 for this module, and the cost of storing each allele is 8
+(value) + 32 (lineage) bits.</li>
+</ul>
+<p>Despite of differences in internal memory layout, all these modules have the
+same interface, although some functions behave differently in terms of
+functionality and performance.</p>
+<p>Standard libraries have detailed debug and run-time validation mechanism to make
+sure a simulation executes correctly. Whenever something unusual is detected,
+simuPOP would terminate with detailed error messages. The cost of such run-time
+validation varies from case to case but can be high under some extreme
+circumstances. Because of this, optimized versions for all modules are provided.
+They bypass most parameter checking and run-time validations and will simply
+crash if things go wrong. It is recommended that you use standard libraries
+whenever possible and only use the optimized version when performance is needed
+and you are confident that your simulation is running as expected.</p>
+<p>Examples <a class="reference internal" href="#lst-use-of-standard-module"><span class="std std-ref">lst_Use_of_standard_module</span></a> and
+<a class="reference internal" href="#lst-use-of-optimized-module"><span class="std std-ref">lst_Use_of_optimized_module</span></a> demonstrate the
+differences between standard and optimized modules, by executing two invalid
+commands. A standard module checks all input values and raises exceptions when
+invalid inputs are detected. An interactive Python session would catch these
+exceptions and print proper error messages. In constrast, an optimized module
+returns erroneous results and or simply crashes when such inputs are given.</p>
+<p id="lst-use-of-standard-module"><strong>Example</strong>: <em>Use of standard simuPOP modules</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">locusPos</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;/var/folders/ys/gnzk0qbx5wbdgm531v82xxljv5yqy8/T/tmp6boewtoh&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+    <span class="c1">#begin_file log/standard.py</span>
+<span class="gr">IndexError</span>: <span class="n">genoStru.h: 557 absolute locus index (10) out of range of 0 ~ 1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">individual</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="o">.</span><span class="n">setAllele</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;/var/folders/ys/gnzk0qbx5wbdgm531v82xxljv5yqy8/T/tmp6boewtoh&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+    <span class="c1">#begin_file log/standard.py</span>
+<span class="gr">IndexError</span>: <span class="n">population.h: 566 individual index (20)  out of range of 0 ~ 9</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="standard.py">Download standard.py</a></p>
+<p id="index-0">Example <a class="reference internal" href="#lst-use-of-optimized-module"><span class="std std-ref">lst_Use_of_optimized_module</span></a> also
+demonstrates how to use the <a class="reference internal" href="refManual_ch2_sec6.html#setOptions" title="setOptions"><code class="xref py py-func docutils literal notranslate"><span class="pre">setOptions</span></code></a> function in the <a class="reference internal" href="refManual_ch4_sec1.html#module-simuOpt" title="simuOpt"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuOpt</span></code></a>
+module to control the choice of one of the six simuPOP modules. By specifying
+one of the values <code class="docutils literal notranslate"><span class="pre">short,</span> <span class="pre">long</span></code> or <code class="docutils literal notranslate"><span class="pre">binary</span></code>for option <code class="docutils literal notranslate"><span class="pre">alleleType</span></code>, and
+setting<code class="docutils literal notranslate"><span class="pre">optimized</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>, the right flavor of module will
+be chosen when simuPOP is loaded. In addition, option <code class="docutils literal notranslate"><span class="pre">quiet</span></code> can be used
+suppress the banner message when simuPOP is loaded. An alternative method is to
+set environmental variable <code class="docutils literal notranslate"><span class="pre">SIMUALLELETYPE</span></code> to <code class="docutils literal notranslate"><span class="pre">short</span></code>, <code class="docutils literal notranslate"><span class="pre">long</span></code> or
+<code class="docutils literal notranslate"><span class="pre">binary</span></code> to use the standard short, long or binary module, and variable
+<code class="docutils literal notranslate"><span class="pre">SIMUOPTIMIZED</span></code> to use the optimized modules. Command line options
+<code class="docutils literal notranslate"><span class="pre">--optimized</span></code> can also be used.</p>
+<p id="lst-use-of-optimized-module"><strong>Example</strong>: <em>Use of optimized simuPOP modules</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">python</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">simuOpt</span> <span class="k">import</span> <span class="n">setOptions</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">setOptions</span><span class="p">(</span><span class="n">optimized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alleleType</span><span class="o">=</span><span class="s1">&#39;long&#39;</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">pop</span><span class="o">.</span><span class="n">locusPos</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="mf">1.2731974748756028e-313</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">pop</span><span class="o">.</span><span class="n">individual</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="o">.</span><span class="n">setAllele</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">Segmentation</span> <span class="n">fault</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="execution-in-multiple-threads">
+<h2>Execution in multiple threads<a class="headerlink" href="#execution-in-multiple-threads" title="Permalink to this headline">¶</a></h2>
+<p>simuPOP is capable of executing in multiple threads but it by default only makes
+use of one thread. If you have a multi-core CPU, it is often beneficial to set
+the number of threads to 2 or more to take advantage of this feature. The
+recommended number of threads is usually the number of cores of your CPU but you
+might want to set it to a lower number to leave room for the execution of other
+applications. The number of threads used in simuPOP can be controlled in the
+following ways:</p>
+<ul class="simple">
+<li>If an environmental variable <code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code> is set to a positive number,
+simuPOP will be started with specified number of threads.</li>
+<li>Before simuPOP is imported, you can set the number of threads using function
+<a class="reference internal" href="refManual_ch4_sec1.html#simuOpt.setOptions" title="simuOpt.setOptions"><code class="xref py py-func docutils literal notranslate"><span class="pre">simuOpt.setOptions</span></code></a>(<code class="docutils literal notranslate"><span class="pre">numThreads=x</span></code>) where <code class="docutils literal notranslate"><span class="pre">x</span></code> can be a positive
+number (number of threads) or <code class="docutils literal notranslate"><span class="pre">0</span></code>, which is intepreted as the number of cores
+available for your computer.</li>
+</ul>
+<p>The number of threads a simuPOP session is used will be displayed in the banner
+message when simuPOP is imported, and can be retrieved through
+<a class="reference internal" href="refManual_ch2_sec6.html#moduleInfo" title="moduleInfo"><code class="xref py py-func docutils literal notranslate"><span class="pre">moduleInfo</span></code></a><code class="docutils literal notranslate"><span class="pre">['threads']</span></code>.</p>
+<p>Although simuPOP can usually benefit from the use of multiple cores, certain
+features of your script might prevent the execution of simuPOP in multiple
+threads. For example, if your script uses a sex mode of <code class="docutils literal notranslate"><span class="pre">GLOBAL_SEX_SEQUENCE</span></code>
+to set the sex of offspring according to the global sequence of sexes (e.g.
+male, male, female), simuPOP will only use on thread to generate offspring
+because it is not feasible to assign individual sex from a single source of list
+across multiple threads.</p>
+</div>
+<div class="section" id="graphical-user-interface">
+<h2>Graphical user interface<a class="headerlink" href="#graphical-user-interface" title="Permalink to this headline">¶</a></h2>
+<p>A complete graphical user interface (GUI) for users to interactively construct
+evolutionary processes is still in the planning stage. However, some simuPOP
+classes and functions can make use of a GUI to improve user interaction. For
+example, a parameter input dialog can be constructed automatically from a
+parameter specification list, and be used to accept user input if class
+<code class="docutils literal notranslate"><span class="pre">simuOpt.Params</span></code> is used to handle parameters. Other examples include a
+progress bar <a class="reference internal" href="refManual_ch4_sec2.html#simuPOP.utils.ProgressBar" title="simuPOP.utils.ProgressBar"><code class="xref py py-class docutils literal notranslate"><span class="pre">simuPOP.utils.ProgressBar</span></code></a> and a dialog used by function
+<a class="reference internal" href="refManual_ch4_sec2.html#simuPOP.utils.viewVars" title="simuPOP.utils.viewVars"><code class="xref py py-func docutils literal notranslate"><span class="pre">simuPOP.utils.viewVars</span></code></a> to display a large number of variables. The most
+notable feature of the use of GUI in simuPOP is that <strong>all functionalities can
+be achieved without a GUI</strong>. For examples, <code class="docutils literal notranslate"><span class="pre">simuOpt.getParam</span></code> will use a
+terminal to accept user input interactively and
+<a class="reference internal" href="refManual_ch4_sec2.html#simuPOP.utils.ProgressBar" title="simuPOP.utils.ProgressBar"><code class="xref py py-class docutils literal notranslate"><span class="pre">simuPOP.utils.ProgressBar</span></code></a> will turn to a text-based progress bar in the
+non-GUI mode.</p>
+<p>The use of GUI can be controlled either globally or Individually. First, a
+global GUI parameter could be set by environmental variable <code class="docutils literal notranslate"><span class="pre">SIMUGUI</span></code>,
+function <a class="reference internal" href="refManual_ch4_sec1.html#simuOpt.setOptions" title="simuOpt.setOptions"><code class="xref py py-func docutils literal notranslate"><span class="pre">simuOpt.setOptions</span></code></a>(<code class="docutils literal notranslate"><span class="pre">gui</span></code>) or a command line option
+<code class="docutils literal notranslate"><span class="pre">--gui</span></code> of a simuPOP scripts. Allowed values include</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">True</span></code>: This is the system default value. A GUI is used whenever possible.
+All GUI-capable functions support <code class="docutils literal notranslate"><span class="pre">wxPython</span></code> so a <code class="docutils literal notranslate"><span class="pre">wxPython</span></code> dialog will be
+used if <code class="docutils literal notranslate"><span class="pre">wxPython</span></code> is available. Otherwise, <code class="docutils literal notranslate"><span class="pre">tkInter</span></code> based dialogs or text-
+mode will be used.</li>
+<li><code class="docutils literal notranslate"><span class="pre">False</span></code>: no GUI will be used. All functions will use text-based
+implementation. Note that <code class="docutils literal notranslate"><span class="pre">--gui=False</span></code> is commonly used to run scripts in
+batch mode.</li>
+<li><code class="docutils literal notranslate"><span class="pre">wxPython</span></code>: Force the use of <code class="docutils literal notranslate"><span class="pre">wxPython</span></code> GUI toolkit.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Tkinter</span></code>: Force the use of <code class="docutils literal notranslate"><span class="pre">Tkinter</span></code> GUI toolkit.</li>
+</ul>
+<p>Individual classes and functions that could make use a GUI usually have their
+own <code class="docutils literal notranslate"><span class="pre">gui</span></code> parameters, which can be set to override global GUI settings. For
+example, you could force the use of a text-based progress bar by using
+<code class="docutils literal notranslate"><span class="pre">ProgressBar(gui=False)</span></code>.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch3_sec1.html">Pythonic issues</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Loading simuPOP modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#short-long-binary-mutant-and-lineage-modules-and-their-optimized-versions">Short, long, binary, mutant and lineage modules and their optimized versions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#execution-in-multiple-threads">Execution in multiple threads</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#graphical-user-interface">Graphical user interface</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch3_sec3.html">Online help system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch3_sec4.html">Debug-related functions and operators *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch3_sec5.html">Random number generator *</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch3.html">Loading and running simuPOP</a><ul>
+      <li>Previous: <a href="userGuide_ch3_sec1.html" title="previous chapter">Pythonic issues</a></li>
+      <li>Next: <a href="userGuide_ch3_sec3.html" title="next chapter">Online help system</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch3_sec2.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

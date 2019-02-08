@@ -1,0 +1,381 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Expressions and statements &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Demographic changes" href="userGuide_ch5_sec4.html" />
+    <link rel="prev" title="Initialization" href="userGuide_ch5_sec2.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="expressions-and-statements">
+<h1>Expressions and statements<a class="headerlink" href="#expressions-and-statements" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="output-a-python-string-operator-pyoutput">
+<h2>Output a Python string (operator <a class="reference internal" href="refManual_ch3_sec3.html#PyOutput" title="PyOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyOutput</span></code></a>)<a class="headerlink" href="#output-a-python-string-operator-pyoutput" title="Permalink to this headline">¶</a></h2>
+<p>Operator <a class="reference internal" href="refManual_ch3_sec3.html#PyOutput" title="PyOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyOutput</span></code></a> is a simple operator that prints a Python string when
+it is applied to a population. It is commonly used to print the progress of a
+simulation (e.g. <a class="reference internal" href="refManual_ch3_sec3.html#PyOutput" title="PyOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyOutput</span></code></a>(<code class="docutils literal notranslate"><span class="pre">'start</span> <span class="pre">migration\\n',</span> <span class="pre">at=200</span></code>)) or
+output separators to beautify outputs from <a class="reference internal" href="refManual_ch3_sec3.html#PyEval" title="PyEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyEval</span></code></a> outputs (e.g.
+<a class="reference internal" href="refManual_ch3_sec3.html#PyOutput" title="PyOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyOutput</span></code></a>(<code class="docutils literal notranslate"><span class="pre">'\\n',</span> <span class="pre">rep=-1</span></code>).</p>
+</div>
+<div class="section" id="execute-python-statements-operator-pyexec">
+<h2>Execute Python statements (operator <a class="reference internal" href="refManual_ch3_sec3.html#PyExec" title="PyExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyExec</span></code></a>)<a class="headerlink" href="#execute-python-statements-operator-pyexec" title="Permalink to this headline">¶</a></h2>
+<p>Operator <a class="reference internal" href="refManual_ch3_sec3.html#PyExec" title="PyExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyExec</span></code></a> executes Python statements in a population’s local
+namespace when it is applied to that population. This operator is designed to
+execute short Python statements but multiple statements separated by newline
+characters are allowed.</p>
+<p>Example <a class="reference internal" href="#pyexec"><span class="std std-ref">PyExec</span></a> uses two <a class="reference internal" href="refManual_ch3_sec3.html#PyExec" title="PyExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyExec</span></code></a> operators to create and
+use a variable <code class="docutils literal notranslate"><span class="pre">traj</span></code> in each population’s local namespace. The first operator
+initialize this variable as an empty list. During evolution, the frequency of
+allele 1 at locus 0 is calcuated (operator <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a>) and appended to this
+variable (operator <a class="reference internal" href="refManual_ch3_sec3.html#PyExec" title="PyExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyExec</span></code></a>). The result is a trajectory of allele
+frequencies during evolution.</p>
+<p id="pyexec"><strong>Example</strong>: <em>Execute Python statements during evolution</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Simulator</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">rep</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyExec</span><span class="p">(</span><span class="s1">&#39;traj=[]&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyExec</span><span class="p">(</span><span class="s1">&#39;traj.append(alleleFreq[0][1])&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">(5, 5)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># print Trajectory</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">%.3f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">simu</span><span class="o">.</span><span class="n">dvars</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">traj</span><span class="p">]))</span>
+<span class="go">0.775, 0.790, 0.760, 0.750, 0.750</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="PyExec.py">Download PyExec.py</a></p>
+</div>
+<div class="section" id="evaluate-and-output-python-expressions-operator-pyeval">
+<h2>Evaluate and output Python expressions (operator <a class="reference internal" href="refManual_ch3_sec3.html#PyEval" title="PyEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyEval</span></code></a>)<a class="headerlink" href="#evaluate-and-output-python-expressions-operator-pyeval" title="Permalink to this headline">¶</a></h2>
+<p>Operator <a class="reference internal" href="refManual_ch3_sec3.html#PyEval" title="PyEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyEval</span></code></a> evaluate a given Python expression in a population’s
+local namespace and output its return value. This operator has been widely used
+(e.g. Example <a class="reference internal" href="userGuide_ch2_sec2.html#simple-example"><span class="std std-ref">simple_example</span></a>, <a class="reference internal" href="userGuide_ch4_sec3.html#ancestralpop"><span class="std std-ref">ancestralPop</span></a>, <a class="reference internal" href="userGuide_ch5_sec1.html#applicablegen"><span class="std std-ref">applicableGen</span></a> and <a class="reference internal" href="userGuide_ch5_sec1.html#output"><span class="std std-ref">output</span></a>) to output statistics of populations and report progress.</p>
+<p>Two additional features of this operator may become handy from time to time.
+First, an optional Python statements (parameter <em>stmts</em>) can be specified which
+will be executed before the expression is evaluated. Second, the population
+being applied can be exposed in its own namespace as a variable (parameter
+<em>exposePop</em>). This makes it possible to access properties of a population other
+than its variables. Example <a class="reference internal" href="#pyeval"><span class="std std-ref">PyEval</span></a> demonstrates both features.
+In this example, two statements are executed to count the number of unique
+parents in an offspring population and save them as variables <code class="docutils literal notranslate"><span class="pre">numFather</span></code> and
+<code class="docutils literal notranslate"><span class="pre">numMother</span></code>. The operator outputs these two variables alone with a generation
+number.</p>
+<p id="pyeval"><strong>Example</strong>: <em>Evaluate a expression and statements in a population’s local namespace.</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mother_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;father_idx&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">ParentsTagger</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;gen </span><span class="si">%d</span><span class="s1">, #father </span><span class="si">%d</span><span class="s1">, #mother </span><span class="si">%d</span><span class="s1">\n&quot;&#39;</span> \
+<span class="gp">... </span>            <span class="s1">&#39; % (gen, numFather, numMother)&#39;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">stmts</span><span class="o">=</span><span class="s2">&quot;numFather = len(set(pop.indInfo(&#39;father_idx&#39;)))</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="gp">... </span>                <span class="s2">&quot;numMother = len(set(pop.indInfo(&#39;mother_idx&#39;)))&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">exposePop</span><span class="o">=</span><span class="s1">&#39;pop&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">3</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">gen 0, #father 439, #mother 433</span>
+<span class="go">gen 1, #father 433, #mother 432</span>
+<span class="go">gen 2, #father 449, #mother 420</span>
+<span class="go">3</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="PyEval.py">Download PyEval.py</a></p>
+<p>Note that the function form of this operator (<a class="reference internal" href="refManual_ch3_sec15.html#pyEval" title="pyEval"><code class="xref py py-func docutils literal notranslate"><span class="pre">pyEval</span></code></a>) returns the result
+of the expression rather than writting it to an output.</p>
+</div>
+<div class="section" id="expression-and-statement-involving-individual-information-fields-operator-infoeval-and-infoexec">
+<h2>Expression and statement involving individual information fields (operator <a class="reference internal" href="refManual_ch3_sec3.html#InfoEval" title="InfoEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoEval</span></code></a> and <a class="reference internal" href="refManual_ch3_sec3.html#InfoExec" title="InfoExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoExec</span></code></a>) *<a class="headerlink" href="#expression-and-statement-involving-individual-information-fields-operator-infoeval-and-infoexec" title="Permalink to this headline">¶</a></h2>
+<p>Operators <a class="reference internal" href="refManual_ch3_sec3.html#PyEval" title="PyEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyEval</span></code></a> and <a class="reference internal" href="refManual_ch3_sec3.html#PyExec" title="PyExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyExec</span></code></a> work at the population level,
+using the local namespace of populations. Operator <a class="reference internal" href="refManual_ch3_sec3.html#InfoEval" title="InfoEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoEval</span></code></a> and
+<a class="reference internal" href="refManual_ch3_sec3.html#InfoExec" title="InfoExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoExec</span></code></a>, on the contraray, work at the individual level, using
+individual information fields (and population variables) as variables. In this
+case, individual information fields are copied to the population namespace one
+by one before expression or statements are executed for each individual.
+Optionally, the individual object can be exposed to these namespace using a
+user-specified name (parameter <em>exposeInd</em>). Individual information fields will
+be updated if the value of these fields are changed.</p>
+<p>Operator <a class="reference internal" href="refManual_ch3_sec3.html#InfoEval" title="InfoEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoEval</span></code></a> evaluates an expression and outputs its value.
+Operator <a class="reference internal" href="refManual_ch3_sec3.html#InfoExec" title="InfoExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoExec</span></code></a> executes one or more statements and does not produce
+any output. Operator <a class="reference internal" href="refManual_ch3_sec3.html#InfoEval" title="InfoEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoEval</span></code></a> is usually used to output individual
+information fields and properties in batch mode. It is faster and sometimes
+easier to use than corresponding for loop plus individual level operations. For
+example</p>
+<ul class="simple">
+<li><a class="reference internal" href="refManual_ch3_sec3.html#InfoEval" title="InfoEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoEval</span></code></a>(<code class="docutils literal notranslate"><span class="pre">r'''%.2f\\t''</span> <span class="pre">%</span> <span class="pre">a'</span></code>) outputs the value of information
+field a for all individuals, separated by tabs.</li>
+<li><a class="reference internal" href="refManual_ch3_sec3.html#InfoEval" title="InfoEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoEval</span></code></a>(<code class="docutils literal notranslate"><span class="pre">'ind.sexChar()',</span> <span class="pre">exposeInd='ind'</span></code>) outputs the sex of
+all individuals using an exposed individual object <code class="docutils literal notranslate"><span class="pre">ind</span></code>.</li>
+<li><a class="reference internal" href="refManual_ch3_sec3.html#InfoEval" title="InfoEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoEval</span></code></a>(<code class="docutils literal notranslate"><span class="pre">'a+b**2'</span></code>) outputs <span class="math notranslate nohighlight">\(a+b^{2}\)</span> for information
+fields <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span> for all individuals.</li>
+</ul>
+<p>Example <a class="reference internal" href="#infoeval"><span class="std std-ref">InfoEval</span></a> demonstrates the use of this operator.</p>
+<p id="infoeval"><strong>Example</strong>: <em>Evaluate expressions using individual information fields</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">InfoSplitter</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setIndInfo</span><span class="p">([</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">)],</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">infoEval</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]);</span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+<span class="go">2.02.02.02.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">infoEval</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="s1">&#39;ind.allele(0, 0)&#39;</span><span class="p">,</span> <span class="n">exposeInd</span><span class="o">=</span><span class="s1">&#39;ind&#39;</span><span class="p">);</span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+<span class="go">11011111111100111111</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># use sim.population variables</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">infoEval</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="s1">&#39;&quot;</span><span class="si">%d</span><span class="s1"> &quot; % (a+b)&#39;</span><span class="p">);</span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+<span class="go">8 9 10 8 9 10 8 9 10 10 9 7 9 7 9 7 9 7 9 8</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="InfoEval.py">Download InfoEval.py</a></p>
+<p>Operator <a class="reference internal" href="refManual_ch3_sec3.html#InfoExec" title="InfoExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoExec</span></code></a> is usually used to set individual information fields.
+For example</p>
+<ul class="simple">
+<li><a class="reference internal" href="refManual_ch3_sec3.html#InfoExec" title="InfoExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoExec</span></code></a>(<code class="docutils literal notranslate"><span class="pre">'age</span> <span class="pre">+=</span> <span class="pre">1'</span></code>) increases the age of all individuals by
+one.</li>
+<li><a class="reference internal" href="refManual_ch3_sec3.html#InfoExec" title="InfoExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoExec</span></code></a>(<code class="docutils literal notranslate"><span class="pre">'risk</span> <span class="pre">=</span> <span class="pre">2</span> <span class="pre">if</span> <span class="pre">packPerYear</span> <span class="pre">&gt;</span> <span class="pre">10</span> <span class="pre">else</span> <span class="pre">1.5'</span></code>) sets
+information field <code class="docutils literal notranslate"><span class="pre">risk</span></code> to <code class="docutils literal notranslate"><span class="pre">2</span></code> if <code class="docutils literal notranslate"><span class="pre">packPerYear</span></code> is greater than <code class="docutils literal notranslate"><span class="pre">10</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">1.5</span></code> otherwise. Note that conditional expression is only available for
+Python version 2.5 or later.</li>
+<li><a class="reference internal" href="refManual_ch3_sec3.html#InfoExec" title="InfoExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoExec</span></code></a>(<code class="docutils literal notranslate"><span class="pre">'a</span> <span class="pre">=</span> <span class="pre">b*c'</span></code>) sets the value of information field <code class="docutils literal notranslate"><span class="pre">a</span></code>
+to the product of <code class="docutils literal notranslate"><span class="pre">b</span></code> and <code class="docutils literal notranslate"><span class="pre">c</span></code>.</li>
+</ul>
+<p>Example <a class="reference internal" href="#infoexec"><span class="std std-ref">InfoExec</span></a> demonstrates the use of this operator, using
+its function form <code class="docutils literal notranslate"><span class="pre">infoExec</span></code>.</p>
+<p id="infoexec"><strong>Example</strong>: <em>Execute statements using individual information fields</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initSex</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">infoExec</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="s1">&#39;a=1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">indInfo</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)[:</span><span class="mi">10</span><span class="p">])</span>
+<span class="go">(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">infoExec</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="s1">&#39;b=ind.sex()&#39;</span><span class="p">,</span> <span class="n">exposeInd</span><span class="o">=</span><span class="s1">&#39;ind&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">indInfo</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">)[:</span><span class="mi">10</span><span class="p">])</span>
+<span class="go">(2.0, 2.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">infoExec</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="s1">&#39;c=a+b&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">indInfo</span><span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">)[:</span><span class="mi">10</span><span class="p">])</span>
+<span class="go">(3.0, 3.0, 2.0, 2.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">d</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">infoExec</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="s1">&#39;c+=d&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">indInfo</span><span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">)[:</span><span class="mi">10</span><span class="p">])</span>
+<span class="go">(8.0, 8.0, 7.0, 7.0, 7.0, 7.0, 7.0, 8.0, 8.0, 8.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># the operator can update population variable as well</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">infoExec</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="s1">&#39;d+=c*c&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">d</span><span class="p">)</span>
+<span class="go">5835.0</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="InfoExec.py">Download InfoExec.py</a></p>
+<p>Note that a statement can also be specified for operator <a class="reference internal" href="refManual_ch3_sec3.html#InfoEval" title="InfoEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoEval</span></code></a>,
+which will be executed before an expression is evaluated.</p>
+</div>
+<div class="section" id="using-functions-in-external-modules-in-simupop-expressions-and-statements">
+<h2>Using functions in external modules in simuPOP expressions and statements<a class="headerlink" href="#using-functions-in-external-modules-in-simupop-expressions-and-statements" title="Permalink to this headline">¶</a></h2>
+<p>All simuPOP expressions and statements are evaluated in a population’s local
+namespace, which is a dictionary with no access to external modules. If you
+would like to use external modules (e.g. functions from the <code class="docutils literal notranslate"><span class="pre">random</span></code> module),
+you will have to import them to the namespace explicitly, using something like</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">exec</span><span class="p">(</span><span class="s1">&#39;import random&#39;</span><span class="p">,</span> <span class="n">pop</span><span class="o">.</span><span class="n">vars</span><span class="p">(),</span> <span class="n">pop</span><span class="o">.</span><span class="n">vars</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>before you evolve the population.</p>
+<p>Example <a class="reference internal" href="#outputbyinterval"><span class="std std-ref">outputByInterval</span></a> demonstrates the application
+of this technique. This example imports the <code class="docutils literal notranslate"><span class="pre">time</span></code> module in the population’s
+local namespace and set <code class="docutils literal notranslate"><span class="pre">init_time</span></code> and <code class="docutils literal notranslate"><span class="pre">last_time</span></code> before evolution. During
+evolution, an<code class="docutils literal notranslate"><span class="pre">IfElse</span></code> operator is used to output the status of the
+simulation for every 5 seconds using expression <code class="docutils literal notranslate"><span class="pre">time.time()</span> <span class="pre">-</span> <span class="pre">last_time</span> <span class="pre">&gt;</span> <span class="pre">5</span></code>.
+<code class="docutils literal notranslate"><span class="pre">last_time</span></code> is reset using the <a class="reference internal" href="refManual_ch3_sec3.html#PyExec" title="PyExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyExec</span></code></a> operator. The evolution will
+last 20 seconds and be terminated by the Terminator with expression
+<code class="docutils literal notranslate"><span class="pre">time.time()</span> <span class="pre">-</span> <span class="pre">init_time</span> <span class="pre">&gt;</span> <span class="pre">20.</span></code></p>
+<p id="outputbyinterval"><strong>Example</strong>: <em>Write the status of an evolutionary process every 10 seconds</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">time</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">init_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">last_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">exec</span><span class="p">(</span><span class="s1">&#39;import time&#39;</span><span class="p">,</span> <span class="n">pop</span><span class="o">.</span><span class="n">vars</span><span class="p">(),</span> <span class="n">pop</span><span class="o">.</span><span class="n">vars</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">IfElse</span><span class="p">(</span><span class="s1">&#39;time.time() - last_time &gt; 5&#39;</span><span class="p">,</span> <span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;Gen: </span><span class="si">%d</span><span class="s1">\n&quot; </span><span class="si">% g</span><span class="s1">en&#39;</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">PyExec</span><span class="p">(</span><span class="s1">&#39;last_time = time.time()&#39;</span><span class="p">)</span>
+<span class="gp">... </span>            <span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">TerminateIf</span><span class="p">(</span><span class="s1">&#39;time.time() - init_time &gt; 20&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">]</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Gen: 5043</span>
+<span class="go">Gen: 9971</span>
+<span class="go">Gen: 14997</span>
+<span class="go">19925</span>
+<span class="go">&gt;&gt;&gt;</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="outputByInterval.py">Download outputByInterval.py</a></p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec1.html">Introduction to operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec2.html">Initialization</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Expressions and statements</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#output-a-python-string-operator-pyoutput">Output a Python string (operator <code class="docutils literal notranslate"><span class="pre">PyOutput</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#execute-python-statements-operator-pyexec">Execute Python statements (operator <code class="docutils literal notranslate"><span class="pre">PyExec</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#evaluate-and-output-python-expressions-operator-pyeval">Evaluate and output Python expressions (operator <code class="docutils literal notranslate"><span class="pre">PyEval</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#expression-and-statement-involving-individual-information-fields-operator-infoeval-and-infoexec">Expression and statement involving individual information fields (operator <code class="docutils literal notranslate"><span class="pre">InfoEval</span></code> and <code class="docutils literal notranslate"><span class="pre">InfoExec</span></code>) *</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-functions-in-external-modules-in-simupop-expressions-and-statements">Using functions in external modules in simuPOP expressions and statements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec4.html">Demographic changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec5.html">Genotype transmitters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html">Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec7.html">Penetrance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec8.html">Quantitative trait</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html">Natural Selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec10.html">Tagging operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html">Statistics calculation (operator <code class="docutils literal notranslate"><span class="pre">Stat</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec12.html">Conditional operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec13.html">Miscellaneous operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec14.html">Hybrid and Python operators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch5.html">simuPOP Operators</a><ul>
+      <li>Previous: <a href="userGuide_ch5_sec2.html" title="previous chapter">Initialization</a></li>
+      <li>Next: <a href="userGuide_ch5_sec4.html" title="next chapter">Demographic changes</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch5_sec3.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

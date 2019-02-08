@@ -1,0 +1,683 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Module simuPOP.utils &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Module simuPOP.demography" href="userGuide_ch7_sec3.html" />
+    <link rel="prev" title="Module simuOpt (function simuOpt.setOptions)" href="userGuide_ch7_sec1.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-simupop-utils">
+<h1>Module <a class="reference internal" href="refManual_ch4_sec2.html#module-simuPOP.utils" title="simuPOP.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.utils</span></code></a><a class="headerlink" href="#module-simupop-utils" title="Permalink to this headline">¶</a></h1>
+<p>The <a class="reference internal" href="refManual_ch4_sec2.html#module-simuPOP.utils" title="simuPOP.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.utils</span></code></a> module provides a few utility functions and classes.
+They do not belong to the simuPOP core but are distributed with simuPOP because
+they are frequently used and play an important role in some specialized
+simulation techniques. Please refer to the simuPOP online cookbook
+(<code class="docutils literal notranslate"><span class="pre">http://simupop.sourceforge.net/cookbook</span></code>) for more utility modules and
+functions.</p>
+<div class="section" id="trajectory-simulation-classes-trajectory-and-trajectorysimulator">
+<h2>Trajectory simulation (classes <code class="docutils literal notranslate"><span class="pre">Trajectory</span></code> and <code class="docutils literal notranslate"><span class="pre">TrajectorySimulator</span></code>)<a class="headerlink" href="#trajectory-simulation-classes-trajectory-and-trajectorysimulator" title="Permalink to this headline">¶</a></h2>
+<p>A forward-time simulation, by its nature, is directly influenced by random
+genetic drift. Starting from the same parental generation, allele frequencies in
+the offspring generation would vary from simulation to simulation, with perhaps
+a predictable mean frequency which is determined by factors such as parental
+allele frequency, natural selection, mutation and migration.</p>
+<p>Genetic drift is unavoidable and is in many cases the target of theoretical and
+simulation studies. However, in certain types of studies, there is often a need
+to control the frequencies of certain alleles in the present generation. For
+example, if we are studying a particular penetrance model with pre-specified
+frequencies of disease predisposing alleles, the simulated populations would
+better have consistent allele frequencies at the disease predisposing loci, and
+consequently consistent disease prevalence.</p>
+<p>simuPOP provides a special offspring generator
+<a class="reference internal" href="refManual_ch2_sec3.html#ControlledOffspringGenerator" title="ControlledOffspringGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlledOffspringGenerator</span></code></a> and an associated mating scheme called
+<a class="reference internal" href="refManual_ch2_sec4.html#ControlledRandomMating" title="ControlledRandomMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlledRandomMating</span></code></a> that can be used to generate offspring
+generations conditioning on frequencies of one or more alleles. This offspring
+generator essentially uses a reject-sampling algorithm to select (or reject)
+offspring according to their genotypes at specified loci. A detailed description
+of this algorithm is given in Peng2007a.</p>
+<p>The controlled random mating scheme accepts a user-defined trajectory function
+that tells the mating scheme the desired allele frequencies at each generation.
+Example <a class="reference internal" href="userGuide_ch6_sec3.html#controlledoffgenerator"><span class="std std-ref">controlledOffGenerator</span></a> uses a manually
+defined function that raises the frequency of an allele steadily. However, given
+known demographic and genetic factors, <strong>a trajectory should be simulated
+randomly so that it represents a random sample from all possible trajectories
+that match the allele frequency requirement</strong>. If such a condition is met, the
+controlled evolutionary process can be considered as a random process
+conditioning on allele frequencies at the present generation. Please refer to
+Peng2007a for a detailed discussion about the theoretical requirements of a
+valid trajectory simulator.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">simuUtil</span></code> module provides functions and classes that implement two
+trajectory simulation methods that can be used in different situations. The
+first class is <code class="docutils literal notranslate"><span class="pre">TrajectorySimulator</span></code> which takes a demographic model and a
+selection model as its input and simulates allele frequency trajectories using a
+forward or backward algorithm. The demographic model is given by parameter
+<code class="docutils literal notranslate"><span class="pre">N</span></code>, which can be a constant (e.g. <code class="docutils literal notranslate"><span class="pre">N=1000</span></code>) for constant population size, a
+list of subpopulation sizes (e.g. <code class="docutils literal notranslate"><span class="pre">N=[1000,</span> <span class="pre">2000]</span></code>) for a structured
+population with constant size, or a demographic function that returns population
+or subpopulation sizes at each generation. In the last case, subpopulations can
+be split or merged with the constrait that subpopulations can be merged into
+one, from split from one population.</p>
+<p>A fitness model specifies the fitness of genotypes at one or more loci using
+parameter <code class="docutils literal notranslate"><span class="pre">fitness</span></code>. It can be a list of three numbers (e.g. <code class="docutils literal notranslate"><span class="pre">fitness=[1,</span>
+<span class="pre">1.001,</span> <span class="pre">1.003]</span></code>), repsenting the fitness of genotype <code class="docutils literal notranslate"><span class="pre">AA</span></code>, <code class="docutils literal notranslate"><span class="pre">Aa</span></code> and <code class="docutils literal notranslate"><span class="pre">aa</span></code>
+at one or more loci; or different fitness for genotypes at each locus (e.g.
+<code class="docutils literal notranslate"><span class="pre">fitness=[1,</span> <span class="pre">1.001,</span> <span class="pre">1.003,</span> <span class="pre">1,</span> <span class="pre">1,</span> <span class="pre">1.002]</span></code>), or for each combination or genotype
+(interaction). In the last case, <span class="math notranslate nohighlight">\(3^{n}\)</span> values are needed for each
+genotype if there are <span class="math notranslate nohighlight">\(n\)</span> loci. This trajectory simulator also accepts
+generation-specific fitness values by accepting a function that returns fitness
+values at each generation.</p>
+<p>The simulator then simulates trajectories of allele frequencies and return them
+as objects of class <code class="docutils literal notranslate"><span class="pre">Trajectory</span></code>. This object can be used provide a trajectory
+function that can be used directly in a <a class="reference internal" href="refManual_ch2_sec4.html#ControlledRandomMating" title="ControlledRandomMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlledRandomMating</span></code></a> mating
+scheme (function <a class="reference internal" href="refManual_ch4_sec2.html#simuPOP.utils.Trajectory.func" title="simuPOP.utils.Trajectory.func"><code class="xref py py-meth docutils literal notranslate"><span class="pre">func</span></code></a>()) or provide a list
+of <a class="reference internal" href="refManual_ch3_sec6.html#PointMutator" title="PointMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointMutator</span></code></a> to introduce mutants at appropriate generations
+(function <a class="reference internal" href="refManual_ch4_sec2.html#simuPOP.utils.Trajectory.mutators" title="simuPOP.utils.Trajectory.mutators"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mutators</span></code></a>()). If a simulation
+failed after specified number of attempts, a <code class="docutils literal notranslate"><span class="pre">None</span></code> object will be returned.</p>
+<div class="section" id="forward-time-trajectory-simulations-function-simulateforwardtrajectory">
+<h3>Forward-time trajectory simulations (function <code class="docutils literal notranslate"><span class="pre">simulateForwardTrajectory</span></code>)<a class="headerlink" href="#forward-time-trajectory-simulations-function-simulateforwardtrajectory" title="Permalink to this headline">¶</a></h3>
+<p>A forward simulation starts from a specified generation with specified allele
+frequencies at one or more loci. The simulator simulates allele frequencies
+forward-in-time, until it reaches a specified ending generation. A trajectory
+object will be returned if the simulated allele frequencies fall into specified
+ranges. Example <a class="reference internal" href="#forwardtrajectory"><span class="std std-ref">forwardTrajectory</span></a> demonstrates how to
+use this simulation method to obtain and use a simulated trajectory, for two
+unlinked loci under different selection pressure.</p>
+<p id="forwardtrajectory"><strong>Example</strong>: <em>Simulation and use of forward-time simulated trajectories.</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuOpt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simuOpt</span><span class="o">.</span><span class="n">setOptions</span><span class="p">(</span><span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.utils</span> <span class="k">import</span> <span class="n">Trajectory</span><span class="p">,</span> <span class="n">simulateForwardTrajectory</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">traj</span> <span class="o">=</span> <span class="n">simulateForwardTrajectory</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="p">[</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">4000</span><span class="p">],</span> <span class="n">fitness</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.98</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">beginGen</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">endGen</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">beginFreq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">endFreq</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.11</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.21</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#traj.plot(&#39;log/forwardTrajectory.png&#39;, set_ylim_top=0.5,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#    plot_c_sp=[&#39;r&#39;, &#39;b&#39;], set_title_label=&#39;Simulated Trajectory (forward-time)&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">4000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;fitness&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="n">subPops</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span> <span class="n">subPops</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOutput</span><span class="p">(</span><span class="s1">&#39;Sp0: loc2</span><span class="se">\t</span><span class="s1">loc5</span><span class="se">\t</span><span class="s1">Sp1: loc2</span><span class="se">\t</span><span class="s1">loc5</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">ControlledRandomMating</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">ops</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">Recombinator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)],</span>
+<span class="gp">... </span>        <span class="n">loci</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">alleles</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">freqFunc</span><span class="o">=</span><span class="n">traj</span><span class="o">.</span><span class="n">func</span><span class="p">()),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;alleleFreq_sp&#39;</span><span class="p">],</span> <span class="n">step</span><span class="o">=</span><span class="mi">20</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;</span><span class="si">%.2f</span><span class="s2">\t</span><span class="si">%.2f</span><span class="s2">\t</span><span class="si">%.2f</span><span class="s2">\t</span><span class="si">%.2f</span><span class="s2">\n&#39; % (subPop[0][&#39;alleleFreq&#39;][2][1],&quot;</span>
+<span class="gp">... </span>            <span class="s2">&quot;subPop[0][&#39;alleleFreq&#39;][5][1], subPop[1][&#39;alleleFreq&#39;][2][1],&quot;</span>
+<span class="gp">... </span>            <span class="s2">&quot;subPop[1][&#39;alleleFreq&#39;][5][1])&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">101</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Sp0: loc2    loc5    Sp1: loc2       loc5</span>
+<span class="go">0.19 0.20    0.30    0.29</span>
+<span class="go">0.20 0.20    0.29    0.27</span>
+<span class="go">0.20 0.14    0.28    0.27</span>
+<span class="go">0.17 0.13    0.27    0.26</span>
+<span class="go">0.14 0.13    0.31    0.23</span>
+<span class="go">0.13 0.10    0.27    0.20</span>
+<span class="go">101</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="forwardTrajectory.py">Download forwardTrajectory.py</a></p>
+<p>Figure <a class="reference internal" href="#fig-forwardtrajectory"><span class="std std-ref">fig_forwardTrajectory</span></a> plots simulated
+trajectories of one locus in two subpopulations. The plot function uses either
+rpy or matplotlib as the underlying plotting library.</p>
+<p><strong>Figure</strong>: <em>Simulated trajectories of one locus in two subpopulations</em></p>
+<div class="figure" id="fig-forwardtrajectory">
+<a class="reference internal image-reference" href="log/forwardTrajectory.png"><img alt="log/forwardTrajectory.png" src="log/forwardTrajectory.png" style="width: 680px;" /></a>
+</div>
+</div>
+<div class="section" id="backward-time-trajectory-simulations-function-simulatebackwardtrajectory">
+<h3>Backward-time trajectory simulations (function <code class="docutils literal notranslate"><span class="pre">simulateBackwardTrajectory</span></code>).<a class="headerlink" href="#backward-time-trajectory-simulations-function-simulatebackwardtrajectory" title="Permalink to this headline">¶</a></h3>
+<p>A backward simulation starts from specified frequencies at the present
+generation. In the single-allele case, the simulations goes backward-in-time
+until an allele gets lost. The length of such a trajectory is random, which is
+usually a desired property because the age of a mutant in the present generation
+is usually unknown and is assumed to be random.</p>
+<p>This trajectory simulation technique is usually used as follows:</p>
+<ol class="arabic simple">
+<li>Determine a demographic and a natural selection model using which a forward-
+time simulation will be performed.</li>
+<li>Given current disease allele frequencies, simulate trajectories of allele
+frequencies at each DSL using a backward approach.</li>
+<li>Evolve a population forward-in-time, using designed demographic and selection
+models. A <a class="reference internal" href="refManual_ch2_sec4.html#ControlledRandomMating" title="ControlledRandomMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlledRandomMating</span></code></a> scheme instead of the usual
+<a class="reference internal" href="refManual_ch2_sec4.html#RandomMating" title="RandomMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomMating</span></code></a> scheme should be used.</li>
+</ol>
+<p>Figure <a class="reference internal" href="#fig-backtrajectory"><span class="std std-ref">fig_backTrajectory</span></a> plots simulated
+trajectories of two unlinked loci.</p>
+<p><strong>Figure</strong>: <em>Simulated trajectories of two unlinked loci</em></p>
+<div class="figure" id="fig-backtrajectory">
+<a class="reference internal image-reference" href="log/backTrajectory.png"><img alt="log/backTrajectory.png" src="log/backTrajectory.png" style="width: 680px;" /></a>
+</div>
+<p>The trajectory is used in a <a class="reference internal" href="refManual_ch2_sec4.html#ControlledRandomMating" title="ControlledRandomMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlledRandomMating</span></code></a> scheme in the
+following evolutionary scenario:</p>
+<p id="backtrajectory"><strong>Example</strong>: <em>Simulation and use of backward-time simulated trajectories.</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.utils</span> <span class="k">import</span> <span class="n">Trajectory</span><span class="p">,</span> <span class="n">simulateBackwardTrajectory</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">exp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">Nt</span><span class="p">(</span><span class="n">gen</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="s1">&#39;An exponential sim.Population growth demographic model.&#39;</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="nb">int</span><span class="p">((</span><span class="mi">5000</span><span class="p">)</span> <span class="o">*</span> <span class="n">exp</span><span class="p">(</span><span class="o">.</span><span class="mi">00115</span> <span class="o">*</span> <span class="n">gen</span><span class="p">))</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">fitness</span><span class="p">(</span><span class="n">gen</span><span class="p">,</span> <span class="n">sp</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="s1">&#39;Constant positive selection pressure.&#39;</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.01</span><span class="p">,</span> <span class="mf">1.02</span><span class="p">]</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># simulate a trajectory backward in time, from generation 1000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">traj</span> <span class="o">=</span> <span class="n">simulateBackwardTrajectory</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">Nt</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="n">fitness</span><span class="p">,</span> <span class="n">nLoci</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="gp">... </span>     <span class="n">endGen</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">endFreq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># matplotlib syntax</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#traj.plot(&#39;log/backTrajectory.png&#39;, set_ylim_top=0.3, set_ylim_bottom=0,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#        plot_c_loc=[&#39;r&#39;, &#39;b&#39;], set_title_label=&#39;Simulated Trajectory (backward-time)&#39;)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Trajectory simulated with length </span><span class="si">%s</span><span class="s1"> &#39;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">traj</span><span class="p">))</span>
+<span class="go">Trajectory simulated with length 834</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">Nt</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># save Trajectory function in the sim.population&#39;s local namespace</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># so that the sim.PyEval operator can access it.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">traj</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">func</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">()],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">traj</span><span class="o">.</span><span class="n">mutators</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">ControlledRandomMating</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">alleles</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="n">subPopSize</span><span class="o">=</span><span class="n">Nt</span><span class="p">,</span> <span class="n">freqFunc</span><span class="o">=</span><span class="n">traj</span><span class="o">.</span><span class="n">func</span><span class="p">()),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">begin</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;</span><span class="si">%4d</span><span class="s2">: </span><span class="si">%.3f</span><span class="s2"> (exp: </span><span class="si">%.3f</span><span class="s2">), </span><span class="si">%.3f</span><span class="s2"> (exp: </span><span class="si">%.3f</span><span class="s2">)\n&#39; % (gen, alleleFreq[0][1],&quot;</span>
+<span class="gp">... </span>            <span class="s2">&quot;traj(gen)[0], alleleFreq[1][1], traj(gen)[1])&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">begin</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">1001</span>  <span class="c1"># evolve 1001 generations to reach the end of generation 1000</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go"> 500: 0.013 (exp: 0.013), 0.000 (exp: 0.000)</span>
+<span class="go"> 600: 0.005 (exp: 0.005), 0.003 (exp: 0.003)</span>
+<span class="go"> 700: 0.011 (exp: 0.011), 0.008 (exp: 0.008)</span>
+<span class="go"> 800: 0.012 (exp: 0.013), 0.031 (exp: 0.031)</span>
+<span class="go"> 900: 0.037 (exp: 0.037), 0.092 (exp: 0.092)</span>
+<span class="go">1000: 0.101 (exp: 0.100), 0.200 (exp: 0.200)</span>
+<span class="go">1001</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="backTrajectory.py">Download backTrajectory.py</a></p>
+</div>
+</div>
+<div class="section" id="graphical-or-text-based-progress-bar-class-progressbar">
+<h2>Graphical or text-based progress bar (class <code class="docutils literal notranslate"><span class="pre">ProgressBar</span></code>)<a class="headerlink" href="#graphical-or-text-based-progress-bar-class-progressbar" title="Permalink to this headline">¶</a></h2>
+<p>If your simulation takes a while to finish, you could use a progress bar to
+indicate its progress. The <code class="docutils literal notranslate"><span class="pre">ProgressBar</span></code> class is provided for such a purpose.
+Basically, you create a <code class="docutils literal notranslate"><span class="pre">ProgressBar</span></code> project with intended total steps, and
+calls its <code class="docutils literal notranslate"><span class="pre">update</span></code> member function with each progress. Depending on available
+graphical toolkit and the global or local GUI settings, a <code class="docutils literal notranslate"><span class="pre">wxPython</span></code> based
+dialog, a <code class="docutils literal notranslate"><span class="pre">Tkinter</span></code> based dialog, or a text-based dialog will be used. Example
+<a class="reference internal" href="#progressbar"><span class="std std-ref">ProgressBar</span></a> demonstrates how to use a text-based progress
+bar. If the progress bar is updated at each step (such as in this example),
+function <code class="docutils literal notranslate"><span class="pre">update()</span></code> can be called without parameter because it updates the
+progress bar at an increment of 1 in this case.</p>
+<p id="progressbar"><strong>Example</strong>: <em>Using a text-based progress bar</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.utils</span> <span class="k">import</span> <span class="n">ProgressBar</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prog</span> <span class="o">=</span> <span class="n">ProgressBar</span><span class="p">(</span><span class="s1">&#39;Setting individual genotype...</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">pop</span><span class="o">.</span><span class="n">popSize</span><span class="p">(),</span> <span class="n">gui</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">Setting individual genotype...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">popSize</span><span class="p">()):</span>
+<span class="gp">... </span>    <span class="c1"># do something to each individaul</span>
+<span class="gp">... </span>    <span class="n">pop</span><span class="o">.</span><span class="n">individual</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">idx</span>
+<span class="gp">... </span>    <span class="c1"># idx + 1 can be ignored in this case.</span>
+<span class="gp">... </span>    <span class="n">prog</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">....1....2....3....4....5....6....7....8....9.... Done.</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="ProgressBar.py">Download ProgressBar.py</a></p>
+</div>
+<div class="section" id="display-population-variables-function-viewvars">
+<h2>Display population variables (function <code class="docutils literal notranslate"><span class="pre">viewVars</span></code>)<a class="headerlink" href="#display-population-variables-function-viewvars" title="Permalink to this headline">¶</a></h2>
+<p>If a population has a large number of variables, or if you are not sure which
+variable to output, you could use function <code class="docutils literal notranslate"><span class="pre">viewVars</span></code> to view the population
+variables in a tree form. If wxPython is available, a dialog could be used to
+view the variables interactively. Example <a class="reference internal" href="#viewvars"><span class="std std-ref">viewVars</span></a>
+demonstrates how to use this function. The wxPython-based dialog is displayed in
+Figure <a class="reference internal" href="#viewvars"><span class="std std-ref">viewVars</span></a>.</p>
+<p id="viewvars"><strong>Example</strong>: <em>Using function viewVars to display population variables</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="kn">from</span> <span class="nn">simuPOP.utils</span> <span class="k">import</span> <span class="n">viewVars</span>
+<span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">genoFreq</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">haploFreq</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+    <span class="n">alleleFreq</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span>
+    <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;genoFreq&#39;</span><span class="p">,</span> <span class="s1">&#39;genoNum&#39;</span><span class="p">,</span> <span class="s1">&#39;haploFreq&#39;</span><span class="p">,</span> <span class="s1">&#39;alleleNum_sp&#39;</span><span class="p">])</span>
+<span class="n">viewVars</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">vars</span><span class="p">())</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="viewVars.py">Download viewVars.py</a></p>
+<p><strong>Figure</strong>: <em>Using wxPython to display population variables</em></p>
+<div class="figure" id="fig-viewvars">
+<a class="reference internal image-reference" href="Users/bpeng1/simuPOP/simuPOP/doc/figures/viewVars.png"><img alt="Users/bpeng1/simuPOP/simuPOP/doc/figures/viewVars.png" src="Users/bpeng1/simuPOP/simuPOP/doc/figures/viewVars.png" style="width: 680px;" /></a>
+</div>
+</div>
+<div class="section" id="import-simupop-population-from-files-in-genepop-phylip-and-fstat-formats-function-importpopulation">
+<h2>Import simuPOP population from files in <code class="docutils literal notranslate"><span class="pre">GENEPOP,</span> <span class="pre">PHYLIP</span></code> and <code class="docutils literal notranslate"><span class="pre">FSTAT</span></code> formats (function <code class="docutils literal notranslate"><span class="pre">importPopulation</span></code>)<a class="headerlink" href="#import-simupop-population-from-files-in-genepop-phylip-and-fstat-formats-function-importpopulation" title="Permalink to this headline">¶</a></h2>
+<p>A function importPopulation is provided in the <a class="reference internal" href="refManual_ch4_sec2.html#module-simuPOP.utils" title="simuPOP.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.utils</span></code></a> module to
+import populations from files in <code class="docutils literal notranslate"><span class="pre">GENEPOP,</span> <span class="pre">PHYLIP</span></code> and <code class="docutils literal notranslate"><span class="pre">FSTAT</span></code> formats.
+Because these formats do not support many of the features of a simuPOP
+population, this function can only import genotype and basic information of a
+population. Because formats GENEPOP and FSTAT formats uses allele 0 to indicate
+missing value, true alleles in these formats start at value 1. If you would like
+to import alleles with starting value 0, you can use parameter adjust=-1 to
+adjust imported values, if you data do not have any missing value.</p>
+</div>
+<div class="section" id="export-simupop-population-to-files-in-structure-genepop-fstat-phylip-ped-map-ms-and-csv-formats-function-export-and-operator-exporter">
+<h2>Export simuPOP population to files in <code class="docutils literal notranslate"><span class="pre">STRUCTURE,</span> <span class="pre">GENEPOP</span></code>, <code class="docutils literal notranslate"><span class="pre">FSTAT,</span> <span class="pre">Phylip,</span> <span class="pre">PED,</span> <span class="pre">MAP,</span> <span class="pre">MS,</span></code> and <code class="docutils literal notranslate"><span class="pre">CSV</span></code> formats (function <code class="docutils literal notranslate"><span class="pre">export</span></code> and operator <code class="docutils literal notranslate"><span class="pre">Exporter</span></code>)<a class="headerlink" href="#export-simupop-population-to-files-in-structure-genepop-fstat-phylip-ped-map-ms-and-csv-formats-function-export-and-operator-exporter" title="Permalink to this headline">¶</a></h2>
+<p>simuPOP uses a program-specific binary format to save and load populations but
+you can use the <code class="docutils literal notranslate"><span class="pre">export</span></code> function to export a simuPOP population in other
+formats if you would like to use other programs to analyze simulated
+populations. An operator Exporter is also provided so that you could export
+populations during evolution. Operator arameters such as output, begin, end,
+step, at, reps, and subPops are supported so that you could export subsets of
+individuals at multiple generations using different file names (e.g.
+<code class="docutils literal notranslate"><span class="pre">output='!''%d.ped''</span> <span class="pre">%</span> <span class="pre">gen'</span></code> to output to different files at different
+generations).</p>
+<p>Commonly used population genetics file formats such as GENEPOP, FSTAT, Phylip,
+MS, and STRUCTURE are supported. Because these formats cannot store all
+information in a simuPOP population, export and import operations can lose
+information. Also, because the processing application have different
+assumptions, some conversion of genotypes might be needed. For example, because
+GENEPOP uses allele 0 as missing genotype, function <code class="docutils literal notranslate"><span class="pre">export(format='genepop')</span></code>
+accepts a parameter <code class="docutils literal notranslate"><span class="pre">adjust</span></code> with default value <code class="docutils literal notranslate"><span class="pre">1</span></code> to export alleles 0, 1
+etc to 1, 2, …. The same applies to function <code class="docutils literal notranslate"><span class="pre">importPopulation</span></code> where some
+file formats accepts a parameter <code class="docutils literal notranslate"><span class="pre">adjust</span></code> (with default value 1) to adjust
+allele values. Please refer to the simuPOP reference manual for a detailed list
+of acceptable parameters for each format.</p>
+<p>Example <a class="reference internal" href="#importexport"><span class="std std-ref">importExport</span></a> demonstrates how to import and export
+a population in formats FSTAT and STRUCTURE. For the FSTAT format, because the
+population is exported with allele values shifted by 1, the imported population
+has different alleles than the original population. This can be fixed by adding
+parameter <code class="docutils literal notranslate"><span class="pre">adjust=-1</span></code> to the <code class="docutils literal notranslate"><span class="pre">importPopulation</span></code> function.</p>
+<p id="importexport"><strong>Example</strong>: <em>Save and load a population</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.utils</span> <span class="k">import</span> <span class="n">importPopulation</span><span class="p">,</span> <span class="n">export</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">lociNames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;a1&#39;</span><span class="p">,</span> <span class="s1">&#39;a2&#39;</span><span class="p">,</span> <span class="s1">&#39;a3&#39;</span><span class="p">,</span> <span class="s1">&#39;a4&#39;</span><span class="p">,</span> <span class="s1">&#39;a5&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;BMI&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initSex</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initInfo</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">25</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;BMI&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">export</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;fstat&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;fstat.txt&#39;</span><span class="p">)</span>
+<span class="go">Exporting....1....2....3....4....5....6....7....8....9.... Done.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;fstat.txt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+<span class="go">2 5 3 1</span>
+<span class="go">a1</span>
+<span class="go">a2</span>
+<span class="go">a3</span>
+<span class="go">a4</span>
+<span class="go">a5</span>
+<span class="go">1 21 21 23 12 12</span>
+<span class="go">1 22 23 22 22 21</span>
+<span class="go">2 31 21 22 11 13</span>
+<span class="go">2 22 22 33 23 21</span>
+<span class="go">2 22 32 33 22 21</span>
+<span class="go">2 33 33 22 21 32</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">export</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;structure&#39;</span><span class="p">,</span> <span class="n">phenotype</span><span class="o">=</span><span class="s1">&#39;BMI&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;stru.txt&#39;</span><span class="p">)</span>
+<span class="go">Exporting....1....2....3....4....5....6....7....8....9.... Done.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;stru.txt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+<span class="go">a1   a2      a3      a4      a5</span>
+<span class="go">-1   1.0     1.0     1.0     1.0</span>
+<span class="go">1    1       20      1       1       1       0       0</span>
+<span class="go">1    1       20      0       0       2       1       1</span>
+<span class="go">2    1       30      1       1       1       1       1</span>
+<span class="go">2    1       30      1       2       1       1       0</span>
+<span class="go">1    2       40      2       1       1       0       0</span>
+<span class="go">1    2       40      0       0       1       0       2</span>
+<span class="go">2    2       50      1       1       2       1       1</span>
+<span class="go">2    2       50      1       1       2       2       0</span>
+<span class="go">3    2       30      1       2       2       1       1</span>
+<span class="go">3    2       30      1       1       2       1       0</span>
+<span class="go">4    2       25      2       2       1       1       2</span>
+<span class="go">4    2       25      2       2       1       0       1</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop1</span> <span class="o">=</span> <span class="n">importPopulation</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;fstat&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;fstat.txt&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">pop1</span><span class="p">)</span>
+<span class="go">Ploidy: 2 (diploid)</span>
+<span class="go">Chromosomes:</span>
+<span class="go">1:  (AUTOSOME, 5 loci)</span>
+<span class="go">  a1 (1), a2 (2), a3 (3), a4 (4), a5 (5)</span>
+<span class="go">population size: 6 (2 subpopulations with 2 (1), 4 (2) Individuals)</span>
+<span class="go">Number of ancestral populations: 0</span>
+
+<span class="go">SubPopulation 0 (1), 2 Individuals:</span>
+<span class="go">   0: MU 22211 | 11322</span>
+<span class="go">   1: MU 22222 | 23221</span>
+<span class="go">SubPopulation 1 (2), 4 Individuals:</span>
+<span class="go">   2: MU 32211 | 11213</span>
+<span class="go">   3: MU 22322 | 22331</span>
+<span class="go">   4: MU 23322 | 22321</span>
+<span class="go">   5: MU 33223 | 33212</span>
+
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="importExport.py">Download importExport.py</a></p>
+<p>Because coalescent simulations are increasingly used to generate initial
+populations in equilibrium stats, importing data in MS format is very useful.
+Because MS only simulates haploid sequences with genotype only at segregating
+sites, you might have to simulate an even number of sequences and use option
+ploidy=2 to import the simulated data as a haploid population. In addition, a
+parameter mergeBy is provided to import multiple replicates as multiple
+subpopulations or chromosomes. This corresponds to the splitBy parameter when
+you export your data in MS format. Example <a class="reference internal" href="#importms"><span class="std std-ref">importMS</span></a>
+demonstrates how to use these parameters.</p>
+<p id="importms"><strong>Example</strong>: <em>Export and import in MS format</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.utils</span> <span class="k">import</span> <span class="n">importPopulation</span><span class="p">,</span> <span class="n">export</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># simulate a population but mutate only a subset of loci</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">SNPMutator</span><span class="p">(</span><span class="n">u</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">17</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">100</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">100</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># export first chromosome, all individuals</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">export</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;ms&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;ms.txt&#39;</span><span class="p">)</span>
+<span class="go">Exporting....1....2....3....4....5....6....7....8....9.... Done.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># export first chromosome, subpops as replicates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">export</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;ms&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;ms_subPop.txt&#39;</span><span class="p">,</span> <span class="n">splitBy</span><span class="o">=</span><span class="s1">&#39;subPop&#39;</span><span class="p">)</span>
+<span class="go">Exporting....1....2....3....4....5....6....7....8....9.... Done.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># export all chromosomes, but limit to all males in subPop 1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">SexSplitter</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">export</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;ms&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;ms_chrom.txt&#39;</span><span class="p">,</span> <span class="n">splitBy</span><span class="o">=</span><span class="s1">&#39;chrom&#39;</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)])</span>
+<span class="go">Exporting....1....2....3....4....5....6....7....8....9.... Done.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;ms_chrom.txt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+<span class="go">simuPOP_export 20 2</span>
+<span class="go">30164 48394 29292</span>
+
+<span class="go">//</span>
+<span class="go">segsites: 5</span>
+<span class="go">positions: 6.0 7.0 8.0 9.0 10.0</span>
+<span class="go">11110</span>
+<span class="go">11111</span>
+<span class="go">11110</span>
+<span class="go">11111</span>
+<span class="go">11011</span>
+<span class="go">11111</span>
+<span class="go">01111</span>
+<span class="go">10111</span>
+<span class="go">11111</span>
+<span class="go">11111</span>
+<span class="go">01111</span>
+<span class="go">01111</span>
+<span class="go">11011</span>
+<span class="go">11111</span>
+<span class="go">01111</span>
+<span class="go">11011</span>
+<span class="go">11101</span>
+<span class="go">10111</span>
+<span class="go">11111</span>
+<span class="go">11111</span>
+
+<span class="go">//</span>
+<span class="go">segsites: 7</span>
+<span class="go">positions: 1.0 2.0 3.0 4.0 5.0 6.0 7.0</span>
+<span class="go">1101111</span>
+<span class="go">1110011</span>
+<span class="go">1101110</span>
+<span class="go">1111111</span>
+<span class="go">0111110</span>
+<span class="go">1111111</span>
+<span class="go">1110001</span>
+<span class="go">1111111</span>
+<span class="go">0111110</span>
+<span class="go">1111111</span>
+<span class="go">1111111</span>
+<span class="go">1111111</span>
+<span class="go">1111111</span>
+<span class="go">1011111</span>
+<span class="go">1111111</span>
+<span class="go">1111111</span>
+<span class="go">1011111</span>
+<span class="go">1111111</span>
+<span class="go">1111111</span>
+<span class="go">1011111</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># import as haploid sequence</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">importPopulation</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;ms&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;ms.txt&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># import as diploid</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">importPopulation</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;ms&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;ms.txt&#39;</span><span class="p">,</span> <span class="n">ploidy</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># import as a single chromosome</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">importPopulation</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;ms&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;ms_subPop.txt&#39;</span><span class="p">,</span> <span class="n">mergeBy</span><span class="o">=</span><span class="s1">&#39;subPop&#39;</span><span class="p">)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="importMS.py">Download importMS.py</a></p>
+<p>If the file format you are interested in is not supported, you can export data
+in csv format and convert the file by yourself. You can also try to write your
+own import or export functions as described in the advanced topics section of
+this guide.</p>
+</div>
+<div class="section" id="export-simupop-population-in-csv-format-function-savecsv-deprecated">
+<h2>Export simuPOP population in csv format (function <code class="docutils literal notranslate"><span class="pre">saveCSV</span></code>, deprecated)<a class="headerlink" href="#export-simupop-population-in-csv-format-function-savecsv-deprecated" title="Permalink to this headline">¶</a></h2>
+<p>Function <code class="docutils literal notranslate"><span class="pre">saveCSV</span></code> is provided in the <a class="reference internal" href="refManual_ch4_sec2.html#module-simuPOP.utils" title="simuPOP.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.utils</span></code></a> module to save (the
+present generation of) a simuPOP population in comma separated formats. It
+allows you to save individual information fields, sex, affection status and
+genotype (in that order). Because this function allows you to output these
+information in different formats using parameters <code class="docutils literal notranslate"><span class="pre">infoFormatter</span></code>,
+<code class="docutils literal notranslate"><span class="pre">sexFormatter</span></code>, <code class="docutils literal notranslate"><span class="pre">affectionFormatter</span></code>, and <code class="docutils literal notranslate"><span class="pre">genoFormatter</span></code>, this function
+can already be used to export a simuPOP population to formats that are
+recognizable by some populat software applications. Example <a class="reference internal" href="#savecsv"><span class="std std-ref">saveCSV</span></a> creates a small population and demonstrates how to save it in
+different formats.</p>
+<p id="savecsv"><strong>Example</strong>: <em>Using function saveCSV to save a simuPOP population in different formats</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.utils</span> <span class="k">import</span> <span class="n">saveCSV</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">lociNames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;r11&#39;</span><span class="p">,</span> <span class="s1">&#39;r12&#39;</span><span class="p">,</span> <span class="s1">&#39;r21&#39;</span><span class="p">,</span> <span class="s1">&#39;r22&#39;</span><span class="p">,</span> <span class="s1">&#39;r23&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">alleleNames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initSex</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initInfo</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">maPenetrance</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">penetrance</span><span class="o">=</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># no filename so output to standard output</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">saveCSV</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">)</span>
+<span class="go">age, sex, aff, r11_1, r11_2, r12_1, r12_2, r21_1, r21_2, r22_1, r22_2, r23_1, r23_2</span>
+<span class="go">2.0, F, A, B, B, B, B, B, A, B, B, B, A</span>
+<span class="go">3.0, F, U, B, A, B, A, B, A, A, A, A, B</span>
+<span class="go">4.0, M, U, B, B, B, B, B, B, B, B, B, A</span>
+<span class="go">2.0, M, U, B, A, B, A, B, B, B, B, B, A</span>
+<span class="go">3.0, M, A, B, B, B, B, B, B, A, A, B, A</span>
+<span class="go">4.0, M, U, A, B, B, A, B, B, B, B, B, B</span>
+<span class="go">2.0, M, U, B, B, B, B, B, B, B, B, A, A</span>
+<span class="go">3.0, F, U, B, B, A, A, B, B, A, A, B, B</span>
+<span class="go">4.0, F, U, A, B, B, B, B, B, B, A, B, B</span>
+<span class="go">2.0, F, A, B, A, A, B, A, A, B, B, B, A</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># change affection code and how to output genotype</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">saveCSV</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="n">affectionFormatter</span><span class="o">=</span><span class="p">{</span><span class="kc">True</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">False</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="n">genoFormatter</span><span class="o">=</span><span class="p">{(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">):</span><span class="s1">&#39;AA&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span><span class="s1">&#39;AB&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">):</span><span class="s1">&#39;AB&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span><span class="s1">&#39;BB&#39;</span><span class="p">})</span>
+<span class="go">age, sex, aff, r11, r12, r21, r22, r23</span>
+<span class="go">2.0, F, 1, BB, BB, AB, BB, AB</span>
+<span class="go">3.0, F, 2, AB, AB, AB, AA, AB</span>
+<span class="go">4.0, M, 2, BB, BB, BB, BB, AB</span>
+<span class="go">2.0, M, 2, AB, AB, BB, BB, AB</span>
+<span class="go">3.0, M, 1, BB, BB, BB, AA, AB</span>
+<span class="go">4.0, M, 2, AB, AB, BB, BB, BB</span>
+<span class="go">2.0, M, 2, BB, BB, BB, BB, AA</span>
+<span class="go">3.0, F, 2, BB, AA, BB, AA, BB</span>
+<span class="go">4.0, F, 2, AB, BB, BB, AB, BB</span>
+<span class="go">2.0, F, 1, AB, AB, AA, BB, AB</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># save to a file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">saveCSV</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;pop.csv&#39;</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="n">affectionFormatter</span><span class="o">=</span><span class="p">{</span><span class="kc">True</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">False</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="n">genoFormatter</span><span class="o">=</span><span class="k">lambda</span> <span class="n">geno</span><span class="p">:</span> <span class="p">(</span><span class="n">geno</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">geno</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;pop.csv&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+<span class="go">age sex aff r11_1 r11_2 r12_1 r12_2 r21_1 r21_2 r22_1 r22_2 r23_1 r23_2</span>
+<span class="go">2.0 F 1 2 2 2 2 2 1 2 2 2 1</span>
+<span class="go">3.0 F 2 2 1 2 1 2 1 1 1 1 2</span>
+<span class="go">4.0 M 2 2 2 2 2 2 2 2 2 2 1</span>
+<span class="go">2.0 M 2 2 1 2 1 2 2 2 2 2 1</span>
+<span class="go">3.0 M 1 2 2 2 2 2 2 1 1 2 1</span>
+<span class="go">4.0 M 2 1 2 2 1 2 2 2 2 2 2</span>
+<span class="go">2.0 M 2 2 2 2 2 2 2 2 2 1 1</span>
+<span class="go">3.0 F 2 2 2 1 1 2 2 1 1 2 2</span>
+<span class="go">4.0 F 2 1 2 2 2 2 2 2 1 2 2</span>
+<span class="go">2.0 F 1 2 1 1 2 1 1 2 2 2 1</span>
+
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="saveCSV.py">Download saveCSV.py</a></p>
+<p><strong>This function is now deprecated with the introduction of function
+**``export``</strong> and operator <strong>``Exporter``</strong>.**</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec1.html">Module <code class="docutils literal notranslate"><span class="pre">simuOpt</span></code> (function <code class="docutils literal notranslate"><span class="pre">simuOpt.setOptions</span></code>)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.utils</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#trajectory-simulation-classes-trajectory-and-trajectorysimulator">Trajectory simulation (classes <code class="docutils literal notranslate"><span class="pre">Trajectory</span></code> and <code class="docutils literal notranslate"><span class="pre">TrajectorySimulator</span></code>)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#forward-time-trajectory-simulations-function-simulateforwardtrajectory">Forward-time trajectory simulations (function <code class="docutils literal notranslate"><span class="pre">simulateForwardTrajectory</span></code>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#backward-time-trajectory-simulations-function-simulatebackwardtrajectory">Backward-time trajectory simulations (function <code class="docutils literal notranslate"><span class="pre">simulateBackwardTrajectory</span></code>).</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#graphical-or-text-based-progress-bar-class-progressbar">Graphical or text-based progress bar (class <code class="docutils literal notranslate"><span class="pre">ProgressBar</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#display-population-variables-function-viewvars">Display population variables (function <code class="docutils literal notranslate"><span class="pre">viewVars</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#import-simupop-population-from-files-in-genepop-phylip-and-fstat-formats-function-importpopulation">Import simuPOP population from files in <code class="docutils literal notranslate"><span class="pre">GENEPOP,</span> <span class="pre">PHYLIP</span></code> and <code class="docutils literal notranslate"><span class="pre">FSTAT</span></code> formats (function <code class="docutils literal notranslate"><span class="pre">importPopulation</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#export-simupop-population-to-files-in-structure-genepop-fstat-phylip-ped-map-ms-and-csv-formats-function-export-and-operator-exporter">Export simuPOP population to files in <code class="docutils literal notranslate"><span class="pre">STRUCTURE,</span> <span class="pre">GENEPOP</span></code>, <code class="docutils literal notranslate"><span class="pre">FSTAT,</span> <span class="pre">Phylip,</span> <span class="pre">PED,</span> <span class="pre">MAP,</span> <span class="pre">MS,</span></code> and <code class="docutils literal notranslate"><span class="pre">CSV</span></code> formats (function <code class="docutils literal notranslate"><span class="pre">export</span></code> and operator <code class="docutils literal notranslate"><span class="pre">Exporter</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#export-simupop-population-in-csv-format-function-savecsv-deprecated">Export simuPOP population in csv format (function <code class="docutils literal notranslate"><span class="pre">saveCSV</span></code>, deprecated)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec3.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.demography</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec4.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.sampling</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec5.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.gsl</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch7.html">Utility Modules</a><ul>
+      <li>Previous: <a href="userGuide_ch7_sec1.html" title="previous chapter">Module <code class="docutils literal notranslate"><span class="pre">simuOpt</span></code> (function <code class="docutils literal notranslate"><span class="pre">simuOpt.setOptions</span></code>)</a></li>
+      <li>Next: <a href="userGuide_ch7_sec3.html" title="next chapter">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.demography</span></code></a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch7_sec2.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

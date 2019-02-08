@@ -1,0 +1,172 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Utility Modules &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Module simuOpt (function simuOpt.setOptions)" href="userGuide_ch7_sec1.html" />
+    <link rel="prev" title="Simulation of mitochondrial DNAs (mtDNAs) *" href="userGuide_ch6_sec8.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="utility-modules">
+<span id="cha-utility-modules"></span><h1>Utility Modules<a class="headerlink" href="#utility-modules" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7_sec1.html">Module <code class="docutils literal notranslate"><span class="pre">simuOpt</span></code> (function <code class="docutils literal notranslate"><span class="pre">simuOpt.setOptions</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7_sec2.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.utils</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec2.html#trajectory-simulation-classes-trajectory-and-trajectorysimulator">Trajectory simulation (classes <code class="docutils literal notranslate"><span class="pre">Trajectory</span></code> and <code class="docutils literal notranslate"><span class="pre">TrajectorySimulator</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="userGuide_ch7_sec2.html#forward-time-trajectory-simulations-function-simulateforwardtrajectory">Forward-time trajectory simulations (function <code class="docutils literal notranslate"><span class="pre">simulateForwardTrajectory</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="userGuide_ch7_sec2.html#backward-time-trajectory-simulations-function-simulatebackwardtrajectory">Backward-time trajectory simulations (function <code class="docutils literal notranslate"><span class="pre">simulateBackwardTrajectory</span></code>).</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec2.html#graphical-or-text-based-progress-bar-class-progressbar">Graphical or text-based progress bar (class <code class="docutils literal notranslate"><span class="pre">ProgressBar</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec2.html#display-population-variables-function-viewvars">Display population variables (function <code class="docutils literal notranslate"><span class="pre">viewVars</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec2.html#import-simupop-population-from-files-in-genepop-phylip-and-fstat-formats-function-importpopulation">Import simuPOP population from files in <code class="docutils literal notranslate"><span class="pre">GENEPOP,</span> <span class="pre">PHYLIP</span></code> and <code class="docutils literal notranslate"><span class="pre">FSTAT</span></code> formats (function <code class="docutils literal notranslate"><span class="pre">importPopulation</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec2.html#export-simupop-population-to-files-in-structure-genepop-fstat-phylip-ped-map-ms-and-csv-formats-function-export-and-operator-exporter">Export simuPOP population to files in <code class="docutils literal notranslate"><span class="pre">STRUCTURE,</span> <span class="pre">GENEPOP</span></code>, <code class="docutils literal notranslate"><span class="pre">FSTAT,</span> <span class="pre">Phylip,</span> <span class="pre">PED,</span> <span class="pre">MAP,</span> <span class="pre">MS,</span></code> and <code class="docutils literal notranslate"><span class="pre">CSV</span></code> formats (function <code class="docutils literal notranslate"><span class="pre">export</span></code> and operator <code class="docutils literal notranslate"><span class="pre">Exporter</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec2.html#export-simupop-population-in-csv-format-function-savecsv-deprecated">Export simuPOP population in csv format (function <code class="docutils literal notranslate"><span class="pre">saveCSV</span></code>, deprecated)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7_sec3.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.demography</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec3.html#predefined-migration-models">Predefined migration models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec3.html#uniform-interface-of-demographic-models">Uniform interface of demographic models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec3.html#demographic-models-defined-by-outcomes">Demographic models defined by outcomes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec3.html#demographic-models-defined-by-population-changes-events">Demographic models defined by population changes (events)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec3.html#predefined-demographic-models-for-human-populations">Predefined demographic models for human populations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec3.html#demographic-model-without-predefined-generations-to-evolve">Demographic model without predefined generations to evolve *</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7_sec4.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.sampling</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec4.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec4.html#sampling-individuals-randomly-class-randomsampler-functions-drawrandomsample-and-drawrandomsamples">Sampling individuals randomly (class <code class="docutils literal notranslate"><span class="pre">RandomSampler</span></code>, functions <code class="docutils literal notranslate"><span class="pre">drawRandomSample</span></code> and <code class="docutils literal notranslate"><span class="pre">drawRandomSamples</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec4.html#sampling-cases-and-controls-class-casecontrolsampler-functions-casecontrolsample-and-casecontrolsamples">Sampling cases and controls (class <code class="docutils literal notranslate"><span class="pre">CaseControlSampler</span></code>, functions <code class="docutils literal notranslate"><span class="pre">CaseControlSample</span></code> and <code class="docutils literal notranslate"><span class="pre">CaseControlSamples</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec4.html#sampling-pedigrees-functions-indextoid-and-plotpedigree">Sampling Pedigrees (functions <code class="docutils literal notranslate"><span class="pre">indexToID</span></code> and <code class="docutils literal notranslate"><span class="pre">plotPedigree</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec4.html#sampling-affected-sibpairs-class-affectedsibpairsampler-functions-drawaffectedsibpairsample-s">Sampling affected sibpairs (class <code class="docutils literal notranslate"><span class="pre">AffectedSibpairSampler</span></code>, functions <code class="docutils literal notranslate"><span class="pre">drawAffectedSibpairSample(s)</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec4.html#sampling-nuclear-families-class-nuclearfamilysampler-functions-drawnuclearfamilysample-and-drawnuclearfamilysamples">Sampling nuclear families (class <code class="docutils literal notranslate"><span class="pre">NuclearFamilySampler</span></code>, functions <code class="docutils literal notranslate"><span class="pre">drawNuclearFamilySample</span></code> and <code class="docutils literal notranslate"><span class="pre">drawNuclearFamilySample</span></code>s)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec4.html#sampling-three-generation-families-class-threegenfamilysampler-functions-drawthreegenfamilysample-and-drawthreegenfamilysamples">Sampling three-generation families (class <code class="docutils literal notranslate"><span class="pre">ThreeGenFamilySampler</span></code>, functions <code class="docutils literal notranslate"><span class="pre">drawThreeGenFamilySample</span> <span class="pre">and</span> <span class="pre">drawThreeGenFamilySamples</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec4.html#sampling-different-types-of-samples-class-combinedsampler-functions-drawcombinedsample-and-drawcombinedsamples">Sampling different types of samples (class <code class="docutils literal notranslate"><span class="pre">CombinedSampler</span></code>, functions <code class="docutils literal notranslate"><span class="pre">drawCombinedSample</span></code> and <code class="docutils literal notranslate"><span class="pre">drawCombinedSamples</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec4.html#sampling-from-subpopulations-and-virtual-subpopulations">Sampling from subpopulations and virtual subpopulations *</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7_sec5.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.gsl</span></code></a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Utility Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec1.html">Module <code class="docutils literal notranslate"><span class="pre">simuOpt</span></code> (function <code class="docutils literal notranslate"><span class="pre">simuOpt.setOptions</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec2.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.utils</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec3.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.demography</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec4.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.sampling</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch7_sec5.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.gsl</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+      <li>Previous: <a href="userGuide_ch6_sec8.html" title="previous chapter">Simulation of mitochondrial DNAs (mtDNAs) *</a></li>
+      <li>Next: <a href="userGuide_ch7_sec1.html" title="next chapter">Module <code class="docutils literal notranslate"><span class="pre">simuOpt</span></code> (function <code class="docutils literal notranslate"><span class="pre">simuOpt.setOptions</span></code>)</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch7.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

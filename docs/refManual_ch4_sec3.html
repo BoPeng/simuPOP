@@ -1,0 +1,773 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Module simuPOP.demography &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Module simuPOP.sampling" href="refManual_ch4_sec4.html" />
+    <link rel="prev" title="Module simuPOP.utils" href="refManual_ch4_sec2.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-simuPOP.demography">
+<span id="module-simupop-demography"></span><h1>Module <a class="reference internal" href="#module-simuPOP.demography" title="simuPOP.demography"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.demography</span></code></a><a class="headerlink" href="#module-simuPOP.demography" title="Permalink to this headline">¶</a></h1>
+<p>This module provides some commonly used demographic models. In addition
+to several migration rate generation functions, it provides models that
+encapsulate complete demographic features of one or more populations (
+population growth, split, bottleneck, admixture, migration). These models
+provides:</p>
+<ol class="arabic simple">
+<li>The model itself can be passed to parameter subPopSize of a mating
+scheme to determine the size of the next generation. More importantly,
+it performs necessary actions of population size change when needed.</li>
+<li>The model provides attribute num_gens, which can be passed to parameter
+<code class="docutils literal notranslate"><span class="pre">gens</span></code> of <code class="docutils literal notranslate"><span class="pre">Simulator.evolve</span></code> or <code class="docutils literal notranslate"><span class="pre">Population.evolve</span></code> function.
+A demographic model can also terminate an evolutionary process by
+returnning an empty list so <code class="docutils literal notranslate"><span class="pre">gens=model.num_gens</span></code> is no longer required.</li>
+</ol>
+<div class="section" id="function-migrislandrates">
+<h2>Function migrIslandRates<a class="headerlink" href="#function-migrislandrates" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuPOP.demography.migrIslandRates">
+<code class="descclassname">simuPOP.demography.</code><code class="descname">migrIslandRates</code><span class="sig-paren">(</span><em>r</em>, <em>n</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.migrIslandRates" title="Permalink to this definition">¶</a></dt>
+<dd><p>migration rate matrix</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>     <span class="n">x</span> <span class="n">m</span><span class="o">/</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="n">m</span><span class="o">/</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">....</span>
+     <span class="n">m</span><span class="o">/</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="n">x</span> <span class="o">............</span>
+     <span class="o">.....</span>
+     <span class="o">....</span> <span class="n">m</span><span class="o">/</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="n">m</span><span class="o">/</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="n">x</span>
+
+<span class="n">where</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="n">m</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="function-migrhierarchicalislandrates">
+<h2>Function migrHierarchicalIslandRates<a class="headerlink" href="#function-migrhierarchicalislandrates" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuPOP.demography.migrHierarchicalIslandRates">
+<code class="descclassname">simuPOP.demography.</code><code class="descname">migrHierarchicalIslandRates</code><span class="sig-paren">(</span><em>r1</em>, <em>r2</em>, <em>n</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.migrHierarchicalIslandRates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the migration rate matrix for a hierarchical island model
+where there are different migration rate within and across groups
+of islands.</p>
+<dl class="docutils">
+<dt>r1</dt>
+<dd>Within group migration rates. It can be a number or a list of numbers
+for each group of the islands.</dd>
+<dt>r2</dt>
+<dd>Across group migration rates which is the probability that someone will
+migrate to a subpopulation outside of his group. A list of r2 could be
+specified for each group of the islands.</dd>
+<dt>n</dt>
+<dd>Number of islands in each group. E.g. n=[5, 4] specifies two groups of
+islands with 5 and 4 islands each.</dd>
+</dl>
+<p>For individuals in an island, the probability that it remains in the same
+island is 1-r1-r2 (r1, r2 might vary by island groups), that it migrates
+to another island in the same group is r1 and migrates to another island
+outside of the group is r2. migrate rate to a specific island depends on
+the size of group.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="function-migrsteppingstonerates">
+<h2>Function migrSteppingStoneRates<a class="headerlink" href="#function-migrsteppingstonerates" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuPOP.demography.migrSteppingStoneRates">
+<code class="descclassname">simuPOP.demography.</code><code class="descname">migrSteppingStoneRates</code><span class="sig-paren">(</span><em>r</em>, <em>n</em>, <em>circular=False</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.migrSteppingStoneRates" title="Permalink to this definition">¶</a></dt>
+<dd><p>migration rate matrix for circular stepping stone model (X=1-m)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">X</span>   <span class="n">m</span><span class="o">/</span><span class="mi">2</span>               <span class="n">m</span><span class="o">/</span><span class="mi">2</span>
+<span class="n">m</span><span class="o">/</span><span class="mi">2</span> <span class="n">X</span>   <span class="n">m</span><span class="o">/</span><span class="mi">2</span>           <span class="mi">0</span>
+<span class="mi">0</span>   <span class="n">m</span><span class="o">/</span><span class="mi">2</span> <span class="n">x</span>   <span class="n">m</span><span class="o">/</span><span class="mi">2</span> <span class="o">......</span><span class="mi">0</span>
+<span class="o">...</span>
+<span class="n">m</span><span class="o">/</span><span class="mi">2</span> <span class="mi">0</span> <span class="o">....</span>       <span class="n">m</span><span class="o">/</span><span class="mi">2</span>  <span class="n">X</span>
+</pre></div>
+</div>
+<p>or non-circular</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>       <span class="n">X</span>   <span class="n">m</span><span class="o">/</span><span class="mi">2</span>               <span class="n">m</span><span class="o">/</span><span class="mi">2</span>
+       <span class="n">m</span><span class="o">/</span><span class="mi">2</span> <span class="n">X</span>   <span class="n">m</span><span class="o">/</span><span class="mi">2</span>           <span class="mi">0</span>
+       <span class="mi">0</span>   <span class="n">m</span><span class="o">/</span><span class="mi">2</span> <span class="n">X</span>   <span class="n">m</span><span class="o">/</span><span class="mi">2</span> <span class="o">......</span><span class="mi">0</span>
+       <span class="o">...</span>
+       <span class="o">...</span>              <span class="n">m</span>   <span class="n">X</span>
+
+<span class="n">This</span> <span class="n">function</span> <span class="n">returns</span> <span class="p">[[</span><span class="mi">1</span><span class="p">]]</span> <span class="n">when</span> <span class="n">there</span> <span class="ow">is</span> <span class="n">only</span> <span class="n">one</span> <span class="n">subpopulation</span><span class="o">.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="function-migrtwodsteppingstonerates">
+<h2>Function migrtwoDSteppingStoneRates<a class="headerlink" href="#function-migrtwodsteppingstonerates" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuPOP.demography.migr2DSteppingStoneRates">
+<code class="descclassname">simuPOP.demography.</code><code class="descname">migr2DSteppingStoneRates</code><span class="sig-paren">(</span><em>r</em>, <em>m</em>, <em>n</em>, <em>diagonal=False</em>, <em>circular=False</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.migr2DSteppingStoneRates" title="Permalink to this definition">¶</a></dt>
+<dd><p>migration rate matrix for 2D stepping stone model, with or without
+diagonal neighbors (4 or 8 neighbors for central patches). The boundaries
+are connected if circular is True. Otherwise individuals from corner and
+bounary patches will migrate to their neighbors with higher probability.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="class-eventbasedmodel">
+<h2>class EventBasedModel<a class="headerlink" href="#class-eventbasedmodel" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.demography.EventBasedModel">
+<em class="property">class </em><code class="descclassname">simuPOP.demography.</code><code class="descname">EventBasedModel</code><a class="headerlink" href="#simuPOP.demography.EventBasedModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>An event based demographic model in which the demographic changes are
+triggered by demographic events such as population growth, split, join, and
+admixture. The population size will be kept constant if no event is applied
+at a certain generation.</p>
+<dl class="method">
+<dt id="simuPOP.demography.EventBasedModel.EventBasedModel">
+<code class="descname">EventBasedModel</code><span class="sig-paren">(</span><em>events=[]</em>, <em>T=None</em>, <em>N0=[]</em>, <em>ops=[]</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.EventBasedModel.EventBasedModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>A demographic model that is driven by a list of demographic events.
+The events should be subclasses of <code class="docutils literal notranslate"><span class="pre">DemographicEvent</span></code>, which have similar
+interface as regular operators with the exception that applicable parameters
+<code class="docutils literal notranslate"><span class="pre">begin</span></code>, <code class="docutils literal notranslate"><span class="pre">end</span></code>, <code class="docutils literal notranslate"><span class="pre">step</span></code>, <code class="docutils literal notranslate"><span class="pre">at</span></code> are relative to the demographic model,
+not the population.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.demography.EventBasedModel.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>filename=''</em>, <em>title=''</em>, <em>initSize=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.EventBasedModel.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evolve a haploid population using a <a class="reference internal" href="refManual_ch2_sec4.html#RandomSelection" title="RandomSelection"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSelection</span></code></a> mating scheme
+using the demographic model. Print population size changes duringe evolution.
+An initial population size could be specified using parameter <code class="docutils literal notranslate"><span class="pre">initSize</span></code>
+for a demographic model with dynamic initial population size. If a filename
+is specified and if matplotlib is available, this function draws a figure
+to depict the demographic model and save it to <code class="docutils literal notranslate"><span class="pre">filename</span></code>. An optional
+<code class="docutils literal notranslate"><span class="pre">title</span></code> could be specified to the figure. Note that this function can
+not be plot demographic models that works for particular mating schemes
+(e.g. genotype dependent).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-demographicevent">
+<h2>class DemographicEvent<a class="headerlink" href="#class-demographicevent" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.demography.DemographicEvent">
+<em class="property">class </em><code class="descclassname">simuPOP.demography.</code><code class="descname">DemographicEvent</code><a class="headerlink" href="#simuPOP.demography.DemographicEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>A demographic events that will be applied to one or more populations at
+specified generations. The interface of a DemographicEvent is very similar to
+an simuPOP operator, but the applicable parameters are handled so that
+the generations are relative to the demographic model, not the populations
+to which the event is applied.</p>
+<dl class="method">
+<dt id="simuPOP.demography.DemographicEvent.DemographicEvent">
+<code class="descname">DemographicEvent</code><span class="sig-paren">(</span><em>ops=[]</em>, <em>output=''</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=True</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.DemographicEvent.DemographicEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a demographic event that will be applied at specified
+generations according to applicability parameters <code class="docutils literal notranslate"><span class="pre">reps</span></code>, <code class="docutils literal notranslate"><span class="pre">begin</span></code>,
+<code class="docutils literal notranslate"><span class="pre">end</span></code>, <code class="docutils literal notranslate"><span class="pre">step</span></code> and <code class="docutils literal notranslate"><span class="pre">at</span></code>. Parameter <code class="docutils literal notranslate"><span class="pre">subPops</span></code> is usually used
+to specify the subpopulations affected by the event. One or more simuPOP
+operators, if specified in <code class="docutils literal notranslate"><span class="pre">ops</span></code>, will be applied when the event
+happens. Parameters <code class="docutils literal notranslate"><span class="pre">output</span></code> and <code class="docutils literal notranslate"><span class="pre">infoFields</span></code> are currently ignored.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.demography.DemographicEvent.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><em>pop</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.DemographicEvent.apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-expansionevent">
+<h2>class ExpansionEvent<a class="headerlink" href="#class-expansionevent" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.demography.ExpansionEvent">
+<em class="property">class </em><code class="descclassname">simuPOP.demography.</code><code class="descname">ExpansionEvent</code><a class="headerlink" href="#simuPOP.demography.ExpansionEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>A demographic event that increase applicable population size by
+<code class="docutils literal notranslate"><span class="pre">N*r</span></code> (to size <code class="docutils literal notranslate"><span class="pre">N*(1+r)</span></code>), or <code class="docutils literal notranslate"><span class="pre">s</span></code> (to size <code class="docutils literal notranslate"><span class="pre">N+s</span></code>) at each applicable
+generation. The first model leads to an exponential population expansion
+model with rate <code class="docutils literal notranslate"><span class="pre">r</span></code> (<code class="docutils literal notranslate"><span class="pre">N(t)=N(0)*exp(r*t)</span></code>), where the second model leads to
+an linear population growth model (<code class="docutils literal notranslate"><span class="pre">N(t)=N(0)+s*t</span></code>) and this is why the
+parameter is called <code class="docutils literal notranslate"><span class="pre">slopes</span></code>. Note that if both population
+size and <code class="docutils literal notranslate"><span class="pre">r</span></code> are small (e.g. <code class="docutils literal notranslate"><span class="pre">N*r&lt;1</span></code>),  the population might not expand
+as expected.</p>
+<dl class="method">
+<dt id="simuPOP.demography.ExpansionEvent.ExpansionEvent">
+<code class="descname">ExpansionEvent</code><span class="sig-paren">(</span><em>rates=[]</em>, <em>slopes=[]</em>, <em>capacity=[]</em>, <em>name=''</em>, <em>ops=[]</em>, <em>output=''</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=True</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.ExpansionEvent.ExpansionEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>A demographic event that expands all or specified subpopulations
+(<code class="docutils literal notranslate"><span class="pre">subPops</span></code>) exponentially by a rate of <code class="docutils literal notranslate"><span class="pre">rates</span></code>, or linearly by a slope
+of <code class="docutils literal notranslate"><span class="pre">slopes</span></code>, unless carray capacity (<code class="docutils literal notranslate"><span class="pre">capacity</span></code>) of the population has
+been reached. Parameter <code class="docutils literal notranslate"><span class="pre">rates</span></code> can be a single number or a list of rates
+for all subpopulations. Parameter <code class="docutils literal notranslate"><span class="pre">slopes</span></code> should be a number, or a list
+of numbers for all subpopulations. <code class="docutils literal notranslate"><span class="pre">subPops</span></code> can be a <code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code> or a list
+of subpopulation index or names. <code class="docutils literal notranslate"><span class="pre">capacity</span></code> can be empty (no limit on
+carrying capacity), or one or more numbers for each of the subpopulations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.demography.ExpansionEvent.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><em>pop</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.ExpansionEvent.apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-resizeevent">
+<h2>class ResizeEvent<a class="headerlink" href="#class-resizeevent" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.demography.ResizeEvent">
+<em class="property">class </em><code class="descclassname">simuPOP.demography.</code><code class="descname">ResizeEvent</code><a class="headerlink" href="#simuPOP.demography.ResizeEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>A demographic event that resize specified subpopulations</p>
+<dl class="method">
+<dt id="simuPOP.demography.ResizeEvent.ResizeEvent">
+<code class="descname">ResizeEvent</code><span class="sig-paren">(</span><em>sizes=[]</em>, <em>names=[]</em>, <em>removeEmptySubPops=False</em>, <em>ops=[]</em>, <em>output=''</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=True</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.ResizeEvent.ResizeEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>A demographic event that resizes given subpopulations <code class="docutils literal notranslate"><span class="pre">subPops</span></code> to new
+<code class="docutils literal notranslate"><span class="pre">sizes</span></code> (integer type), or sizes proportional to original sizes (if a float
+number is given). For example, <code class="docutils literal notranslate"><span class="pre">sizes=[0.5,</span> <span class="pre">500]</span></code> will resize the first
+subpopulation to half of its original size, and the second subpopulation to
+size <code class="docutils literal notranslate"><span class="pre">500</span></code>. If the new size is larger, existing individuals will be copied
+to sequentially, and repeatedly if needed. If the size of a subpopulation is
+0 and <code class="docutils literal notranslate"><span class="pre">removeEmptySubPops</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, empty subpopulations will be
+removed. A new set of names could be assigned to the population being resized.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.demography.ResizeEvent.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><em>pop</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.ResizeEvent.apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-splitevent">
+<h2>class SplitEvent<a class="headerlink" href="#class-splitevent" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.demography.SplitEvent">
+<em class="property">class </em><code class="descclassname">simuPOP.demography.</code><code class="descname">SplitEvent</code><a class="headerlink" href="#simuPOP.demography.SplitEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>A demographic event that splits a specified population into two or
+more subpopulations.</p>
+<dl class="method">
+<dt id="simuPOP.demography.SplitEvent.SplitEvent">
+<code class="descname">SplitEvent</code><span class="sig-paren">(</span><em>sizes=[]</em>, <em>names=[]</em>, <em>ops=[]</em>, <em>output=''</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=True</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.SplitEvent.SplitEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>A demographic event that splits a subpopulation specified by
+<code class="docutils literal notranslate"><span class="pre">subPops</span></code> to two or more subpopulations, with specified <code class="docutils literal notranslate"><span class="pre">sizes</span></code>
+and <code class="docutils literal notranslate"><span class="pre">names</span></code>. <code class="docutils literal notranslate"><span class="pre">sizes</span></code> can be a list of numbers, proportions
+(e.g. <code class="docutils literal notranslate"><span class="pre">[1.,</span> <span class="pre">500]</span></code> keeps the original population and copies 500
+individuals to create a new subpupulation). Note that <code class="docutils literal notranslate"><span class="pre">sizes</span></code>
+and <code class="docutils literal notranslate"><span class="pre">names</span></code>, if specified, should include the source subpopulation
+as its first element.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.demography.SplitEvent.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><em>pop</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.SplitEvent.apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-mergeevent">
+<h2>class MergeEvent<a class="headerlink" href="#class-mergeevent" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.demography.MergeEvent">
+<em class="property">class </em><code class="descclassname">simuPOP.demography.</code><code class="descname">MergeEvent</code><a class="headerlink" href="#simuPOP.demography.MergeEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>A demographic event that merges one or more subpopulation to
+a single one.</p>
+<dl class="method">
+<dt id="simuPOP.demography.MergeEvent.MergeEvent">
+<code class="descname">MergeEvent</code><span class="sig-paren">(</span><em>name=''</em>, <em>ops=[]</em>, <em>output=''</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=True</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.MergeEvent.MergeEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>A demographic event that merges subpopulations into a single subpopulation.
+The merged subpopulation will have the name of the first merged subpopulation
+unless a separate <code class="docutils literal notranslate"><span class="pre">name</span></code> is supported.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.demography.MergeEvent.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><em>pop</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.MergeEvent.apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-admixtureevent">
+<h2>class AdmixtureEvent<a class="headerlink" href="#class-admixtureevent" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.demography.AdmixtureEvent">
+<em class="property">class </em><code class="descclassname">simuPOP.demography.</code><code class="descname">AdmixtureEvent</code><a class="headerlink" href="#simuPOP.demography.AdmixtureEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>This event implements a population admixture event that mix
+individuals from specified subpopulations to either a new
+subpopulation or an existing subpopulation.</p>
+<dl class="method">
+<dt id="simuPOP.demography.AdmixtureEvent.AdmixtureEvent">
+<code class="descname">AdmixtureEvent</code><span class="sig-paren">(</span><em>sizes=[]</em>, <em>toSubPop=None</em>, <em>name=''</em>, <em>ops=[]</em>, <em>output=''</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=True</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.AdmixtureEvent.AdmixtureEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an admixed population by choosing individuals
+from all or specified subpopulations (<code class="docutils literal notranslate"><span class="pre">subPops</span></code>) and creating
+an admixed population <code class="docutils literal notranslate"><span class="pre">toSubPop</span></code>. The admixed population will
+be appended to the population as a new subpopulation with name
+<code class="docutils literal notranslate"><span class="pre">name</span></code> if <code class="docutils literal notranslate"><span class="pre">toSubPop</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default), or replace an
+existing subpopulation with name or index <code class="docutils literal notranslate"><span class="pre">toSubPop</span></code>. The admixed
+population consists of individuals from <code class="docutils literal notranslate"><span class="pre">subPops</span></code> according to
+specified <code class="docutils literal notranslate"><span class="pre">sizes</span></code>. Its size is maximized to have the largest
+number of individuals from the source population when a new population
+is created, or equal to the size of the existing destination population.
+The parameter <code class="docutils literal notranslate"><span class="pre">sizes</span></code> should be a list of float numbers
+between 0 and 1, and add up to 1 (e.g. <code class="docutils literal notranslate"><span class="pre">[0.4,</span> <span class="pre">0.4,</span> <span class="pre">0.2]</span></code>, although
+this function ignores the last element and set it to 1 minus the
+sum of the other numbers). Alternatively, parameter <code class="docutils literal notranslate"><span class="pre">sizes</span></code> can
+be a list of numbers used to explicitly specify the size of admixed
+population and number of individuals from each source subpopulation.
+In all cases, the size of source populations will be kept constant.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.demography.AdmixtureEvent.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><em>pop</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.AdmixtureEvent.apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-instantchangemodel">
+<h2>class InstantChangeModel<a class="headerlink" href="#class-instantchangemodel" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.demography.InstantChangeModel">
+<em class="property">class </em><code class="descclassname">simuPOP.demography.</code><code class="descname">InstantChangeModel</code><a class="headerlink" href="#simuPOP.demography.InstantChangeModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>A model for instant population change (growth, resize, merge, split).</p>
+<dl class="method">
+<dt id="simuPOP.demography.InstantChangeModel.InstantChangeModel">
+<code class="descname">InstantChangeModel</code><span class="sig-paren">(</span><em>T=None</em>, <em>N0=[]</em>, <em>G=[]</em>, <em>NG=[]</em>, <em>ops=[]</em>, <em>infoFields=[]</em>, <em>removeEmptySubPops=False</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.InstantChangeModel.InstantChangeModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>An instant population growth model that evolves a population
+from size <code class="docutils literal notranslate"><span class="pre">N0</span></code> to <code class="docutils literal notranslate"><span class="pre">NT</span></code> for <code class="docutils literal notranslate"><span class="pre">T</span></code> generations with population
+size changes at generation <code class="docutils literal notranslate"><span class="pre">G</span></code> to <code class="docutils literal notranslate"><span class="pre">NT</span></code>. If <code class="docutils literal notranslate"><span class="pre">G</span></code> is a list,
+multiple population size changes are allowed. In that case, a list
+(or a nested list) of population size should be provided to parameter
+<code class="docutils literal notranslate"><span class="pre">NT</span></code>. Both <code class="docutils literal notranslate"><span class="pre">N0</span></code> and <code class="docutils literal notranslate"><span class="pre">NT</span></code> supports fixed (an integer), dynamic
+(keep passed poulation size) and proportional (an float number) population
+size. Optionally, one or more operators (e.g. a migrator) <code class="docutils literal notranslate"><span class="pre">ops</span></code>
+can be applied to population. Required information fields by these
+operators should be passed to parameter <code class="docutils literal notranslate"><span class="pre">infoFields</span></code>. If <code class="docutils literal notranslate"><span class="pre">removeEmpty</span></code>
+option is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, empty subpopulation will be removed. This
+option can be used to remove subpopulations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.demography.InstantChangeModel.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>filename=''</em>, <em>title=''</em>, <em>initSize=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.InstantChangeModel.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evolve a haploid population using a <a class="reference internal" href="refManual_ch2_sec4.html#RandomSelection" title="RandomSelection"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSelection</span></code></a> mating scheme
+using the demographic model. Print population size changes duringe evolution.
+An initial population size could be specified using parameter <code class="docutils literal notranslate"><span class="pre">initSize</span></code>
+for a demographic model with dynamic initial population size. If a filename
+is specified and if matplotlib is available, this function draws a figure
+to depict the demographic model and save it to <code class="docutils literal notranslate"><span class="pre">filename</span></code>. An optional
+<code class="docutils literal notranslate"><span class="pre">title</span></code> could be specified to the figure. Note that this function can
+not be plot demographic models that works for particular mating schemes
+(e.g. genotype dependent).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-exponentialgrowthmodel">
+<h2>class ExponentialGrowthModel<a class="headerlink" href="#class-exponentialgrowthmodel" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.demography.ExponentialGrowthModel">
+<em class="property">class </em><code class="descclassname">simuPOP.demography.</code><code class="descname">ExponentialGrowthModel</code><a class="headerlink" href="#simuPOP.demography.ExponentialGrowthModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>A model for exponential population growth with carry capacity</p>
+<dl class="method">
+<dt id="simuPOP.demography.ExponentialGrowthModel.ExponentialGrowthModel">
+<code class="descname">ExponentialGrowthModel</code><span class="sig-paren">(</span><em>T=None</em>, <em>N0=[]</em>, <em>NT=None</em>, <em>r=None</em>, <em>ops=[]</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.ExponentialGrowthModel.ExponentialGrowthModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>An exponential population growth model that evolves a population from size
+<code class="docutils literal notranslate"><span class="pre">N0</span></code> to <code class="docutils literal notranslate"><span class="pre">NT</span></code> for <code class="docutils literal notranslate"><span class="pre">T</span></code> generations with <code class="docutils literal notranslate"><span class="pre">r*N(t)</span></code> individuals added
+at each generation. <code class="docutils literal notranslate"><span class="pre">N0</span></code>, <code class="docutils literal notranslate"><span class="pre">NT</span></code> and <code class="docutils literal notranslate"><span class="pre">r</span></code> can be a list of population
+sizes or growth rates for multiple subpopulations. The initial population
+will be resized to <code class="docutils literal notranslate"><span class="pre">N0</span></code> (split if necessary). Zero or negative growth
+rates are allowed. The model will automatically determine <code class="docutils literal notranslate"><span class="pre">T</span></code>, <code class="docutils literal notranslate"><span class="pre">r</span></code>
+or <code class="docutils literal notranslate"><span class="pre">NT</span></code> if one of them is unspecified. If all of them are specified,
+<code class="docutils literal notranslate"><span class="pre">NT</span></code> is intepretted as carrying capacity of the model, namely the
+population will keep contant after it reaches size <code class="docutils literal notranslate"><span class="pre">NT</span></code>. Optionally,
+one or more operators (e.g. a migrator) <code class="docutils literal notranslate"><span class="pre">ops</span></code> can be applied to
+population.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.demography.ExponentialGrowthModel.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>filename=''</em>, <em>title=''</em>, <em>initSize=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.ExponentialGrowthModel.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evolve a haploid population using a <a class="reference internal" href="refManual_ch2_sec4.html#RandomSelection" title="RandomSelection"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSelection</span></code></a> mating scheme
+using the demographic model. Print population size changes duringe evolution.
+An initial population size could be specified using parameter <code class="docutils literal notranslate"><span class="pre">initSize</span></code>
+for a demographic model with dynamic initial population size. If a filename
+is specified and if matplotlib is available, this function draws a figure
+to depict the demographic model and save it to <code class="docutils literal notranslate"><span class="pre">filename</span></code>. An optional
+<code class="docutils literal notranslate"><span class="pre">title</span></code> could be specified to the figure. Note that this function can
+not be plot demographic models that works for particular mating schemes
+(e.g. genotype dependent).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-lineargrowthmodel">
+<h2>class LinearGrowthModel<a class="headerlink" href="#class-lineargrowthmodel" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.demography.LinearGrowthModel">
+<em class="property">class </em><code class="descclassname">simuPOP.demography.</code><code class="descname">LinearGrowthModel</code><a class="headerlink" href="#simuPOP.demography.LinearGrowthModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>A model for linear population growth with carry capacity.</p>
+<dl class="method">
+<dt id="simuPOP.demography.LinearGrowthModel.LinearGrowthModel">
+<code class="descname">LinearGrowthModel</code><span class="sig-paren">(</span><em>T=None</em>, <em>N0=[]</em>, <em>NT=None</em>, <em>r=None</em>, <em>ops=[]</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.LinearGrowthModel.LinearGrowthModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>An linear population growth model that evolves a population from size
+<code class="docutils literal notranslate"><span class="pre">N0</span></code> to <code class="docutils literal notranslate"><span class="pre">NT</span></code> for <code class="docutils literal notranslate"><span class="pre">T</span></code> generations with <code class="docutils literal notranslate"><span class="pre">r*N0</span></code> individuals added
+at each generation. <code class="docutils literal notranslate"><span class="pre">N0</span></code>, <code class="docutils literal notranslate"><span class="pre">NT</span></code> and <code class="docutils literal notranslate"><span class="pre">r</span></code> can be a list of population
+sizes or growth rates for multiple subpopulations. The initial population
+will be resized to <code class="docutils literal notranslate"><span class="pre">N0</span></code> (split if necessary). Zero or negative growth
+rates are allowed. The model will automatically determine <code class="docutils literal notranslate"><span class="pre">T</span></code>, <code class="docutils literal notranslate"><span class="pre">r</span></code>
+or <code class="docutils literal notranslate"><span class="pre">NT</span></code> if one of them is unspecified. If all of them are specified,
+<code class="docutils literal notranslate"><span class="pre">NT</span></code> is intepretted as carrying capacity of the model, namely the
+population will keep contant after it reaches size <code class="docutils literal notranslate"><span class="pre">NT</span></code>. Optionally,
+one or more operators (e.g. a migrator) <code class="docutils literal notranslate"><span class="pre">ops</span></code> can be applied to
+population.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.demography.LinearGrowthModel.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>filename=''</em>, <em>title=''</em>, <em>initSize=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.LinearGrowthModel.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evolve a haploid population using a <a class="reference internal" href="refManual_ch2_sec4.html#RandomSelection" title="RandomSelection"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSelection</span></code></a> mating scheme
+using the demographic model. Print population size changes duringe evolution.
+An initial population size could be specified using parameter <code class="docutils literal notranslate"><span class="pre">initSize</span></code>
+for a demographic model with dynamic initial population size. If a filename
+is specified and if matplotlib is available, this function draws a figure
+to depict the demographic model and save it to <code class="docutils literal notranslate"><span class="pre">filename</span></code>. An optional
+<code class="docutils literal notranslate"><span class="pre">title</span></code> could be specified to the figure. Note that this function can
+not be plot demographic models that works for particular mating schemes
+(e.g. genotype dependent).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-multistagemodel">
+<h2>class MultiStageModel<a class="headerlink" href="#class-multistagemodel" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.demography.MultiStageModel">
+<em class="property">class </em><code class="descclassname">simuPOP.demography.</code><code class="descname">MultiStageModel</code><a class="headerlink" href="#simuPOP.demography.MultiStageModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>A multi-stage demographic model that connects a number of demographic
+models.</p>
+<dl class="method">
+<dt id="simuPOP.demography.MultiStageModel.MultiStageModel">
+<code class="descname">MultiStageModel</code><span class="sig-paren">(</span><em>models</em>, <em>ops=[]</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.MultiStageModel.MultiStageModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>An multi-stage demographic model that connects specified
+demographic models <code class="docutils literal notranslate"><span class="pre">models</span></code>. It applies a model to the population
+until it reaches <code class="docutils literal notranslate"><span class="pre">num_gens</span></code> of the model, or if the model returns
+<code class="docutils literal notranslate"><span class="pre">[]</span></code>. One or more operators could be specified, which will be applied
+before a demographic model is applied. Note that the last model will be
+ignored if it lasts 0 generation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.demography.MultiStageModel.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>filename=''</em>, <em>title=''</em>, <em>initSize=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.MultiStageModel.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evolve a haploid population using a <a class="reference internal" href="refManual_ch2_sec4.html#RandomSelection" title="RandomSelection"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSelection</span></code></a> mating scheme
+using the demographic model. Print population size changes duringe evolution.
+An initial population size could be specified using parameter <code class="docutils literal notranslate"><span class="pre">initSize</span></code>
+for a demographic model with dynamic initial population size. If a filename
+is specified and if matplotlib is available, this function draws a figure
+to depict the demographic model and save it to <code class="docutils literal notranslate"><span class="pre">filename</span></code>. An optional
+<code class="docutils literal notranslate"><span class="pre">title</span></code> could be specified to the figure. Note that this function can
+not be plot demographic models that works for particular mating schemes
+(e.g. genotype dependent).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-outofafricamodel">
+<h2>class OutOfAfricaModel<a class="headerlink" href="#class-outofafricamodel" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.demography.OutOfAfricaModel">
+<em class="property">class </em><code class="descclassname">simuPOP.demography.</code><code class="descname">OutOfAfricaModel</code><a class="headerlink" href="#simuPOP.demography.OutOfAfricaModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>A dempgraphic model for the CHB, CEU, and YRI populations, as defined in
+Gutenkunst 2009, Plos Genetics. The model is depicted in Figure 2, and the
+default parameters are listed in Table 1 of this paper.</p>
+<dl class="method">
+<dt id="simuPOP.demography.OutOfAfricaModel.OutOfAfricaModel">
+<code class="descname">OutOfAfricaModel</code><span class="sig-paren">(</span><em>T0, N_A=7300, N_AF=12300, N_B=2100, N_EU0=1000, r_EU=0.004, N_AS0=510, r_AS=0.0055, m_AF_B=0.00025, m_AF_EU=3e-05, m_AF_AS=1.9e-05, m_EU_AS=9.6e-05, T_AF=8800, T_B=5600, T_EU_AS=848, ops=[], infoFields=[], outcome=['AF', 'EU', 'AS'], scale=1</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.OutOfAfricaModel.OutOfAfricaModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Counting <strong>backward in time</strong>, this model evolves a population for <code class="docutils literal notranslate"><span class="pre">T0</span></code>
+generations (required parameter). The ancient population <code class="docutils literal notranslate"><span class="pre">A</span></code> started at
+size <code class="docutils literal notranslate"><span class="pre">N_A</span></code> and expanded at <code class="docutils literal notranslate"><span class="pre">T_AF</span></code> generations from now, to pop <code class="docutils literal notranslate"><span class="pre">AF</span></code>
+with size <code class="docutils literal notranslate"><span class="pre">N_AF</span></code>. Pop <code class="docutils literal notranslate"><span class="pre">B</span></code> split from pop <code class="docutils literal notranslate"><span class="pre">AF</span></code> at <code class="docutils literal notranslate"><span class="pre">T_B</span></code> generations
+from now, with size <code class="docutils literal notranslate"><span class="pre">N_B</span></code>; Pop <code class="docutils literal notranslate"><span class="pre">AF</span></code> remains as <code class="docutils literal notranslate"><span class="pre">N_AF</span></code> individuals.
+Pop <code class="docutils literal notranslate"><span class="pre">EU</span></code> and  <code class="docutils literal notranslate"><span class="pre">AS</span></code> split from pop <code class="docutils literal notranslate"><span class="pre">B</span></code> at <code class="docutils literal notranslate"><span class="pre">T_EU_AS</span></code> generations
+from now; with size <code class="docutils literal notranslate"><span class="pre">N_EU0</span></code> individuals and <code class="docutils literal notranslate"><span class="pre">N_ASO</span></code> individuals,
+respectively. Pop <code class="docutils literal notranslate"><span class="pre">EU</span></code> grew exponentially with rate <code class="docutils literal notranslate"><span class="pre">r_EU</span></code>; Pop
+<code class="docutils literal notranslate"><span class="pre">AS</span></code> grew exponentially with rate <code class="docutils literal notranslate"><span class="pre">r_AS</span></code>. The <code class="docutils literal notranslate"><span class="pre">YRI</span></code>, <code class="docutils literal notranslate"><span class="pre">CEU</span></code> and
+<code class="docutils literal notranslate"><span class="pre">CHB</span></code> samples are drawn from <code class="docutils literal notranslate"><span class="pre">AF</span></code>, <code class="docutils literal notranslate"><span class="pre">EU</span></code> and <code class="docutils literal notranslate"><span class="pre">AS</span></code> populations
+respectively. Additional operators could be added to <code class="docutils literal notranslate"><span class="pre">ops</span></code>. Information
+fields required by these operators should be passed to <code class="docutils literal notranslate"><span class="pre">infoFields</span></code>. If
+a scaling factor <code class="docutils literal notranslate"><span class="pre">scale</span></code> is specified, all population sizes and
+generation numbers will be divided by a factor of <code class="docutils literal notranslate"><span class="pre">scale</span></code>. This demographic
+model by default returns all populations (<code class="docutils literal notranslate"><span class="pre">AF</span></code>, <code class="docutils literal notranslate"><span class="pre">EU</span></code>, <code class="docutils literal notranslate"><span class="pre">AS</span></code>) but
+you can choose to keep only selected subpopulations using parameter
+<code class="docutils literal notranslate"><span class="pre">outcome</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">outcome=['EU',</span> <span class="pre">'AS']</span></code>).</p>
+<p>This model merges all subpopulations if it is applied to an initial
+population with multiple subpopulation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.demography.OutOfAfricaModel.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>filename=''</em>, <em>title=''</em>, <em>initSize=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.OutOfAfricaModel.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evolve a haploid population using a <a class="reference internal" href="refManual_ch2_sec4.html#RandomSelection" title="RandomSelection"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSelection</span></code></a> mating scheme
+using the demographic model. Print population size changes duringe evolution.
+An initial population size could be specified using parameter <code class="docutils literal notranslate"><span class="pre">initSize</span></code>
+for a demographic model with dynamic initial population size. If a filename
+is specified and if matplotlib is available, this function draws a figure
+to depict the demographic model and save it to <code class="docutils literal notranslate"><span class="pre">filename</span></code>. An optional
+<code class="docutils literal notranslate"><span class="pre">title</span></code> could be specified to the figure. Note that this function can
+not be plot demographic models that works for particular mating schemes
+(e.g. genotype dependent).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-settlementofnewworldmodel">
+<h2>class SettlementOfNewWorldModel<a class="headerlink" href="#class-settlementofnewworldmodel" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.demography.SettlementOfNewWorldModel">
+<em class="property">class </em><code class="descclassname">simuPOP.demography.</code><code class="descname">SettlementOfNewWorldModel</code><a class="headerlink" href="#simuPOP.demography.SettlementOfNewWorldModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>A dempgraphic model for settlement of the new world of Americans, as defined
+in Gutenkunst 2009, Plos Genetics. The model is depicted in Figure 3, and the
+default parameters are listed in Table 2 of this paper.</p>
+<dl class="method">
+<dt id="simuPOP.demography.SettlementOfNewWorldModel.SettlementOfNewWorldModel">
+<code class="descname">SettlementOfNewWorldModel</code><span class="sig-paren">(</span><em>T0</em>, <em>N_A=7300</em>, <em>N_AF=12300</em>, <em>N_B=2100</em>, <em>N_EU0=1500</em>, <em>r_EU=0.0023</em>, <em>N_AS0=590</em>, <em>r_AS=0.0037</em>, <em>N_MX0=800</em>, <em>r_MX=0.005</em>, <em>m_AF_B=0.00025</em>, <em>m_AF_EU=3e-05</em>, <em>m_AF_AS=1.9e-05</em>, <em>m_EU_AS=1.35e-05</em>, <em>T_AF=8800</em>, <em>T_B=5600</em>, <em>T_EU_AS=1056</em>, <em>T_MX=864</em>, <em>f_MX=0.48</em>, <em>ops=[]</em>, <em>infoFields=[]</em>, <em>outcome='MXL'</em>, <em>scale=1</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.SettlementOfNewWorldModel.SettlementOfNewWorldModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Counting <strong>backward in time</strong>, this model evolves a population for <code class="docutils literal notranslate"><span class="pre">T0</span></code>
+generations. The ancient population <code class="docutils literal notranslate"><span class="pre">A</span></code> started at size <code class="docutils literal notranslate"><span class="pre">N_A</span></code> and
+expanded at <code class="docutils literal notranslate"><span class="pre">T_AF</span></code> generations from now, to pop <code class="docutils literal notranslate"><span class="pre">AF</span></code> with size <code class="docutils literal notranslate"><span class="pre">N_AF</span></code>.
+Pop <code class="docutils literal notranslate"><span class="pre">B</span></code> split from pop <code class="docutils literal notranslate"><span class="pre">AF</span></code> at <code class="docutils literal notranslate"><span class="pre">T_B</span></code> generations from now, with
+size <code class="docutils literal notranslate"><span class="pre">N_B</span></code>; Pop <code class="docutils literal notranslate"><span class="pre">AF</span></code> remains as <code class="docutils literal notranslate"><span class="pre">N_AF</span></code> individuals. Pop <code class="docutils literal notranslate"><span class="pre">EU</span></code> and
+<code class="docutils literal notranslate"><span class="pre">AS</span></code> split from pop <code class="docutils literal notranslate"><span class="pre">B</span></code> at <code class="docutils literal notranslate"><span class="pre">T_EU_AS</span></code> generations from now; with
+size <code class="docutils literal notranslate"><span class="pre">N_EU0</span></code> individuals and <code class="docutils literal notranslate"><span class="pre">N_ASO</span></code> individuals, respectively. Pop
+<code class="docutils literal notranslate"><span class="pre">EU</span></code> grew exponentially with final population size <code class="docutils literal notranslate"><span class="pre">N_EU</span></code>; Pop
+<code class="docutils literal notranslate"><span class="pre">AS</span></code> grew exponentially with final populaiton size <code class="docutils literal notranslate"><span class="pre">N_AS</span></code>. Pop <code class="docutils literal notranslate"><span class="pre">MX</span></code>
+split from pop <code class="docutils literal notranslate"><span class="pre">AS</span></code> at <code class="docutils literal notranslate"><span class="pre">T_MX</span></code> generations from now with size <code class="docutils literal notranslate"><span class="pre">N_MX0</span></code>,
+grew exponentially to final size <code class="docutils literal notranslate"><span class="pre">N_MX</span></code>. Migrations are allowed between
+populations with migration rates <code class="docutils literal notranslate"><span class="pre">m_AF_B</span></code>, <code class="docutils literal notranslate"><span class="pre">m_EU_AS</span></code>, <code class="docutils literal notranslate"><span class="pre">m_AF_EU</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">m_AF_AS</span></code>. At the end of the evolution, the <code class="docutils literal notranslate"><span class="pre">AF</span></code> and <code class="docutils literal notranslate"><span class="pre">CHB</span></code>
+populations are removed, and the <code class="docutils literal notranslate"><span class="pre">EU</span></code> and <code class="docutils literal notranslate"><span class="pre">MX</span></code> populations are merged
+with <code class="docutils literal notranslate"><span class="pre">f_MX</span></code> proportion for <code class="docutils literal notranslate"><span class="pre">MX</span></code>. The Mexican American&lt;F19&gt; sample could
+be sampled from the last single population. Additional operators could
+be added to <code class="docutils literal notranslate"><span class="pre">ops</span></code>. Information fields required by these operators
+should be passed to <code class="docutils literal notranslate"><span class="pre">infoFields</span></code>. If a scaling factor <code class="docutils literal notranslate"><span class="pre">scale</span></code>
+is specified, all population sizes and generation numbers will be divided by
+a factor of <code class="docutils literal notranslate"><span class="pre">scale</span></code>. This demographic model by default only returns the
+mixed Mexican America model (<code class="docutils literal notranslate"><span class="pre">outputcom='MXL'</span></code>) but you can specify any
+combination of <code class="docutils literal notranslate"><span class="pre">AF</span></code>, <code class="docutils literal notranslate"><span class="pre">EU</span></code>, <code class="docutils literal notranslate"><span class="pre">AS</span></code>, <code class="docutils literal notranslate"><span class="pre">MX</span></code> and <code class="docutils literal notranslate"><span class="pre">MXL</span></code>.</p>
+<p>This model merges all subpopulations if it is applied to an initial population
+with multiple subpopulation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.demography.SettlementOfNewWorldModel.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>filename=''</em>, <em>title=''</em>, <em>initSize=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.SettlementOfNewWorldModel.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evolve a haploid population using a <a class="reference internal" href="refManual_ch2_sec4.html#RandomSelection" title="RandomSelection"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSelection</span></code></a> mating scheme
+using the demographic model. Print population size changes duringe evolution.
+An initial population size could be specified using parameter <code class="docutils literal notranslate"><span class="pre">initSize</span></code>
+for a demographic model with dynamic initial population size. If a filename
+is specified and if matplotlib is available, this function draws a figure
+to depict the demographic model and save it to <code class="docutils literal notranslate"><span class="pre">filename</span></code>. An optional
+<code class="docutils literal notranslate"><span class="pre">title</span></code> could be specified to the figure. Note that this function can
+not be plot demographic models that works for particular mating schemes
+(e.g. genotype dependent).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-cosimodel">
+<h2>class CosiModel<a class="headerlink" href="#class-cosimodel" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.demography.CosiModel">
+<em class="property">class </em><code class="descclassname">simuPOP.demography.</code><code class="descname">CosiModel</code><a class="headerlink" href="#simuPOP.demography.CosiModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>A dempgraphic model for Africa, Asia and Europe, as described in
+Schaffner et al, Genome Research, 2005, and implemented in the coalescent
+simulator cosi.</p>
+<dl class="method">
+<dt id="simuPOP.demography.CosiModel.CosiModel">
+<code class="descname">CosiModel</code><span class="sig-paren">(</span><em>T0</em>, <em>N_A=12500</em>, <em>N_AF=24000</em>, <em>N_OoA=7700</em>, <em>N_AF1=100000</em>, <em>N_AS1=100000</em>, <em>N_EU1=100000</em>, <em>T_AF=17000</em>, <em>T_OoA=3500</em>, <em>T_EU_AS=2000</em>, <em>T_AS_exp=400</em>, <em>T_EU_exp=350</em>, <em>T_AF_exp=200</em>, <em>F_OoA=0.085</em>, <em>F_AS=0.067</em>, <em>F_EU=0.02</em>, <em>F_AF=0.02</em>, <em>m_AF_EU=3.2e-05</em>, <em>m_AF_AS=8e-06</em>, <em>ops=[]</em>, <em>infoFields=[]</em>, <em>scale=1</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.CosiModel.CosiModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Counting <strong>backward in time</strong>, this model evolves a population for a
+total of <code class="docutils literal notranslate"><span class="pre">T0</span></code> generations. The ancient population <code class="docutils literal notranslate"><span class="pre">Ancestral</span></code> started
+at size <code class="docutils literal notranslate"><span class="pre">N_Ancestral</span></code> and expanded at <code class="docutils literal notranslate"><span class="pre">T_AF</span></code> generations from now,
+to pop <code class="docutils literal notranslate"><span class="pre">AF</span></code> with size <code class="docutils literal notranslate"><span class="pre">N_AF</span></code>. The Out of Africa population split from
+the <code class="docutils literal notranslate"><span class="pre">AF</span></code> population at <code class="docutils literal notranslate"><span class="pre">T_OoA</span></code> generations ago. The <code class="docutils literal notranslate"><span class="pre">OoA</span></code> population
+split into two subpopulations <code class="docutils literal notranslate"><span class="pre">AS</span></code> and <code class="docutils literal notranslate"><span class="pre">EU</span></code> but keep the same size.
+At the generations of <code class="docutils literal notranslate"><span class="pre">T_EU_exp</span></code>, <code class="docutils literal notranslate"><span class="pre">T_AS_exp</span></code>, and <code class="docutils literal notranslate"><span class="pre">T_AF_exp</span></code> ago,
+three populations expanded to modern population sizes of <code class="docutils literal notranslate"><span class="pre">N_AF1</span></code>,
+<code class="docutils literal notranslate"><span class="pre">N_AS1</span></code> and <code class="docutils literal notranslate"><span class="pre">N_EU1</span></code> exponentially, respectively. Migrations are
+allowed between <code class="docutils literal notranslate"><span class="pre">AF</span></code> and <code class="docutils literal notranslate"><span class="pre">EU</span></code> populations
+with rate <code class="docutils literal notranslate"><span class="pre">m_AF_EU</span></code>, and between <code class="docutils literal notranslate"><span class="pre">AF</span></code> and <code class="docutils literal notranslate"><span class="pre">AS</span></code> with rate <code class="docutils literal notranslate"><span class="pre">m_AF_AS</span></code>.</p>
+<p>Four bottlenecks happens in the <code class="docutils literal notranslate"><span class="pre">AF</span></code>, <code class="docutils literal notranslate"><span class="pre">OoA</span></code>, <code class="docutils literal notranslate"><span class="pre">EU</span></code> and <code class="docutils literal notranslate"><span class="pre">AS</span></code> populations.
+They are supposed to happen 200 generations after population split and last
+for 200 generations. The intensity is parameterized in F, which is number
+of generations devided by twice the effective size during bottleneck.
+So the bottleneck size is 100/F.</p>
+<p>This model merges all subpopulations if it is applied to a population with
+multiple subpopulation. Although parameters are configurable, we assume
+the order of events so dramatically changes of parameters might need
+to errors.  If a scaling factor <code class="docutils literal notranslate"><span class="pre">scale</span></code> is specified, all population
+sizes and generation numbers will be divided by, and migration rates
+will be multiplied by a factor of <code class="docutils literal notranslate"><span class="pre">scale</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.demography.CosiModel.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>filename=''</em>, <em>title=''</em>, <em>initSize=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.demography.CosiModel.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evolve a haploid population using a <a class="reference internal" href="refManual_ch2_sec4.html#RandomSelection" title="RandomSelection"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSelection</span></code></a> mating scheme
+using the demographic model. Print population size changes duringe evolution.
+An initial population size could be specified using parameter <code class="docutils literal notranslate"><span class="pre">initSize</span></code>
+for a demographic model with dynamic initial population size. If a filename
+is specified and if matplotlib is available, this function draws a figure
+to depict the demographic model and save it to <code class="docutils literal notranslate"><span class="pre">filename</span></code>. An optional
+<code class="docutils literal notranslate"><span class="pre">title</span></code> could be specified to the figure. Note that this function can
+not be plot demographic models that works for particular mating schemes
+(e.g. genotype dependent).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch4_sec1.html">Module <code class="docutils literal notranslate"><span class="pre">simuOpt</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch4_sec2.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.utils</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.demography</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#function-migrislandrates">Function migrIslandRates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-migrhierarchicalislandrates">Function migrHierarchicalIslandRates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-migrsteppingstonerates">Function migrSteppingStoneRates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-migrtwodsteppingstonerates">Function migrtwoDSteppingStoneRates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-eventbasedmodel">class EventBasedModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-demographicevent">class DemographicEvent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-expansionevent">class ExpansionEvent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-resizeevent">class ResizeEvent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-splitevent">class SplitEvent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-mergeevent">class MergeEvent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-admixtureevent">class AdmixtureEvent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-instantchangemodel">class InstantChangeModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-exponentialgrowthmodel">class ExponentialGrowthModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-lineargrowthmodel">class LinearGrowthModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-multistagemodel">class MultiStageModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-outofafricamodel">class OutOfAfricaModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-settlementofnewworldmodel">class SettlementOfNewWorldModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-cosimodel">class CosiModel</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch4_sec4.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.sampling</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch4_sec5.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.gsl</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="refManual.html">&lt;no title&gt;</a><ul>
+  <li><a href="refManual_ch4.html">Utility Modules</a><ul>
+      <li>Previous: <a href="refManual_ch4_sec2.html" title="previous chapter">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.utils</span></code></a></li>
+      <li>Next: <a href="refManual_ch4_sec4.html" title="next chapter">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.sampling</span></code></a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/refManual_ch4_sec3.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

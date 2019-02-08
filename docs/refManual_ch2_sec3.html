@@ -1,0 +1,773 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Mating Schemes &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Pre-defined mating schemes" href="refManual_ch2_sec4.html" />
+    <link rel="prev" title="Virtual splitters" href="refManual_ch2_sec2.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="mating-schemes">
+<h1>Mating Schemes<a class="headerlink" href="#mating-schemes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class-matingscheme">
+<span id="index-0"></span><h2>class MatingScheme<a class="headerlink" href="#class-matingscheme" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="MatingScheme">
+<em class="property">class </em><code class="descname">MatingScheme</code><a class="headerlink" href="#MatingScheme" title="Permalink to this definition">¶</a></dt>
+<dd><p>This mating scheme is the base class of all mating schemes. It
+evolves a population generation by generation but does not actually
+transmit genotype.</p>
+<dl class="method">
+<dt id="MatingScheme.MatingScheme">
+<code class="descname">MatingScheme</code><span class="sig-paren">(</span><em>subPopSize=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#MatingScheme.MatingScheme" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a base mating scheme that evolves a population without
+transmitting genotypes. At each generation, this mating scheme
+creates an offspring generation according to parameter
+<em>subPopSize</em>, which can be a list of subpopulation sizes (or a
+number if there is only one subpopulation) or a Python function
+which will be called at each generation, just before mating, to
+determine the subpopulation sizes of the offspring generation.
+The function should be defined with one or both parameters of
+<code class="docutils literal notranslate"><span class="pre">gen</span></code> and <code class="docutils literal notranslate"><span class="pre">pop</span></code> where <code class="docutils literal notranslate"><span class="pre">gen</span></code> is the current generation
+number and <code class="docutils literal notranslate"><span class="pre">pop</span></code> is the parental population just before
+mating. The return value of this function should be a list of
+subpopulation sizes for the offspring generation. A single
+number can be returned if there is only one subpopulation. The
+passed parental population is usually used to determine
+offspring population size from parental population size but you
+can also modify this population to prepare for mating. A common
+practice is to split and merge parental populations in this
+function so that you demographic related information and actions
+could be implemented in the same function.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-homomating">
+<h2>class HomoMating<a class="headerlink" href="#class-homomating" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="HomoMating">
+<em class="property">class </em><code class="descname">HomoMating</code><a class="headerlink" href="#HomoMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>A homogeneous mating scheme that uses a parent chooser to choose
+parents from a prental generation, and an offspring generator to
+generate offspring from chosen parents. It can be either used
+directly, or within a heterogeneous mating scheme. In the latter
+case, it can be applied to a (virtual) subpopulation.</p>
+<dl class="method">
+<dt id="HomoMating.HomoMating">
+<code class="descname">HomoMating</code><span class="sig-paren">(</span><em>chooser</em>, <em>generator</em>, <em>subPopSize=[]</em>, <em>subPops=ALL_AVAIL</em>, <em>weight=0</em><span class="sig-paren">)</span><a class="headerlink" href="#HomoMating.HomoMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a homogeneous mating scheme using a parent chooser
+<em>chooser</em> and an offspring generator <em>generator</em>.</p>
+<p>If this mating scheme is used directly in a simulator, it will
+be responsible for creating an offspring population according to
+parameter <em>subPopSize</em>. This parameter can be a list of
+subpopulation sizes (or a number if there is only one
+subpopulation) or a Python function which will be called at each
+generation to determine the subpopulation sizes of the offspring
+generation. Please refer to class <a class="reference internal" href="#MatingScheme" title="MatingScheme"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatingScheme</span></code></a> for
+details about this parameter.</p>
+<p>If this mating shcme is used within a heterogeneous mating
+scheme. Parameters <em>subPops</em> and <em>weight</em> are used to determine
+which (virtual) subpopulations this mating scheme will be
+applied to, and how many offspring this mating scheme will
+produce. Please refer to mating scheme <a class="reference internal" href="#HeteroMating" title="HeteroMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">HeteroMating</span></code></a> for
+the use of these two parameters.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-heteromating">
+<h2>class HeteroMating<a class="headerlink" href="#class-heteromating" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="HeteroMating">
+<em class="property">class </em><code class="descname">HeteroMating</code><a class="headerlink" href="#HeteroMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>A heterogeneous mating scheme that applies a list of homogeneous
+mating schemes to different (virtual) subpopulations.</p>
+<dl class="method">
+<dt id="HeteroMating.HeteroMating">
+<code class="descname">HeteroMating</code><span class="sig-paren">(</span><em>matingSchemes</em>, <em>subPopSize=[]</em>, <em>shuffleOffspring=True</em>, <em>weightBy=ANY_SEX</em><span class="sig-paren">)</span><a class="headerlink" href="#HeteroMating.HeteroMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a heterogeneous mating scheme that will apply a list of
+homogeneous mating schemes <em>matingSchemes</em> to different
+(virtual) subpopulations. The size of the offspring generation
+is determined by parameter <em>subPopSize</em>, which can be a list of
+subpopulation sizes or a Python function that returns a list of
+subpopulation sizes at each generation. Please refer to class
+<a class="reference internal" href="#MatingScheme" title="MatingScheme"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatingScheme</span></code></a> for a detailed explanation of this
+parameter.</p>
+<p>Each mating scheme defined in <em>matingSchemes</em> can be applied to
+one or more (virtual) subpopulation. If parameter <em>subPops</em> is
+not specified, a mating scheme will be applied to all
+subpopulations. If a list of (virtual) subpopulation is
+specified, the mating scheme will be applied to specific
+(virtual) subpopulations.</p>
+<p>If multiple mating schemes are applied to the same
+subpopulation, a weight (parameter <em>weight</em>) can be given to
+each mating scheme to determine how many offspring it will
+produce. The default weight for all mating schemes are <code class="docutils literal notranslate"><span class="pre">0</span></code>.
+In this case, the number of offspring each mating scheme
+produces is proportional to the number of individuals in its
+parental (virtual) subpopulation (default to all parents, but
+can be father for <code class="docutils literal notranslate"><span class="pre">weightBy=MALE_ONLY</span></code>, mother for
+<code class="docutils literal notranslate"><span class="pre">weightBy=FEMALE_ONLY</span></code>, or father mother pairs (less of number
+of father and mothers) for <code class="docutils literal notranslate"><span class="pre">weightBy=PAIR_ONLY</span></code>). If all
+weights are negative, the numbers of offspring are determined by
+the multiplication of the absolute values of the weights and
+their respective parental (virtual) subpopulation sizes. If all
+weights are positive, the number of offspring produced by each
+mating scheme is proportional to these weights, except for
+mating schemes with zero parental population size (or no father,
+no mother, or no pairs, depending on value of parameter
+<code class="docutils literal notranslate"><span class="pre">weightBy</span></code>). Mating schemes with zero weight in this case will
+produce no offspring. If both negative and positive weights are
+present, negative weights are processed before positive ones.</p>
+<p>A sexual mating scheme might fail if a parental (virtual)
+subpopulation has no father or mother. In this case, you can set
+<code class="docutils literal notranslate"><span class="pre">weightBy</span></code> to <code class="docutils literal notranslate"><span class="pre">PAIR_ONLY</span></code> so a (virtual) subpopulation will
+appear to have zero size, and will thus contribute no offspring
+to the offspring population. Note that the perceived parental
+(virtual) subpopulation size in this mode (and in modes of
+<code class="docutils literal notranslate"><span class="pre">MALE_ONLY</span></code>, <code class="docutils literal notranslate"><span class="pre">FEMALE_ONLY</span></code>) during the calculation of the
+size of the offspring subpopulation will be roughly half of the
+actual population size so you might have to use <code class="docutils literal notranslate"><span class="pre">weight=-2</span></code> if
+you would like to have an offspring subpopulation that is
+roughly the same size of the parental (virtual) subpopulation.</p>
+<p>If multiple mating schemes are applied to the same
+subpopulation, offspring produced by these mating schemes are
+shuffled randomly. If this is not desired, you can turn off
+offspring shuffling by setting parameter <em>shuffleOffspring</em> to
+<code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-conditionalmating">
+<h2>class ConditionalMating<a class="headerlink" href="#class-conditionalmating" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ConditionalMating">
+<em class="property">class </em><code class="descname">ConditionalMating</code><a class="headerlink" href="#ConditionalMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>A conditional mating scheme that applies different mating schemes
+according to a condition (similar to operator  IfElse). The
+condition can be a fixed condition, an expression or a user-defined
+function, to determine which mating scheme to be used.</p>
+<dl class="method">
+<dt id="ConditionalMating.ConditionalMating">
+<code class="descname">ConditionalMating</code><span class="sig-paren">(</span><em>cond</em>, <em>ifMatingScheme</em>, <em>elseMatingScheme</em><span class="sig-paren">)</span><a class="headerlink" href="#ConditionalMating.ConditionalMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a conditional mating scheme that applies mating scheme
+<em>ifMatingScheme</em> if the condition <em>cond</em> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, or
+<em>elseMatingScheme</em> if <em>cond</em> is <code class="docutils literal notranslate"><span class="pre">False</span></code>. If a Python
+expression (a string) is given to parameter <em>cond</em>, the
+expression will be evalulated in parental population’s local
+namespace. When a Python function is specified, it accepts
+parameter <code class="docutils literal notranslate"><span class="pre">pop</span></code> for the parental population. The return value
+of this function should be <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>. Otherwise,
+parameter <em>cond</em> will be treated as a fixed condition (converted
+to <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>) upon which <em>ifMatingScheme</em> or
+<em>elseMatingScheme</em> will alway be applied.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-pedigreemating">
+<h2>class PedigreeMating<a class="headerlink" href="#class-pedigreemating" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PedigreeMating">
+<em class="property">class </em><code class="descname">PedigreeMating</code><a class="headerlink" href="#PedigreeMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>This mating scheme evolves a population following an existing
+pedigree structure. If the <a class="reference internal" href="refManual_ch2_sec1.html#Pedigree" title="Pedigree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pedigree</span></code></a> object has <code class="docutils literal notranslate"><span class="pre">N</span></code>
+ancestral generations and a present generation, it can be used to
+evolve a population for <code class="docutils literal notranslate"><span class="pre">N</span></code> generations, starting from the
+topmost ancestral generation. At the <em>k-th</em> generation, this mating
+scheme produces an offspring generation according to subpopulation
+structure of the <code class="docutils literal notranslate"><span class="pre">N-k-1</span></code> ancestral generation in the pedigree
+object (e.g. producing the offspring population of generation 0
+according to the <code class="docutils literal notranslate"><span class="pre">N-1</span></code> ancestral generation of the pedigree
+object ). For each offspring, this mating scheme copies individual
+ID and sex from the corresponing individual in the pedigree object.
+It then locates the parents of each offspring using their IDs in
+the pedigree object. A list of during mating operators are then
+used to transmit parental genotype to the offspring. The population
+being evolved must have an information field <code class="docutils literal notranslate"><span class="pre">'ind_id'</span></code>.</p>
+<dl class="method">
+<dt id="PedigreeMating.PedigreeMating">
+<code class="descname">PedigreeMating</code><span class="sig-paren">(</span><em>ped</em>, <em>ops</em>, <em>idField=&quot;ind_id&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#PedigreeMating.PedigreeMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a pedigree mating scheme that evolves a population
+according to <a class="reference internal" href="refManual_ch2_sec1.html#Pedigree" title="Pedigree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pedigree</span></code></a> object <em>ped</em>. The evolved
+population should contain individuals with ID (at information
+field <em>idField</em>, default to <code class="docutils literal notranslate"><span class="pre">'ind_id'</span></code>) that match those
+individual in the topmost ancestral generation who have
+offspring. After parents of each individuals are determined from
+their IDs, a list of during-mating operators <em>ops</em> are applied
+to transmit genotypes. The return value of these operators are
+not checked.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PedigreeMating.parallelizable">
+<code class="descname">parallelizable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PedigreeMating.parallelizable" title="Permalink to this definition">¶</a></dt>
+<dd><p>FIXME: No document</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-sequentialparentchooser">
+<h2>class SequentialParentChooser<a class="headerlink" href="#class-sequentialparentchooser" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="SequentialParentChooser">
+<em class="property">class </em><code class="descname">SequentialParentChooser</code><a class="headerlink" href="#SequentialParentChooser" title="Permalink to this definition">¶</a></dt>
+<dd><p>This parent chooser chooses a parent from a parental (virtual)
+subpopulation sequentially. Natural selection is not considered. If
+the last parent is reached, this parent chooser will restart from
+the beginning of the (virtual) subpopulation.</p>
+<dl class="method">
+<dt id="SequentialParentChooser.SequentialParentChooser">
+<code class="descname">SequentialParentChooser</code><span class="sig-paren">(</span><em>sexChoice=ANY_SEX</em><span class="sig-paren">)</span><a class="headerlink" href="#SequentialParentChooser.SequentialParentChooser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a parent chooser that chooses a parent from a parental
+(virtual) subpopulation sequentially. Parameter <em>choice</em> can be
+<code class="docutils literal notranslate"><span class="pre">ANY_SEX</span></code> (default), <code class="docutils literal notranslate"><span class="pre">MALE_ONLY</span></code> and <code class="docutils literal notranslate"><span class="pre">FEMALE_ONLY</span></code>. In the
+latter two cases, only male or female individuals are selected.
+A <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised if there is no male or
+female individual from the population.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="SequentialParentChooser.chooseParents">
+<code class="descname">chooseParents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#SequentialParentChooser.chooseParents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return chosen parents from a population if the parent chooser
+object is created with a population.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="SequentialParentChooser.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>pop</em>, <em>subPop</em><span class="sig-paren">)</span><a class="headerlink" href="#SequentialParentChooser.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize a parent chooser for subpopulation <em>subPop</em> of
+<em>population</em> pop.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-sequentialparentschooser">
+<h2>class SequentialParentsChooser<a class="headerlink" href="#class-sequentialparentschooser" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="SequentialParentsChooser">
+<em class="property">class </em><code class="descname">SequentialParentsChooser</code><a class="headerlink" href="#SequentialParentsChooser" title="Permalink to this definition">¶</a></dt>
+<dd><p>This parent chooser chooses two parents (a father and a mother)
+sequentially from their respective sex groups. Selection is not considered.
+If all fathers (or mothers) are exhausted, this parent chooser will choose
+fathers (or mothers) from the beginning of the (virtual) subpopulation
+again.</p>
+<dl class="method">
+<dt id="SequentialParentsChooser.SequentialParentsChooser">
+<code class="descname">SequentialParentsChooser</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#SequentialParentsChooser.SequentialParentsChooser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a parent chooser that chooses two parents sequentially from a
+parental (virtual) subpopulation.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-randomparentchooser">
+<h2>class RandomParentChooser<a class="headerlink" href="#class-randomparentchooser" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="RandomParentChooser">
+<em class="property">class </em><code class="descname">RandomParentChooser</code><a class="headerlink" href="#RandomParentChooser" title="Permalink to this definition">¶</a></dt>
+<dd><p>This parent chooser chooses a parent randomly from a (virtual)
+parental subpopulation. Parents are chosen with or without
+replacement. If parents are chosen with replacement, a parent can
+be selected multiple times. If individual fitness values are
+assigned to individuals ( stored in an information field
+<em>selectionField</em> (default to <code class="docutils literal notranslate"><span class="pre">&quot;fitness&quot;</span></code>), individuals will be
+chosen at a probability proportional to his or her fitness value.
+If parents are chosen without replacement, a parent can be chosen
+only once. An <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised if all parents
+are exhausted. Natural selection is disabled in the without-
+replacement case.</p>
+<dl class="method">
+<dt id="RandomParentChooser.RandomParentChooser">
+<code class="descname">RandomParentChooser</code><span class="sig-paren">(</span><em>replacement=True</em>, <em>selectionField=&quot;fitness&quot;</em>, <em>sexChoice=ANY_SEX</em><span class="sig-paren">)</span><a class="headerlink" href="#RandomParentChooser.RandomParentChooser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a random parent chooser that choose parents with or
+without replacement (parameter <em>replacement</em>, default to
+<code class="docutils literal notranslate"><span class="pre">True</span></code>). If selection is enabled and information field
+<em>selectionField</em> exists in the passed population, the
+probability that a parent is chosen is proportional to his/her
+fitness value stored in <em>selectionField</em>. This parent chooser by
+default chooses parent from all individuals (<code class="docutils literal notranslate"><span class="pre">ANY_SEX</span></code>), but
+it can be made to select only male (<code class="docutils literal notranslate"><span class="pre">MALE_ONLY</span></code>) or female
+(<code class="docutils literal notranslate"><span class="pre">FEMALE_ONLY</span></code>) individuals by setting parameter <em>sexChoice</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="RandomParentChooser.chooseParents">
+<code class="descname">chooseParents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#RandomParentChooser.chooseParents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return chosen parents from a population if the parent chooser
+object is created with a population.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="RandomParentChooser.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>pop</em>, <em>subPop</em><span class="sig-paren">)</span><a class="headerlink" href="#RandomParentChooser.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize a parent chooser for subpopulation <em>subPop</em> of
+<em>population</em> pop.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-randomparentschooser">
+<h2>class RandomParentsChooser<a class="headerlink" href="#class-randomparentschooser" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="RandomParentsChooser">
+<em class="property">class </em><code class="descname">RandomParentsChooser</code><a class="headerlink" href="#RandomParentsChooser" title="Permalink to this definition">¶</a></dt>
+<dd><p>This parent chooser chooses two parents, a male and a female,
+randomly from a (virtual) parental subpopulation. Parents are
+chosen with or without replacement from their respective sex group.
+If parents are chosen with replacement, a parent can be selected
+multiple times. If individual fitness values are assigned (stored
+in information field <em>selectionField</em>, default to <code class="docutils literal notranslate"><span class="pre">&quot;fitness&quot;</span></code>,
+the probability that an individual is chosen is proportional to
+his/her fitness value among all individuals with the same sex. If
+parents are chosen without replacement, a parent can be chosen only
+once. An <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised if all males or
+females are exhausted. Natural selection is disabled in the
+without-replacement case.</p>
+<dl class="method">
+<dt id="RandomParentsChooser.RandomParentsChooser">
+<code class="descname">RandomParentsChooser</code><span class="sig-paren">(</span><em>replacement=True</em>, <em>selectionField=&quot;fitness&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#RandomParentsChooser.RandomParentsChooser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a random parents chooser that choose two parents with or
+without replacement (parameter <em>replacement</em>, default to
+<code class="docutils literal notranslate"><span class="pre">True</span></code>). If selection is enabled and information field
+<em>selectionField</em> exists in the passed population, the
+probability that a parent is chosen is proportional to his/her
+fitness value stored in <em>selectionField</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="RandomParentsChooser.chooseParents">
+<code class="descname">chooseParents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#RandomParentsChooser.chooseParents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return chosen parents from a population if the parent chooser
+object is created with a population.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="RandomParentsChooser.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>pop</em>, <em>subPop</em><span class="sig-paren">)</span><a class="headerlink" href="#RandomParentsChooser.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize a parent chooser for subpopulation <em>subPop</em> of
+<em>population</em> pop.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-polyparentschooser">
+<h2>class PolyParentsChooser<a class="headerlink" href="#class-polyparentschooser" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PolyParentsChooser">
+<em class="property">class </em><code class="descname">PolyParentsChooser</code><a class="headerlink" href="#PolyParentsChooser" title="Permalink to this definition">¶</a></dt>
+<dd><p>This parent chooser is similar to random parents chooser but
+instead of selecting a new pair of parents each time, one of the
+parents in this parent chooser will mate with several spouses
+before he/she is replaced. This mimicks multi-spouse mating schemes
+such as polygyny or polyandry in some populations. Natural
+selection is supported for both sexes.</p>
+<dl class="method">
+<dt id="PolyParentsChooser.PolyParentsChooser">
+<code class="descname">PolyParentsChooser</code><span class="sig-paren">(</span><em>polySex=MALE</em>, <em>polyNum=1</em>, <em>selectionField=&quot;fitness&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#PolyParentsChooser.PolyParentsChooser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a multi-spouse parents chooser where each father (if
+<em>polySex</em> is MALE) or mother (if <em>polySex</em> is FEMALE) has
+<em>polyNum</em> spouses. The parents are chosen with replacement. If
+individual fitness values are assigned (stored to information
+field <code class="docutils literal notranslate"><span class="pre">selectionField</span></code>, default to <code class="docutils literal notranslate"><span class="pre">&quot;fitness&quot;</span></code>), the
+probability that an individual is chosen is proportional to
+his/her fitness value among all individuals with the same sex.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PolyParentsChooser.chooseParents">
+<code class="descname">chooseParents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PolyParentsChooser.chooseParents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return chosen parents from a population if the parent chooser
+object is created with a population.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PolyParentsChooser.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>pop</em>, <em>subPop</em><span class="sig-paren">)</span><a class="headerlink" href="#PolyParentsChooser.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize a parent chooser for subpopulation <em>subPop</em> of
+<em>population</em> pop.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-combinedparentschooser">
+<h2>class CombinedParentsChooser<a class="headerlink" href="#class-combinedparentschooser" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="CombinedParentsChooser">
+<em class="property">class </em><code class="descname">CombinedParentsChooser</code><a class="headerlink" href="#CombinedParentsChooser" title="Permalink to this definition">¶</a></dt>
+<dd><p>This parent chooser accepts two parent choosers. It takes one
+parent from each parent chooser and return them as father and
+mother. Because two parent choosers do not have to choose parents
+from the same virtual subpopulation, this parent chooser allows you
+to choose parents from different subpopulations.</p>
+<dl class="method">
+<dt id="CombinedParentsChooser.CombinedParentsChooser">
+<code class="descname">CombinedParentsChooser</code><span class="sig-paren">(</span><em>fatherChooser</em>, <em>motherChooser</em>, <em>allowSelfing=True</em><span class="sig-paren">)</span><a class="headerlink" href="#CombinedParentsChooser.CombinedParentsChooser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Python parent chooser using two parent choosers
+<em>fatherChooser</em> and <em>motherChooser</em>. It takes one parent from
+each parent chooser and return them as father and mother. If two
+valid parents are returned, the first valid parent (father) will
+be used for <em>fatherChooser</em>, the second valid parent (mother)
+will be used for <em>motherChooser</em>. Although these two parent
+choosers are supposed to return a father and a mother
+respectively, the sex of returned parents are not checked so it
+is possible to return parents with the same sex using this
+parents chooser. This choose by default allows the selection of
+the same parents as father and mother (self-fertilization),
+unless a parameter <em>allowSelfing</em> is used to disable it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CombinedParentsChooser.chooseParents">
+<code class="descname">chooseParents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombinedParentsChooser.chooseParents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return chosen parents from a population if the parent chooser
+object is created with a population.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CombinedParentsChooser.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>pop</em>, <em>subPop</em><span class="sig-paren">)</span><a class="headerlink" href="#CombinedParentsChooser.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize a parent chooser for subpopulation <em>subPop</em> of
+<em>population</em> pop.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-pyparentschooser">
+<h2>class PyParentsChooser<a class="headerlink" href="#class-pyparentschooser" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PyParentsChooser">
+<em class="property">class </em><code class="descname">PyParentsChooser</code><a class="headerlink" href="#PyParentsChooser" title="Permalink to this definition">¶</a></dt>
+<dd><p>This parent chooser accepts a Python generator function that
+repeatedly yields one or two parents, which can be references to
+individual objects or indexes relative to each subpopulation. The
+parent chooser calls the generator function with parental
+population and a subpopulation index for each subpopulation and
+retrieves parents repeatedly using the iterator interface of the
+generator function.</p>
+<p>This parent chooser does not support virtual subpopulation
+directly. However, because virtual subpopulations are defined in
+the passed parental population, it is easy to return parents from a
+particular virtual subpopulation using virtual subpopulation
+related functions.</p>
+<dl class="method">
+<dt id="PyParentsChooser.PyParentsChooser">
+<code class="descname">PyParentsChooser</code><span class="sig-paren">(</span><em>generator</em><span class="sig-paren">)</span><a class="headerlink" href="#PyParentsChooser.PyParentsChooser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Python parent chooser using a Python generator function
+<em>parentsGenerator</em>. This function should accept one or both of
+parameters <em>pop</em> (the parental population) and <em>subPop</em> (index
+of subpopulation) and return the reference or index (relative to
+subpopulation) of a parent or a pair of parents repeatedly using
+the iterator interface of the generator function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyParentsChooser.chooseParents">
+<code class="descname">chooseParents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PyParentsChooser.chooseParents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return chosen parents from a population if the parent chooser
+object is created with a population.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyParentsChooser.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>pop</em>, <em>subPop</em><span class="sig-paren">)</span><a class="headerlink" href="#PyParentsChooser.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize a parent chooser for subpopulation <em>subPop</em> of
+<em>population</em> pop.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-offspringgenerator">
+<h2>class OffspringGenerator<a class="headerlink" href="#class-offspringgenerator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="OffspringGenerator">
+<em class="property">class </em><code class="descname">OffspringGenerator</code><a class="headerlink" href="#OffspringGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>An <em>offspring generator</em> generates offspring from parents chosen by
+a parent chooser. It is responsible for creating a certain number
+of offspring, determinning their sex, and transmitting genotypes
+from parents to offspring.</p>
+<dl class="method">
+<dt id="OffspringGenerator.OffspringGenerator">
+<code class="descname">OffspringGenerator</code><span class="sig-paren">(</span><em>ops</em>, <em>numOffspring=1</em>, <em>sexMode=RANDOM_SEX</em><span class="sig-paren">)</span><a class="headerlink" href="#OffspringGenerator.OffspringGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a basic offspring generator. This offspring generator
+uses <em>ops</em> genotype transmitters to transmit genotypes from
+parents to offspring.</p>
+<p>A number of <em>during-mating operators</em> (parameter <em>ops</em>) can be
+used to, among other possible duties such as setting information
+fields of offspring, transmit genotype from parents to
+offspring. This general offspring generator does not have any
+default during-mating operator but all stock mating schemes use
+an offspring generator with a default operator. For example, a
+<code class="docutils literal notranslate"><span class="pre">mendelianOffspringGenerator</span></code> is used by <a class="reference internal" href="refManual_ch2_sec4.html#RandomMating" title="RandomMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomMating</span></code></a>
+to trasmit genotypes. Note that applicability parameters
+<code class="docutils literal notranslate"><span class="pre">begin</span></code>, <code class="docutils literal notranslate"><span class="pre">step</span></code>, <code class="docutils literal notranslate"><span class="pre">end</span></code>, <code class="docutils literal notranslate"><span class="pre">at</span></code> and <code class="docutils literal notranslate"><span class="pre">reps</span></code> could be used
+in these operators but negative population and generation
+indexes are unsupported.</p>
+<p>Parameter <em>numOffspring</em> is used to control the number of
+offspring per mating event, or in another word the number of
+offspring in each family. It can be a number, a Python function
+or generator, or a mode parameter followed by some optional
+arguments. If a number is given, given number of offspring will
+be generated at each mating event. If a Python function is
+given, it will be called each time when a mating event happens.
+When a generator function is specified, it will be called for
+each subpopulation to provide number of offspring for all mating
+events during the populating of this subpopulation. Current
+generation number will be passed to this function or generator
+function if parameter “gen” is used in this function. In the
+last case, a tuple (or a list) in one of the following forms can
+be given:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">(GEOMETRIC_DISTRIBUTION,</span> <span class="pre">p)</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">(POISSON_DISTRIBUTION,</span> <span class="pre">p)</span></code>, p &gt; 0</li>
+<li><code class="docutils literal notranslate"><span class="pre">(BINOMIAL_DISTRIBUTION,</span> <span class="pre">p,</span> <span class="pre">N)</span></code>, 0 &lt; p &lt;=1, N &gt; 0</li>
+<li><code class="docutils literal notranslate"><span class="pre">(UNIFORM_DISTRIBUTION,</span> <span class="pre">a,</span> <span class="pre">b)</span></code>, 0 &lt;= a &lt;= b.</li>
+</ul>
+<p>In this case, the number of offspring will be determined
+randomly following the specified statistical distributions.
+Because families with zero offspring are silently ignored, the
+distribution of the observed number of offspring per mating
+event (excluding zero) follows zero-truncated versions of these
+distributions.</p>
+<p>Parameter <em>numOffspring</em> specifies the number of offspring per
+mating event but the actual surviving offspring can be less than
+specified. More spefically, if any during-mating operator
+returns <code class="docutils literal notranslate"><span class="pre">False</span></code>, an offspring will be discarded so the
+actually number of offspring of a mating event will be reduced.
+This is essentially how during-mating selector works.</p>
+<p>Parameter <em>sexMode</em> is used to control the sex of each
+offspring. Its default value is usually <em>RANDOM_SEX</em> which
+assign <code class="docutils literal notranslate"><span class="pre">MALE</span></code> or <code class="docutils literal notranslate"><span class="pre">FEMALE</span></code> to each individual randomly, with
+equal probabilities. If <code class="docutils literal notranslate"><span class="pre">NO_SEX</span></code> is given, offspring sex will
+not be changed. <em>sexMode</em> can also be one of</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">(PROB_OF_MALES,</span> <span class="pre">p)</span></code> where <code class="docutils literal notranslate"><span class="pre">p</span></code> is the probability of male
+for each offspring,</li>
+<li><code class="docutils literal notranslate"><span class="pre">(NUM_OF_MALES,</span> <span class="pre">n)</span></code> where <code class="docutils literal notranslate"><span class="pre">n</span></code> is the number of males in a
+mating event. If <code class="docutils literal notranslate"><span class="pre">n</span></code> is greater than or equal to the number
+of offspring in this family, all offspring in this family will
+be <code class="docutils literal notranslate"><span class="pre">MALE</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">(NUM_OF_FEMALES,</span> <span class="pre">n)</span></code> where <code class="docutils literal notranslate"><span class="pre">n</span></code> is the number of females
+in a mating event,</li>
+<li><code class="docutils literal notranslate"><span class="pre">(SEQUENCE_OF_SEX,</span> <span class="pre">s1,</span> <span class="pre">s2</span> <span class="pre">...)</span></code> where <code class="docutils literal notranslate"><span class="pre">s1</span></code>, <code class="docutils literal notranslate"><span class="pre">s2</span></code> etc are
+MALE or FEMALE. The sequence will be used for each mating
+event. It will be reused if the number of offspring in a
+mating event is greater than the length of sequence.</li>
+<li><code class="docutils literal notranslate"><span class="pre">(GLOBAL_SEQUENCE_OF_SEX,</span> <span class="pre">s1,</span> <span class="pre">s2,</span> <span class="pre">...)</span></code> where <code class="docutils literal notranslate"><span class="pre">s1</span></code>, <code class="docutils literal notranslate"><span class="pre">s2</span></code>
+etc are MALE or FEMALE. The sequence will be used across
+mating events. It will be reused if the number of offspring in
+a subpopulation is greater than the length of sequence.</li>
+</ul>
+<p>Finally, parameter <em>sexMode</em> accepts a function or a generator
+function. A function will be called whenever an offspring is
+produced. A generator will be created at each subpopulation and
+will be used to produce sex for all offspring in this
+subpopulation. No parameter is accepted.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-controlledoffspringgenerator">
+<h2>class ControlledOffspringGenerator<a class="headerlink" href="#class-controlledoffspringgenerator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ControlledOffspringGenerator">
+<em class="property">class </em><code class="descname">ControlledOffspringGenerator</code><a class="headerlink" href="#ControlledOffspringGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>This offspring generator populates an offspring population and
+controls allele frequencies at specified loci. At each generation,
+expected allele frequencies at these loci are passed from a user
+defined allele frequency <em>trajectory</em> function. The offspring
+population is populated in two steps. At the first step, only
+families with disease alleles are accepted until until the expected
+number of disease alleles are met. At the second step, only
+families with wide type alleles are accepted to populate the rest
+of the offspring generation. This method is described in detail in
+“Peng et al, (2007) PLoS Genetics”.</p>
+<dl class="method">
+<dt id="ControlledOffspringGenerator.ControlledOffspringGenerator">
+<code class="descname">ControlledOffspringGenerator</code><span class="sig-paren">(</span><em>loci</em>, <em>alleles</em>, <em>freqFunc</em>, <em>ops=[]</em>, <em>numOffspring=1</em>, <em>sexMode=RANDOM_SEX</em><span class="sig-paren">)</span><a class="headerlink" href="#ControlledOffspringGenerator.ControlledOffspringGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an offspring generator that selects offspring so that
+allele frequency at specified loci in the offspring generation
+reaches specified allele frequency. At the beginning of each
+generation, expected allele frequency of <em>alleles</em> at <em>loci</em> is
+returned from a user-defined trajectory function <em>freqFunc</em>.
+Parameter <em>loci</em> can be a list of loci indexes, names, or
+ALL_AVAIL. If there is no subpopulation, this function should
+return a list of frequencies for each locus. If there are
+multiple subpopulations, <em>freqFunc</em> can return a list of allele
+frequencies for all subpopulations or combined frequencies that
+ignore population structure. In the former case, allele
+frequencies should be arranged by loc0_sp0, loc1_sp0, …
+loc0_sp1, loc1_sp1, …, and so on. In the latter case, overall
+expected number of alleles are scattered to each subpopulation
+in proportion to existing number of alleles in each
+subpopulation, using a multinomial distribution.</p>
+<p>After the expected alleles are calculated, this offspring
+generator accept and reject families according to their genotype
+at <em>loci</em> until allele frequecies reach their expected values.
+The rest of the offspring generation is then filled with
+families without only wild type alleles at these <em>loci</em>.</p>
+<p>This offspring generator is derived from class
+<em>OffspringGenerator</em>. Please refer to class <em>OffspringGenerator</em>
+for a detailed description of parameters <em>ops</em>, <em>numOffspring</em>
+and <em>sexMode</em>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec1.html">Individual, Population, pedigree and Simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec2.html">Virtual splitters</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Mating Schemes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-matingscheme">class MatingScheme</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-homomating">class HomoMating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-heteromating">class HeteroMating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-conditionalmating">class ConditionalMating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-pedigreemating">class PedigreeMating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-sequentialparentchooser">class SequentialParentChooser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-sequentialparentschooser">class SequentialParentsChooser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-randomparentchooser">class RandomParentChooser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-randomparentschooser">class RandomParentsChooser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-polyparentschooser">class PolyParentsChooser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-combinedparentschooser">class CombinedParentsChooser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-pyparentschooser">class PyParentsChooser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-offspringgenerator">class OffspringGenerator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-controlledoffspringgenerator">class ControlledOffspringGenerator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec4.html">Pre-defined mating schemes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec5.html">Utility Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec6.html">Global functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="refManual.html">&lt;no title&gt;</a><ul>
+  <li><a href="refManual_ch2.html">simuPOP Components</a><ul>
+      <li>Previous: <a href="refManual_ch2_sec2.html" title="previous chapter">Virtual splitters</a></li>
+      <li>Next: <a href="refManual_ch2_sec4.html" title="next chapter">Pre-defined mating schemes</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/refManual_ch2_sec3.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

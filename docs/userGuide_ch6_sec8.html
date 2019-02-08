@@ -1,0 +1,261 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Simulation of mitochondrial DNAs (mtDNAs) * &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Utility Modules" href="userGuide_ch7.html" />
+    <link rel="prev" title="Evolve a population following a specified pedigree structure **" href="userGuide_ch6_sec7.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="simulation-of-mitochondrial-dnas-mtdnas">
+<h1>Simulation of mitochondrial DNAs (mtDNAs) *<a class="headerlink" href="#simulation-of-mitochondrial-dnas-mtdnas" title="Permalink to this headline">¶</a></h1>
+<p>Mitochondrial DNAs resides in human mitochondrion. A zygote inherits its
+organelles from the cytoplasm of the egg, and thus organelle inheritance is
+generally maternal. Whereas there is only one copy of a nuclear chromosome per
+gamete, there are man copies of an organellar chromosome, forming a population
+of identical organelle chromosomes that is transmitted to the offspring through
+the egg. Because these organellar chromosomes are identical, they are modelled
+in simuPOP as a single chromosome with type <code class="docutils literal notranslate"><span class="pre">MITOCHONDRIAL</span></code>. In order to
+simulate mitochondrial DNAs, it is important to remember:</p>
+<ul class="simple">
+<li><a class="reference internal" href="refManual_ch3_sec5.html#MendelianGenoTransmitter" title="MendelianGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MendelianGenoTransmitter</span></code></a> and <a class="reference internal" href="refManual_ch3_sec5.html#Recombinator" title="Recombinator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Recombinator</span></code></a> do not handle
+mitochondrial DNAs so you will have to explicitly use
+<a class="reference internal" href="refManual_ch3_sec5.html#MitochondrialGenoTransmitter" title="MitochondrialGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MitochondrialGenoTransmitter</span></code></a> to transmit the mitochondrial DNAs from
+mother to offspring. Note that <a class="reference internal" href="refManual_ch3_sec5.html#CloneGenoTransmitter" title="CloneGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">CloneGenoTransmitter</span></code></a> is a special
+transmitter that will copy everything including sex, information fields to
+offspring.</li>
+<li>The <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> operator recognizes this chromosome type and will report
+allele, haplotype, and genotype counts, and other statistics correctly, although
+some diploid-specific statistics are not applicable.</li>
+<li>Natural selections on mtDNAs is usually performed using operator
+<a class="reference internal" href="refManual_ch3_sec9.html#MapSelector" title="MapSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapSelector</span></code></a> where single alleles are assigned a fitness value. Operator
+<a class="reference internal" href="refManual_ch3_sec9.html#MaSelector" title="MaSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaSelector</span></code></a> assumes two alleles and is not applicable.</li>
+</ul>
+<p>Example <a class="reference internal" href="#mitochondrial"><span class="std std-ref">mitochondrial</span></a> demonstrates the use of a
+<a class="reference internal" href="refManual_ch3_sec5.html#Recombinator" title="Recombinator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Recombinator</span></code></a> to recombine an autosome and two sex chromosomes, and a
+<a class="reference internal" href="refManual_ch3_sec5.html#MitochondrialGenoTransmitter" title="MitochondrialGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MitochondrialGenoTransmitter</span></code></a> to transmit mitochondrial chromosomes.
+Natural selection is applied to allele 3 at the 3rd locus on the mitochondrial
+DNA, whose frequency in the population decreases as a result.</p>
+<p id="mitochondrial"><strong>Example</strong>: <em>Transmission of mitochondrial chromosomes</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">*</span><span class="mi">4</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="c1"># one autosome, two sex chromosomes, and one mitochondrial chromosomes</span>
+<span class="gp">... </span>    <span class="n">chromTypes</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">AUTOSOME</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">CHROMOSOME_X</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">CHROMOSOME_Y</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">MITOCHONDRIAL</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;fitness&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.25</span><span class="p">]</span><span class="o">*</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MapSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">17</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="p">{(</span><span class="mi">0</span><span class="p">,):</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,):</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,):</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,):</span> <span class="mf">0.4</span><span class="p">})</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Recombinator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MitochondrialGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">17</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;</span><span class="si">%.2f</span><span class="s1"> </span><span class="si">%.2f</span><span class="s1"> </span><span class="si">%.2f</span><span class="s1"> </span><span class="si">%.2f</span><span class="s1">\n&quot; % (alleleNum[17][0],&#39;</span>
+<span class="gp">... </span>            <span class="s1">&#39;alleleNum[17][1], alleleNum[17][2], alleleNum[17][3])&#39;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">1288.00 273.00 325.00 114.00</span>
+<span class="go">1384.00 245.00 371.00 0.00</span>
+<span class="go">1492.00 138.00 370.00 0.00</span>
+<span class="go">1461.00 69.00 470.00 0.00</span>
+<span class="go">1449.00 65.00 486.00 0.00</span>
+<span class="go">1536.00 17.00 447.00 0.00</span>
+<span class="go">1624.00 7.00 369.00 0.00</span>
+<span class="go">1538.00 0.00 462.00 0.00</span>
+<span class="go">1619.00 0.00 381.00 0.00</span>
+<span class="go">1623.00 0.00 377.00 0.00</span>
+<span class="go">100</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="mitochondrial.py">Download mitochondrial.py</a></p>
+<p>You might wonder how a mutation can change the allele of all organelles in the
+mitochondrion. This is generally believed to be done through natural drift
+during cytoplasmic segreagation, which is not a mitotic process because it takes
+place in dividing asexual cells. Because only one mitochondrial chromosome is
+allowed in simuPOP, you will have to use customized chromosome types if you
+would like to simulate this process. Fortunately, operator
+<a class="reference internal" href="refManual_ch3_sec5.html#MitochondrialGenoTransmitter" title="MitochondrialGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MitochondrialGenoTransmitter</span></code></a> can select random organelles from multiple
+customized chromosomes, if no chromosome of type <code class="docutils literal notranslate"><span class="pre">MITOCHONDRIAL</span></code> is present.</p>
+<p>Example <a class="reference internal" href="#mtdna-evolve"><span class="std std-ref">mtDNA_evolve</span></a> demonstrates the fixation of mutant
+in cells with multiple organelles. Althogh mutations are introduced to only one
+of the organelles, after a number of cell divisions, the majority of the cells
+now have only one type of allele. This example uses a <a class="reference internal" href="refManual_ch2_sec4.html#RandomSelection" title="RandomSelection"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSelection</span></code></a>
+mating scheme to select cells randomly from the parental population. Because no
+sexual reproduction is involved, <a class="reference internal" href="refManual_ch3_sec5.html#MitochondrialGenoTransmitter" title="MitochondrialGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MitochondrialGenoTransmitter</span></code></a> passes
+the parental genotype to offspring regardless of sex of parent. This example
+also demonstrates a disadvantage of using customized chromosomes in that you
+will have to calculate statistics by yourself because only you know the meaning
+of these chromosomes. In this example, a function is written to count the number
+of mutants in each cell (individual), and summarize the number of cells with 0,
+1, 2, 3, 4, and 5 copies of the mutant.</p>
+<p id="mtdna-evolve"><strong>Example</strong>: <em>Evolution of multiple organelles in mitochondrion</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">alleleCount</span><span class="p">(</span><span class="n">pop</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">summary</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span> <span class="mi">6</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">():</span>
+<span class="gp">... </span>        <span class="n">geno</span> <span class="o">=</span> <span class="n">ind</span><span class="o">.</span><span class="n">genotype</span><span class="p">(</span><span class="n">ploidy</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">summary</span><span class="p">[</span><span class="n">geno</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">geno</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">geno</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="n">geno</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">+</span> <span class="n">geno</span><span class="p">[</span><span class="mi">8</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">gen</span><span class="p">,</span> <span class="n">summary</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="kc">True</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">,</span> <span class="n">chromTypes</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">CUSTOMIZED</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="c1"># every one has miDNAs 10, 00, 00, 00, 00</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">haplotypes</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">9</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="c1"># random select cells for cytoplasmic segregation</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomSelection</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MitochondrialGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">PyOperator</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">alleleCount</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">51</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">0 [333, 408, 219, 38, 2, 0]</span>
+<span class="go">10 [806, 16, 14, 16, 11, 137]</span>
+<span class="go">20 [816, 1, 1, 3, 0, 179]</span>
+<span class="go">30 [833, 0, 0, 0, 0, 167]</span>
+<span class="go">40 [805, 0, 0, 0, 0, 195]</span>
+<span class="go">50 [849, 0, 0, 0, 0, 151]</span>
+<span class="go">51</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="mtDNA_evolve.py">Download mtDNA_evolve.py</a></p>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec1.html">Mating Schemes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec2.html">Simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec3.html">Non-random and customized mating schemes *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec4.html">Age structured populations with overlapping generations **</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec5.html">Tracing allelic lineage *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec6.html">Pedigrees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec7.html">Evolve a population following a specified pedigree structure **</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Simulation of mitochondrial DNAs (mtDNAs) *</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch6.html">Evolving populations</a><ul>
+      <li>Previous: <a href="userGuide_ch6_sec7.html" title="previous chapter">Evolve a population following a specified pedigree structure **</a></li>
+      <li>Next: <a href="userGuide_ch7.html" title="next chapter">Utility Modules</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch6_sec8.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

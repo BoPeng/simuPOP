@@ -1,0 +1,297 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Initialization &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Expression and Statements" href="refManual_ch3_sec3.html" />
+    <link rel="prev" title="Base class for all operators" href="refManual_ch3_sec1.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="initialization">
+<h1>Initialization<a class="headerlink" href="#initialization" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class-initsex">
+<span id="index-0"></span><h2>class InitSex<a class="headerlink" href="#class-initsex" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="InitSex">
+<em class="property">class </em><code class="descname">InitSex</code><a class="headerlink" href="#InitSex" title="Permalink to this definition">¶</a></dt>
+<dd><p>This operator initializes sex of individuals, either randomly or
+use a list of sexes.</p>
+<dl class="method">
+<dt id="InitSex.InitSex">
+<code class="descname">InitSex</code><span class="sig-paren">(</span><em>maleFreq=0.5</em>, <em>maleProp=-1</em>, <em>sex=[]</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#InitSex.InitSex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an operator that initializes individual sex to <code class="docutils literal notranslate"><span class="pre">MALE</span></code>
+or <code class="docutils literal notranslate"><span class="pre">FEMALE</span></code>. By default, it assigns sex to individuals
+randomly, with equal probability of having a male or a female.
+This probabability can be adjusted through parameter <em>maleFreq</em>
+or be made to exact proportions by specifying parameter
+<em>maleProp</em>. Alternatively, a fixed sequence of sexes can be
+assigned. For example, if <code class="docutils literal notranslate"><span class="pre">sex=[MALE,</span> <span class="pre">FEMALE]</span></code>, individuals
+will be assigned <code class="docutils literal notranslate"><span class="pre">MALE</span></code> and <code class="docutils literal notranslate"><span class="pre">FEMALE</span></code> successively. Parameter
+<em>maleFreq</em> or <em>maleProp</em> are ignored if <em>sex</em> is given. If a
+list of (virtual) subpopulation is specified in parameter
+<em>subPop</em>, only individuals in these subpopulations will be
+initialized. Note that the <em>sex</em> sequence, if used, is assigned
+repeatedly regardless of (virtual) subpopulation boundaries so
+that you can assign <em>sex</em> to all individuals in a population.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-initinfo">
+<h2>class InitInfo<a class="headerlink" href="#class-initinfo" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="InitInfo">
+<em class="property">class </em><code class="descname">InitInfo</code><a class="headerlink" href="#InitInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>This operator initializes given information fields with a sequence
+of values, or a user-provided function such as <code class="docutils literal notranslate"><span class="pre">random.random</span></code>.</p>
+<dl class="method">
+<dt id="InitInfo.InitInfo">
+<code class="descname">InitInfo</code><span class="sig-paren">(</span><em>values</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#InitInfo.InitInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an operator that initialize individual information fields
+<em>infoFields</em> using a sequence of values or a user-defined
+function. If a list of values are given, it will be used
+sequentially for all individuals. The values will be reused if
+its length is less than the number of individuals. The values
+will be assigned repeatedly regardless of subpopulation
+boundaries. If a Python function is given, it will be called,
+without any argument, whenever a value is needed. If a list of
+(virtual) subpopulation is specified in parameter <em>subPop</em>, only
+individuals in these subpopulations will be initialized.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-initgenotype">
+<h2>class InitGenotype<a class="headerlink" href="#class-initgenotype" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="InitGenotype">
+<em class="property">class </em><code class="descname">InitGenotype</code><a class="headerlink" href="#InitGenotype" title="Permalink to this definition">¶</a></dt>
+<dd><p>This operator assigns alleles at all or part of loci with given
+allele frequencies, proportions or values. This operator
+initializes all chromosomes, including unused genotype locations
+and customized chromosomes.</p>
+<dl class="method">
+<dt id="InitGenotype.InitGenotype">
+<code class="descname">InitGenotype</code><span class="sig-paren">(</span><em>freq=[]</em>, <em>genotype=[]</em>, <em>prop=[]</em>, <em>haplotypes=[]</em>, <em>genotypes=[]</em>, <em>loci=ALL_AVAIL</em>, <em>ploidy=ALL_AVAIL</em>, <em>begin=0</em>, <em>end=1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#InitGenotype.InitGenotype" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function creates an initializer that initializes individual
+genotypes with random alleles, genotypes, or haplotypes with
+specified frequencies (parameter <em>freq</em>) or proportions
+(parameter <em>prop</em>). If parameter <em>genotypes</em> or <em>haplotypes</em> is
+not specified, <em>freq</em> specifies the allele frequencies of
+alleles <code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span></code>… respectively. Alternatively, you
+can use parameter <em>prop</em> to specified the exact proportions of
+alleles <code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span></code>, …, although alleles with small
+proportions might not be assigned at all.</p>
+<p>Values of parameter <em>prob</em> or <em>prop</em> should add up to 1. In
+addition to a vector, parameter <em>prob</em> and <em>prop</em> can also be a
+function that accepts optional parameters <em>loc</em>, <em>subPop</em> or
+<em>vsp</em> and returns a list of requencies for alleles <code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span></code>,
+etc, or a number for frequency of allele <code class="docutils literal notranslate"><span class="pre">0</span></code> as a speciail
+case for each locus, subpopulation (parameter <em>subPop</em>), or
+virtual subpopulations (parameter <em>vsp</em>, pass as a tuple).</p>
+<p>If parameter <em>genotypes</em> is specified, it should contain a list
+of genotypes (alleles on different strand of chromosomes) with
+length equal to population ploidy. Parameter <em>prob</em> and <em>prop</em>
+then specifies frequencies or proportions of each genotype,
+which can vary for each subpopulation but not each locus if the
+function form of parameters is used.</p>
+<p>If parameter <em>haplotypes</em> is specified, it should contain a list
+of haplotypes (alleles on the same strand of chromosome) and
+parameter <em>prob</em> or <em>prop</em> specifies frequencies or proportions
+of each haplotype.</p>
+<p>If <em>loci</em>, <em>ploidy</em> and/or <em>subPop</em> are specified, only
+specified loci, ploidy, and individuals in these (virtual)
+subpopulations will be initialized. Parameter <em>loci</em> can be a
+list of loci indexes, names or <code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>. If the length of a
+haplotype is not enough to fill all loci, the haplotype will be
+reused. If a list (or a single) haplotypes are specified without
+<em>freq</em> or <em>prop</em>, they are used with equal probability.</p>
+<p>In the last case, if a sequence of genotype is specified through
+parameter <em>genotype</em> (not <em>genotypes</em>), it will be used
+repeatedly to initialize all alleles sequentially. This works
+similar to function <code class="docutils literal notranslate"><span class="pre">Population.setGenotype()</span></code> except that you
+can limit the initialization to certain <em>loci</em> and <em>ploidy</em>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-initlineage">
+<h2>class InitLineage<a class="headerlink" href="#class-initlineage" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="InitLineage">
+<em class="property">class </em><code class="descname">InitLineage</code><a class="headerlink" href="#InitLineage" title="Permalink to this definition">¶</a></dt>
+<dd><p>This operator assigns lineages at all or part of loci with given
+values. This operator initializes all chromosomes, including unused
+lineage locations and customized chromosomes.</p>
+<dl class="method">
+<dt id="InitLineage.InitLineage">
+<code class="descname">InitLineage</code><span class="sig-paren">(</span><em>lineage=[], mode=PER_ALLELE, loci=ALL_AVAIL, ploidy=ALL_AVAIL, begin=0, end=1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[&quot;ind_id&quot;]</em><span class="sig-paren">)</span><a class="headerlink" href="#InitLineage.InitLineage" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function creates an initializer that initializes lineages
+with either a specified set of values or from the field
+<em>infoFields</em> (default to <code class="docutils literal notranslate"><span class="pre">ind_id</span></code>), whose value will be saved
+as the lineage of modified alleles. If a list of values is
+specified in parameter <em>lineage</em>, each value in this list is
+applied to one or more alleles so that each allele
+(<code class="docutils literal notranslate"><span class="pre">PER_ALLELE</span></code>, default mode), alleles on each chromosome
+(<code class="docutils literal notranslate"><span class="pre">PER_CHROMOSOME</span></code>), on chromosomes of each ploidy
+(<code class="docutils literal notranslate"><span class="pre">PER_PLOIDY</span></code>), or for each individual (<code class="docutils literal notranslate"><span class="pre">PER_INDIVIDUAL</span></code>)
+have the same lineage. A single value is allowed and values in
+<em>lineage</em> will be re-used if not enough values are provided. If
+an empty list is provided, values 1, 2, 3, .. will be used to
+provide an unique identify for each allele, genotype,
+chromosome, etc. If a valid field is specified (default to
+<code class="docutils literal notranslate"><span class="pre">ind_id</span></code>), the value of this field will be used for all
+alleles of each individual if <em>mode</em> is set to <code class="docutils literal notranslate"><span class="pre">FROM_INFO</span></code>, or
+be adjusted to produce positive values for alleles on the frist
+ploidy, and negative values for the second ploidy (and so on) if
+<em>mode</em> equals to <code class="docutils literal notranslate"><span class="pre">FROM_INFO_SIGNED</span></code>. If <em>loci</em>, <em>ploidy</em>
+and/or <em>subPops</em> are specified, only specified loci, ploidy, and
+individuals in these (virtual) subpopulations will be
+initialized.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="refManual_ch3.html">Operator References</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec1.html">Base class for all operators</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Initialization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-initsex">class InitSex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-initinfo">class InitInfo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-initgenotype">class InitGenotype</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-initlineage">class InitLineage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec3.html">Expression and Statements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec4.html">Demographic models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec5.html">Genotype transmitters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec6.html">Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec7.html">Penetrance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec8.html">Quantitative Trait</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec9.html">Natural selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec10.html">Tagging operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec11.html">Statistics Calculation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec12.html">Conditional operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec13.html">The Python operator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec14.html">Miscellaneous operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec15.html">Function form of operators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="refManual.html">&lt;no title&gt;</a><ul>
+  <li><a href="refManual_ch3.html">Operator References</a><ul>
+      <li>Previous: <a href="refManual_ch3_sec1.html" title="previous chapter">Base class for all operators</a></li>
+      <li>Next: <a href="refManual_ch3_sec3.html" title="next chapter">Expression and Statements</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/refManual_ch3_sec2.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

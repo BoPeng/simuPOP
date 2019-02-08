@@ -1,0 +1,1223 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Mutation &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Penetrance" href="userGuide_ch5_sec7.html" />
+    <link rel="prev" title="Genotype transmitters" href="userGuide_ch5_sec5.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="mutation">
+<h1>Mutation<a class="headerlink" href="#mutation" title="Permalink to this headline">¶</a></h1>
+<p>A mutator (a mutation operator) mutates alleles at certain loci from one allele
+to another. Because alleles are simple non-nagative numbers that can be
+intrepreted as nucleotides, codons, squences of nucleotides or even genetic
+deletions, appropriate mutation models have to be chosen for different types of
+loci. Please refer to Section <a class="reference internal" href="userGuide_ch4_sec1.html#sec-genotypic-structure"><span class="std std-ref">sec_Genotypic_structure</span></a> for a few examples.</p>
+<p>A mutator will mutate alleles at all loci unless parameter <code class="docutils literal notranslate"><span class="pre">loci</span></code> is used to
+specify a subset of loci. Different mutators have different concepts and forms
+of mutation rates. If a mutator accepts only a single mutation rate (which can
+be in the form of a list or a matrix), it uses parameter <code class="docutils literal notranslate"><span class="pre">rate</span></code> and applies
+the same mutation rate to all loci. If a mutator accepts a list of mutation
+rates (each of which is a single number), it uses parameter <code class="docutils literal notranslate"><span class="pre">rates</span></code> and
+applies different mutation rates to different loci if multiple loci are
+specified. Note that parameter <code class="docutils literal notranslate"><span class="pre">rates</span></code> also accepts single form inputs (e.g.
+<code class="docutils literal notranslate"><span class="pre">rates=0.01</span></code>) in which case the same mutation rate will be applied to all
+loci.</p>
+<div class="section" id="mutation-models-specified-by-rate-matrixes-matrixmutator">
+<h2>Mutation models specified by rate matrixes (<a class="reference internal" href="refManual_ch3_sec6.html#MatrixMutator" title="MatrixMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatrixMutator</span></code></a>)<a class="headerlink" href="#mutation-models-specified-by-rate-matrixes-matrixmutator" title="Permalink to this headline">¶</a></h2>
+<p>A mutation model can be defined as a <strong>mutation rate matrix</strong>
+<span class="math notranslate nohighlight">\(\left(p_{ij}\right)_{n\times n}\)</span> where <span class="math notranslate nohighlight">\(p_{ij}\)</span> is the probability
+that an allele <span class="math notranslate nohighlight">\(i\)</span> mutates to <span class="math notranslate nohighlight">\(j\)</span> per generation per locus. Although
+mathematical formulation of <span class="math notranslate nohighlight">\(p_{ij}\)</span> are sometimes unscaled, simuPOP
+assumes <span class="math notranslate nohighlight">\(\sum_{j=0}^{n-1}p_{ij}=1\)</span> for all <span class="math notranslate nohighlight">\(i\)</span> and requires such
+rate matrixes in the specification of a mutation model. <span class="math notranslate nohighlight">\(p_{ii}\)</span> of such a
+matrix are ignored because they are automatically calculated from
+<span class="math notranslate nohighlight">\(p_{ii}=1-\sum_{j\ne i}p_{ij}\)</span>.</p>
+<p>A <a class="reference internal" href="refManual_ch3_sec6.html#MatrixMutator" title="MatrixMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatrixMutator</span></code></a> is defined to mutate between alleles 0, 1, …,
+<span class="math notranslate nohighlight">\(n-1\)</span> according to a given rate matrix. Conceptually speaking, this
+mutator goes through each mutable allele and mutates it to allele
+<span class="math notranslate nohighlight">\(0,1,..,n-1\)</span> according to probabilities <span class="math notranslate nohighlight">\(p_{ij}\)</span>,
+<span class="math notranslate nohighlight">\(j=0,...,n-1\)</span>. Most alleles will be kept intact because mutations usually
+happen at low probability (with <span class="math notranslate nohighlight">\(p_{ii}\)</span> close to 1). For example, Example
+<a class="reference internal" href="#matrixmutator"><span class="std std-ref">MatrixMutator</span></a> simulates a locus with 3 alleles. Because
+the rate at which allele 2 mutats to alleles 0 and 1 is higher than the rate
+alleles 0 and 2 mutate to allele 2, the frequency of allele 2 decreases over
+time.</p>
+<p id="matrixmutator"><strong>Example</strong>: <em>General mutator specified by a mutation rate matrix</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">2000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">MatrixMutator</span><span class="p">(</span><span class="n">rate</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>            <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="p">[</span><span class="mf">1e-4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="p">[</span><span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="gp">... </span>        <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;, &#39;.join([&#39;</span><span class="si">%.3f</span><span class="s2">&#39; % alleleFreq[0][x] for x in range(3)]) + &#39;\n&#39;&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">step</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">1000</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">0.192, 0.302, 0.505</span>
+<span class="go">0.241, 0.292, 0.467</span>
+<span class="go">0.328, 0.273, 0.399</span>
+<span class="go">0.270, 0.322, 0.408</span>
+<span class="go">0.312, 0.412, 0.276</span>
+<span class="go">0.330, 0.344, 0.327</span>
+<span class="go">0.332, 0.424, 0.244</span>
+<span class="go">0.426, 0.372, 0.201</span>
+<span class="go">0.413, 0.384, 0.203</span>
+<span class="go">0.395, 0.408, 0.198</span>
+<span class="go">1000</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="MatrixMutator.py">Download MatrixMutator.py</a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Alleles other than 0, 1, …, $n-1$ will not be mutated because their mutation
+rates are undefined. A warning message will be displayed for this case when
+debugging code <code class="docutils literal notranslate"><span class="pre">DBG_WARNING</span></code> is turnned on.</p>
+</div>
+</div>
+<div class="section" id="k-allele-mutation-model-kallelemutator">
+<h2>k-allele mutation model (<a class="reference internal" href="refManual_ch3_sec6.html#KAlleleMutator" title="KAlleleMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">KAlleleMutator</span></code></a>)<a class="headerlink" href="#k-allele-mutation-model-kallelemutator" title="Permalink to this headline">¶</a></h2>
+<p>A <span class="math notranslate nohighlight">\(k\)</span>-allele model assumes <span class="math notranslate nohighlight">\(k\)</span> alleles
+<span class="math notranslate nohighlight">\(\left(0,1,...,k-1\right)\)</span> at a locus and mutate between them using rate
+matrix</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}p_{ij}=\left(\begin{array}{cccc}
+1-\mu &amp; \frac{\mu}{k-1} &amp; \cdots &amp; \frac{\mu}{k-1}\\
+\frac{\mu}{k-1} &amp; 1-\mu &amp; \cdots &amp; \frac{\mu}{k-1}\\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+\frac{\mu}{k-1} &amp; \frac{\mu}{k-1} &amp; \cdots &amp; 1-\mu
+\end{array}\right)\end{split}\]</div>
+<p>The only parameter <span class="math notranslate nohighlight">\(\mu\)</span> is the mutation rate, which is the rate at which
+an allele mutates to any other allele with equal probability.</p>
+<p>This mutation model is a special case of the <a class="reference internal" href="refManual_ch3_sec6.html#MatrixMutator" title="MatrixMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatrixMutator</span></code></a> but a
+specialized <a class="reference internal" href="refManual_ch3_sec6.html#KAlleleMutator" title="KAlleleMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">KAlleleMutator</span></code></a> is recommended because it provides better
+performance, especially when <span class="math notranslate nohighlight">\(k\)</span> is large. In addition, this operator
+allows different mutation rates at different loci. When <span class="math notranslate nohighlight">\(k\)</span> is not
+specified, it is assumed to be the number of allowed alleles (e.g. 2 for binary
+modules). Example <a class="reference internal" href="#kallelemutator"><span class="std std-ref">KAlleleMutator</span></a> desmonstrates the use
+of this operator where parameters <code class="docutils literal notranslate"><span class="pre">rate</span></code> and <code class="docutils literal notranslate"><span class="pre">loci</span></code> are used to specify
+different mutation rates for different loci. Because this operator treats all
+alleles equally, all alleles will have the same allele frequency in the long
+run.</p>
+<p id="kallelemutator"><strong>Example</strong>: <em>A k-allele mutation model</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">2000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="o">*</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">KAlleleMutator</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">rates</span><span class="o">=</span><span class="p">[</span><span class="mf">1e-2</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">step</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;, &#39;.join([&#39;</span><span class="si">%.3f</span><span class="s2">&#39; % alleleFreq[x][0] for x in range(3)]) + &#39;\n&#39;&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">step</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">500</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">0.991, 0.999, 1.000</span>
+<span class="go">0.368, 0.918, 1.000</span>
+<span class="go">0.300, 0.815, 1.000</span>
+<span class="go">0.257, 0.639, 1.000</span>
+<span class="go">0.209, 0.573, 1.000</span>
+<span class="go">500</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="KAlleleMutator.py">Download KAlleleMutator.py</a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If alleles $k$ and higher exist in the population, they will not be mutated
+because their mutation rates are undefined. A warning message will be displayed
+for this case when debugging code <code class="docutils literal notranslate"><span class="pre">DBG_WARNING</span></code> is turnned on.</p>
+</div>
+</div>
+<div class="section" id="diallelic-mutation-models-snpmutator">
+<h2>Diallelic mutation models (<a class="reference internal" href="refManual_ch3_sec6.html#SNPMutator" title="SNPMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">SNPMutator</span></code></a>)<a class="headerlink" href="#diallelic-mutation-models-snpmutator" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="refManual_ch3_sec6.html#MatrixMutator" title="MatrixMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatrixMutator</span></code></a> and <a class="reference internal" href="refManual_ch3_sec6.html#KAlleleMutator" title="KAlleleMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">KAlleleMutator</span></code></a> are general purpose mutators
+in the sense that they do not assume a type for the mutated alleles. This and
+the following sections describe mutation models for specific types of alleles.</p>
+<p>If there are only two alleles at a locus, a diallelic mutation model should be
+used. Because single nucleotide polymorphisms (SNPs) are the most widely
+avaiable diallelic markers, a <a class="reference internal" href="refManual_ch3_sec6.html#SNPMutator" title="SNPMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">SNPMutator</span></code></a> is provided to mutate such
+markers using a mutate rate matrix</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}R=\left(\begin{array}{cc}
+1-u &amp; u\\
+v &amp; 1-v
+\end{array}\right).\end{split}\]</div>
+<p>Despite of its name, this mutator can be used in many theoretical models
+assuming <span class="math notranslate nohighlight">\(\mbox{Pr}\left(A\rightarrow a\right)=u\)</span> and
+<span class="math notranslate nohighlight">\(\mbox{Pr}\left(a\rightarrow A\right)=v\)</span>. If <span class="math notranslate nohighlight">\(v=0\)</span>, mutations will
+be directional. Example <a class="reference internal" href="#snpmutator"><span class="std std-ref">SNPMutator</span></a> applies such a
+directional mutaton model to two loci, but with a purifying selection applied to
+the first locus. Because of the selection pressure, the frequency of allele 1 at
+the first locus does not increase indefinitely as allele 1 at the second locus.</p>
+<p id="snpmutator"><strong>Example</strong>: <em>A diallelic directional mutation model</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">2000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">lociNames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;fitness&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">SNPMutator</span><span class="p">(</span><span class="n">u</span><span class="o">=</span><span class="mf">0.001</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MaSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.98</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">],</span> <span class="n">step</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;</span><span class="si">%.3f</span><span class="s2">\t</span><span class="si">%.3f</span><span class="s2">\n&#39; % (alleleFreq[0][1], alleleFreq[1][1])&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">step</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">500</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">0.001        0.001</span>
+<span class="go">0.077        0.087</span>
+<span class="go">0.099        0.192</span>
+<span class="go">0.099        0.300</span>
+<span class="go">0.085        0.400</span>
+<span class="go">500</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="SNPMutator.py">Download SNPMutator.py</a></p>
+</div>
+<div class="section" id="nucleotide-mutation-models-acgtmutator">
+<h2>Nucleotide mutation models (<a class="reference internal" href="refManual_ch3_sec6.html#AcgtMutator" title="AcgtMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">AcgtMutator</span></code></a>)<a class="headerlink" href="#nucleotide-mutation-models-acgtmutator" title="Permalink to this headline">¶</a></h2>
+<p>Mutations in these models assume alleles 0, 1, 2, 3 as nucleotides A, C, G, and
+T. The operator is named <a class="reference internal" href="refManual_ch3_sec6.html#AcgtMutator" title="AcgtMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">AcgtMutator</span></code></a> to remind you the alphabetic order
+of these nucleotides. This mutation model is specified by a rate matrix</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{array}{ccccc}
+ &amp; A &amp; C &amp; G &amp; T\\
+A &amp; - &amp; x_{1} &amp; x_{2} &amp; x_{3}\\
+C &amp; x_{4} &amp; - &amp; x_{5} &amp; x_{6}\\
+G &amp; x_{7} &amp; x_{8} &amp; - &amp; x_{9}\\
+T &amp; x_{10} &amp; x_{11} &amp; x_{12} &amp; -
+\end{array}\end{split}\]</div>
+<p>which is determined by 12 parameters. However, several simpler models with fewer
+parameters can be used. In addition to parameters shared by all mutation
+operators, a nucleotide mutator is specified by a parameter list and a model
+name. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AcgtMutator</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="p">[</span><span class="mf">1e-5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;K80&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>specifies a nucleotide mutator using Kimura’s 2-parameter model with
+<span class="math notranslate nohighlight">\(\mu=10^{-5}\)</span> and <span class="math notranslate nohighlight">\(\kappa=0.5\)</span>. Because multiple parameters could be
+involved for a particular mutation model, <strong>the definition of a mutation rate
+and other paramters are model dependent and may varying with different
+mathematical representation of the models</strong>.</p>
+<p>The names and acceptable parameters of acceptable models are listed below:</p>
+<ol class="arabic">
+<li><p class="first">Jukes and Cantor 1969 model: <code class="docutils literal notranslate"><span class="pre">model='JC69'</span></code>, rate=[<span class="math notranslate nohighlight">\(\mu\)</span> ]</p>
+<p>The Jukes and Cantor model is similar to a <span class="math notranslate nohighlight">\(4\)</span>-allele model but its
+definition of <span class="math notranslate nohighlight">\(\mu\)</span> is different. More specifically, when a mutation event
+happens at rate <span class="math notranslate nohighlight">\(\mu\)</span>, an allele will have equal probability to mutate to
+any of the 4 allelic states.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}R=\left(\begin{array}{cccc}
+- &amp; \frac{\mu}{4} &amp; \frac{\mu}{4} &amp; \frac{\mu}{4}\\
+\frac{\mu}{4} &amp; - &amp; \frac{\mu}{4} &amp; \frac{\mu}{4}\\
+\frac{\mu}{4} &amp; \frac{\mu}{4} &amp; - &amp; \frac{\mu}{4}\\
+\frac{\mu}{4} &amp; \frac{\mu}{4} &amp; \frac{\mu}{4} &amp; -
+\end{array}\right)\end{split}\]</div>
+</li>
+<li><p class="first">Kimura’s 2-parameter 1980 model: <code class="docutils literal notranslate"><span class="pre">model='K80'</span></code>, rate=[<span class="math notranslate nohighlight">\(\mu\)</span>,
+<span class="math notranslate nohighlight">\(\kappa\)</span>]</p>
+<p>Kimura ‘s model distinguishes transitions (<span class="math notranslate nohighlight">\(A\longleftrightarrow G\)</span>, and
+<span class="math notranslate nohighlight">\(C\leftrightarrow T\)</span> namely <span class="math notranslate nohighlight">\(0\longleftrightarrow2\)</span> and
+<span class="math notranslate nohighlight">\(1\longleftrightarrow3\)</span> with probability <span class="math notranslate nohighlight">\(\frac{\mu}{4}\kappa\)</span>) and
+transversions (others) with probability <span class="math notranslate nohighlight">\(\frac{\mu}{4}\)</span>. It would be a
+Jukes and Cantor model if <span class="math notranslate nohighlight">\(\kappa=1\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}R=\left(\begin{array}{cccc}
+- &amp; \frac{\mu}{4} &amp; \frac{\mu}{4}\kappa &amp; \frac{\mu}{4}\\
+\frac{\mu}{4} &amp; - &amp; \frac{\mu}{4} &amp; \frac{\mu}{4}\kappa\\
+\frac{\mu}{4}\kappa &amp; \frac{\mu}{4} &amp; - &amp; \frac{\mu}{4}\\
+\frac{\mu}{4} &amp; \frac{\mu}{4}\kappa &amp; \frac{\mu}{4} &amp; -
+\end{array}\right)\end{split}\]</div>
+</li>
+<li><p class="first">Felsenstein 1981 model: <code class="docutils literal notranslate"><span class="pre">model='F81'</span></code>, rate=[<span class="math notranslate nohighlight">\(\mu\)</span>, <span class="math notranslate nohighlight">\(\pi_{A}\)</span>,
+<span class="math notranslate nohighlight">\(\pi_{C}\)</span>, <span class="math notranslate nohighlight">\(\pi_{G}\)</span>].</p>
+<p>This model assumes different base frequencies but the same probabilities for
+transitions and transversions. <span class="math notranslate nohighlight">\(\pi_{T}\)</span> is calculated from
+<span class="math notranslate nohighlight">\(\pi_{A}\)</span>, <span class="math notranslate nohighlight">\(\pi_{C}\)</span> and <span class="math notranslate nohighlight">\(\pi_{G}\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}R=\left(\begin{array}{cccc}
+- &amp; \mu\pi_{C} &amp; \mu\pi_{G} &amp; \mu\pi_{T}\\
+\mu\pi_{A} &amp; - &amp; \mu\pi_{G} &amp; \mu\pi_{T}\\
+\mu\pi_{A} &amp; \mu\pi_{C} &amp; - &amp; \mu\pi_{T}\\
+\mu\pi_{A} &amp; \mu\pi_{C} &amp; \mu\pi_{G} &amp; -
+\end{array}\right)\end{split}\]</div>
+</li>
+<li><p class="first">Hasegawa, Kishino and Yano 1985 model: <code class="docutils literal notranslate"><span class="pre">model='HKY85'</span></code>, rate=[<span class="math notranslate nohighlight">\(\mu\)</span>,
+<span class="math notranslate nohighlight">\(\kappa\)</span>, <span class="math notranslate nohighlight">\(\pi_{A}\)</span>, <span class="math notranslate nohighlight">\(\pi_{C}\)</span>, <span class="math notranslate nohighlight">\(\pi_{G}\)</span>]</p>
+<p>This model replaces 1/4 frequency used in the Kimura’s 2-parameter model with
+nucleotide-specific frequencies.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}R=\left(\begin{array}{cccc}
+- &amp; \mu\pi_{C} &amp; \mu\kappa\pi_{G} &amp; \mu\pi_{T}\\
+\mu\pi_{A} &amp; - &amp; \mu\pi_{G} &amp; \mu\kappa\pi_{T}\\
+\mu\kappa\pi_{A} &amp; \mu\pi_{C} &amp; - &amp; \mu\pi_{T}\\
+\mu\pi_{A} &amp; \mu\kappa\pi_{C} &amp; \mu\pi_{G} &amp; -
+\end{array}\right)\end{split}\]</div>
+</li>
+<li><p class="first">Tamura 1992 model: <code class="docutils literal notranslate"><span class="pre">model='T92'</span></code>, rate=[<span class="math notranslate nohighlight">\(\mu\)</span>, <span class="math notranslate nohighlight">\(\pi_{GC}\)</span>]</p>
+<p>This model is a HKY85 model with <span class="math notranslate nohighlight">\(\pi_{G}=\pi_{C}=\pi_{GC}/2\)</span> and
+<span class="math notranslate nohighlight">\(\pi_{A}=\pi_{T}=\pi_{AT}/2=\left(1-\pi_{GC}\right)/2\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}R=\left(\begin{array}{cccc}
+- &amp; \frac{1}{2}\mu\pi_{GC} &amp; \frac{1}{2}\mu\nu\pi_{GC} &amp; \frac{1}{2}\mu\pi_{AT}\\
+\frac{1}{2}\mu\pi_{AT} &amp; - &amp; \frac{1}{2}\mu\pi_{GC} &amp; \frac{1}{2}\mu\nu\pi_{AT}\\
+\frac{1}{2}\mu\nu\pi_{AT} &amp; \frac{1}{2}\mu\pi_{GC} &amp; - &amp; \frac{1}{2}\mu\pi_{AT}\\
+\frac{1}{2}\mu\pi_{AT} &amp; \frac{1}{2}\mu\nu\pi_{GC} &amp; \frac{1}{2}\mu\pi_{GC} &amp; -
+\end{array}\right)\end{split}\]</div>
+</li>
+<li><p class="first">Tamura and Nei 1993 model: <code class="docutils literal notranslate"><span class="pre">model='TN93'</span></code>, rate=[<span class="math notranslate nohighlight">\(\mu\)</span>,
+<span class="math notranslate nohighlight">\(\kappa_{1}\)</span>, <span class="math notranslate nohighlight">\(\kappa_{2}\)</span>, <span class="math notranslate nohighlight">\(\pi_{A}\)</span>, <span class="math notranslate nohighlight">\(\pi_{C}\)</span>,
+<span class="math notranslate nohighlight">\(\pi_{G}\)</span>]</p>
+<p>This model extends the HKY1985 model by distinguishing
+<span class="math notranslate nohighlight">\(A\longleftrightarrow G\)</span> transitions (namely
+<span class="math notranslate nohighlight">\(0\longleftrightarrow2\)</span>) and <span class="math notranslate nohighlight">\(C\leftrightarrow T\)</span> transitions
+(<span class="math notranslate nohighlight">\(1\longleftrightarrow3\)</span>) with different <span class="math notranslate nohighlight">\(\kappa\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}R=\left(\begin{array}{cccc}
+- &amp; \mu\pi_{C} &amp; \mu\kappa_{1}\pi_{G} &amp; \mu\pi_{T}\\
+\mu\pi_{A} &amp; - &amp; \mu\pi_{G} &amp; \mu\kappa_{2}\pi_{T}\\
+\mu\kappa_{1}\pi_{A} &amp; \mu\pi_{C} &amp; - &amp; \mu\pi_{T}\\
+\mu\pi_{A} &amp; \mu\kappa_{2}\pi_{C} &amp; \mu\pi_{G} &amp; -
+\end{array}\right)\end{split}\]</div>
+</li>
+<li><p class="first">Generalized time reversible model: <code class="docutils literal notranslate"><span class="pre">model='GTR'</span></code>, rate=[<span class="math notranslate nohighlight">\(x_{1}\)</span>,
+<span class="math notranslate nohighlight">\(x_{2}\)</span>, <span class="math notranslate nohighlight">\(x_{3}\)</span>, <span class="math notranslate nohighlight">\(x_{4}\)</span>, <span class="math notranslate nohighlight">\(x_{5}\)</span>, <span class="math notranslate nohighlight">\(x_{6}\)</span>,
+<span class="math notranslate nohighlight">\(\pi_{A}\)</span>, <span class="math notranslate nohighlight">\(\pi_{C}\)</span>, <span class="math notranslate nohighlight">\(\pi_{G}\)</span>]</p>
+<p>The generalized time reviersible model is the most general neutral,
+indepdendent, finite-sites, time-reversible model possible. It is specified by
+six parameters and base frequencies. Its rate matrix is defined as</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}R=\left(\begin{array}{cccc}
+- &amp; \frac{\pi_{A}x_{1}}{\pi_{C}} &amp; \frac{\pi_{A}x_{2}}{\pi_{G}} &amp; \frac{\pi_{A}x_{3}}{\pi_{T}}\\
+x_{1} &amp; - &amp; \frac{\pi_{C}x_{4}}{\pi_{G}} &amp; \frac{\pi_{C}x_{5}}{\pi_{T}}\\
+x_{2} &amp; x_{4} &amp; - &amp; \frac{\pi_{G}x_{6}}{\pi_{T}}\\
+x_{3} &amp; x_{5} &amp; x_{6} &amp; -
+\end{array}\right)\end{split}\]</div>
+</li>
+<li><p class="first">General model: <code class="docutils literal notranslate"><span class="pre">model='general'</span></code> (default), rate=[<span class="math notranslate nohighlight">\(x_{1}\)</span>,
+<span class="math notranslate nohighlight">\(x_{2}\)</span>, <span class="math notranslate nohighlight">\(x_{3}\)</span>, <span class="math notranslate nohighlight">\(x_{4}\)</span>, <span class="math notranslate nohighlight">\(x_{5}\)</span>, <span class="math notranslate nohighlight">\(x_{6}\)</span>,
+<span class="math notranslate nohighlight">\(x_{7}\)</span>, <span class="math notranslate nohighlight">\(x_{8}\)</span>, <span class="math notranslate nohighlight">\(x_{9}\)</span>, <span class="math notranslate nohighlight">\(x_{10}\)</span>, <span class="math notranslate nohighlight">\(x_{11}\)</span>,
+<span class="math notranslate nohighlight">\(x_{12}\)</span>].</p>
+<p>This is the most general model with 12 parameters:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}R=\left(\begin{array}{cccc}
+- &amp; x_{1} &amp; x_{2} &amp; x_{3}\\
+x_{4} &amp; - &amp; x_{5} &amp; x_{6}\\
+x_{7} &amp; x_{8} &amp; - &amp; x_{9}\\
+x_{10} &amp; x_{11} &amp; x_{12} &amp; -
+\end{array}\right)\end{split}\]</div>
+<p>It is not surprising that all other models are implemented as special cases of
+this model.</p>
+</li>
+</ol>
+<p>Example <a class="reference internal" href="#acgtmutator"><span class="std std-ref">AcgtMutator</span></a> applies a Kimmura’s 2-parameter
+mutation model to a population with a single nucleotide marker.</p>
+<p id="acgtmutator"><strong>Example</strong>: <em>A Kimura’s 2 parameter mutation model</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">2000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">alleleNames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">7</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">AcgtMutator</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="p">[</span><span class="mf">1e-4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;K80&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;, &#39;.join([&#39;</span><span class="si">%.3f</span><span class="s2">&#39; % alleleFreq[0][x] for x in range(4)]) + &#39;\n&#39;&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">step</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">500</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">0.093, 0.101, 0.094, 0.712</span>
+<span class="go">0.142, 0.073, 0.084, 0.701</span>
+<span class="go">0.135, 0.160, 0.083, 0.623</span>
+<span class="go">0.230, 0.128, 0.013, 0.628</span>
+<span class="go">0.293, 0.189, 0.008, 0.510</span>
+<span class="go">500</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="AcgtMutator.py">Download AcgtMutator.py</a></p>
+</div>
+<div class="section" id="mutation-model-for-microsatellite-markers-stepwisemutator">
+<h2>Mutation model for microsatellite markers (<a class="reference internal" href="refManual_ch3_sec6.html#StepwiseMutator" title="StepwiseMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">StepwiseMutator</span></code></a>)<a class="headerlink" href="#mutation-model-for-microsatellite-markers-stepwisemutator" title="Permalink to this headline">¶</a></h2>
+<p>The <strong>stepwise mutation model</strong> (SMM) was proposed by Ohta1973 to model the
+mutation of Variable Number Tandem Repeat (VNTR), which consists of tandem
+repeat of sequences. VNTR markers consisting of short sequences (e.g. 5 basepair
+or less) are also called microsatellite markers. A mutation event of a VNTR
+marker either increase of decrease the number of repeats, as a result of
+slipped-strand mispairing or unequal sister chromatid exchange and genetic
+recombination.</p>
+<p>A <a class="reference internal" href="refManual_ch3_sec6.html#StepwiseMutator" title="StepwiseMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">StepwiseMutator</span></code></a> assumes that alleles at a locus are the number of
+tandem repeats and mutates them by increasing or decreasing the number of
+repeats during a mutation event. By adjusting parameters <code class="docutils literal notranslate"><span class="pre">incProb</span></code>,
+<code class="docutils literal notranslate"><span class="pre">maxAllele</span></code> and <code class="docutils literal notranslate"><span class="pre">mutStep</span></code>, this operator can be used to simulate the
+standard neutral stepwise mutation model and a number of <strong>generalized stepwise
+mutation models</strong>. For example, Example <a class="reference internal" href="#stepwisemutator"><span class="std std-ref">StepwiseMutator</span></a>
+uses two <a class="reference internal" href="refManual_ch3_sec6.html#StepwiseMutator" title="StepwiseMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">StepwiseMutator</span></code></a> to mutate two microsatellite markers, using a
+standard and a generalized model where a geometric distribution is used to
+determine the number of steps.</p>
+<p id="stepwisemutator"><strong>Example</strong>: <em>A standard and a generalized stepwise mutation model</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="c1"># all start from allele 50</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">50</span> <span class="o">+</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">StepwiseMutator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">StepwiseMutator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">incProb</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">mutStep</span><span class="o">=</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">GEOMETRIC_DISTRIBUTION</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">100</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">100</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># count the average number tandem repeats at both loci</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cnt0</span> <span class="o">=</span> <span class="n">cnt1</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="n">cnt0</span> <span class="o">+=</span> <span class="n">ind</span><span class="o">.</span><span class="n">allele</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">ind</span><span class="o">.</span><span class="n">allele</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">cnt1</span> <span class="o">+=</span> <span class="n">ind</span><span class="o">.</span><span class="n">allele</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">ind</span><span class="o">.</span><span class="n">allele</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Average number of repeats at two loci are </span><span class="si">%.2f</span><span class="s1"> and </span><span class="si">%.2f</span><span class="s1">.&#39;</span> <span class="o">%</span> \
+<span class="gp">... </span>    <span class="p">(</span><span class="n">cnt0</span><span class="o">/</span><span class="mf">2000.</span><span class="p">,</span> <span class="n">cnt1</span><span class="o">/</span><span class="mf">2000.</span><span class="p">))</span>
+<span class="go">Average number of repeats at two loci are 50.03 and 49.70.</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="StepwiseMutator.py">Download StepwiseMutator.py</a></p>
+</div>
+<div class="section" id="simulating-arbitrary-mutation-models-using-a-hybrid-mutator-pymutator">
+<h2>Simulating arbitrary mutation models using a hybrid mutator (<a class="reference internal" href="refManual_ch3_sec6.html#PyMutator" title="PyMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyMutator</span></code></a>)*<a class="headerlink" href="#simulating-arbitrary-mutation-models-using-a-hybrid-mutator-pymutator" title="Permalink to this headline">¶</a></h2>
+<p>A hybrid mutator <a class="reference internal" href="refManual_ch3_sec6.html#PyMutator" title="PyMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyMutator</span></code></a> mutates random alleles at selected loci
+(parameter <code class="docutils literal notranslate"><span class="pre">loci</span></code>), replicates (parameter <code class="docutils literal notranslate"><span class="pre">loci</span></code>), subpopulations (parameter
+<code class="docutils literal notranslate"><span class="pre">subPop</span></code>) with specified mutation rate (parameter <code class="docutils literal notranslate"><span class="pre">rate</span></code>). Instead of
+mutating the alleles by itself, it passes the alleles to a user-defined function
+and use it return values as the mutated alleles. Arbitrary mutation models could
+be implemented using this operator.</p>
+<p>Example <a class="reference internal" href="#pymutator"><span class="std std-ref">PyMutator</span></a> applies a simple mutation model where an
+allele is increased by a random number between 1 and 5 when it is mutated. Two
+different mutation rates are used for two different loci so average alleles at
+these two loci are different.</p>
+<p id="pymutator"><strong>Example</strong>: <em>A hybrid mutation model</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">incAllele</span><span class="p">(</span><span class="n">allele</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">allele</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">20</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">PyMutator</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">incAllele</span><span class="p">,</span> <span class="n">rates</span><span class="o">=</span><span class="p">[</span><span class="mf">1e-4</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">1000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># count the average number tandem repeats at both loci</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">avgAllele</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">loc</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">():</span>
+<span class="gp">... </span>        <span class="n">ret</span> <span class="o">+=</span> <span class="n">ind</span><span class="o">.</span><span class="n">allele</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">ind</span><span class="o">.</span><span class="n">allele</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">ret</span> <span class="o">/</span> <span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">popSize</span><span class="p">()</span> <span class="o">*</span> <span class="mf">2.</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Average number of repeats at two loci are </span><span class="si">%.2f</span><span class="s1"> and </span><span class="si">%.2f</span><span class="s1">.&#39;</span> <span class="o">%</span> \
+<span class="gp">... </span>    <span class="p">(</span><span class="n">avgAllele</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">avgAllele</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="mi">10</span><span class="p">)))</span>
+<span class="go">Average number of repeats at two loci are 0.01 and 2.19.</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="PyMutator.py">Download PyMutator.py</a></p>
+</div>
+<div class="section" id="mixed-mutation-models-mixedmutator">
+<h2>Mixed mutation models (<a class="reference internal" href="refManual_ch3_sec6.html#MixedMutator" title="MixedMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MixedMutator</span></code></a>) **<a class="headerlink" href="#mixed-mutation-models-mixedmutator" title="Permalink to this headline">¶</a></h2>
+<p>Mixed mutation models are sometimes used to model real data. For example, a
+<span class="math notranslate nohighlight">\(k\)</span>-allele model can be used to explain extremely large or small number
+of tandem repeats at a microsatellite marker which are hard to justify using a
+standard stepwise mutation model. A mixed mutation model would apply two or more
+mutation models at pre-specified probabilities.</p>
+<p>A <a class="reference internal" href="refManual_ch3_sec6.html#MixedMutator" title="MixedMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MixedMutator</span></code></a> is constructed by a list of mutators and their
+respective probabilities. It accepts regular mutator parameters such as
+<code class="docutils literal notranslate"><span class="pre">rates</span></code>, <code class="docutils literal notranslate"><span class="pre">loci</span></code>, <code class="docutils literal notranslate"><span class="pre">subPops</span></code>, <code class="docutils literal notranslate"><span class="pre">mapIn</span> <span class="pre">and</span> <span class="pre">mapOut</span></code> and mutates aleles at
+specified rate. When a mutation event happens, it calls one of the mutators to
+mutate the allele. For example, Example <a class="reference internal" href="#mixedmutator"><span class="std std-ref">MixedMutator</span></a>
+applies a mixture of <span class="math notranslate nohighlight">\(k\)</span>-allele model and stepwise model to mutate a
+micosatellite model.</p>
+<p id="mixedmutator"><strong>Example</strong>: <em>A mixed k-allele and stepwise mutation model</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">5000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">genotype</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="c1"># the first locus uses a pure stepwise mutation model</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">StepwiseMutator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="c1"># the second locus uses a mixed model</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MixedMutator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mutators</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">KAlleleMutator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">StepwiseMutator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="p">],</span> <span class="n">prob</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">])],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">20</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># what alleles are there?</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geno0</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geno1</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="n">geno0</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">ind</span><span class="o">.</span><span class="n">allele</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">ind</span><span class="o">.</span><span class="n">allele</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+<span class="gp">... </span>    <span class="n">geno1</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">ind</span><span class="o">.</span><span class="n">allele</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">ind</span><span class="o">.</span><span class="n">allele</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Locus 0 has alleles&#39;</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">geno0</span><span class="p">)]))</span>
+<span class="go">Locus 0 has alleles 49, 50, 51</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Locus 1 has alleles&#39;</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">geno1</span><span class="p">)]))</span>
+<span class="go">Locus 1 has alleles 67, 49, 50, 51, 88</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="MixedMutator.py">Download MixedMutator.py</a></p>
+<p>When a mutation event happens, mutators in Example <a class="reference internal" href="#mixedmutator"><span class="std std-ref">MixedMutator</span></a> mutate the allele with probability (mutation rate) 1. If
+different mutation rates are specified, the overall mutation rates would be the
+product of mutation rate of <a class="reference internal" href="refManual_ch3_sec6.html#MixedMutator" title="MixedMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MixedMutator</span></code></a> and the passed mutators.
+However, it is extremely important to understand that although
+<a class="reference internal" href="refManual_ch3_sec6.html#MixedMutator" title="MixedMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MixedMutator</span></code></a>(<code class="docutils literal notranslate"><span class="pre">rates=mu</span></code>) with <a class="reference internal" href="refManual_ch3_sec6.html#StepwiseMutator" title="StepwiseMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">StepwiseMutator</span></code></a>(<code class="docutils literal notranslate"><span class="pre">rates=1</span></code>) and <a class="reference internal" href="refManual_ch3_sec6.html#MixedMutator" title="MixedMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MixedMutator</span></code></a><code class="docutils literal notranslate"><span class="pre">(rates=1)</span></code>with
+<a class="reference internal" href="refManual_ch3_sec6.html#StepwiseMutator" title="StepwiseMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">StepwiseMutator</span></code></a>(<code class="docutils literal notranslate"><span class="pre">rates=mu</span></code>) mutate alleles at the same mutation
+rate, the former is much more efficient because it triggers far less mutation
+events.</p>
+</div>
+<div class="section" id="context-dependent-mutation-models-contextmutator">
+<h2>Context-dependent mutation models (<a class="reference internal" href="refManual_ch3_sec6.html#ContextMutator" title="ContextMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContextMutator</span></code></a>)**<a class="headerlink" href="#context-dependent-mutation-models-contextmutator" title="Permalink to this headline">¶</a></h2>
+<p>All mutation models we have seen till now are context independent. That is to
+say, how an allele is mutated depends only on the allele itself. However, it is
+understood that DNA and amino acid substitution rates are highly sequence
+context-dependent, e.g., C <span class="math notranslate nohighlight">\(\rightarrow\)</span> T substitutions in vertebrates
+may occur much more frequently at CpG sites. To simulate such models, a mutator
+must consider the context of a mutated allele, e.g. certain number of alleles to
+the left and right of this allele, and mutate the allele accordingly.</p>
+<p>A <a class="reference internal" href="refManual_ch3_sec6.html#ContextMutator" title="ContextMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContextMutator</span></code></a> can be used to mutate an allele depending on its
+surrounding loci. This mutator is constructed by a list of mutators and their
+respective contexts. It accepts regular mutator parameters such as <code class="docutils literal notranslate"><span class="pre">rates</span></code>,
+<code class="docutils literal notranslate"><span class="pre">loci</span></code>, <code class="docutils literal notranslate"><span class="pre">subPops</span></code>, <code class="docutils literal notranslate"><span class="pre">mapIn</span> <span class="pre">and</span> <span class="pre">mapOut</span></code> and mutates aleles at specified
+rate. When a mutation event happens, it checks the context of the mutaed allele
+and choose a corresponding mutator to mutate the allele. An additional mutator
+can be specified to mutate alleles with unknown context. Example
+<a class="reference internal" href="#contextmutator"><span class="std std-ref">ContextMutator</span></a> applies two <a class="reference internal" href="refManual_ch3_sec6.html#SNPMutator" title="SNPMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">SNPMutator</span></code></a> at
+different rates under different contexts.</p>
+<p id="contextmutator"><strong>Example</strong>: <em>A context-dependent mutation model</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">5000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="c1"># initialize locus by 0, 0, 0, 1, 0, 1</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">genotype</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">ContextMutator</span><span class="p">(</span><span class="n">mutators</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">SNPMutator</span><span class="p">(</span><span class="n">u</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">SNPMutator</span><span class="p">(</span><span class="n">u</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="p">],</span>
+<span class="gp">... </span>            <span class="n">contexts</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span>
+<span class="gp">... </span>            <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="n">rates</span><span class="o">=</span><span class="mf">0.01</span>
+<span class="gp">... </span>        <span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">step</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;Gen: </span><span class="si">%2d</span><span class="s2"> freq1: </span><span class="si">%.3f</span><span class="s2">, freq2: </span><span class="si">%.3f</span><span class="s2">\n&#39;&quot;</span> <span class="o">+</span>
+<span class="gp">... </span>            <span class="s2">&quot; % (gen, alleleFreq[1][1], alleleFreq[4][1])&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Gen:  0 freq1: 0.001, freq2: 0.010</span>
+<span class="go">Gen:  5 freq1: 0.005, freq2: 0.059</span>
+<span class="go">Gen: 10 freq1: 0.007, freq2: 0.108</span>
+<span class="go">Gen: 15 freq1: 0.015, freq2: 0.142</span>
+<span class="go">20</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="ContextMutator.py">Download ContextMutator.py</a></p>
+<p>Note that although</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ContextMutator</span><span class="p">(</span><span class="n">mutators</span><span class="o">=</span><span class="p">[</span>
+    <span class="n">SNPMutator</span><span class="p">(</span><span class="n">u</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span>
+    <span class="n">SNPMutator</span><span class="p">(</span><span class="n">u</span><span class="o">=</span><span class="mi">1</span><span class="p">)],</span>
+    <span class="n">contexts</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span>
+    <span class="n">rates</span><span class="o">=</span><span class="mf">0.01</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ContextMutator</span><span class="p">(</span><span class="n">mutators</span><span class="o">=</span><span class="p">[</span>
+    <span class="n">SNPMutator</span><span class="p">(</span><span class="n">u</span><span class="o">=</span><span class="mf">0.001</span><span class="p">),</span>
+    <span class="n">SNPMutator</span><span class="p">(</span><span class="n">u</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)],</span>
+    <span class="n">contexts</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span>
+    <span class="n">rates</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>both apply two <a class="reference internal" href="refManual_ch3_sec6.html#SNPMutator" title="SNPMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">SNPMutator</span></code></a> at mutation rates <code class="docutils literal notranslate"><span class="pre">0.001</span></code> and <code class="docutils literal notranslate"><span class="pre">0.01</span></code>, the
+former is more efficient because it triggers less mutation events.</p>
+<p>Context-dependent mutator can also be implemented by a <a class="reference internal" href="refManual_ch3_sec6.html#PyMutator" title="PyMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyMutator</span></code></a>. When
+a non-zero parameter <code class="docutils literal notranslate"><span class="pre">context</span></code> is specified, this mutator will collect
+<code class="docutils literal notranslate"><span class="pre">context</span></code> number of alleles to the left and right of a mutated allele and pass
+them as a second parameter of the user-provided mutation function. Example
+<a class="reference internal" href="#pycontextmutator"><span class="std std-ref">pyContextMutator</span></a> applies the same mutation model as
+Example <a class="reference internal" href="#contextmutator"><span class="std std-ref">ContextMutator</span></a> using a <a class="reference internal" href="refManual_ch3_sec6.html#PyMutator" title="PyMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyMutator</span></code></a>.</p>
+<p id="pycontextmutator"><strong>Example</strong>: <em>A hybrid context-dependent mutation model</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">5000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">contextMut</span><span class="p">(</span><span class="n">allele</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">context</span> <span class="o">==</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]:</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">allele</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.1</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">return</span> <span class="mi">1</span>
+<span class="gp">... </span>    <span class="k">elif</span> <span class="n">context</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">allele</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">return</span> <span class="mi">1</span>
+<span class="gp">... </span>    <span class="c1"># do not mutate</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">allele</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="c1"># initialize locus by 0, 0, 0, 1, 0, 1</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">genotype</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyMutator</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">contextMut</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>  <span class="n">rates</span><span class="o">=</span><span class="mf">0.01</span>
+<span class="gp">... </span>        <span class="p">),</span>
+<span class="gp">... </span>        <span class="c1">#sim.SNPMutator(u=0.01, v= 0.01, loci=[1, 4]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">step</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;Gen: </span><span class="si">%2d</span><span class="s2"> freq1: </span><span class="si">%.3f</span><span class="s2">, freq2: </span><span class="si">%.3f</span><span class="s2">\n&#39;&quot;</span> <span class="o">+</span>
+<span class="gp">... </span>            <span class="s2">&quot; % (gen, alleleFreq[1][1], alleleFreq[4][1])&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Gen:  0 freq1: 0.000, freq2: 0.000</span>
+<span class="go">Gen:  5 freq1: 0.000, freq2: 0.000</span>
+<span class="go">Gen: 10 freq1: 0.000, freq2: 0.000</span>
+<span class="go">Gen: 15 freq1: 0.000, freq2: 0.000</span>
+<span class="go">20</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="pyContextMutator.py">Download pyContextMutator.py</a></p>
+</div>
+<div class="section" id="manually-introduced-mutations-pointmutator">
+<h2>Manually-introduced mutations (<a class="reference internal" href="refManual_ch3_sec6.html#PointMutator" title="PointMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointMutator</span></code></a>)<a class="headerlink" href="#manually-introduced-mutations-pointmutator" title="Permalink to this headline">¶</a></h2>
+<p>Operator <a class="reference internal" href="refManual_ch3_sec6.html#PointMutator" title="PointMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointMutator</span></code></a> is different from all other mutators in that it
+mutates specified alleles of specified individuals. It is usually used to
+manually introduce one or more mutants to a population. Although it is not a
+recommended method to introduce a disease predisposing allele, the following
+example (Example <a class="reference internal" href="#pointmutator"><span class="std std-ref">PointMutator</span></a>) demonstrates an
+evolutionary process where mutants are repeatedly introduced and raised by
+positive selection until it reaches an appreciable allele frequency. This
+example uses two <a class="reference internal" href="refManual_ch3_sec12.html#IfElse" title="IfElse"><code class="xref py py-class docutils literal notranslate"><span class="pre">IfElse</span></code></a> operators. The first one introduces a mutant
+when there is no mutant in the population, and the second one terminate the
+evolution when the frequency of the mutant reaches 0.05.</p>
+<p id="pointmutator"><strong>Example</strong>: <em>Use a point mutator to introduce a disease predisposing allele</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;fitness&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">PyOutput</span><span class="p">(</span><span class="s1">&#39;Introducing alleles at generation&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">MaSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">wildtype</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomSelection</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">IfElse</span><span class="p">(</span><span class="s1">&#39;alleleNum[0][1] == 0&#39;</span><span class="p">,</span> <span class="n">ifOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39; </span><span class="si">%d</span><span class="s2">&#39; </span><span class="si">% g</span><span class="s2">en&quot;</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">PointMutator</span><span class="p">(</span><span class="n">inds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">allele</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">IfElse</span><span class="p">(</span><span class="s1">&#39;alleleFreq[0][1] &gt; 0.05&#39;</span><span class="p">,</span> <span class="n">ifOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;.\nTerminate at generation </span><span class="si">%d</span><span class="s2"> at allele freq </span><span class="si">%.3f</span><span class="s2">.\n&#39;&quot;</span> <span class="o">+</span>
+<span class="gp">... </span>                <span class="s2">&quot; % (gen, alleleFreq[0][1])&quot;</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">TerminateIf</span><span class="p">(</span><span class="s1">&#39;True&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Introducing alleles at generation 0 1 2 16 17 18 22 30 32 33 34 41 81 82 83.</span>
+<span class="go">Terminate at generation 111 at allele freq 0.051.</span>
+<span class="go">112</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="PointMutator.py">Download PointMutator.py</a></p>
+</div>
+<div class="section" id="apply-mutation-to-virtual-subpopulations">
+<h2>Apply mutation to (virtual) subpopulations *<a class="headerlink" href="#apply-mutation-to-virtual-subpopulations" title="Permalink to this headline">¶</a></h2>
+<p>A mutator is usually applied to all individuals in a population. However, you
+can restrict its use to specified subpopulations and/or virtual subpopulations
+using parameter <code class="docutils literal notranslate"><span class="pre">subPop</span></code>. For example, you can use <code class="docutils literal notranslate"><span class="pre">subPop=[0,</span> <span class="pre">2]</span></code> to apply
+the mutator only to individuals in subpopulations 0 and 2.</p>
+<p>Virtual subpopulations can also be specified in this parameter. For example, you
+can apply different mutation models to male and female individuals, to
+unaffected or affected individuals, to patients at different stages of a cancer.
+Example <a class="reference internal" href="#mutatorvsp"><span class="std std-ref">mutatorVSP</span></a> demonstrate a mutation model where
+individuals with more tandem repeats at a disease predisposing locus are more
+likely to develop a disease (e.g. fragile-X). Affected individuals are then
+subject to a non-neutral mutation model at an accerlerated mutation rate.</p>
+<p id="mutatorvsp"><strong>Example</strong>: <em>Applying mutation to virtual subpopulations.</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">fragileX</span><span class="p">(</span><span class="n">geno</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="sd">&#39;&#39;&#39;A disease model where an individual has increased risk of</span>
+<span class="gp">... </span><span class="sd">    affected if the number of tandem repeats exceed 75.</span>
+<span class="gp">... </span><span class="sd">    &#39;&#39;&#39;</span>
+<span class="gp">... </span>    <span class="c1"># Alleles A1, A2.</span>
+<span class="gp">... </span>    <span class="n">maxRep</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">geno</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">maxRep</span> <span class="o">&lt;</span> <span class="mi">50</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="mi">0</span>
+<span class="gp">... </span>    <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="c1"># individuals with allele &gt;= 70 will surely be affected</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">maxRep</span> <span class="o">-</span> <span class="mi">50</span><span class="p">)</span><span class="o">*</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">avgAllele</span><span class="p">(</span><span class="n">pop</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="s1">&#39;Get average allele by affection sim.status.&#39;</span>
+<span class="gp">... </span>    <span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">alleleFreq</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)],</span>
+<span class="gp">... </span>        <span class="n">numOfAffected</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;alleleNum&#39;</span><span class="p">,</span> <span class="s1">&#39;alleleNum_sp&#39;</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="n">avg</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">alleleNum</span> <span class="ow">in</span> <span class="p">[</span>\
+<span class="gp">... </span>            <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">alleleNum</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>  <span class="c1"># first locus, unaffected</span>
+<span class="gp">... </span>            <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">alleleNum</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>  <span class="c1"># first locus, affected</span>
+<span class="gp">... </span>            <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">alleleNum</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>       <span class="c1"># second locus, overall</span>
+<span class="gp">... </span>        <span class="p">]:</span>
+<span class="gp">... </span>        <span class="n">alleleSum</span> <span class="o">=</span> <span class="n">numAllele</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">... </span>        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span><span class="n">cnt</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">alleleNum</span><span class="p">):</span>
+<span class="gp">... </span>            <span class="n">alleleSum</span> <span class="o">+=</span> <span class="n">idx</span> <span class="o">*</span> <span class="n">cnt</span>
+<span class="gp">... </span>            <span class="n">numAllele</span> <span class="o">+=</span> <span class="n">cnt</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">numAllele</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="n">avg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="n">avg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alleleSum</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">/</span><span class="n">numAllele</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="c1"># unaffected, affected, loc2</span>
+<span class="gp">... </span>    <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">avgAllele</span> <span class="o">=</span> <span class="n">avg</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="kc">True</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">AffectionSplitter</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">genotype</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="c1"># determine affection sim.status for each offspring (duringMating)</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyPenetrance</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">fragileX</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="c1"># unaffected offspring, mutation rate is high to save some time</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">StepwiseMutator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="c1"># unaffected offspring, mutation rate is high to save some time</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">StepwiseMutator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]),</span>
+<span class="gp">... </span>        <span class="c1"># affected offspring have high probability of mutating upward</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">StepwiseMutator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span>
+<span class="gp">... </span>           <span class="n">incProb</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">mutStep</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="c1"># number of affected</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOperator</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">avgAllele</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">20</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;Gen: </span><span class="si">%3d</span><span class="s2"> #Aff: </span><span class="si">%d</span><span class="s2"> AvgRepeat: </span><span class="si">%.2f</span><span class="s2"> (unaff), </span><span class="si">%.2f</span><span class="s2"> (aff), </span><span class="si">%.2f</span><span class="s2"> (unrelated)\n&#39;&quot;</span>
+<span class="gp">... </span>            <span class="o">+</span> <span class="s2">&quot; % (gen, numOfAffected, avgAllele[0], avgAllele[1], avgAllele[2])&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">step</span><span class="o">=</span><span class="mi">20</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">101</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Gen:   0 #Aff: 0 AvgRepeat: 1.01 (unaff), 0.00 (aff), 1.01 (unrelated)</span>
+<span class="go">Gen:  20 #Aff: 6 AvgRepeat: 1.53 (unaff), 0.50 (aff), 1.52 (unrelated)</span>
+<span class="go">Gen:  40 #Aff: 20 AvgRepeat: 2.56 (unaff), 2.04 (aff), 1.53 (unrelated)</span>
+<span class="go">Gen:  60 #Aff: 46 AvgRepeat: 2.56 (unaff), 2.04 (aff), 2.04 (unrelated)</span>
+<span class="go">Gen:  80 #Aff: 55 AvgRepeat: 3.08 (unaff), 1.53 (aff), 2.04 (unrelated)</span>
+<span class="go">Gen: 100 #Aff: 48 AvgRepeat: 2.04 (unaff), 1.52 (aff), 2.04 (unrelated)</span>
+<span class="go">101</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="mutatorVSP.py">Download mutatorVSP.py</a></p>
+<p>At the beginning of a simulation, all individuals have 50 copies of a tandem
+repeat and the mutation follows a standard neutral stepwise mutation model.
+individuals with more than 50 repeats will have an increasing probability to
+develop a disease (<span class="math notranslate nohighlight">\(\mbox{Pr}\left(\mbox{affected}\mid
+n\right)=\left(n-50\right)\*0.05\)</span>) for <span class="math notranslate nohighlight">\(50\le n\le70\)</span>). The averge repeat
+number therefore increases for affected individuals. In contrast, the mean
+number of repeats at locus 1 on a separate chromosome oscillate around 50.</p>
+</div>
+<div class="section" id="allele-mapping">
+<h2>Allele mapping **<a class="headerlink" href="#allele-mapping" title="Permalink to this headline">¶</a></h2>
+<p>If alleles in your simulation do not follow the convention of a mutation model,
+you may want to use the <code class="docutils literal notranslate"><span class="pre">pop.recodeAlleles()</span></code> function to recode your alleles
+so that appropriate mutation models could be applied. If this is not possible,
+you can use a general mutation model with your own mutation matrix, or an
+advanced feature called <strong>allele mapping</strong>.</p>
+<p>Allele mapping is done through two parameters <em>mapIn</em> and <em>mapOut</em>, which map
+alleles in your population to and from alleles assumed in a mutation model. For
+example, an <a class="reference internal" href="refManual_ch3_sec6.html#AcgtMutator" title="AcgtMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">AcgtMutator</span></code></a> mutator assumes alleles <code class="docutils literal notranslate"><span class="pre">A</span></code>, <code class="docutils literal notranslate"><span class="pre">C</span></code>, <code class="docutils literal notranslate"><span class="pre">G</span></code> and
+<code class="docutils literal notranslate"><span class="pre">T</span></code> for alleles 0, 1, 2, and 3 respectively. If for any reason the alleles in
+your application does not follow this order, you will need to map these alleles
+to the alleles assumed in the mutator. For example, if you assumes <code class="docutils literal notranslate"><span class="pre">C</span></code>, <code class="docutils literal notranslate"><span class="pre">G</span></code>,
+<code class="docutils literal notranslate"><span class="pre">A</span></code>, <code class="docutils literal notranslate"><span class="pre">T</span></code> for alleles 0, 1, 2, and 3 respectively, you can use parameters</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mapIn</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">mapOut</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>to map your alleles (<code class="docutils literal notranslate"><span class="pre">C(0)-&gt;C(1)</span></code>, <code class="docutils literal notranslate"><span class="pre">G(1)-&gt;G(2)</span></code>, <code class="docutils literal notranslate"><span class="pre">A(2)-&gt;A(0)</span></code>,
+<code class="docutils literal notranslate"><span class="pre">T(3)-&gt;T(3)</span></code>) to alleles <a class="reference internal" href="refManual_ch3_sec6.html#AcgtMutator" title="AcgtMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">AcgtMutator</span></code></a> assumes, and then map mutated
+alleles (<code class="docutils literal notranslate"><span class="pre">A(0)-&gt;A(2)</span></code>, <code class="docutils literal notranslate"><span class="pre">C(1)-&gt;C(0)</span></code>, <code class="docutils literal notranslate"><span class="pre">G(2)-&gt;G(1)</span></code>, <code class="docutils literal notranslate"><span class="pre">T(3)-&gt;T(3)</span></code>) back.
+Example <a class="reference internal" href="#allelemapping"><span class="std std-ref">alleleMapping</span></a> gives another example where alleles
+4, 5, 6 and 7 are mutated using a 4-allele model.</p>
+<p id="allelemapping"><strong>Example</strong>: <em>Allele mapping for mutation operators</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">2000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">4</span> <span class="o">+</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">KAlleleMutator</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">rates</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">mapIn</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">4</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)),</span>
+<span class="gp">... </span>            <span class="n">mapOut</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;, &#39;.join([&#39;</span><span class="si">%.2f</span><span class="s2">&#39; % alleleFreq[0][x] for x in range(8)]) + &#39;\n&#39;&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">step</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">500</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">0.00, 0.00, 0.00, 0.00, 0.09, 0.20, 0.30, 0.41</span>
+<span class="go">0.00, 0.00, 0.00, 0.00, 0.13, 0.20, 0.40, 0.26</span>
+<span class="go">0.00, 0.00, 0.00, 0.00, 0.17, 0.20, 0.31, 0.31</span>
+<span class="go">0.00, 0.00, 0.00, 0.00, 0.19, 0.18, 0.26, 0.37</span>
+<span class="go">0.00, 0.00, 0.00, 0.00, 0.18, 0.24, 0.23, 0.34</span>
+<span class="go">500</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="alleleMapping.py">Download alleleMapping.py</a></p>
+<p>These two parameters also accept Python functions which should return
+corresponding mapped-in or out allele for a given allele. These two functions
+can be used to explore very fancy mutation models. For example, you can
+categorize a large number of alleles into alleles assumed in a mutation model,
+and emit random alleles from a mutated allele.</p>
+</div>
+<div class="section" id="mutation-rate-and-transition-matrix-of-a-matrixmutator">
+<h2>Mutation rate and transition matrix of a <code class="docutils literal notranslate"><span class="pre">MatrixMutator</span></code>**<a class="headerlink" href="#mutation-rate-and-transition-matrix-of-a-matrixmutator" title="Permalink to this headline">¶</a></h2>
+<p>A <a class="reference internal" href="refManual_ch3_sec6.html#MatrixMutator" title="MatrixMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatrixMutator</span></code></a> is specified by a mutation rate matrix. Although
+mutation rates of this mutator is typically allele-dependent, the
+<a class="reference internal" href="refManual_ch3_sec6.html#MatrixMutator" title="MatrixMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatrixMutator</span></code></a> is implemented as a two-step process where mutation
+events are triggered independent to allelic states. This section describes these
+two steps which can be useful if you need to use a <code class="docutils literal notranslate"><span class="pre">maxtrixMutator</span></code> in a
+<a class="reference internal" href="refManual_ch3_sec6.html#MixedMutator" title="MixedMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MixedMutator</span></code></a> or <a class="reference internal" href="refManual_ch3_sec6.html#ContextMutator" title="ContextMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContextMutator</span></code></a>, and would like to factor out
+an allele-independent mutation rate to the wrapper mutator.</p>
+<p>Because alleles usually have different probabilities of mutating to other
+alleles, <strong>a mutation process is usually allele dependent</strong>. Given a mutation
+model <span class="math notranslate nohighlight">\(\left(p_{ij}\right)\)</span>, it is obviously inefficient to go through all
+mutable alleles and determine whether or not to mutate it using <span class="math notranslate nohighlight">\(p_{ij},\)</span>
+<span class="math notranslate nohighlight">\(j=0,...,1-n\)</span>. simuPOP uses a two step procedure to mutate a large number
+of alleles. More specifically, for each mutation model, we determine
+<span class="math notranslate nohighlight">\(\mu=\max_{i=0}^{n-1}\left(1-p_{ii}\right)\)</span> as the overall mutation rate,
+and then</p>
+<ol class="arabic">
+<li><p class="first">For each allele, trigger a mutation event with probability <span class="math notranslate nohighlight">\(\mu\)</span>.
+Because <span class="math notranslate nohighlight">\(\mu\)</span> is usually very small and is the same for all alleles, this
+step can be implemented efficiently.</p>
+</li>
+<li><p class="first">When a mutation event happens, mutation allele <span class="math notranslate nohighlight">\(i\)</span> to allele <span class="math notranslate nohighlight">\(j\)</span>
+with probability</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\mbox{Pr}\left(i\rightarrow j\right)=\begin{cases}
+1-\frac{1}{\mu}\left(1-p_{ii}\right) &amp; \mbox{if }i=j\\
+\frac{p_{ij}}{\mu} &amp; \mbox{if }i\ne j
+\end{cases}\end{split}\]</div>
+</li>
+</ol>
+<p>Because steps 1 and 2 are independent, it is easy to verify that</p>
+<div class="math notranslate nohighlight">
+\[p_{ij}=\mu\mbox{Pr}\left(i\rightarrow j\right)\]</div>
+<p>if <span class="math notranslate nohighlight">\(i\ne j\)</span> and</p>
+<div class="math notranslate nohighlight">
+\[p_{ii}=\left(1-\mu\right)+\mu\mbox{Pr}\left(i\rightarrow i\right)\]</div>
+<p>where the first and second items are probabilities of no-mutation at steps 1 and
+2. <span class="math notranslate nohighlight">\(\mu\)</span> was chosen as the smallest <span class="math notranslate nohighlight">\(\mu\)</span> that makes
+<span class="math notranslate nohighlight">\(0\leq\mbox{Pr}\left(i\rightarrow i\right)\leq1\)</span> for all <span class="math notranslate nohighlight">\(i\)</span>.</p>
+<p>For example, for a <span class="math notranslate nohighlight">\(k\)</span>-allele model with</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}p_{ij}=\left(\begin{array}{cccc}
+1-\mu &amp; \frac{\mu}{k-1} &amp; \cdots &amp; \frac{\mu}{k-1}\\
+\frac{\mu}{k-1} &amp; 1-\mu &amp; \cdots &amp; \frac{\mu}{k-1}\\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+\frac{\mu}{k-1} &amp; \frac{\mu}{k-1} &amp; \cdots &amp; 1-\mu
+\end{array}\right)\end{split}\]</div>
+<p><span class="math notranslate nohighlight">\(\mu\)</span> is directly <span class="math notranslate nohighlight">\(\mu\)</span> for the first step and</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\mbox{Pr}\left(i\rightarrow j\right)=\begin{cases}
+0 &amp; \mbox{if }i=j\\
+\frac{1}{k-1} &amp; \mbox{if }i\ne j
+\end{cases}\end{split}\]</div>
+<p>for the second step. Therefore, mutation rate <span class="math notranslate nohighlight">\(\mu\)</span> in a <span class="math notranslate nohighlight">\(k\)</span>-allele model could be interpreted as the probability of mutation, and a
+mutation event would mutate an allele to any other allele with equal
+probability.</p>
+<p>For a classical mutation model with <span class="math notranslate nohighlight">\(P\left(A\rightarrow a\right)=u\)</span> and
+<span class="math notranslate nohighlight">\(P\left(a\rightarrow A\right)=v\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}p_{ij}=\left(\begin{array}{cc}
+1-u &amp; u\\
+v &amp; 1-v
+\end{array}\right)\end{split}\]</div>
+<p>if <span class="math notranslate nohighlight">\(u=0.001\)</span> and <span class="math notranslate nohighlight">\(v=0.0005\)</span>, <span class="math notranslate nohighlight">\(\mu=\max\left(u,v\right)=0.001\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\mbox{Pr}\left(i\rightarrow j\right)=\left(\begin{array}{cc}
+0 &amp; 1\\
+\frac{v}{u}=0.5 &amp; 1-\frac{v}{u}=0.5
+\end{array}\right)\end{split}\]</div>
+<p>That is to say, we would mutate at a mutation rate <span class="math notranslate nohighlight">\(u=0.001\)</span>, mutate
+allele <span class="math notranslate nohighlight">\(A\)</span> to <span class="math notranslate nohighlight">\(a\)</span> with probability 1 and mutate allele <span class="math notranslate nohighlight">\(a\)</span> to
+<span class="math notranslate nohighlight">\(A\)</span> with probability 0.5.</p>
+</div>
+<div class="section" id="infinite-sites-model-and-other-simulation-techniques">
+<h2>Infinite-sites model and other simulation techniques **<a class="headerlink" href="#infinite-sites-model-and-other-simulation-techniques" title="Permalink to this headline">¶</a></h2>
+<p>Infinite-sites and infinite-alleles models have some similarities. If you assume
+that mutation is the only force to create new mutants, you can treat a long
+chromosomal region as a locus and use the infinite-alleles model, actually a
+<span class="math notranslate nohighlight">\(k\)</span>-allele model with large <span class="math notranslate nohighlight">\(k\)</span>, to mimic the infinite-site model.
+This assumption is certainly wrong with the infinite-site model when
+recombination is involved, because recombination creates new haplotypes
+(alleles) under the infinite-site model. However, for short regions where
+recombination can be ignored, an <span class="math notranslate nohighlight">\(k\)</span>-allele model can be an easy and
+fast way to mimic an infinite-site model. That statement basically says that you
+have a choice between two models if you would like to simulate the evolution of
+this gene, namely considering the gene as a locus and simulating variants as
+alleles, or considering the gene as a sequence and simulating haplotypes as
+alleles.</p>
+<p>For example, the CFTR gene (for cystic fibrosis) can have many alleles (thinking
+in terms of infinite-allele model) which are nucleotide mutations on tens of
+locations (infinite-site model). In order to simulate the evolution of this
+gene, you have a choice between two models, namely considering the gene as a
+locus and simulating variants as alleles, or considering the gene as a sequence
+and simulating haplotypes as alleles. Because there is supposed to be only one
+mutant at each site, you can assign a unique <em>location</em> for each allele of an
+infinite-allele model and convert multi-allelic datasets simulated by an
+infinite-allele model to sequences of diallelic markers. Note that mutation
+rates are interpreted differently for these two models.</p>
+<p>If specific location of such a mutation is needed, it is possible to record the
+location of mutations during an evolution and minic an infinite-sites model. For
+example, alleles in Example <a class="reference internal" href="#infinitesites"><span class="std std-ref">infiniteSites</span></a> are used to
+store location of a mutation event. When a mutation event happens, the location
+of the new allele (rather the allele itself) is recorded on the chromosome
+(actually list of mutation events) of an individual. The transmission of
+chromosomes proceed normally and effectively transmit mutants from parents to
+offspring. At the end of the simulation, each individual accumulates a number of
+mutation events and they are essentially alleles at their respective locations.</p>
+<p id="infinitesites"><strong>Example</strong>: <em>Mimicking an infinite-sites model using mutation events as alleles</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuOpt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simuOpt</span><span class="o">.</span><span class="n">setOptions</span><span class="p">(</span><span class="n">alleleType</span><span class="o">=</span><span class="s1">&#39;long&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">infSitesMutate</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="sd">&#39;&#39;&#39;Apply an infinite mutation model&#39;&#39;&#39;</span>
+<span class="gp">... </span>    <span class="p">(</span><span class="n">startPos</span><span class="p">,</span> <span class="n">endPos</span><span class="p">,</span> <span class="n">rate</span><span class="p">)</span> <span class="o">=</span> <span class="n">param</span>
+<span class="gp">... </span>    <span class="c1"># for each individual</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">():</span>
+<span class="gp">... </span>        <span class="c1"># for each homologous copy of chromosomes</span>
+<span class="gp">... </span>        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+<span class="gp">... </span>            <span class="c1"># using a geometric distribution to determine</span>
+<span class="gp">... </span>            <span class="c1"># the first mutation location</span>
+<span class="gp">... </span>            <span class="n">loc</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">getRNG</span><span class="p">()</span><span class="o">.</span><span class="n">randGeometric</span><span class="p">(</span><span class="n">rate</span><span class="p">)</span>
+<span class="gp">... </span>            <span class="c1"># if a mutation happens, record the mutated location</span>
+<span class="gp">... </span>            <span class="k">if</span> <span class="n">startPos</span> <span class="o">+</span> <span class="n">loc</span> <span class="o">&lt;</span> <span class="n">endPos</span><span class="p">:</span>
+<span class="gp">... </span>                <span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>                    <span class="c1"># find the first non-zero location</span>
+<span class="gp">... </span>                    <span class="n">idx</span> <span class="o">=</span> <span class="n">ind</span><span class="o">.</span><span class="n">genotype</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>                    <span class="c1"># record mutation here</span>
+<span class="gp">... </span>                    <span class="n">ind</span><span class="o">.</span><span class="n">setAllele</span><span class="p">(</span><span class="n">startPos</span> <span class="o">+</span> <span class="n">loc</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">ploidy</span><span class="o">=</span><span class="n">p</span><span class="p">)</span>
+<span class="gp">... </span>                <span class="k">except</span><span class="p">:</span>
+<span class="gp">... </span>                    <span class="k">raise</span>
+<span class="gp">... </span>                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Warning: more than </span><span class="si">%d</span><span class="s1"> mutations have accumulated&#39;</span> <span class="o">%</span> <span class="n">pop</span><span class="o">.</span><span class="n">totNumLoci</span><span class="p">())</span>
+<span class="gp">... </span>                    <span class="k">pass</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="kc">True</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">2000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="c1"># mutate in a 10Mb region at rate 1e-8</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOperator</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">infSitesMutate</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10000000</span><span class="p">,</span> <span class="mf">1e-8</span><span class="p">)),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">100</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># now, we get a sim.Population. Let us have a look at the &#39;alleles&#39;.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># print the first five mutation locations</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">individual</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">genotype</span><span class="p">()[:</span><span class="mi">5</span><span class="p">])</span>
+<span class="go">[1527502, 4774892, 7979220, 3671118, 395142]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># how many alleles are there (does not count 0)?</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">genotype</span><span class="p">()))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="go">2700</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Allele count a simple count of alleles.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cnt</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">allele</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">genotype</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">allele</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">continue</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">allele</span> <span class="ow">in</span> <span class="n">cnt</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">cnt</span><span class="p">[</span><span class="n">allele</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="gp">... </span>    <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">cnt</span><span class="p">[</span><span class="n">allele</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># highest allele frequency?</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">cnt</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">*</span><span class="mf">0.5</span> <span class="o">/</span> <span class="n">pop</span><span class="o">.</span><span class="n">popSize</span><span class="p">())</span>
+<span class="go">0.05475</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="infiniteSites.py">Download infiniteSites.py</a></p>
+<p>All mutation models in simuPOP apply to existing alleles at pre-specified loci.
+However, if the location of loci cannot be determined beforehand, it is
+sometimes desired to create new loci as a result of mutation. A customized
+operator can be used for this purpose (see Example <a class="reference internal" href="userGuide_ch5_sec14.html#newoperator"><span class="std std-ref">newOperator</span></a>), but extra attention is needed to make sure that other operators
+are applied to the correct loci because loci indexes will be changed with the
+insertion of new loci. This technique could also be used to simulate mutations
+over long sequences.</p>
+</div>
+<div class="section" id="recording-and-tracing-individual-mutants">
+<h2>Recording and tracing individual mutants **<a class="headerlink" href="#recording-and-tracing-individual-mutants" title="Permalink to this headline">¶</a></h2>
+<p>Mutation operators mutate alleles in place and by default do not generate any
+output. If you are interested in knowing the source of each mutant, you can
+specify an output stream and let the mutation operators dump details of each
+mutation event, which consists of generation number, locus index, ploidy,
+original allele, and mutated allele. If a list of information fields are
+specified through parameter <code class="docutils literal notranslate"><span class="pre">infoFields</span></code>, values at these information fields
+will also be outputted (if they exist in the population. The default information
+field is <code class="docutils literal notranslate"><span class="pre">ind_id</span></code>, which allow you to record the ID of individuals harboring
+the mutants.</p>
+<p>Example <a class="reference internal" href="#countmutants"><span class="std std-ref">countMutants</span></a> demonstrates how to use this feature
+to count the number of mutants at each locus. Instead of sending the output to a
+file (e.g. <code class="docutils literal notranslate"><span class="pre">output='&gt;&gt;mutants.txt'</span></code>), this example sends the output to a
+Python function, which parses input string and counts the number of mutants at
+each locus using a global dictionary variable. As we can see from the output,
+because the KAlleleMutator uses a higher mutation rate (0.01) at locus 1 than
+mutation rate (0.001) at locus 0, there are 10 times more mutants at the second
+locus. There are about 3/4 mutations on the locus on chromosome X and 1/4
+mutations on the locus on chromosome Y, for obvious reasons.</p>
+<p id="countmutants"><strong>Example</strong>: <em>Count number of mutants from mutator outputs</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># count number of mutants at each locus</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">counter</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">countMutants</span><span class="p">(</span><span class="n">mutants</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">global</span> <span class="n">counter</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">mutants</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="c1"># a trailing \n will lead to an empty string</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">continue</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="n">gen</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">ploidy</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">counter</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">loc</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">5000</span><span class="p">]</span><span class="o">*</span><span class="mi">3</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;ind_id&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">chromTypes</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">AUTOSOME</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">CHROMOSOME_X</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">CHROMOSOME_Y</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">KAlleleMutator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="p">[</span><span class="mf">0.001</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">]</span><span class="o">*</span><span class="mi">3</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">loci</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="n">k</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">countMutants</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">()</span>
+<span class="gp">... </span>        <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">counter</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+<span class="go">dict_items([(0, 308), (1, 2984), (2, 2319), (3, 768)])</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="countMutants.py">Download countMutants.py</a></p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec1.html">Introduction to operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec2.html">Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec3.html">Expressions and statements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec4.html">Demographic changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec5.html">Genotype transmitters</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Mutation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mutation-models-specified-by-rate-matrixes-matrixmutator">Mutation models specified by rate matrixes (<code class="docutils literal notranslate"><span class="pre">MatrixMutator</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#k-allele-mutation-model-kallelemutator">k-allele mutation model (<code class="docutils literal notranslate"><span class="pre">KAlleleMutator</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#diallelic-mutation-models-snpmutator">Diallelic mutation models (<code class="docutils literal notranslate"><span class="pre">SNPMutator</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nucleotide-mutation-models-acgtmutator">Nucleotide mutation models (<code class="docutils literal notranslate"><span class="pre">AcgtMutator</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mutation-model-for-microsatellite-markers-stepwisemutator">Mutation model for microsatellite markers (<code class="docutils literal notranslate"><span class="pre">StepwiseMutator</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#simulating-arbitrary-mutation-models-using-a-hybrid-mutator-pymutator">Simulating arbitrary mutation models using a hybrid mutator (<code class="docutils literal notranslate"><span class="pre">PyMutator</span></code>)*</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mixed-mutation-models-mixedmutator">Mixed mutation models (<code class="docutils literal notranslate"><span class="pre">MixedMutator</span></code>) **</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#context-dependent-mutation-models-contextmutator">Context-dependent mutation models (<code class="docutils literal notranslate"><span class="pre">ContextMutator</span></code>)**</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#manually-introduced-mutations-pointmutator">Manually-introduced mutations (<code class="docutils literal notranslate"><span class="pre">PointMutator</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apply-mutation-to-virtual-subpopulations">Apply mutation to (virtual) subpopulations *</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#allele-mapping">Allele mapping **</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mutation-rate-and-transition-matrix-of-a-matrixmutator">Mutation rate and transition matrix of a <code class="docutils literal notranslate"><span class="pre">MatrixMutator</span></code>**</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#infinite-sites-model-and-other-simulation-techniques">Infinite-sites model and other simulation techniques **</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recording-and-tracing-individual-mutants">Recording and tracing individual mutants **</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec7.html">Penetrance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec8.html">Quantitative trait</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html">Natural Selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec10.html">Tagging operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html">Statistics calculation (operator <code class="docutils literal notranslate"><span class="pre">Stat</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec12.html">Conditional operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec13.html">Miscellaneous operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec14.html">Hybrid and Python operators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch5.html">simuPOP Operators</a><ul>
+      <li>Previous: <a href="userGuide_ch5_sec5.html" title="previous chapter">Genotype transmitters</a></li>
+      <li>Next: <a href="userGuide_ch5_sec7.html" title="next chapter">Penetrance</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch5_sec6.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

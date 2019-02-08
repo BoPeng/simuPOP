@@ -1,0 +1,209 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Quantitative trait &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Natural Selection" href="userGuide_ch5_sec9.html" />
+    <link rel="prev" title="Penetrance" href="userGuide_ch5_sec7.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="quantitative-trait">
+<h1>Quantitative trait<a class="headerlink" href="#quantitative-trait" title="Permalink to this headline">¶</a></h1>
+<p>Quantitative traits are naturally stored in information fields of each
+individual. A quantitative trait operator assigns quantitative trait fields
+according to individual genetic (genotype) and environmental (other information
+fields) information. Although a large number of quantitative trait models have
+been used in theoretical and empirical studies, no model is popular enough to
+deserve a specialized operator. Therefore, only one hybrid operator is currently
+provided in simuPOP.</p>
+<div class="section" id="a-hybrid-quantitative-trait-operator-operator-pyquantrait">
+<h2>A hybrid quantitative trait operator (operator <a class="reference internal" href="refManual_ch3_sec8.html#PyQuanTrait" title="PyQuanTrait"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyQuanTrait</span></code></a>)<a class="headerlink" href="#a-hybrid-quantitative-trait-operator-operator-pyquantrait" title="Permalink to this headline">¶</a></h2>
+<p>Operator <a class="reference internal" href="refManual_ch3_sec8.html#PyQuanTrait" title="PyQuanTrait"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyQuanTrait</span></code></a> accepts a user defined function that returns
+quantitative trait values for specified information fields. This operator can
+comunicate with functions in one of the forms of <code class="docutils literal notranslate"><span class="pre">func(geno)</span></code>, <code class="docutils literal notranslate"><span class="pre">func(geno,</span>
+<span class="pre">field_name,</span> <span class="pre">...)</span></code> or <code class="docutils literal notranslate"><span class="pre">func(geno,</span> <span class="pre">field_name,</span> <span class="pre">gen)</span></code> where <code class="docutils literal notranslate"><span class="pre">field_name</span></code>
+should be name of existing fields. simuPOP will pass genotype and value of
+specified fields according to name of the passed function. Note that geno are
+arrange locus by locus, namely in the order of <code class="docutils literal notranslate"><span class="pre">A1</span></code>,``A2``,``B1``,``B2`` for
+loci <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">B</span></code>.</p>
+<p>A quantitative trait operator can be applied before or after mating and assign
+values to the trait fields of all parents or offspring, respectively. It can
+also be applied during mating to assign trait values to offspring. Example
+<a class="reference internal" href="#pyquantrait"><span class="std std-ref">PyQuanTrait</span></a> demonstrates the use of this operator, using
+two trait fields <code class="docutils literal notranslate"><span class="pre">trait1</span></code> and <code class="docutils literal notranslate"><span class="pre">trait2</span></code> which are determined by individual
+genotype and age. This example also demonstrates how to calculate statistics
+within virtual subpopulations (defined by age).</p>
+<p id="pyquantrait"><strong>Example</strong>: <em>A hybrid quantitative trait model</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;qtrait1&#39;</span><span class="p">,</span> <span class="s1">&#39;qtrait2&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">InfoSplitter</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="p">[</span><span class="mi">40</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">qtrait</span><span class="p">(</span><span class="n">geno</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="s1">&#39;Return two traits that depends on genotype and age&#39;</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">normalvariate</span><span class="p">(</span><span class="n">age</span> <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span><span class="n">geno</span><span class="p">),</span> <span class="mi">10</span><span class="p">),</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="o">*</span><span class="nb">sum</span><span class="p">(</span><span class="n">geno</span><span class="p">))</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="c1"># use random age for simplicity</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitInfo</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">75</span><span class="p">),</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyQuanTrait</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">func</span><span class="o">=</span><span class="n">qtrait</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;qtrait1&#39;</span><span class="p">,</span> <span class="s1">&#39;qtrait2&#39;</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">meanOfInfo</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;qtrait1&#39;</span><span class="p">],</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">ALL_AVAIL</span><span class="p">)],</span>
+<span class="gp">... </span>            <span class="nb">vars</span><span class="o">=</span><span class="s1">&#39;meanOfInfo_sp&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;Mean of trait1: </span><span class="si">%.3f</span><span class="s2"> (age &lt; 40), </span><span class="si">%.3f</span><span class="s2"> (age &gt;=40)\n&#39; % &quot;</span>
+<span class="gp">... </span>            <span class="s2">&quot;(subPop[(0,0)][&#39;meanOfInfo&#39;][&#39;qtrait1&#39;], subPop[(0,1)][&#39;meanOfInfo&#39;][&#39;qtrait1&#39;])&quot;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Mean of trait1: 92.876 (age &lt; 40), 183.515 (age &gt;=40)</span>
+<span class="go">Mean of trait1: 94.041 (age &lt; 40), 183.374 (age &gt;=40)</span>
+<span class="go">Mean of trait1: 95.447 (age &lt; 40), 183.288 (age &gt;=40)</span>
+<span class="go">Mean of trait1: 95.017 (age &lt; 40), 183.919 (age &gt;=40)</span>
+<span class="go">Mean of trait1: 94.769 (age &lt; 40), 185.430 (age &gt;=40)</span>
+<span class="go">5</span>
+<span class="go">&gt;&gt;&gt;</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="PyQuanTrait.py">Download PyQuanTrait.py</a></p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec1.html">Introduction to operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec2.html">Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec3.html">Expressions and statements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec4.html">Demographic changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec5.html">Genotype transmitters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html">Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec7.html">Penetrance</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Quantitative trait</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#a-hybrid-quantitative-trait-operator-operator-pyquantrait">A hybrid quantitative trait operator (operator <code class="docutils literal notranslate"><span class="pre">PyQuanTrait</span></code>)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html">Natural Selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec10.html">Tagging operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html">Statistics calculation (operator <code class="docutils literal notranslate"><span class="pre">Stat</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec12.html">Conditional operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec13.html">Miscellaneous operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec14.html">Hybrid and Python operators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch5.html">simuPOP Operators</a><ul>
+      <li>Previous: <a href="userGuide_ch5_sec7.html" title="previous chapter">Penetrance</a></li>
+      <li>Next: <a href="userGuide_ch5_sec9.html" title="next chapter">Natural Selection</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch5_sec8.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

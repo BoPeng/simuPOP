@@ -1,0 +1,214 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Demographic model &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Mutation and selection models" href="userGuide_ch8_sec3.html" />
+    <link rel="prev" title="Simulation scenario" href="userGuide_ch8_sec1.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="demographic-model">
+<h1>Demographic model<a class="headerlink" href="#demographic-model" title="Permalink to this headline">¶</a></h1>
+<p>The original paper used a very simple instant population growth model. Under the
+model assumption, a population with an initial population size <span class="math notranslate nohighlight">\(N_{0}\)</span>
+would evolve <span class="math notranslate nohighlight">\(G_{0}\)</span> generations, instantly expand its population size to
+<span class="math notranslate nohighlight">\(N_{1}\)</span> and evolve another <span class="math notranslate nohighlight">\(G_{1}\)</span> generations. Such a model can be
+easily implemented as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ins_expansion</span><span class="p">(</span><span class="n">gen</span><span class="p">):</span>
+    <span class="s1">&#39;An instant population growth model&#39;</span>
+    <span class="k">if</span> <span class="n">gen</span> <span class="o">&lt;</span> <span class="n">G0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">N0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">N1</span>
+</pre></div>
+</div>
+<p>Other demographic models could be implemented similarly. For example, an
+exponential population growth model that expand the population size from
+<span class="math notranslate nohighlight">\(N_{0}\)</span> to <span class="math notranslate nohighlight">\(N_{1}\)</span> in <span class="math notranslate nohighlight">\(G_{1}\)</span> generations could be defined as</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">exp_expansion</span><span class="p">(</span><span class="n">gen</span><span class="p">):</span>
+    <span class="s1">&#39;An exponential population growth model&#39;</span>
+    <span class="k">if</span> <span class="n">gen</span> <span class="o">&lt;</span> <span class="n">G0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">N0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rate</span> <span class="o">=</span> <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">N1</span><span class="p">)</span> <span class="o">-</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">N0</span><span class="p">))</span><span class="o">/</span><span class="n">G1</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">N0</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">((</span><span class="n">gen</span> <span class="o">-</span> <span class="n">G0</span><span class="p">)</span> <span class="o">*</span> <span class="n">rate</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>That is to say, we first solve <span class="math notranslate nohighlight">\(r\)</span> from
+<span class="math notranslate nohighlight">\(N_{1}=N_{0}\exp\left(rG_{1}\right)\)</span> and then calculate
+<span class="math notranslate nohighlight">\(N_{t}=N_{0}\exp\left(rG\right)\)</span> for a given generation.</p>
+<p>There is a problem here: the above definitions treat <code class="docutils literal notranslate"><span class="pre">N0</span></code>, <code class="docutils literal notranslate"><span class="pre">G0</span></code>, <code class="docutils literal notranslate"><span class="pre">N1</span></code> and
+<code class="docutils literal notranslate"><span class="pre">G1</span></code> as global variables. This is OK for small scripts but is certainly not a
+good idea for larger scripts especially when different parameters will be used.
+A better way is to wrap these functions by another function that accept <code class="docutils literal notranslate"><span class="pre">N0</span></code>,
+<code class="docutils literal notranslate"><span class="pre">G0</span></code>, <code class="docutils literal notranslate"><span class="pre">N1</span></code> and <code class="docutils literal notranslate"><span class="pre">G1</span></code> as parameters. That is demonstrated in Example
+<a class="reference internal" href="#reichdemo"><span class="std std-ref">reichDemo</span></a> where a function <code class="docutils literal notranslate"><span class="pre">demo_model</span></code> is defined to
+return either an instant or an exponential population growth demographic
+function.</p>
+<p id="reichdemo"><strong>Example</strong>: <em>A demographic function producer</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">math</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">demo_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">N0</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">N1</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span> <span class="n">G0</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">G1</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="sd">&#39;&#39;&#39;Return a demographic function</span>
+<span class="gp">... </span><span class="sd">    model: linear or exponential</span>
+<span class="gp">... </span><span class="sd">    N0:   Initial sim.population size.</span>
+<span class="gp">... </span><span class="sd">    N1:   Ending sim.population size.</span>
+<span class="gp">... </span><span class="sd">    G0:   Length of burn-in stage.</span>
+<span class="gp">... </span><span class="sd">    G1:   Length of sim.population expansion stage.</span>
+<span class="gp">... </span><span class="sd">    &#39;&#39;&#39;</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">ins_expansion</span><span class="p">(</span><span class="n">gen</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">gen</span> <span class="o">&lt;</span> <span class="n">G0</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">return</span> <span class="n">N0</span>
+<span class="gp">... </span>        <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">return</span> <span class="n">N1</span>
+<span class="gp">... </span>    <span class="n">rate</span> <span class="o">=</span> <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">N1</span><span class="p">)</span> <span class="o">-</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">N0</span><span class="p">))</span><span class="o">/</span><span class="n">G1</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">exp_expansion</span><span class="p">(</span><span class="n">gen</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">gen</span> <span class="o">&lt;</span> <span class="n">G0</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">return</span> <span class="n">N0</span>
+<span class="gp">... </span>        <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">N0</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">((</span><span class="n">gen</span> <span class="o">-</span> <span class="n">G0</span><span class="p">)</span> <span class="o">*</span> <span class="n">rate</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;instant&#39;</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">ins_expansion</span>
+<span class="gp">... </span>    <span class="k">elif</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;exponential&#39;</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">exp_expansion</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># when needed, create a demographic function as follows</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">demo_func</span> <span class="o">=</span> <span class="n">demo_model</span><span class="p">(</span><span class="s1">&#39;exponential&#39;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">100000</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># sim.population size at generation 700</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">demo_func</span><span class="p">(</span><span class="mi">700</span><span class="p">))</span>
+<span class="go">6309</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="reichDemo.py">Download reichDemo.py</a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The defined demographic functions return the total population size (a number) at
+each generation beacuse no subpopulation is considered. A list of subpopulation
+sizes should be returned if there are more than one subpopulations.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch8.html">A real world example</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec1.html">Simulation scenario</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Demographic model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec3.html">Mutation and selection models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec4.html">Output statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec5.html">Initialize and evolve the population</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec6.html">Option handling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch8.html">A real world example</a><ul>
+      <li>Previous: <a href="userGuide_ch8_sec1.html" title="previous chapter">Simulation scenario</a></li>
+      <li>Next: <a href="userGuide_ch8_sec3.html" title="next chapter">Mutation and selection models</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch8_sec2.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

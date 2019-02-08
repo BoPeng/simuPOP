@@ -1,0 +1,179 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Evolving populations &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Mating Schemes" href="userGuide_ch6_sec1.html" />
+    <link rel="prev" title="Hybrid and Python operators" href="userGuide_ch5_sec14.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="evolving-populations">
+<h1>Evolving populations<a class="headerlink" href="#evolving-populations" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6_sec1.html">Mating Schemes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec1.html#control-the-size-of-the-offspring-generation">Control the size of the offspring generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec1.html#advanced-use-of-demographic-functions">Advanced use of demographic functions *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec1.html#determine-the-number-of-offspring-during-mating">Determine the number of offspring during mating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec1.html#dynamic-population-size-determined-by-number-of-offspring">Dynamic population size determined by number of offspring *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec1.html#determine-sex-of-offspring">Determine sex of offspring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec1.html#monogamous-mating">Monogamous mating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec1.html#polygamous-mating">Polygamous mating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec1.html#asexual-random-mating">Asexual random mating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec1.html#mating-in-haplodiploid-populations">Mating in haplodiploid populations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec1.html#self-fertilization">Self-fertilization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec1.html#heterogeneous-mating-schemes">Heterogeneous mating schemes *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec1.html#conditional-mating-schemes">Conditional mating schemes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6_sec2.html">Simulator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec2.html#add-access-and-remove-populations-from-a-simulator">Add, access and remove populations from a simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec2.html#number-of-generations-to-evolve">Number of generations to evolve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec2.html#evolve-populations-in-a-simulator">Evolve populations in a simulator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6_sec3.html">Non-random and customized mating schemes *</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec3.html#the-structure-of-a-homogeneous-mating-scheme">The structure of a homogeneous mating scheme *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec3.html#offspring-generators">Offspring generators *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec3.html#genotype-transmitters">Genotype transmitters *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec3.html#a-python-parent-chooser">A Python parent chooser *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec3.html#using-c-to-implement-a-parent-chooser">Using C++ to implement a parent chooser **</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6_sec4.html">Age structured populations with overlapping generations **</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6_sec5.html">Tracing allelic lineage *</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6_sec6.html">Pedigrees</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec6.html#create-a-pedigree-object">Create a pedigree object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec6.html#locate-close-and-remote-relatives-of-each-individual">Locate close and remote relatives of each individual</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec6.html#identify-pedigrees-related-individuals">Identify pedigrees (related individuals)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec6.html#save-and-load-pedigrees">Save and load pedigrees</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6_sec7.html">Evolve a population following a specified pedigree structure **</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6_sec8.html">Simulation of mitochondrial DNAs (mtDNAs) *</a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Evolving populations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec1.html">Mating Schemes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec2.html">Simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec3.html">Non-random and customized mating schemes *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec4.html">Age structured populations with overlapping generations **</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec5.html">Tracing allelic lineage *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec6.html">Pedigrees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec7.html">Evolve a population following a specified pedigree structure **</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec8.html">Simulation of mitochondrial DNAs (mtDNAs) *</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+      <li>Previous: <a href="userGuide_ch5_sec14.html" title="previous chapter">Hybrid and Python operators</a></li>
+      <li>Next: <a href="userGuide_ch6_sec1.html" title="next chapter">Mating Schemes</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch6.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

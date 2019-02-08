@@ -1,0 +1,291 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Miscellaneous operators &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Function form of operators" href="refManual_ch3_sec15.html" />
+    <link rel="prev" title="The Python operator" href="refManual_ch3_sec13.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="miscellaneous-operators">
+<h1>Miscellaneous operators<a class="headerlink" href="#miscellaneous-operators" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class-noneop">
+<h2>class NoneOp<a class="headerlink" href="#class-noneop" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="NoneOp">
+<em class="property">class </em><code class="descname">NoneOp</code><a class="headerlink" href="#NoneOp" title="Permalink to this definition">¶</a></dt>
+<dd><p>This operator does nothing when it is applied to a population. It
+is usually used as a placeholder when an operator is needed
+syntactically.</p>
+<dl class="method">
+<dt id="NoneOp.NoneOp">
+<code class="descname">NoneOp</code><span class="sig-paren">(</span><em>output=&quot;&gt;&quot;</em>, <em>begin=0</em>, <em>end=0</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#NoneOp.NoneOp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a <a class="reference internal" href="#NoneOp" title="NoneOp"><code class="xref py py-class docutils literal notranslate"><span class="pre">NoneOp</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-dumper">
+<h2>class Dumper<a class="headerlink" href="#class-dumper" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Dumper">
+<em class="property">class </em><code class="descname">Dumper</code><a class="headerlink" href="#Dumper" title="Permalink to this definition">¶</a></dt>
+<dd><p>This operator dumps the content of a population in a human readable
+format. Because this output format is not structured and can not be
+imported back to  simuPOP, this operator is usually used to dump a
+small population to a terminal for demonstration and debugging
+purposes.</p>
+<dl class="method">
+<dt id="Dumper.Dumper">
+<code class="descname">Dumper</code><span class="sig-paren">(</span><em>genotype=True</em>, <em>structure=True</em>, <em>ancGens=UNSPECIFIED</em>, <em>width=1</em>, <em>max=100</em>, <em>loci=[]</em>, <em>output=&quot;&gt;&quot;</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#Dumper.Dumper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a operator that dumps the genotype structure (if
+<em>structure</em> is <code class="docutils literal notranslate"><span class="pre">True</span></code>) and genotype (if <em>genotype</em> is
+<code class="docutils literal notranslate"><span class="pre">True</span></code>) to an <em>output</em> ( default to standard terminal output).
+Because a population can be large, this operator will only
+output the first 100 (parameter <em>max</em>) individuals of the
+present generation (parameter <em>ancGens</em>). All loci will be
+outputed unless parameter <em>loci</em> are used to specify a subset of
+loci. This operator by default output values of all information
+fields unless parameter <em>infoFields</em> is used to specify a subset
+of info fields to display. If a list of (virtual) subpopulations
+are specified, this operator will only output individuals in
+these outputs. Please refer to class <a class="reference internal" href="refManual_ch3_sec1.html#BaseOperator" title="BaseOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOperator</span></code></a> for a
+detailed explanation for common parameters such as <em>output</em> and
+<em>stage</em>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-savepopulation">
+<h2>class SavePopulation<a class="headerlink" href="#class-savepopulation" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="SavePopulation">
+<em class="property">class </em><code class="descname">SavePopulation</code><a class="headerlink" href="#SavePopulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>An operator that save populations to specified files.</p>
+<dl class="method">
+<dt id="SavePopulation.SavePopulation">
+<code class="descname">SavePopulation</code><span class="sig-paren">(</span><em>output=&quot;&quot;</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#SavePopulation.SavePopulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an operator that saves a population to <em>output</em> when it
+is applied to the population. This operator supports all output
+specifications (<code class="docutils literal notranslate"><span class="pre">''</span></code>, <code class="docutils literal notranslate"><span class="pre">'filename'</span></code>, <code class="docutils literal notranslate"><span class="pre">'filename'</span></code> prefixed
+by one or more ‘&gt;’ characters, and <code class="docutils literal notranslate"><span class="pre">'!expr'</span></code>) but output from
+different operators will always replace existing files
+(effectively ignore ‘&gt;’ specification). Parameter <em>subPops</em> is
+ignored. Please refer to class <a class="reference internal" href="refManual_ch3_sec1.html#BaseOperator" title="BaseOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOperator</span></code></a> for a
+detailed description about common operator parameters such as
+<em>stage</em> and <em>begin</em>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-pause">
+<h2>class Pause<a class="headerlink" href="#class-pause" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Pause">
+<em class="property">class </em><code class="descname">Pause</code><a class="headerlink" href="#Pause" title="Permalink to this definition">¶</a></dt>
+<dd><p>This operator pauses the evolution of a simulator at given
+generations or at a key stroke. When a simulator is stopped, you
+can go to a Python shell to examine the status of an evolutionary
+process, resume or stop the evolution.</p>
+<dl class="method">
+<dt id="Pause.Pause">
+<code class="descname">Pause</code><span class="sig-paren">(</span><em>stopOnKeyStroke=False</em>, <em>prompt=True</em>, <em>output=&quot;&gt;&quot;</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Pause.Pause" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an operator that pause the evolution of a population when
+it is applied to this population. If <em>stopOnKeyStroke</em> is
+<code class="docutils literal notranslate"><span class="pre">False</span></code> (default), it will always pause a population when it
+is applied, if this parameter is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the operator
+will pause a population if <em>any</em> key has been pressed. If a
+specific character is set, the operator will stop when this key
+has been pressed. This allows, for example, the use of several
+pause operators to pause different populations.</p>
+<p>After a population has been paused, a message will be displayed
+(unless <em>prompt</em> is set to <code class="docutils literal notranslate"><span class="pre">False</span></code>) and tells you how to
+proceed. You can press <code class="docutils literal notranslate"><span class="pre">'s'</span></code> to stop the evolution of this
+population, <code class="docutils literal notranslate"><span class="pre">'S'</span></code> to stop the evolution of all populations, or
+<code class="docutils literal notranslate"><span class="pre">'p'</span></code> to enter a Python shell. The current population will be
+available in this Python shell as <code class="docutils literal notranslate"><span class="pre">&quot;pop_X_Y&quot;</span></code> when <code class="docutils literal notranslate"><span class="pre">X</span></code> is
+generation number and <code class="docutils literal notranslate"><span class="pre">Y</span></code> is replicate number. The evolution
+will continue after you exit this interactive Python shell.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Ctrl-C will be intercepted even if a specific character is
+specified in parameter <em>stopOnKeyStroke</em>.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-tictoc">
+<h2>class TicToc<a class="headerlink" href="#class-tictoc" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="TicToc">
+<em class="property">class </em><code class="descname">TicToc</code><a class="headerlink" href="#TicToc" title="Permalink to this definition">¶</a></dt>
+<dd><p>This operator, when called, output the difference between current
+and the last called clock time. This can be used to estimate
+execution time of each generation. Similar information can also be
+obtained from <code class="docutils literal notranslate"><span class="pre">turnOnDebug(&quot;DBG_PROFILE&quot;)</span></code>, but this operator has
+the advantage of measuring the duration between several generations
+by setting <code class="docutils literal notranslate"><span class="pre">step</span></code> parameter. As an advanced feature that mainly
+used for performance testing, this operator accepts a parameter
+<em>stopAfter</em> (seconds), and will stop the evolution of a population
+if the overall time exceeds <em>stopAfter</em>. Note that elapsed time is
+only checked when this operator is applied to a population so it
+might not be able to stop the evolution process right after
+<em>stopAfter</em> seconds. This operator can also be applied during
+mating. Note that to avoid excessive time checking, this operator
+does not always check system time accurately.</p>
+<dl class="method">
+<dt id="TicToc.TicToc">
+<code class="descname">TicToc</code><span class="sig-paren">(</span><em>output=&quot;&gt;&quot;</em>, <em>stopAfter=0</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#TicToc.TicToc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a <a class="reference internal" href="#TicToc" title="TicToc"><code class="xref py py-class docutils literal notranslate"><span class="pre">TicToc</span></code></a> operator that outputs the elapsed since
+the last time it was applied, and the overall time since the
+first time this operator is applied.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="refManual_ch3.html">Operator References</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec1.html">Base class for all operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec2.html">Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec3.html">Expression and Statements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec4.html">Demographic models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec5.html">Genotype transmitters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec6.html">Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec7.html">Penetrance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec8.html">Quantitative Trait</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec9.html">Natural selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec10.html">Tagging operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec11.html">Statistics Calculation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec12.html">Conditional operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec13.html">The Python operator</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Miscellaneous operators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-noneop">class NoneOp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-dumper">class Dumper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-savepopulation">class SavePopulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-pause">class Pause</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-tictoc">class TicToc</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec15.html">Function form of operators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="refManual.html">&lt;no title&gt;</a><ul>
+  <li><a href="refManual_ch3.html">Operator References</a><ul>
+      <li>Previous: <a href="refManual_ch3_sec13.html" title="previous chapter">The Python operator</a></li>
+      <li>Next: <a href="refManual_ch3_sec15.html" title="next chapter">Function form of operators</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/refManual_ch3_sec14.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,1754 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Individual, Population, pedigree and Simulator &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Virtual splitters" href="refManual_ch2_sec2.html" />
+    <link rel="prev" title="simuPOP Components" href="refManual_ch2.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="individual-population-pedigree-and-simulator">
+<h1>Individual, Population, pedigree and Simulator<a class="headerlink" href="#individual-population-pedigree-and-simulator" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class-genostrutrait">
+<span id="index-0"></span><h2>class GenoStruTrait<a class="headerlink" href="#class-genostrutrait" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="GenoStruTrait">
+<em class="property">class </em><code class="descname">GenoStruTrait</code><a class="headerlink" href="#GenoStruTrait" title="Permalink to this definition">¶</a></dt>
+<dd><p>All individuals in a population share the same genotypic properties
+such as number of chromosomes, number and position of loci, names
+of markers, chromosomes, and information fields. These properties
+are stored in this <a class="reference internal" href="#GenoStruTrait" title="GenoStruTrait"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenoStruTrait</span></code></a> class and are accessible
+from both <a class="reference internal" href="#Individual" title="Individual"><code class="xref py py-class docutils literal notranslate"><span class="pre">Individual</span></code></a> and <a class="reference internal" href="#Population" title="Population"><code class="xref py py-class docutils literal notranslate"><span class="pre">Population</span></code></a> classes.
+Currently, a genotypic structure consists of</p>
+<ul class="simple">
+<li>Ploidy, namely the number of homologous sets of chromosomes, of a
+population. Haplodiploid population is also supported.</li>
+<li>Number of chromosomes and number of loci on each chromosome.</li>
+<li>Positions of loci, which determine the relative distance between
+loci on the same chromosome. No unit is assumed so these
+positions can be ordinal (<code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span></code>, <code class="docutils literal notranslate"><span class="pre">3</span></code>, …, the default),
+in physical distance (<code class="docutils literal notranslate"><span class="pre">bp</span></code>, <code class="docutils literal notranslate"><span class="pre">kb</span></code> or <code class="docutils literal notranslate"><span class="pre">mb</span></code>), or in map
+distance (e.g. <code class="docutils literal notranslate"><span class="pre">centiMorgan</span></code>) depending on applications.</li>
+<li>Names of alleles, which can either be shared by all loci or be
+specified for each locus.</li>
+<li>Names of loci and chromosomes.</li>
+<li>Names of information fields attached to each individual.</li>
+</ul>
+<p>In addition to basic property access functions, this class provides
+some utility functions such as <code class="docutils literal notranslate"><span class="pre">locusByName</span></code>, which looks up a
+locus by its name.</p>
+<dl class="method">
+<dt id="GenoStruTrait.GenoStruTrait">
+<code class="descname">GenoStruTrait</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.GenoStruTrait" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#GenoStruTrait" title="GenoStruTrait"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenoStruTrait</span></code></a> object is created with the construction
+of a <a class="reference internal" href="#Population" title="Population"><code class="xref py py-class docutils literal notranslate"><span class="pre">Population</span></code></a> object and cannot be initialized
+directly.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.absLocusIndex">
+<code class="descname">absLocusIndex</code><span class="sig-paren">(</span><em>chrom</em>, <em>locus</em><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.absLocusIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the absolute index of locus <em>locus</em> on chromosome
+<em>chrom</em>. c.f. <code class="docutils literal notranslate"><span class="pre">chromLocusPair</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.alleleName">
+<code class="descname">alleleName</code><span class="sig-paren">(</span><em>allele</em>, <em>locus=0</em><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.alleleName" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the name of allele <em>allele</em> at <em>lcous</em> specified by the
+<em>alleleNames</em> parameter of the <a class="reference internal" href="#Population" title="Population"><code class="xref py py-class docutils literal notranslate"><span class="pre">Population</span></code></a> function.
+<em>locus</em> could be ignored if alleles at all loci share the same
+names. If the name of an allele is unspecified, its value
+(<code class="docutils literal notranslate"><span class="pre">'0'</span></code>, <code class="docutils literal notranslate"><span class="pre">'1'</span></code>, <code class="docutils literal notranslate"><span class="pre">'2'</span></code>, etc) is returned.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.alleleNames">
+<code class="descname">alleleNames</code><span class="sig-paren">(</span><em>locus=0</em><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.alleleNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>return a list of allele names at locus given by the
+<em>alleleNames</em> parameter of the <a class="reference internal" href="#Population" title="Population"><code class="xref py py-class docutils literal notranslate"><span class="pre">Population</span></code></a> function.
+<em>locus</em> could be ignored if alleles at all loci share the same
+names. This list does not have to cover all possible allele
+states of a population so <code class="docutils literal notranslate"><span class="pre">alleleNames()[``*allele*</span></code>]`` might
+fail (use <code class="docutils literal notranslate"><span class="pre">alleleNames(``*allele*</span></code>)`` instead).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.chromBegin">
+<code class="descname">chromBegin</code><span class="sig-paren">(</span><em>chrom</em><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.chromBegin" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the index of the first locus on chromosome <em>chrom</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.chromByName">
+<code class="descname">chromByName</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.chromByName" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the index of a chromosome by its <em>name</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.chromEnd">
+<code class="descname">chromEnd</code><span class="sig-paren">(</span><em>chrom</em><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.chromEnd" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the index of the last locus on chromosome <em>chrom</em> plus 1.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.chromLocusPair">
+<code class="descname">chromLocusPair</code><span class="sig-paren">(</span><em>locus</em><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.chromLocusPair" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the chromosome and relative index of a locus using its
+absolute index <em>locus</em>. c.f. <code class="docutils literal notranslate"><span class="pre">absLocusIndex</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.chromName">
+<code class="descname">chromName</code><span class="sig-paren">(</span><em>chrom</em><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.chromName" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the name of a chromosome <em>chrom</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.chromNames">
+<code class="descname">chromNames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.chromNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>return a list of the names of all chromosomes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.chromType">
+<code class="descname">chromType</code><span class="sig-paren">(</span><em>chrom</em><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.chromType" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the type of a chromosome <em>chrom</em> (<code class="docutils literal notranslate"><span class="pre">CUSTOMIZED</span></code>,
+<code class="docutils literal notranslate"><span class="pre">AUTOSOME</span></code>, <code class="docutils literal notranslate"><span class="pre">CHROMOSOME_X</span></code>, <code class="docutils literal notranslate"><span class="pre">CHROMOSOME_Y</span></code> or
+<code class="docutils literal notranslate"><span class="pre">MITOCHONDRIAL</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.chromTypes">
+<code class="descname">chromTypes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.chromTypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the type of all chromosomes (<code class="docutils literal notranslate"><span class="pre">CUSTOMIZED</span></code>,
+<code class="docutils literal notranslate"><span class="pre">AUTOSOME</span></code>, <code class="docutils literal notranslate"><span class="pre">CHROMOSOME_X</span></code>, <code class="docutils literal notranslate"><span class="pre">CHROMOSOME_Y</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">MITOCHONDRIAL</span></code>).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.indexesOfLoci">
+<code class="descname">indexesOfLoci</code><span class="sig-paren">(</span><em>loci=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.indexesOfLoci" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the indexes of loci with positions <em>positions</em> (list of
+(chr, pos) pairs). Raise a <code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code> if any of the
+loci cannot be found.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.infoField">
+<code class="descname">infoField</code><span class="sig-paren">(</span><em>idx</em><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.infoField" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the name of information field <em>idx</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.infoFields">
+<code class="descname">infoFields</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.infoFields" title="Permalink to this definition">¶</a></dt>
+<dd><p>return a list of the names of all information fields of the
+population.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.infoIdx">
+<code class="descname">infoIdx</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.infoIdx" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the index of information field <em>name</em>. Raise an
+<code class="xref py py-class docutils literal notranslate"><span class="pre">IndexError</span></code> if <em>name</em> is not one of the information
+fields.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.lociByNames">
+<code class="descname">lociByNames</code><span class="sig-paren">(</span><em>names</em><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.lociByNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the indexes of loci with names <em>names</em>. Raise a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code> if any of the loci cannot be found.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.lociDist">
+<code class="descname">lociDist</code><span class="sig-paren">(</span><em>locus1</em>, <em>locus2</em><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.lociDist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the distance between loci <em>locus1</em> and <em>locus2</em> on the
+same chromosome. A negative value will be returned if <em>locus1</em>
+is after <em>locus2</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.lociNames">
+<code class="descname">lociNames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.lociNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the names of all loci specified by the <em>lociNames</em>
+parameter of the <a class="reference internal" href="#Population" title="Population"><code class="xref py py-class docutils literal notranslate"><span class="pre">Population</span></code></a> function. An empty list
+will be returned if <em>lociNames</em> was not specified.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.lociPos">
+<code class="descname">lociPos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.lociPos" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the positions of all loci, specified by the <em>lociPos</em>
+prameter of the <a class="reference internal" href="#Population" title="Population"><code class="xref py py-class docutils literal notranslate"><span class="pre">Population</span></code></a> function. The default
+positions are 1, 2, 3, 4, … on each chromosome.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.locusByName">
+<code class="descname">locusByName</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.locusByName" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the index of a locus with name <em>name</em>. Raise a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code> if no locus is found. Note that empty
+strings are used for loci without name but you cannot lookup
+such loci using this function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.locusName">
+<code class="descname">locusName</code><span class="sig-paren">(</span><em>locus</em><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.locusName" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the name of locus <em>locus</em> specified by the <em>lociNames</em>
+parameter of the <a class="reference internal" href="#Population" title="Population"><code class="xref py py-class docutils literal notranslate"><span class="pre">Population</span></code></a> function. An empty string
+will be returned if no name has been given to locus <em>locus</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.locusPos">
+<code class="descname">locusPos</code><span class="sig-paren">(</span><em>locus</em><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.locusPos" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the position of locus <em>locus</em> specified by the <em>lociPos</em>
+parameter of the <a class="reference internal" href="#Population" title="Population"><code class="xref py py-class docutils literal notranslate"><span class="pre">Population</span></code></a> function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.numChrom">
+<code class="descname">numChrom</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.numChrom" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the number of chromosomes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.numLoci">
+<code class="descname">numLoci</code><span class="sig-paren">(</span><em>chrom</em><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.numLoci" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the number of loci on chromosome <em>chrom</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">numLoci</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>return a list of the number of loci on all chromosomes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.ploidy">
+<code class="descname">ploidy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.ploidy" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the number of homologous sets of chromosomes, specified
+by the <em>ploidy</em> parameter of the <a class="reference internal" href="#Population" title="Population"><code class="xref py py-class docutils literal notranslate"><span class="pre">Population</span></code></a> function.
+Return 2 for a haplodiploid population because two sets of
+chromosomes are stored for both males and females in such a
+population.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.ploidyName">
+<code class="descname">ploidyName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.ploidyName" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the ploidy name of this population, can be one of
+<code class="docutils literal notranslate"><span class="pre">haploid</span></code>, <code class="docutils literal notranslate"><span class="pre">diploid</span></code>, <code class="docutils literal notranslate"><span class="pre">haplodiploid</span></code>, <code class="docutils literal notranslate"><span class="pre">triploid</span></code>,
+<code class="docutils literal notranslate"><span class="pre">tetraploid</span></code> or <code class="docutils literal notranslate"><span class="pre">#-ploid</span></code> where <code class="docutils literal notranslate"><span class="pre">#</span></code> is the ploidy number.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GenoStruTrait.totNumLoci">
+<code class="descname">totNumLoci</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GenoStruTrait.totNumLoci" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the total number of loci on all chromosomes.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-individual">
+<h2>class Individual<a class="headerlink" href="#class-individual" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Individual">
+<em class="property">class </em><code class="descname">Individual</code><a class="headerlink" href="#Individual" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#Population" title="Population"><code class="xref py py-class docutils literal notranslate"><span class="pre">Population</span></code></a> consists of individuals with the same
+genotypic structure. An <a class="reference internal" href="#Individual" title="Individual"><code class="xref py py-class docutils literal notranslate"><span class="pre">Individual</span></code></a> object cannot be
+created independently, but refences to inidividuals can be
+retrieved using member functions of a <a class="reference internal" href="#Population" title="Population"><code class="xref py py-class docutils literal notranslate"><span class="pre">Population</span></code></a> object.
+In addition to structural information shared by all individuals in
+a population (provided by class <a class="reference internal" href="#GenoStruTrait" title="GenoStruTrait"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenoStruTrait</span></code></a>), the
+<a class="reference internal" href="#Individual" title="Individual"><code class="xref py py-class docutils literal notranslate"><span class="pre">Individual</span></code></a> class provides member functions to get and set
+<em>genotype</em>, <em>sex</em>, <em>affection status</em> and <em>information fields</em> of
+an individual.</p>
+<p>Genotypes of an individual are stored sequentially and can be
+accessed locus by locus, or in batch. The alleles are arranged by
+position, chromosome and ploidy. That is to say, the first allele
+on the first chromosome of the first homologous set is followed by
+alleles at other loci on the same chromsome, then markers on the
+second and later chromosomes, followed by alleles on the second
+homologous set of the chromosomes for a diploid individual. A
+consequence of this memory layout is that alleles at the same locus
+of a non-haploid individual are separated by
+<code class="docutils literal notranslate"><span class="pre">Individual::totNumLoci()</span></code> loci. It is worth noting that access
+to invalid chromosomes, such as the Y chromosomes of female
+individuals, is not restricted.</p>
+<dl class="method">
+<dt id="Individual.Individual">
+<code class="descname">Individual</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Individual.Individual" title="Permalink to this definition">¶</a></dt>
+<dd><p>An <a class="reference internal" href="#Individual" title="Individual"><code class="xref py py-class docutils literal notranslate"><span class="pre">Individual</span></code></a> object cannot be created directly. It has
+to be accessed from a <a class="reference internal" href="#Population" title="Population"><code class="xref py py-class docutils literal notranslate"><span class="pre">Population</span></code></a> object using functions
+such as <code class="docutils literal notranslate"><span class="pre">Population::Individual(idx)</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Individual.affected">
+<code class="descname">affected</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Individual.affected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if this individual is affected.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Individual.allele">
+<code class="descname">allele</code><span class="sig-paren">(</span><em>idx</em>, <em>ploidy=-1</em>, <em>chrom=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#Individual.allele" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the current allele at a locus, using its absolute index
+<em>idx</em>. If a ploidy <em>ploidy</em> and/or a chromosome indexes is
+given, <em>idx</em> is relative to the beginning of specified
+homologous copy of chromosomes (if <em>chrom=-1</em>) or the beginning
+of the specified homologous copy of specified chromosome (if
+<em>chrom</em> &gt;= 0).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Individual.alleleChar">
+<code class="descname">alleleChar</code><span class="sig-paren">(</span><em>idx</em>, <em>ploidy=-1</em>, <em>chrom=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#Individual.alleleChar" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the name of <code class="docutils literal notranslate"><span class="pre">allele(idx,</span> <span class="pre">ploidy,</span> <span class="pre">chrom)</span></code>. If idx is
+invalid (e.g. second homologus copy of chromosome Y), ‘_’ is
+returned.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Individual.alleleLineage">
+<code class="descname">alleleLineage</code><span class="sig-paren">(</span><em>idx</em>, <em>ploidy=-1</em>, <em>chrom=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#Individual.alleleLineage" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the lineage of the allele at a locus, using its absolute
+index <em>idx</em>. If a ploidy <em>ploidy</em> and/or a chromosome indexes is
+given, <em>idx</em> is relative to the beginning of specified
+homologous copy of chromosomes (if <em>chrom=-1</em>) or the beginning
+of the specified homologous copy of specified chromosome (if
+<em>chrom</em> &gt;= 0). <strong>This function returns 0 for modules without
+lineage information.</strong></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Individual.__cmp__">
+<code class="descname">__cmp__</code><span class="sig-paren">(</span><em>rhs</em><span class="sig-paren">)</span><a class="headerlink" href="#Individual.__cmp__" title="Permalink to this definition">¶</a></dt>
+<dd><p>a python function used to compare the individual objects</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Individual.genotype">
+<code class="descname">genotype</code><span class="sig-paren">(</span><em>ploidy=ALL_AVAIL</em>, <em>chroms=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#Individual.genotype" title="Permalink to this definition">¶</a></dt>
+<dd><p>return an editable array (a <code class="docutils literal notranslate"><span class="pre">carray</span></code> object) that represents
+all alleles of an individual. If <em>ploidy</em> or <em>chroms</em> is given,
+only alleles on the specified chromosomes and homologous copy of
+chromosomes will be returned. If multiple chromosomes are
+specified, there should not be gaps between chromosomes. This
+function ignores type of chromosomes so it will return unused
+alleles for sex and mitochondrial chromosomes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Individual.info">
+<code class="descname">info</code><span class="sig-paren">(</span><em>field</em><span class="sig-paren">)</span><a class="headerlink" href="#Individual.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the value of an information field <em>filed</em> (by index or
+name). <code class="docutils literal notranslate"><span class="pre">ind.info(name)</span></code> is equivalent to <code class="docutils literal notranslate"><span class="pre">ind.name</span></code> although
+the function form allows the use of indexes of information
+fieldes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Individual.lineage">
+<code class="descname">lineage</code><span class="sig-paren">(</span><em>ploidy=ALL_AVAIL</em>, <em>chroms=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#Individual.lineage" title="Permalink to this definition">¶</a></dt>
+<dd><p>return an editable array (a <code class="docutils literal notranslate"><span class="pre">carray_lineage</span></code> object) that
+represents the lineages of all alleles of an individual. If
+<em>ploidy</em> or <em>chroms</em> is given, only lineages on the specified
+chromosomes and homologous copy of chromosomes will be returned.
+If multiple chromosomes are specified, there should not be gaps
+between chromosomes. This function ignores type of chromosomes
+so it will return lineage of unused alleles for sex and
+mitochondrial chromosomes. A <code class="docutils literal notranslate"><span class="pre">None</span></code> object will be returned
+for modules without lineage information.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Individual.mutants">
+<code class="descname">mutants</code><span class="sig-paren">(</span><em>ploidy=ALL_AVAIL</em>, <em>chroms=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#Individual.mutants" title="Permalink to this definition">¶</a></dt>
+<dd><p>return an itertor that iterate through all mutants (non-zero
+alleles) of an individual. Each mutant is presented as a tuple
+of (index, value) where index is the index of mutant ranging
+from zero to  totNumLoci() *  ploidy() - 1, so you will have to
+adjust indexes to check multiple alleles at a locus. If <em>ploidy</em>
+or <em>chroms</em> is given, only alleles on the specified chromosomes
+and homologous copy of chromosomes will be iterated. If multiple
+chromosomes are specified, there should not be gaps between
+chromosomes. This function ignores type of chromosomes so it
+will return unused alleles for sex and mitochondrial
+chromosomes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Individual.setAffected">
+<code class="descname">setAffected</code><span class="sig-paren">(</span><em>affected</em><span class="sig-paren">)</span><a class="headerlink" href="#Individual.setAffected" title="Permalink to this definition">¶</a></dt>
+<dd><p>set affection status to <em>affected</em> (<code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Individual.setAllele">
+<code class="descname">setAllele</code><span class="sig-paren">(</span><em>allele</em>, <em>idx</em>, <em>ploidy=-1</em>, <em>chrom=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#Individual.setAllele" title="Permalink to this definition">¶</a></dt>
+<dd><p>set allele <em>allele</em> to a locus, using its absolute index <em>idx</em>.
+If a ploidy <em>ploidy</em> and/or a chromosome indexes are given,
+<em>idx</em> is relative to the beginning of specified homologous copy
+of chromosomes (if <em>chrom=-1</em>) or the beginning of the specified
+homologous copy of specified chromosome (if <em>chrom</em> &gt;= 0).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Individual.setAlleleLineage">
+<code class="descname">setAlleleLineage</code><span class="sig-paren">(</span><em>lineage</em>, <em>idx</em>, <em>ploidy=-1</em>, <em>chrom=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#Individual.setAlleleLineage" title="Permalink to this definition">¶</a></dt>
+<dd><p>set lineage <em>lineage</em> to an allele, using its absolute index
+<em>idx</em>. If a ploidy <em>ploidy</em> and/or a chromosome indexes are
+given, <em>idx</em> is relative to the beginning of specified
+homologous copy of chromosomes (if <em>chrom=-1</em>) or the beginning
+of the specified homologous copy of specified chromosome (if
+<em>chrom</em> &gt;= 0). This function does nothing for modules without
+lineage information.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Individual.setGenotype">
+<code class="descname">setGenotype</code><span class="sig-paren">(</span><em>geno</em>, <em>ploidy=ALL_AVAIL</em>, <em>chroms=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#Individual.setGenotype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill the genotype of an individual using a list of alleles
+<em>geno</em>. If parameters <em>ploidy</em> and/or <em>chroms</em> are specified,
+alleles will be copied to only all or specified chromosomes on
+selected homologous copies of chromosomes. <code class="docutils literal notranslate"><span class="pre">geno</span></code> will be
+reused if its length is less than number of alleles to be
+filled. This function ignores type of chromosomes so it will set
+genotype for unused alleles for sex and mitochondrial
+chromosomes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Individual.setInfo">
+<code class="descname">setInfo</code><span class="sig-paren">(</span><em>value</em>, <em>field</em><span class="sig-paren">)</span><a class="headerlink" href="#Individual.setInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>set the value of an information field <em>field</em> (by index or name)
+to <em>value</em>. <code class="docutils literal notranslate"><span class="pre">ind.setInfo(value,</span> <span class="pre">field)</span></code> is equivalent to
+<code class="docutils literal notranslate"><span class="pre">ind.field</span> <span class="pre">=</span> <span class="pre">value</span></code> although the function form allows the use
+of indexes of information fieldes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Individual.setLineage">
+<code class="descname">setLineage</code><span class="sig-paren">(</span><em>lineage</em>, <em>ploidy=ALL_AVAIL</em>, <em>chroms=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#Individual.setLineage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill the lineage of an individual using a list of IDs <em>lineage</em>.
+If parameters <em>ploidy</em> and/or <em>chroms</em> are specified, lineages
+will be copied to only all or specified chromosomes on selected
+homologous copies of chromosomes. <code class="docutils literal notranslate"><span class="pre">lineage</span></code> will be reused if
+its length is less than number of allelic lineage to be filled.
+This function ignores type of chromosomes so it will set lineage
+to unused alleles for sex and mitochondrial chromosomes. It does
+nothing for modules without lineage information.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Individual.setSex">
+<code class="descname">setSex</code><span class="sig-paren">(</span><em>sex</em><span class="sig-paren">)</span><a class="headerlink" href="#Individual.setSex" title="Permalink to this definition">¶</a></dt>
+<dd><p>set individual sex to <code class="docutils literal notranslate"><span class="pre">MALE</span></code> or <code class="docutils literal notranslate"><span class="pre">FEMALE</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Individual.sex">
+<code class="descname">sex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Individual.sex" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the sex of an individual, <code class="docutils literal notranslate"><span class="pre">1</span></code> for male and <code class="docutils literal notranslate"><span class="pre">2</span></code> for
+female.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-population">
+<h2>class Population<a class="headerlink" href="#class-population" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Population">
+<em class="property">class </em><code class="descname">Population</code><a class="headerlink" href="#Population" title="Permalink to this definition">¶</a></dt>
+<dd><p>A  simuPOP population consists of individuals of the same genotypic
+structure, organized by generations, subpopulations and virtual
+subpopulations. It also contains a Python dictionary that is used
+to store arbitrary population variables.</p>
+<p>In addition to genotypic structured related functions provided by
+the <a class="reference internal" href="#GenoStruTrait" title="GenoStruTrait"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenoStruTrait</span></code></a> class, the population class provides a
+large number of member functions that can be used to</p>
+<ul class="simple">
+<li>Create, copy and compare populations.</li>
+<li>Manipulate subpopulations. A population can be divided into
+several subpopulations. Because individuals only mate with
+individuals within the same subpopulation, exchange of genetic
+information across subpopulations can only be done through
+migration. A number of functions are provided to access
+subpopulation structure information, and to merge and split
+subpopulations.</li>
+<li>Define and access virtual subpopulations. A <em>virtual
+subpopulation splitter</em> can be assigned to a population, which
+defines groups of individuals called <em>virtual subpopulations</em>
+(VSP) within each subpopulation.</li>
+<li>Access individuals individually, or through iterators that
+iterate through individuals in (virtual) subpopulations.</li>
+<li>Access genotype and information fields of individuals at the
+population level. From a population point of view, all genotypes
+are arranged sequentially individual by individual. Please refer
+to class <a class="reference internal" href="#Individual" title="Individual"><code class="xref py py-class docutils literal notranslate"><span class="pre">Individual</span></code></a> for an introduction to genotype
+arragement of each individual.</li>
+<li>Store and access <em>ancestral generations</em>. A population can save
+arbitrary number of ancestral generations. It is possible to
+directly access an ancestor, or make an ancestral generation the
+current generation for more efficient access.</li>
+<li>Insert or remove loci, resize (shrink or expand) a population,
+sample from a population, or merge with other populations.</li>
+<li>Manipulate population variables and evaluate expressions in this
+<em>local namespace</em>.</li>
+<li>Save and load a population.</li>
+</ul>
+<dl class="method">
+<dt id="Population.Population">
+<code class="descname">Population</code><span class="sig-paren">(</span><em>size=[]</em>, <em>ploidy=2</em>, <em>loci=[]</em>, <em>chromTypes=[]</em>, <em>lociPos=[]</em>, <em>ancGen=0</em>, <em>chromNames=[]</em>, <em>alleleNames=[]</em>, <em>lociNames=[]</em>, <em>subPopNames=[]</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.Population" title="Permalink to this definition">¶</a></dt>
+<dd><p>The following parameters are used to create a population object:</p>
+<dl class="docutils">
+<dt>size</dt>
+<dd>A list of subpopulation sizes. The length of this list determines the
+number of subpopulations of this population. If there is no
+subpopulation, <code class="docutils literal notranslate"><span class="pre">size=[popSize]</span></code> can be written as
+<code class="docutils literal notranslate"><span class="pre">size=popSize</span></code>.</dd>
+<dt>ploidy</dt>
+<dd>Number of homologous sets of chromosomes. Default to <code class="docutils literal notranslate"><span class="pre">2</span></code> (diploid).
+For efficiency considerations, all chromosomes have the same
+number of homologous sets, even if some customized
+chromosomes or some individuals (e.g. males in a haplodiploid
+population) have different numbers of homologous sets. The
+first case is handled by setting <em>chromTypes</em> of each
+chromosome. Only the haplodiploid populations are handled for
+the second case, for which <code class="docutils literal notranslate"><span class="pre">ploidy=HAPLODIPLOID</span></code> should be
+used.</dd>
+<dt>loci</dt>
+<dd>A list of numbers of loci on each chromosome. The length of this
+parameter determines the number of chromosomes. If there is
+only one chromosome, <code class="docutils literal notranslate"><span class="pre">numLoci</span></code> instead of <code class="docutils literal notranslate"><span class="pre">[numLoci]</span></code> can
+be used.</dd>
+<dt>chromTypes</dt>
+<dd>A list that specifies the type of each chromosome, which can be
+<code class="docutils literal notranslate"><span class="pre">AUTOSOME</span></code>, <code class="docutils literal notranslate"><span class="pre">CHROMOSOME_X</span></code>, <code class="docutils literal notranslate"><span class="pre">CHROMOSOME_Y</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">CUSTOMIZED</span></code>. All chromosomes are assumed to be autosomes
+if this parameter is ignored. Sex chromosome can only be
+specified in a diploid population where the sex of an
+individual is determined by the existence of these
+chromosomes using the <code class="docutils literal notranslate"><span class="pre">XX</span></code> (<code class="docutils literal notranslate"><span class="pre">FEMALE</span></code>) and <code class="docutils literal notranslate"><span class="pre">XY</span></code>
+(<code class="docutils literal notranslate"><span class="pre">MALE</span></code>) convention. Both sex chromosomes have to be
+available and be specified only once. Because chromosomes
+<code class="docutils literal notranslate"><span class="pre">X</span></code> and <code class="docutils literal notranslate"><span class="pre">Y</span></code> are treated as two chromosomes, recombination
+on the pseudo-autosomal regions of the sex chromsomes is not
+supported. <code class="docutils literal notranslate"><span class="pre">CUSTOMIZED</span></code> chromosomes are special chromosomes
+whose inheritance patterns are undefined. They rely on user-
+defined functions and operators to be passed from parents to
+offspring. Multiple customized chromosomes have to be
+arranged consecutively.</dd>
+<dt>lociPos</dt>
+<dd>Positions of all loci on all chromosome, as a list of float numbers.
+Default to <code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span></code>, … etc on each chromosome.
+<em>lociPos</em> should be arranged chromosome by chromosome. If
+<code class="docutils literal notranslate"><span class="pre">lociPos</span></code> are not in order within a chromosome, they will
+be re-arranged along with corresponding <em>lociNames</em> (if
+specified).</dd>
+<dt>ancGen</dt>
+<dd>Number of the most recent ancestral generations to keep during
+evolution. Default to <code class="docutils literal notranslate"><span class="pre">0</span></code>, which means only the current
+generation will be kept. If it is set to <code class="docutils literal notranslate"><span class="pre">-1</span></code>, all
+ancestral generations will be kept in this population (and
+exhaust your computer RAM quickly).</dd>
+<dt>chromNames</dt>
+<dd>A list of chromosome names. Default to <code class="docutils literal notranslate"><span class="pre">''</span></code> for all chromosomes.</dd>
+<dt>alleleNames</dt>
+<dd>A list or a nested list of allele names. If a list of alleles is
+given, it will be used for all loci in this population. For
+example, <code class="docutils literal notranslate"><span class="pre">alleleNames=('A','C','T','G')</span></code> gives names <code class="docutils literal notranslate"><span class="pre">A</span></code>,
+<code class="docutils literal notranslate"><span class="pre">C</span></code>, <code class="docutils literal notranslate"><span class="pre">T</span></code>, and <code class="docutils literal notranslate"><span class="pre">G</span></code> to alleles <code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">3</span></code> respectively. If a nested list of names is given, it
+should specify alleles names for all loci.</dd>
+<dt>lociNames</dt>
+<dd>A list of names for each locus. It can be empty or a list of unique
+names for each locus. If loci are not specified in order,
+loci names will be rearranged according to their position on
+the chromosome.</dd>
+<dt>subPopNames</dt>
+<dd>A list of subpopulation names. All subpopulations will have name
+<code class="docutils literal notranslate"><span class="pre">''</span></code> if this parameter is not specified.</dd>
+<dt>infoFields</dt>
+<dd>Names of information fields (named float number) that will be attached
+to each individual.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.absIndIndex">
+<code class="descname">absIndIndex</code><span class="sig-paren">(</span><em>idx</em>, <em>subPop</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.absIndIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the absolute index of an individual <em>idx</em> in
+subpopulation <em>subPop</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.addChrom">
+<code class="descname">addChrom</code><span class="sig-paren">(</span><em>lociPos</em>, <em>lociNames=[]</em>, <em>chromName=&quot;&quot;</em>, <em>alleleNames=[]</em>, <em>chromType=AUTOSOME</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.addChrom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add chromosome <em>chromName</em> with given type <em>chromType</em> to a
+population, with loci <em>lociNames</em> inserted at position
+<em>lociPos</em>. <em>lociPos</em> should be ordered. <em>lociNames</em> and
+<em>chromName</em> should not exist in the current population. Allele
+names could be specified for all loci (a list of names) or
+differently for each locus (a nested list of names), using
+parameter <em>alleleNames</em>. Empty loci names will be used if
+<em>lociNames</em> is not specified. The newly added alleles will have
+zero lineage in modules wiht lineage information.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.addChromFrom">
+<code class="descname">addChromFrom</code><span class="sig-paren">(</span><em>pop</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.addChromFrom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add chromosomes in population <em>pop</em> to the current population.
+population <em>pop</em> should have the same number of individuals as
+the current population in the current and all ancestral
+generations. Chromosomes of <em>pop</em>, if named, should not conflict
+with names of existing chromosome. This function merges
+genotypes on the new chromosomes from population <code class="docutils literal notranslate"><span class="pre">pop</span></code>
+individual by individual.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.addIndFrom">
+<code class="descname">addIndFrom</code><span class="sig-paren">(</span><em>pop</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.addIndFrom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add all individuals, including ancestors, in <em>pop</em> to the
+current population. Two populations should have the same
+genotypic structures and number of ancestral generations.
+Subpopulations in population <em>pop</em> are kept.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.addInfoFields">
+<code class="descname">addInfoFields</code><span class="sig-paren">(</span><em>fields</em>, <em>init=0</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.addInfoFields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a list of information fields <em>fields</em> to a population and
+initialize their values to <em>init</em>. If an information field
+alreay exists, it will be re-initialized.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.addLoci">
+<code class="descname">addLoci</code><span class="sig-paren">(</span><em>chrom</em>, <em>pos</em>, <em>lociNames=[]</em>, <em>alleleNames=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.addLoci" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert loci <em>lociNames</em> at positions <em>pos</em> on chromosome
+<em>chrom</em>. These parameters should be lists of the same length,
+although <em>names</em> may be ignored, in which case empty strings
+will be assumed. Single-value input is allowed for parameter
+<em>chrom</em> and <em>pos</em> if only one locus is added. Alleles at
+inserted loci are initialized with zero alleles. Note that loci
+have to be added to existing chromosomes. If loci on a new
+chromosome need to be added, function <code class="docutils literal notranslate"><span class="pre">addChrom</span></code> should be
+used. Optionally, allele names could be specified either for all
+loci (a single list) or each loci (a nested list). This function
+returns indexes of the inserted loci. Newly inserted alleles
+will have zero lineage in modules with lineage information.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.addLociFrom">
+<code class="descname">addLociFrom</code><span class="sig-paren">(</span><em>pop</em>, <em>byName=False</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.addLociFrom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add loci from population <em>pop</em>. By default, chromosomes are
+merged by index and names of merged chromosomes of population
+<em>pop</em> will be ignored (merge of two chromosomes with different
+names will yield a warning). If <em>byName</em> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+chromosomes in <em>pop</em> will be merged to chromosomes with
+identical names. Added loci will be inserted according to their
+position. Their position and names should not overlap with any
+locus in the current population. population <em>pop</em> should have
+the same number of individuals as the current population in the
+current and all ancestral generations. Allele lineages are also
+copied from <em>pop</em> in modules with lineage information.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.ancestor">
+<code class="descname">ancestor</code><span class="sig-paren">(</span><em>idx</em>, <em>gen</em>, <em>subPop=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.ancestor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a reference to individual <code class="docutils literal notranslate"><span class="pre">idx</span></code> in ancestral generation
+<code class="docutils literal notranslate"><span class="pre">gen</span></code>. The correct individual will be returned even if the
+current generation is not the present one (see also
+<code class="docutils literal notranslate"><span class="pre">useAncestralGen</span></code>). If a valid <em>subPop</em> is specified, <em>index</em>
+is relative to that <em>subPop</em>. Virtual subpopulation is not
+supported. Note that a float <em>idx</em> is acceptable as long as it
+rounds closely to an integer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.ancestralGens">
+<code class="descname">ancestralGens</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Population.ancestralGens" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the actual number of ancestral generations stored in a
+population, which does not necessarily equal to the number set
+by <code class="docutils literal notranslate"><span class="pre">setAncestralDepth()</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.clone">
+<code class="descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Population.clone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a cloned copy of a population. Note that Python statement
+<code class="docutils literal notranslate"><span class="pre">pop1</span> <span class="pre">=</span> <span class="pre">pop</span></code> only creates a reference to an existing
+population <code class="docutils literal notranslate"><span class="pre">pop</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.__cmp__">
+<code class="descname">__cmp__</code><span class="sig-paren">(</span><em>rhs</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.__cmp__" title="Permalink to this definition">¶</a></dt>
+<dd><p>a python function used to compare the population objects</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.dvars">
+<code class="descname">dvars</code><span class="sig-paren">(</span><em>subPop=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.dvars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a wrapper of Python dictionary returned by
+<code class="docutils literal notranslate"><span class="pre">vars(subPop)</span></code> so that dictionary keys can be accessed as
+attributes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.extractIndividuals">
+<code class="descname">extractIndividuals</code><span class="sig-paren">(</span><em>indexes=[]</em>, <em>IDs=[]</em>, <em>idField=&quot;ind_id&quot;</em>, <em>filter=None</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.extractIndividuals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract individuals with given absolute indexes (parameter
+<em>indexes</em>), IDs (parameter <em>IDs</em>, stored in information field
+<em>idField</em>, default to <code class="docutils literal notranslate"><span class="pre">ind_id</span></code>), or a filter function
+(parameter <em>filter</em>). If a list of absolute indexes are
+specified, the present generation will be extracted and form a
+one-generational population. If a list of IDs are specified,
+this function will look through all ancestral generations and
+extract individuals with given ID. Individuals with shared IDs
+are allowed. In the last case, a user-defined Python function
+should be provided. This function should accept parameter
+<code class="docutils literal notranslate"><span class="pre">&quot;ind&quot;</span></code> or one or more of the information fields. All
+individuals, including ancestors if there are multiple ancestral
+generations, will be passed to this function. Individuals that
+returns <code class="docutils literal notranslate"><span class="pre">True</span></code> will be extracted. Extracted individuals will
+be in their original ancestral generations and subpopulations,
+even if some subpopulations or generations are empty. An
+<code class="xref py py-class docutils literal notranslate"><span class="pre">IndexError</span></code> will be raised if an index is out of bound
+but no error will be given if an invalid ID is encountered.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.extractSubPops">
+<code class="descname">extractSubPops</code><span class="sig-paren">(</span><em>subPops=ALL_AVAIL</em>, <em>rearrange=False</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.extractSubPops" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract a list of (virtual) subpopulations from a population and
+create a new population. If <em>rearrange</em> is <code class="docutils literal notranslate"><span class="pre">False</span></code> (default),
+structure and names of extracted subpopulations are kept
+although extracted subpopulations can have fewer individuals if
+they are created from extracted virtual subpopulations. (e.g. it
+is possible to extract all male individuals from a subpopulation
+using a <code class="docutils literal notranslate"><span class="pre">SexSplitter()</span></code>). If <em>rearrange</em> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, each
+(virtual) subpopulation in <em>subPops</em> becomes a new subpopulation
+in the extracted population in the order at which they are
+specified. Because each virtual subpopulation becomes a
+subpopulation, this function could be used, for example, to
+separate male and female individuals to two subpopulations (
+<code class="docutils literal notranslate"><span class="pre">subPops=[(0,0),</span> <span class="pre">(0,1)]</span></code>). If overlapping (virtual)
+subpopulations are specified, individuals will be copied
+multiple times. This function only extract individuals from the
+present generation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.genotype">
+<code class="descname">genotype</code><span class="sig-paren">(</span><em>subPop=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.genotype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an editable array of the genotype of all individuals in a
+population (if <code class="docutils literal notranslate"><span class="pre">subPop=[]</span></code>, default), or individuals in a
+subpopulation <em>subPop</em>. Virtual subpopulation is unsupported.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.indByID">
+<code class="descname">indByID</code><span class="sig-paren">(</span><em>id</em>, <em>ancGens=ALL_AVAIL</em>, <em>idField=&quot;ind_id&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.indByID" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a reference to individual with <em>id</em> stored in information
+field <em>idField</em> (default to <code class="docutils literal notranslate"><span class="pre">ind_id</span></code>). This function by
+default search the present and all ancestral generations
+(<code class="docutils literal notranslate"><span class="pre">ancGen=ALL_AVAIL</span></code>), but you can limit the search in specific
+generations if you know which generations to search
+(<code class="docutils literal notranslate"><span class="pre">ancGens=[0,1]</span></code> for present and parental generations) or
+<code class="docutils literal notranslate"><span class="pre">UNSPECIFIED</span></code> to search only the current generation. If no
+individual with <em>id</em> is found, an <code class="xref py py-class docutils literal notranslate"><span class="pre">IndexError</span></code> will be
+raised. A float <em>id</em> is acceptable as long as it rounds closely
+to an integer. Note that this function uses a dynamic searching
+algorithm which tends to be slow. If you need to look for
+multiple individuals from a static population, you might want to
+convert a population object to a pedigree object and use
+function <a class="reference internal" href="#Pedigree.indByID" title="Pedigree.indByID"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Pedigree.indByID</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.indInfo">
+<code class="descname">indInfo</code><span class="sig-paren">(</span><em>field</em>, <em>subPop=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.indInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the values (as a list) of information field <code class="docutils literal notranslate"><span class="pre">field</span></code> (by
+index or name) of all individuals (if <code class="docutils literal notranslate"><span class="pre">subPop=[]</span></code>, default),
+or individuals in a (virtual) subpopulation (if <code class="docutils literal notranslate"><span class="pre">subPop=sp</span></code> or
+<code class="docutils literal notranslate"><span class="pre">(sp,</span> <span class="pre">vsp)</span></code>).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.individual">
+<code class="descname">individual</code><span class="sig-paren">(</span><em>idx</em>, <em>subPop=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.individual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a refernce to individual <em>idx</em> in the population (if
+<code class="docutils literal notranslate"><span class="pre">subPop=[]</span></code>, default) or a subpopulation (if <code class="docutils literal notranslate"><span class="pre">subPop=sp</span></code>).
+Virtual subpopulation is not supported. Note that a float <em>idx</em>
+is acceptable as long as it rounds closely to an integer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.individuals">
+<code class="descname">individuals</code><span class="sig-paren">(</span><em>subPop=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.individuals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator that can be used to iterate through all
+individuals in a population (if <code class="docutils literal notranslate"><span class="pre">subPop=[]</span></code>, default), or a
+(virtual) subpopulation (<code class="docutils literal notranslate"><span class="pre">subPop=spID</span></code> or <code class="docutils literal notranslate"><span class="pre">(spID,</span>&#160; <span class="pre">vspID)</span></code>).
+If you would like to iterate through multiple subpopulations in
+multiple ancestral generations, please use function
+<code class="docutils literal notranslate"><span class="pre">Population.allIndividuals()</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.lineage">
+<code class="descname">lineage</code><span class="sig-paren">(</span><em>subPop=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.lineage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an editable array of the lineage of alleles for all
+individuals in a population (if <code class="docutils literal notranslate"><span class="pre">subPop=[]</span></code>, default), or
+individuals in a subpopulation <em>subPop</em>. Virtual subpopulation
+is unsupported. <strong>This function returns ``None`` for modules
+without lineage information.</strong></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.mergeSubPops">
+<code class="descname">mergeSubPops</code><span class="sig-paren">(</span><em>subPops=ALL_AVAIL</em>, <em>name=&quot;&quot;</em>, <em>toSubPop=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.mergeSubPops" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge subpopulations <em>subPops</em>. If <em>subPops</em> is <code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>
+(default), all subpopulations will be merged. <em>subPops</em> do not
+have to be adjacent to each other. They will all be merged to
+the subpopulation with the smallest subpopulation ID, unless a
+subpopulation ID is specified using parameter <code class="docutils literal notranslate"><span class="pre">toSubPop</span></code>.
+Indexes of the rest of the subpopulation may be changed. A new
+name can be assigned to the merged subpopulation through
+parameter <em>name</em> (an empty <em>name</em> will be ignored). This
+function returns the ID of the merged subpopulation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.mutants">
+<code class="descname">mutants</code><span class="sig-paren">(</span><em>subPop=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.mutants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator that iterate through mutants of all
+individuals in a population (if <code class="docutils literal notranslate"><span class="pre">subPop=[]</span></code>, default), or
+individuals in a subpopulation <em>subPop</em>. Virtual subpopulation
+is unsupported. Each mutant is presented as a tuple of (index,
+value) where index is the index of mutant (from 0 to
+totNumLoci()*ploidy()) so you will have to adjust its value to
+check multiple alleles at a locus. This function ignores type of
+chromosomes so non-zero alleles in unused alleles of sex and
+mitochondrial chromosomes are also iterated.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.numSubPop">
+<code class="descname">numSubPop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Population.numSubPop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of subpopulations in a population. Return 1 if
+there is no subpopulation structure.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.numVirtualSubPop">
+<code class="descname">numVirtualSubPop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Population.numVirtualSubPop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of virtual subpopulations (VSP) defined by a
+VSP splitter. Return <code class="docutils literal notranslate"><span class="pre">0</span></code> if no VSP is defined.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.popSize">
+<code class="descname">popSize</code><span class="sig-paren">(</span><em>ancGen=-1</em>, <em>sex=ANY_SEX</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.popSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the total number of individuals in all subpopulations of
+the current generation (default) or the an ancestral generation
+<em>ancGen</em>. This function by default returns number of all
+individuals (<code class="docutils literal notranslate"><span class="pre">sex=ANY_SEX</span></code>), but it will return number of
+males (if <code class="docutils literal notranslate"><span class="pre">sex=MALE_ONLY</span></code>), number of females (if
+<code class="docutils literal notranslate"><span class="pre">sex=MALE_ONLY</span></code>), and number of male/female pairs (if
+<code class="docutils literal notranslate"><span class="pre">sex=PAIR_ONLY</span></code>) which is essentially less of the number of
+males and females.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.push">
+<code class="descname">push</code><span class="sig-paren">(</span><em>pop</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.push" title="Permalink to this definition">¶</a></dt>
+<dd><p>Push population <em>pop</em> into the current population. Both
+populations should have the same genotypic structure. The
+current population is discarded if <em>ancestralDepth</em> (maximum
+number of ancestral generations to hold) is zero so no ancestral
+generation can be kept. Otherise, the current population will
+become the parental generation of <em>pop</em>. If <em>ancGen</em> of a
+population is positive and there are already <em>ancGen</em> ancestral
+generations (c.f. <code class="docutils literal notranslate"><span class="pre">ancestralGens()</span></code>), the greatest ancestral
+generation will be discarded. In any case,  Population*pop*
+becomes invalid as all its individuals are absorbed by the
+current population.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.recodeAlleles">
+<code class="descname">recodeAlleles</code><span class="sig-paren">(</span><em>alleles</em>, <em>loci=ALL_AVAIL</em>, <em>alleleNames=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.recodeAlleles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recode alleles at <em>loci</em> (can be a list of loci indexes or
+names, or all loci in a population (<code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>)) to other
+values according to parameter <em>alleles</em>. This parameter can a
+list of new allele numbers for alleles <code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span></code>, …
+(allele <code class="docutils literal notranslate"><span class="pre">x</span></code> will be recoded to <code class="docutils literal notranslate"><span class="pre">newAlleles[x]</span></code>, <code class="docutils literal notranslate"><span class="pre">x</span></code>
+outside of the range of <em>newAlleles</em> will not be recoded,
+although a warning will be given if <code class="docutils literal notranslate"><span class="pre">DBG_WARNING</span></code> is defined)
+or a Python function, which should accept one or both parameters
+<code class="docutils literal notranslate"><span class="pre">allele</span></code> (existing allele) and <code class="docutils literal notranslate"><span class="pre">locus</span></code> (index of locus). The
+return value will become the new allele. This function is
+intended to recode some alleles without listing all alleles in a
+list. It will be called once for each existing allele so it is
+not possible to recode an allele to different alleles. A new
+list of allele names could be specified for these <em>loci</em>.
+Different sets of names could be specified for each locus if a
+nested list of names are given. This function recode alleles for
+all subpopulations in all ancestral generations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.removeIndividuals">
+<code class="descname">removeIndividuals</code><span class="sig-paren">(</span><em>indexes=[]</em>, <em>IDs=[]</em>, <em>idField=&quot;ind_id&quot;</em>, <em>filter=None</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.removeIndividuals" title="Permalink to this definition">¶</a></dt>
+<dd><p>remove individual(s) by absolute indexes (parameter <em>index</em>) or
+their IDs (parameter <em>IDs</em>), or using a filter function
+(paramter <em>filter</em>). If indexes are used, only individuals at
+the current generation will be removed. If IDs are used, all
+individuals with one of the IDs at information field <em>idField</em>
+(default to <code class="docutils literal notranslate"><span class="pre">&quot;ind_id&quot;</span></code>) will be removed. Although <code class="docutils literal notranslate"><span class="pre">&quot;ind_id&quot;</span></code>
+usually stores unique IDs of individuals, this function is
+frequently used to remove groups of individuals with the same
+value at an information field. An <code class="xref py py-class docutils literal notranslate"><span class="pre">IndexError</span></code> will be
+raised if an index is out of bound, but no error will be given
+if an invalid ID is specified. In the last case, a user-defined
+function should be provided. This function should accept
+parameter <code class="docutils literal notranslate"><span class="pre">&quot;ind&quot;</span></code> or one or more of the information fields.
+All individuals, including ancestors if there are multiple
+ancestral generations, will be passed to this function.
+Individuals that returns <code class="docutils literal notranslate"><span class="pre">True</span></code> will be removed. This function
+does not affect subpopulation structure in the sense that a
+subpopulation will be kept even if all individuals from it are
+removed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.removeInfoFields">
+<code class="descname">removeInfoFields</code><span class="sig-paren">(</span><em>fields</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.removeInfoFields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove information fields <em>fields</em> from a population.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.removeLoci">
+<code class="descname">removeLoci</code><span class="sig-paren">(</span><em>loci=UNSPECIFIED</em>, <em>keep=UNSPECIFIED</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.removeLoci" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove <em>loci</em> (absolute indexes or names) and genotypes at these
+loci from the current population. Alternatively, a parameter
+<em>keep</em> can be used to specify loci that will not be removed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.removeSubPops">
+<code class="descname">removeSubPops</code><span class="sig-paren">(</span><em>subPops</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.removeSubPops" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove (virtual) subpopulation(s) <em>subPops</em> and all their
+individuals. This function can be used to remove complete
+subpopulations (with shifted subpopulation indexes) or
+individuals belonging to virtual subpopulations of a
+subpopulation. In the latter case, the subpopulations are kept
+even if all individuals have been removed. This function only
+handles the present generation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.resize">
+<code class="descname">resize</code><span class="sig-paren">(</span><em>sizes</em>, <em>propagate=False</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.resize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resize population by giving new subpopulation sizes <em>sizes</em>.
+individuals at the end of some subpopulations will be removed if
+the new subpopulation size is smaller than the old one. New
+individuals will be appended to a subpopulation if the new size
+is larger. Their genotypes will be set to zero (default), or be
+copied from existing individuals if <em>propagate</em> is set to
+<code class="docutils literal notranslate"><span class="pre">True</span></code>. More specifically, if a subpopulation with <code class="docutils literal notranslate"><span class="pre">3</span></code>
+individuals is expanded to <code class="docutils literal notranslate"><span class="pre">7</span></code>, the added individuals will
+copy genotypes from individual <code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span></code>, <code class="docutils literal notranslate"><span class="pre">3</span></code>, and <code class="docutils literal notranslate"><span class="pre">1</span></code>
+respectively. Note that this function only resizes the current
+generation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save population to a file <em>filename</em>, which can be loaded by a
+global function <code class="docutils literal notranslate"><span class="pre">loadPopulation(filename)</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.setAncestralDepth">
+<code class="descname">setAncestralDepth</code><span class="sig-paren">(</span><em>depth</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.setAncestralDepth" title="Permalink to this definition">¶</a></dt>
+<dd><p>set the intended ancestral depth of a population to <em>depth</em>,
+which can be <code class="docutils literal notranslate"><span class="pre">0</span></code> (does not store any ancestral generation),
+<code class="docutils literal notranslate"><span class="pre">-1</span></code> (store all ancestral generations), and a positive number
+(store <em>depth</em> ancestral generations. If there exists more than
+<em>depth</em> ancestral generations (if <em>depth</em> &gt; 0), extra ancestral
+generations are removed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.setGenotype">
+<code class="descname">setGenotype</code><span class="sig-paren">(</span><em>geno</em>, <em>subPop=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.setGenotype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill the genotype of all individuals in a population (if
+<code class="docutils literal notranslate"><span class="pre">subPop=[]</span></code>) or in a (virtual) subpopulation <em>subPop</em> (if
+<code class="docutils literal notranslate"><span class="pre">subPop=sp</span></code> or <code class="docutils literal notranslate"><span class="pre">(sp,</span> <span class="pre">vsp)</span></code>) using a list of alleles <em>geno</em>.
+<em>geno</em> will be reused if its length is less than
+<code class="docutils literal notranslate"><span class="pre">subPopSize(subPop)*totNumLoci()*ploidy()</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.setIndInfo">
+<code class="descname">setIndInfo</code><span class="sig-paren">(</span><em>values</em>, <em>field</em>, <em>subPop=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.setIndInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set information field <code class="docutils literal notranslate"><span class="pre">field</span></code> (specified by index or name) of
+all individuals (if <code class="docutils literal notranslate"><span class="pre">subPop=[]</span></code>, default), or individuals in a
+(virtual) subpopulation (<code class="docutils literal notranslate"><span class="pre">subPop=sp</span></code> or <code class="docutils literal notranslate"><span class="pre">(sp,</span> <span class="pre">vsp)</span></code>) to
+<em>values</em>. <em>values</em> will be reused if its length is smaller than
+the size of the population or (virtual) subpopulation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.setInfoFields">
+<code class="descname">setInfoFields</code><span class="sig-paren">(</span><em>fields</em>, <em>init=0</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.setInfoFields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set information fields <em>fields</em> to a population and initialize
+them with value <em>init</em>. All existing information fields will be
+removed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.setLineage">
+<code class="descname">setLineage</code><span class="sig-paren">(</span><em>geno</em>, <em>subPop=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.setLineage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill the lineage of all individuals in a population (if
+<code class="docutils literal notranslate"><span class="pre">subPop=[]</span></code>) or in a (virtual) subpopulation <em>subPop</em> (if
+<code class="docutils literal notranslate"><span class="pre">subPop=sp</span></code> or <code class="docutils literal notranslate"><span class="pre">(sp,</span> <span class="pre">vsp)</span></code>) using a list of IDs <em>lineage</em>.
+<em>lineage</em> will be reused if its length is less than
+<code class="docutils literal notranslate"><span class="pre">subPopSize(subPop)*totNumLoci()*ploidy()</span></code>. This function
+returns directly for modules without lineage information.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.setSubPopByIndInfo">
+<code class="descname">setSubPopByIndInfo</code><span class="sig-paren">(</span><em>field</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.setSubPopByIndInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rearrange individuals to their new subpopulations according to
+their integer values at information field <em>field</em> (value
+returned by <code class="docutils literal notranslate"><span class="pre">Individual::info(field)</span></code>). individuals with
+negative values at this <em>field</em> will be removed. Existing
+subpopulation names are kept. New subpopulations will have empty
+names.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.setSubPopName">
+<code class="descname">setSubPopName</code><span class="sig-paren">(</span><em>name</em>, <em>subPop</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.setSubPopName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign a name <em>name</em> to subpopulation <em>subPop</em>. Note that
+subpopulation names do not have to be unique.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.setVirtualSplitter">
+<code class="descname">setVirtualSplitter</code><span class="sig-paren">(</span><em>splitter</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.setVirtualSplitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a VSP <em>splitter</em> to the population, which defines the same
+VSPs for all subpopulations. If different VSPs are needed for
+different subpopulations, a <a class="reference internal" href="refManual_ch2_sec2.html#CombinedSplitter" title="CombinedSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">CombinedSplitter</span></code></a> can be
+used to make these VSPs available to all subpopulations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.sortIndividuals">
+<code class="descname">sortIndividuals</code><span class="sig-paren">(</span><em>infoFields</em>, <em>reverse=False</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.sortIndividuals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort individuals according to values at specified information
+fields (<em>infoFields</em>). Individuals will be sorted at an
+increasing order unless <em>reverse</em> is set to <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.splitSubPop">
+<code class="descname">splitSubPop</code><span class="sig-paren">(</span><em>subPop</em>, <em>sizes</em>, <em>names=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.splitSubPop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split subpopulation <em>subPop</em> into subpopulations of given
+<em>sizes</em>, which should add up to the size of subpopulation
+<em>subPop</em> or <em>1</em>, in which case <em>sizes</em> are treated as
+proportions. If <em>subPop</em> is not the last subpopulation, indexes
+of subpopulations after <em>subPop</em> are shifted. If <em>subPop</em> is
+named, the same name will be given to all new subpopulations
+unless a new set of <em>names</em> are specified for these
+subpopulations. This function returns the IDs of split
+subpopulations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.subPopBegin">
+<code class="descname">subPopBegin</code><span class="sig-paren">(</span><em>subPop</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.subPopBegin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the index of the first individual in subpopulation
+<em>subPop</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.subPopByName">
+<code class="descname">subPopByName</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.subPopByName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the index of the first subpopulation with name <em>name</em>. An
+<code class="xref py py-class docutils literal notranslate"><span class="pre">IndexError</span></code> will be raised if subpopulations are not
+named, or if no subpopulation with name <em>name</em> is found. Virtual
+subpopulation name is not supported.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.subPopEnd">
+<code class="descname">subPopEnd</code><span class="sig-paren">(</span><em>subPop</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.subPopEnd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the index of the last individual in subpopulation
+<em>subPop</em> plus <code class="docutils literal notranslate"><span class="pre">1</span></code>, so that <code class="docutils literal notranslate"><span class="pre">range(subPopBegin(subPop)</span></code>,
+<code class="docutils literal notranslate"><span class="pre">subPopEnd(subPop)</span></code> can iterate through the index of all
+individuals in subpopulation <em>subPop</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.subPopIndPair">
+<code class="descname">subPopIndPair</code><span class="sig-paren">(</span><em>idx</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.subPopIndPair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the subpopulation ID and relative index of an individual,
+given its absolute index <code class="docutils literal notranslate"><span class="pre">idx</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.subPopName">
+<code class="descname">subPopName</code><span class="sig-paren">(</span><em>subPop</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.subPopName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the “spName - vspName” (virtual named subpopulation), “”
+(unnamed non-virtual subpopulation), “spName” (named
+subpopulation) or “vspName” (unnamed virtual subpopulation),
+depending on whether subpopulation is named or if <em>subPop</em> is
+virtual.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.subPopNames">
+<code class="descname">subPopNames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Population.subPopNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the names of all subpopulations (excluding virtual
+subpopulations). An empty string will be returned for unnamed
+subpopulations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.subPopSizes">
+<code class="descname">subPopSizes</code><span class="sig-paren">(</span><em>ancGen=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.subPopSizes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the sizes of all subpopulations at the current generation
+(default) or specified ancestral generation <em>ancGen</em>. Virtual
+subpopulations are not considered.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.swap">
+<code class="descname">swap</code><span class="sig-paren">(</span><em>rhs</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.swap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Swap the content of two population objects, which can be handy
+in some particular circumstances. For example, you could swap
+out a population in a simulator.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.updateInfoFieldsFrom">
+<code class="descname">updateInfoFieldsFrom</code><span class="sig-paren">(</span><em>fields</em>, <em>pop</em>, <em>fromFields=[]</em>, <em>ancGens=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.updateInfoFieldsFrom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update information fields <em>fields</em> from <em>fromFields</em> of another
+population (or  Pedigree) <em>pop</em>. Two populations should have the
+same number of individuals. If <em>fromFields</em> is not specified, it
+is assumed to be the same as <em>fields</em>. If <em>ancGens</em> is not
+<code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>, only the specified ancestral generations are
+updated.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.useAncestralGen">
+<code class="descname">useAncestralGen</code><span class="sig-paren">(</span><em>idx</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.useAncestralGen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Making ancestral generation <em>idx</em> (<code class="docutils literal notranslate"><span class="pre">0</span></code> for current generation,
+<code class="docutils literal notranslate"><span class="pre">1</span></code> for parental generation, <code class="docutils literal notranslate"><span class="pre">2</span></code> for grand-parental
+generation, etc) the current generation. This is an efficient
+way to access  Population properties of an ancestral generation.
+<code class="docutils literal notranslate"><span class="pre">useAncestralGen(0)</span></code> should always be called afterward to
+restore the correct order of ancestral generations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.vars">
+<code class="descname">vars</code><span class="sig-paren">(</span><em>subPop=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.vars" title="Permalink to this definition">¶</a></dt>
+<dd><p>return variables of a population as a Python dictionary. If a
+valid subpopulation <em>subPop</em> is specified, a dictionary
+<code class="docutils literal notranslate"><span class="pre">vars()[&quot;subPop&quot;][subPop]</span></code> is returned. A <code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code>
+will be raised if key <em>subPop</em> does not exist in <code class="docutils literal notranslate"><span class="pre">vars()</span></code>, or
+if key <em>subPop</em> does not exist in <code class="docutils literal notranslate"><span class="pre">vars()[&quot;subPop&quot;]</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.virtualSplitter">
+<code class="descname">virtualSplitter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Population.virtualSplitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the virtual splitter associated with the population,
+<code class="docutils literal notranslate"><span class="pre">None</span></code> will be returned if there is no splitter.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.asPedigree">
+<code class="descname">asPedigree</code><span class="sig-paren">(</span><em>idField='ind_id'</em>, <em>fatherField='father_id'</em>, <em>motherField='mother_id'</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.asPedigree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the existing population object to a pedigree. After this
+function pedigree function should magically be usable for this
+function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.subPopSize">
+<code class="descname">subPopSize</code><span class="sig-paren">(</span><em>subPop=[]</em>, <em>ancGen=-1</em>, <em>sex=ANY_SEX</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.subPopSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the size of a subpopulation (<code class="docutils literal notranslate"><span class="pre">subPopSize(sp)</span></code>) or a
+virtual subpopulation (<code class="docutils literal notranslate"><span class="pre">subPopSize([sp,</span> <span class="pre">vsp])</span></code>) in the current
+generation (default) or a specified ancestral generation
+<em>ancGen</em>. If no <em>subpop</em> is given, it is the same as
+<code class="docutils literal notranslate"><span class="pre">popSize(ancGen,</span> <span class="pre">sex)</span></code>.  Population and virtual subpopulation
+names can be used. This function by default returns number of
+all individuals (<code class="docutils literal notranslate"><span class="pre">sex=ANY_SEX</span></code>), but it will return number of
+males (if <code class="docutils literal notranslate"><span class="pre">sex=MALE_ONLY</span></code>), number of females (if
+<code class="docutils literal notranslate"><span class="pre">sex=MALE_ONLY</span></code>), and number of male/female pairs (if
+<code class="docutils literal notranslate"><span class="pre">sex=PAIR_ONLY</span></code>) which is essentially less of the number of
+males and females. &lt;group&gt;2-subpopsize&lt;/grouplociList()&gt;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.allIndividuals">
+<code class="descname">allIndividuals</code><span class="sig-paren">(</span><em>subPops=ALL_AVAIL</em>, <em>ancGens=True</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.allIndividuals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator that iterat through all (virtual)
+subpopulations in all ancestral generations. A list of (virtual)
+subpopulations (<em>subPops</em>) and a list of ancestral generations
+(<em>ancGens</em>, can be a single number) could be specified to
+iterate through only selected subpopulation and generations.
+Value <code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code> is acceptable in the specification of <code class="docutils literal notranslate"><span class="pre">sp</span></code>
+and/or <code class="docutils literal notranslate"><span class="pre">vsp</span></code> in specifying a virtual subpopulation <code class="docutils literal notranslate"><span class="pre">(sp,</span>
+<span class="pre">vsp)</span></code> for the iteration through all or specific virtual
+subpopulation in all or specific subpopulations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Population.evolve">
+<code class="descname">evolve</code><span class="sig-paren">(</span><em>initOps=[]</em>, <em>preOps=[]</em>, <em>matingScheme=MatingScheme()</em>, <em>postOps=[]</em>, <em>finalOps=[]</em>, <em>gen=-1</em>, <em>dryrun=False</em><span class="sig-paren">)</span><a class="headerlink" href="#Population.evolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evolve the current population <em>gen</em> generations using mating
+scheme <em>matingScheme</em> and operators <em>initOps</em> (applied before
+evolution), <em>preOps</em> (applied to the parental population at the
+beginning of each life cycle), <em>postOps</em> (applied to the
+offspring population at the end of each life cycle) and
+<em>finalOps</em> (applied at the end of evolution). More specifically,
+this function creates a <em>Simulator</em> using the current
+population, call its <em>evolve</em> function using passed parameters
+and then replace the current population with the evolved
+population. Please refer to function  <code class="docutils literal notranslate"><span class="pre">Simulator.evolve</span></code> for
+more details about each parameter.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-pedigree">
+<h2>class Pedigree<a class="headerlink" href="#class-pedigree" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Pedigree">
+<em class="property">class </em><code class="descname">Pedigree</code><a class="headerlink" href="#Pedigree" title="Permalink to this definition">¶</a></dt>
+<dd><p>The pedigree class is derived from the population class. Unlike a
+population class that emphasizes on individual properties, the
+pedigree class emphasizes on relationship between individuals. An
+unique ID for all individuals is needed to create a pedigree object
+from a population object. Compared to the <a class="reference internal" href="#Population" title="Population"><code class="xref py py-class docutils literal notranslate"><span class="pre">Population</span></code></a>
+class, a <a class="reference internal" href="#Pedigree" title="Pedigree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pedigree</span></code></a> object is optimized for access
+individuals by their IDs, regardless of population structure and
+ancestral generations. Note that the implementation of some
+algorithms rely on the fact that parental IDs are smaller than
+their offspring because individual IDs are assigned sequentially
+during evolution. Pedigrees with manually assigned IDs should try
+to obey such a rule.</p>
+<dl class="method">
+<dt id="Pedigree.Pedigree">
+<code class="descname">Pedigree</code><span class="sig-paren">(</span><em>pop</em>, <em>loci=[]</em>, <em>infoFields=[]</em>, <em>ancGens=ALL_AVAIL</em>, <em>idField=&quot;ind_id&quot;</em>, <em>fatherField=&quot;father_id&quot;</em>, <em>motherField=&quot;mother_id&quot;</em>, <em>stealPop=False</em><span class="sig-paren">)</span><a class="headerlink" href="#Pedigree.Pedigree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a pedigree object from a population, using a subset of
+loci (parameter <em>loci</em>, can be a list of loci indexes, names, or
+<code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>, default to no locus), information fields
+(parameter <em>infoFields</em>, default to no information field besides
+<em>idField</em>, <em>fatherField</em> and <em>motherField</em>), and ancestral
+generations (parameter <em>ancGens</em>, default to all ancestral
+generations). By default, information field <code class="docutils literal notranslate"><span class="pre">father_id</span></code>
+(parameter <em>fatherField</em>) and <code class="docutils literal notranslate"><span class="pre">mother_id</span></code> (parameter
+<em>motherField</em>) are used to locate parents identified by
+<code class="docutils literal notranslate"><span class="pre">ind_id</span></code> (parameter <em>idField</em>), which should store an unique
+ID for all individuals. Multiple individuls with the same ID are
+allowed and will be considered as the same individual, but a
+warning will be given if they actually differ in genotype or
+information fields. Operators <a class="reference internal" href="refManual_ch3_sec10.html#IdTagger" title="IdTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">IdTagger</span></code></a> and
+<a class="reference internal" href="refManual_ch3_sec10.html#PedigreeTagger" title="PedigreeTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">PedigreeTagger</span></code></a> are usually used to assign such IDs,
+although function <code class="docutils literal notranslate"><span class="pre">sampling.indexToID</span></code> could be used to assign
+unique IDs and construct parental IDs from index based
+relationship recorded by operator <a class="reference internal" href="refManual_ch3_sec10.html#ParentsTagger" title="ParentsTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParentsTagger</span></code></a>. A
+pedigree object could be constructed with one or no parent but
+certain functions such as relative tracking will not be
+available for such pedigrees. In case that your are no longer
+using your population object, you could steal the content from
+the population by setting <em>stealPop</em> to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pedigree.clone">
+<code class="descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Pedigree.clone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a cloned copy of a  Pedigree.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pedigree.identifyAncestors">
+<code class="descname">identifyAncestors</code><span class="sig-paren">(</span><em>IDs=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>ancGens=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#Pedigree.identifyAncestors" title="Permalink to this definition">¶</a></dt>
+<dd><p>If a list of individuals (<em>IDs</em>) is given, this function traces
+backward in time and find all ancestors of these individuals. If
+<em>IDs</em> is <code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>, ancestors of all individuals in the
+present generation will be located. If a list of (virtual)
+subpopulations (<em>subPops</em>) or ancestral geneartions (<em>ancGens</em>)
+is given, the search will be limited to individuals in these
+subpopulations and generations. This could be used to, for
+example, find all fathers of <em>IDs</em>. This function returns a list
+of IDs, which includes valid specified IDs. Invalid IDs will be
+silently ignored. Note that parameters <em>subPops</em> and <em>ancGens</em>
+will limit starting IDs if <code class="docutils literal notranslate"><span class="pre">IDs</span></code> is set to <code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>, but
+specified IDs will not be trimmed according to these parameters.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pedigree.identifyFamilies">
+<code class="descname">identifyFamilies</code><span class="sig-paren">(</span><em>pedField=&quot;&quot;</em>, <em>subPops=ALL_AVAIL</em>, <em>ancGens=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#Pedigree.identifyFamilies" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function goes through all individuals in a pedigree and
+group related individuals into families. If an information field
+<em>pedField</em> is given, indexes of families will be assigned to
+this field of each family member. The return value is a list of
+family sizes corresponding to families 0, 1, 2, … etc. If a
+list of (virtual) subpopulations (parameter <em>subPops</em>) or
+ancestral generations are specified (parameter <em>ancGens</em>), the
+search will be limited to individuals in these subpopulations
+and generations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pedigree.identifyOffspring">
+<code class="descname">identifyOffspring</code><span class="sig-paren">(</span><em>IDs=[]</em>, <em>subPops=ALL_AVAIL</em>, <em>ancGens=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#Pedigree.identifyOffspring" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function traces forward in time and find all offspring of
+individuals specified in parameter <em>IDs</em>. If a list of (virtual)
+subpopulations (<em>subPops</em>) or ancestral geneartions (<em>ancGens</em>)
+is given, the search will be limited to individuals in these
+subpopulations and generations. This could be used to, for
+example, find all male offspring of <em>IDs</em>. This function returns
+a list of IDs, which includes valid starting <em>IDs</em>. Invalid IDs
+are silently ignored. Note that parameters <em>subPops</em> and
+<em>ancGens</em> will limit search result but will not be used to trim
+specified <em>IDs</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pedigree.indByID">
+<code class="descname">indByID</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#Pedigree.indByID" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a reference to individual with <em>id</em>. An
+<code class="xref py py-class docutils literal notranslate"><span class="pre">IndexError</span></code> will be raised if no individual with <em>id</em> is
+found. An float <em>id</em> is acceptable as long as it rounds closely
+to an integer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pedigree.individualsWithRelatives">
+<code class="descname">individualsWithRelatives</code><span class="sig-paren">(</span><em>infoFields</em>, <em>sex=[]</em>, <em>affectionStatus=[]</em>, <em>subPops=ALL_AVAIL</em>, <em>ancGens=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#Pedigree.individualsWithRelatives" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of IDs of individuals who have non-negative values
+at information fields <em>infoFields</em>. Additional requirements
+could be specified by parameters <em>sex</em> and <em>affectionStatus</em>.
+<em>sex</em> can be <code class="docutils literal notranslate"><span class="pre">ANY_SEX</span></code> (default), <code class="docutils literal notranslate"><span class="pre">MALE_ONLY</span></code>,
+<code class="docutils literal notranslate"><span class="pre">FEMALE_ONLY</span></code>, <code class="docutils literal notranslate"><span class="pre">SAME_SEX</span></code> or <code class="docutils literal notranslate"><span class="pre">OPPOSITE_SEX</span></code>, and
+<em>affectionStatus</em> can be <code class="docutils literal notranslate"><span class="pre">AFFECTED</span></code>, <code class="docutils literal notranslate"><span class="pre">UNAFFECTED</span></code> or
+<code class="docutils literal notranslate"><span class="pre">ANY_AFFECTION_STATUS</span></code> (default). This function by default
+check all individuals in all ancestral generations, but you
+could limit the search using parameter <em>subPops</em> (a list of
+(virtual) subpopulations) and ancestral generations <em>ancGens</em>.
+Relatives fall out of specified subpopulations and ancestral
+generaions will be considered invalid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pedigree.locateRelatives">
+<code class="descname">locateRelatives</code><span class="sig-paren">(</span><em>relType</em>, <em>resultFields=[]</em>, <em>sex=ANY_SEX</em>, <em>affectionStatus=ANY_AFFECTION_STATUS</em>, <em>ancGens=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#Pedigree.locateRelatives" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function locates relatives (of type <em>relType</em>) of each
+individual and store their IDs in information fields
+<em>relFields</em>. The length of <em>relFields</em> determines how many
+relatives an individual can have.</p>
+<p>Parameter <em>relType</em> specifies what type of relative to locate,
+which can be</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">SPOUSE</span></code> locate spouses with whom an individual has at least
+one common offspring.</li>
+<li><code class="docutils literal notranslate"><span class="pre">OUTBRED_SPOUSE</span></code> locate non-slibling spouses, namely spouses
+with no shared parent.</li>
+<li><code class="docutils literal notranslate"><span class="pre">OFFSPRING</span></code> all offspring of each individual.</li>
+<li><code class="docutils literal notranslate"><span class="pre">COMMON_OFFSPRING</span></code> common offspring between each individual
+and its spouse (located by <code class="docutils literal notranslate"><span class="pre">SPOUSE</span></code> or <code class="docutils literal notranslate"><span class="pre">OUTBRED_SPOUSE</span></code>).
+<em>relFields</em> should consist of an information field for spouse
+and <code class="docutils literal notranslate"><span class="pre">m-1</span></code> fields for offspring where <code class="docutils literal notranslate"><span class="pre">m</span></code> is the number of
+fields.</li>
+<li><code class="docutils literal notranslate"><span class="pre">FULLSIBLING</span></code> siblings with common father and mother,</li>
+<li><code class="docutils literal notranslate"><span class="pre">SIBLING</span></code> siblings with at least one common parent.</li>
+</ul>
+<p>Optionally, you can specify the sex and affection status of
+relatives you would like to locate, using parameters <em>sex</em> and
+<em>affectionStatus</em>. <em>sex</em> can be <code class="docutils literal notranslate"><span class="pre">ANY_SEX</span></code> (default),
+<code class="docutils literal notranslate"><span class="pre">MALE_ONLY</span></code>, <code class="docutils literal notranslate"><span class="pre">FEMALE_ONLY</span></code>, <code class="docutils literal notranslate"><span class="pre">SAME_SEX</span></code> or
+<code class="docutils literal notranslate"><span class="pre">OPPOSITE_SEX</span></code>, and <em>affectionStatus</em> can be <code class="docutils literal notranslate"><span class="pre">AFFECTED</span></code>,
+<code class="docutils literal notranslate"><span class="pre">UNAFFECTED</span></code> or <code class="docutils literal notranslate"><span class="pre">ANY_AFFECTION_STATUS</span></code> (default). Only
+relatives with specified properties will be located.</p>
+<p>This function will by default go through all ancestral
+generations and locate relatives for all individuals. This can
+be changed by setting parameter <em>ancGens</em> to certain ancestral
+generations you would like to process.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pedigree.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>filename</em>, <em>infoFields=[]</em>, <em>loci=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Pedigree.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save a pedigree to file <em>filename</em>. This function goes through
+all individuals of a pedigree and outputs in each line the ID of
+individual, IDs of his or her parents, sex (<code class="docutils literal notranslate"><span class="pre">'M'</span></code> or <code class="docutils literal notranslate"><span class="pre">'F'</span></code>),
+affection status (<code class="docutils literal notranslate"><span class="pre">'A'</span></code> or <code class="docutils literal notranslate"><span class="pre">'U'</span></code>), values of specified
+information fields <em>infoFields</em> and genotypes at specified loci
+(parameter <code class="docutils literal notranslate"><span class="pre">loci</span></code>, which can be a list of loci indexes, names,
+or <code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>). Allele numbers, instead of their names are
+outputed. Two columns are used for each locus if the population
+is diploid. This file can be loaded using function
+<a class="reference internal" href="refManual_ch2_sec6.html#loadPedigree" title="loadPedigree"><code class="xref py py-func docutils literal notranslate"><span class="pre">loadPedigree</span></code></a> although additional information such as
+names of information fields need to be specified. This format
+differs from a <a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">``</span></a>.ped file used in some genetic analysis
+software in that there is no family ID and IDs of all
+individuals have to be unique. Note that parental IDs will be
+set to zero if the parent is not in the pedigree object.
+Therefore, the parents of individuals in the top-most ancestral
+generation will always be zero.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pedigree.traceRelatives">
+<code class="descname">traceRelatives</code><span class="sig-paren">(</span><em>fieldPath</em>, <em>sex=[]</em>, <em>affectionStatus=[]</em>, <em>resultFields=[]</em>, <em>ancGens=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#Pedigree.traceRelatives" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trace a relative path in a population and record the result in
+the given information fields <em>resultFields</em>. This function is
+used to locate more distant relatives based on the relatives
+located by function <code class="docutils literal notranslate"><span class="pre">locateRelatives</span></code>. For example, after
+siblings and offspring of all individuals are located, you can
+locate mother’s sibling’s offspring using a <em>relative path</em>, and
+save their indexes in each individuals information fields
+<em>resultFields</em>.</p>
+<p>A <em>relative path</em> consits of a <em>fieldPath</em> that specifies which
+information fields to look for at each step, a <em>sex</em> specifies
+sex choices at each generation, and a <em>affectionStatus</em> that
+specifies affection status at each generation. <em>fieldPath</em>
+should be a list of information fields, <em>sex</em> and
+<em>affectionStatus</em> are optional. If specified, they should be a
+list of <code class="docutils literal notranslate"><span class="pre">ANY_SEX</span></code>, <code class="docutils literal notranslate"><span class="pre">MALE_ONLY</span></code>, <code class="docutils literal notranslate"><span class="pre">FEMALE_ONLY</span></code>,
+<code class="docutils literal notranslate"><span class="pre">SAME_SEX</span></code> and <code class="docutils literal notranslate"><span class="pre">OppsiteSex</span></code> for parameter <em>sex</em>, and a list
+of <code class="docutils literal notranslate"><span class="pre">UNAFFECTED</span></code>, <code class="docutils literal notranslate"><span class="pre">AFFECTED</span></code> and <code class="docutils literal notranslate"><span class="pre">ANY_AFFECTION_STATUS</span></code> for
+parameter <em>affectionStatus</em>.</p>
+<p>For example, if <code class="docutils literal notranslate"><span class="pre">fieldPath</span> <span class="pre">=</span> <span class="pre">[['father_id',</span> <span class="pre">'mother_id'],</span>
+<span class="pre">['sib1',</span> <span class="pre">'sib2'],</span> <span class="pre">['off1',</span> <span class="pre">'off2']]</span></code>, and <code class="docutils literal notranslate"><span class="pre">sex</span> <span class="pre">=</span> <span class="pre">[ANY_SEX,</span>
+<span class="pre">MALE_ONLY,</span> <span class="pre">FEMALE_ONLY]</span></code>, this function will locate
+<code class="docutils literal notranslate"><span class="pre">father_id</span></code> and <code class="docutils literal notranslate"><span class="pre">mother_id</span></code> for each individual, find all
+individuals referred by <code class="docutils literal notranslate"><span class="pre">father_id</span></code> and <code class="docutils literal notranslate"><span class="pre">mother_id</span></code>, find
+informaton fields <code class="docutils literal notranslate"><span class="pre">sib1</span></code> and <code class="docutils literal notranslate"><span class="pre">sib2</span></code> from these parents and
+locate male individuals referred by these two information
+fields. Finally, the information fields <code class="docutils literal notranslate"><span class="pre">off1</span></code> and <code class="docutils literal notranslate"><span class="pre">off2</span></code>
+from these siblings are located and are used to locate their
+female offspring. The results are father or mother’s brother’s
+daughters. Their indexes will be saved in each individuals
+information fields <em>resultFields</em>. If a list of ancestral
+generations is given in parameter <em>ancGens</em> is given, only
+individuals in these ancestral generations will be processed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pedigree.asPopulation">
+<code class="descname">asPopulation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Pedigree.asPopulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the existing pedigree object to a population. This
+function will behave like a regular population after this
+function call.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-simulator">
+<h2>class Simulator<a class="headerlink" href="#class-simulator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Simulator">
+<em class="property">class </em><code class="descname">Simulator</code><a class="headerlink" href="#Simulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>A  simuPOP simulator is responsible for evolving one or more
+populations forward in time, subject to various <em>operators</em>.
+Populations in a simulator are created from one or more replicates
+of specified populations. A number of functions are provided to
+access and manipulate populations, and most importantly, to evolve
+them.</p>
+<dl class="method">
+<dt id="Simulator.Simulator">
+<code class="descname">Simulator</code><span class="sig-paren">(</span><em>pops</em>, <em>rep=1</em>, <em>stealPops=True</em><span class="sig-paren">)</span><a class="headerlink" href="#Simulator.Simulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a simulator with <em>rep</em> (default to <code class="docutils literal notranslate"><span class="pre">1</span></code>) replicates of
+populations <em>pops</em>, which is a list of populations although a
+single population object is also acceptable. Contents of passed
+populations are by default moved to the simulator to avoid
+duplication of potentially large population objects, leaving
+empty populations behind. This behavior can be changed by
+setting <em>stealPops</em> to <code class="docutils literal notranslate"><span class="pre">False</span></code>, in which case populations are
+copied to the simulator.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Simulator.add">
+<code class="descname">add</code><span class="sig-paren">(</span><em>pop</em>, <em>stealPop=True</em><span class="sig-paren">)</span><a class="headerlink" href="#Simulator.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a population <em>pop</em> to the end of an existing simulator. This
+function by default moves <em>pop</em> to the simulator, leaving an
+empty population for passed population object. If <em>steal</em> is set
+to <code class="docutils literal notranslate"><span class="pre">False</span></code>, the population will be copied to the simulator,
+and thus unchanged.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Simulator.clone">
+<code class="descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Simulator.clone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clone a simulator, along with all its populations. Note that
+Python assign statement <code class="docutils literal notranslate"><span class="pre">simu1</span> <span class="pre">=</span> <span class="pre">simu</span></code> only creates a symbolic
+link to an existing simulator.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Simulator.__cmp__">
+<code class="descname">__cmp__</code><span class="sig-paren">(</span><em>rhs</em><span class="sig-paren">)</span><a class="headerlink" href="#Simulator.__cmp__" title="Permalink to this definition">¶</a></dt>
+<dd><p>a Pyton function used to compare the simulator objects Note that
+mating schemes are not tested.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Simulator.dvars">
+<code class="descname">dvars</code><span class="sig-paren">(</span><em>rep</em>, <em>subPop=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Simulator.dvars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a wrapper of Python dictionary returned by <code class="docutils literal notranslate"><span class="pre">vars(rep,</span>
+<span class="pre">subPop)</span></code> so that dictionary keys can be accessed as attributes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Simulator.evolve">
+<code class="descname">evolve</code><span class="sig-paren">(</span><em>initOps=[]</em>, <em>preOps=[]</em>, <em>matingScheme=MatingScheme</em>, <em>postOps=[]</em>, <em>finalOps=[]</em>, <em>gen=-1</em>, <em>dryrun=False</em><span class="sig-paren">)</span><a class="headerlink" href="#Simulator.evolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evolve all populations <em>gen</em> generations, subject to several
+lists of operators which are applied at different stages of an
+evolutionary process. Operators <em>initOps</em> are applied to all
+populations (subject to applicability restrictions of the
+operators, imposed by the <em>rep</em> parameter of these operators)
+before evolution. They are used to initialize populations before
+evolution. Operators <em>finalOps</em> are applied to all populations
+after the evolution.</p>
+<p>Operators <em>preOps</em>, and <em>postOps</em> are applied during the life
+cycle of each generation. These operators can be applied at all
+or some of the generations, to all or some of the evolving
+populations, depending the <em>begin</em>, <em>end</em>, <em>step</em>, <em>at</em> and
+<em>reps</em> parameters of these operators. These operators are
+applied in the order at which they are specified. populations in
+a simulator are evolved one by one. At each generation,
+operators <em>preOps</em> are applied to the parental generations. A
+mating scheme is then used to populate an offspring generation.
+For each offspring, his or her sex is determined before during-
+mating operators of the mating scheme are used to transmit
+parental genotypes. After an offspring generation is
+successfully generated and becomes the current generation,
+operators <em>postOps</em> are applied to the offspring generation. If
+any of the <em>preOps</em> and <em>postOps</em> fails (return <code class="docutils literal notranslate"><span class="pre">False</span></code>), the
+evolution of a population will be stopped. The generation number
+of a population, which is the variable <code class="docutils literal notranslate"><span class="pre">&quot;gen&quot;</span></code> in each
+populations local namespace, is increased by one if an offspring
+generation has been successfully populated even if a post-mating
+operator fails. Another variable <code class="docutils literal notranslate"><span class="pre">&quot;rep&quot;</span></code> will also be set to
+indicate the index of each population in the simulator. Note
+that populations in a simulator does not have to have the same
+generation number. You could reset a population’s generation
+number by changing this variable.</p>
+<p>Parameter <em>gen</em> can be set to a non-negative number, which is
+the number of generations to evolve. If a simulator starts at
+the beginning of a generation <code class="docutils literal notranslate"><span class="pre">g</span></code> (for example 0), a simulator
+will stop at the beginning (instead of the end) of generation
+<code class="docutils literal notranslate"><span class="pre">g</span> <span class="pre">+</span> <span class="pre">gen</span></code> (for example gen). If <em>gen</em> is negative (default),
+the evolution will continue indefinitely, until all replicates
+are stopped by operators that return <code class="docutils literal notranslate"><span class="pre">False</span></code> at some point
+(these operators are called <em>terminators</em>). At the end of the
+evolution, the generations that each replicates have evolved are
+returned. Note that <em>finalOps</em> are applied to all applicable
+population, including those that have stopped before others.</p>
+<p>If parameter <em>dryrun</em> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, this function will
+print a description of the evolutionary process generated by
+function <code class="docutils literal notranslate"><span class="pre">describeEvolProcess()</span></code> and exits.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Simulator.extract">
+<code class="descname">extract</code><span class="sig-paren">(</span><em>rep</em><span class="sig-paren">)</span><a class="headerlink" href="#Simulator.extract" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the <em>rep-th</em> population from a simulator. This will
+reduce the number of populations in this simulator by one.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Simulator.numRep">
+<code class="descname">numRep</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Simulator.numRep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of replicates.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Simulator.population">
+<code class="descname">population</code><span class="sig-paren">(</span><em>rep</em><span class="sig-paren">)</span><a class="headerlink" href="#Simulator.population" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a reference to the <em>rep-th</em> population of a simulator.
+The reference will become invalid once the simulator starts
+evolving or becomes invalid (removed). If an independent copy of
+the population is needed, you can use <code class="docutils literal notranslate"><span class="pre">population.clone()</span></code> to
+create a cloned copy or <code class="docutils literal notranslate"><span class="pre">simulator.extract()</span></code> to remove the
+population from the simulator.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Simulator.populations">
+<code class="descname">populations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Simulator.populations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a Python iterator that can be used to iterate through all
+populations in a simulator.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Simulator.vars">
+<code class="descname">vars</code><span class="sig-paren">(</span><em>rep</em>, <em>subPop=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Simulator.vars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the local namespace of the <em>rep-th</em> population,
+equivalent to <code class="docutils literal notranslate"><span class="pre">x.Population(rep).vars(subPop)</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Individual, Population, pedigree and Simulator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-genostrutrait">class GenoStruTrait</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-individual">class Individual</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-population">class Population</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-pedigree">class Pedigree</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-simulator">class Simulator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec2.html">Virtual splitters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec3.html">Mating Schemes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec4.html">Pre-defined mating schemes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec5.html">Utility Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec6.html">Global functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="refManual.html">&lt;no title&gt;</a><ul>
+  <li><a href="refManual_ch2.html">simuPOP Components</a><ul>
+      <li>Previous: <a href="refManual_ch2.html" title="previous chapter">simuPOP Components</a></li>
+      <li>Next: <a href="refManual_ch2_sec2.html" title="next chapter">Virtual splitters</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/refManual_ch2_sec1.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

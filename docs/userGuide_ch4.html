@@ -1,0 +1,160 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Individuals and Populations &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Genotypic structure" href="userGuide_ch4_sec1.html" />
+    <link rel="prev" title="Random number generator *" href="userGuide_ch3_sec5.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="individuals-and-populations">
+<h1>Individuals and Populations<a class="headerlink" href="#individuals-and-populations" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4_sec1.html">Genotypic structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec1.html#haploid-diploid-and-haplodiploid-populations">Haploid, diploid and haplodiploid populations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec1.html#autosomes-sex-chromosomes-mitochondrial-and-other-types-of-chromosomes">Autosomes, sex chromosomes, mitochondrial, and other types of chromosomes *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec1.html#information-fields">Information fields</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4_sec2.html">Individual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec2.html#access-individual-genotype">Access individual genotype</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec2.html#individual-sex-affection-status-and-information-fields">individual sex, affection status and information fields</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4_sec3.html">Population</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec3.html#access-and-change-individual-genotype">Access and change individual genotype</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec3.html#subpopulations">Subpopulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec3.html#virtual-subpopulations-and-virtual-splitters">Virtual subpopulations and virtual splitters *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec3.html#advanced-virtual-subpopulation-splitters">Advanced virtual subpopulation splitters **</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec3.html#access-individuals-and-their-properties">Access individuals and their properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec3.html#attach-arbitrary-auxillary-information-using-information-fields">Attach arbitrary auxillary information using information fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec3.html#keep-track-of-ancestral-generations">Keep track of ancestral generations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec3.html#change-genotypic-structure-of-a-population">Change genotypic structure of a population</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec3.html#remove-or-extract-individuals-and-subpopulations-from-a-population">Remove or extract individuals and subpopulations from a population</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec3.html#store-arbitrary-population-information-as-population-variables">Store arbitrary population information as population variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec3.html#save-and-load-a-population">Save and load a population</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec3.html#import-and-export-datasets-in-unsupported-formats">Import and export datasets in unsupported formats *</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Individuals and Populations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec1.html">Genotypic structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec2.html">Individual</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec3.html">Population</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+      <li>Previous: <a href="userGuide_ch3_sec5.html" title="previous chapter">Random number generator *</a></li>
+      <li>Next: <a href="userGuide_ch4_sec1.html" title="next chapter">Genotypic structure</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch4.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

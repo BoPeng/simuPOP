@@ -1,0 +1,1453 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Statistics calculation (operator Stat) &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Conditional operators" href="userGuide_ch5_sec12.html" />
+    <link rel="prev" title="Tagging operators" href="userGuide_ch5_sec10.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="statistics-calculation-operator-stat">
+<h1>Statistics calculation (operator <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a>)<a class="headerlink" href="#statistics-calculation-operator-stat" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="how-statistics-calculation-works">
+<h2>How statistics calculation works<a class="headerlink" href="#how-statistics-calculation-works" title="Permalink to this headline">¶</a></h2>
+<p>A <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> operator calculates specified statistics of a population when it
+is applied to this population. This operator can be applied to specified
+replicates (parameter <em>rep</em>) at specified generations (parameter <em>begin</em>, <em>end</em>,
+<em>step</em>, and <em>at</em>). This operator does not produce any output (ignore parameter
+<em>output</em>) after statistics are calculated. Instead, it stores results in the
+local namespace of the population being applied. Other operators can retrieve
+these variables or evalulate expression directly in this local namespace.</p>
+<p>The <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> operator is usually used in conjunction with a <a class="reference internal" href="refManual_ch3_sec3.html#PyEval" title="PyEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyEval</span></code></a>
+or <a class="reference internal" href="refManual_ch3_sec3.html#PyExec" title="PyExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyExec</span></code></a> operator which execute Python statements and/or expressions
+in a population’s local namespace. For example, operators</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ops</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="n">PyEval</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">%.2f</span><span class="s2">&#39; % alleleFreq[0][0]&quot;</span><span class="p">)</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>in the <code class="docutils literal notranslate"><span class="pre">ops</span></code> parameter of the <a class="reference internal" href="refManual_ch2_sec1.html#Simulator.evolve" title="Simulator.evolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Simulator.evolve</span></code></a> function will be
+applied to populations during evolution. The first operator calculates allele
+frequency at the first locus and store the results in each population’s local
+namespace. The second operator formats and outputs one of the variables. Because
+of the flexiblity of the <a class="reference internal" href="refManual_ch3_sec3.html#PyEval" title="PyEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyEval</span></code></a> operator, you can output statistics,
+even simple derived statistics, in any format. For example, you can output
+expected heterozygosity (<span class="math notranslate nohighlight">\(1-\sum p_{i}^{2}\)</span>) using calculated allele
+frequencies as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PyEval</span><span class="p">(</span><span class="s2">&quot;&#39;H_exp=</span><span class="si">%.2f</span><span class="s2">&#39; % (1-sum([x*x for x in alleleFreq[0].values()]))&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">alleleFreq[0]</span></code> is a dictionary.</p>
+<p>You can also retrieve variables in a population directly using functions
+<a class="reference internal" href="refManual_ch2_sec1.html#Population.vars" title="Population.vars"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.vars</span></code></a>() or <a class="reference internal" href="refManual_ch2_sec1.html#Population.dvars" title="Population.dvars"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.dvars</span></code></a>(). The only difference
+between these functions is that <code class="docutils literal notranslate"><span class="pre">vars</span></code> returns a dictionary and <code class="xref py py-func docutils literal notranslate"><span class="pre">dvars</span></code>() returns a Python object that uses variable names as attributes
+(<code class="docutils literal notranslate"><span class="pre">vars()['alleleFreq']</span></code> is equivalent to <code class="xref py py-func docutils literal notranslate"><span class="pre">dvars</span></code><code class="docutils literal notranslate"><span class="pre">.alleleFreq</span></code>). This
+method is usually used when the function form of the <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> operator is
+used. For example,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">alleleFreq</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">H_exp</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">([</span><span class="n">x</span><span class="o">*</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">alleleFreq</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+</pre></div>
+</div>
+<p>uses the <code class="docutils literal notranslate"><span class="pre">stat</span></code> function (note the capital S) to count frequencies of alleles
+for a given population and calculates expected heterozygosity using these
+variables.</p>
+</div>
+<div class="section" id="defdict-datatype">
+<h2><code class="xref py py-class docutils literal notranslate"><span class="pre">defdict</span></code> datatype<a class="headerlink" href="#defdict-datatype" title="Permalink to this headline">¶</a></h2>
+<p>simuPOP uses dictionaries to save statistics such as allele frequencies. For
+example, <code class="docutils literal notranslate"><span class="pre">alleleFreq[5]</span></code> can be <code class="docutils literal notranslate"><span class="pre">{0:0.2,</span> <span class="pre">3:0.8}</span></code> meaning there are 20%
+allele 0 and 80% allele 3 at locus 5 in a population. However, because it is
+sometimes unclear whether or not a particular allele exists in a population,
+<code class="docutils literal notranslate"><span class="pre">alleleFreq[5][allele]</span></code> can fail with a <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> exception if
+<code class="docutils literal notranslate"><span class="pre">alleleFreq[5]</span></code> does not have key <code class="docutils literal notranslate"><span class="pre">allele</span></code>.</p>
+<p>To address this problem, a special default dictionary type <code class="xref py py-class docutils literal notranslate"><span class="pre">defdict</span></code> is
+used for dictionaries with keys determined from a population. This derived
+dictionary type works just like a regular dictionay, but it returns 0, instead
+of raising a <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> exception, when an invalid key is used. For example,
+subpopulations in Example <a class="reference internal" href="#defdicttype"><span class="std std-ref">defdictType</span></a> have different
+alleles. Although <code class="docutils literal notranslate"><span class="pre">pop.dvars(sp).alleleFreq[0]</span></code> have only two keys for
+<code class="docutils literal notranslate"><span class="pre">sp=0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">pop.dvars(sp).alleleFreq[0][x]</span></code> are used to print
+frequencies of alleles <code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span></code> and <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p>
+<p id="defdicttype"><strong>Example</strong>: <em>The defdict datatype</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">100</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span> <span class="n">subPops</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span> <span class="n">subPops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;alleleFreq_sp&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Subpop </span><span class="si">%d</span><span class="s1"> (with </span><span class="si">%d</span><span class="s1"> alleles): &#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sp</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">(</span><span class="n">sp</span><span class="p">)</span><span class="o">.</span><span class="n">alleleFreq</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%.2f</span><span class="s1"> &#39;</span> <span class="o">%</span> <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">(</span><span class="n">sp</span><span class="p">)</span><span class="o">.</span><span class="n">alleleFreq</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">a</span><span class="p">])</span>
+<span class="gp">...</span>
+<span class="go">Subpop 0 (with 2 alleles):</span>
+<span class="go">0.00</span>
+<span class="go">0.21</span>
+<span class="go">0.79</span>
+<span class="go">Subpop 1 (with 2 alleles):</span>
+<span class="go">0.21</span>
+<span class="go">0.79</span>
+<span class="go">0.00</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="defdict.py">Download defdict.py</a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The standard <code class="docutils literal notranslate"><span class="pre">collections</span></code> module of Python has a <code class="docutils literal notranslate"><span class="pre">defaultdict</span></code> type that
+accepts a default factory function that will be used when an invalid key is
+encountered. The <code class="xref py py-class docutils literal notranslate"><span class="pre">defdict</span></code> type is similar to <code class="docutils literal notranslate"><span class="pre">defaultdict(int)</span></code> but
+with an important difference: when an invalid key is encountered, <code class="docutils literal notranslate"><span class="pre">d[key]</span></code>
+with a default value will be inserted to a <code class="docutils literal notranslate"><span class="pre">defaultdict(int)</span></code>, but will not be
+inserted to a <code class="xref py py-class docutils literal notranslate"><span class="pre">defdict</span></code>. That is to say, it is safe to use
+<code class="docutils literal notranslate"><span class="pre">alleleFreq[loc].keys()</span></code> to get available alleles after non-assignment
+<code class="docutils literal notranslate"><span class="pre">alleleFreq[loc][allele]</span></code> operations.</p>
+</div>
+</div>
+<div class="section" id="support-for-virtual-subpopulations">
+<h2>Support for virtual subpopulations<a class="headerlink" href="#support-for-virtual-subpopulations" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> operator supports parameter <em>subPops</em> and can calculate
+statistics in specified subpopulations. For example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)])</span>
+</pre></div>
+</div>
+<p>will calculate the frequencies of alleles at locus 0, among Individuals in two
+virtual subpopulations. If the virtual subpopulation is defined by sex (using a
+<a class="reference internal" href="refManual_ch2_sec2.html#SexSplitter" title="SexSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SexSplitter</span></code></a>), the above operator will calculate allele frequency among
+all males in the first and second subpopulations (not separately!). If
+<code class="docutils literal notranslate"><span class="pre">subPops</span></code> is not specified, allele frequency of the whole population (all
+subpopulations) will be calculated.</p>
+<p>Although many statistics could be calculated and outputted, the <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a>
+operator by default outputs a selected number of variables for each statisic
+calculated. Other statistics could be calculated and outputted if their names
+are specified in parameter <code class="docutils literal notranslate"><span class="pre">vars</span></code>. Variable names ending with <code class="docutils literal notranslate"><span class="pre">_sp</span></code> is
+interpreted as variables that will be calculated and outputted in all or
+specified (virtual) subpopulations. For example, parameter <code class="docutils literal notranslate"><span class="pre">vars</span></code> in</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;alleleFreq_sp&#39;</span><span class="p">,</span> <span class="s1">&#39;alleleNum_sp&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>tells this operator to output numbers and frequencies of alleles at locus <code class="docutils literal notranslate"><span class="pre">0</span></code>
+in subpopulation <code class="docutils literal notranslate"><span class="pre">0</span></code> and virtual subpopulation <code class="docutils literal notranslate"><span class="pre">(1,0)</span></code>. These variables will
+be saved in dictionaries <code class="docutils literal notranslate"><span class="pre">subPop[sp]</span></code> of the local namespace. For example, the
+above operator will write variables such as <code class="docutils literal notranslate"><span class="pre">subPop[0]['alleleFreq'],</span>
+<span class="pre">subPop[(1,0)]['alleleFreq']</span> <span class="pre">and</span> <span class="pre">subPop[(1,0)]['alleleNum']</span></code>. Functions
+<a class="reference internal" href="refManual_ch2_sec1.html#Population.vars" title="Population.vars"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.vars</span></code></a>(<code class="docutils literal notranslate"><span class="pre">sp</span></code>) and <a class="reference internal" href="refManual_ch2_sec1.html#Population.dvars" title="Population.dvars"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.dvars</span></code></a>(<code class="docutils literal notranslate"><span class="pre">sp</span></code>) are
+provided as shortcuts to access these variables but the full variable names have
+to be specified if these variables are used in expressions.</p>
+<p>By default, the same variables will be set for a statistic, regardless of the
+values of the <code class="docutils literal notranslate"><span class="pre">loci</span></code> and <code class="docutils literal notranslate"><span class="pre">subPops</span></code> parameter. This can be a problem if
+multiple <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> operators are used to calculate the same statistics for
+different sets of loci (e.g. for each chromosome) or subpopulations. To avoid
+name conflict, you can use parameter <em>suffix</em> to add a suffix to all variables
+outputted by a Stat operator. For example, Example <a class="reference internal" href="#statsuffix"><span class="std std-ref">statSuffix</span></a> uses 4 <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> operators to calculate overall and pairwise
+<span class="math notranslate nohighlight">\(F_{ST}\)</span> values for three subpopulations. Different suffixes are used for
+pairwise <span class="math notranslate nohighlight">\(F_{ST}\)</span> estimators so that variables set by these operators will
+not override each other.</p>
+<p id="statsuffix"><strong>Example</strong>: <em>Add suffixes to variables set by multiple Stat operators</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">5000</span><span class="p">]</span><span class="o">*</span><span class="mi">3</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">structure</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">subPops</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;_01&#39;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">40</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">structure</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">subPops</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;_12&#39;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">40</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">structure</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">subPops</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;_02&#39;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">40</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">structure</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">step</span><span class="o">=</span><span class="mi">40</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;Fst=</span><span class="si">%.3f</span><span class="s2"> (pairwise: </span><span class="si">%.3f</span><span class="s2"> </span><span class="si">%.3f</span><span class="s2"> </span><span class="si">%.3f</span><span class="s2">)\n&#39; % (F_st, F_st_01, F_st_12, F_st_02)&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">step</span><span class="o">=</span><span class="mi">40</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Fst=0.000 (pairwise: 0.000 0.000 0.000)</span>
+<span class="go">Fst=0.004 (pairwise: 0.006 0.003 0.004)</span>
+<span class="go">Fst=0.012 (pairwise: 0.017 0.015 0.004)</span>
+<span class="go">Fst=0.008 (pairwise: 0.012 0.010 0.001)</span>
+<span class="go">Fst=0.008 (pairwise: 0.007 0.009 0.007)</span>
+<span class="go">200</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="statSuffix.py">Download statSuffix.py</a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> opeartor accepts overlapping or even duplicate virtual
+subpopulations. During the calculation of summary statistics, these
+subpopulations are treated as separate subpopulations so some individuals can be
+counted more than once. For example, individuals in virtual subpopulation (0, 1)
+will be counted twice during the calculation of allele frequency and population
+size in operator</p>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="counting-individuals-by-sex-and-affection-status">
+<h2>Counting individuals by sex and affection status<a class="headerlink" href="#counting-individuals-by-sex-and-affection-status" title="Permalink to this headline">¶</a></h2>
+<p>Parameters <em>popSize</em>, <em>numOfMales</em> and <em>numOfAffected</em> provide basic Individual
+counting statistics. They count the number of all, male/female,
+affected/unaffected individuals in all or specified (virtual) subpopulations,
+and set variables such as <code class="docutils literal notranslate"><span class="pre">popSize</span></code>, <code class="docutils literal notranslate"><span class="pre">numOfMales</span></code>, <code class="docutils literal notranslate"><span class="pre">numOfFemales</span></code>,
+<code class="docutils literal notranslate"><span class="pre">numOfAffected</span></code>, <code class="docutils literal notranslate"><span class="pre">numOfUnaffected</span></code>. Proportions and statistics for
+subpopulations are available if variables such as <code class="docutils literal notranslate"><span class="pre">propOfMales</span></code>,
+<code class="docutils literal notranslate"><span class="pre">numOfAffected_sp</span></code> are specified in parameter vars. Another variable
+<code class="docutils literal notranslate"><span class="pre">subPopSize</span></code> is defined for parameter <code class="docutils literal notranslate"><span class="pre">popSize=True</span></code>. It is a list of sizes
+of all or specified subpopulations and is easier to use than referring to
+variable <code class="docutils literal notranslate"><span class="pre">popSize</span></code> from individual subpopulations.</p>
+<p>Example <a class="reference internal" href="#statcount"><span class="std std-ref">statCount</span></a> demonstrates how to use these parameters in
+operator <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a>. It defines four VSPs by sex and affection status (using
+a <code class="docutils literal notranslate"><span class="pre">stackedSplitter</span></code>) and count individuals by sex and affection status. It is
+worth noting that <code class="docutils literal notranslate"><span class="pre">pop.dvars().popSize</span></code> in the first example is the total
+number of individuals in two virtual subpopulations <code class="docutils literal notranslate"><span class="pre">(0,0)</span></code> and <code class="docutils literal notranslate"><span class="pre">(0,2)</span></code>,
+which are all male indiviudals, and all unaffected individuals. Because these
+two VSPs overlap, this variable can be larger than actual population size.</p>
+<p id="statcount"><strong>Example</strong>: <em>Count individuals by sex and/or affection status</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">CombinedSplitter</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">SexSplitter</span><span class="p">(),</span> <span class="n">sim</span><span class="o">.</span><span class="n">AffectionSplitter</span><span class="p">()]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initSex</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">maPenetrance</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">penetrance</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Count sim.population size</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># popSize is the size of two VSPs, does not equal to total sim.population size.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Because two VSPs overlap (all males and all unaffected), popSize can be</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># greater than real sim.population size.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">subPopSize</span><span class="p">,</span> <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">popSize</span><span class="p">)</span>
+<span class="go">[5052, 6080] 11132</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># print popSize of each virtual subpopulation.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)],</span> <span class="nb">vars</span><span class="o">=</span><span class="s1">&#39;popSize_sp&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Note the two ways to access variable in (virtual) subpopulations.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">popSize</span><span class="p">,</span> <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">subPop</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">)][</span><span class="s1">&#39;popSize&#39;</span><span class="p">])</span>
+<span class="go">5052 6080</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Count number of male (should be the same as the size of VSP (0,0).</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">numOfMales</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">numOfMales</span><span class="p">)</span>
+<span class="go">5052</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Count the number of affected and unaffected male individual</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">numOfMales</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)],</span> <span class="nb">vars</span><span class="o">=</span><span class="s1">&#39;numOfMales_sp&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">numOfMales</span><span class="p">,</span> <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">numOfMales</span><span class="p">)</span>
+<span class="go">3056 1996</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># or number of affected male and females</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">numOfAffected</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span> <span class="nb">vars</span><span class="o">=</span><span class="s1">&#39;numOfAffected_sp&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">numOfAffected</span><span class="p">,</span> <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">numOfAffected</span><span class="p">)</span>
+<span class="go">1996 1924</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># These can also be done using a sim.ProductSplitter...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">ProductSplitter</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">SexSplitter</span><span class="p">(),</span> <span class="n">sim</span><span class="o">.</span><span class="n">AffectionSplitter</span><span class="p">()]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># counts for male unaffected, male affected, female unaffected and female affected</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">subPopSize</span><span class="p">)</span>
+<span class="go">[3056, 1996, 3024, 1924]</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="statCount.py">Download statCount.py</a></p>
+</div>
+<div class="section" id="number-of-segregating-and-fixed-sites">
+<h2>Number of segregating and fixed sites<a class="headerlink" href="#number-of-segregating-and-fixed-sites" title="Permalink to this headline">¶</a></h2>
+<p>Parameter <em>numOfSegSites</em> counts the number of segregating sites for specified
+or all loci, for all individuals or individuals in specified (virtual)
+subpopulations. It can also be used to count the number of fixed sites . This
+parameter sets variables <code class="docutils literal notranslate"><span class="pre">numOfSegSites</span></code> and <code class="docutils literal notranslate"><span class="pre">numOfFixedSites</span></code>. Here we
+defined fixed sites as loci with only one non-zero allele (e.g. fixed to a non-
+zero allele). Other numbers, such as all loci with only one allele (including
+zero), or loci with all wildtype alleles (only zero), can be derived from these
+two counts. Starting from version 1.1.3, variables <code class="docutils literal notranslate"><span class="pre">segSites</span></code> and
+<code class="docutils literal notranslate"><span class="pre">fixedSites</span></code> can be used to return a list of segregating and fixed sites.</p>
+<p>For example, Example <a class="reference internal" href="#numsegsites"><span class="std std-ref">numSegSites</span></a> demonstrates how to use
+this operator to calculate the number of segregating sites (sites with alleles 0
+and 1), number of fixed sites (sites with only allele 1), and number of loci
+with only wildtype alleles (loci with only allele 0). As you can see, the
+population starts with 100 segregating sites. During evolution, alleles at some
+loci get lost and some get fixed, and there should be no segregating site if we
+evolve the population for long enough.</p>
+<p id="numsegsites"><strong>Example</strong>: <em>Count number of segregating and fixed sites</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOutput</span><span class="p">(</span><span class="s1">&#39;#all 0</span><span class="se">\t</span><span class="s1">#seg sites</span><span class="se">\t</span><span class="s1">#all 1</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">numOfSegSites</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">ALL_AVAIL</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;numOfSegSites&#39;</span><span class="p">,</span> <span class="s1">&#39;numOfFixedSites&#39;</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;</span><span class="si">%d</span><span class="s1">\t</span><span class="si">%d</span><span class="s1">\t</span><span class="si">%d</span><span class="s1">\n&quot; % (100-numOfSegSites-numOfFixedSites,&#39;</span>
+<span class="gp">... </span>            <span class="s1">&#39;numOfSegSites, numOfFixedSites)&#39;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">step</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">500</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">#all 0       #seg sites      #all 1</span>
+<span class="go">0    100     0</span>
+<span class="go">0    93      7</span>
+<span class="go">3    76      21</span>
+<span class="go">7    55      38</span>
+<span class="go">12   40      48</span>
+<span class="go">17   31      52</span>
+<span class="go">19   23      58</span>
+<span class="go">22   19      59</span>
+<span class="go">26   14      60</span>
+<span class="go">28   10      62</span>
+<span class="go">500</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># output a list of segregating sites</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">numOfSegSites</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">ALL_AVAIL</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="s1">&#39;segSites&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">segSites</span><span class="p">)</span>
+<span class="go">[11, 15, 20, 32, 39, 43, 44, 51, 86, 95]</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="statNumOfSegSites.py">Download statNumOfSegSites.py</a></p>
+</div>
+<div class="section" id="allele-count-and-frequency">
+<h2>Allele count and frequency<a class="headerlink" href="#allele-count-and-frequency" title="Permalink to this headline">¶</a></h2>
+<p>Parameter <em>alleleFreq</em> accepts a list of markers at which allele frequencies in
+all or specified (virtual) subpopulations will be calculated. This statistic
+sets variables <code class="docutils literal notranslate"><span class="pre">alleleFreq[loc][allele]</span></code> and <code class="docutils literal notranslate"><span class="pre">alleleNum[loc][allele]</span></code> which
+are frequencies and numbers of allele <code class="docutils literal notranslate"><span class="pre">allele</span></code> at locus <code class="docutils literal notranslate"><span class="pre">loc</span></code>, respectively.
+If variables <code class="docutils literal notranslate"><span class="pre">alleleFreq_sp</span></code> and <code class="docutils literal notranslate"><span class="pre">alleleNum_sp</span></code> are specified in parameter
+<em>vars</em>, these variables will be set for all or specified (virtual)
+subpopulations. <strong>At the Python level, these variables are dictionaries of
+default dictionaries.</strong> That is to say, <code class="docutils literal notranslate"><span class="pre">alleleFreq[loc]</span></code> at a unspecified
+locus will raise a <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> exception, and <code class="docutils literal notranslate"><span class="pre">alleleFreq[loc][allele]</span></code> of an
+invalid allele will return 0.</p>
+<p>Example <a class="reference internal" href="#statallelefreq"><span class="std std-ref">statAlleleFreq</span></a> demonstrates an advanced usage of
+allele counting statistic. In this example, two virtual subpopulations are
+defined by individual affection status. During evolution, a multi-allele
+penetrance operator is used to determine individual affection status and a
+<a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> operator is used to calculate allele frequencies in these two
+virtual subpopulations, and in the whole population. Because the simulated
+disease is largely caused by the existence of allele 1 at the first locus, it is
+expected that the frequency of allele 1 is higher in the case group than in the
+control group. It is worth noting that <code class="docutils literal notranslate"><span class="pre">alleleFreq[0][1]</span></code> in this example is
+the frequency of allele 1 in the whole population because these two virtual
+subpopulations add up to the whole population.</p>
+<p id="statallelefreq"><strong>Example</strong>: <em>Calculate allele frequency in affected and unaffected individuals</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">AffectionSplitter</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MaPenetrance</span><span class="p">(</span><span class="n">penetrance</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span>
+<span class="gp">... </span>            <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;alleleFreq&#39;</span><span class="p">,</span> <span class="s1">&#39;alleleFreq_sp&#39;</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;Gen: </span><span class="si">%d</span><span class="s2">, freq: </span><span class="si">%.2f</span><span class="s2">, freq (aff): </span><span class="si">%.2f</span><span class="s2">, freq (unaff): </span><span class="si">%.2f</span><span class="s2">\n&#39; % &quot;</span> <span class="o">+</span> \
+<span class="gp">... </span>            <span class="s2">&quot;(gen, alleleFreq[0][1], subPop[(0,1)][&#39;alleleFreq&#39;][0][1],&quot;</span> <span class="o">+</span> \
+<span class="gp">... </span>            <span class="s2">&quot;subPop[(0,0)][&#39;alleleFreq&#39;][0][1])&quot;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Gen: 0, freq: 0.20, freq (aff): 0.41, freq (unaff): 0.14</span>
+<span class="go">Gen: 1, freq: 0.20, freq (aff): 0.40, freq (unaff): 0.14</span>
+<span class="go">Gen: 2, freq: 0.20, freq (aff): 0.41, freq (unaff): 0.14</span>
+<span class="go">Gen: 3, freq: 0.20, freq (aff): 0.41, freq (unaff): 0.14</span>
+<span class="go">Gen: 4, freq: 0.19, freq (aff): 0.41, freq (unaff): 0.14</span>
+<span class="go">5</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="statAlleleFreq.py">Download statAlleleFreq.py</a></p>
+</div>
+<div class="section" id="genotype-count-and-frequency">
+<h2>Genotype count and frequency<a class="headerlink" href="#genotype-count-and-frequency" title="Permalink to this headline">¶</a></h2>
+<p>Parameter <em>genoFreq</em> accepts a list of loci at which genotype counts and
+frequencies are calculated and outputted. A genotype is represented as a tuple
+of alleles at a locus. The length of the tupples** <a href="#id1"><span class="problematic" id="id2">**</span></a>is determined by the number
+of homologous copy of chromosomes in a population. For example, genotypes in a
+diploid population are ordered pairs such as <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">2)</span></code> where 1 and 2 are
+alleles at a locus on, respectively, the first and second homologous copies of
+chromosomes. <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">2)</span></code> and <code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">1)</span></code> are different genotypes. This statistic
+sets dictionaries (with locus indexes as keys) of default dictionaries (with
+genotypes as keys) <code class="docutils literal notranslate"><span class="pre">genoFreq</span></code> and <code class="docutils literal notranslate"><span class="pre">genoNum</span></code>.</p>
+<p>Example <a class="reference internal" href="#statgenofreq"><span class="std std-ref">statGenoFreq</span></a> creates a small population and
+initializes a locus with rare alleles 0, 1 and a common allele 2. A function
+<code class="docutils literal notranslate"><span class="pre">stat</span></code> (the function form of operator <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a>) is used to count the
+available genotypes. Note that <code class="docutils literal notranslate"><span class="pre">pop.dvars().genoFreq[0][(i,j)]</span></code> can be used to
+print frequencies of all genotypes even when not all genotypes are available in
+the population.</p>
+<p id="statgenofreq"><strong>Example</strong>: <em>Counting genotypes in a population</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">lociNames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">chromTypes</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">AUTOSOME</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">CHROMOSOME_X</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">CHROMOSOME_Y</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.94</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">genoFreq</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;X&#39;</span><span class="p">])</span> <span class="c1"># both loci indexes and names can be used.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Available genotypes on autosome:&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">genoFreq</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+<span class="go">Available genotypes on autosome: [(0, 2), (1, 1), (1, 2), (2, 0), (2, 1), (2, 2)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">-</span><span class="si">%d</span><span class="s1">: </span><span class="si">%.3f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">genoFreq</span><span class="p">[</span><span class="mi">0</span><span class="p">][(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)]))</span>
+<span class="gp">...</span>
+<span class="go">0-0: 0.000</span>
+<span class="go">0-1: 0.000</span>
+<span class="go">0-2: 0.020</span>
+<span class="go">1-0: 0.000</span>
+<span class="go">1-1: 0.030</span>
+<span class="go">1-2: 0.070</span>
+<span class="go">2-0: 0.010</span>
+<span class="go">2-1: 0.040</span>
+<span class="go">2-2: 0.830</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Genotype frequency on chromosome X:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> \
+<span class="gp">... </span>    <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%.3f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">genoFreq</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()]))</span>
+<span class="go">Genotype frequency on chromosome X:</span>
+<span class="go"> (0,): 0.020</span>
+<span class="go">(1,): 0.030</span>
+<span class="go">(2,): 0.950</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="statGenoFreq.py">Download statGenoFreq.py</a></p>
+</div>
+<div class="section" id="homozygote-and-heterozygote-count-and-frequency">
+<h2>Homozygote and heterozygote count and frequency<a class="headerlink" href="#homozygote-and-heterozygote-count-and-frequency" title="Permalink to this headline">¶</a></h2>
+<p>In a diploid population, a heterozygote is a genotype with two different alleles
+and a homozygote is a genotype with two identical alleles. Parameter
+<code class="docutils literal notranslate"><span class="pre">heteroFreq</span></code> accepts a list of loci and outputs variables <code class="docutils literal notranslate"><span class="pre">heteroFreq</span></code> which
+is a dictionary of heterozygote frequencies at specfied loci. Optional variables
+<code class="docutils literal notranslate"><span class="pre">heteroNum</span></code>, <code class="docutils literal notranslate"><span class="pre">homoFreq</span></code> and <code class="docutils literal notranslate"><span class="pre">homoNum</span></code> can be outputted for all and each
+(virtual) subpopulations. Example <a class="reference internal" href="#statheterofreq"><span class="std std-ref">statHeteroFreq</span></a>
+demonstrates the decay of heterozygosity of a locus due to genetic drift.</p>
+<p id="statheterofreq"><strong>Example</strong>: <em>Counting homozygotes and heterozygotes in a population</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">heteroFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;Gen: </span><span class="si">%d</span><span class="s2">, HeteroFreq: </span><span class="si">%.2f</span><span class="s2">\n&#39; % (gen, heteroFreq[0])&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Gen: 0, HeteroFreq: 0.45</span>
+<span class="go">Gen: 20, HeteroFreq: 0.44</span>
+<span class="go">Gen: 40, HeteroFreq: 0.55</span>
+<span class="go">Gen: 60, HeteroFreq: 0.46</span>
+<span class="go">Gen: 80, HeteroFreq: 0.40</span>
+<span class="go">100</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="statHeteroFreq.py">Download statHeteroFreq.py</a></p>
+</div>
+<div class="section" id="haplotype-count-and-frequency">
+<h2>Haplotype count and frequency<a class="headerlink" href="#haplotype-count-and-frequency" title="Permalink to this headline">¶</a></h2>
+<p>Haplotypes refer to alleles on the same homologous copy of a chromosome at
+specified loci. For example, an diploid individual can have haplotypes <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">2,</span>
+<span class="pre">1)</span></code> and <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1,</span> <span class="pre">1)</span></code> at loci <code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">3,</span> <span class="pre">5)</span></code> if he or she has genotype <code class="docutils literal notranslate"><span class="pre">(0,</span>
+<span class="pre">0)</span></code>, <code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">1)</span></code> and <code class="docutils literal notranslate"><span class="pre">(1,1)</span></code> at loci 2, 3 and 5 respectively. Parameter
+<em>haploFreq</em> accept one or more lists of loci specifying one or more haplotype
+sites (e.g. <code class="docutils literal notranslate"><span class="pre">haploFreq=[(0,1,2),</span> <span class="pre">(2,3)]</span></code> specifies two haplotype sites). The
+results are saved to dictionaries (with haplotype site as keys) of default
+dictionaries (with haplotype as keys). For example,
+<code class="docutils literal notranslate"><span class="pre">haploFreq[(0,1,2)][(0,1,1)]</span></code> will be the frequency of haplotype <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1,</span> <span class="pre">1)</span></code>
+at loci <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1,</span> <span class="pre">2)</span></code>. Example <a class="reference internal" href="#stathaplofreq"><span class="std std-ref">statHaploFreq</span></a> prints the
+numbers of genotypes and haplotypes at loci 0, 1 and 2 of a small population.
+Note that the <code class="docutils literal notranslate"><span class="pre">viewVars</span></code> function defined in module <code class="docutils literal notranslate"><span class="pre">simuUtil</span></code> can make use
+of a wxPython window to view all variables if it is called in GUI mode.</p>
+<p id="stathaplofreq"><strong>Example</strong>: <em>Counting haplotypes in a population</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.utils</span> <span class="k">import</span> <span class="n">viewVars</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">genoFreq</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">haploFreq</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;genoNum&#39;</span><span class="p">,</span> <span class="s1">&#39;haploFreq&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">viewVars</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">vars</span><span class="p">(),</span> <span class="n">gui</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">{&#39;genoNum&#39;: {0: {(0, 0): 3.0,</span>
+<span class="go">                 (0, 1): 7.0,</span>
+<span class="go">                 (0, 2): 5.0,</span>
+<span class="go">                 (1, 0): 9.0,</span>
+<span class="go">                 (1, 1): 14.0,</span>
+<span class="go">                 (1, 2): 16.0,</span>
+<span class="go">                 (2, 0): 8.0,</span>
+<span class="go">                 (2, 1): 14.0,</span>
+<span class="go">                 (2, 2): 24.0},</span>
+<span class="go">             1: defdict({(0, 0): 100.0}),</span>
+<span class="go">             2: {(0, 0): 4.0,</span>
+<span class="go">                 (0, 1): 19.0,</span>
+<span class="go">                 (1, 0): 15.0,</span>
+<span class="go">                 (1, 1): 62.0}},</span>
+<span class="go"> &#39;haploFreq&#39;: {(0, 1, 2): {(0, 0, 0): 0.03,</span>
+<span class="go">                           (0, 0, 1): 0.145,</span>
+<span class="go">                           (1, 0, 0): 0.055,</span>
+<span class="go">                           (1, 0, 1): 0.315,</span>
+<span class="go">                           (2, 0, 0): 0.125,</span>
+<span class="go">                           (2, 0, 1): 0.33}}}</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="statHaploFreq.py">Download statHaploFreq.py</a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><em>haploFreq</em> does not check if loci in a haplotype site belong to the same
+chromosome, or if loci are duplicated or in order. It faithfully assemble
+alleles at specified loci as haplotypes although these haplotypes might not be
+biologically meaningful.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Counting a large number of haplotypes on long haplotype sites may exhaust the
+RAM of your computer.</p>
+</div>
+</div>
+<div class="section" id="summary-statistics-of-information-fields">
+<h2>Summary statistics of information fields<a class="headerlink" href="#summary-statistics-of-information-fields" title="Permalink to this headline">¶</a></h2>
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">sumOfInfo</span></code>, <code class="docutils literal notranslate"><span class="pre">meanOfInfo</span></code>, <code class="docutils literal notranslate"><span class="pre">varOfInfo</span></code>, <code class="docutils literal notranslate"><span class="pre">maxOfInfo</span></code> and
+<code class="docutils literal notranslate"><span class="pre">minOfInfo</span></code> are used to calculate the sum, mean, sample variance
+(<span class="math notranslate nohighlight">\(\frac{1}{n-1}\sum_{i=1}^{n}\left(x_{i}-\bar{x}\right)^{2}\)</span>), max and min
+of specified information fields of individuals in all or specified (virtual)
+subpopulations. The results are saved in dictionaries <code class="docutils literal notranslate"><span class="pre">sumOfInfo</span></code>,
+<code class="docutils literal notranslate"><span class="pre">meanOfInfo</span></code>, <code class="docutils literal notranslate"><span class="pre">varOfInfo</span></code>, <code class="docutils literal notranslate"><span class="pre">maxOfInfo</span></code> and <code class="docutils literal notranslate"><span class="pre">minOfInfo</span></code> with information
+fields as keys. For example, parameter  <code class="docutils literal notranslate"><span class="pre">meanOfInfo='age'</span></code> calculates the mean
+age of all individuals and set variable <code class="docutils literal notranslate"><span class="pre">meanOfInfo['age']</span></code>.</p>
+<p>Example <a class="reference internal" href="#statinfo"><span class="std std-ref">statInfo</span></a> demonstrates a mixing process of two
+populations. The population starts with two types of individuals with ancestry
+values 0 or 1 (information field <code class="docutils literal notranslate"><span class="pre">anc</span></code>). During the evolution, parents mate
+randomly and the ancestry of offspring is the mean of parental ancestry values.
+A <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> operator is used to calculate the mean and variance of
+individual ancestry values, and the number of individuals in five ancestry
+groups. It is not surprising that whereas population mean ancestry does not
+change, more and more people have about the same number of ancestors from each
+group and have an ancestry value around 0.5. The variance of ancestry values
+therefore decreases gradually.</p>
+<p id="statinfo"><strong>Example</strong>: <em>Calculate summary statistics of information fields</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">500</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;anc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Defines VSP 0, 1, 2, 3, 4 by anc.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">InfoSplitter</span><span class="p">(</span><span class="s1">&#39;anc&#39;</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="c1"># anc is 0 or 1</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitInfo</span><span class="p">(</span><span class="k">lambda</span> <span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;anc&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InheritTagger</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">MEAN</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;anc&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">meanOfInfo</span><span class="o">=</span><span class="s1">&#39;anc&#39;</span><span class="p">,</span> <span class="n">varOfInfo</span><span class="o">=</span><span class="s1">&#39;anc&#39;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">ALL_AVAIL</span><span class="p">)]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;Anc: </span><span class="si">%.2f</span><span class="s2"> (</span><span class="si">%.2f</span><span class="s2">), #inds: </span><span class="si">%s</span><span class="s2">\n&#39; %&quot;</span> <span class="o">+</span> \
+<span class="gp">... </span>            <span class="s2">&quot;(meanOfInfo[&#39;anc&#39;], varOfInfo[&#39;anc&#39;], &quot;</span> <span class="o">+</span> \
+<span class="gp">... </span>            <span class="s2">&quot;&#39;, &#39;.join([&#39;</span><span class="si">%4d</span><span class="s2">&#39; </span><span class="si">% x</span><span class="s2"> for x in subPopSize]))&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Anc: 0.51 (0.12), #inds:  118,    0,  251,    0,  131</span>
+<span class="go">Anc: 0.51 (0.06), #inds:   27,  121,  190,  137,   25</span>
+<span class="go">Anc: 0.52 (0.03), #inds:   14,  143,  138,  181,   24</span>
+<span class="go">Anc: 0.52 (0.02), #inds:    4,   85,  267,  137,    7</span>
+<span class="go">Anc: 0.52 (0.01), #inds:    0,   40,  385,   75,    0</span>
+<span class="go">5</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="statInfo.py">Download statInfo.py</a></p>
+</div>
+<div class="section" id="linkage-disequilibrium">
+<h2>Linkage disequilibrium<a class="headerlink" href="#linkage-disequilibrium" title="Permalink to this headline">¶</a></h2>
+<p>Parameter <em>LD</em> accepts a list of loci-pairs (e.g. <code class="docutils literal notranslate"><span class="pre">LD=[(0,1),(2,3)]</span></code>) with
+optional primary alleles at two loci (e.g. <code class="docutils literal notranslate"><span class="pre">LD=[(0,1,0,0),(2,3)]</span></code>). For each
+pair of loci, this operator calculates linkage disequilibrium and optional
+association measures between them.</p>
+<p>Assuming that two loci are both diallelic, one with alleles <span class="math notranslate nohighlight">\(A\)</span> and
+<span class="math notranslate nohighlight">\(a\)</span>, and the other with alleles <span class="math notranslate nohighlight">\(B\)</span> and <span class="math notranslate nohighlight">\(b\)</span>. If we denote
+<span class="math notranslate nohighlight">\(P_{x}\)</span>, <span class="math notranslate nohighlight">\(P_{xy}\)</span> as allele and haplotype frequencies for allele
+<span class="math notranslate nohighlight">\(x\)</span> and haplotype <span class="math notranslate nohighlight">\(xy\)</span>, respectively, the linkage disequilibrium
+measures <strong>with respect to primaries alleles</strong> <em>A</em> and <em>B</em> are</p>
+<ul>
+<li><p class="first">Basic LD measure <span class="math notranslate nohighlight">\(D\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[D=P_{AB}-P_{A}P_{B}\]</div>
+<p><em>D</em> ranges from -0.25 to 0.25. The sign depends on the choice of alleles (<em>A</em>
+and <em>B</em>) at two loci.</p>
+</li>
+<li><p class="first">Lewontin’s <span class="math notranslate nohighlight">\(D'=D/D_{max}\)</span> where</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}D_{max}=\begin{cases}
+\min\left(P_{A}\left(1-P_{B}\right),\left(1-P_{A}\right)P_{B}\right) &amp; \textrm{if }D&gt;0\\
+\min\left(P_{A}P_{B},\left(1-P_{A}\right)\left(1-P_{B}\right)\right) &amp; \textrm{if }D&lt;0
+\end{cases}\end{split}\]</div>
+<p><em>D’</em> ranges from -1 to 1. The sign depends on the choice of alleles (<em>A</em> and
+<em>B</em>) at two loci.</p>
+</li>
+<li><p class="first"><span class="math notranslate nohighlight">\(r^{2}\)</span> (<span class="math notranslate nohighlight">\(\Delta^{2}\)</span> in Devlin1995)</p>
+<div class="math notranslate nohighlight">
+\[r^{2}=\frac{D^{2}}{P_{A}\left(1-P_{A}\right)P_{B}\left(1-P_{B}\right)}\]</div>
+</li>
+</ul>
+<p>If one or both loci have more than 2 alleles, or if no primary allele is
+specified, the LD measures are calculated as follows:</p>
+<ul>
+<li><p class="first">If primary alleles are specified, all other alleles are considered as minor
+alleles with combined frequency (e.g. <span class="math notranslate nohighlight">\(1-P_{A}\)</span>). The same formulas apply
+which lead to signed <span class="math notranslate nohighlight">\(D\)</span> and <span class="math notranslate nohighlight">\(D'\)</span> measures.</p>
+</li>
+<li><p class="first">If primary alleles are not specified, these LD measures are calculated as the
+average of the absolute value of diallelic measures of all allele pairs. For
+example, the multi-allele version of <span class="math notranslate nohighlight">\(r^{2}\)</span> is</p>
+<div class="math notranslate nohighlight">
+\[r^{2}=\sum_{i}\sum_{j}P_{i}P_{j}\left|r_{ij}^{2}\right|=\sum_{i}\sum_{j}\frac{D_{ij}^{2}}{\left(1-P_{i}\right)\left(1-P_{j}\right)}\]</div>
+<p>where <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span> iterate through all alleles at the two loci. <strong>In
+the diallelic case, LD measures will be the absolute value of the single
+measures</strong> because <span class="math notranslate nohighlight">\(D_{ij}\)</span> and <span class="math notranslate nohighlight">\(D'_{ij}\)</span> only differ by signs.</p>
+</li>
+</ul>
+<p>In another word,</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">LD=[loc1,</span> <span class="pre">loc2]</span></code> will yield positive <span class="math notranslate nohighlight">\(D\)</span> and <span class="math notranslate nohighlight">\(D'\)</span> measures.</li>
+<li><code class="docutils literal notranslate"><span class="pre">LD=[loc1,</span> <span class="pre">loc2,</span> <span class="pre">allele1,</span> <span class="pre">allele2]</span></code> will yield signed <span class="math notranslate nohighlight">\(D\)</span> and
+<span class="math notranslate nohighlight">\(D'\)</span> measures.</li>
+<li>In the diallelic case, both cases yield identical results except for signs of
+<span class="math notranslate nohighlight">\(D\)</span> and <span class="math notranslate nohighlight">\(D'\)</span>.</li>
+<li>In the multi-allelic case, the results can be different because <code class="docutils literal notranslate"><span class="pre">LD=[loc1,</span>
+<span class="pre">loc2,</span> <span class="pre">allele1,</span> <span class="pre">allele2]</span></code> combines non-primary alleles and gives a single
+diallelic measure.</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">A large number of linkage disequilibrium measures have been used in different
+disciplines but not all of them are well-accepted. Requests of adding a
+particular LD measure will be considered when a reliable reference is provided.</p>
+</div>
+<p>Association tests between specified loci could also be calculated using a
+<span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> table of haplotype frequencies. If primary alleles are
+specified, non-primary alleles are combined to form a 2 by 2 table
+(<span class="math notranslate nohighlight">\(m=n=2\)</span>). Otherwise, <span class="math notranslate nohighlight">\(m\)</span> and <span class="math notranslate nohighlight">\(n\)</span> are respective numbers of
+alleles at two loci.</p>
+<ul>
+<li><p class="first"><span class="math notranslate nohighlight">\(\chi^{2}\)</span> and its <span class="math notranslate nohighlight">\(p\)</span>-value (variable <code class="docutils literal notranslate"><span class="pre">LD_ChiSq</span></code> and
+<code class="docutils literal notranslate"><span class="pre">LD_ChiSq_p</span></code>, respectively). A one-side <span class="math notranslate nohighlight">\(\chi^{2}\)</span> test with
+<span class="math notranslate nohighlight">\(\left(m-1\right)\times\left(n-1\right)\)</span> degrees of freedom will be used.</p>
+</li>
+<li><p class="first">Cramer V statistic (variable <code class="docutils literal notranslate"><span class="pre">CramerV</span></code>):</p>
+<div class="math notranslate nohighlight">
+\[V=\sqrt{\frac{\chi^{2}}{N\times\mbox{min}\left(m-1,n-1\right)}}\]</div>
+<p>where <span class="math notranslate nohighlight">\(N\)</span> equals the total number of haplotypes
+(<span class="math notranslate nohighlight">\(2\times\mbox{popSize}\)</span> for autosomes in diploid populations).</p>
+</li>
+</ul>
+<p>This statistic sets variables <code class="docutils literal notranslate"><span class="pre">LD</span></code>, <code class="docutils literal notranslate"><span class="pre">LD_prime</span></code>, <code class="docutils literal notranslate"><span class="pre">R2</span></code>, and optionally
+<code class="docutils literal notranslate"><span class="pre">ChiSq</span></code>, <code class="docutils literal notranslate"><span class="pre">ChiSq_p</span></code> and <code class="docutils literal notranslate"><span class="pre">CramerV</span></code>. SubPopulation specific variables can be
+calculated by specifying variables such as <code class="docutils literal notranslate"><span class="pre">LD_sp</span></code> and <code class="docutils literal notranslate"><span class="pre">R2_sp</span></code>. Example
+<a class="reference internal" href="#statld"><span class="std std-ref">statLD</span></a> demonstrates how to calculate various LD measures and
+output selected variables. Note that the significant overall LD between two loci
+is an artifact of population structure because loci are in linkage equilibrium
+in each subpopulation.</p>
+<p id="statld"><strong>Example</strong>: <em>Linkage disequilibrium measures</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">1000</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span> <span class="n">subPops</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="n">subPops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">LD</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]],</span>
+<span class="gp">... </span>    <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;LD&#39;</span><span class="p">,</span> <span class="s1">&#39;LD_prime&#39;</span><span class="p">,</span> <span class="s1">&#39;R2&#39;</span><span class="p">,</span> <span class="s1">&#39;LD_ChiSq&#39;</span><span class="p">,</span> <span class="s1">&#39;LD_ChiSq_p&#39;</span><span class="p">,</span> <span class="s1">&#39;CramerV&#39;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s1">&#39;LD_prime_sp&#39;</span><span class="p">,</span> <span class="s1">&#39;LD_ChiSq_p_sp&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pprint</span> <span class="k">import</span> <span class="n">pprint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">vars</span><span class="p">())</span>
+<span class="go">{&#39;CramerV&#39;: {0: defdict({1: 0.3355834766347789}),</span>
+<span class="go">             1: defdict({2: 0.39144946095755695})},</span>
+<span class="go"> &#39;LD&#39;: {0: defdict({1: 0.08387987499999999}),</span>
+<span class="go">        1: defdict({2: 0.09783043749999992})},</span>
+<span class="go"> &#39;LD_ChiSq&#39;: {0: defdict({1: 450.4650791611408}),</span>
+<span class="go">              1: defdict({2: 612.9307219358476})},</span>
+<span class="go"> &#39;LD_ChiSq_p&#39;: {0: defdict({1: 0.0}), 1: defdict({2: 0.0})},</span>
+<span class="go"> &#39;LD_prime&#39;: {0: defdict({1: 0.3425347836362625}),</span>
+<span class="go">              1: defdict({2: 0.4057999832524774})},</span>
+<span class="go"> &#39;R2&#39;: {0: defdict({1: 0.1126162697902852}),</span>
+<span class="go">        1: defdict({2: 0.15323268048396166})},</span>
+<span class="go"> &#39;subPop&#39;: {0: {&#39;LD_ChiSq_p&#39;: {0: defdict({1: 0.03843990070970382}),</span>
+<span class="go">                               1: defdict({2: 0.5110492462003573})},</span>
+<span class="go">                &#39;LD_prime&#39;: {0: defdict({1: -0.17661111690962444}),</span>
+<span class="go">                             1: defdict({2: 0.016760924318107204})}},</span>
+<span class="go">            1: {&#39;LD_ChiSq_p&#39;: {0: defdict({1: 0.8024214035646771}),</span>
+<span class="go">                               1: defdict({2: 0.11685510935577492})},</span>
+<span class="go">                &#39;LD_prime&#39;: {0: defdict({1: -0.02259456714902688}),</span>
+<span class="go">                             1: defdict({2: 0.035632559660018596})}}}}</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="statLD.py">Download statLD.py</a></p>
+</div>
+<div class="section" id="genetic-association">
+<h2>Genetic association<a class="headerlink" href="#genetic-association" title="Permalink to this headline">¶</a></h2>
+<p>Genetic association refers to association between individual genotype (alleles
+or genotype) and phenotype (affection status). There are a large number of
+statistics tests based on different study designs (e.g. case-control, Pedigree,
+longitudinal) with different covariate variables. Although specialized software
+applications should be used for sophisticated statistical analysis, simuPOP
+provides a number of simple genetic association tests for convenience. These
+tests</p>
+<ul class="simple">
+<li>Are single-locus tests that test specified loci separately.</li>
+<li>Are based on individual affection status. Associations between genotype and
+quantitative traits are currently unsupported.</li>
+<li>Apply to all individuals in specified (virtual) subpopulations. Because a
+population usually has much more unaffected individuals than affected ones, it
+is a common practice to draw certain types of samples (e.g. a case-control
+sample with the same number of cases and controls) before statistical tests are
+applied.</li>
+</ul>
+<p>simuPOP currently supports the following tests:</p>
+<ul class="simple">
+<li><strong>Allele-based Chi-square test</strong>: This is the basic allele-based
+<span class="math notranslate nohighlight">\(\chi^{2}\)</span> test that can be applied to diploid as well as haploid
+populations. Basically, a 2 by <span class="math notranslate nohighlight">\(n\)</span> contigency table is set up for each
+locus with <span class="math notranslate nohighlight">\(n_{ij}\)</span> being the number of alleles <span class="math notranslate nohighlight">\(j\)</span> in cases
+<span class="math notranslate nohighlight">\(\left(i=0\right)\)</span> and controls <span class="math notranslate nohighlight">\(\left(i=1\right)\)</span>. A
+<span class="math notranslate nohighlight">\(\chi^{2}\)</span> test is applied to each locus and set variables
+<code class="docutils literal notranslate"><span class="pre">Allele_ChiSq</span></code> and <code class="docutils literal notranslate"><span class="pre">Allele_ChiSq_p</span></code> to the <span class="math notranslate nohighlight">\(\chi^{2}\)</span> statistic and
+its two-sided <span class="math notranslate nohighlight">\(p\)</span> value (with degrees freedom <span class="math notranslate nohighlight">\(n-1\)</span>). Note that
+genotype information is not preserved in such a test.</li>
+<li><strong>Genotype-based Chi-square test</strong>: This is the genotype-based
+<span class="math notranslate nohighlight">\(\chi^{2}\)</span> test for diploid populations. Basically, a 2 by <span class="math notranslate nohighlight">\(n\)</span>
+contigency table is set up for each locus with <span class="math notranslate nohighlight">\(n_{ij}\)</span> being the number
+of genotype <span class="math notranslate nohighlight">\(j\)</span> (unordered pairs of alleles) in cases
+<span class="math notranslate nohighlight">\(\left(i=0\right)\)</span> and controls <span class="math notranslate nohighlight">\(\left(i=1\right)\)</span>. A
+<span class="math notranslate nohighlight">\(\chi^{2}\)</span> test is applied to each locus and set variables <code class="docutils literal notranslate"><span class="pre">Geno_ChiSq</span></code>
+and <code class="docutils literal notranslate"><span class="pre">Geno_ChiSq_p</span></code> to the <span class="math notranslate nohighlight">\(\chi^{2}\)</span> statistic and its two-sided
+<span class="math notranslate nohighlight">\(p\)</span> value (with degrees freedom <span class="math notranslate nohighlight">\(n-1\)</span>). This test is usually applied
+to diallelic loci with 3 genotypes (<em>AA</em>, <em>Aa</em> and <em>aa</em>) but it can be applied
+to loci with more than two alleles as well.</li>
+<li><strong>Genotype-based trend test</strong>: This Cochran-Armitage test can only be applied
+to diallelic loci in diploid populations. For each locus, a 2 by 3 contigency
+table is set up with <span class="math notranslate nohighlight">\(n_{ij}\)</span> being the number of genotype <span class="math notranslate nohighlight">\(j\)</span>
+(<em>AA</em>, <em>Aa</em> and <em>aa</em> with <em>A</em> being the wildtype allele) in cases
+<span class="math notranslate nohighlight">\(\left(i=0\right)\)</span> and controls <span class="math notranslate nohighlight">\(\left(i=1\right)\)</span>. A Cochran-
+Armitage trend test is applied to each locus and set variables <code class="docutils literal notranslate"><span class="pre">Armitage_p</span></code> to
+its two-sided <span class="math notranslate nohighlight">\(p\)</span> value.</li>
+</ul>
+<p>Example <a class="reference internal" href="#statassociation"><span class="std std-ref">statAssociation</span></a> demonstrates how to apply a
+penetrance model, draw a case-control sample and apply genetic association tests
+to an evolving population. In this example, a penetrance model is applied to a
+locus (locus 3). A Python operator is then used to draw a case-control sample
+from the population and test genetic association at two surrounding loci.
+Because these two loci are tightly linked to the disease predisposing locus,
+they are in strong association with the disease initially. However, because of
+recombination, such association decays with time at rates depending on their
+genetic distances to the disease predisposing locus.</p>
+<p id="statassociation"><strong>Example</strong>: <em>Genetic association tests</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.utils</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.sampling</span> <span class="k">import</span> <span class="n">drawCaseControlSample</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">assoTest</span><span class="p">(</span><span class="n">pop</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="s1">&#39;Draw case-control sample and apply association tests&#39;</span>
+<span class="gp">... </span>    <span class="n">sample</span> <span class="o">=</span> <span class="n">drawCaseControlSample</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">cases</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">controls</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">association</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Allele_ChiSq_p&#39;</span><span class="p">,</span> <span class="s1">&#39;Geno_ChiSq_p&#39;</span><span class="p">,</span> <span class="s1">&#39;Armitage_p&#39;</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Allele test: </span><span class="si">%.2e</span><span class="s1">, </span><span class="si">%.2e</span><span class="s1">, Geno test: </span><span class="si">%.2e</span><span class="s1">, </span><span class="si">%.2e</span><span class="s1">, Trend test: </span><span class="si">%.2e</span><span class="s1">, </span><span class="si">%.2e</span><span class="s1">&#39;</span> \
+<span class="gp">... </span>        <span class="o">%</span> <span class="p">(</span><span class="n">sample</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">Allele_ChiSq_p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sample</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">Allele_ChiSq_p</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="n">sample</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">Geno_ChiSq_p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sample</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">Geno_ChiSq_p</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="n">sample</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">Armitage_p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sample</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">Armitage_p</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="kc">True</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">ProportionSplitter</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">genotype</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">3</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">genotype</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">3</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)]),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">Recombinator</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">rates</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.005</span><span class="p">])),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MaPenetrance</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">penetrance</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOperator</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">assoTest</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">20</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Allele test: 0.00e+00, 0.00e+00, Geno test: 0.00e+00, 0.00e+00, Trend test: 0.00e+00, 0.00e+00</span>
+<span class="go">Allele test: 1.14e-13, 4.44e-16, Geno test: 3.09e-13, 2.66e-15, Trend test: 7.66e-14, 2.22e-16</span>
+<span class="go">Allele test: 1.71e-08, 8.55e-15, Geno test: 4.95e-08, 3.45e-13, Trend test: 1.62e-08, 7.36e-14</span>
+<span class="go">Allele test: 8.57e-09, 7.99e-15, Geno test: 3.09e-08, 2.18e-14, Trend test: 7.05e-09, 2.66e-15</span>
+<span class="go">Allele test: 3.12e-06, 9.05e-09, Geno test: 5.95e-06, 8.83e-08, Trend test: 2.12e-06, 1.26e-08</span>
+<span class="go">100</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="statAssociation.py">Download statAssociation.py</a></p>
+</div>
+<div class="section" id="population-structure">
+<h2>population structure<a class="headerlink" href="#population-structure" title="Permalink to this headline">¶</a></h2>
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">structure</span></code> measures the structure of a population using the
+following statistics:</p>
+<ul class="simple">
+<li>The <span class="math notranslate nohighlight">\(G_{ST}\)</span> statistic developed by Nei Nei1973. This statistic is
+equivalent to Wright’s fixation index <span class="math notranslate nohighlight">\(F_{ST}\)</span> in the diallelic case so it
+can be considered as the multi-allele and multi-locus extension of Wright’s
+<span class="math notranslate nohighlight">\(F_{ST}\)</span>. It assumes known genotype frequency so it can be used to
+calculate true <span class="math notranslate nohighlight">\(F_{ST}\)</span> of a population when all genotype information is
+available. This statistic sets a dictionary of locus level <span class="math notranslate nohighlight">\(G_{ST}\)</span>
+(variable <code class="docutils literal notranslate"><span class="pre">g_st</span></code>) and a summary statistics for all loci (variable <code class="docutils literal notranslate"><span class="pre">G_st</span></code>).</li>
+<li>Wright’s fixation index <span class="math notranslate nohighlight">\(F_{ST}\)</span> calculated using an algorithm developed
+by Weir1984. This statistic considers existing populations as random samples
+from an infinite pool of populations with the same ancestral population so it is
+best to be applied to random samples where true genotype frequencies are
+unknown. This statistic sets dictionaries of locus level <span class="math notranslate nohighlight">\(F_{ST}\)</span>,
+<span class="math notranslate nohighlight">\(F_{IT}\)</span> and <span class="math notranslate nohighlight">\(F_{IS}\)</span> (variables <code class="docutils literal notranslate"><span class="pre">f_st</span></code>, <code class="docutils literal notranslate"><span class="pre">f_is</span></code> and <code class="docutils literal notranslate"><span class="pre">f_it</span></code>),
+and summary statistics for all loci (variables <code class="docutils literal notranslate"><span class="pre">F_st</span></code>, <code class="docutils literal notranslate"><span class="pre">F_is</span></code> and <code class="docutils literal notranslate"><span class="pre">F_it</span></code>)
+. When hetergozygote count is unavailable (non-diploid population, loci on sex
+chromosomes and mitochondrial chromosomes), simuPOP uses expected heterozygosity
+to estimate this quantity.</li>
+</ul>
+<p>These statistics by default uses all existing subpopulations, but it can also be
+applied to a subset of subpopulations, or even virtual subpopulations using
+parameter <em>subPops</em>. That is to say, you can measure the genetic difference
+between males and females using <code class="docutils literal notranslate"><span class="pre">subPops=[(0,0),</span> <span class="pre">(0,1)]</span></code> if a SexSplitter is
+used to define two virtual subpopulations with male and female individuals
+respectively.</p>
+<p>Example <a class="reference internal" href="#statstructure"><span class="std std-ref">statStructure</span></a> demonstrate a simulation with two
+replicates. In the first replicate, three subpopulations evolve separately
+without migration and become more and more genetically distinct. In the second
+replicate, a low level migration is applied between subpopulations so the
+population structure is kept at a low level.</p>
+<p id="statstructure"><strong>Example</strong>: <em>Measure of population structure</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.utils</span> <span class="k">import</span> <span class="n">migrIslandRates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Simulator</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">5000</span><span class="p">]</span><span class="o">*</span><span class="mi">3</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;migrate_to&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">rep</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">Migrator</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="n">migrIslandRates</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">reps</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">structure</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="n">step</span><span class="o">=</span><span class="mi">40</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="s2">&quot;&#39;Fst=</span><span class="si">%.3f</span><span class="s2"> (rep=</span><span class="si">%d</span><span class="s2"> without migration) &#39; % (F_st, rep)&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="s2">&quot;&#39;Fst=</span><span class="si">%.3f</span><span class="s2"> (rep=</span><span class="si">%d</span><span class="s2"> with migration) &#39; % (F_st, rep)&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOutput</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">reps</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Fst=0.000 (rep=0 without migration) Fst=0.000 (rep=1 with migration)</span>
+<span class="go">Fst=0.003 (rep=0 without migration) Fst=0.002 (rep=1 with migration)</span>
+<span class="go">Fst=0.006 (rep=0 without migration) Fst=0.002 (rep=1 with migration)</span>
+<span class="go">Fst=0.008 (rep=0 without migration) Fst=0.003 (rep=1 with migration)</span>
+<span class="go">Fst=0.010 (rep=0 without migration) Fst=0.001 (rep=1 with migration)</span>
+<span class="go">(200, 200)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="statStructure.py">Download statStructure.py</a></p>
+</div>
+<div class="section" id="hardy-weinberg-equilibrium-test">
+<h2>Hardy-Weinberg equilibrium test<a class="headerlink" href="#hardy-weinberg-equilibrium-test" title="Permalink to this headline">¶</a></h2>
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">HWE</span></code> accepts a list of loci at which exact Hardy Weinberg
+equilibrium tests are applied. The <em>p</em>-values of the tests are assigned to a
+dictionary <code class="docutils literal notranslate"><span class="pre">HWE</span></code>. Example <a class="reference internal" href="#stathwe"><span class="std std-ref">statHWE</span></a> demonstrates how Hardy
+Weinberg equilibrium is reached in one generation.</p>
+<p id="stathwe"><strong>Example</strong>: <em>Hardy Weinberg Equilibrium test</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">1000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">ProportionSplitter</span><span class="p">([</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">genotype</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">genotype</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">genotype</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">)]),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">HWE</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">genoFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;HWE p-value: </span><span class="si">%.5f</span><span class="s1"> (AA: </span><span class="si">%.2f</span><span class="s1">, Aa: </span><span class="si">%.2f</span><span class="s1">, aa: </span><span class="si">%.2f</span><span class="s1">)\n&quot; % (HWE[0], &#39;</span>
+<span class="gp">... </span>            <span class="s1">&#39;genoFreq[0][(0,0)], genoFreq[0][(0,1)] + genoFreq[0][(1,0)], genoFreq[0][(1,1)])&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">HWE</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">genoFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;HWE p-value: </span><span class="si">%.5f</span><span class="s1"> (AA: </span><span class="si">%.2f</span><span class="s1">, Aa: </span><span class="si">%.2f</span><span class="s1">, aa: </span><span class="si">%.2f</span><span class="s1">)\n&quot; % (HWE[0], &#39;</span>
+<span class="gp">... </span>            <span class="s1">&#39;genoFreq[0][(0,0)], genoFreq[0][(0,1)] + genoFreq[0][(1,0)], genoFreq[0][(1,1)])&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">HWE p-value: 0.00000 (AA: 0.40, Aa: 0.40, aa: 0.20)</span>
+<span class="go">HWE p-value: 0.93636 (AA: 0.38, Aa: 0.48, aa: 0.15)</span>
+<span class="go">1</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="statHWE.py">Download statHWE.py</a></p>
+</div>
+<div class="section" id="measure-of-inbreeding">
+<h2>Measure of Inbreeding<a class="headerlink" href="#measure-of-inbreeding" title="Permalink to this headline">¶</a></h2>
+<p>Inbreeding coefficient at a generation is defined as the probability that the
+two alleles in a given individual are identical by decent (IBD). Although it is
+usually very difficult to estimate this quantity, it is easy to observe it
+directly during evolution if the ancestors of alleles are tracked. This can be
+done using the lineage module of simuPOP where allelic lineage is tracked during
+evolution. For example, Example <a class="reference internal" href="#statibd"><span class="std std-ref">statIBD</span></a> output the frequency of
+IBD loci in a population of size 500. It also outputs the frequency of IBS
+(Identical by State), which should always be larger than IBD frequency, and
+theoretical estimate of the decay of inbreeding coefficient.</p>
+<p id="statibd"><strong>Example</strong>: <em>Frequency of IBD as a measure of inbreeding coefficient</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuOpt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simuOpt</span><span class="o">.</span><span class="n">setOptions</span><span class="p">(</span><span class="n">alleleType</span><span class="o">=</span><span class="s1">&#39;lineage&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">500</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitLineage</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.2</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">inbreeding</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">ALL_AVAIL</span><span class="p">,</span> <span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;gen </span><span class="si">%d</span><span class="s1">: IBD freq </span><span class="si">%.4f</span><span class="s1">, IBS freq </span><span class="si">%.4f</span><span class="s1">, est: </span><span class="si">%.4f</span><span class="s1">\n&quot; % &#39;</span>
+<span class="gp">... </span>            <span class="s1">&#39;(gen, sum(IBD_freq.values()) /len(IBD_freq), &#39;</span>
+<span class="gp">... </span>            <span class="s1">&#39; sum(IBS_freq.values()) /len(IBS_freq), &#39;</span>
+<span class="gp">... </span>            <span class="s1">&#39; 1 - (1-1/(2.*popSize))**gen)&#39;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">gen 0: IBD freq 0.0000, IBS freq 0.1994, est: 0.0000</span>
+<span class="go">gen 10: IBD freq 0.0084, IBS freq 0.2072, est: 0.0100</span>
+<span class="go">gen 20: IBD freq 0.0167, IBS freq 0.2142, est: 0.0198</span>
+<span class="go">gen 30: IBD freq 0.0266, IBS freq 0.2204, est: 0.0296</span>
+<span class="go">gen 40: IBD freq 0.0380, IBS freq 0.2292, est: 0.0392</span>
+<span class="go">gen 50: IBD freq 0.0486, IBS freq 0.2383, est: 0.0488</span>
+<span class="go">gen 60: IBD freq 0.0577, IBS freq 0.2457, est: 0.0583</span>
+<span class="go">gen 70: IBD freq 0.0689, IBS freq 0.2566, est: 0.0676</span>
+<span class="go">gen 80: IBD freq 0.0782, IBS freq 0.2616, est: 0.0769</span>
+<span class="go">gen 90: IBD freq 0.0887, IBS freq 0.2638, est: 0.0861</span>
+<span class="go">100</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="statIBD.py">Download statIBD.py</a></p>
+</div>
+<div class="section" id="effective-population-size">
+<h2>Effective population size<a class="headerlink" href="#effective-population-size" title="Permalink to this headline">¶</a></h2>
+<p>Effective population size is an important, yet complicated concept in population
+genetics. Simply put, the effective population size is determined by a mating
+scheme, namely how parents are selected and how offsprings are generated. In the
+context of forward-time simulation, if we populate an offspring population from
+a parental population, a true effective population size can be calculated, under
+certain assumptions, as</p>
+<div class="math notranslate nohighlight">
+\[Ne=\frac{kN-1}{k-1+V_{k}/k}\]</div>
+<p>where <span class="math notranslate nohighlight">\(k\)</span> and <span class="math notranslate nohighlight">\(V_{k}\)</span> are the mean and variance of the number of
+gametes each parent  transmits to the offspring generation. Naturally, the
+number of sex chromosomes transmitted will be different for males and females.
+This effective size is independent of genotypes and is called the demographic
+effective size.</p>
+<p>Because the calculation of demographic effective size needs to track which
+alleles are transmitted from parental to offspring population, it has to collect
+information from both parental and offspring populations, and can only be
+calculated using the lineage modules of simuPOP. As shown in Example
+<a class="reference internal" href="#statnedemographic"><span class="std std-ref">statNeDemographic</span></a>, a <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> operator is
+applied before mating to mark lineage of alleles of each locus with an
+individual index, and save the IDs of parents in a variable <code class="docutils literal notranslate"><span class="pre">Ne_demo_base</span></code>.
+After mating, another <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> operator is used to count how many alleles
+each parent has contributed to the offspring generation, and calculate
+demographic effective size accordingly. This example uses three virtual
+subpopulations, a whole subpopulation, all male individuals, and all female
+individuals, and calculated effective size for loci on an autosome, an X
+chromosome, and a Y chromosome. As we can imagine, the effective size is 0 at
+the Y chromosome for all females, because no such chromsome is transmitted from
+the parental population.</p>
+<p id="statnedemographic"><strong>Example</strong>: <em>Demographic effective population size</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuOpt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simuOpt</span><span class="o">.</span><span class="n">setOptions</span><span class="p">(</span><span class="n">alleleType</span><span class="o">=</span><span class="s1">&#39;lineage&#39;</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">2000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">3</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">chromTypes</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">AUTOSOME</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">CHROMOSOME_X</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">CHROMOSOME_Y</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">SexSplitter</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">effectiveSize</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)],</span>
+<span class="gp">... </span>            <span class="nb">vars</span><span class="o">=</span><span class="s1">&#39;Ne_demo_base_sp&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">effectiveSize</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)],</span>
+<span class="gp">... </span>            <span class="nb">vars</span><span class="o">=</span><span class="s1">&#39;Ne_demo_sp&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;Demographic Ne: </span><span class="si">%.1f</span><span class="s1"> (auto), </span><span class="si">%.1f</span><span class="s1"> (X), </span><span class="si">%.1f</span><span class="s1"> (Y), &#39;</span>
+<span class="gp">... </span>            <span class="sa">r</span><span class="s1">&#39;Males: </span><span class="si">%.1f</span><span class="s1">, </span><span class="si">%.1f</span><span class="s1">, </span><span class="si">%.1f</span><span class="s1">, Females: </span><span class="si">%.1f</span><span class="s1">, </span><span class="si">%.1f</span><span class="s1">, </span><span class="si">%.1f</span><span class="s1">\n&quot;&#39;</span>
+<span class="gp">... </span>            <span class="s1">&#39;% tuple([subPop[0][&quot;Ne_demo&quot;][x] for x in (0, 1, 2)] + &#39;</span>
+<span class="gp">... </span>            <span class="s1">&#39;[subPop[(0,0)][&quot;Ne_demo&quot;][x] for x in (0, 1, 2)] + &#39;</span>
+<span class="gp">... </span>            <span class="s1">&#39;[subPop[(0,1)][&quot;Ne_demo&quot;][x] for x in (0, 1, 2)])&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Demographic Ne: 2021.2 (auto), 1808.8 (X), 1056.1 (Y), Males: 1038.4, 1049.4, 1056.1, Females: 983.8, 983.8, nan</span>
+<span class="go">Demographic Ne: 2024.8 (auto), 1886.4 (X), 918.2 (Y), Males: 965.7, 1014.2, 918.2, Females: 1063.3, 1063.3, nan</span>
+<span class="go">Demographic Ne: 2048.7 (auto), 1858.5 (X), 969.2 (Y), Males: 1023.0, 1037.4, 969.2, Females: 1025.1, 1025.1, nan</span>
+<span class="go">Demographic Ne: 1955.0 (auto), 1790.6 (X), 956.8 (Y), Males: 958.8, 985.2, 956.8, Females: 996.5, 996.5, nan</span>
+<span class="go">Demographic Ne: 2000.5 (auto), 1811.7 (X), 955.1 (Y), Males: 983.8, 966.2, 955.1, Females: 1016.8, 1016.8, nan</span>
+<span class="go">5</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="statNeDemographic.py">Download statNeDemographic.py</a></p>
+<p>Effective population sizes could also be estimated from genotypes because
+changes of genotypes reflects properties of the mating scheme. However, it is
+important to realize that <strong>evolving a population for one generation is only one
+realization of many possible realizations of the same mating scheme</strong> (effective
+size). If we consider the demographic effective size as the average effective
+size of all realizations, estimating effective size from genotypes will be
+inaccurate unless a large number of unlinked loci are used. The temporal methods
+essentially try to get better estimate by averaging such realizations across
+multiple generations, although the demographic effective size might vary due to
+change of population size.</p>
+<p>simuPOP currently provides two temporal methods proposed by Waples (1989) and
+Jorde &amp; Ryman’s (2007). Because these methods estimate effective population size
+using changes of allele frequencies of samples at two generations, it is
+necessary to set a baseline generation before any temporal method could be
+applied.</p>
+<p>The baseline information is saved to variable <code class="docutils literal notranslate"><span class="pre">Ne_temporal_base</span></code> when this
+variable is specified in the <code class="docutils literal notranslate"><span class="pre">vars</span></code> parameter of the <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> operator.
+After the baseline is set, for example, at generation 0, if the operator
+<a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> is applied at generations 0, 20, and 40, it will set variable
+<code class="docutils literal notranslate"><span class="pre">Ne_waples89_P1</span></code>, <code class="docutils literal notranslate"><span class="pre">Ne_waples89_P2</span></code>(for Waples 1989) and <code class="docutils literal notranslate"><span class="pre">Ne_tempoFS_P1</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Ne_tempoFS_P</span></code>2 (for Jorde &amp; Ryman 2007, as implemented in a package
+<code class="docutils literal notranslate"><span class="pre">TempoFS</span></code>) as the census population size at generation 0, estimated effective
+population sizes between generation 0 and 20 at generation 20, and estimates
+between 0 and 40 at generation 40. The variables are lists of three elements:
+the estimated Ne and lower and upper boundaries of the 95% confidence interval.</p>
+<p>Sampling plan 1 assumes that samples are drawn with replacement at the first
+time point so that some of the individuals sampled in the first time period
+could have contributed genes to subsequent generations (see Nei and Tajima, 1981
+Genetics and other papers). simuPOP uses census population (or subpopulation if
+the statistics are calcuated for each subpopulations) size as <span class="math notranslate nohighlight">\(N\)</span> and
+consider the sample being a subset of the population (or subpopulation), it
+should be applied to a virtual subpopulation (e.g. a subset of individuals
+defined by a <a class="reference internal" href="refManual_ch2_sec2.html#RangeSplitter" title="RangeSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">RangeSplitter</span></code></a>) of the whole population. Sample plan 2
+treats the sample as a sample from an infinitely-sized population, and should be
+applied to a population (sample) that is actually extracted from a larger
+population. Results under both assumptions are calculated and provided so you
+should choose the ones that match your sampling plan.</p>
+<p>Example <a class="reference internal" href="#statnetemporal"><span class="std std-ref">statNeTemporal</span></a> demonstrates how to calculate
+temporal effective population sizes at a 20 generation interval during
+evolution, using a fixed baseline generation at generation 0. The statistics are
+estimated from genotypes at 50 unlinked loci from 500 random samples from a
+population of size 2000. Instead of drawing random samples explicitly, this
+example defines a virtual subpopulation that consists of the first 500
+individuals in the population. The Stat operator is applied at generations 0,
+20, 40, …, 100 to this virtual subpopulation, with the first output being the
+census size (of the sample). Because a standard Wright-Fisher random mating
+scheme is used, the true effective population size should be around 2000. It
+would be interesting to adjust this evolutionary process (with population
+expansion, with varying number of offspring etc) and the method of estimation
+(sample size, generations between estimates) to see how well this statistic
+estimate effective population size under different scenarios.</p>
+<p id="statnetemporal"><strong>Example</strong>: <em>Temporal effective population size using a fixed baseline sample</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">2000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">50</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">RangeSplitter</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">500</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">effectiveSize</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)],</span>
+<span class="gp">... </span>            <span class="nb">vars</span><span class="o">=</span><span class="s1">&#39;Ne_temporal_base&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">effectiveSize</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)],</span>
+<span class="gp">... </span>            <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Ne_waples89_P1&#39;</span><span class="p">,</span> <span class="s1">&#39;Ne_tempoFS_P1&#39;</span><span class="p">],</span> <span class="n">step</span><span class="o">=</span><span class="mi">20</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;Waples Ne: </span><span class="si">%.1f</span><span class="s1"> (</span><span class="si">%.1f</span><span class="s1"> - </span><span class="si">%.1f</span><span class="s1">), TempoFS: &#39;</span>
+<span class="gp">... </span>            <span class="sa">r</span><span class="s1">&#39;</span><span class="si">%.1f</span><span class="s1"> (</span><span class="si">%.1f</span><span class="s1"> - </span><span class="si">%.1f</span><span class="s1">), at generation </span><span class="si">%d</span><span class="s1">\n&quot; % &#39;</span>
+<span class="gp">... </span>            <span class="s1">&#39;tuple(Ne_waples89_P1 + Ne_tempoFS_P1 + [gen])&#39;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">101</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Waples Ne: 500.0 (500.0 - 500.0), TempoFS: 500.0 (500.0 - 500.0), at generation 0</span>
+<span class="go">Waples Ne: 1853.1 (1155.2 - 3536.1), TempoFS: 1843.2 (1255.1 - 3467.7), at generation 20</span>
+<span class="go">Waples Ne: 1537.9 (979.7 - 2452.6), TempoFS: 1565.7 (1117.0 - 2617.2), at generation 40</span>
+<span class="go">Waples Ne: 1843.3 (1178.0 - 2872.4), TempoFS: 1963.4 (1332.2 - 3730.9), at generation 60</span>
+<span class="go">Waples Ne: 1783.0 (1143.4 - 2710.7), TempoFS: 1807.2 (1291.5 - 3008.7), at generation 80</span>
+<span class="go">Waples Ne: 1572.7 (1011.2 - 2346.6), TempoFS: 1639.5 (1205.1 - 2563.6), at generation 100</span>
+<span class="go">101</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="statNeTemporal.py">Download statNeTemporal.py</a></p>
+<p>Instead of using a fixed baseline generation, it is also possible to reset
+baseline generation during evolution. For example, Example <a class="reference internal" href="#statneinterval"><span class="std std-ref">statNeInterval</span></a> demonstrates how to calculate temporal effective population
+sizes at a 20 generation interval during evolution. This example sets variable
+<code class="docutils literal notranslate"><span class="pre">Ne_temporal_base</span></code> with <code class="docutils literal notranslate"><span class="pre">Ne_waples89_P1</span></code> whenever the Stat operator is
+applied. This effectively resets the baseline generation to the present
+generation at generations 0, 20, 40, etc, so baseline generations 0, 20, 40, …
+are used at generations 20, 40, …. This example also demonstrates how to use
+the suffix parameter to apply the same statistics with different parameters.</p>
+<p id="statneinterval"><strong>Example</strong>: <em>Temporal effective population size between consecutive samples</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">2000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">50</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">RangeSplitter</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">500</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">effectiveSize</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)],</span>
+<span class="gp">... </span>            <span class="nb">vars</span><span class="o">=</span><span class="s1">&#39;Ne_temporal_base&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">effectiveSize</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)],</span>
+<span class="gp">... </span>            <span class="nb">vars</span><span class="o">=</span><span class="s1">&#39;Ne_waples89_P1&#39;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">20</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">effectiveSize</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)],</span> <span class="n">step</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;_i&#39;</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Ne_temporal_base&#39;</span><span class="p">,</span> <span class="s1">&#39;Ne_waples89_P1&#39;</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;Waples Ne (till </span><span class="si">%d</span><span class="s1">): </span><span class="si">%.1f</span><span class="s1"> (</span><span class="si">%.1f</span><span class="s1"> - </span><span class="si">%.1f</span><span class="s1">), &#39;</span>
+<span class="gp">... </span>            <span class="sa">r</span><span class="s1">&#39;(interval) </span><span class="si">%.1f</span><span class="s1"> (</span><span class="si">%.1f</span><span class="s1"> - </span><span class="si">%.1f</span><span class="s1">)\n&quot; % &#39;</span>
+<span class="gp">... </span>            <span class="s1">&#39;tuple([gen] + Ne_waples89_P1 + Ne_waples89_P1_i)&#39;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">step</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">101</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Waples Ne (till 0): 500.0 (500.0 - 500.0), (interval) 500.0 (500.0 - 500.0)</span>
+<span class="go">Waples Ne (till 20): 1853.1 (1155.2 - 3536.1), (interval) 1853.1 (1155.2 - 3536.1)</span>
+<span class="go">Waples Ne (till 40): 1537.9 (979.7 - 2452.6), (interval) 2063.7 (1281.1 - 4094.1)</span>
+<span class="go">Waples Ne (till 60): 1843.3 (1178.0 - 2872.4), (interval) 1681.9 (1052.1 - 3112.9)</span>
+<span class="go">Waples Ne (till 80): 1783.0 (1143.4 - 2710.7), (interval) 1872.7 (1167.0 - 3586.3)</span>
+<span class="go">Waples Ne (till 100): 1572.7 (1011.2 - 2346.6), (interval) 2056.1 (1276.6 - 4073.3)</span>
+<span class="go">101</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="statNeInterval.py">Download statNeInterval.py</a></p>
+<p>Linkage disequilibrium method is another popular method to estimate effective
+population size. Compared to temporal methods, it has the distinct advantage
+that it requires only one sample. simuPOP provides a method that is developed by
+Waples in his 2006 paper. To use this method, you will need to specify variable
+<code class="docutils literal notranslate"><span class="pre">Ne_LD</span></code> for a random mating scheme, or <code class="docutils literal notranslate"><span class="pre">Ne_LD_mono</span></code> for a monogamous mating
+scheme. <a class="reference internal" href="#statneld"><span class="std std-ref">statNeLD</span></a> demonstrates this usage. Note that because
+the LDNe mehod is sensitive to rare alleles (which can lead to inflated measure
+of LD), simuPOP provides estimates that ignores alleles with frequencies less
+than 0 (all alleles are kept), 0.01, 0.02 and 0.05. The results are saved in
+variable <code class="docutils literal notranslate"><span class="pre">Ne_LD</span></code> as a dictionary with keys 0, 0.01, 0.02, 0.05, and values as
+lists of estimated effective population sizes and their 95% confidence
+intervals. Because of the existence of many rare alleles, the example gives
+quite different estimates with and without rare alleles (using cutoff=0.02).</p>
+<p id="statneld"><strong>Example</strong>: <em>Effective population size estimated using a LD based method</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">2000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">50</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">RangeSplitter</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">500</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.005</span><span class="p">]</span><span class="o">*</span><span class="mi">4</span> <span class="o">+</span> <span class="p">[</span><span class="mf">0.015</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span> <span class="o">+</span> <span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">effectiveSize</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">ALL_AVAIL</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)],</span>
+<span class="gp">... </span>            <span class="nb">vars</span><span class="o">=</span><span class="s1">&#39;Ne_LD&#39;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">20</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;LD Ne (gen </span><span class="si">%d</span><span class="s1">): </span><span class="si">%.1f</span><span class="s1"> (</span><span class="si">%.1f</span><span class="s1"> - </span><span class="si">%.1f</span><span class="s1">)&#39;</span>
+<span class="gp">... </span>            <span class="sa">r</span><span class="s1">&#39;, </span><span class="si">%.1f</span><span class="s1"> (</span><span class="si">%.1f</span><span class="s1"> - </span><span class="si">%.1f</span><span class="s1">, adjusted)\n&quot; % &#39;</span>
+<span class="gp">... </span>            <span class="s1">&#39;tuple([gen] + Ne_LD[0.] + Ne_LD[0.02])&#39;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">step</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">101</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">LD Ne (gen 0): 30623.2 (5220.9 - inf), inf (8071.2 - inf, adjusted)</span>
+<span class="go">LD Ne (gen 20): 6297.4 (2574.4 - inf), 1900.0 (1160.3 - 4647.8, adjusted)</span>
+<span class="go">LD Ne (gen 40): 2187.6 (1554.1 - 3589.2), 2535.5 (1459.2 - 8173.8, adjusted)</span>
+<span class="go">LD Ne (gen 60): 2757.8 (1799.2 - 5619.3), 3510.9 (1801.6 - 32066.7, adjusted)</span>
+<span class="go">LD Ne (gen 80): 2574.0 (1729.7 - 4828.9), 1813.2 (1197.7 - 3501.7, adjusted)</span>
+<span class="go">LD Ne (gen 100): 3234.6 (1819.5 - 12210.9), 2834.8 (1603.4 - 10168.4, adjusted)</span>
+<span class="go">101</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="statNeLD.py">Download statNeLD.py</a></p>
+<p>simuPOP allows you to estimate effective population size using genotypes at
+selected loci from selected individuals. It is up to you, however, to decide
+when to apply the operator (pre- or post-mating), how to draw samples, and
+select the right method for your data. For example, the temporal methods assume
+discrete generations and no (or slight) selection, migration, and mutation. The
+LD method assumes that markers are selectively neutral and independent;
+population has discrete generations and is closed to immigration; and sampling
+is random. In addition, to keep the interface simple, simuPOP does not provide
+many options as dedicated programs do (e.g. TempoFS). Please export your samples
+in other formats (e.g. use operator <code class="docutils literal notranslate"><span class="pre">Export(format=''GENEPOP'')</span></code> or function
+<code class="docutils literal notranslate"><span class="pre">export(pop,</span> <span class="pre">format=''GENEPOP'')</span></code> from module <code class="docutils literal notranslate"><span class="pre">simuPOP.utiles</span></code>) and use
+these programs if you need such flexibilities.</p>
+</div>
+<div class="section" id="other-statistics">
+<h2>Other statistics<a class="headerlink" href="#other-statistics" title="Permalink to this headline">¶</a></h2>
+<p>If you need other statistics, a popular approach is to define them using Python
+operators. If your statistics is based on existing statistics such as allele
+frequency, it is a good idea to calculate existing statistics using a <code class="docutils literal notranslate"><span class="pre">stat</span></code>
+function and derive your statistics from population variables. Please refer to
+the last chapter of this guide on an example.</p>
+<p>If you would like to calculate some summary statistics that involves individual
+information fields but cannot be calculated using parameters such as minOfInfo,
+you can try to use operators such as InfoExec to process individuals one by one
+and collect result. For example, you can use operators</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PyExec</span><span class="p">(</span><span class="s1">&#39;s=0&#39;</span><span class="p">)</span>
+<span class="n">InfoExec</span><span class="p">(</span><span class="s1">&#39;s+=x*x&#39;</span><span class="p">)</span>
+<span class="n">PyEval</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>to calculate and report <span class="math notranslate nohighlight">\(s=\sum x^{2}\)</span> where x is an information field
+during evolution. This makes use of the fact that operator <a class="reference internal" href="refManual_ch3_sec3.html#InfoExec" title="InfoExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoExec</span></code></a>
+goes through all individuals and evaluate the statement.</p>
+<p>If performance becomes a problem, you might want to have a look at the source
+code of simuPOP and implement your statistics at the C++ level. If you believe
+that your statistics are popular enough, please send your implementation to the
+simuPOP mailinglist for possible inclusion of your statistics into simuPOP.</p>
+</div>
+<div class="section" id="support-for-sex-and-customized-chromosome-types">
+<h2>Support for sex and customized chromosome types<a class="headerlink" href="#support-for-sex-and-customized-chromosome-types" title="Permalink to this headline">¶</a></h2>
+<p>simuPOP supports statistics calculation for loci on sex chromosomes. For
+example, when pair-wise difference between haplotypes is calculated using
+parameter <code class="docutils literal notranslate"><span class="pre">neutrality</span></code>, it will pick the right haplotypes for X, and Y
+chromosomes. However, because neutrality is calculated based on a group of
+haplotypes of all specified loci, even if the loci are collected across
+chromosomes, you can not use operator</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Stat</span><span class="p">(</span><span class="n">neutrality</span><span class="o">=</span><span class="n">ALL_AVAIL</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>if the loci are selected from chromosomes of different types, because different
+numbers of haplotypes exists on these chromosomes. To calculate <code class="docutils literal notranslate"><span class="pre">Pi</span></code> for these
+chromosomes, you would have to calculate them separately, using operators such
+as</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Stat</span><span class="p">(</span><span class="n">neutrality</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">40</span><span class="p">),</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;_X&#39;</span><span class="p">)</span>
+<span class="n">Stat</span><span class="p">(</span><span class="n">neutrality</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span><span class="mi">50</span><span class="p">),</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;_Y&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>so that all specified loci are on the same type of chromosomes. Here we use
+parameter <code class="docutils literal notranslate"><span class="pre">suffix</span></code> to avoid conflict of variable names because both operator
+would produce the same variable <code class="docutils literal notranslate"><span class="pre">Pi</span></code> without this parameter.</p>
+<p>The case with customized chromosomes are more complex because the meaning of
+these chromosomes are defined by users. If these chromosomes are mitochondrial
+DNAs, only chromosomes from the females are carrying useful information. If you
+would like to calculate, for example, the <code class="docutils literal notranslate"><span class="pre">Pi</span></code> statistics for these
+chromosomes, you will have to explicitly selected females for calculation. This
+can be done by operator</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Stat</span><span class="p">(</span><span class="n">neutrality</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span><span class="mi">60</span><span class="p">),</span> <span class="n">vsps</span><span class="o">=</span><span class="p">[(</span><span class="n">ALL_AVAIL</span><span class="p">,</span> <span class="s1">&#39;FEMALE&#39;</span><span class="p">)],</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;_mt&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>if VSPs have been created by a <a class="reference internal" href="refManual_ch2_sec2.html#SexSplitter" title="SexSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SexSplitter</span></code></a>.</p>
+<p>Example <a class="reference internal" href="#statchromtypes"><span class="std std-ref">statChromTypes</span></a> demonstrates the use of these
+operators. This example intentionally initializes all individuals with the same
+haplotypes on all chromosomes (the <a class="reference internal" href="refManual_ch3_sec2.html#InitGenotype" title="InitGenotype"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitGenotype</span></code></a> operator ignores
+chromosome types). Because of different chromosome types, four <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a>
+operators are used to get the <code class="docutils literal notranslate"><span class="pre">Pi</span></code> statistics for them. These operators return
+different results because different sets of haplotypes are picked for the
+calculation of this statistics.</p>
+<p id="statchromtypes"><strong>Example</strong>: <em>Statistics for sex and customized chromosome types</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">*</span><span class="mi">4</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">chromTypes</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">AUTOSOME</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">CHROMOSOME_X</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">CHROMOSOME_Y</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">MITOCHONDRIAL</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">SexSplitter</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">haplotypes</span><span class="o">=</span><span class="p">[</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">4</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="mi">4</span> <span class="p">],</span>
+<span class="gp">... </span>            <span class="n">prop</span><span class="o">=</span><span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">MitochondrialGenoTransmitter</span><span class="p">()]),</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">neutrality</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">neutrality</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;_X&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">neutrality</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;_Y&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">neutrality</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;_mt&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;</span><span class="si">%.3f</span><span class="s1"> </span><span class="si">%.3f</span><span class="s1"> </span><span class="si">%.3f</span><span class="s1"> </span><span class="si">%.3f</span><span class="s1">\n&quot; % (Pi, Pi_X, Pi_Y, Pi_mt)&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">1.921 1.900 1.973 1.914</span>
+<span class="go">1.931 1.921 1.957 1.945</span>
+<span class="go">2</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="statChromTypes.py">Download statChromTypes.py</a></p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec1.html">Introduction to operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec2.html">Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec3.html">Expressions and statements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec4.html">Demographic changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec5.html">Genotype transmitters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html">Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec7.html">Penetrance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec8.html">Quantitative trait</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html">Natural Selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec10.html">Tagging operators</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Statistics calculation (operator <code class="docutils literal notranslate"><span class="pre">Stat</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#how-statistics-calculation-works">How statistics calculation works</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#defdict-datatype"><code class="docutils literal notranslate"><span class="pre">defdict</span></code> datatype</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#support-for-virtual-subpopulations">Support for virtual subpopulations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#counting-individuals-by-sex-and-affection-status">Counting individuals by sex and affection status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#number-of-segregating-and-fixed-sites">Number of segregating and fixed sites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#allele-count-and-frequency">Allele count and frequency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genotype-count-and-frequency">Genotype count and frequency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#homozygote-and-heterozygote-count-and-frequency">Homozygote and heterozygote count and frequency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#haplotype-count-and-frequency">Haplotype count and frequency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#summary-statistics-of-information-fields">Summary statistics of information fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#linkage-disequilibrium">Linkage disequilibrium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genetic-association">Genetic association</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#population-structure">population structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hardy-weinberg-equilibrium-test">Hardy-Weinberg equilibrium test</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#measure-of-inbreeding">Measure of Inbreeding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#effective-population-size">Effective population size</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-statistics">Other statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#support-for-sex-and-customized-chromosome-types">Support for sex and customized chromosome types</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec12.html">Conditional operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec13.html">Miscellaneous operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec14.html">Hybrid and Python operators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch5.html">simuPOP Operators</a><ul>
+      <li>Previous: <a href="userGuide_ch5_sec10.html" title="previous chapter">Tagging operators</a></li>
+      <li>Next: <a href="userGuide_ch5_sec12.html" title="next chapter">Conditional operators</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch5_sec11.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

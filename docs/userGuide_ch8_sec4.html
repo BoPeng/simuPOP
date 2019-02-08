@@ -1,0 +1,245 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Output statistics &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Initialize and evolve the population" href="userGuide_ch8_sec5.html" />
+    <link rel="prev" title="Mutation and selection models" href="userGuide_ch8_sec3.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="output-statistics">
+<h1>Output statistics<a class="headerlink" href="#output-statistics" title="Permalink to this headline">¶</a></h1>
+<p>We first want to output total disease allele frequency of each locus. This is
+easy because <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a>() operator can calculate allele frequency for us.
+What we need to do is use a <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a>() operator to calculate allele
+frequency and get the result from population variable <code class="docutils literal notranslate"><span class="pre">alleleFreq</span></code>. Because
+allele frequcies add up to one, we can get the total disease allele frequency
+using the allele frequency of the wild type allele 0
+(<span class="math notranslate nohighlight">\(\sum_{i=1}^{\infty}f_{i}=1-f_{0}\)</span>). The actual code would look more or
+less like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]),</span>
+<span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;</span><span class="si">%.2f</span><span class="s1">&quot; % (1-alleleFreq[0][0])&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We are also interested in the effective number of alleles Reich2001a at a locus.
+Because simuPOP does not provide an operator or function to calculate this
+statistic, we will have to calculate it manually. Fortunately, this is not
+difficult because effective number of alleles can be calculated from existing
+allele frequencies, using formula</p>
+<div class="math notranslate nohighlight">
+\[n_{e}=\left(\sum_{i=1}^{\infty}\left(\frac{f_{i}}{1-f_{0}}\right)^{2}\right)^{-1}\]</div>
+<p>where <span class="math notranslate nohighlight">\(f_{i}\)</span> is the allele frequency of disease allele <span class="math notranslate nohighlight">\(i\)</span>.</p>
+<p>A quick-and-dirty way to output <span class="math notranslate nohighlight">\(n_{e}\)</span> at a locus (e.g. locus 0) can be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PyEval</span><span class="p">(</span><span class="s1">&#39;1./sum([(alleleFreq[0][x]/(1-alleleFreq[0][0]))**2 for x in alleleFreq[0].keys() if x != 0])&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>but this expression looks complicated and does not handle the case when
+<span class="math notranslate nohighlight">\(f_{0}=1\)</span>. A more robust method would involve the <code class="docutils literal notranslate"><span class="pre">stmts</span></code> parameter of
+<a class="reference internal" href="refManual_ch3_sec3.html#PyEval" title="PyEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyEval</span></code></a>, which will be evaluated before parameter <code class="docutils literal notranslate"><span class="pre">expr</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PyEval</span><span class="p">(</span><span class="n">stmts</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;if alleleFreq[0][0] == 1:</span>
+<span class="s1">    ne = 0</span>
+<span class="s1">else:</span>
+<span class="s1">    freq = [freq[0][x] for x in alleleFreq[0].keys() if x != 0]</span>
+<span class="s1">    ne = 1./sum([(f/(1-alleleFreq[0][0])**2 for x in freq])</span>
+<span class="s1">&#39;&#39;&#39;</span><span class="p">,</span> <span class="n">expr</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;&quot;</span><span class="si">%.3f</span><span class="s1">&quot; % ne&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>However, this piece of code does not look nice with the multi-line string, and
+the operator is not really reusable (only valid for locus o). It makes sense to
+define a function to calculate <span class="math notranslate nohighlight">\(n_{e}\)</span> generally:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ne</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">loci</span><span class="p">):</span>
+    <span class="s1">&#39; calculate effective number of alleles at given loci&#39;</span>
+    <span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">alleleFreq</span><span class="o">=</span><span class="n">loci</span><span class="p">)</span>
+    <span class="n">ne</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">loc</span> <span class="ow">in</span> <span class="n">loci</span><span class="p">:</span>
+        <span class="n">freq</span> <span class="o">=</span> <span class="p">[</span><span class="n">y</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">alleleFreq</span><span class="p">[</span><span class="n">loc</span><span class="p">]</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()</span> <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">sumFreq</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">alleleFreq</span><span class="p">[</span><span class="n">loc</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">sumFreq</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ne</span><span class="p">[</span><span class="n">loc</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ne</span><span class="p">[</span><span class="n">loc</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">([(</span><span class="n">x</span><span class="o">/</span><span class="n">sumFreq</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">freq</span><span class="p">])</span>
+    <span class="c1"># save the result to the population.</span>
+    <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">ne</span> <span class="o">=</span> <span class="n">ne</span>
+    <span class="k">return</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>When it is needed to calculate effective number of alleles, a Python operator
+that uses this function can be used. For example, operator</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PyOperator</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">ne</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">step</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;</span><span class="si">%.3f</span><span class="s1">&quot; % ne[0]&#39;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>would calculate effective number of alleles at locus 0 and output it.</p>
+<p>The biggest difference between <a class="reference internal" href="refManual_ch3_sec3.html#PyEval" title="PyEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyEval</span></code></a> and <a class="reference internal" href="refManual_ch3_sec13.html#PyOperator" title="PyOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyOperator</span></code></a> is that
+<a class="reference internal" href="refManual_ch3_sec13.html#PyOperator" title="PyOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyOperator</span></code></a> is no longer evaluated in the population’s local namespace.
+You will have to get the variables explicitly using the <code class="docutils literal notranslate"><span class="pre">pop.dvars()</span></code>
+function, and the results have to be explicitly saved to the population’s local
+namespace.</p>
+<p>The final implementation, as a way to demonstrate how to define a new statistics
+that hides all the details, defines a new operator by inheriting a class from
+<a class="reference internal" href="refManual_ch3_sec13.html#PyOperator" title="PyOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyOperator</span></code></a>. The resulting operator could be used as a regular operator
+(e.g., <code class="docutils literal notranslate"><span class="pre">ne(loci=[0])</span></code>). A function <code class="docutils literal notranslate"><span class="pre">Ne</span></code> is also defined as the function form
+of this operator. The code is listed in Example <a class="reference internal" href="#reichstat"><span class="std std-ref">reichstat</span></a></p>
+<p id="reichstat"><strong>Example</strong>: <em>A customized operator to calculate effective number of alleles</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">ne</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">PyOperator</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="sd">&#39;&#39;&#39;Define an operator that calculates effective number of</span>
+<span class="gp">... </span><span class="sd">    alleles at given loci. The result is saved in a population</span>
+<span class="gp">... </span><span class="sd">    variable ne.</span>
+<span class="gp">... </span><span class="sd">    &#39;&#39;&#39;</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loci</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">loci</span> <span class="o">=</span> <span class="n">loci</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOperator</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calcNe</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="c1">#</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">calcNe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pop</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">alleleFreq</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">loci</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">ne</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="gp">... </span>        <span class="k">for</span> <span class="n">loc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loci</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="n">freq</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">alleleFreq</span><span class="p">[</span><span class="n">loc</span><span class="p">]</span>
+<span class="gp">... </span>            <span class="n">sumFreq</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">alleleFreq</span><span class="p">[</span><span class="n">loc</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">... </span>            <span class="k">if</span> <span class="n">sumFreq</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="gp">... </span>                <span class="n">ne</span><span class="p">[</span><span class="n">loc</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">... </span>            <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>                <span class="n">ne</span><span class="p">[</span><span class="n">loc</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">([(</span><span class="n">freq</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">/</span><span class="n">sumFreq</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">freq</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">])</span>
+<span class="gp">... </span>        <span class="c1"># save the result to the sim.Population.</span>
+<span class="gp">... </span>        <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">ne</span> <span class="o">=</span> <span class="n">ne</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="kc">True</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">Ne</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">loci</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="sd">&#39;&#39;&#39;Function form of operator ne&#39;&#39;&#39;</span>
+<span class="gp">... </span>    <span class="n">ne</span><span class="p">(</span><span class="n">loci</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">ne</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Ne</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]))</span>
+<span class="go">{2: 3.9565470135154768, 4: 3.948841408365935}</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="reichstat.py">Download reichstat.py</a></p>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch8.html">A real world example</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec1.html">Simulation scenario</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec2.html">Demographic model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec3.html">Mutation and selection models</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Output statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec5.html">Initialize and evolve the population</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec6.html">Option handling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch8.html">A real world example</a><ul>
+      <li>Previous: <a href="userGuide_ch8_sec3.html" title="previous chapter">Mutation and selection models</a></li>
+      <li>Next: <a href="userGuide_ch8_sec5.html" title="next chapter">Initialize and evolve the population</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch8_sec4.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

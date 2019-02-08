@@ -1,0 +1,318 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Global functions &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Operator References" href="refManual_ch3.html" />
+    <link rel="prev" title="Utility Classes" href="refManual_ch2_sec5.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="global-functions">
+<h1>Global functions<a class="headerlink" href="#global-functions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="function-closeoutput">
+<h2>Function closeOutput<a class="headerlink" href="#function-closeoutput" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="closeOutput">
+<code class="descname">closeOutput</code><span class="sig-paren">(</span><em>output=&quot;&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#closeOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output files specified by <code class="docutils literal notranslate"><span class="pre">'&gt;'</span></code> are closed immediately after they
+are written. Those specified by <code class="docutils literal notranslate"><span class="pre">'&gt;&gt;'</span></code> and <code class="docutils literal notranslate"><span class="pre">'&gt;&gt;&gt;'</span></code> are closed
+by a simulator after <code class="docutils literal notranslate"><span class="pre">Simulator.evolve()</span></code>. However, these files
+will be kept open if the operators are applied directly to a
+population using the operators’ function form. In this case,
+function <a class="reference internal" href="#closeOutput" title="closeOutput"><code class="xref py py-func docutils literal notranslate"><span class="pre">closeOutput</span></code></a> can be used to close a specific file
+<em>output</em>, and close all unclosed files if <em>output</em> is unspecified.
+An exception will be raised if <em>output</em> does not exist or it has
+already been closed.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="function-describeevolprocess">
+<h2>Function describeEvolProcess<a class="headerlink" href="#function-describeevolprocess" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="describeEvolProcess">
+<code class="descname">describeEvolProcess</code><span class="sig-paren">(</span><em>initOps=[]</em>, <em>preOps=[]</em>, <em>matingScheme=MatingScheme</em>, <em>postOps=[]</em>, <em>finalOps=[]</em>, <em>gen=-1</em>, <em>numRep=1</em><span class="sig-paren">)</span><a class="headerlink" href="#describeEvolProcess" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function takes the same parameters as <a class="reference internal" href="refManual_ch2_sec1.html#Simulator.evolve" title="Simulator.evolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Simulator.evolve</span></code></a>
+and output a description of how an evolutionary process will be
+executed. It is recommended that you call this function if you have
+any doubt how your simulation will proceed.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="function-loadpopulation">
+<h2>Function loadPopulation<a class="headerlink" href="#function-loadpopulation" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="loadPopulation">
+<code class="descname">loadPopulation</code><span class="sig-paren">(</span><em>file</em><span class="sig-paren">)</span><a class="headerlink" href="#loadPopulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>load a population from a file saved by <code class="docutils literal notranslate"><span class="pre">Population::save()</span></code>.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="function-loadpedigree">
+<h2>Function loadPedigree<a class="headerlink" href="#function-loadpedigree" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="loadPedigree">
+<code class="descname">loadPedigree</code><span class="sig-paren">(</span><em>file</em>, <em>idField=&quot;ind_id&quot;</em>, <em>fatherField=&quot;father_id&quot;</em>, <em>motherField=&quot;mother_id&quot;</em>, <em>ploidy=2</em>, <em>loci=[]</em>, <em>chromTypes=[]</em>, <em>lociPos=[]</em>, <em>chromNames=[]</em>, <em>alleleNames=[]</em>, <em>lociNames=[]</em>, <em>subPopNames=[]</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#loadPedigree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a pedigree from a file saved by operator
+<a class="reference internal" href="refManual_ch3_sec10.html#PedigreeTagger" title="PedigreeTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">PedigreeTagger</span></code></a> or function <a class="reference internal" href="refManual_ch2_sec1.html#Pedigree.save" title="Pedigree.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Pedigree.save</span></code></a>. This
+file contains the ID of each offspring and their parent(s) and
+optionally sex (‘M’ or ‘F’), affection status (‘A’ or ‘U’), values
+of information fields and genotype at some loci. IDs of each
+individual and their parents are loaded to information fields
+<em>idField</em>, <em>fatherField</em> and <em>motherField</em>. Only numeric IDs are
+allowed, and individual IDs must be unique across all generations.</p>
+<p>Because this file does not contain generation information,
+generations to which offspring belong are determined by the parent-
+offspring relationships. Individuals without parents are assumed to
+be in the top-most ancestral generation. This is the case for
+individuals in the top-most ancestral generation if the file is
+saved by function <code class="docutils literal notranslate"><span class="pre">Pedigree.save()</span></code>, and for individuals who only
+appear as another individual’s parent, if the file is saved by
+operator <a class="reference internal" href="refManual_ch3_sec10.html#PedigreeTagger" title="PedigreeTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">PedigreeTagger</span></code></a>. The order at which offsprng is
+specified is not important because this function essentially
+creates a top-most ancestral generation using IDs without parents,
+and creates the next generation using offspring of these parents,
+and so on until all generations are recreated. That is to say, if
+you have a mixture of pedigrees with different generations, they
+will be lined up from the top most ancestral generation.</p>
+<p>If individual sex is not specified, sex of of parents are
+determined by their parental roles (father or mother) but the sex
+of individuals in the last generation can not be determined so they
+will all be males. If additional information fields are given,
+their names have to be specified using parameter <em>infoFields</em>. The
+rest of the columns are assued to be alleles, arranged <em>ploidy</em>
+consecutive columns for each locus. If paraemter <em>loci</em> is not
+specified, the number of loci is calculated by number of columns
+divided by <em>ploidy</em> (default to 2). All loci are assumed to be on
+one chromosome unless parameter <em>loci</em> is used to specified number
+of loci on each chromosome. Additional parameters such as <em>ploidy</em>,
+<em>chromTypes</em>, <em>lociPos</em>, <em>chromNames</em>, <em>alleleNames</em>, <em>lociNames</em>
+could be used to specified the genotype structured of the loaded
+pedigree. Please refer to class <a class="reference internal" href="refManual_ch2_sec1.html#Population" title="Population"><code class="xref py py-class docutils literal notranslate"><span class="pre">Population</span></code></a> for details
+about these parameters.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="function-moduleinfo">
+<h2>Function moduleInfo<a class="headerlink" href="#function-moduleinfo" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="moduleInfo">
+<code class="descname">moduleInfo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#moduleInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a dictionary with information regarding the currently loaded
+simuPOP module. This dictionary has the following keys:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">revision:</span></code> revision number.</li>
+<li><code class="docutils literal notranslate"><span class="pre">version:</span></code> simuPOP version string.</li>
+<li><code class="docutils literal notranslate"><span class="pre">optimized:</span></code> Is this module optimized (<code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">alleleType:</span></code> Allele type of the module (<code class="docutils literal notranslate"><span class="pre">short</span></code>, <code class="docutils literal notranslate"><span class="pre">long</span></code> or
+<code class="docutils literal notranslate"><span class="pre">binary</span></code>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">maxAllele:</span></code> the maximum allowed allele state, which is <code class="docutils literal notranslate"><span class="pre">1</span></code>
+for binary modules, <code class="docutils literal notranslate"><span class="pre">255</span></code> for short modules and <code class="docutils literal notranslate"><span class="pre">65535</span></code> for
+long modules.</li>
+<li><code class="docutils literal notranslate"><span class="pre">compiler:</span></code> the compiler that compiles this module.</li>
+<li><code class="docutils literal notranslate"><span class="pre">date:</span></code> date on which this module is compiled.</li>
+<li><code class="docutils literal notranslate"><span class="pre">python:</span></code> version of python.</li>
+<li><code class="docutils literal notranslate"><span class="pre">platform:</span></code> platform of the module.</li>
+<li><code class="docutils literal notranslate"><span class="pre">wordsize:</span></code> size of word, can be either 32 or 64.</li>
+<li><code class="docutils literal notranslate"><span class="pre">alleleBits:</span></code> the number of bits used to store an allele</li>
+<li><code class="docutils literal notranslate"><span class="pre">maxNumSubPop:</span></code> maximum number of subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">maxIndex:</span></code> maximum index size (limits population size * total
+number of marker).</li>
+<li><code class="docutils literal notranslate"><span class="pre">debug:</span></code> A dictionary with debugging codes as keys and the
+status of each debugging code (<code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>) as their
+values.</li>
+</ul>
+</dd></dl>
+
+</div>
+<div class="section" id="function-getrng">
+<h2>Function getRNG<a class="headerlink" href="#function-getrng" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="getRNG">
+<code class="descname">getRNG</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#getRNG" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the currently used random number generator</p>
+</dd></dl>
+
+</div>
+<div class="section" id="function-setrng">
+<h2>Function setRNG<a class="headerlink" href="#function-setrng" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="setRNG">
+<code class="descname">setRNG</code><span class="sig-paren">(</span><em>name=''</em>, <em>seed=0</em><span class="sig-paren">)</span><a class="headerlink" href="#setRNG" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set random number generator. This function is obsolete but is provided
+for compatibility purposes. Please use setOptions instead</p>
+</dd></dl>
+
+</div>
+<div class="section" id="function-setoptions">
+<h2>Function setOptions<a class="headerlink" href="#function-setoptions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="setOptions">
+<code class="descname">setOptions</code><span class="sig-paren">(</span><em>numThreads=-1</em>, <em>name=None</em>, <em>seed=0</em><span class="sig-paren">)</span><a class="headerlink" href="#setOptions" title="Permalink to this definition">¶</a></dt>
+<dd><p>First argument is to set number of thread in openMP. The number of
+threads can be be positive, integer (number of threads) or 0, which
+implies all available cores, or a number set by environmental
+variable <code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code>. Second and third argument is to set
+the type or seed of existing random number generator using
+RNG*name* with <em>seed</em>. If using openMP, it sets the type or seed of
+random number generator of each thread.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="function-turnondebug">
+<h2>Function turnOnDebug<a class="headerlink" href="#function-turnondebug" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="turnOnDebug">
+<code class="descname">turnOnDebug</code><span class="sig-paren">(</span><em>code=&quot;&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#turnOnDebug" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set debug code <em>code</em>. More than one code could be specified using
+a comma separated string. Name of available codes are available
+from <code class="docutils literal notranslate"><span class="pre">moduleInfo()['debug'].keys()</span></code>.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="function-turnoffdebug">
+<h2>Function turnOffDebug<a class="headerlink" href="#function-turnoffdebug" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="turnOffDebug">
+<code class="descname">turnOffDebug</code><span class="sig-paren">(</span><em>code=&quot;DBG_ALL&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#turnOffDebug" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn off debug code <em>code</em>. More than one code could be specified
+using a comma separated string. Default to turn off all debug
+codes.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec1.html">Individual, Population, pedigree and Simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec2.html">Virtual splitters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec3.html">Mating Schemes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec4.html">Pre-defined mating schemes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec5.html">Utility Classes</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Global functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#function-closeoutput">Function closeOutput</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-describeevolprocess">Function describeEvolProcess</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-loadpopulation">Function loadPopulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-loadpedigree">Function loadPedigree</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-moduleinfo">Function moduleInfo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-getrng">Function getRNG</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-setrng">Function setRNG</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-setoptions">Function setOptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-turnondebug">Function turnOnDebug</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-turnoffdebug">Function turnOffDebug</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="refManual.html">&lt;no title&gt;</a><ul>
+  <li><a href="refManual_ch2.html">simuPOP Components</a><ul>
+      <li>Previous: <a href="refManual_ch2_sec5.html" title="previous chapter">Utility Classes</a></li>
+      <li>Next: <a href="refManual_ch3.html" title="next chapter">Operator References</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/refManual_ch2_sec6.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

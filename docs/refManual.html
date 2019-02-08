@@ -1,0 +1,404 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>&lt;no title&gt; &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Front Matter" href="refManual_ch1.html" />
+    <link rel="prev" title="Option handling" href="userGuide_ch8_sec6.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec1.html">Individual, Population, pedigree and Simulator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec1.html#class-genostrutrait">class GenoStruTrait</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec1.html#class-individual">class Individual</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec1.html#class-population">class Population</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec1.html#class-pedigree">class Pedigree</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec1.html#class-simulator">class Simulator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec2.html">Virtual splitters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec2.html#class-basevspsplitter">class BaseVspSplitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec2.html#class-sexsplitter">class SexSplitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec2.html#class-affectionsplitter">class AffectionSplitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec2.html#class-infosplitter">class InfoSplitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec2.html#class-proportionsplitter">class ProportionSplitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec2.html#class-rangesplitter">class RangeSplitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec2.html#class-genotypesplitter">class GenotypeSplitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec2.html#class-combinedsplitter">class CombinedSplitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec2.html#class-productsplitter">class ProductSplitter</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec3.html">Mating Schemes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec3.html#class-matingscheme">class MatingScheme</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec3.html#class-homomating">class HomoMating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec3.html#class-heteromating">class HeteroMating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec3.html#class-conditionalmating">class ConditionalMating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec3.html#class-pedigreemating">class PedigreeMating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec3.html#class-sequentialparentchooser">class SequentialParentChooser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec3.html#class-sequentialparentschooser">class SequentialParentsChooser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec3.html#class-randomparentchooser">class RandomParentChooser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec3.html#class-randomparentschooser">class RandomParentsChooser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec3.html#class-polyparentschooser">class PolyParentsChooser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec3.html#class-combinedparentschooser">class CombinedParentsChooser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec3.html#class-pyparentschooser">class PyParentsChooser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec3.html#class-offspringgenerator">class OffspringGenerator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec3.html#class-controlledoffspringgenerator">class ControlledOffspringGenerator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec4.html">Pre-defined mating schemes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec4.html#class-clonemating">class CloneMating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec4.html#class-randomselection">class RandomSelection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec4.html#class-randommating">class RandomMating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec4.html#class-monogamousmating">class MonogamousMating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec4.html#class-polygamousmating">class PolygamousMating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec4.html#class-haplodiploidmating">class HaplodiploidMating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec4.html#class-selfmating">class SelfMating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec4.html#class-hermaphroditicmating">class HermaphroditicMating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec4.html#class-controlledrandommating">class ControlledRandomMating</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec5.html">Utility Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec5.html#class-withargs">class WithArgs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec5.html#class-withmode">class WithMode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec5.html#class-rng">class RNG</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec5.html#class-weightedsampler">class WeightedSampler</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec6.html">Global functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec6.html#function-closeoutput">Function closeOutput</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec6.html#function-describeevolprocess">Function describeEvolProcess</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec6.html#function-loadpopulation">Function loadPopulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec6.html#function-loadpedigree">Function loadPedigree</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec6.html#function-moduleinfo">Function moduleInfo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec6.html#function-getrng">Function getRNG</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec6.html#function-setrng">Function setRNG</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec6.html#function-setoptions">Function setOptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec6.html#function-turnondebug">Function turnOnDebug</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch2_sec6.html#function-turnoffdebug">Function turnOffDebug</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec1.html">Base class for all operators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec1.html#class-baseoperator">class BaseOperator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec2.html">Initialization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec2.html#class-initsex">class InitSex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec2.html#class-initinfo">class InitInfo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec2.html#class-initgenotype">class InitGenotype</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec2.html#class-initlineage">class InitLineage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec3.html">Expression and Statements</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec3.html#class-pyoutput">class PyOutput</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec3.html#class-pyeval">class PyEval</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec3.html#class-pyexec">class PyExec</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec3.html#class-infoeval">class InfoEval</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec3.html#class-infoexec">class InfoExec</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec4.html">Demographic models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec4.html#class-migrator">class Migrator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec4.html#class-backwardmigrator">class BackwardMigrator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec4.html#class-splitsubpops">class SplitSubPops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec4.html#class-mergesubpops">class MergeSubPops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec4.html#class-resizesubpops">class ResizeSubPops</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec5.html">Genotype transmitters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec5.html#class-genotransmitter">class GenoTransmitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec5.html#class-clonegenotransmitter">class CloneGenoTransmitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec5.html#class-mendeliangenotransmitter">class MendelianGenoTransmitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec5.html#class-selfinggenotransmitter">class SelfingGenoTransmitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec5.html#class-haplodiploidgenotransmitter">class HaplodiploidGenoTransmitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec5.html#class-mitochondrialgenotransmitter">class MitochondrialGenoTransmitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec5.html#class-recombinator">class Recombinator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec6.html">Mutation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec6.html#class-basemutator">class BaseMutator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec6.html#class-matrixmutator">class MatrixMutator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec6.html#class-kallelemutator">class KAlleleMutator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec6.html#class-stepwisemutator">class StepwiseMutator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec6.html#class-pymutator">class PyMutator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec6.html#class-mixedmutator">class MixedMutator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec6.html#class-contextmutator">class ContextMutator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec6.html#class-pointmutator">class PointMutator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec6.html#class-snpmutator">class SNPMutator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec6.html#class-acgtmutator">class AcgtMutator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec7.html">Penetrance</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec7.html#class-basepenetrance">class BasePenetrance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec7.html#class-mappenetrance">class MapPenetrance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec7.html#class-mapenetrance">class MaPenetrance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec7.html#class-mlpenetrance">class MlPenetrance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec7.html#class-pypenetrance">class PyPenetrance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec7.html#class-pymlpenetrance">class PyMlPenetrance</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec8.html">Quantitative Trait</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec8.html#class-basequantrait">class BaseQuanTrait</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec8.html#class-pyquantrait">class PyQuanTrait</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec9.html">Natural selection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec9.html#class-baseselector">class BaseSelector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec9.html#class-mapselector">class MapSelector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec9.html#class-maselector">class MaSelector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec9.html#class-mlselector">class MlSelector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec9.html#class-pyselector">class PySelector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec9.html#class-pymlselector">class PyMlSelector</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec10.html">Tagging operators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec10.html#class-idtagger">class IdTagger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec10.html#class-inherittagger">class InheritTagger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec10.html#class-summarytagger">class SummaryTagger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec10.html#class-parentstagger">class ParentsTagger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec10.html#class-offspringtagger">class OffspringTagger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec10.html#class-pedigreetagger">class PedigreeTagger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec10.html#class-pytagger">class PyTagger</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec11.html">Statistics Calculation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec11.html#class-stat">class Stat</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec12.html">Conditional operators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec12.html#class-ifelse">class IfElse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec12.html#class-terminateif">class TerminateIf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec12.html#class-discardif">class DiscardIf</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec13.html">The Python operator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec13.html#class-pyoperator">class PyOperator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec14.html">Miscellaneous operators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec14.html#class-noneop">class NoneOp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec14.html#class-dumper">class Dumper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec14.html#class-savepopulation">class SavePopulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec14.html#class-pause">class Pause</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec14.html#class-tictoc">class TicToc</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec15.html">Function form of operators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-acgtmutate">Function acgtMutate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-contextmutate">Function contextMutate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-discardif">Function discardIf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-dump">Function dump</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-infoeval">Function infoEval</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-infoexec">Function infoExec</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-initgenotype">Function initGenotype</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-initinfo">Function initInfo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-initsex">Function initSex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-kallelemutate">Function kAlleleMutate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-mapenetrance">Function maPenetrance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-mappenetrance">Function mapPenetrance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-matrixmutate">Function matrixMutate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-mergesubpops">Function mergeSubPops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-migrate">Function migrate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-backwardmigrate">Function backwardMigrate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-mixedmutate">Function mixedMutate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-mlpenetrance">Function mlPenetrance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-pointmutate">Function pointMutate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-pyeval">Function pyEval</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-pyexec">Function pyExec</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-pymutate">Function pyMutate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-pypenetrance">Function pyPenetrance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-pymlpenetrance">Function pyMlPenetrance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-pyquantrait">Function pyQuanTrait</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-resizesubpops">Function resizeSubPops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-snpmutate">Function snpMutate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-splitsubpops">Function splitSubPops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-stat">Function stat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-stepwisemutate">Function stepwiseMutate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch3_sec15.html#function-tagid">Function tagID</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch4_sec1.html">Module <code class="docutils literal notranslate"><span class="pre">simuOpt</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec1.html#function-setoptions">Function setOptions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch4_sec2.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.utils</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec2.html#class-trajectory">class Trajectory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec2.html#class-trajectorysimulator">class TrajectorySimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec2.html#function-simulateforwardtrajectory">Function simulateForwardTrajectory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec2.html#function-simulatebackwardtrajectory">Function simulateBackwardTrajectory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec2.html#class-progressbar">class ProgressBar</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec2.html#function-viewvars">Function viewVars</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec2.html#function-savecsv">Function saveCSV</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec2.html#class-exporter">class Exporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec2.html#function-importpopulation">Function importPopulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec2.html#function-export">Function export</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch4_sec3.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.demography</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec3.html#function-migrislandrates">Function migrIslandRates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec3.html#function-migrhierarchicalislandrates">Function migrHierarchicalIslandRates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec3.html#function-migrsteppingstonerates">Function migrSteppingStoneRates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec3.html#function-migrtwodsteppingstonerates">Function migrtwoDSteppingStoneRates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec3.html#class-eventbasedmodel">class EventBasedModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec3.html#class-demographicevent">class DemographicEvent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec3.html#class-expansionevent">class ExpansionEvent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec3.html#class-resizeevent">class ResizeEvent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec3.html#class-splitevent">class SplitEvent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec3.html#class-mergeevent">class MergeEvent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec3.html#class-admixtureevent">class AdmixtureEvent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec3.html#class-instantchangemodel">class InstantChangeModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec3.html#class-exponentialgrowthmodel">class ExponentialGrowthModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec3.html#class-lineargrowthmodel">class LinearGrowthModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec3.html#class-multistagemodel">class MultiStageModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec3.html#class-outofafricamodel">class OutOfAfricaModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec3.html#class-settlementofnewworldmodel">class SettlementOfNewWorldModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec3.html#class-cosimodel">class CosiModel</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch4_sec4.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.sampling</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec4.html#class-basesampler">class BaseSampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec4.html#class-randomsampler">class RandomSampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec4.html#function-drawrandomsample">Function drawRandomSample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec4.html#function-drawrandomsamples">Function drawRandomSamples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec4.html#class-casecontrolsampler">class CaseControlSampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec4.html#function-drawcasecontrolsample">Function drawCaseControlSample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec4.html#function-drawcasecontrolsamples">Function drawCaseControlSamples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec4.html#class-pedigreesampler">class PedigreeSampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec4.html#class-affectedsibpairsampler">class AffectedSibpairSampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec4.html#function-drawaffectedsibpairsample">Function drawAffectedSibpairSample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec4.html#function-drawaffectedsibpairsamples">Function drawAffectedSibpairSamples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec4.html#class-nuclearfamilysampler">class NuclearFamilySampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec4.html#function-drawnuclearfamilysample">Function drawNuclearFamilySample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec4.html#function-drawnuclearfamilysamples">Function drawNuclearFamilySamples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec4.html#class-threegenfamilysampler">class ThreeGenFamilySampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec4.html#function-drawthreegenfamilysample">Function drawThreeGenFamilySample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec4.html#function-drawthreegenfamilysamples">Function drawThreeGenFamilySamples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec4.html#class-combinedsampler">class CombinedSampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec4.html#function-drawcombinedsample">Function drawCombinedSample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="refManual_ch4_sec4.html#function-drawcombinedsamples">Function drawCombinedSamples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch4_sec5.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.gsl</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="userGuide_ch8_sec6.html" title="previous chapter">Option handling</a></li>
+      <li>Next: <a href="refManual_ch1.html" title="next chapter">Front Matter</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/refManual.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,402 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Simulator &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Non-random and customized mating schemes *" href="userGuide_ch6_sec3.html" />
+    <link rel="prev" title="Mating Schemes" href="userGuide_ch6_sec1.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="simulator">
+<h1>Simulator<a class="headerlink" href="#simulator" title="Permalink to this headline">¶</a></h1>
+<p>A simuPOP simulator evolves one or more copies of a population forward in time,
+subject to various operators. Although a population could evolve by itself using
+function <a class="reference internal" href="refManual_ch2_sec1.html#Population.evolve" title="Population.evolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.evolve</span></code></a>, a simulator with one replicate is actually
+used.</p>
+<div class="section" id="add-access-and-remove-populations-from-a-simulator">
+<h2>Add, access and remove populations from a simulator<a class="headerlink" href="#add-access-and-remove-populations-from-a-simulator" title="Permalink to this headline">¶</a></h2>
+<p>A simulator could be created by one or more replicates of a list of populations.
+For example, you could create a simulator from five replicates of a population
+using</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Simulator</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">rep</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or from a list of populations using</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Simulator</span><span class="p">([</span><span class="n">pop</span><span class="p">,</span> <span class="n">pop1</span><span class="p">,</span> <span class="n">pop2</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>. <code class="docutils literal notranslate"><span class="pre">pop</span></code>, <code class="docutils literal notranslate"><span class="pre">pop1</span></code> and <code class="docutils literal notranslate"><span class="pre">pop2</span></code> do not have to have the same genotypic
+structure. In order to avoid duplication of potentially large populations, a
+population is by default <em>stolen</em> after it is used to create a simulator. If you
+would like to keep the populations, you could set parameter <code class="docutils literal notranslate"><span class="pre">stealPops</span></code> to
+<code class="docutils literal notranslate"><span class="pre">False</span></code> so that the populations will be copied to the simulator. Populations
+in a simulator can be added or removed using functions <a class="reference internal" href="refManual_ch2_sec1.html#Simulator.add" title="Simulator.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Simulator.add</span></code></a>()
+and <a class="reference internal" href="refManual_ch2_sec1.html#Simulator.extract" title="Simulator.extract"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Simulator.extract</span></code></a>(<code class="docutils literal notranslate"><span class="pre">idx</span></code>).</p>
+<p>When a simulator is created, you can access populations in this simulator using
+function <a class="reference internal" href="refManual_ch2_sec1.html#Simulator.population" title="Simulator.population"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Simulator.population</span></code></a>(<code class="docutils literal notranslate"><span class="pre">idx</span></code>) or iterate through all
+populations using function <a class="reference internal" href="refManual_ch2_sec1.html#Simulator.populations" title="Simulator.populations"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Simulator.populations</span></code></a>(). These functions
+return references to the populations so that you can access populations.
+Modifying these references will change the corresponding populations within the
+simulator. The references will become invalid once the simulator object is
+destoryed.</p>
+<p>Example <a class="reference internal" href="#id1"><span class="std std-ref">Simulator</span></a> demonstrates different ways to create a
+simulator and how to access populations within it.</p>
+<p id="id1"><strong>Example</strong>: <em>Create a simulator and access populations</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># five copies of the same population</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Simulator</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">rep</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span><span class="o">.</span><span class="n">numRep</span><span class="p">()</span>
+<span class="go">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># evolve for ten generations and save the populations</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">finalOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">SavePopulation</span><span class="p">(</span><span class="s1">&#39;!&quot;pop</span><span class="si">%d</span><span class="s1">.pop&quot;</span><span class="si">%r</span><span class="s1">ep&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">10</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">(10, 10, 10, 10, 10)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># load the population and create another Simulator</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Simulator</span><span class="p">([</span><span class="n">sim</span><span class="o">.</span><span class="n">loadPopulation</span><span class="p">(</span><span class="s1">&#39;pop</span><span class="si">%d</span><span class="s1">.pop&#39;</span> <span class="o">%</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># continue to evolve</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">10</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">(10, 10, 10, 10, 10)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># print out allele frequency</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">pop</span> <span class="ow">in</span> <span class="n">simu</span><span class="o">.</span><span class="n">populations</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%.2f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">alleleFreq</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+<span class="gp">...</span>
+<span class="go">0.36</span>
+<span class="go">0.30</span>
+<span class="go">0.28</span>
+<span class="go">0.01</span>
+<span class="go">0.11</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># get a population</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">simu</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span><span class="o">.</span><span class="n">numRep</span><span class="p">()</span>
+<span class="go">4</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="Simulator.py">Download Simulator.py</a></p>
+</div>
+<div class="section" id="number-of-generations-to-evolve">
+<h2>Number of generations to evolve<a class="headerlink" href="#number-of-generations-to-evolve" title="Permalink to this headline">¶</a></h2>
+<p>A simulator usually evolves a specific number of generations according to
+parameter <code class="docutils literal notranslate"><span class="pre">gen</span></code> of the <code class="docutils literal notranslate"><span class="pre">evolve</span></code> function. A generation number is used to
+track the number of generations a simulator has evolved. Because a new
+population has generation number 0, a population would be at the beginning of
+generation <span class="math notranslate nohighlight">\(n\)</span> after it evolves <span class="math notranslate nohighlight">\(n\)</span> generations. The generation
+number would increase if the simulator continues to evolve. During evoluting,
+variables <code class="docutils literal notranslate"><span class="pre">rep</span></code> (replicate number) and <code class="docutils literal notranslate"><span class="pre">gen</span></code> (current generation number) are
+set to each population’s local namespace.</p>
+<p>It is not always possible to know in advance the number of generations to
+evolve. For example, you may want to evolve a population until a specific allele
+gets fixed or lost in the population. In this case, you can let the simulator
+run indefinitely (do not set the <code class="docutils literal notranslate"><span class="pre">gen</span></code> parameter) and depend on a <a href="#id2"><span class="problematic" id="id3">*</span></a>terminator
+<a href="#id4"><span class="problematic" id="id5">*</span></a>to terminate the evolution of a population. The easiest method to do this is to
+use population variables to track the status of a population, and use a
+<a class="reference internal" href="refManual_ch3_sec12.html#TerminateIf" title="TerminateIf"><code class="xref py py-class docutils literal notranslate"><span class="pre">TerminateIf</span></code></a> operator to terminate the evolution according to the value
+of an expression. Example <a class="reference internal" href="#simugen"><span class="std std-ref">simuGen</span></a> demonstrates the use of such
+a terminator, which terminates the evolution of a population if allele 0 at
+locus 5 is fixed or lost. It also shows the application of an interesting
+operator <a class="reference internal" href="refManual_ch3_sec12.html#IfElse" title="IfElse"><code class="xref py py-class docutils literal notranslate"><span class="pre">IfElse</span></code></a>, which applies an operator, in this case
+<a class="reference internal" href="refManual_ch3_sec3.html#PyEval" title="PyEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyEval</span></code></a>, only when an expression returns <code class="docutils literal notranslate"><span class="pre">True</span></code>. Note that this
+example calls the <code class="docutils literal notranslate"><span class="pre">simulator.evolve</span></code> function twice. The first call does not
+specify a mating scheme so a default empty mating scheme (<a class="reference internal" href="refManual_ch2_sec3.html#MatingScheme" title="MatingScheme"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatingScheme</span></code></a>)
+that does not transmit genotype is used. Populations start from the beginning of
+the fifth generation when the second <code class="docutils literal notranslate"><span class="pre">simulator.evole</span></code> function is called.</p>
+<p>The generation number is stored in each Population using population variable
+<code class="docutils literal notranslate"><span class="pre">gen</span></code>.You can access these numbers from a simulator using function
+<a class="reference internal" href="refManual_ch2_sec1.html#Simulator.dvars" title="Simulator.dvars"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Simulator.dvars</span></code></a>(<code class="docutils literal notranslate"><span class="pre">idx</span></code>) or from a population using function
+<a class="reference internal" href="refManual_ch2_sec1.html#Population.dvars" title="Population.dvars"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.dvars</span></code></a>(). If needed, <strong>you can reset generation numbers by
+changing these variables.</strong></p>
+<p id="simugen"><strong>Example</strong>: <em>Generation number of a simulator</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Simulator</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">ploidy</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">rep</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span>
+<span class="go">(5, 5, 5)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span><span class="o">.</span><span class="n">dvars</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">gen</span>
+<span class="go">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomSelection</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">IfElse</span><span class="p">(</span><span class="s1">&#39;alleleNum[5][0] == 0&#39;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;Allele 0 is lost in rep </span><span class="si">%d</span><span class="s2"> at gen </span><span class="si">%d</span><span class="s2">\n&#39; % (rep, gen)&quot;</span><span class="p">)),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">IfElse</span><span class="p">(</span><span class="s1">&#39;alleleNum[5][0] == 50&#39;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;Allele 0 is fixed in rep </span><span class="si">%d</span><span class="s2"> at gen </span><span class="si">%d</span><span class="s2">\n&#39; % (rep, gen)&quot;</span><span class="p">)),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">TerminateIf</span><span class="p">(</span><span class="s1">&#39;len(alleleNum[5]) == 1&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Allele 0 is fixed in rep 2 at gen 29</span>
+<span class="go">Allele 0 is fixed in rep 1 at gen 74</span>
+<span class="go">Allele 0 is lost in rep 0 at gen 120</span>
+<span class="go">(116, 70, 25)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">simu</span><span class="o">.</span><span class="n">dvars</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">gen</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+<span class="go">[121, 75, 30]</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="simuGen.py">Download simuGen.py</a></p>
+</div>
+<div class="section" id="evolve-populations-in-a-simulator">
+<h2>Evolve populations in a simulator<a class="headerlink" href="#evolve-populations-in-a-simulator" title="Permalink to this headline">¶</a></h2>
+<p>There are a number of rules about when and how operators are applied during the
+evolution of a population. In summary, in the order at which operators are
+processed and applied,</p>
+<ul class="simple">
+<li>Operators specified in parameter <code class="docutils literal notranslate"><span class="pre">initOps</span></code> of function
+<a class="reference internal" href="refManual_ch2_sec1.html#Simulator.evolve" title="Simulator.evolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Simulator.evolve</span></code></a> will be applied to the initial population before
+evolution, subject to replicate applicability restraint specified by parameter
+<code class="docutils literal notranslate"><span class="pre">reps</span></code>.</li>
+<li>Operators specified in parameter <code class="docutils literal notranslate"><span class="pre">preOps</span></code> of function
+<a class="reference internal" href="refManual_ch2_sec1.html#Simulator.evolve" title="Simulator.evolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Simulator.evolve</span></code></a> will be applied to the parental population at each
+generation, subject to replicate and generation applicability restraint
+specified by parameters <code class="docutils literal notranslate"><span class="pre">begin</span></code>, <code class="docutils literal notranslate"><span class="pre">end</span></code>, <code class="docutils literal notranslate"><span class="pre">step</span></code>, <code class="docutils literal notranslate"><span class="pre">at</span></code>, and <code class="docutils literal notranslate"><span class="pre">reps</span></code>.</li>
+<li>During-mating operators specified in the <code class="docutils literal notranslate"><span class="pre">ops</span></code> parameter of a mating scheme
+will be called during mating to transmit genotype (and possibly information
+fields etc) from parental to offspring, subject to replicate and generation
+applicability restraint specified by parameters <code class="docutils literal notranslate"><span class="pre">begin</span></code>, <code class="docutils literal notranslate"><span class="pre">end</span></code>, <code class="docutils literal notranslate"><span class="pre">step</span></code>,
+<code class="docutils literal notranslate"><span class="pre">at</span></code>, and <code class="docutils literal notranslate"><span class="pre">reps</span></code>.</li>
+<li>Operators specified in parameter postOps of function <a class="reference internal" href="refManual_ch2_sec1.html#Simulator.evolve" title="Simulator.evolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Simulator.evolve</span></code></a>
+will be applied to the offspring population at each generation, subject to
+replicate and generation applicability restraint specified by parameters
+<code class="docutils literal notranslate"><span class="pre">begin</span></code>, <code class="docutils literal notranslate"><span class="pre">end</span></code>, <code class="docutils literal notranslate"><span class="pre">step</span></code>, <code class="docutils literal notranslate"><span class="pre">at</span></code>, and <code class="docutils literal notranslate"><span class="pre">reps</span></code>.</li>
+<li>Operators specified in parameter <code class="docutils literal notranslate"><span class="pre">finalOps</span></code> of function
+<a class="reference internal" href="refManual_ch2_sec1.html#Simulator.evolve" title="Simulator.evolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Simulator.evolve</span></code></a> will be applied to the final population after
+evolution, subject to replicate applicability restraint specified by parameter
+<code class="docutils literal notranslate"><span class="pre">reps</span></code>.</li>
+</ul>
+<p>Figure <a class="reference internal" href="#fig-operator-orders"><span class="std std-ref">fig_operator_orders</span></a> illustrated how
+operators are applied to an evolutionary process. It worth noting that a default
+during-mating operator is defined for each mating scheme. User-specfied
+operators will <strong>replace</strong> the default operator so you need to explicitly
+specify the default operator if you intent to add another one.</p>
+<p><strong>Figure</strong>: <em>Orders at which operators are applied during an evolutionary process</em></p>
+<div class="figure" id="fig-operator-orders">
+<a class="reference internal image-reference" href="Users/bpeng1/simuPOP/simuPOP/doc/figures/operators.png"><img alt="Users/bpeng1/simuPOP/simuPOP/doc/figures/operators.png" src="Users/bpeng1/simuPOP/simuPOP/doc/figures/operators.png" style="width: 680px;" /></a>
+</div>
+<p>If you suspect that your simulation is not running as expected, you can have a
+close look at your evolutionary process by setting the <code class="docutils literal notranslate"><span class="pre">dryrun</span></code> parameter of
+an <code class="docutils literal notranslate"><span class="pre">evolve</span></code> function to <code class="docutils literal notranslate"><span class="pre">True</span></code>, or by calling function
+<a class="reference internal" href="refManual_ch2_sec6.html#describeEvolProcess" title="describeEvolProcess"><code class="xref py py-func docutils literal notranslate"><span class="pre">describeEvolProcess</span></code></a>(). This function takes the same set of parameters
+as <a class="reference internal" href="refManual_ch2_sec1.html#Simulator.evolve" title="Simulator.evolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Simulator.evolve</span></code></a>() and returns a description of the evolution
+process, which might help you identify misuse of operators.</p>
+<p id="describe"><strong>Example</strong>: <em>describe an evolutionary process</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">outputstat</span><span class="p">(</span><span class="n">pop</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="s1">&#39;Calculate and output statistics, ignored&#39;</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="kc">True</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># describe this evolutionary process</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">describeEvolProcess</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitInfo</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">75</span><span class="p">),</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOutput</span><span class="p">(</span><span class="s1">&#39;Prevalence of disease in each age group:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InfoExec</span><span class="p">(</span><span class="s1">&#39;age += 1&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">HeteroMating</span><span class="p">([</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">CloneMating</span><span class="p">(</span><span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">)],</span> <span class="n">weight</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">Recombinator</span><span class="p">(</span><span class="n">intensity</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="p">],</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)]),</span>
+<span class="gp">... </span>    <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MaPenetrance</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">penetrance</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOperator</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">outputstat</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">numRep</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">... </span><span class="p">))</span>
+<span class="go">Replicate 0 1 2:</span>
+<span class="go">Apply pre-evolution operators to the initial population (initOps).</span>
+<span class="go">   * &lt;simuPOP.InitSex&gt; initialize sex randomly</span>
+<span class="go">   * &lt;simuPOP.InitInfo&gt; initialize information field age using a Python</span>
+<span class="go">     function &lt;lambda&gt;</span>
+<span class="go">   * &lt;simuPOP.InitGenotype&gt; initialize individual genotype acccording to</span>
+<span class="go">     allele frequencies.</span>
+<span class="go">   * &lt;simuPOP.IdTagger&gt; assign an unique ID to individuals</span>
+<span class="go">   * &lt;simuPOP.PyOutput&gt; write &#39;Prevalence of disease in each age group:... &#39;</span>
+<span class="go">     to output</span>
+
+<span class="go">Evolve a population for 100 generations</span>
+<span class="go">   * Apply pre-mating operators to the parental generation (preOps)</span>
+<span class="go">      # &lt;simuPOP.InfoExec&gt; execute statement age += 1 using information fields</span>
+<span class="go">        as variables.</span>
+
+<span class="go">   * Populate an offspring populaton from the parental population using mating</span>
+<span class="go">     scheme &lt;simuPOP.HeteroMating&gt; a heterogeneous mating scheme with 2</span>
+<span class="go">     homogeneous mating schemes:</span>
+<span class="go">      # &lt;simuPOP.HomoMating&gt; a homogeneous mating scheme that uses</span>
+<span class="go">         - &lt;simuPOP.SequentialParentChooser&gt; chooses a parent sequentially</span>
+<span class="go">         - &lt;simuPOP.OffspringGenerator&gt; produces offspring using operators</span>
+<span class="go">            . &lt;simuPOP.CloneGenoTransmitter&gt; clone genotype, sex and</span>
+<span class="go">              information fields of parent to offspring</span>
+<span class="go">        in subpopulations (0, 0), (0, 1), (0, 2).</span>
+<span class="go">      # &lt;simuPOP.HomoMating&gt; a homogeneous mating scheme that uses</span>
+<span class="go">         - &lt;simuPOP.RandomParentsChooser&gt; chooses two parents randomly</span>
+<span class="go">         - &lt;simuPOP.OffspringGenerator&gt; produces offspring using operators</span>
+<span class="go">            . &lt;simuPOP.IdTagger&gt; assign an unique ID to individuals</span>
+<span class="go">            . &lt;simuPOP.Recombinator&gt; genetic recombination.</span>
+<span class="go">        in subpopulations (0, 1).</span>
+
+
+<span class="go">   * Apply post-mating operators to the offspring population (postOps).</span>
+<span class="go">      # &lt;simuPOP.MaPenetrance&gt; multiple-alleles penetrance</span>
+<span class="go">      # &lt;simuPOP.PyOperator&gt; calling a Python function outputstat</span>
+
+<span class="go">No operator is applied to the final population (finalOps).</span>
+
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="describe.py">Download describe.py</a></p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec1.html">Mating Schemes</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Simulator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#add-access-and-remove-populations-from-a-simulator">Add, access and remove populations from a simulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#number-of-generations-to-evolve">Number of generations to evolve</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#evolve-populations-in-a-simulator">Evolve populations in a simulator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec3.html">Non-random and customized mating schemes *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec4.html">Age structured populations with overlapping generations **</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec5.html">Tracing allelic lineage *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec6.html">Pedigrees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec7.html">Evolve a population following a specified pedigree structure **</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec8.html">Simulation of mitochondrial DNAs (mtDNAs) *</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch6.html">Evolving populations</a><ul>
+      <li>Previous: <a href="userGuide_ch6_sec1.html" title="previous chapter">Mating Schemes</a></li>
+      <li>Next: <a href="userGuide_ch6_sec3.html" title="next chapter">Non-random and customized mating schemes *</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch6_sec2.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

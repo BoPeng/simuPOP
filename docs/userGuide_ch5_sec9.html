@@ -1,0 +1,951 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Natural Selection &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tagging operators" href="userGuide_ch5_sec10.html" />
+    <link rel="prev" title="Quantitative trait" href="userGuide_ch5_sec8.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="natural-selection">
+<h1>Natural Selection<a class="headerlink" href="#natural-selection" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="natural-selection-through-the-selection-of-parents">
+<h2>Natural selection through the selection of parents<a class="headerlink" href="#natural-selection-through-the-selection-of-parents" title="Permalink to this headline">¶</a></h2>
+<p>In the simplest scenario, natural selection is implemented in two steps:</p>
+<ul class="simple">
+<li>Before mating happens, an operator (called a <strong>selector</strong>) goes through a
+population and assign each individual a fitness value. The fitness values are
+stored in an information field called <code class="docutils literal notranslate"><span class="pre">fitness</span></code>.</li>
+<li>When mating happens, parents are chosen with probabilities that are
+proportional to their fitness values. For example, assuming that a parental
+population consists of four Individuals with fitness values 1, 2, 3, and 4,
+respectively, the probability that they are picked to produce offspring are
+<span class="math notranslate nohighlight">\(1/\left(1+2+3+4\right)=0.1\)</span>, <span class="math notranslate nohighlight">\(0.2\)</span>, <span class="math notranslate nohighlight">\(0.3\)</span>, and <span class="math notranslate nohighlight">\(0.4\)</span>
+respectively. As you can image, if the offspring population has 10 individuals,
+the four parents will on average parent 1, 2, 3 and 4 offspring.</li>
+</ul>
+<p>Because parents with lower fitness values have less chance to be produce
+offspring, their genotypes have less chance to be passed to an offspring
+generation. If the decreased fitness is caused by the presence of certain mutant
+(e.g. a mutant causing a serious disease), individuals with that mutant will
+have less change to survive and effecitively reduce or eleminate that mutant
+from the population.</p>
+<p>Example <a class="reference internal" href="#selectparents"><span class="std std-ref">selectParents</span></a> gives an example of natural
+selection. In this example, a <a class="reference internal" href="refManual_ch3_sec9.html#MapSelector" title="MapSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapSelector</span></code></a> is used to explicitly assign
+fitness value to genotypes at the first locus. The fitness values are <code class="docutils literal notranslate"><span class="pre">1</span></code>,
+<code class="docutils literal notranslate"><span class="pre">0.98</span></code>, <code class="docutils literal notranslate"><span class="pre">0.97</span></code> for genotypes <code class="docutils literal notranslate"><span class="pre">00</span></code>, <code class="docutils literal notranslate"><span class="pre">01</span></code> and <code class="docutils literal notranslate"><span class="pre">11</span></code> respectively. The
+selector set individual fitness values to information field <code class="docutils literal notranslate"><span class="pre">fitness</span></code> before
+mating happens. The <a class="reference internal" href="refManual_ch2_sec4.html#RandomMating" title="RandomMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomMating</span></code></a> mating scheme then selects parents
+according to parental fitness values.</p>
+<p id="selectparents"><strong>Example</strong>: <em>Natural selection through the selection of parents</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">4000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;fitness&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Simulator</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">rep</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">MapSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="p">{(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">):</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span><span class="mf">0.98</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span><span class="mf">0.97</span><span class="p">}),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="s2">&quot;&#39;Gen:</span><span class="si">%3d</span><span class="s2"> &#39; </span><span class="si">% g</span><span class="s2">en&quot;</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;</span><span class="si">%.3f</span><span class="s2">\t&#39; % alleleFreq[0][1]&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOutput</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">reps</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Gen:  0 0.490        0.492   0.487</span>
+<span class="go">Gen: 10 0.433        0.430   0.431</span>
+<span class="go">Gen: 20 0.403        0.390   0.419</span>
+<span class="go">Gen: 30 0.343        0.325   0.383</span>
+<span class="go">Gen: 40 0.303        0.297   0.334</span>
+<span class="go">(50, 50, 50)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="selectParents.py">Download selectParents.py</a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The selection algorithm used in simuPOP is called <em>fitness proportionate
+selection</em>, or <em>roulette-wheel selection</em>. simuPOP does not use the more
+efficient <em>stochastic universal sampling</em> algorithm because the number of needed
+offspring is unknown in advance.</p>
+</div>
+</div>
+<div class="section" id="natural-selection-through-the-selection-of-offspring">
+<h2>Natural selection through the selection of offspring *<a class="headerlink" href="#natural-selection-through-the-selection-of-offspring" title="Permalink to this headline">¶</a></h2>
+<p>Natural selection can also be implemented as selection of offspring. Remember
+that an individual will be discarded if one of the during-mating operators fails
+(return <code class="docutils literal notranslate"><span class="pre">False</span></code>), <strong>a</strong> <strong>during-mating selector</strong> <strong>discards offspring
+according to fitness values of offspring</strong>. Instead of relative fitness that
+will be compared against other individuals during the selection of parents,
+<strong>fitness values of a during-mating selector are considered as absolute fitness
+which are probabilities to survive</strong> and have to be between 0 and 1.</p>
+<p>A during-mating selector works as follows:</p>
+<ol class="arabic simple">
+<li>During evolution, parents are chosen randomly to produce one or more
+offspring. (Nothing prevents you from choosing parents according to their
+fitness values, but it is rarely justifiable to apply natural selection to both
+parents and offspring.)</li>
+<li>A selection operator is applied to each offspring during mating and
+determines his or her fitness value. The fitness value is considered as
+probability to survive so an offspring will be discarded (operator returns
+<code class="docutils literal notranslate"><span class="pre">False</span></code>) if the fitnessvalue is larger than an uniform random number.</li>
+<li>Repeat steps 1 and 2 until the offspring generation is populated.</li>
+</ol>
+<p>Because many offspring will be generated and discarded, especially when
+offspring fitness values are low, selection through offspring is less efficient
+than selection through parents. In addition, absolute fitness is usually more
+difficult to estimate than relative fitness. So, unless there are compelling
+reasons (e.g. simulating realistic scenarios of survival competition among
+offspring), selection through parents are recommended.</p>
+<p>Example <a class="reference internal" href="#selectoffspring"><span class="std std-ref">selectOffspring</span></a> gives an example of natural
+selection through the selection of offspring. This example looks almost
+identical to Example <a class="reference internal" href="#selectparents"><span class="std std-ref">selectParents</span></a> but the underlying
+selection mechanism is quite different. Note that selection through offspring
+does not save fitness values to an information field so you do not need to add
+information field fitness to the population.</p>
+<p id="selectoffspring"><strong>Example</strong>: <em>Natural selection through the selection of offspring</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Simulator</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">rep</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MapSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="p">{(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">):</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span><span class="mf">0.98</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span><span class="mf">0.97</span><span class="p">}),</span>
+<span class="gp">... </span>    <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="s2">&quot;&#39;Gen:</span><span class="si">%3d</span><span class="s2"> &#39; </span><span class="si">% g</span><span class="s2">en&quot;</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;</span><span class="si">%.3f</span><span class="s2">\t&#39; % alleleFreq[0][1]&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOutput</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">reps</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Gen:  0 0.493        0.493   0.496</span>
+<span class="go">Gen: 10 0.461        0.464   0.465</span>
+<span class="go">Gen: 20 0.436        0.445   0.442</span>
+<span class="go">Gen: 30 0.389        0.386   0.385</span>
+<span class="go">Gen: 40 0.370        0.345   0.348</span>
+<span class="go">(50, 50, 50)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="selectOffspring.py">Download selectOffspring.py</a></p>
+</div>
+<div class="section" id="are-two-selection-scenarios-equivalent">
+<h2>Are two selection scenarios equivalent? **<a class="headerlink" href="#are-two-selection-scenarios-equivalent" title="Permalink to this headline">¶</a></h2>
+<p>If you look closely at Examples <a class="reference internal" href="#selectparents"><span class="std std-ref">selectParents</span></a> and
+<a class="reference internal" href="#selectoffspring"><span class="std std-ref">selectOffspring</span></a>, you will notice that their results are
+quite similar. This is actually what you should expect in most cases. Let us
+look at the theoretical consequence of selection through parents or offspring in
+a simple case with asexual mating.</p>
+<p>Assuming a diallelic marker with three genotypes <span class="math notranslate nohighlight">\(g_{AA}\)</span>, <span class="math notranslate nohighlight">\(g_{Aa}\)</span>
+and <span class="math notranslate nohighlight">\(g_{aa}\)</span>, with frequencies <span class="math notranslate nohighlight">\(P_{AA}\)</span>, <span class="math notranslate nohighlight">\(P_{Aa}\)</span> and
+<span class="math notranslate nohighlight">\(P_{aa}\)</span>, and relative fitness values <span class="math notranslate nohighlight">\(w_{AA}\)</span>, <span class="math notranslate nohighlight">\(w_{Aa}\)</span>, and
+<span class="math notranslate nohighlight">\(w_{22}\)</span> respectively. If we select through offspring, the proportion of
+genotype <span class="math notranslate nohighlight">\(g_{AA}\)</span> etc., should be</p>
+<div class="math notranslate nohighlight">
+\[P_{AA}'=\frac{P_{AA}w_{AA}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}\]</div>
+<div class="math notranslate nohighlight">
+\[P_{Aa}'=\frac{P_{Aa}w_{Aa}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}\]</div>
+<div class="math notranslate nohighlight">
+\[P_{aa}'=\frac{P_{aa}w_{aa}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}\]</div>
+<p>because offspring genotypes are randomly drawn from the parental generation, and
+each offspring has certain probability to survive.</p>
+<p>Now, if we select through parents, the proportion of parents with genotype
+<span class="math notranslate nohighlight">\(AA\)</span> will be the number of <span class="math notranslate nohighlight">\(AA\)</span> individuals times its probability to
+be chosen:</p>
+<div class="math notranslate nohighlight">
+\[n_{AA}\frac{w_{AA}}{\sum_{n=1}^{N}w_{n}}\]</div>
+<p>This is, however, exactly</p>
+<div class="math notranslate nohighlight">
+\[n_{AA}\frac{w_{AA}}{\sum_{n=1}^{N}w_{n}}=\frac{n_{AA}w_{AA}}{n_{AA}w_{AA}+n_{Aa}w_{Aa}+n_{aa}w_{aa}}=\frac{P_{AA}w_{AA}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}=P_{AA}'\]</div>
+<p>which corresponds to the proportion of offspring with such genotype. That is to
+say, <strong>in this simple case, two types of selection scenarios yield identical
+results</strong>.</p>
+<p>These two types of selection scenarios do not have to always yield identical
+results. Exceptions exist in cases with more than one offspring or sexual mating
+with sex-specific survival rate. simuPOP provides both selection implementations
+and you should choose one of them for your particular simulation.</p>
+</div>
+<div class="section" id="map-selector-operator-mapselector">
+<h2>Map selector (operator <a class="reference internal" href="refManual_ch3_sec9.html#MapSelector" title="MapSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapSelector</span></code></a>)<a class="headerlink" href="#map-selector-operator-mapselector" title="Permalink to this headline">¶</a></h2>
+<p>A map selector uses a Python dictionary to provide fitness values for each type
+of genotype. For example, Example <a class="reference internal" href="#mapselector"><span class="std std-ref">MapSelector</span></a> uses a
+dictionary with keys <code class="docutils literal notranslate"><span class="pre">(0,0)</span></code>, <code class="docutils literal notranslate"><span class="pre">(0,1)</span></code> and <code class="docutils literal notranslate"><span class="pre">(1,1)</span></code> to specify fitness
+values for individuals with these genotypes at locus 0. This example is a
+typical example of heterozygote advantage. When <span class="math notranslate nohighlight">\(w_{11}&lt;w_{12}&gt;w_{22},\)</span>
+the genotype frequencies will go to an equilibrium state. Theoretically, if
+<span class="math notranslate nohighlight">\(s_{1}=w_{12}-w_{11}\)</span> and <span class="math notranslate nohighlight">\(s_{2}=w_{12}-w_{22}\)</span>, the stable allele
+frequency of allele 0 is</p>
+<div class="math notranslate nohighlight">
+\[p=\frac{s_{2}}{s_{1}+s_{2}}\]</div>
+<p>which is <span class="math notranslate nohighlight">\(\frac{2}{3}\)</span> in the example (<span class="math notranslate nohighlight">\(s_{1}=.1\)</span>,
+<span class="math notranslate nohighlight">\(s_{2}=.2\)</span>).</p>
+<p id="mapselector"><strong>Example</strong>: <em>A selector that uses pre-defined fitness value</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;fitness&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="o">.</span><span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s2</span> <span class="o">=</span> <span class="o">.</span><span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">2</span><span class="p">,</span> <span class="o">.</span><span class="mi">8</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">MapSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="p">{(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">):</span><span class="mi">1</span><span class="o">-</span><span class="n">s1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span><span class="mi">1</span><span class="o">-</span><span class="n">s2</span><span class="p">}),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;</span><span class="si">%.4f</span><span class="s2">\n&#39; % alleleFreq[0][0]&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">301</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">0.2250</span>
+<span class="go">0.6605</span>
+<span class="go">0.6530</span>
+<span class="go">0.6870</span>
+<span class="go">301</span>
+<span class="go">&gt;&gt;&gt;</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="MapSelector.py">Download MapSelector.py</a></p>
+<p>The above example assumes that the fitness value for individuals with genotypes
+<code class="docutils literal notranslate"><span class="pre">(0,1)</span></code> and <code class="docutils literal notranslate"><span class="pre">(1,0)</span></code> are the same. This assumption is usually valid but can
+be vialoated with impriting. In that case, you can specify fitness for both
+types of genotypes. The underlying mechanism is that the <a class="reference internal" href="refManual_ch3_sec9.html#MapSelector" title="MapSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapSelector</span></code></a>
+looks up a genotype in the dictionary first directly, and then without phase
+information if a genotype is not found.</p>
+<p>This operator supports haplodiploid populations and sex chromosomes. In these
+cases, only valid alleles should be listed which can lead to dictionary keys
+with different lengths. In addition, although less used because of potentially a
+large number of keys, this operator can act on multiple loci. Please refer to
+<a class="reference internal" href="refManual_ch3_sec7.html#MapPenetrance" title="MapPenetrance"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapPenetrance</span></code></a> for details.</p>
+</div>
+<div class="section" id="multi-allele-selector-operator-maselector">
+<h2>Multi-allele selector (operator <a class="reference internal" href="refManual_ch3_sec9.html#MaSelector" title="MaSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaSelector</span></code></a>)<a class="headerlink" href="#multi-allele-selector-operator-maselector" title="Permalink to this headline">¶</a></h2>
+<p>A multi-allele selector divides alleles into two groups, wildtype <em>A</em> and
+mutants <em>a</em>, and treat alleles within each group as the same. The fitness model
+is therefore simplified to</p>
+<ul class="simple">
+<li>Two fitness values for genotype <span class="math notranslate nohighlight">\(A\)</span>, <span class="math notranslate nohighlight">\(a\)</span> in the haploid case</li>
+<li>Three fitness values for genotype <em>AA</em>, <em>Aa</em> and <em>aa</em> in the diploid single
+locus case. Genotype Aa and aA are assumed to have the same impact on fitness.</li>
+</ul>
+<p>The default wildtype group contains allele 0 so the two allele groups are zero
+and non-zero alleles. Example <a class="reference internal" href="#maselector"><span class="std std-ref">MaSelector</span></a> demonstrates the
+use of this operator. This example is identical to Example <a class="reference internal" href="#mapselector"><span class="std std-ref">MapSelector</span></a> except that there are five alleles at locus 0 and alleles 1, 2,
+3, 4 are treated as a single non-widetype group.</p>
+<p id="maselector"><strong>Example</strong>: <em>A multi-allele selector</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;fitness&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="o">.</span><span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s2</span> <span class="o">=</span> <span class="o">.</span><span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">MaSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">s1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="n">s2</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;</span><span class="si">%.4f</span><span class="s2">\n&#39; % alleleFreq[0][0]&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">301</span><span class="p">)</span>
+<span class="go">0.2250</span>
+<span class="go">0.6605</span>
+<span class="go">0.6530</span>
+<span class="go">0.6870</span>
+<span class="go">301</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="MaSelector.py">Download MaSelector.py</a></p>
+<p>Operator <a class="reference internal" href="refManual_ch3_sec9.html#MaSelector" title="MaSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaSelector</span></code></a> also supports multiple loci by specifying fitness
+values for all combination of genotype at specified loci. In the case of two
+loci, this operator requires</p>
+<ul class="simple">
+<li>Four fitness values for genotype <code class="docutils literal notranslate"><span class="pre">AB</span></code>, <code class="docutils literal notranslate"><span class="pre">Ab</span></code>, <code class="docutils literal notranslate"><span class="pre">aB</span></code> and <code class="docutils literal notranslate"><span class="pre">ab</span></code> in the
+haploid case,</li>
+<li>Nine fitness values for genotype <code class="docutils literal notranslate"><span class="pre">AABB</span></code>, <code class="docutils literal notranslate"><span class="pre">AABb</span></code>, <code class="docutils literal notranslate"><span class="pre">AAbb</span></code>, <code class="docutils literal notranslate"><span class="pre">AaBB</span></code>,
+<code class="docutils literal notranslate"><span class="pre">AaBb</span></code>, <code class="docutils literal notranslate"><span class="pre">Aabb</span></code>, <code class="docutils literal notranslate"><span class="pre">aaBB</span></code>, <code class="docutils literal notranslate"><span class="pre">aaBb</span></code>, and <code class="docutils literal notranslate"><span class="pre">aabb</span></code> in the haploid case.</li>
+</ul>
+<p>In general, <span class="math notranslate nohighlight">\(2^{n}\)</span> values are needed for haploid populations and
+<span class="math notranslate nohighlight">\(3^{n}\)</span> values are needed for diploid populations where <span class="math notranslate nohighlight">\(n\)</span> is the
+number of loci. This operator does not yet support haplodiploid populations and
+sex chromosomes. Example <a class="reference internal" href="#maselectorhaploid"><span class="std std-ref">MaSelectorHaploid</span></a>
+demonstrates the use of a multi-locus model in a haploid population.</p>
+<p id="maselectorhaploid"><strong>Example</strong>: <em>A multi-locus multi-allele selection model in a haploid population</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">ploidy</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;fitness&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="c1"># fitness values for AB, Ab, aB and ab</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">MaSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">fitness</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomSelection</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">haploFreq</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">step</span><span class="o">=</span><span class="mi">25</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;</span><span class="si">%.3f</span><span class="s2">\t</span><span class="si">%.3f</span><span class="s2">\t</span><span class="si">%.3f</span><span class="s2">\t</span><span class="si">%.3f</span><span class="s2">\n&#39; % (haploFreq[(0,1)][(0,0)],&quot;</span>
+<span class="gp">... </span>                <span class="s2">&quot;haploFreq[(0,1)][(0,1)], haploFreq[(0,1)][(1,0)],&quot;</span>
+<span class="gp">... </span>                <span class="s2">&quot;haploFreq[(0,1)][(1,1)])&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">0.264        0.243   0.252   0.240</span>
+<span class="go">0.292        0.294   0.321   0.093</span>
+<span class="go">0.339        0.330   0.303   0.027</span>
+<span class="go">0.310        0.383   0.297   0.009</span>
+<span class="go">100</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="MaSelectorHaploid.py">Download MaSelectorHaploid.py</a></p>
+</div>
+<div class="section" id="multi-locus-selection-models-operator-mlselector">
+<h2>Multi-locus selection models (operator <a class="reference internal" href="refManual_ch3_sec9.html#MlSelector" title="MlSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlSelector</span></code></a>)<a class="headerlink" href="#multi-locus-selection-models-operator-mlselector" title="Permalink to this headline">¶</a></h2>
+<p>Although an individual’s fitness can be affected by several factors, each of
+which can be modeled individually, <strong>only one fitness value is used to determine
+a person’s ability to pass all these factors to his or her offspring</strong>. Although
+in theory we sometimes assume independent evolution of disease predisposing loci
+(mostly for mathematical reasons), in practise we have to use a multi-locus
+selection model to combine single-locus models.</p>
+<p>This multi-loci selector applies several selectors to each individual and
+computes an overall fitness value from the fitness values provided by these
+selectors. Although this selector is designed to obtain multi-loci fitness
+values from several single-locus fitness models, any selector, including those
+obtain their fitness values from multiple disease predisposing loci, can be used
+in this selector. This selector uses parameter <code class="docutils literal notranslate"><span class="pre">mode</span></code> to control how
+individual fitness values are combined. More specifically, if <span class="math notranslate nohighlight">\(f_{i}\)</span> are
+fitness values obtained from individual selectors, this selector returns</p>
+<ul class="simple">
+<li><span class="math notranslate nohighlight">\(\Pi_{i}f_{i}\)</span> if <code class="docutils literal notranslate"><span class="pre">mode=MULTIPLICATIVE</span></code>, and</li>
+<li><span class="math notranslate nohighlight">\(1-\sum_{i}\left(1-f_{i}\right)\)</span> if <code class="docutils literal notranslate"><span class="pre">mode=ADDITIVE</span></code>, and</li>
+<li><span class="math notranslate nohighlight">\(1-\Pi_{i}\left(1-f_{i}\right)\)</span> if <code class="docutils literal notranslate"><span class="pre">mode=HETEROGENEITY</span></code></li>
+</ul>
+<p>0 will be returned if the returned fitness value is less than 0.</p>
+<p>This operator simply combines individual fitness values and it is your
+responsibility to apply and interpret these models. For example, if relative
+fitness values are greater than one, the heterogeneity model hardly makes sense.
+Example <a class="reference internal" href="#mlselector"><span class="std std-ref">MlSelector</span></a> demonstrates the use of this operator
+using an additive multi-locus model over an additive and a recessive single-
+locus model at two diesease predisposing loci. For comparison, we simulate two
+additional replicates with selection only applying to one of the two loci. It
+would be interesting to see if these two loci evolve more or less independently
+by comparing allele freqency trajectories of these two replicates to those in
+the first replicate.</p>
+<p id="mlselector"><strong>Example</strong>: <em>A multi-loci selector</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;fitness&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MlSelector</span><span class="p">([</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">MapSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="p">{(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">):</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span><span class="o">.</span><span class="mi">8</span><span class="p">}),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">MapSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="p">{(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">):</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span><span class="mf">0.9</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span><span class="o">.</span><span class="mi">8</span><span class="p">}),</span>
+<span class="gp">... </span>            <span class="p">],</span> <span class="n">mode</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">ADDITIVE</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MapSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="p">{(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">):</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span><span class="o">.</span><span class="mi">8</span><span class="p">},</span> <span class="n">reps</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MapSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="p">{(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">):</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span><span class="mf">0.9</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span><span class="o">.</span><span class="mi">8</span><span class="p">},</span> <span class="n">reps</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>         <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]),</span>
+<span class="gp">... </span>         <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;REP </span><span class="si">%d</span><span class="s2">:\t</span><span class="si">%.3f</span><span class="s2">\t</span><span class="si">%.3f</span><span class="s2">\t&#39; % (rep, alleleFreq[0][1], alleleFreq[1][1])&quot;</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="n">sim</span><span class="o">.</span><span class="n">PyOutput</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">reps</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">REP 0:       0.472   0.465</span>
+<span class="go">REP 0:       0.452   0.429</span>
+<span class="go">REP 0:       0.429   0.397</span>
+<span class="go">REP 0:       0.405   0.378</span>
+<span class="go">REP 0:       0.382   0.355</span>
+<span class="go">5</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="MlSelector.py">Download MlSelector.py</a></p>
+</div>
+<div class="section" id="a-hybrid-selector-operator-pyselector">
+<h2>A hybrid selector (operator <a class="reference internal" href="refManual_ch3_sec9.html#PySelector" title="PySelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySelector</span></code></a>)<a class="headerlink" href="#a-hybrid-selector-operator-pyselector" title="Permalink to this headline">¶</a></h2>
+<p>When your selection model involves multiple interacting genetic and
+environmental factors, it might be easier to calculate a fitness value
+explicitly using a Python function. A hybrid selector can be used for this
+purpose. If your selection model depends solely on genotype, you can define a
+function such as</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fitness_func</span><span class="p">(</span><span class="n">geno</span><span class="p">):</span>
+    <span class="c1"># calculate fitness according to genotype at specified loci</span>
+    <span class="c1"># genotypes are arrange locus by locus, namely A1,A2,B1,B2 for loci A and B</span>
+    <span class="k">return</span> <span class="n">val</span>
+</pre></div>
+</div>
+<p>and use this function in an operator <a class="reference internal" href="refManual_ch3_sec9.html#PySelector" title="PySelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySelector</span></code></a>(<code class="docutils literal notranslate"><span class="pre">func=fitness_func,</span>
+<span class="pre">loci=loci</span></code>). If your selection model depends on genotype as well as some
+information fields, you can define a function in the form of</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fitness_func</span><span class="p">(</span><span class="n">geno</span><span class="p">,</span> <span class="n">field1</span><span class="p">,</span> <span class="n">field2</span><span class="p">):</span>
+    <span class="c1"># calculate fitness according to genotype at specified loci</span>
+    <span class="c1"># and values at specified informaton fields.</span>
+    <span class="k">return</span> <span class="n">val</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">field1</span></code>, <code class="docutils literal notranslate"><span class="pre">field2</span></code> are names of information fields. simuPOP will pass
+genotype and value of specified fields according to name of the passed function.
+Note that genotypes are arrange locus by locus, namely in the order of
+<code class="docutils literal notranslate"><span class="pre">A1</span></code>,``A2``,``B1``,``B2`` for loci <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">B</span></code>. Other parameters such as
+<code class="docutils literal notranslate"><span class="pre">gen</span></code>, <code class="docutils literal notranslate"><span class="pre">ind</span></code>, and <code class="docutils literal notranslate"><span class="pre">pop</span></code> are also allowed. Please check the reference
+manual for details.</p>
+<p>When a <a class="reference internal" href="refManual_ch3_sec9.html#PySelector" title="PySelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySelector</span></code></a> is used to calculate fitness for an individual
+(parents if applied pre-mating, offspring if applied during-mating), it will
+collect his or her genotype at specified loci, optional values at specified
+information fields, generation number, or individual to a user-specified Python
+function, and take its return value as fitness. As you can imagine, the
+incorporation of information fields and generation number allow the
+implementation of very complex selection scenarios such as gene environment
+interaction and varying selection pressures.</p>
+<p>Example <a class="reference internal" href="#pyselector"><span class="std std-ref">PySelector</span></a> demonstrates how to use a
+<a class="reference internal" href="refManual_ch3_sec9.html#PySelector" title="PySelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySelector</span></code></a> to specify fitness values according to a fitness table and
+the smoking status of each individual.</p>
+<p id="pyselector"><strong>Example</strong>: <em>A hybrid selector</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;fitness&#39;</span><span class="p">,</span> <span class="s1">&#39;smoking&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="o">.</span><span class="mi">02</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s2</span> <span class="o">=</span> <span class="o">.</span><span class="mi">03</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># the second parameter gen can be used for varying selection pressure</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">sel</span><span class="p">(</span><span class="n">geno</span><span class="p">,</span> <span class="n">smoking</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="c1">#     BB  Bb   bb</span>
+<span class="gp">... </span>    <span class="c1"># AA  1   1    1</span>
+<span class="gp">... </span>    <span class="c1"># Aa  1   1-s1 1-s2</span>
+<span class="gp">... </span>    <span class="c1"># aa  1   1    1-s2</span>
+<span class="gp">... </span>    <span class="c1">#</span>
+<span class="gp">... </span>    <span class="c1"># geno is (A1 A2 B1 B2)</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">geno</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">geno</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">geno</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">geno</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">v</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">s1</span>  <span class="c1"># case of AaBb</span>
+<span class="gp">... </span>    <span class="k">elif</span> <span class="n">geno</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">geno</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">v</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">s2</span>  <span class="c1"># case of ??bb</span>
+<span class="gp">... </span>    <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">v</span> <span class="o">=</span> <span class="mi">1</span>       <span class="c1"># other cases</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">smoking</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">v</span> <span class="o">*</span> <span class="mf">0.9</span>
+<span class="gp">... </span>    <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">v</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">PySelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">func</span><span class="o">=</span><span class="n">sel</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="c1"># set smoking status randomly</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitInfo</span><span class="p">(</span><span class="k">lambda</span> <span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;smoking&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">step</span><span class="o">=</span><span class="mi">20</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;</span><span class="si">%.4f</span><span class="s2">\t</span><span class="si">%.4f</span><span class="s2">\n&#39; % (alleleFreq[0][1], alleleFreq[1][1])&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">0.4943       0.4890</span>
+<span class="go">0.4880       0.4285</span>
+<span class="go">0.4898       0.4073</span>
+<span class="go">50</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="PySelector.py">Download PySelector.py</a></p>
+</div>
+<div class="section" id="multi-locus-random-fitness-effects-operator-pymlselector">
+<h2>Multi-locus random fitness effects (operator <a class="reference internal" href="refManual_ch3_sec9.html#PyMlSelector" title="PyMlSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyMlSelector</span></code></a>)<a class="headerlink" href="#multi-locus-random-fitness-effects-operator-pymlselector" title="Permalink to this headline">¶</a></h2>
+<p>If the fitness of individuals is determined by fitness effects over a large
+number of loci, both <a class="reference internal" href="refManual_ch3_sec9.html#MlSelector" title="MlSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlSelector</span></code></a> and <a class="reference internal" href="refManual_ch3_sec9.html#PySelector" title="PySelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySelector</span></code></a> are difficult
+to use because the former requires a large number of single-locus selectors, and
+the latter requires the processing long genome sequences. If the overall fitness
+can be determined by fitness effects of mutants, a <a class="reference internal" href="refManual_ch3_sec9.html#PyMlSelector" title="PyMlSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyMlSelector</span></code></a> can be
+used. This operator</p>
+<ul class="simple">
+<li>Calls a user-provided call-back function for each locus with at least a mutant
+(non-zero allele). The function can accept location and genotype so the fitness
+can be location and genotype dependent. The return value is cached so the
+function will be called only once for each locus-genotype pair.</li>
+<li>The fitness of each individual is determined by fitness values of loci with at
+least one mutant, using the same methods as operator <a class="reference internal" href="refManual_ch3_sec9.html#MlSelector" title="MlSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlSelector</span></code></a>. This
+implicitly assumes that loci without any mutant have fitness value 1 and will
+not contribute to the final fitness value.</li>
+</ul>
+<p>Example <a class="reference internal" href="#pyselector"><span class="std std-ref">PySelector</span></a> demonstrates how to use a
+<a class="reference internal" href="refManual_ch3_sec9.html#PyMlSelector" title="PyMlSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyMlSelector</span></code></a> to implement a fitness model where each mutant has a
+random fitness drawn from a Gamma distribution. An additive model is used so a
+homozygote will have a fitness penalty that doubles that of a heterozygote.
+Because the fitness values of heterozygote and homozygote at each locus are
+requested separately, a class is used to store locus-specific s values.</p>
+<p>The fitness value of each locus-genotype pair is outputted to a file, and it
+should be interesting to plot the distribution of allele frequency at each locus
+against the fitness values, because mutants that suffer from stronger negative
+natural selection are supposed to be rarer.</p>
+<p id="pymlselector"><strong>Example</strong>: <em>Random fitness effect</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuOpt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simuOpt</span><span class="o">.</span><span class="n">setOptions</span><span class="p">(</span><span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alleleType</span><span class="o">=</span><span class="s1">&#39;mutant&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">10000</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;fitness&#39;</span><span class="p">])</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">GammaDistributedFitness</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">coefMap</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">alleles</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="c1"># because s is assigned for each locus, we need to make sure the</span>
+<span class="gp">... </span>        <span class="c1"># same s is used for fitness of genotypes 01 (1-s) and 11 (1-2s)</span>
+<span class="gp">... </span>        <span class="c1"># at each locus</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">loc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">coefMap</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coefMap</span><span class="p">[</span><span class="n">loc</span><span class="p">]</span>
+<span class="gp">... </span>        <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="n">s</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">gammavariate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">)</span>
+<span class="gp">... </span>            <span class="bp">self</span><span class="o">.</span><span class="n">coefMap</span><span class="p">[</span><span class="n">loc</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+<span class="gp">... </span>        <span class="c1">#</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="mi">0</span> <span class="ow">in</span> <span class="n">alleles</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">return</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">s</span>
+<span class="gp">... </span>        <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">return</span> <span class="mf">1.</span> <span class="o">-</span> <span class="mf">2.</span><span class="o">*</span><span class="n">s</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">AcgtMutator</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="p">[</span><span class="mf">0.00001</span><span class="p">],</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;JC69&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyMlSelector</span><span class="p">(</span><span class="n">GammaDistributedFitness</span><span class="p">(</span><span class="mf">0.23</span><span class="p">,</span> <span class="mf">0.185</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">output</span><span class="o">=</span><span class="s1">&#39;&gt;&gt;sel.txt&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">numOfSegSites</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">ALL_AVAIL</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">50</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;Gen: </span><span class="si">%2d</span><span class="s2"> #seg sites: </span><span class="si">%d</span><span class="s2">\n&#39; % (gen, numOfSegSites)&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">step</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">201</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Gen:  0 #seg sites: 180</span>
+<span class="go">Gen: 50 #seg sites: 1310</span>
+<span class="go">Gen: 100 #seg sites: 1479</span>
+<span class="go">Gen: 150 #seg sites: 1511</span>
+<span class="go">Gen: 200 #seg sites: 1579</span>
+<span class="go">201</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;sel.txt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">()[:</span><span class="mi">5</span><span class="p">]))</span>
+<span class="go">5855 1       0       0.978125</span>
+<span class="go">1085 2       0       0.340724</span>
+<span class="go">2907 0       1       0.998146</span>
+<span class="go">7773 0       1       0.927273</span>
+<span class="go">1835 0       2       0.999976</span>
+
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="PyMlSelector.py">Download PyMlSelector.py</a></p>
+</div>
+<div class="section" id="alternative-implementations-of-natural-selection">
+<h2>Alternative implementations of natural selection<a class="headerlink" href="#alternative-implementations-of-natural-selection" title="Permalink to this headline">¶</a></h2>
+<p>If you know how natural selection works in simuPOP, you do not have to use a
+selector to perform natural selection. For example,</p>
+<ul class="simple">
+<li>If you choose to use fitness values of parents to perform probabilistic
+natural selection during mating, you just need to set individual fitness in some
+way before mating. (You do not even have to use information field <code class="docutils literal notranslate"><span class="pre">fitness</span></code>
+because you can specify which information field to use in a mating scheme using
+parameter <code class="docutils literal notranslate"><span class="pre">selectionField</span></code>). This can be done through a penetrance model (as
+shown in the following example) where affected individuals are selected against
+during mating, a quantitative trait model (where a trait is defined to control
+individual fitness), or by setting information field fitness manually through a
+Python operator.</li>
+<li>If you would like to perform deterministic selection on certain phenotype, you
+can explicitly remove individuals before or during mating. More explicitly, you
+can use an operator <a class="reference internal" href="refManual_ch3_sec12.html#DiscardIf" title="DiscardIf"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiscardIf</span></code></a> to remove parents before mating or remove
+offspring during mating according to certain status (disease status or
+quantitative trait), provided that the trait status is defined before this
+operator is applied.</li>
+</ul>
+<p>Example <a class="reference internal" href="#peneselector"><span class="std std-ref">peneSelector</span></a> demonstrates a commonly used case
+where parents who are affected with certain disease are excluded from producing
+offspring. In this example, a penetrance model (operator <a class="reference internal" href="refManual_ch3_sec7.html#MaPenetrance" title="MaPenetrance"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaPenetrance</span></code></a>)
+is applied to the parental generation to determine who will be affected. An
+<a class="reference internal" href="refManual_ch3_sec3.html#InfoExec" title="InfoExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoExec</span></code></a> operator is used to set individual fitness to 1 if he or she
+is unaffected, and 0 if he or she is affected. Due to the way parents are
+selected, affected parents will not be able to produce offspring as long as
+there is any unaffected individual. Because individual affection status is
+determined by his or her genotype, this genotype - affection status - fitness
+relationship could be implemented using an equivalent <a class="reference internal" href="refManual_ch3_sec9.html#MaSelector" title="MaSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaSelector</span></code></a>. This
+method could be extended to <a class="reference internal" href="refManual_ch3_sec3.html#InfoExec" title="InfoExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoExec</span></code></a>(<code class="docutils literal notranslate"><span class="pre">'fitness</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">-</span>
+<span class="pre">0.01*ind.affected()',</span> <span class="pre">exposeInd='ind'</span></code>) to select against, but not remove,
+affected parents, and similarly <a class="reference internal" href="refManual_ch3_sec3.html#InfoExec" title="InfoExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoExec</span></code></a>(<code class="docutils literal notranslate"><span class="pre">'fitness</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">-</span> <span class="pre">0.01*(LDL</span> <span class="pre">&gt;</span>
+<span class="pre">250)'</span></code>) to select against individuals according to a quantitative trait. For
+this particular example, a <a class="reference internal" href="refManual_ch3_sec12.html#DiscardIf" title="DiscardIf"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiscardIf</span></code></a> operator could be used, although
+it can be slower because of the explicit removal of parents.</p>
+<p id="peneselector"><strong>Example</strong>: <em>Natural selection according to individual affection status</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;fitness&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MaPenetrance</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">penetrance</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">numOfAffected</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="s1">&#39;propOfAffected&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;Percent of affected: </span><span class="si">%.3f</span><span class="s2">\t&#39; % propOfAffected&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">50</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InfoExec</span><span class="p">(</span><span class="s1">&#39;fitness = not ind.affected()&#39;</span><span class="p">,</span> <span class="n">exposeInd</span><span class="o">=</span><span class="s1">&#39;ind&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;</span><span class="si">%.4f</span><span class="s2">\n&#39; % alleleFreq[0][1]&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">151</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Percent of affected: 0.110   0.4713</span>
+<span class="go">Percent of affected: 0.009   0.0095</span>
+<span class="go">Percent of affected: 0.013   0.0000</span>
+<span class="go">Percent of affected: 0.008   0.0000</span>
+<span class="go">151</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="peneSelector.py">Download peneSelector.py</a></p>
+</div>
+<div class="section" id="frequency-dependent-or-dynamic-selection-pressure">
+<h2>Frequency dependent or dynamic selection pressure *<a class="headerlink" href="#frequency-dependent-or-dynamic-selection-pressure" title="Permalink to this headline">¶</a></h2>
+<p>If individual fitness depends on individual information fields and/or population
+variables, you will have to calculate individual fitness using expressions or
+functions. In order to access individual information fields and population
+variable and calculate individual fitness, you have the option to</p>
+<ul class="simple">
+<li>Use a <a class="reference internal" href="refManual_ch3_sec9.html#PySelector" title="PySelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySelector</span></code></a> and pass genotype, values of information fields,
+references to individual and population to a user-provided function, which
+returns fitness value for each individual.</li>
+<li>Use of <a class="reference internal" href="refManual_ch3_sec13.html#PyOperator" title="PyOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyOperator</span></code></a> to obtain information of the population (e.g.
+variables) and all individuals. Determine individual fitness and set information
+field <code class="docutils literal notranslate"><span class="pre">fitness</span></code> of all individuals.</li>
+<li>Use an operator <a class="reference internal" href="refManual_ch3_sec3.html#InfoExec" title="InfoExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoExec</span></code></a> to calculate individual fitness using
+expressions. This method can be more efficient than others because simuPOP does
+not have to call a user-provided function.</li>
+</ul>
+<p>Example <a class="reference internal" href="#freqdependentselection"><span class="std std-ref">freqDependentSelection</span></a> demonstrates an
+example where the fitness values of individuals are calculated from allele
+frequencies calculated using a <a class="reference internal" href="refManual_ch3_sec11.html#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> operator. Because the fitness
+values of individuals are 1, <span class="math notranslate nohighlight">\(1-(p-0.5)\*0.1\)</span>, <span class="math notranslate nohighlight">\(1-(p-0.5)\*0.2\)</span> for
+genotype 00, 01 and 11 where <span class="math notranslate nohighlight">\(p\)</span> is the frequency of allele 1, this allele
+will be under purifying selection if its frequency is over 0.5, and positive
+selection if its frequency is less than 0.5. Consequently, the frequency of this
+allele will oscillate around 0.5 during evolution, as shown in the result of
+this example.</p>
+<p id="freqdependentselection"><strong>Example</strong>: <em>Frequency dependent selection</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;fitness&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InfoExec</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;fitness = {</span>
+<span class="gp">... </span><span class="s1">            0: 1,</span>
+<span class="gp">... </span><span class="s1">            1: 1 - (alleleFreq[0][1] - 0.5)*0.1,</span>
+<span class="gp">... </span><span class="s1">            2: 1 - (alleleFreq[0][1] - 0.5)*0.2}[ind.allele(0,0)+ind.allele(0,1)]&#39;&#39;&#39;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">exposeInd</span><span class="o">=</span><span class="s1">&#39;ind&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">meanOfInfo</span><span class="o">=</span><span class="s1">&#39;fitness&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;alleleFreq=</span><span class="si">%.3f</span><span class="s2">, mean fitness=</span><span class="si">%.5f</span><span class="s2">\n&#39; % (alleleFreq[0][1], meanOfInfo[&#39;fitness&#39;])&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">step</span><span class="o">=</span><span class="mi">25</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">151</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">alleleFreq=0.495, mean fitness=1.00045</span>
+<span class="go">alleleFreq=0.504, mean fitness=0.99955</span>
+<span class="go">alleleFreq=0.484, mean fitness=1.00150</span>
+<span class="go">alleleFreq=0.492, mean fitness=1.00076</span>
+<span class="go">alleleFreq=0.499, mean fitness=1.00005</span>
+<span class="go">alleleFreq=0.526, mean fitness=0.99726</span>
+<span class="go">alleleFreq=0.514, mean fitness=0.99856</span>
+<span class="go">151</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="freqDependentSelector.py">Download freqDependentSelector.py</a></p>
+</div>
+<div class="section" id="support-for-virtual-subpopulations">
+<span id="subsec-vspselection"></span><h2>Support for virtual subpopulations *<a class="headerlink" href="#support-for-virtual-subpopulations" title="Permalink to this headline">¶</a></h2>
+<p>Support for virtual subpopulations allows you to use different selectors for
+different (virtual) subpopulations. Because virtual subpopulations may overlap,
+and they do not have to cover all individuals in a subpopulation, it is
+important to remember that</p>
+<ul class="simple">
+<li>If virtual subpopulations overlap, the fitness value set by the last selector
+will be used.</li>
+<li>If an individual is not included in any of the virtual subpopulation, its
+fitness value will be zero which will prevent them from producing any offspring.</li>
+</ul>
+<p>Example <a class="reference internal" href="#vspselector"><span class="std std-ref">vspSelector</span></a> demonstrates how to apply selectors to
+virtual subpopulations. This example has two subpopulations, each having two
+virtual subpopulations defined by sex. Natural selection is applied to male
+individuals in the first subpopulation, and female individuals in the second
+subpopulation. However, because the sex of offspring is randomly determined, the
+selection actually decreases the disease allele frequency for all inviduals.</p>
+<p id="vspselector"><strong>Example</strong>: <em>Selector in virtual subpopulations</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">5000</span><span class="p">,</span> <span class="mi">5000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;fitness&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">SexSplitter</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MaSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.98</span><span class="p">],</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MaSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.98</span><span class="p">],</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)]),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="n">sim</span><span class="o">.</span><span class="n">ALL_AVAIL</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">ALL_AVAIL</span><span class="p">)],</span>
+<span class="gp">... </span>            <span class="nb">vars</span><span class="o">=</span><span class="s1">&#39;alleleFreq_sp&#39;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">50</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;</span><span class="si">%.4f</span><span class="s2">\t</span><span class="si">%.4f</span><span class="s2">\t</span><span class="si">%.4f</span><span class="s2">\t</span><span class="si">%.4f</span><span class="s2">\n&#39; % &quot;</span>
+<span class="gp">... </span>            <span class="s2">&quot;tuple([subPop[x][&#39;alleleFreq&#39;][0][1] for x in ((0,0),(0,1),(1,0),(1,1))])&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">step</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">151</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">0.5022       0.5083  0.4970  0.5020</span>
+<span class="go">0.4086       0.4054  0.3849  0.3817</span>
+<span class="go">0.3275       0.3259  0.2435  0.2532</span>
+<span class="go">0.2715       0.2662  0.1305  0.1338</span>
+<span class="go">151</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="vspSelector.py">Download vspSelector.py</a></p>
+<p>Selecting through offspring can also be applied to virtual subpopulations. For
+example, Example <a class="reference internal" href="#vspduringmatingselector"><span class="std std-ref">vspDuringMatingSelector</span></a> moves
+the selectors to the <code class="docutils literal notranslate"><span class="pre">ops</span></code> parameter of <a class="reference internal" href="refManual_ch2_sec4.html#RandomMating" title="RandomMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomMating</span></code></a>. In this way,
+male and female offspring will have different survival probabilities according
+to their genotype.</p>
+<p id="vspduringmatingselector"><strong>Example</strong>: <em>Selection against offspring in virtual subpopulations</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">5000</span><span class="p">,</span> <span class="mi">5000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;fitness&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">SexSplitter</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MaSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.98</span><span class="p">],</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MaSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.98</span><span class="p">],</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)]),</span>
+<span class="gp">... </span>        <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="n">sim</span><span class="o">.</span><span class="n">ALL_AVAIL</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">ALL_AVAIL</span><span class="p">)],</span>
+<span class="gp">... </span>            <span class="nb">vars</span><span class="o">=</span><span class="s1">&#39;alleleFreq_sp&#39;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">50</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;</span><span class="si">%.4f</span><span class="s2">\t</span><span class="si">%.4f</span><span class="s2">\t</span><span class="si">%.4f</span><span class="s2">\t</span><span class="si">%.4f</span><span class="s2">\n&#39; % &quot;</span>
+<span class="gp">... </span>            <span class="s2">&quot;tuple([subPop[x][&#39;alleleFreq&#39;][0][1] for x in ((0,0),(0,1),(1,0),(1,1))])&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">step</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">151</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">0.5018       0.5034  0.4941  0.4853</span>
+<span class="go">0.3652       0.3728  0.3820  0.3766</span>
+<span class="go">0.2882       0.2920  0.2590  0.2667</span>
+<span class="go">0.2083       0.1994  0.2378  0.2356</span>
+<span class="go">151</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="vspDuringMatingSelector.py">Download vspDuringMatingSelector.py</a></p>
+</div>
+<div class="section" id="natural-selection-in-heterogeneous-mating-schemes">
+<h2>Natural selection in heterogeneous mating schemes **<a class="headerlink" href="#natural-selection-in-heterogeneous-mating-schemes" title="Permalink to this headline">¶</a></h2>
+<p>Multiple mating schemes could be applied to the same subpopulation in a
+heterogeneous mating scheme (<a class="reference internal" href="refManual_ch2_sec3.html#HeteroMating" title="HeteroMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">HeteroMating</span></code></a>). These mating schemes may or
+may not support natural selection, may be applied to different virtual
+subpopulations of population, and they may see Individuals differently in terms
+of individual fitness. Parameter <code class="docutils literal notranslate"><span class="pre">fitnessField</span></code> of a mating scheme could be
+used to handle such cases. More specifically,</p>
+<ul class="simple">
+<li>You can turn off the natural selection support of a mating scheme by setting
+<code class="docutils literal notranslate"><span class="pre">fitnessField=''</span></code>.</li>
+<li>If a mating scheme uses a different set of fitness values, you can add an
+information field (e.g. <code class="docutils literal notranslate"><span class="pre">fitness1</span></code>), setting individual fitness to this
+information field using a selector (with parameter <code class="docutils literal notranslate"><span class="pre">infoFields='fitness1'</span></code>)
+and tells a mating scheme to look in this information field for fitness values
+(using parameter <code class="docutils literal notranslate"><span class="pre">fitnessField='fitness1'</span></code>).</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec1.html">Introduction to operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec2.html">Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec3.html">Expressions and statements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec4.html">Demographic changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec5.html">Genotype transmitters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html">Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec7.html">Penetrance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec8.html">Quantitative trait</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Natural Selection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#natural-selection-through-the-selection-of-parents">Natural selection through the selection of parents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#natural-selection-through-the-selection-of-offspring">Natural selection through the selection of offspring *</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#are-two-selection-scenarios-equivalent">Are two selection scenarios equivalent? **</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#map-selector-operator-mapselector">Map selector (operator <code class="docutils literal notranslate"><span class="pre">MapSelector</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multi-allele-selector-operator-maselector">Multi-allele selector (operator <code class="docutils literal notranslate"><span class="pre">MaSelector</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multi-locus-selection-models-operator-mlselector">Multi-locus selection models (operator <code class="docutils literal notranslate"><span class="pre">MlSelector</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a-hybrid-selector-operator-pyselector">A hybrid selector (operator <code class="docutils literal notranslate"><span class="pre">PySelector</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multi-locus-random-fitness-effects-operator-pymlselector">Multi-locus random fitness effects (operator <code class="docutils literal notranslate"><span class="pre">PyMlSelector</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alternative-implementations-of-natural-selection">Alternative implementations of natural selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#frequency-dependent-or-dynamic-selection-pressure">Frequency dependent or dynamic selection pressure *</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#support-for-virtual-subpopulations">Support for virtual subpopulations *</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#natural-selection-in-heterogeneous-mating-schemes">Natural selection in heterogeneous mating schemes **</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec10.html">Tagging operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html">Statistics calculation (operator <code class="docutils literal notranslate"><span class="pre">Stat</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec12.html">Conditional operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec13.html">Miscellaneous operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec14.html">Hybrid and Python operators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch5.html">simuPOP Operators</a><ul>
+      <li>Previous: <a href="userGuide_ch5_sec8.html" title="previous chapter">Quantitative trait</a></li>
+      <li>Next: <a href="userGuide_ch5_sec10.html" title="next chapter">Tagging operators</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch5_sec9.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

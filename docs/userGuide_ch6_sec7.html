@@ -1,0 +1,359 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Evolve a population following a specified pedigree structure ** &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Simulation of mitochondrial DNAs (mtDNAs) *" href="userGuide_ch6_sec8.html" />
+    <link rel="prev" title="Pedigrees" href="userGuide_ch6_sec6.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="evolve-a-population-following-a-specified-pedigree-structure">
+<h1>Evolve a population following a specified pedigree structure **<a class="headerlink" href="#evolve-a-population-following-a-specified-pedigree-structure" title="Permalink to this headline">¶</a></h1>
+<p>There are some applications where you would like to repeat the same evolutionary
+process repeatedly using the same pedigree structure. For example, a gene-
+dropping simulation method basically initialize leaves of a pedigree with random
+genotypes and pass the genotypes along the pedigree according to Mendelian laws.
+This can be done in simuPOP using a pedigree mating scheme.</p>
+<p>A pedigree mating scheme <a class="reference internal" href="refManual_ch2_sec3.html#PedigreeMating" title="PedigreeMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">PedigreeMating</span></code></a> evolves a population following
+an existing pedigree structure. If the  <a class="reference internal" href="refManual_ch2_sec1.html#Pedigree" title="Pedigree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pedigree</span></code></a> object has <code class="docutils literal notranslate"><span class="pre">N</span></code>
+ancestral generations and a present generation, it can be used to evolve a
+population for <code class="docutils literal notranslate"><span class="pre">N</span></code> generations, starting from the topmost ancestral
+generation. At the <em>k</em>-th generation, this mating scheme produces an offspring
+generation according to subpopulation structure of the <code class="docutils literal notranslate"><span class="pre">N-k-1</span></code> ancestral
+generation in the pedigree object (e.g. producing the offspring population of
+generation 0 according to the <code class="docutils literal notranslate"><span class="pre">N-1</span></code> ancestral generation of the pedigree
+object). For each offspring, this mating scheme copies individual ID and sex
+from the corresponing individual in the pedigree object. It then locates the
+parents of each offspring using their IDs in the pedigree object. A list of
+during mating operators are then used to transmit parental genotype to the
+offspring.</p>
+<p>To use this mating scheme, you should</p>
+<ul class="simple">
+<li>Prepare a pedigree object with <code class="docutils literal notranslate"><span class="pre">N</span></code> ancestral generations (and a present
+generation). Parental information should be available at the present, parental,
+…, and <code class="docutils literal notranslate"><span class="pre">N-1</span></code> ancestral generations. This object could be created by evolving
+a population with <code class="docutils literal notranslate"><span class="pre">ancGen</span></code> set to -1 with parental information tracked by
+operators <code class="docutils literal notranslate"><span class="pre">idTagger()</span></code> and <code class="docutils literal notranslate"><span class="pre">pedigreeTagger()</span></code>.</li>
+<li>Prepare the population so that it contains individuals with IDs matching this
+generation, or at least individuals who have offspring in the next topmost
+ancestral generation. Because individuals in such a population will parent
+offsprings at the <code class="docutils literal notranslate"><span class="pre">N-1</span></code> ancestral generation of the pedigree object, it is a
+good idea to assign <code class="docutils literal notranslate"><span class="pre">ind_id</span></code> using <code class="docutils literal notranslate"><span class="pre">ped.indInfo('father_id')</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ped.infInfo('mother_id')</span></code> of the <code class="docutils literal notranslate"><span class="pre">N-1</span></code> ancestral generation of <code class="docutils literal notranslate"><span class="pre">ped</span></code>.</li>
+<li>Evolve the population using a <a class="reference internal" href="refManual_ch2_sec3.html#PedigreeMating" title="PedigreeMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">PedigreeMating</span></code></a> mating scheme for <code class="docutils literal notranslate"><span class="pre">N</span></code>
+or less generations. Because parents are chosen by their IDs, subpopulation
+structure is ignored and migration will have no effect on the evolutionary
+process. No <a class="reference internal" href="refManual_ch3_sec10.html#IdTagger" title="IdTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">IdTagger</span></code></a> should be used to assign IDs to offspring because
+re-labeling IDs will confuse this mating scheme. This mating scheme copies
+individual sex from pedigree individual to each offspring because individual sex
+may affect the way genotypes are transmitted (e.g. a
+<a class="reference internal" href="refManual_ch3_sec5.html#MendelianGenoTransmitter" title="MendelianGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MendelianGenoTransmitter</span></code></a>() with sex chromosomes).</li>
+</ul>
+<p>Example <a class="reference internal" href="#pedigreemating"><span class="std std-ref">pedigreeMating</span></a> demonstrates how to create a
+complete pedigree by evolving a population without genotype, and then replay the
+evolutionary process using another population.</p>
+<p id="pedigreemating"><strong>Example</strong>: <em>Use a pedigree mating scheme to replay an evolutionary process.</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># create a population without any genotype</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.utils</span> <span class="k">import</span> <span class="n">migrSteppingStoneRates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ped</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">1000</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">,</span> <span class="n">ancGen</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;ind_id&#39;</span><span class="p">,</span> <span class="s1">&#39;father_id&#39;</span><span class="p">,</span> <span class="s1">&#39;mother_id&#39;</span><span class="p">,</span> <span class="s1">&#39;migrate_to&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ped</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">Migrator</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="n">migrSteppingStoneRates</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">numOffspring</span><span class="o">=</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">UNIFORM_DISTRIBUTION</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="c1"># we do not even need a genotype transmitter...</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">PedigreeTagger</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">100</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">100</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># convert itself to a pedigree object</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ped</span><span class="o">.</span><span class="n">asPedigree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># we should have 100 ancestral generations</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">N</span> <span class="o">=</span> <span class="n">ped</span><span class="o">.</span><span class="n">ancestralGens</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># We should have 101 * 1000 * 5 individuals, but how many actually</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># contribute genotype to the last generation?</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">anc</span> <span class="o">=</span> <span class="n">ped</span><span class="o">.</span><span class="n">identifyAncestors</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">anc</span><span class="p">)</span>
+<span class="go">205647</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># remove individuals who do not contribute genotype to the last generation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">allIDs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">ind_id</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ped</span><span class="o">.</span><span class="n">allIndividuals</span><span class="p">()]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">removedIDs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">allIDs</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">anc</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ped</span><span class="o">.</span><span class="n">removeIndividuals</span><span class="p">(</span><span class="n">IDs</span><span class="o">=</span><span class="n">removedIDs</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># now create a top most population, but we do not need all of them</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># so we record only used individuals</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">IDs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">ind_id</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ped</span><span class="o">.</span><span class="n">allIndividuals</span><span class="p">(</span><span class="n">ancGens</span><span class="o">=</span><span class="n">N</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sex</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">sex</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ped</span><span class="o">.</span><span class="n">allIndividuals</span><span class="p">(</span><span class="n">ancGens</span><span class="o">=</span><span class="n">N</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># create a population, this time with genotype. Note that we do not need</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># populaton structure because PedigreeMating disregard population structure.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">IDs</span><span class="p">),</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;ind_id&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># manually initialize ID and sex</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initInfo</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">IDs</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;ind_id&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initSex</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">sex</span><span class="o">=</span><span class="n">sex</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="c1"># we do not need migration, or set number of offspring,</span>
+<span class="gp">... </span>    <span class="c1"># or demographic model, but we do need a genotype transmitter</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">PedigreeMating</span><span class="p">(</span><span class="n">ped</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">ops</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">()),</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">100</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">100</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># let us compare the pedigree and the population object</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ped</span><span class="o">.</span><span class="n">indInfo</span><span class="p">(</span><span class="s1">&#39;ind_id&#39;</span><span class="p">)[:</span><span class="mi">5</span><span class="p">])</span>
+<span class="go">(500001.0, 500002.0, 500003.0, 500004.0, 500005.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">indInfo</span><span class="p">(</span><span class="s1">&#39;ind_id&#39;</span><span class="p">)[:</span><span class="mi">5</span><span class="p">])</span>
+<span class="go">(500001.0, 500002.0, 500003.0, 500004.0, 500005.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">([</span><span class="n">ped</span><span class="o">.</span><span class="n">individual</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">sex</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
+<span class="go">[1, 2, 1, 1, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">([</span><span class="n">pop</span><span class="o">.</span><span class="n">individual</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">sex</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
+<span class="go">[1, 2, 1, 1, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ped</span><span class="o">.</span><span class="n">subPopSizes</span><span class="p">())</span>
+<span class="go">(663, 1254, 1213, 1230, 640)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSizes</span><span class="p">())</span>
+<span class="go">(663, 1254, 1213, 1230, 640)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="pedigreeMating.py">Download pedigreeMating.py</a></p>
+<p>As long as unique IDs are used for individuals in different generations, the
+same technique could be used for overlapping generations as well. Even if some
+individuals are copied from generation to generation, separate IDs should be
+assigned to these individuals so that a pedigree could be correctly constructed.
+Because these individuals are copied from a single parent, the pedigree object
+will have mixed number of parents (some individuals have one parent, some have
+two). If <a class="reference internal" href="refManual_ch3_sec10.html#PedigreeTagger" title="PedigreeTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">PedigreeTagger</span></code></a> operators are used to record parental
+information, such a pedigree could be loaded by function <a class="reference internal" href="refManual_ch2_sec6.html#loadPedigree" title="loadPedigree"><code class="xref py py-func docutils literal notranslate"><span class="pre">loadPedigree</span></code></a>.
+Example <a class="reference internal" href="#pedigreematingagestructured"><span class="std std-ref">pedigreeMatingAgeStructured</span></a> evolves
+an age-structured population. Instead of saving all ancestral generations to a
+population object and convert it to a pedigree, this example saves the complete
+pedigree to file <code class="docutils literal notranslate"><span class="pre">structure.ped</span></code> and load the pedigree using function
+<a class="reference internal" href="refManual_ch2_sec6.html#loadPedigree" title="loadPedigree"><code class="xref py py-func docutils literal notranslate"><span class="pre">loadPedigree</span></code></a>.</p>
+<p id="pedigreematingagestructured"><strong>Example</strong>: <em>Replay an evolutionary process of an age-structured population</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">N</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="s1">&#39;ind_id&#39;</span><span class="p">,</span> <span class="s1">&#39;father_id&#39;</span><span class="p">,</span> <span class="s1">&#39;mother_id&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># we simulate age 0, 1, 2, 3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">InfoSplitter</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="c1"># random assign age</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitInfo</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="c1"># random genotype</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="c1"># assign an unique ID to everyone.</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="c1"># increase the age of everyone by 1 before mating.</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InfoExec</span><span class="p">(</span><span class="s1">&#39;age += 1&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">HeteroMating</span><span class="p">([</span>
+<span class="gp">... </span>        <span class="c1"># age 1, 2 will be copied</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">CloneMating</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>                <span class="c1"># This will set offspring ID</span>
+<span class="gp">... </span>                <span class="n">sim</span><span class="o">.</span><span class="n">CloneGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>                <span class="c1"># new ID for offspring in order to track pedigree</span>
+<span class="gp">... </span>                <span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>
+<span class="gp">... </span>                <span class="c1"># both offspring and parental IDs will be the same</span>
+<span class="gp">... </span>                <span class="n">sim</span><span class="o">.</span><span class="n">PedigreeTagger</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s1">&#39;&gt;&gt;structured.ped&#39;</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="p">],</span>
+<span class="gp">... </span>            <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">)],</span>
+<span class="gp">... </span>            <span class="n">weight</span><span class="o">=-</span><span class="mi">1</span>
+<span class="gp">... </span>        <span class="p">),</span>
+<span class="gp">... </span>        <span class="c1"># age 2 produce offspring</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>                <span class="c1"># new ID for offspring</span>
+<span class="gp">... </span>                <span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>
+<span class="gp">... </span>                <span class="c1"># record complete pedigree</span>
+<span class="gp">... </span>                <span class="n">sim</span><span class="o">.</span><span class="n">PedigreeTagger</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s1">&#39;&gt;&gt;structured.ped&#39;</span><span class="p">),</span>
+<span class="gp">... </span>                <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span>   <span class="c1"># transmit genotype</span>
+<span class="gp">... </span>            <span class="p">],</span>
+<span class="gp">... </span>            <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">)]</span>
+<span class="gp">... </span>        <span class="p">)]</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">20</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">20</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># use a pedigree object recovered from a file saved by operator PedigreeTagger</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ped</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">loadPedigree</span><span class="p">(</span><span class="s1">&#39;structured.ped&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># create a top most population, but we do not need all of them</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># so we record only used individuals</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">IDs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">ind_id</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ped</span><span class="o">.</span><span class="n">allIndividuals</span><span class="p">(</span><span class="n">ancGens</span><span class="o">=</span><span class="n">ped</span><span class="o">.</span><span class="n">ancestralGens</span><span class="p">())]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sex</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">sex</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ped</span><span class="o">.</span><span class="n">allIndividuals</span><span class="p">(</span><span class="n">ancGens</span><span class="o">=</span><span class="n">ped</span><span class="o">.</span><span class="n">ancestralGens</span><span class="p">())]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># create a population, this time with genotype. Note that we do not need</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># populaton structure because PedigreeMating disregard population structure.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">IDs</span><span class="p">),</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;ind_id&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># manually initialize ID and sex</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initInfo</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">IDs</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;ind_id&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initSex</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">sex</span><span class="o">=</span><span class="n">sex</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="c1"># we do not need migration, or set number of offspring,</span>
+<span class="gp">... </span>    <span class="c1"># or demographic model, but we do need a genotype transmitter</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">PedigreeMating</span><span class="p">(</span><span class="n">ped</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">ops</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">IfElse</span><span class="p">(</span><span class="k">lambda</span> <span class="n">mom</span><span class="p">:</span> <span class="n">mom</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span>
+<span class="gp">... </span>                <span class="n">sim</span><span class="o">.</span><span class="n">CloneGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>                <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">())</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">100</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">20</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">indInfo</span><span class="p">(</span><span class="s1">&#39;ind_id&#39;</span><span class="p">)[:</span><span class="mi">5</span><span class="p">])</span>
+<span class="go">(200001.0, 200002.0, 200003.0, 200004.0, 200005.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">([</span><span class="n">pop</span><span class="o">.</span><span class="n">individual</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">sex</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
+<span class="go">[1, 2, 2, 1, 1]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># The pedigree object does not have population structure</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSizes</span><span class="p">())</span>
+<span class="go">(10000,)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="pedigreeMatingAgeStructured.py">Download pedigreeMatingAgeStructured.py</a></p>
+<p>The pedigree is then used to repeat the evolutionary process. However, because
+some individuals were produced sexually using <a class="reference internal" href="refManual_ch3_sec5.html#MendelianGenoTransmitter" title="MendelianGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MendelianGenoTransmitter</span></code></a>
+and some were copied using <code class="docutils literal notranslate"><span class="pre">CloneGenoTransitter</span></code>, an <a class="reference internal" href="refManual_ch3_sec12.html#IfElse" title="IfElse"><code class="xref py py-class docutils literal notranslate"><span class="pre">IfElse</span></code></a> operator
+has to be used to transmit genotypes correctly. This example uses the function
+condition of the <a class="reference internal" href="refManual_ch3_sec12.html#IfElse" title="IfElse"><code class="xref py py-class docutils literal notranslate"><span class="pre">IfElse</span></code></a> operator and makes use of the fact that parent
+<code class="docutils literal notranslate"><span class="pre">mom</span></code> will be <code class="docutils literal notranslate"><span class="pre">None</span></code> if an individual is copied from his or her father.</p>
+<p>plainnat simuPOP</p>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec1.html">Mating Schemes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec2.html">Simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec3.html">Non-random and customized mating schemes *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec4.html">Age structured populations with overlapping generations **</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec5.html">Tracing allelic lineage *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec6.html">Pedigrees</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Evolve a population following a specified pedigree structure **</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec8.html">Simulation of mitochondrial DNAs (mtDNAs) *</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch6.html">Evolving populations</a><ul>
+      <li>Previous: <a href="userGuide_ch6_sec6.html" title="previous chapter">Pedigrees</a></li>
+      <li>Next: <a href="userGuide_ch6_sec8.html" title="next chapter">Simulation of mitochondrial DNAs (mtDNAs) *</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch6_sec7.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

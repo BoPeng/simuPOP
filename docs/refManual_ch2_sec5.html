@@ -1,0 +1,356 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Utility Classes &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Global functions" href="refManual_ch2_sec6.html" />
+    <link rel="prev" title="Pre-defined mating schemes" href="refManual_ch2_sec4.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="utility-classes">
+<h1>Utility Classes<a class="headerlink" href="#utility-classes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class-withargs">
+<h2>class WithArgs<a class="headerlink" href="#class-withargs" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="WithArgs">
+<em class="property">class </em><code class="descname">WithArgs</code><a class="headerlink" href="#WithArgs" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class wraps around a user-provided function and provides an
+attribute <code class="docutils literal notranslate"><span class="pre">args</span></code> so that simuPOP knows which parameters to send to the
+function. This is only needed if the function can not be defined with
+allowed parameters.</p>
+<dl class="method">
+<dt id="WithArgs.WithArgs">
+<code class="descname">WithArgs</code><span class="sig-paren">(</span><em>func</em>, <em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#WithArgs.WithArgs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a callable object that wraps around function <code class="docutils literal notranslate"><span class="pre">func</span></code>.
+Parameter <code class="docutils literal notranslate"><span class="pre">args</span></code> should be a list of parameter names.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-withmode">
+<h2>class WithMode<a class="headerlink" href="#class-withmode" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="WithMode">
+<em class="property">class </em><code class="descname">WithMode</code><a class="headerlink" href="#WithMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class wraps around a user-provided output string, function
+or file handle (acceptable by parameter <code class="docutils literal notranslate"><span class="pre">output</span></code> of operators) so
+that simuPOP knows which mode the output should be written to. For
+example, if the output of the operator is a binary compressed stream,
+<code class="docutils literal notranslate"><span class="pre">WithMode(output,</span> <span class="pre">'b')</span></code> could be used to tell the operators to
+output bytes instead of string. This is most needed for Python 3
+because files in Python 2 accepts string even if they are opened in
+binary mode.</p>
+<dl class="method">
+<dt id="WithMode.WithMode">
+<code class="descname">WithMode</code><span class="sig-paren">(</span><em>output</em>, <em>mode=''</em><span class="sig-paren">)</span><a class="headerlink" href="#WithMode.WithMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an object that wraps around <code class="docutils literal notranslate"><span class="pre">output</span></code> and tells simuPOP
+to output string in <code class="docutils literal notranslate"><span class="pre">mode</span></code>. This class currently only support
+<code class="docutils literal notranslate"><span class="pre">mode=''</span></code> for text mode and <code class="docutils literal notranslate"><span class="pre">mode='b'</span></code> for binary output.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-rng">
+<h2>class RNG<a class="headerlink" href="#class-rng" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="RNG">
+<em class="property">class </em><code class="descname">RNG</code><a class="headerlink" href="#RNG" title="Permalink to this definition">¶</a></dt>
+<dd><p>This random number generator class wraps around a number of random
+number generators from GNU Scientific Library. You can obtain and
+change the  RNG used by the current  simuPOP module through the
+<code class="docutils literal notranslate"><span class="pre">getRNG()</span></code> function, or create a separate random number generator
+and use it in your script.</p>
+<dl class="method">
+<dt id="RNG.RNG">
+<code class="descname">RNG</code><span class="sig-paren">(</span><em>name=None</em>, <em>seed=0</em><span class="sig-paren">)</span><a class="headerlink" href="#RNG.RNG" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a  RNG object using specified name and seed. If <em>rng</em> is
+not given, environmental variable <code class="docutils literal notranslate"><span class="pre">GSL_RNG_TYPE</span></code> will be used
+if it is available. Otherwise, generator <code class="docutils literal notranslate"><span class="pre">mt19937</span></code> will be
+used. If <em>seed</em> is not given, <code class="docutils literal notranslate"><span class="pre">/dev/urandom</span></code>, <code class="docutils literal notranslate"><span class="pre">/dev/random</span></code>,
+or other system random number source will be used to guarantee
+that random seeds are used even if more than one  simuPOP
+sessions are started simultaneously. Names of supported random
+number generators are available from
+<code class="docutils literal notranslate"><span class="pre">moduleInfo()['availableRNGs']</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="RNG.name">
+<code class="descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#RNG.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of the current random number generator.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="RNG.randBinomial">
+<code class="descname">randBinomial</code><span class="sig-paren">(</span><em>n</em>, <em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#RNG.randBinomial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a random number following a binomial distribution with
+parameters <em>n</em> and <em>p</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="RNG.randChisq">
+<code class="descname">randChisq</code><span class="sig-paren">(</span><em>nu</em><span class="sig-paren">)</span><a class="headerlink" href="#RNG.randChisq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a random number following a Chi-squared distribution
+with <em>nu</em> degrees of freedom.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="RNG.randExponential">
+<code class="descname">randExponential</code><span class="sig-paren">(</span><em>mu</em><span class="sig-paren">)</span><a class="headerlink" href="#RNG.randExponential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a random number following a exponential distribution
+with parameter <em>mu</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="RNG.randGamma">
+<code class="descname">randGamma</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#RNG.randGamma" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a random number following a gamma distribution with a
+shape parameters <em>a</em> and scale parameter <em>b</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="RNG.randGeometric">
+<code class="descname">randGeometric</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#RNG.randGeometric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a random number following a geometric distribution with
+parameter <em>p</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="RNG.randInt">
+<code class="descname">randInt</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="headerlink" href="#RNG.randInt" title="Permalink to this definition">¶</a></dt>
+<dd><p>return a random number in the range of <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1,</span> <span class="pre">2,</span> <span class="pre">...</span> <span class="pre">n-1]</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="RNG.randMultinomial">
+<code class="descname">randMultinomial</code><span class="sig-paren">(</span><em>N</em>, <em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#RNG.randMultinomial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a random number following a multinomial distribution
+with parameters <em>N</em> and <em>p</em> (a list of probabilities).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="RNG.randNormal">
+<code class="descname">randNormal</code><span class="sig-paren">(</span><em>mu</em>, <em>sigma</em><span class="sig-paren">)</span><a class="headerlink" href="#RNG.randNormal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a random number following a normal distribution with
+mean <em>mu</em> and standard deviation <em>sigma</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="RNG.randPoisson">
+<code class="descname">randPoisson</code><span class="sig-paren">(</span><em>mu</em><span class="sig-paren">)</span><a class="headerlink" href="#RNG.randPoisson" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a random number following a Poisson distribution with
+parameter <em>mu</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="RNG.randTruncatedBinomial">
+<code class="descname">randTruncatedBinomial</code><span class="sig-paren">(</span><em>n</em>, <em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#RNG.randTruncatedBinomial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a positive random number following a zero-truncated
+binomial distribution with parameters <em>n</em> and <em>p</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="RNG.randTruncatedPoisson">
+<code class="descname">randTruncatedPoisson</code><span class="sig-paren">(</span><em>mu</em><span class="sig-paren">)</span><a class="headerlink" href="#RNG.randTruncatedPoisson" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a positive random number following a zero-truncated
+Poisson distribution with parameter <em>mu</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="RNG.randUniform">
+<code class="descname">randUniform</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#RNG.randUniform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a random number following a rng_uniform [0, 1)
+distribution.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="RNG.seed">
+<code class="descname">seed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#RNG.seed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the seed used to initialize the  RNG. This can be used to
+repeat a previous session.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="RNG.set">
+<code class="descname">set</code><span class="sig-paren">(</span><em>name=None</em>, <em>seed=0</em><span class="sig-paren">)</span><a class="headerlink" href="#RNG.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace the existing random number generator using  RNG*name*
+with seed <em>seed</em>. If <em>seed</em> is 0, a random seed will be used. If
+<em>name</em> is empty, use the existing  RNG but reset the seed.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-weightedsampler">
+<h2>class WeightedSampler<a class="headerlink" href="#class-weightedsampler" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="WeightedSampler">
+<em class="property">class </em><code class="descname">WeightedSampler</code><a class="headerlink" href="#WeightedSampler" title="Permalink to this definition">¶</a></dt>
+<dd><p>A random number generator that returns <code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span></code>, …, <code class="docutils literal notranslate"><span class="pre">k-1</span></code>
+with probabilites that are proportional to their weights. For
+example, a weighted sampler with weights <code class="docutils literal notranslate"><span class="pre">4</span></code>, <code class="docutils literal notranslate"><span class="pre">3</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span></code> and
+<code class="docutils literal notranslate"><span class="pre">1</span></code> will return numbers <code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span></code> and <code class="docutils literal notranslate"><span class="pre">3</span></code> with
+probabilities <code class="docutils literal notranslate"><span class="pre">0.4</span></code>, <code class="docutils literal notranslate"><span class="pre">0.3</span></code>, <code class="docutils literal notranslate"><span class="pre">0.2</span></code> and <code class="docutils literal notranslate"><span class="pre">0.1</span></code>, respectively.
+If an additional parameter <code class="docutils literal notranslate"><span class="pre">N</span></code> is specified, the weighted sampler
+will return exact proportions of numbers if <code class="docutils literal notranslate"><span class="pre">N</span></code> numbers are
+returned. The version without additional parameter is similar to
+the <code class="docutils literal notranslate"><span class="pre">sample(prob,</span> <span class="pre">replace=FALSE)</span></code> function of the R statistical
+package.</p>
+<dl class="method">
+<dt id="WeightedSampler.WeightedSampler">
+<code class="descname">WeightedSampler</code><span class="sig-paren">(</span><em>weights=[]</em>, <em>N=0</em><span class="sig-paren">)</span><a class="headerlink" href="#WeightedSampler.WeightedSampler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a weighted sampler that returns <code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span></code>, …
+<code class="docutils literal notranslate"><span class="pre">k-1</span></code> when a list of <code class="docutils literal notranslate"><span class="pre">k</span></code> weights are specified (<em>weights</em>).
+<em>weights</em> do not have to add up to 1. If a non-zero <em>N</em> is
+specified, exact proportions of numbers will be returned in <em>N</em>
+returned numbers.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WeightedSampler.draw">
+<code class="descname">draw</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WeightedSampler.draw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a random number between <code class="docutils literal notranslate"><span class="pre">0</span></code> and <code class="docutils literal notranslate"><span class="pre">k-1</span></code> with
+probabilities that are proportional to specified weights.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WeightedSampler.drawSamples">
+<code class="descname">drawSamples</code><span class="sig-paren">(</span><em>n=1</em><span class="sig-paren">)</span><a class="headerlink" href="#WeightedSampler.drawSamples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of <em>n</em> random numbers</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec1.html">Individual, Population, pedigree and Simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec2.html">Virtual splitters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec3.html">Mating Schemes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec4.html">Pre-defined mating schemes</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Utility Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-withargs">class WithArgs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-withmode">class WithMode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-rng">class RNG</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-weightedsampler">class WeightedSampler</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec6.html">Global functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="refManual.html">&lt;no title&gt;</a><ul>
+  <li><a href="refManual_ch2.html">simuPOP Components</a><ul>
+      <li>Previous: <a href="refManual_ch2_sec4.html" title="previous chapter">Pre-defined mating schemes</a></li>
+      <li>Next: <a href="refManual_ch2_sec6.html" title="next chapter">Global functions</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/refManual_ch2_sec5.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

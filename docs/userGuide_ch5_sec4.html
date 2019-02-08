@@ -1,0 +1,800 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Demographic changes &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Genotype transmitters" href="userGuide_ch5_sec5.html" />
+    <link rel="prev" title="Expressions and statements" href="userGuide_ch5_sec3.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="demographic-changes">
+<h1>Demographic changes<a class="headerlink" href="#demographic-changes" title="Permalink to this headline">¶</a></h1>
+<p>A mating scheme controls the size of an offspring generation using parameter
+<code class="docutils literal notranslate"><span class="pre">subPopSize</span></code>. This parameter has been described in detail in section
+<a class="reference internal" href="userGuide_ch6_sec1.html#subsec-offspring-size"><span class="std std-ref">subsec_offspring_size</span></a>. In summary,</p>
+<ul class="simple">
+<li>The subpopulation sizes of the offspring generation will be the same as the
+parental generation if subPopSize is not set.</li>
+<li>The offspring generation will have a fixed size if <code class="docutils literal notranslate"><span class="pre">subPopSize</span></code> is set to a
+number (no subpopulation) or a list of subpopulation sizes.</li>
+<li>The subpopulation sizes of an offspring generation will be determined by the
+return value of a demographic function if <code class="docutils literal notranslate"><span class="pre">subPopSize</span></code> is set to such a
+function (a function that returns subpopulation sizes at each generation).</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Parameter <code class="docutils literal notranslate"><span class="pre">subPopSize</span></code> only controls subpopulation sizes of an offspring
+generation immediately after it is generated. population or subpopulation sizes
+could be changed by other operators.</p>
+</div>
+<p>During mating, a mating scheme goes through each parental subpopulation and
+populates its corresponding offspring subpopulation. This implies that</p>
+<ul class="simple">
+<li>Parental and offspring populations should have the same number of
+subpopulations.</li>
+<li>Mating happens strictly within each subpopulation.</li>
+</ul>
+<p>This section will introduce several operators that allow you to move dndividuals
+across the boundary of subpopulations (migration), and change the number of
+subpopulations during evolution (split and merge). Please refer to
+<a class="reference internal" href="userGuide_ch6_sec1.html#subsec-offspring-size"><span class="std std-ref">subsec_offspring_size</span></a> (control the size of the
+offspring generation section of chapter mating scheme) for more details. For
+more advanced demographic models, please refer to the <a class="reference internal" href="refManual_ch4_sec3.html#module-simuPOP.demography" title="simuPOP.demography"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.demography</span></code></a>
+module.</p>
+<div class="section" id="migration-operator-migrator">
+<h2>Migration (operator <a class="reference internal" href="refManual_ch3_sec4.html#Migrator" title="Migrator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Migrator</span></code></a>)<a class="headerlink" href="#migration-operator-migrator" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="migration-by-probability">
+<h3>Migration by probability<a class="headerlink" href="#migration-by-probability" title="Permalink to this headline">¶</a></h3>
+<p>Operator <a class="reference internal" href="refManual_ch3_sec4.html#Migrator" title="Migrator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Migrator</span></code></a> (and its function form <code class="docutils literal notranslate"><span class="pre">migrate</span></code>) migrates
+individuals from one subpopulation to another. The key parameters are</p>
+<ul class="simple">
+<li><em>from</em> subpopulations (parameter <code class="docutils literal notranslate"><span class="pre">subPops</span></code>). A list of subpopulations from
+which individuals migrate. Default to all subpopulations.</li>
+<li><em>to</em> subpopulations (parameter <code class="docutils literal notranslate"><span class="pre">toSubPops</span></code>). A list of subpopulations to
+which individuals migrate. Default to all subpopulations. <strong>A new subpopulation
+ID can be specified to create a new subpopulation from migrants.</strong></li>
+<li>A migration rate matrix (parameter <code class="docutils literal notranslate"><span class="pre">rate</span></code>). A <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix
+( a nested list in Python) that specifies migration rate from each source to
+each destination subpopulation. That is to say, <span class="math notranslate nohighlight">\(\mbox{rate}{}_{i,j}\)</span>
+specifies migration rate from <span class="math notranslate nohighlight">\(\mbox{subPops}_{i}\)</span> to
+<span class="math notranslate nohighlight">\(\mbox{toSubPops}_{j}\)</span>. Needless to say, <span class="math notranslate nohighlight">\(m\)</span> and <span class="math notranslate nohighlight">\(n\)</span> are
+determined by the number of <em>from</em> and <em>to</em> subpopulations.</li>
+</ul>
+<p>Example <a class="reference internal" href="#migratebyprob"><span class="std std-ref">migrateByProb</span></a> demonstrate the use of a
+<a class="reference internal" href="refManual_ch3_sec4.html#Migrator" title="Migrator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Migrator</span></code></a> to migrate individuals between three subpopulations. Note that</p>
+<ul class="simple">
+<li>Operator <a class="reference internal" href="refManual_ch3_sec4.html#Migrator" title="Migrator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Migrator</span></code></a> relies on an information field <code class="docutils literal notranslate"><span class="pre">migrate_to</span></code>
+(configurable) to record destination subpopulation of each individual so this
+information field needs to be added to a population befor migration.</li>
+<li>Migration rates to subpopulation themselves are determined automatically so
+they can be left unspecified.</li>
+</ul>
+<p id="migratebyprob"><strong>Example</strong>: <em>Migration by probability</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">1000</span><span class="p">]</span><span class="o">*</span><span class="mi">3</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;migrate_to&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">Migrator</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="gp">... </span>        <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="s1">&#39;subPopSize&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOutput</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">[762, 1108, 1130]</span>
+<span class="go">[601, 1175, 1224]</span>
+<span class="go">[490, 1233, 1277]</span>
+<span class="go">[395, 1282, 1323]</span>
+<span class="go">[320, 1300, 1380]</span>
+<span class="go">5</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="migrateByProb.py">Download migrateByProb.py</a></p>
+</div>
+<div class="section" id="migration-by-proportion-and-counts">
+<h3>Migration by proportion and counts<a class="headerlink" href="#migration-by-proportion-and-counts" title="Permalink to this headline">¶</a></h3>
+<p>Migration rate specified in the rate parameter in Example <a class="reference internal" href="#migratebyprob"><span class="std std-ref">migrateByProb</span></a> is intepreted as probabilities. That is to say, a migration
+rate <span class="math notranslate nohighlight">\(r_{m,n}\)</span> is interpreted as the probability at which any individual
+in subpopulation <span class="math notranslate nohighlight">\(m\)</span> migrates to subpopulation <span class="math notranslate nohighlight">\(n\)</span>. The exact number
+of migrants are randomly distributed.</p>
+<p>If you would like to specify exactly how many migrants migrate from a
+subpopulation to another, you can specify parameter <code class="docutils literal notranslate"><span class="pre">mode</span></code> of operator
+<a class="reference internal" href="refManual_ch3_sec4.html#Migrator" title="Migrator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Migrator</span></code></a> to <code class="docutils literal notranslate"><span class="pre">BY_PROPORTION</span></code> or <code class="docutils literal notranslate"><span class="pre">BY_COUNTS</span></code>. The <code class="docutils literal notranslate"><span class="pre">BY_PROPORTION</span></code>
+mode interpret <span class="math notranslate nohighlight">\(r_{m,n}\)</span> as proportion of individuals who will migrate
+from subpopulation <span class="math notranslate nohighlight">\(m\)</span> to <span class="math notranslate nohighlight">\(n\)</span> so the number of <span class="math notranslate nohighlight">\(m\rightarrow
+n\)</span> migrant will be exactly <span class="math notranslate nohighlight">\(r_{m,n}\times\)</span>subPopSize(m). In the
+<code class="docutils literal notranslate"><span class="pre">BY_COUNTS</span></code> mode, <span class="math notranslate nohighlight">\(r_{m,n}\)</span> is interpretted as number of migrants,
+regardless the size of subpopulation <span class="math notranslate nohighlight">\(m\)</span>. Example
+<a class="reference internal" href="#migratebypropandcount"><span class="std std-ref">migrateByPropAndCount</span></a> demonstrates these two
+migration modes, as well as the use of parameters <code class="docutils literal notranslate"><span class="pre">subPops</span></code> and <code class="docutils literal notranslate"><span class="pre">toSubPops.</span></code></p>
+<p id="migratebypropandcount"><strong>Example</strong>: <em>Migration by proportion and count</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">1000</span><span class="p">]</span><span class="o">*</span><span class="mi">3</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;migrate_to&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">Migrator</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">]],</span>
+<span class="gp">... </span>            <span class="n">mode</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">BY_PROPORTION</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">subPops</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="n">toSubPops</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="s1">&#39;subPopSize&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOutput</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">[1000, 900, 800, 300]</span>
+<span class="go">[1000, 810, 640, 550]</span>
+<span class="go">[1000, 729, 512, 759]</span>
+<span class="go">[1000, 657, 410, 933]</span>
+<span class="go">[1000, 592, 328, 1080]</span>
+<span class="go">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">Migrator</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="p">[[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">]],</span>
+<span class="gp">... </span>            <span class="n">mode</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">BY_COUNTS</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">subPops</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="n">toSubPops</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="s1">&#39;subPopSize&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOutput</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">[1000, 692, 328, 980]</span>
+<span class="go">[1000, 792, 328, 880]</span>
+<span class="go">[1000, 892, 328, 780]</span>
+<span class="go">[1000, 992, 328, 680]</span>
+<span class="go">[1000, 1092, 328, 580]</span>
+<span class="go">5</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="migrateByPropAndCount.py">Download migrateByPropAndCount.py</a></p>
+</div>
+<div class="section" id="theoretical-migration-models">
+<h3>Theoretical migration models<a class="headerlink" href="#theoretical-migration-models" title="Permalink to this headline">¶</a></h3>
+<p>To facilitate the use of widely used theoretical migration models, a few
+functions are defined in module <a class="reference internal" href="refManual_ch4_sec3.html#module-simuPOP.demography" title="simuPOP.demography"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.demography</span></code></a>
+<a class="reference internal" href="userGuide_ch7_sec3.html#subsec-predefined-migration-models"><span class="std std-ref">subsec_Predefined_migration_models</span></a>.
+These functions generate migration matrixes that can be plugged in to the
+<a class="reference internal" href="refManual_ch3_sec4.html#Migrator" title="Migrator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Migrator</span></code></a> operator.</p>
+</div>
+<div class="section" id="migrate-from-virtual-subpopulations">
+<h3>migrate from virtual subpopulations *<a class="headerlink" href="#migrate-from-virtual-subpopulations" title="Permalink to this headline">¶</a></h3>
+<p>Under a realistic eco-social settings, individuals in a subpopulation rarely
+have the same probability to migrate. Genetic evidence has shown that female has
+a higher migrate rate than male in humans, perhaps due to migration patterns
+related to inter-population marriages. Such sex-biased migration also happens in
+other large migration events such as slave trade.</p>
+<p>It is easy to simulate most of such complex migration models by migrating from
+virtual subpopulations. For example, if you define virtual subpopulations by
+sex, you can specify different migration rates for males and females and control
+the proportion of males among migrants, by specifying virtual subpopulations in
+parameter <code class="docutils literal notranslate"><span class="pre">subPops</span></code>. Parameter <code class="docutils literal notranslate"><span class="pre">toSubPops</span></code> does not accept virtual
+subpopulations because you cannot, for example, migrate to females in a
+subpopulation.</p>
+<p>Example <a class="reference internal" href="#migratevsp"><span class="std std-ref">migrateVSP</span></a> demonstrate a sex-biased migration model
+where males dominate migrants from subpopulation 0. To avoid confusing, this
+example uses the proportion migration mode. At the beginning of the first
+generation, there are 500 males and 500 females in each subpopulation. A 10%
+male migration rate and 5% female migration rate leads to 50 male migrants and
+25 female migrants. Subpopulation sizes and number of males in each
+subpopulation before mating are therefore:</p>
+<ul class="simple">
+<li>Subpopulation 0: male 500-50, female 500-25, total 925</li>
+<li>Subpopulation 1: male 500+50, female 500+25, total 1075</li>
+</ul>
+<p>Note that the unspecified <em>to</em> subpopulations are subpopulation 0 and 1, which
+cannot be virtual.</p>
+<p id="migratevsp"><strong>Example</strong>: <em>Migration from virtual subpopulations</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">1000</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;migrate_to&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">SexSplitter</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="c1"># 500 males and 500 females</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(</span><span class="n">sex</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">MALE</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">FEMALE</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Migrator</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.10</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="p">],</span>
+<span class="gp">... </span>            <span class="n">mode</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">BY_PROPORTION</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">numOfMales</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="s1">&#39;numOfMales_sp&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;</span><span class="si">%d</span><span class="s2">/</span><span class="si">%d</span><span class="s2">\t</span><span class="si">%d</span><span class="s2">/</span><span class="si">%d</span><span class="s2">\n&#39; % (subPop[0][&#39;numOfMales&#39;], subPopSize[0], &quot;</span>
+<span class="gp">... </span>            <span class="s2">&quot;subPop[1][&#39;numOfMales&#39;], subPopSize[1])&quot;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">numOfMales</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="s1">&#39;numOfMales_sp&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;</span><span class="si">%d</span><span class="s2">/</span><span class="si">%d</span><span class="s2">\t</span><span class="si">%d</span><span class="s2">/</span><span class="si">%d</span><span class="s2">\n&#39; % (subPop[0][&#39;numOfMales&#39;], subPopSize[0], &quot;</span>
+<span class="gp">... </span>            <span class="s2">&quot;subPop[1][&#39;numOfMales&#39;], subPopSize[1])&quot;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">450/925      550/1075</span>
+<span class="go">426/925      520/1075</span>
+<span class="go">384/859      562/1141</span>
+<span class="go">425/859      582/1141</span>
+<span class="go">2</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="migrateVSP.py">Download migrateVSP.py</a></p>
+</div>
+<div class="section" id="arbitrary-migration-models">
+<h3>Arbitrary migration models **<a class="headerlink" href="#arbitrary-migration-models" title="Permalink to this headline">¶</a></h3>
+<p>If none of the described migration mothods fits your need, you can always resort
+to manual migration. One such example is when you need to mimick an existing
+evolutionary scenario so you know exactly which subpopulation each individual
+will migrate to.</p>
+<p>Manual migration is actually very easy. All you need to do is specifying the
+destination subpopulation of all individuals in the <em>from</em> subpopulations
+(parameter <code class="docutils literal notranslate"><span class="pre">subPops</span></code>), using an information field (usually <code class="docutils literal notranslate"><span class="pre">migrate_to</span></code>).
+You can then call the <a class="reference internal" href="refManual_ch3_sec4.html#Migrator" title="Migrator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Migrator</span></code></a> using <code class="docutils literal notranslate"><span class="pre">mode=BY_IND_INFO</span></code>. Example
+<a class="reference internal" href="#manualmigration"><span class="std std-ref">manualMigration</span></a> shows how to manually move individuals
+around. This example uses the function form of <a class="reference internal" href="refManual_ch3_sec4.html#Migrator" title="Migrator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Migrator</span></code></a>. You usually
+need to use a Python operator to set destination subpopulations if you would
+like to manually migrate individuals during an evolutionary process.</p>
+<p id="manualmigration"><strong>Example</strong>: <em>Manual migration</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">10</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;migrate_to&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setIndInfo</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;migrate_to&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">migrate</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">BY_IND_INFO</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSizes</span><span class="p">()</span>
+<span class="go">(5, 5, 5, 5)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="manualMigration.py">Download manualMigration.py</a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">individuals with an invalid destination subpopulation ID (e.g. an negative
+number) will be discarded silently. Although not recommended, this feature can
+be used to remove individuals from a subpopulation.</p>
+</div>
+</div>
+</div>
+<div class="section" id="migration-using-backward-migration-matrix-operator-backwardmigrator">
+<h2>Migration using backward migration matrix (operator <a class="reference internal" href="refManual_ch3_sec4.html#BackwardMigrator" title="BackwardMigrator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackwardMigrator</span></code></a>)<a class="headerlink" href="#migration-using-backward-migration-matrix-operator-backwardmigrator" title="Permalink to this headline">¶</a></h2>
+<p>Backward migration matrices are widely used in theoretical population genetics
+and coalescent based simulations. Instead of specifying the probability of
+migrating from one subpopulation to another (namely how migration happens), such
+matrices specify the probability that individuals in a subpopulation originate
+from others (namely the result of migration). simuPOP simulates such models by
+converting backward migration matrices to foward ones using the theory described
+below. Due to the limit of such models, simuPOP cannot simulate migration
+from/to virtual subpopulatons, creation of new subpopulation, different source
+and destination subpopulations, and will generate an error if the conversion
+process fails.</p>
+<p>To explain the differences between forward and backward migration matrices, let
+us assume that there are <span class="math notranslate nohighlight">\(d\)</span> subpopulations with population sizes
+<span class="math notranslate nohighlight">\(S=\left[S_{1},S_{2},...,S_{d}\right]\)</span>, and a forward migration matrix</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}F=\left[\begin{array}{cccc}
+f_{11} &amp; f_{12} &amp; \cdots &amp; f_{1d}\\
+f_{21} &amp; f_{22} &amp; \cdots &amp; f_{2d}\\
+\vdots &amp;  &amp;  &amp; \vdots\\
+f_{d1} &amp; f_{d2} &amp; \cdots &amp; f_{dd}
+\end{array}\right]\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(f_{ij}\)</span> is the probability that an individual will migration from
+subpopulation <span class="math notranslate nohighlight">\(i\)</span> to <span class="math notranslate nohighlight">\(j\)</span>. After migration happens, subppulation
+sizes are changed to <span class="math notranslate nohighlight">\(S'=\left[S'_{1},S'_{2},...,S'_{d}\right]\)</span>, and the
+origin of individuals in each subpopulation can be described by the backward
+migration matrix</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}B=\left[\begin{array}{cccc}
+b_{11} &amp; b_{12} &amp; \cdots &amp; b_{1d}\\
+b_{21} &amp; b_{22} &amp; \cdots &amp; b_{2d}\\
+\vdots &amp;  &amp;  &amp; \vdots\\
+b_{d1} &amp; b_{d2} &amp; \cdots &amp; b_{dd}
+\end{array}\right]\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(b_{ij}\)</span> is the probability that an individual in subpopulation
+<span class="math notranslate nohighlight">\(i\)</span> originates from subpopulation <span class="math notranslate nohighlight">\(j\)</span>.</p>
+<p>These qualities can be derived from original population sizes and the forward
+migration matrix. That is to say, the size of new subpopulation <span class="math notranslate nohighlight">\(k\)</span> is the
+sum of all migrants to this subpopulation</p>
+<div class="math notranslate nohighlight">
+\[S'_{k}={\displaystyle \sum_{i=1}^{d}}S_{i}f_{ik}\]</div>
+<p>and the size of the original population <span class="math notranslate nohighlight">\(k\)</span> is the sum of all migrants
+from this subpopulation</p>
+<div class="math notranslate nohighlight">
+\[S_{k}={\displaystyle \sum_{i=1}^{d}}S'_{i}b_{ik}\]</div>
+<p>and the composition of subpopulation <span class="math notranslate nohighlight">\(k\)</span> (e.g. individuals originate from
+subpopulation <span class="math notranslate nohighlight">\(j\)</span>) is</p>
+<div class="math notranslate nohighlight">
+\[b_{kj}=\dfrac{S_{j}f_{jk}}{S'_{k}}\]</div>
+<p>In matrix form, these formulas can be written as</p>
+<div class="math notranslate nohighlight">
+\[S'=F^{T}S\]</div>
+<div class="math notranslate nohighlight">
+\[S=B^{T}S'\]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[B=diag(S')^{-1}F^{T}diag(S)\]</div>
+<p>Therefore, given a backward migration matrix <span class="math notranslate nohighlight">\(B\)</span> and current population
+size <span class="math notranslate nohighlight">\(S\)</span>, we can derive a forward migration matrix using</p>
+<div class="math notranslate nohighlight">
+\[S'=\left(B^{T}\right)^{-1}S\]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[F=diag(S)^{-1}B^{T}diag(S')\]</div>
+<p>Note that <span class="math notranslate nohighlight">\(F=B\)</span> is always true if <span class="math notranslate nohighlight">\(B\)</span> is symmetric and
+<span class="math notranslate nohighlight">\(S_{i}=S_{j}\)</span> (equal subpopulation size) so simuPOP will use <span class="math notranslate nohighlight">\(B\)</span>
+directly in this case. Also note that <span class="math notranslate nohighlight">\(B\)</span> might not be inversable and
+<span class="math notranslate nohighlight">\(S'\)</span> and <span class="math notranslate nohighlight">\(F\)</span> might be invalid (e.g. negative population size or
+forward migration rate) for given <span class="math notranslate nohighlight">\(B\)</span> and <span class="math notranslate nohighlight">\(S\)</span>. simuPOP will
+terminate with an error message in these cases.</p>
+<p>The following example <a class="reference internal" href="#backwardmigration"><span class="std std-ref">backwardMigration</span></a> demonstrates
+how to use a backward migration matrix to perform migration. It initializes all
+individuals with indexes of subpopulations they belong to before migration and
+calculates the percent of individuals from each source population using a
+PyOperator with function originOfInds. The so-called overseved backward
+migration matrix is similar to specified migration matrix despite of stochastic
+effects. This example also uses turnOnDebug function to let the operator print
+the expected subpopulation size (<span class="math notranslate nohighlight">\(S'\)</span>) and calculate forward migration
+matrix (<span class="math notranslate nohighlight">\(F\)</span>) at each generation, which, as expected, vary from generation
+to generation.</p>
+<p id="backwardmigration"><strong>Example</strong>: <em>Migration using a backward migration matrix</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">turnOnDebug</span><span class="p">(</span><span class="s1">&#39;DBG_MIGRATOR&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">5000</span><span class="p">,</span> <span class="mi">8000</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;migrate_to&#39;</span><span class="p">,</span> <span class="s1">&#39;migrate_from&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">originOfInds</span><span class="p">(</span><span class="n">pop</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Observed backward migration matrix at generation </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">gen</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">numSubPop</span><span class="p">()):</span>
+<span class="gp">... </span>        <span class="c1"># get source subpop for all individuals in subpopulation i</span>
+<span class="gp">... </span>        <span class="n">origins</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">indInfo</span><span class="p">(</span><span class="s1">&#39;migrate_from&#39;</span><span class="p">,</span> <span class="n">sp</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">spSize</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">subPopSize</span><span class="p">(</span><span class="n">sp</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">B_sp</span> <span class="o">=</span> <span class="p">[</span><span class="n">origins</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">/</span><span class="n">spSize</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">numSubPop</span><span class="p">())]</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;    &#39;</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{:.3f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">B_sp</span><span class="p">]))</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="kc">True</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span>
+<span class="gp">... </span>        <span class="c1"># mark the source subpopulation of each individual</span>
+<span class="gp">... </span>        <span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">InitInfo</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;migrate_from&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span>
+<span class="gp">... </span>        <span class="c1"># perform migration</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">BackwardMigrator</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="p">[</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="gp">... </span>        <span class="p">]),</span>
+<span class="gp">... </span>        <span class="c1"># calculate and print observed backward migration matrix</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOperator</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">originOfInds</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="c1"># calculate population size</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="c1"># and print it</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;Pop size after migration: </span><span class="si">{}</span><span class="s1">\n&quot;.format(&quot;, &quot;.join([str(x) for x in subPopSize]))&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Expected next population size is 10211.4, 4851.8, 7936.84</span>
+<span class="go">Forward migration matrix is 0.959867, 0.024259, 0.0158737, 0.0816908, 0.902435, 0.0158737, 0.0255284, 0.0121295, 0.962342</span>
+<span class="go">Observed backward migration matrix at generation 0</span>
+<span class="go">    0.939, 0.040, 0.021</span>
+<span class="go">    0.051, 0.927, 0.022</span>
+<span class="go">    0.020, 0.010, 0.969</span>
+<span class="go">Pop size after migration: 10218, 4859, 7923</span>
+<span class="go">Expected next population size is 10453.6, 4690.64, 7855.79</span>
+<span class="go">Forward migration matrix is 0.961671, 0.0229529, 0.0153764, 0.0860553, 0.897777, 0.0161675, 0.0263879, 0.0118406, 0.961772</span>
+<span class="go">Observed backward migration matrix at generation 1</span>
+<span class="go">    0.942, 0.038, 0.020</span>
+<span class="go">    0.049, 0.932, 0.020</span>
+<span class="go">    0.023, 0.010, 0.968</span>
+<span class="go">Pop size after migration: 10417, 4706, 7877</span>
+<span class="go">Expected next population size is 10675.5, 4517.1, 7807.37</span>
+<span class="go">Forward migration matrix is 0.963329, 0.0216814, 0.0149897, 0.0907397, 0.89267, 0.0165902, 0.0271056, 0.0114691, 0.961425</span>
+<span class="go">Observed backward migration matrix at generation 2</span>
+<span class="go">    0.942, 0.039, 0.020</span>
+<span class="go">    0.048, 0.930, 0.022</span>
+<span class="go">    0.020, 0.010, 0.970</span>
+<span class="go">Pop size after migration: 10660, 4536, 7804</span>
+<span class="go">Expected next population size is 10946, 4323.5, 7730.53</span>
+<span class="go">Forward migration matrix is 0.965217, 0.0202791, 0.0145038, 0.0965253, 0.886432, 0.0170426, 0.0280522, 0.0110802, 0.960868</span>
+<span class="go">Observed backward migration matrix at generation 3</span>
+<span class="go">    0.940, 0.040, 0.020</span>
+<span class="go">    0.050, 0.930, 0.020</span>
+<span class="go">    0.020, 0.011, 0.969</span>
+<span class="go">Pop size after migration: 10942, 4321, 7737</span>
+<span class="go">Expected next population size is 11260.4, 4079.55, 7660</span>
+<span class="go">Forward migration matrix is 0.967357, 0.0186417, 0.0140011, 0.104239, 0.878033, 0.0177274, 0.0291081, 0.0105456, 0.960346</span>
+<span class="go">Observed backward migration matrix at generation 4</span>
+<span class="go">    0.937, 0.043, 0.021</span>
+<span class="go">    0.046, 0.933, 0.021</span>
+<span class="go">    0.019, 0.009, 0.972</span>
+<span class="go">Pop size after migration: 11331, 4042, 7627</span>
+<span class="go">5</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="backwardMigrate.py">Download backwardMigrate.py</a></p>
+</div>
+<div class="section" id="split-subpopulations-operators-splitsubpops">
+<h2>Split subpopulations (operators <a class="reference internal" href="refManual_ch3_sec4.html#SplitSubPops" title="SplitSubPops"><code class="xref py py-class docutils literal notranslate"><span class="pre">SplitSubPops</span></code></a>)<a class="headerlink" href="#split-subpopulations-operators-splitsubpops" title="Permalink to this headline">¶</a></h2>
+<p id="index-0">Operator <code class="docutils literal notranslate"><span class="pre">SplitSubPops</span></code> splits one or more subpopulations into finer
+subpopulations. It can be used to simulate populations that originate from the
+same founder population. For example, a population of size 1000 in Example
+<a class="reference internal" href="#splitbysize"><span class="std std-ref">splitBySize</span></a> is split into three subpopulations of sizes
+300, 300 and 400 respectively, after evolving as a single population for two
+generations.</p>
+<p id="splitbysize"><strong>Example</strong>: <em>Split subpopulations by size</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">SplitSubPops</span><span class="p">(</span><span class="n">subPops</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">400</span><span class="p">],</span> <span class="n">at</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;Gen </span><span class="si">%d</span><span class="s1">:\t</span><span class="si">%s</span><span class="s1">\n&quot; % (gen, subPopSize)&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomSelection</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Gen 0:       [1000]</span>
+<span class="go">Gen 1:       [1000]</span>
+<span class="go">Gen 2:       [300, 300, 400]</span>
+<span class="go">Gen 3:       [300, 300, 400]</span>
+<span class="go">4</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="splitBySize.py">Download splitBySize.py</a></p>
+<p>Operator <a class="reference internal" href="refManual_ch3_sec4.html#SplitSubPops" title="SplitSubPops"><code class="xref py py-class docutils literal notranslate"><span class="pre">SplitSubPops</span></code></a> splits a subpopulation by sizes of the resulting
+subpopulations. It is often easier to do so with proportions. In addition, if a
+demographic function is used, you should make sure that the number of
+subpopulations will be the same before and after mating at any generation. One
+way of doing this is to apply a <a class="reference internal" href="refManual_ch3_sec4.html#SplitSubPops" title="SplitSubPops"><code class="xref py py-class docutils literal notranslate"><span class="pre">SplitSubPops</span></code></a> operator at the right
+generation. Example <a class="reference internal" href="#splitbyprop"><span class="std std-ref">splitByProp</span></a> demonstrates such an
+evolutionary scenario. However, it is often easier to split the population in
+the demographic function in such case (see section
+<a class="reference internal" href="userGuide_ch6_sec1.html#subsec-advanced-demo-func"><span class="std std-ref">subsec_Advanced_demo_func</span></a> for details).</p>
+<p id="splitbyprop"><strong>Example</strong>: <em>Split subpopulations by proportion</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">demo</span><span class="p">(</span><span class="n">gen</span><span class="p">,</span> <span class="n">pop</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">gen</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="mi">1000</span> <span class="o">+</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">gen</span>
+<span class="gp">... </span>    <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="o">+</span> <span class="mi">50</span> <span class="o">*</span> <span class="n">gen</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">subPopSizes</span><span class="p">()]</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">SplitSubPops</span><span class="p">(</span><span class="n">subPops</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">proportions</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">5</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">at</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;Gen </span><span class="si">%d</span><span class="s1">:\t</span><span class="si">%s</span><span class="s1">\n&quot; % (gen, subPopSize)&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomSelection</span><span class="p">(</span><span class="n">subPopSize</span><span class="o">=</span><span class="n">demo</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Gen 0:       [1000]</span>
+<span class="go">Gen 1:       [1000]</span>
+<span class="go">Gen 2:       [550, 550]</span>
+<span class="go">Gen 3:       [650, 650]</span>
+<span class="go">4</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="splitByProp.py">Download splitByProp.py</a></p>
+<p>Either by <em>sizes</em> or by <em>proportions</em>, individuals in a subpopulation are
+divided randomly. It is, however, also possible to split subpopulations
+according to individual information fields. In this case, individuals with
+different values at a given information field will be split into different
+subpopulations. This is demonstrated in Example <a class="reference internal" href="#splitbyinfo"><span class="std std-ref">splitByInfo</span></a>
+where the function form of operator <a class="reference internal" href="refManual_ch3_sec4.html#SplitSubPops" title="SplitSubPops"><code class="xref py py-class docutils literal notranslate"><span class="pre">SplitSubPops</span></code></a> is used.</p>
+<p id="splitbyinfo"><strong>Example</strong>: <em>Split subpopulations by individual information field</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">1000</span><span class="p">]</span><span class="o">*</span><span class="mi">3</span><span class="p">,</span> <span class="n">subPopNames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setIndInfo</span><span class="p">([</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">)],</span> <span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSizes</span><span class="p">())</span>
+<span class="go">(1000, 1000, 1000)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">subPopNames</span><span class="p">())</span>
+<span class="go">(&#39;a&#39;, &#39;b&#39;, &#39;c&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">splitSubPops</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">subPopSizes</span><span class="p">())</span>
+<span class="go">(243, 244, 262, 251, 1000, 243, 244, 262, 251)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">subPopNames</span><span class="p">())</span>
+<span class="go">(&#39;a&#39;, &#39;a&#39;, &#39;a&#39;, &#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;c&#39;, &#39;c&#39;, &#39;c&#39;)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="splitByInfo.py">Download splitByInfo.py</a></p>
+</div>
+<div class="section" id="merge-subpopulations-operator-mergesubpops">
+<h2>Merge subpopulations (operator <a class="reference internal" href="refManual_ch3_sec4.html#MergeSubPops" title="MergeSubPops"><code class="xref py py-class docutils literal notranslate"><span class="pre">MergeSubPops</span></code></a>)<a class="headerlink" href="#merge-subpopulations-operator-mergesubpops" title="Permalink to this headline">¶</a></h2>
+<p>Operator <a class="reference internal" href="refManual_ch3_sec4.html#MergeSubPops" title="MergeSubPops"><code class="xref py py-class docutils literal notranslate"><span class="pre">MergeSubPops</span></code></a> merges specified subpopulations into a single
+subpopulation. This operator can be used to simulate admixed populations where
+two or more subpopulations merged into one subpopulation and continue to evolve
+for a few generations. Example <a class="reference internal" href="#mergesubpops"><span class="std std-ref">MergeSubPops</span></a> simulates such
+an evolutionary scenario. A demographic model could be added similar to Example
+<a class="reference internal" href="#splitbyprop"><span class="std std-ref">splitByProp</span></a>.</p>
+<p id="mergesubpops"><strong>Example</strong>: <em>Merge multiple subpopulations into a single subpopulation</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">500</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MergeSubPops</span><span class="p">(</span><span class="n">subPops</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">at</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;Gen </span><span class="si">%d</span><span class="s1">:\t</span><span class="si">%s</span><span class="s1">\n&quot; % (gen, subPopSize)&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomSelection</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Gen 0:       [500, 500]</span>
+<span class="go">Gen 1:       [500, 500]</span>
+<span class="go">Gen 2:       [500, 500]</span>
+<span class="go">Gen 3:       [1000]</span>
+<span class="go">Gen 4:       [1000]</span>
+<span class="go">5</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="MergeSubPops.py">Download MergeSubPops.py</a></p>
+</div>
+<div class="section" id="resize-subpopulations-operator-resizesubpops">
+<h2>Resize subpopulations (operator <a class="reference internal" href="refManual_ch3_sec4.html#ResizeSubPops" title="ResizeSubPops"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResizeSubPops</span></code></a>)<a class="headerlink" href="#resize-subpopulations-operator-resizesubpops" title="Permalink to this headline">¶</a></h2>
+<p>Whenever possible, it is recommended that subpopulation sizes are changed
+naturally, namely through the population of an offspring generation. However, it
+is sometimes desired to change the size of a population forcefully. Examples of
+such applications include immediate expansion of a small population before
+evolution, and the simulation of sudden population size change caused by natural
+disaster. By default, new individuals created by such sudden population
+expansion get their genotype from existing individuals. Example
+<a class="reference internal" href="#resizesubpops"><span class="std std-ref">ResizeSubPops</span></a> shows a scenario where two subpopulations
+expand instantly at generation 3.</p>
+<p id="resizesubpops"><strong>Example</strong>: <em>Resize subpopulation sizes</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">500</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">ResizeSubPops</span><span class="p">(</span><span class="n">proportions</span><span class="o">=</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">at</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;Gen </span><span class="si">%d</span><span class="s1">:\t</span><span class="si">%s</span><span class="s1">\n&quot; % (gen, subPopSize)&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomSelection</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Gen 0:       [500, 500]</span>
+<span class="go">Gen 1:       [500, 500]</span>
+<span class="go">Gen 2:       [500, 500]</span>
+<span class="go">Gen 3:       [750, 1000]</span>
+<span class="go">Gen 4:       [750, 1000]</span>
+<span class="go">5</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="ResizeSubPops.py">Download ResizeSubPops.py</a></p>
+</div>
+<div class="section" id="time-dependent-migration-rate">
+<h2>Time-dependent migration rate<a class="headerlink" href="#time-dependent-migration-rate" title="Permalink to this headline">¶</a></h2>
+<p>In evolutionary scenarios with complex demographic models, number of
+subpopulations and migration rate might change from generation to generation.
+For example, if one of the subpopulations is split into two, the migration
+matrix has to be changed to accommendate increased number of subpopulations.</p>
+<p>If there are a limited number of demographic changes and a few number of pre-
+determined migration matrices. You can use a number of <code class="docutils literal notranslate"><span class="pre">Migrators</span></code> that are
+applied at different generations. For example, you can use the following
+operators to apply the first migration scheme during first ten generations (0,
+…, 9), and the second migration scheme during the rest of the evolutionary
+process:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+    <span class="n">Migrator</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="n">M1</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">9</span><span class="p">),</span>
+    <span class="n">Migrator</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="n">M2</span><span class="p">,</span> <span class="n">begin</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>If changes of demographies are frequent or stochastic so that migration matrices
+can only be determined programmatically, it is easier to use a
+<a class="reference internal" href="refManual_ch3_sec13.html#PyOperator" title="PyOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyOperator</span></code></a> to migrate populations using the function form of a
+<a class="reference internal" href="refManual_ch3_sec4.html#Migrator" title="Migrator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Migrator</span></code></a>. This is demonstrated in Example <a class="reference internal" href="#varyingmigr"><span class="std std-ref">varyingMigr</span></a> where migration matrixes are computed dynamically due to random
+split of subpopulations.</p>
+<p id="varyingmigr"><strong>Example</strong>: <em>Varying migration rate</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP.utils</span> <span class="k">import</span> <span class="n">migrIslandRates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">demo</span><span class="p">(</span><span class="n">pop</span><span class="p">):</span>
+<span class="gp">... </span>  <span class="c1"># this function randomly split populations</span>
+<span class="gp">... </span>  <span class="n">numSP</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">numSubPop</span><span class="p">()</span>
+<span class="gp">... </span>  <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.3</span><span class="p">:</span>
+<span class="gp">... </span>      <span class="n">pop</span><span class="o">.</span><span class="n">splitSubPop</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">numSP</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="gp">... </span>  <span class="k">return</span> <span class="n">pop</span><span class="o">.</span><span class="n">subPopSizes</span><span class="p">()</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">migr</span><span class="p">(</span><span class="n">pop</span><span class="p">):</span>
+<span class="gp">... </span>  <span class="n">numSP</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">numSubPop</span><span class="p">()</span>
+<span class="gp">... </span>  <span class="n">sim</span><span class="o">.</span><span class="n">migrate</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">migrIslandRates</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">numSP</span><span class="p">))</span>
+<span class="gp">... </span>  <span class="k">return</span> <span class="kc">True</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;migrate_to&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOperator</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">migr</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;Gen </span><span class="si">%d</span><span class="s1">:\t</span><span class="si">%s</span><span class="s1">\n&quot; % (gen, subPopSize)&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">subPopSize</span><span class="o">=</span><span class="n">demo</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Gen 0:       [10000]</span>
+<span class="go">Gen 1:       [4982, 5018]</span>
+<span class="go">Gen 2:       [2495, 2505, 5000]</span>
+<span class="go">Gen 3:       [2509, 2517, 4974]</span>
+<span class="go">Gen 4:       [2512, 2512, 4976]</span>
+<span class="go">5</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="VaryingMigr.py">Download VaryingMigr.py</a></p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec1.html">Introduction to operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec2.html">Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec3.html">Expressions and statements</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Demographic changes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#migration-operator-migrator">Migration (operator <code class="docutils literal notranslate"><span class="pre">Migrator</span></code>)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#migration-by-probability">Migration by probability</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#migration-by-proportion-and-counts">Migration by proportion and counts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#theoretical-migration-models">Theoretical migration models</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#migrate-from-virtual-subpopulations">migrate from virtual subpopulations *</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arbitrary-migration-models">Arbitrary migration models **</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#migration-using-backward-migration-matrix-operator-backwardmigrator">Migration using backward migration matrix (operator <code class="docutils literal notranslate"><span class="pre">BackwardMigrator</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#split-subpopulations-operators-splitsubpops">Split subpopulations (operators <code class="docutils literal notranslate"><span class="pre">SplitSubPops</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#merge-subpopulations-operator-mergesubpops">Merge subpopulations (operator <code class="docutils literal notranslate"><span class="pre">MergeSubPops</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#resize-subpopulations-operator-resizesubpops">Resize subpopulations (operator <code class="docutils literal notranslate"><span class="pre">ResizeSubPops</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#time-dependent-migration-rate">Time-dependent migration rate</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec5.html">Genotype transmitters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html">Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec7.html">Penetrance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec8.html">Quantitative trait</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html">Natural Selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec10.html">Tagging operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html">Statistics calculation (operator <code class="docutils literal notranslate"><span class="pre">Stat</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec12.html">Conditional operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec13.html">Miscellaneous operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec14.html">Hybrid and Python operators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch5.html">simuPOP Operators</a><ul>
+      <li>Previous: <a href="userGuide_ch5_sec3.html" title="previous chapter">Expressions and statements</a></li>
+      <li>Next: <a href="userGuide_ch5_sec5.html" title="next chapter">Genotype transmitters</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch5_sec4.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,461 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Genotype transmitters &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Mutation" href="userGuide_ch5_sec6.html" />
+    <link rel="prev" title="Demographic changes" href="userGuide_ch5_sec4.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="genotype-transmitters">
+<span id="sec-genotype-transmitters"></span><h1>Genotype transmitters<a class="headerlink" href="#genotype-transmitters" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="generic-genotype-transmitters-operators-genotransmitter-clonegenotransmitter-mendeliangenotransmitter-selfinggenotransmitter-haplodiploidgenotransmitter-and-mitochondrialgenotransmitter">
+<h2>Generic genotype transmitters (operators <a class="reference internal" href="refManual_ch3_sec5.html#GenoTransmitter" title="GenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenoTransmitter</span></code></a>, <a class="reference internal" href="refManual_ch3_sec5.html#CloneGenoTransmitter" title="CloneGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">CloneGenoTransmitter</span></code></a>, <a class="reference internal" href="refManual_ch3_sec5.html#MendelianGenoTransmitter" title="MendelianGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MendelianGenoTransmitter</span></code></a>, <a class="reference internal" href="refManual_ch3_sec5.html#SelfingGenoTransmitter" title="SelfingGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SelfingGenoTransmitter</span></code></a>, <a class="reference internal" href="refManual_ch3_sec5.html#HaplodiploidGenoTransmitter" title="HaplodiploidGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HaplodiploidGenoTransmitter</span></code></a>, and <a class="reference internal" href="refManual_ch3_sec5.html#MitochondrialGenoTransmitter" title="MitochondrialGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MitochondrialGenoTransmitter</span></code></a>) *<a class="headerlink" href="#generic-genotype-transmitters-operators-genotransmitter-clonegenotransmitter-mendeliangenotransmitter-selfinggenotransmitter-haplodiploidgenotransmitter-and-mitochondrialgenotransmitter" title="Permalink to this headline">¶</a></h2>
+<p>A number of during-mating operators are defined to transmit genotype from
+parent(s) to offspring. They are rarely used or even seen directly because they
+are used as genotype transmitters of mating schemes.</p>
+<ul class="simple">
+<li><a class="reference internal" href="refManual_ch3_sec5.html#GenoTransmitter" title="GenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenoTransmitter</span></code></a>: This genotype transmitter is usually used by
+customized genotype transmitters because it provides some utility functions that
+are more efficient than their Pythonic counterparts.</li>
+<li><a class="reference internal" href="refManual_ch3_sec5.html#CloneGenoTransmitter" title="CloneGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">CloneGenoTransmitter</span></code></a>: Copy all genotype on non-customized chromosomes
+from a parent to an offspring. It also copies parental sex to the offspring
+because sex can be genotype determined. This genotype transmitter is used by
+mating scheme <a class="reference internal" href="refManual_ch2_sec4.html#CloneMating" title="CloneMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">CloneMating</span></code></a>. This genotype transmitter can be applied to
+populations of <strong>any ploidy</strong> type. If you would like to copy part of the
+chromosomes, or customized chromosomes, a parameter chroms could be used to
+specify chromosomes to copy.</li>
+<li><a class="reference internal" href="refManual_ch3_sec5.html#MendelianGenoTransmitter" title="MendelianGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MendelianGenoTransmitter</span></code></a>: Copy genotypes from two parents (a male and
+a female) to an offspring following Mendel’s laws, used by mating scheme
+<code class="docutils literal notranslate"><span class="pre">RandomMating.</span></code>This genotype transmitter can only be applied to <strong>diploid</strong>
+populations.</li>
+<li><a class="reference internal" href="refManual_ch3_sec5.html#SelfingGenoTransmitter" title="SelfingGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SelfingGenoTransmitter</span></code></a>: Copy genotypes from one parent to an
+offspring using self-fertilization, used by mating scheme <a class="reference internal" href="refManual_ch2_sec4.html#SelfMating" title="SelfMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">SelfMating</span></code></a>.
+This genotype transmitter can only be applied to <strong>diploid</strong> populations.</li>
+<li><a class="reference internal" href="refManual_ch3_sec5.html#HaplodiploidGenoTransmitter" title="HaplodiploidGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HaplodiploidGenoTransmitter</span></code></a>: Set genotype to male and female
+offspring differently in a haplodiploid population, used by mating scheme
+<a class="reference internal" href="refManual_ch2_sec4.html#HaplodiploidMating" title="HaplodiploidMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">HaplodiploidMating</span></code></a>. This genotype transmitter can only be applied to
+<strong>haplodiploid</strong> populations.</li>
+<li><a class="reference internal" href="refManual_ch3_sec5.html#MitochondrialGenoTransmitter" title="MitochondrialGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MitochondrialGenoTransmitter</span></code></a>: Treat a single mitochondrial
+chromosome, or all customized chromosomes, or specified chromosomes as
+mitochondrial chromosomes and transmit maternal mitochondrial chromosomes
+randomly to an offspring. This genotype transmitter can be applied to
+populations of <strong>any ploidy</strong> type. It trasmits the first homologous copy of
+chromosomes maternally and clears alleles on other homologous copies of
+chromosomes of an offspring.</li>
+</ul>
+</div>
+<div class="section" id="recombination-operator-recombinator">
+<h2>Recombination (Operator <a class="reference internal" href="refManual_ch3_sec5.html#Recombinator" title="Recombinator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Recombinator</span></code></a>)<a class="headerlink" href="#recombination-operator-recombinator" title="Permalink to this headline">¶</a></h2>
+<p>The generic genotype transmitters do not handle genetic recombination. A
+genotype transmitter <a class="reference internal" href="refManual_ch3_sec5.html#Recombinator" title="Recombinator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Recombinator</span></code></a> is provided for such purposes, and
+can be used with <a class="reference internal" href="refManual_ch2_sec4.html#RandomMating" title="RandomMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomMating</span></code></a> and <a class="reference internal" href="refManual_ch2_sec4.html#SelfMating" title="SelfMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">SelfMating</span></code></a> (replace
+<a class="reference internal" href="refManual_ch3_sec5.html#MendelianGenoTransmitter" title="MendelianGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MendelianGenoTransmitter</span></code></a> and <a class="reference internal" href="refManual_ch3_sec5.html#SelfingGenoTransmitter" title="SelfingGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SelfingGenoTransmitter</span></code></a> used in
+these mating schemes).</p>
+<p>Recombination rate is implemented <strong>between adjacent markers</strong>. There can be
+only one recombination event between adjacent markers no matter how far apart
+they are located on a chromosome. In practise, a <a class="reference internal" href="refManual_ch3_sec5.html#Recombinator" title="Recombinator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Recombinator</span></code></a> goes
+along chromosomes and determine, between each adjacent loci, whether or not a
+recombination happens.</p>
+<p>Recombination rates could be specified in the following ways:</p>
+<ol class="arabic">
+<li><p class="first">If a single recombination rate is specified through paramter <code class="docutils literal notranslate"><span class="pre">rate</span></code>s, it
+will be the recombination rate between all adjacent loci, regardless of loci
+position.</p>
+</li>
+<li><p class="first">If recombination happens only after certain loci, you can specify these loci
+using parameter <code class="docutils literal notranslate"><span class="pre">loci</span></code>. For example,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Recombinator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>recombines a chromosome only <strong>after</strong> loci 2 (between 2 and 3) and 5 (between 5
+and 6).</p>
+</li>
+<li><p class="first">If parameter <code class="docutils literal notranslate"><span class="pre">loci</span></code> is given with a list of loci, different recombination
+rate can be given to each of them. The two lists should have the same length.
+For example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Recombinator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>uses two different recombination rates after loci 2 and 5.</p>
+</li>
+<li><p class="first">If parameter <code class="docutils literal notranslate"><span class="pre">loci</span></code> is not given (default to <code class="docutils literal notranslate"><span class="pre">loci=ALL_AVAIL</span></code>) but a list
+of recombination rates is assigned, the rates will be assigned to each locus.
+The length of prameter <code class="docutils literal notranslate"><span class="pre">rates</span></code> should equal to total number of loci but the
+recombiantion rates for the locus at the end of each chromosome will be ignored
+(assumed to be 0.5). For example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Recombinator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span> <span class="o">+</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>uses two different recombination rates for two chromosomes with 5 loci.</p>
+</li>
+<li><p class="first">If recombination rates vary across your chromosomes, a long list of <code class="docutils literal notranslate"><span class="pre">rate</span></code>
+and <code class="docutils literal notranslate"><span class="pre">loci</span></code> may be needed to specify recombination rates one by one. An
+alternative method is to specify a <strong>recombination intensity</strong>. Recombination
+rate between two adjacent loci is calculated as the product of this intensity
+and distance between them. For example, if you apply operator</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Recombinator</span><span class="p">(</span><span class="n">intensity</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>to a population</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">lociPos</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The recombination rates between adjacent markers will be <code class="docutils literal notranslate"><span class="pre">0.1*0.1</span></code>,
+<code class="docutils literal notranslate"><span class="pre">0.1*0.2</span></code> and <code class="docutils literal notranslate"><span class="pre">0.1*0.4</span></code> respectively.</p>
+</li>
+</ol>
+<p id="recrate"><strong>Example</strong>: <em>Genetic recombination at all and selected loci</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Simulator</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">1000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">rep</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">genotype</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">100</span> <span class="o">+</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Recombinator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Recombinator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">]</span><span class="o">*</span><span class="mi">10</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">60</span><span class="p">),</span> <span class="n">reps</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">LD</span><span class="o">=</span><span class="p">[[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">55</span><span class="p">],</span> <span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">70</span><span class="p">]]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;</span><span class="si">%d</span><span class="s1">:\t</span><span class="si">%.3f</span><span class="s1">\t</span><span class="si">%.3f</span><span class="s1">\t&quot; % (rep, LD_prime[40][55], LD_prime[60][70])&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOutput</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">reps</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">0:   0.741   0.806   1:      0.904   1.000</span>
+<span class="go">0:   0.658   0.715   1:      0.882   1.000</span>
+<span class="go">0:   0.491   0.668   1:      0.843   1.000</span>
+<span class="go">0:   0.435   0.610   1:      0.818   1.000</span>
+<span class="go">0:   0.383   0.567   1:      0.763   1.000</span>
+<span class="go">(5, 5)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="recRate.py">Download recRate.py</a></p>
+<p>Example <a class="reference internal" href="#recrate"><span class="std std-ref">recRate</span></a> demonstrates how to specify recombination rates
+for all loci or for specified loci. In this example, two replicates of a
+population are evolved, subject to two different Recombinators. The first
+Recombinator applies the same recombination rate between all adjacent loci, and
+the second Recombinator recombines only after loci 50 - 59. Because there is no
+recombination event between loci 60 and 70 for the second replicate, linkage
+disequilibrium values between these two loci does not decrease as what happens
+in the first replicate.</p>
+<p id="recintensity"><strong>Example</strong>: <em>Genetic recombination rates specified by intensity</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">1000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">lociPos</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">genotype</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">3</span> <span class="o">+</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">Recombinator</span><span class="p">(</span><span class="n">intensity</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">LD</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;</span><span class="si">%.3f</span><span class="s1">\t</span><span class="si">%.3f</span><span class="s1">\n&quot; % (LD_prime[0][1], LD_prime[1][2])&#39;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">0.988        0.998</span>
+<span class="go">0.912        0.996</span>
+<span class="go">0.836        0.991</span>
+<span class="go">0.896        0.982</span>
+<span class="go">0.814        0.991</span>
+<span class="go">50</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="recIntensity.py">Download recIntensity.py</a></p>
+<p>Example <a class="reference internal" href="#recintensity"><span class="std std-ref">recIntensity</span></a> demonstrates the use of the
+<code class="docutils literal notranslate"><span class="pre">intensity</span></code> parameter. In this example, the distances between the first two
+loci and the latter two loci are 1 and 0.1 respectively. This leads
+recombination rates 0.01 and 0.001 respectively with a recombination intensity
+0.01. Consequently, LD between the first two loci decay much faster than the
+latter two.</p>
+<p>If more advanced recombination model is desired, a customized genotype
+transmitter can be used. For example, Example <a class="reference internal" href="userGuide_ch6_sec3.html#sexspecificrec"><span class="std std-ref">sexSpecificRec</span></a> uses two Recombinators to implement sex-specific
+recombination.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Both loci positions and recombination intensity are unitless. You can assume
+different unit for loci position and recombination intensity as long as the
+resulting recombination rate makes sense.</p>
+</div>
+</div>
+<div class="section" id="gene-conversion-operator-recombinator">
+<h2>Gene conversion (Operator <a class="reference internal" href="refManual_ch3_sec5.html#Recombinator" title="Recombinator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Recombinator</span></code></a>) *<a class="headerlink" href="#gene-conversion-operator-recombinator" title="Permalink to this headline">¶</a></h2>
+<p>simuPOP uses the Holliday junction model to simulate gene conversion. This model
+treats recombination and conversion as a unified process. The key features of
+this model is</p>
+<ul class="simple">
+<li>Two (out of four) chromatids pair and a single strand cut is made in each
+chromatid</li>
+<li>Strand exchange takes place between the chromatids</li>
+<li>Ligation occurs yielding two completely intact DNA molecules</li>
+<li>Branch migration occurs, giving regions of heteroduplex DNA</li>
+<li>Resolution of the Holliday junction gives two DNA molecules with heteroduplex
+DNA. Depending upon how the holliday junction is resolved, we either observe no
+exchange of flanking markers, or an exchange of flanking markers. The former
+forms a conversion event, which can be considered as a double recombination.</li>
+</ul>
+<p>In practise, gene conversion can be considered as a double recombination event.
+That is to say, when a recombination event happens, it has certain probability
+to trigger a second recombination event along the chromosome. The distance
+between the two locations where recombination events happen is the tract length
+of this conversion event.</p>
+<p>The probability at which gene conversion happens, and how tract length is
+determined is specify using parameter <code class="docutils literal notranslate"><span class="pre">convMode</span></code> of a Recombinator. This
+parameter can be</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">NoConversion</span></code> No gene conversion. (default)</li>
+<li><code class="docutils literal notranslate"><span class="pre">(NUM_MARKERS,</span> <span class="pre">prob,</span> <span class="pre">N)</span></code> Convert a fixed number <code class="docutils literal notranslate"><span class="pre">N</span></code> of markers at
+probability <code class="docutils literal notranslate"><span class="pre">prob</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">(TRACT_LENGTH,</span> <span class="pre">prob,</span> <span class="pre">N)</span></code> Convert a fixed length <code class="docutils literal notranslate"><span class="pre">N</span></code> of chromosome regions
+at probability <code class="docutils literal notranslate"><span class="pre">prob</span></code>. This can be used when markers are not equally spaced on
+chromosomes.</li>
+<li><code class="docutils literal notranslate"><span class="pre">(GEOMETRIC_DISTRIBUTION,</span> <span class="pre">prob,</span> <span class="pre">p)</span></code> When a conversion event happens at
+probability <code class="docutils literal notranslate"><span class="pre">prob</span></code>, convert a random number of markers, with a geometric
+distribution with parameter <code class="docutils literal notranslate"><span class="pre">p</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">(EXPONENTIAL_DISTRIBUTION,</span> <span class="pre">prob,</span> <span class="pre">p)</span></code> When a conversion event happens at
+probability <code class="docutils literal notranslate"><span class="pre">prob</span></code>, convert a random length of chromosome region, using an
+exponential distribution with parameter <code class="docutils literal notranslate"><span class="pre">p</span></code>.</li>
+</ul>
+<p>Note that</p>
+<ul class="simple">
+<li>If tract length is determined by length (<code class="docutils literal notranslate"><span class="pre">TractLength</span></code> or
+<code class="docutils literal notranslate"><span class="pre">ExponentialDistribution</span></code>), the starting point of the flanking region is
+uniformly distributed between marker <span class="math notranslate nohighlight">\(i-1\)</span> and <span class="math notranslate nohighlight">\(i\)</span>, if the
+recombination happens at marker <span class="math notranslate nohighlight">\(i\)</span>. That is to say, it is possible that
+no marker is converted with a positive tract length.</li>
+<li>A conversion event will act like a recombination event if its flanking region
+exceeds the end of a chromosome, or if another recombination event happens
+before the end of the flanking region.</li>
+</ul>
+<p>Example <a class="reference internal" href="#conversion"><span class="std std-ref">conversion</span></a> compares two Recombinators. The first
+Recombinator is a regular Recombinator that recombine between loci 50 and 51.
+The second Recombinator is a conversion operator because every recombination
+event will become a conversion event (prob=1). Because a second recombination
+event will surely happen between loci 60 and 61, there will be either no or
+double recombination events between loci 40, 70. LD between these two loci
+therefore does not decrease, although LD between locus 55 and these two loci
+will decay.</p>
+<p id="conversion"><strong>Example</strong>: <em>Gene conversion</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Simulator</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">1000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">rep</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">genotype</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">100</span> <span class="o">+</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Recombinator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Recombinator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">convMode</span><span class="o">=</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">NUM_MARKERS</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)),</span>
+<span class="gp">... </span>    <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">LD</span><span class="o">=</span><span class="p">[[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">55</span><span class="p">],</span> <span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">70</span><span class="p">]]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;</span><span class="si">%d</span><span class="s1">:\t</span><span class="si">%.3f</span><span class="s1">\t</span><span class="si">%.3f</span><span class="s1">\t&quot; % (rep, LD_prime[40][55], LD_prime[40][70])&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOutput</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">reps</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">0:   0.988   0.988   1:      0.980   1.000</span>
+<span class="go">0:   0.982   0.982   1:      0.982   1.000</span>
+<span class="go">0:   0.982   0.982   1:      0.974   1.000</span>
+<span class="go">0:   0.974   0.974   1:      0.954   1.000</span>
+<span class="go">0:   0.960   0.960   1:      0.940   1.000</span>
+<span class="go">(5, 5)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="conversion.py">Download conversion.py</a></p>
+</div>
+<div class="section" id="tracking-all-recombination-events">
+<h2>Tracking all recombination events **<a class="headerlink" href="#tracking-all-recombination-events" title="Permalink to this headline">¶</a></h2>
+<p>To understand the evolutionary history of a simulated population, it is
+sometimes needed to track down all ancestral recombination events. In order to
+do that, you will first need to give an unique ID to each individual so that you
+could make sense of the dumped recombination events. Although this is routinely
+done using operator <a class="reference internal" href="refManual_ch3_sec10.html#IdTagger" title="IdTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">IdTagger</span></code></a> (see example <a class="reference internal" href="userGuide_ch5_sec10.html#idtagger"><span class="std std-ref">IdTagger</span></a>
+for details), it is a little tricky here because you need to place the during-
+mating <a class="reference internal" href="refManual_ch3_sec10.html#IdTagger" title="IdTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">IdTagger</span></code></a> before a <a class="reference internal" href="refManual_ch3_sec5.html#Recombinator" title="Recombinator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Recombinator</span></code></a> in the <code class="docutils literal notranslate"><span class="pre">ops</span></code> parameter
+of a mating scheme so that offspring ID could be set and outputted correctly.</p>
+<p>After setting the name of the ID field (usually <code class="docutils literal notranslate"><span class="pre">ind_id</span></code>) to the <code class="docutils literal notranslate"><span class="pre">infoField</span></code>
+parameter of a <a class="reference internal" href="refManual_ch3_sec5.html#Recombinator" title="Recombinator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Recombinator</span></code></a>, it can dump a list of recombinatin events
+(loci after which recombinatin events happened) for each set of homologous
+chromosomes of an offspring. Each line is in the format of</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">offspringID</span> <span class="n">parentID</span> <span class="n">startingPloidy</span> <span class="n">rec1</span> <span class="n">rec2</span> <span class="o">....</span>
+</pre></div>
+</div>
+<p>Example <a class="reference internal" href="#trackrec"><span class="std std-ref">trackRec</span></a> gives an example how the output looks like.</p>
+<p id="trackrec"><strong>Example</strong>: <em>Tracking all recombination events</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;ind_id&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Recombinator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;&gt;&gt;rec.log&#39;</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;ind_id&#39;</span><span class="p">)]),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rec</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;rec.log&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># print the first three lines of the log file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rec</span><span class="o">.</span><span class="n">readlines</span><span class="p">()[:</span><span class="mi">4</span><span class="p">]))</span>
+<span class="go">1001 642 0 381 999 1490</span>
+<span class="go">1001 250 1 908 999 1315 2134</span>
+<span class="go">1002 847 1 999</span>
+<span class="go">1002 91 0 975 999 1245 2546</span>
+
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="trackRec.py">Download trackRec.py</a></p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec1.html">Introduction to operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec2.html">Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec3.html">Expressions and statements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec4.html">Demographic changes</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Genotype transmitters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#generic-genotype-transmitters-operators-genotransmitter-clonegenotransmitter-mendeliangenotransmitter-selfinggenotransmitter-haplodiploidgenotransmitter-and-mitochondrialgenotransmitter">Generic genotype transmitters (operators <code class="docutils literal notranslate"><span class="pre">GenoTransmitter</span></code>, <code class="docutils literal notranslate"><span class="pre">CloneGenoTransmitter</span></code>, <code class="docutils literal notranslate"><span class="pre">MendelianGenoTransmitter</span></code>, <code class="docutils literal notranslate"><span class="pre">SelfingGenoTransmitter</span></code>, <code class="docutils literal notranslate"><span class="pre">HaplodiploidGenoTransmitter</span></code>, and <code class="docutils literal notranslate"><span class="pre">MitochondrialGenoTransmitter</span></code>) *</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recombination-operator-recombinator">Recombination (Operator <code class="docutils literal notranslate"><span class="pre">Recombinator</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gene-conversion-operator-recombinator">Gene conversion (Operator <code class="docutils literal notranslate"><span class="pre">Recombinator</span></code>) *</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tracking-all-recombination-events">Tracking all recombination events **</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html">Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec7.html">Penetrance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec8.html">Quantitative trait</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html">Natural Selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec10.html">Tagging operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html">Statistics calculation (operator <code class="docutils literal notranslate"><span class="pre">Stat</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec12.html">Conditional operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec13.html">Miscellaneous operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec14.html">Hybrid and Python operators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch5.html">simuPOP Operators</a><ul>
+      <li>Previous: <a href="userGuide_ch5_sec4.html" title="previous chapter">Demographic changes</a></li>
+      <li>Next: <a href="userGuide_ch5_sec6.html" title="next chapter">Mutation</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch5_sec5.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

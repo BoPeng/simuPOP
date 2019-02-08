@@ -1,0 +1,741 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Statistics Calculation &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Conditional operators" href="refManual_ch3_sec12.html" />
+    <link rel="prev" title="Tagging operators" href="refManual_ch3_sec10.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="statistics-calculation">
+<h1>Statistics Calculation<a class="headerlink" href="#statistics-calculation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class-stat">
+<h2>class Stat<a class="headerlink" href="#class-stat" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Stat">
+<em class="property">class </em><code class="descname">Stat</code><a class="headerlink" href="#Stat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Operator <a class="reference internal" href="#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> calculates various statistics of the
+population being applied and sets variables in its local namespace.
+Other operators or functions can retrieve results from or evalulate
+expressions in this local namespace after <a class="reference internal" href="#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> is applied.</p>
+<dl class="method">
+<dt id="Stat.Stat">
+<code class="descname">Stat</code><span class="sig-paren">(</span><em>popSize=False</em>, <em>numOfMales=False</em>, <em>numOfAffected=False</em>, <em>numOfSegSites=[]</em>, <em>numOfMutants=[]</em>, <em>alleleFreq=[]</em>, <em>heteroFreq=[]</em>, <em>homoFreq=[]</em>, <em>genoFreq=[]</em>, <em>haploFreq=[]</em>, <em>haploHeteroFreq=[]</em>, <em>haploHomoFreq=[]</em>, <em>sumOfInfo=[]</em>, <em>meanOfInfo=[]</em>, <em>varOfInfo=[]</em>, <em>maxOfInfo=[]</em>, <em>minOfInfo=[]</em>, <em>LD=[]</em>, <em>association=[]</em>, <em>neutrality=[]</em>, <em>structure=[]</em>, <em>HWE=[]</em>, <em>inbreeding=[]</em>, <em>effectiveSize=[]</em>, <em>vars=ALL_AVAIL</em>, <em>suffix=&quot;&quot;</em>, <em>output=&quot;&quot;</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#Stat.Stat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a <a class="reference internal" href="#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> operator that calculates specified
+statistics of a population when it is applied to this
+population. This operator can be applied to specified replicates
+(parameter <em>rep</em>) at specified generations (parameter <em>begin</em>,
+<em>end</em>, <em>step</em>, and <em>at</em>). This operator does not produce any
+output (ignore parameter <em>output</em>) after statistics are
+calculated. Instead, it stores results in the local namespace of
+the population being applied. Other operators can retrieve these
+variables or evalulate expression directly in this local
+namespace. Please refer to operator <a class="reference internal" href="refManual_ch3_sec1.html#BaseOperator" title="BaseOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOperator</span></code></a> for a
+detailed explanation of these common operator parameters.</p>
+<p><a class="reference internal" href="#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> supports parameter <em>subPops</em>. It usually calculate
+the same set of statistics for all subpopulations
+(<code class="docutils literal notranslate"><span class="pre">subPops=subPopList()</span></code>). If a list of (virtual)
+subpopulations are specified, statistics for only specified
+subpopulations will be calculated. However, different statistics
+treat this parameter differently and it is very important to
+check its reference before you use <em>subPops</em> for any statistics.</p>
+<p>Calculated statistics are saved as variables in a population’s
+local namespace. These variables can be numbers, lists or
+dictionaries and can be retrieved using functions
+<code class="docutils literal notranslate"><span class="pre">Population.vars()</span></code> or <code class="docutils literal notranslate"><span class="pre">Population.dvars()</span></code>. A special
+default dictionary (<code class="xref py py-class docutils literal notranslate"><span class="pre">defdict</span></code>) is used for dictionaries
+whose keys are determined dynamically. Accessing elements of
+such a dictionary with an invalid key will yield value 0 instead
+of a <code class="docutils literal notranslate"><span class="pre">KeyError</span></code>. If the same variables are calculated for one
+or more (virtual) subpopulation, the variables are stored in
+<code class="docutils literal notranslate"><span class="pre">vars()['subPop'][sp]['var']</span></code> where sp is a subpopulation ID
+(<code class="docutils literal notranslate"><span class="pre">sp</span></code>) or a tuple of virtual subpopulation ID (<code class="docutils literal notranslate"><span class="pre">(sp,</span> <span class="pre">vsp)</span></code>).
+<code class="docutils literal notranslate"><span class="pre">Population.vars(sp)</span></code> and <code class="docutils literal notranslate"><span class="pre">Population.dvars(sp)</span></code> provide
+shortcuts to these variables.</p>
+<p>Operator <em>Stat</em> outputs a number of most useful variables for
+each type of statistic. For example, <code class="docutils literal notranslate"><span class="pre">alleleFreq</span></code> calculates
+both allele counts and allele frequencies and it by default sets
+variable <code class="docutils literal notranslate"><span class="pre">alleleFreq</span></code> (<code class="docutils literal notranslate"><span class="pre">dvars().alleleFreq</span></code>) for all or
+specified subpopulations. If this does not fit your need, you
+can use parameter <em>vars</em> to output additional parameters, or
+limit the output of existing parameters. More specifically, for
+this particular statistic, the available variables are
+<code class="docutils literal notranslate"><span class="pre">'alleleFreq'</span></code>, <code class="docutils literal notranslate"><span class="pre">'alleleNum'</span></code>, <code class="docutils literal notranslate"><span class="pre">'alleleFreq_sp'</span></code>
+(<code class="docutils literal notranslate"><span class="pre">'alleleFreq'</span></code> in each subpopulation), and <code class="docutils literal notranslate"><span class="pre">'alleleNum_sp'</span></code>
+(<code class="docutils literal notranslate"><span class="pre">'alleleNum'</span></code> in each subpopulation). You can set
+<code class="docutils literal notranslate"><span class="pre">vars=['alleleNum_sp']</span></code> to output only subpopulation specific
+allele count. An optional suffix (parameter <em>suffix</em>) can be
+used to append a suffix to default parameter names. This
+parameter can be used, for example, to calculate and store the
+same statistics for different subpopulations (e.g. pairwise
+<code class="docutils literal notranslate"><span class="pre">Fst</span></code>).</p>
+<p>Operator <a class="reference internal" href="#Stat" title="Stat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stat</span></code></a> supports the following statistics:</p>
+<p><strong>popSize</strong>: If <em>popSize=True</em>, number of individuals in all or
+specified subpopulations (parameter <em>subPops</em>) will be set to
+the following variables:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">popSize</span></code> (default): Number of individuals in all or
+specified subpopulations. Because <em>subPops</em> does not have to
+cover all individuals, it may not be the actual population
+size.</li>
+<li><code class="docutils literal notranslate"><span class="pre">popSize_sp:</span></code> Size of (virtual) subpopulation <code class="docutils literal notranslate"><span class="pre">sp</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">subPopSize</span></code> (default): A list of (virtual) subpopulation
+sizes. This variable is easier to use than accessing popSize
+from each (virtual) subpopulation.</li>
+</ul>
+<p><strong>numOfMales</strong>: If <em>numOfMales=True</em>, number of male individuals
+in all or specified (virtual) subpopulations will be set to the
+following variables:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">numOfMales</span></code> (default): Total number of male individuals in
+all or specified (virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">numOfFemales</span></code> (default): Total number of female individuals
+in all or specified (virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">propOfMales:</span></code> Proportion of male individuals.</li>
+<li><code class="docutils literal notranslate"><span class="pre">propOfFemales:</span></code> Proportion of female individuals.</li>
+<li><code class="docutils literal notranslate"><span class="pre">numOfMales_sp:</span></code> Number of male individuals in each
+(virtual) subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">numOfFemales_sp:</span></code> Number of female individuals in each
+(virtual) subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">propOfMales_sp:</span></code> Proportion of male individuals in each
+(virtual) subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">propOfFemales_sp:</span></code> Proportion of female individuals in each
+(virtual) subpopulation.</li>
+</ul>
+<p><strong>numOfAffected</strong>: If <em>numOfAffected=True</em>, number of affected
+individuals in all or specified (virtual) subpopulations will be
+set to the following variables:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">numOfAffected</span></code> (default): Total number of affected
+individuals in all or specified (virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">numOfUnaffected</span></code> (default): Total number of unaffected
+individuals in all or specified (virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">propOfAffected:</span></code> Proportion of affected individuals.</li>
+<li><code class="docutils literal notranslate"><span class="pre">propOfUnaffected:</span></code> Proportion of unaffected individuals.</li>
+<li><code class="docutils literal notranslate"><span class="pre">numOfAffected_sp:</span></code> Number of affected individuals in each
+(virtual) subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">numOfUnaffected_sp:</span></code> Number of unaffected individuals in
+each (virtual) subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">propOfAffected_sp:</span></code> Proportion of affected individuals in
+each (virtual) subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">propOfUnaffected_sp:</span></code> Proportion of unaffected individuals
+in each (virtual) subpopulation.</li>
+</ul>
+<p><strong>numOfSegSites</strong>: Parameter <em>numOfSegSites</em> accepts a list of
+loci (loci indexes, names, or <code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>) and count the
+number of loci with at least two different alleles (segregating
+sites) or loci with only one non-zero allele (no zero allele,
+not segragating) for individuals in all or specified (virtual)
+subpopulations. This parameter sets variables</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">numOfSegSites</span></code> (default): Number of segregating sites in
+all or specified (virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">numOfSegSites_sp:</span></code> Number of segregating sites in each
+(virtual) subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">numOfFixedSites:</span></code> Number of sites with one non-zero allele
+in all or specified (virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">numOfFixedSites_sp:</span></code> Number of sites with one non-zero
+allele in in each (virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">segSites:</span></code> A list of segregating sites in all or specified
+(virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">segSites_sp:</span></code> A list of segregating sites in each (virtual)
+subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">fixedSites:</span></code> A list of sites with one non-zero allele in
+all or specified (virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">fixedSites_sp:</span></code> A list of sites with one non-zero allele in
+in each (virtual) subpopulations.</li>
+</ul>
+<p><strong>numOfMutants</strong>: Parameter <em>numOfMutants</em> accepts a list of
+loci (loci indexes, names, or <code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>) and count the
+number of mutants (non-zero alleles) for individuals in all or
+specified (virtual) subpopulations. It sets variables</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">numOfMutants</span></code> (default): Number of mutants in all or
+specified (virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">numOfMutants_sp:</span></code> Number of mutants in each (virtual)
+subpopulations.</li>
+</ul>
+<p><strong>alleleFreq</strong>: This parameter accepts a list of loci (loci
+indexes, names, or <code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>), at which allele frequencies
+will be calculated. This statistic outputs the following
+variables, all of which are dictionary (with loci indexes as
+keys) of default dictionaries (with alleles as keys). For
+example, <code class="docutils literal notranslate"><span class="pre">alleleFreq[loc][a]</span></code> returns 0 if allele <code class="docutils literal notranslate"><span class="pre">a</span></code> does
+not exist.</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">alleleFreq</span></code> (default): <code class="docutils literal notranslate"><span class="pre">alleleFreq[loc][a]</span></code> is the
+frequency of allele <code class="docutils literal notranslate"><span class="pre">a</span></code> at locus loc for all or specified
+(virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">alleleNum</span></code> (default): <code class="docutils literal notranslate"><span class="pre">alleleNum[loc][a]</span></code> is the number
+of allele <code class="docutils literal notranslate"><span class="pre">a</span></code> at locus loc for all or specified (virtual)
+subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">alleleFreq_sp:</span></code> Allele frequency in each (virtual)
+subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">alleleNum_sp:</span></code> Allele count in each (virtual)
+subpopulation.</li>
+</ul>
+<p><strong>heteroFreq</strong> and <strong>homoFreq</strong>: These parameters accept a list
+of loci (by indexes or names), at which the number and frequency
+of homozygotes and/or heterozygotes will be calculated. These
+statistics are only available for diploid populations. The
+following variables will be outputted:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">heteroFreq</span></code> (default for parameter <em>heteroFreq</em>): A
+dictionary of proportion of heterozygotes in all or specified
+(virtual) subpopulations, with loci indexes as dictionary
+keys.</li>
+<li><code class="docutils literal notranslate"><span class="pre">homoFreq</span></code> (default for parameter <em>homoFreq</em>): A dictionary
+of proportion of homozygotes in all or specified (virtual)
+subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">heteroNum:</span></code> A dictionary of number of heterozygotes in all
+or specified (virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">homoNum:</span></code> A dictionary of number of homozygotes in all or
+specified (virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">heteroFreq_sp:</span></code> A dictionary of proportion of heterozygotes
+in each (virtual) subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">homoFreq_sp:</span></code> A dictionary of proportion of homozygotes in
+each (virtual) subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">heteroNum_sp:</span></code> A dictionary of number of heterozygotes in
+each (virtual) subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">homoNum_sp:</span></code> A dictionary of number of homozygotes in each
+(virtual) subpopulation.</li>
+</ul>
+<p><strong>genoFreq</strong>: This parameter accept a list of loci (by indexes
+or names) at which number and frequency of all genotypes are
+outputed as a dictionary (indexed by loci indexes) of default
+dictionaries (indexed by tuples of possible indexes). This
+statistic is available for all population types with genotype
+defined as ordered alleles at a locus. The length of genotype
+equals the number of homologous copies of chromosomes (ploidy)
+of a population. Genotypes for males or females on sex
+chromosomes or in haplodiploid populations will have different
+length. Because genotypes are ordered, <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">0)</span></code> and <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1)</span></code>
+(two possible genotypes in a diploid population) are considered
+as different genotypes. This statistic outputs the following
+variables:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">genoFreq</span></code> (default): A dictionary (by loci indexes) of
+default dictionaries (by genotype) of genotype frequencies.
+For example, <code class="docutils literal notranslate"><span class="pre">genoFreq[1][(1,</span> <span class="pre">0)]</span></code> is the frequency of
+genotype (1, 0) at locus 1.</li>
+<li><code class="docutils literal notranslate"><span class="pre">genoNum</span></code> (default): A dictionary of default dictionaries of
+genotype counts of all or specified (virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">genoFreq_sp:</span></code> genotype frequency in each specified
+(virtual) subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">genoFreq_sp:</span></code> genotype count in each specified (virtual)
+subpopulation.</li>
+</ul>
+<p><strong>haploFreq</strong>: This parameter accepts one or more lists of loci
+(by index) at which number and frequency of haplotypes are
+outputted as default dictionaries. <code class="docutils literal notranslate"><span class="pre">[(1,2)]</span></code> can be
+abbreviated to <code class="docutils literal notranslate"><span class="pre">(1,2)</span></code>. For example, using parameter
+<code class="docutils literal notranslate"><span class="pre">haploFreq=(1,2,4)</span></code>, all haplotypes at loci <code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span></code> and
+<code class="docutils literal notranslate"><span class="pre">4</span></code> are counted. This statistic saves results to dictionary
+(with loci index as keys) of default dictionaries (with
+haplotypes as keys) such as <code class="docutils literal notranslate"><span class="pre">haploFreq[(1,2,4)][(1,1,0)]</span></code>
+(frequency of haplotype <code class="docutils literal notranslate"><span class="pre">(1,1,0)</span></code> at loci <code class="docutils literal notranslate"><span class="pre">(1,2,3)</span></code>). This
+statistic works for all population types. Number of haplotypes
+for each individual equals to his/her ploidy number.
+Haplodiploid populations are supported in the sense that the
+second homologous copy of the haplotype is not counted for male
+individuals. This statistic outputs the following variables:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">haploFreq</span></code> (default): A dictionary (with tuples of loci
+indexes as keys) of default dictionaries of haplotype
+frequencies. For example, <code class="docutils literal notranslate"><span class="pre">haploFreq[(0,</span> <span class="pre">1)][(1,1)]</span></code> records
+the frequency of haplotype <code class="docutils literal notranslate"><span class="pre">(1,1)</span></code> at loci <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1)</span></code> in all
+or specified (virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">haploNum</span></code> (default): A dictionary of default dictionaries
+of haplotype counts in all or specified (virtual)
+subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">haploFreq_sp:</span></code> Halptype frequencies in each (virtual)
+subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">haploNum_sp:</span></code> Halptype count in each (virtual)
+subpopulation.</li>
+</ul>
+<p><strong>haploHeteroFreq</strong> and <strong>haploHomoFreq</strong>: These parameters
+accept a list of haplotypes (list of loci), at which the number
+and frequency of haplotype homozygotes and/or heterozygotes will
+be calculated. Note that these statistics are <strong>observed</strong> count
+of haplotype heterozygote. The following variables will be
+outputted:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">haploHeteroFreq</span></code> (default for parameter <em>haploHeteroFreq</em>):
+A dictionary of proportion of haplotype heterozygotes in all
+or specified (virtual) subpopulations, with haplotype indexes
+as dictionary keys.</li>
+<li><code class="docutils literal notranslate"><span class="pre">haploHomoFreq</span></code> (default for parameter <em>haploHomoFreq</em>): A
+dictionary of proportion of homozygotes in all or specified
+(virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">haploHeteroNum:</span></code> A dictionary of number of heterozygotes in
+all or specified (virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">haploHomoNum:</span></code> A dictionary of number of homozygotes in all
+or specified (virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">haploHeteroFreq_sp:</span></code> A dictionary of proportion of
+heterozygotes in each (virtual) subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">haploHomoFreq_sp:</span></code> A dictionary of proportion of
+homozygotes in each (virtual) subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">haploHeteroNum_sp:</span></code> A dictionary of number of heterozygotes
+in each (virtual) subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">haploHomoNum_sp:</span></code> A dictionary of number of homozygotes in
+each (virtual) subpopulation.</li>
+</ul>
+<p><strong>sumOfinfo</strong>, <strong>meanOfInfo</strong>, <strong>varOfInfo</strong>, <strong>maxOfInfo</strong> and
+<strong>minOfInfo</strong>: Each of these five parameters accepts a list of
+information fields. For each information field, the sum, mean,
+variance, maximum or minimal (depending on the specified
+parameter(s)) of this information field at iddividuals in all or
+specified (virtual) subpopulations will be calculated. The
+results will be put into the following population variables:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">sumOfInfo</span></code> (default for <em>sumOfInfo</em>): A dictionary of the
+sum of specified information fields of individuals in all or
+specified (virtual) subpopulations. This dictionary is indexed
+by names of information fields.</li>
+<li><code class="docutils literal notranslate"><span class="pre">meanOfInfo</span></code> (default for <em>meanOfInfo</em>): A dictionary of the
+mean of information fields of all individuals.</li>
+<li><code class="docutils literal notranslate"><span class="pre">varOfInfo</span></code> (default for <em>varOfInfo</em>): A dictionary of the
+sample variance of information fields of all individuals.</li>
+<li><code class="docutils literal notranslate"><span class="pre">maxOfInfo</span></code> (default for <em>maxOfInfo</em>): A dictionary of the
+maximum value of information fields of all individuals.</li>
+<li><code class="docutils literal notranslate"><span class="pre">minOfInfo</span></code> (default for <em>minOfInfo</em>): A dictionary of the
+minimal value of information fields of all individuals.</li>
+<li><code class="docutils literal notranslate"><span class="pre">sumOfInfo_sp:</span></code> A dictionary of the sum of information
+fields of individuals in each subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">meanOfInfo_sp:</span></code> A dictionary of the mean of information
+fields of individuals in each subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">varOfInfo_sp:</span></code> A dictionary of the sample variance of
+information fields of individuals in each subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">maxOfInfo_sp:</span></code> A dictionary of the maximum value of
+information fields of individuals in each subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">minOfInfo_sp:</span></code> A dictionary of the minimal value of
+information fields of individuals in each subpopulation.</li>
+</ul>
+<p><strong>LD</strong>: Parameter <code class="docutils literal notranslate"><span class="pre">LD</span></code> accepts one or a list of loci pairs
+(e.g. <code class="docutils literal notranslate"><span class="pre">LD=[[0,1],</span> <span class="pre">[2,3]]</span></code>) with optional primary alleles at
+both loci (e.g. <code class="docutils literal notranslate"><span class="pre">LD=[0,1,0,0]</span></code>). For each pair of loci, this
+operator calculates linkage disequilibrium and optional
+association statistics between two loci. When primary alleles
+are specified, signed linkage disequilibrium values are
+calculated with non-primary alleles are combined. Otherwise,
+absolute values of diallelic measures are combined to yield
+positive measure of LD. Association measures are calculated from
+a <code class="docutils literal notranslate"><span class="pre">m</span></code> by <code class="docutils literal notranslate"><span class="pre">n</span></code> contigency of haplotype counts (<code class="docutils literal notranslate"><span class="pre">m=n=2</span></code> if
+primary alleles are specified). Please refer to the  simuPOP
+user’s guide for detailed information. This statistic sets the
+following variables:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">LD</span></code> (default) Basic LD measure for haplotypes in all or
+specified (virtual) subpopulations. Signed if primary alleles
+are specified.</li>
+<li><code class="docutils literal notranslate"><span class="pre">LD_prime</span></code> (default) Lewontin’s D’ measure for haplotypes in
+all or specified (virtual) subpopulations. Signed if primary
+alleles are specified.</li>
+<li><code class="docutils literal notranslate"><span class="pre">R2</span></code> (default) Correlation LD measure for haplotypes in all
+or specified (virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">LD_ChiSq</span></code> ChiSq statistics for a contigency table with
+frequencies of haplotypes in all or specified (virtual)
+subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">LD_ChiSq_p</span></code> Single side p-value for the ChiSq statistic.
+Degrees of freedom is determined by number of alleles at both
+loci and the specification of primary alleles.</li>
+<li><code class="docutils literal notranslate"><span class="pre">CramerV</span></code> Normalized ChiSq statistics.</li>
+<li><code class="docutils literal notranslate"><span class="pre">LD_sp</span></code> Basic LD measure for haplotypes in each (virtual)
+subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">LD_prime_sp</span></code> Lewontin’s D’ measure for haplotypes in each
+(virtual) subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">R2_sp</span></code> R2 measure for haplotypes in each (virtual)
+subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">LD_ChiSq_sp</span></code> ChiSq statistics for each (virtual)
+subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">LD_ChiSq_p_sp</span></code> p value for the ChiSq statistics for each
+(virtual) subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">CramerV_sp</span></code> Cramer V statistics for each (virtual)
+subpopulation.</li>
+</ul>
+<p><strong>association</strong>: Parameter <code class="docutils literal notranslate"><span class="pre">association</span></code> accepts a list of
+loci, which can be a list of indexes, names, or <code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>.
+At each locus, one or more statistical tests will be performed
+to test association between this locus and individual affection
+status. Currently,  simuPOP provides the following tests:</p>
+<ul class="simple">
+<li>An allele-based Chi-square test using alleles counts. This
+test can be applied to loci with more than two alleles, and to
+haploid populations.</li>
+<li>A genotype-based Chi-square test using genotype counts. This
+test can be applied to loci with more than two alleles (more
+than 3 genotypes) in diploid populations. <code class="docutils literal notranslate"><span class="pre">aA</span></code> and <code class="docutils literal notranslate"><span class="pre">Aa</span></code>
+are considered to be the same genotype.</li>
+<li>A genotype-based Cochran-Armitage trend test. This test can
+only be applied to diallelic loci in diploid populations. A
+codominant model is assumed.</li>
+</ul>
+<p>This statistic sets the following variables:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">Allele_ChiSq</span></code> A dictionary of allele-based Chi-Square
+statistics for each locus, using cases and controls in all or
+specified (virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Allele_ChiSq_p</span></code> (default) A dictionary of <em>p-values</em> of the
+corresponding Chi-square statistics.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Geno_ChiSq</span></code> A dictionary of genotype-based Chi-Square
+statistics for each locus, using cases and controls in all or
+specified (virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Geno_ChiSq_p</span></code> A dictionary of <em>p-values</em> of the
+corresponding genotype-based Chi-square test.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Armitage_p</span></code> A dictionary of <em>p-values</em> of the Cochran-
+Armitage tests, using cases and controls in all or specified
+(virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Allele_ChiSq_sp</span></code> A dictionary of allele-based Chi-Square
+statistics for each locus, using cases and controls from each
+subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Allele_ChiSq_p_sp</span></code> A dictionary of p-values of allele-based
+Chi-square tests, using cases and controls from each (virtual)
+subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Geno_ChiSq_sp</span></code> A dictionary of genotype-based Chi-Square
+tests for each locus, using cases and controls from each
+subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Geno_ChiSq_p_sp</span></code> A dictionary of p-values of genotype-based
+Chi-Square tests, using cases and controls from each
+subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Armitage_p_sp</span></code> A dictionary of <em>p-values</em> of the Cochran-
+Armitage tests, using cases and controls from each
+subpopulation.</li>
+</ul>
+<p><strong>neutrality</strong>: This parameter performs neutrality tests
+(detection of natural selection) on specified loci, which can be
+a list of loci indexes, names or <code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>. It currently
+only outputs <em>Pi</em>, which is the average number of pairwise
+difference between loci. This statistic outputs the following
+variables:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">Pi</span></code> Mean pairwise difference between all sequences from all
+or specified (virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Pi_sp</span></code> Mean paiewise difference between all sequences in
+each (virtual) subpopulation.</li>
+</ul>
+<p><strong>structure</strong>: Parameter <code class="docutils literal notranslate"><span class="pre">structure</span></code> accepts a list of loci at
+which statistics that measure population structure are
+calculated. <em>structure</em> accepts a list of loci indexes, names or
+<code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>. This parameter currently supports the following
+statistics:</p>
+<ul class="simple">
+<li>Weir and Cockerham’s Fst (1984). This is the most widely used
+estimator of Wright’s fixation index and can be used to
+measure  Population differentiation. However, this method is
+designed to estimate Fst from samples of larger populations
+and might not be appropriate for the calculation of Fst of
+large populations.</li>
+<li>Nei’s Gst (1973). The Gst estimator is another estimator for
+Wright’s fixation index but it is extended for multi-allele
+(more than two alleles) and multi-loci cases. This statistics
+should be used if you would like to obtain a <em>true</em> Fst value
+of a large  Population. Nei’s Gst uses only allele frequency
+information so it is available for all population type
+(haploid, diploid etc). Weir and Cockerham’s Fst uses
+heterozygosity frequency so it is best for autosome of diploid
+populations. For non-diploid population, sex, and
+mitochondrial DNAs,  simuPOP uses expected heterozygosity (1 -
+sum p_i^2) when heterozygosity is needed. These statistics
+output the following variables:</li>
+<li><code class="docutils literal notranslate"><span class="pre">F_st</span></code> (default) The WC84 <em>Fst</em> statistic estimated for all
+* specified loci.</li>
+<li><code class="docutils literal notranslate"><span class="pre">F_is</span></code> The WC84 <em>Fis</em> statistic estimated for all specified
+loci.</li>
+<li><code class="docutils literal notranslate"><span class="pre">F_it</span></code> The WC84 <em>Fit</em> statistic estimated for all specified
+loci.</li>
+<li><code class="docutils literal notranslate"><span class="pre">f_st</span></code> A dictionary of locus level WC84 <em>Fst</em> values.</li>
+<li><code class="docutils literal notranslate"><span class="pre">f_is</span></code> A dictionary of locus level WC84 <em>Fis</em> values.</li>
+<li><code class="docutils literal notranslate"><span class="pre">f_it</span></code> A dictionary of locus level WC84 <em>Fit</em> values.</li>
+<li><code class="docutils literal notranslate"><span class="pre">G_st</span></code> Nei’s Gst statistic estimated for all specified loci.</li>
+<li><code class="docutils literal notranslate"><span class="pre">g_st</span></code> A dictionary of Nei’s Gst statistic estimated for
+each locus.</li>
+</ul>
+<p><strong>HWE</strong>: Parameter <code class="docutils literal notranslate"><span class="pre">HWE</span></code> accepts a list of loci at which exact
+two-side tests for Hardy-Weinberg equilibrium will be performed.
+This statistic is only available for diallelic loci in diploid
+populations. <em>HWE</em> can be a list of loci indexes, names or
+<code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>. This statistic outputs the following variables:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">HWE</span></code> (default) A dictionary of p-values of HWE tests using
+genotypes in all or specified (virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">HWE_sp</span></code> A dictionary of p-values of HWS tests using
+genotypes in each (virtual) subpopulation.</li>
+</ul>
+<p><strong>inbreeding</strong>: Inbreeding measured by Identitcal by Decent (and
+by State). This statistics go through all loci of individuals in
+a diploid population and calculate the number and proportions of
+alleles that are identitcal by decent and by state. Because
+ancestral information is only available in lineage module,
+variables IBD_freq are always set to zero in other modules. Loci
+on sex and mitochondrial chromosomes, and non-diploid
+populations are currently not supported. This statistic outputs
+the following variables:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">IBD_freq</span></code> (default) The frequency of IBD pairs among all
+allele pairs. To use this statistic, the population must be
+initialized by operator InitLineage() to assign each ancestral
+allele an unique identify.</li>
+<li><code class="docutils literal notranslate"><span class="pre">IBS_freq</span></code> (default) The proportion of IBS pairs among all
+allele pairs.</li>
+<li><code class="docutils literal notranslate"><span class="pre">IBD_freq_sp</span></code> frequency of IBD in each (virtual)
+subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">IBS_freq_sp</span></code> frequency of IBS in each (virtual)
+subpopulations.</li>
+</ul>
+<p><strong>effectiveSize</strong>: Parameter <code class="docutils literal notranslate"><span class="pre">effectiveSize</span></code> accepts a list of
+loci at which the effective population size for the whole or
+specified (virtual) subpopulations is calculated.
+<em>effectiveSize</em> can be a list of loci indexes, names or
+<code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>. Parameter <em>subPops</em> is usually used to define
+samples from which effective sizes are estimated. This statistic
+allows the calculation of true effective size based on number of
+gametes each parents transmit to the offspring population (per-
+locus before and after mating), and estimated effective size
+based on sample genotypes. Due to the temporal natural of some
+methods, more than one  Stat operators might be needed to
+calculate effective size. The <em>vars</em> parameter specified which
+method to use and which variable to set. Acceptable values
+include:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">Ne_demo_base</span></code> When this variable is set before mating, it
+stores IDs of breeding parents and, more importantly, assign
+an unique lineage value to alleles at specified loci of each
+individual. <strong>This feature is only available for lineage
+modules and will change lineage values at specified loci of
+all individuals</strong>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Ne_demo_base_sp</span></code> Pre-mating information for each (virtual)
+subpopulation, used by variable <code class="docutils literal notranslate"><span class="pre">Ne_demo_sp</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Ne_demo</span></code> A dictionary of locus-specific demographic
+effective population size, calculated using number of gemetes
+each parent transmits to the offspring population. The method
+is vased on Crow &amp; Denniston 1988 (Ne = KN-1/k-1+Vk/k) and
+need variable <code class="docutils literal notranslate"><span class="pre">Ne_demo_base</span></code> set before mating. <strong>Effective
+size estimated from this formula is model dependent and might
+not be applicable to your mating schemes.</strong></li>
+<li><code class="docutils literal notranslate"><span class="pre">Ne_demo_sp</span></code> Calculate subpopulation-specific effective
+size.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Ne_temporal_base</span></code> When this variable is set in parameter
+<em>vars</em>, the  Stat operator saves baseline allele frequencies
+and other information in this variable, which are used by
+temporary methods to estimate effective population size
+according to changes in allele frequency between the baseline
+and present generations. This variable could be set repeatedly
+to change baselines.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Ne_temporal_base_sp</span></code> Set baseline information for each
+(virtual) subpopulation specified.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Ne_tempoFS_P1</span></code> Effective population size, 2.5% and 97.5%
+confidence interval for sampling plan 1 as a list of size 3,
+estimated using a temporal method as described in Jorde &amp;
+Ryman (2007), and as implemented by software tempoFS
+(<a class="reference external" href="http://www.zoologi.su.se/~ryman/">http://www.zoologi.su.se/~ryman/</a>). This variable is set to
+census population size if no baseline has been set, and to the
+temporal effective size between the present and the baseline
+generation otherwise. This method uses population size or sum
+of subpopulation sizes of specified (virtual) subpopulations
+as census population size for the calculation based on plan 1.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Ne_tempoFS_P2</span></code> Effective population size, 2.5% and 97.5%
+confidence interval for sampling plan 2 as a list of size 6,
+estimated using a temporal method as described in Jorde &amp;
+Ryman (2007). This variable is set to census population size
+no baseline has been set, and to the temporal effective size
+between the present and the baseline generation otherwise.
+This method assumes that the sample is drawn from an
+infinitely-sized population.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Ne_tempoFS</span></code> deprecated, use <code class="docutils literal notranslate"><span class="pre">Ne_tempoFS_P2</span></code> instead.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Ne_tempoFS_P1_sp</span></code> Estimate effective size of each (virtual)
+subpopulation using method Jorde &amp; Ryman 2007, assuming
+sampling plan 1. The census population sizes for sampling plan
+1 are the sizes for each subpopulation that contain the
+specified (virtual) subpopulations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Ne_tempoFS_P2_sp</span></code> Estimate effective size of each (virtual)
+subpopulation using method Jorde &amp; Ryman 2007, assuming
+sampling plan 2.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Ne_tempoFS_sp</span></code> deprecated, use <code class="docutils literal notranslate"><span class="pre">Ne_tempoFS_P2_sp</span></code>
+instead.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Ne_waples89_P1</span></code> Effective population size, 2.5% and 97.5%
+confidence interval for sampling plan 1 as a list of size 6,
+estimated using a temporal method as described in Waples 1989,
+Genetics. Because this is a temporal method, Ne_waples89
+estimates effective size between the present and the baseline
+generation set by variable <code class="docutils literal notranslate"><span class="pre">Ne_temporal_base</span></code>. Census
+population size will be resutned if no baseline has been set.
+This method uses population size or sum of subpopulation sizes
+of specified (virtual) subpopulations as census population
+size for the calculation based on plan 1.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Ne_waples89_P2</span></code> Effective population size, 2.5% and 97.5%
+confidence interval for sampling plan 2 as a list of size 6,
+estimated using a temporal method as described in Waples 1989,
+Genetics. Because this is a temporal method, Ne_waples89
+estimates effective size between the present and the baseline
+generation set by variable <code class="docutils literal notranslate"><span class="pre">Ne_temporal_base</span></code>. Census
+population size will be returned if no baseline has been set.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Ne_waples89_P1_sp</span></code> Estimate effective size for each
+(virtual) subpopulation using method Waples 89, assuming
+sampling plan 1. The census population sizes are the sizes for
+each subpopulation that contain the specified (virtual)
+subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Ne_waples89_P2_sp</span></code> Estimate effective size for each
+(virtual) subpopulation using method Waples 89, assuming
+sampling plan 2.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Ne_waples89_sp</span></code> deprecated, use <code class="docutils literal notranslate"><span class="pre">Ne_waples89_P2_sp</span></code>
+instead.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Ne_LD</span></code> Lists of length three for effective population size,
+2.5% and 97.% confidence interval for cutoff allele frequency
+0., 0.01, 0.02 and 0.05 (as dictionary keys), using a
+parametric method, estimated from linkage disequilibrim
+information of one sample, using LD method developed by Waples
+&amp; Do 2006 (LDNe). This method assumes unlinked loci and uses
+LD measured from genotypes at loci. Because this is a sample
+based method, it should better be applied to a random sample
+of the population. 95% CI is calculated using a Jackknife
+estimated effective number of independent alleles. Please
+refer to relevant papers and the LDNe user’s guide for
+details.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Ne_LD_sp</span></code> Estimate LD-based effective population size for
+each specified (virtual) subpopulation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Ne_LD_mono</span></code> A version of Ne_LD that assumes monogamy (see
+Waples 2006 for details.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Ne_LD_mono_sp</span></code> Ne_LD_mono calculated for each (virtual)
+subpopulation.</li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="refManual_ch3.html">Operator References</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec1.html">Base class for all operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec2.html">Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec3.html">Expression and Statements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec4.html">Demographic models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec5.html">Genotype transmitters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec6.html">Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec7.html">Penetrance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec8.html">Quantitative Trait</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec9.html">Natural selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec10.html">Tagging operators</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Statistics Calculation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-stat">class Stat</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec12.html">Conditional operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec13.html">The Python operator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec14.html">Miscellaneous operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec15.html">Function form of operators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="refManual.html">&lt;no title&gt;</a><ul>
+  <li><a href="refManual_ch3.html">Operator References</a><ul>
+      <li>Previous: <a href="refManual_ch3_sec10.html" title="previous chapter">Tagging operators</a></li>
+      <li>Next: <a href="refManual_ch3_sec12.html" title="next chapter">Conditional operators</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/refManual_ch3_sec11.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,638 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Introduction to operators &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Initialization" href="userGuide_ch5_sec2.html" />
+    <link rel="prev" title="simuPOP Operators" href="userGuide_ch5.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="introduction-to-operators">
+<h1>Introduction to operators<a class="headerlink" href="#introduction-to-operators" title="Permalink to this headline">¶</a></h1>
+<p>Operators are objects that act on populations. There are two types of operators:</p>
+<ul class="simple">
+<li><strong>Operators that are applied to populations</strong>. These operators are used in the
+<code class="docutils literal notranslate"><span class="pre">initOps</span></code>, <code class="docutils literal notranslate"><span class="pre">preOps</span></code>, <code class="docutils literal notranslate"><span class="pre">postOps</span></code> and <code class="docutils literal notranslate"><span class="pre">finalOps</span></code> parameters of the
+<code class="docutils literal notranslate"><span class="pre">evolve</span></code> function. The <code class="docutils literal notranslate"><span class="pre">initOps</span></code> operators are applied before an
+evolutionary process, the <code class="docutils literal notranslate"><span class="pre">preOps</span></code> operators are applied to the parental
+population at each generation before mating, the <code class="docutils literal notranslate"><span class="pre">postOps</span></code> operators are
+applied to the offspring population at each generation after mating, and the
+<code class="docutils literal notranslate"><span class="pre">finalOps</span></code> operators are applied after an evolutionary process. Examples of
+such operators include <a class="reference internal" href="refManual_ch3_sec4.html#MergeSubPops" title="MergeSubPops"><code class="xref py py-class docutils literal notranslate"><span class="pre">MergeSubPops</span></code></a> to merge subpopulations and
+<a class="reference internal" href="refManual_ch3_sec6.html#StepwiseMutator" title="StepwiseMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">StepwiseMutator</span></code></a> to mutate individuals using a stepwise mutation model.</li>
+<li><strong>Operators that are applied to individuals</strong> (offspring) during mating. These
+operators are used in the <code class="docutils literal notranslate"><span class="pre">ops</span></code> parameter of a mating scheme. They are usually
+used to transmit genotype or other information from parents to offspring.
+Examples of such operators include <a class="reference internal" href="refManual_ch3_sec5.html#MendelianGenoTransmitter" title="MendelianGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MendelianGenoTransmitter</span></code></a> that
+transmit parental genotype to offspring according to Mendelian laws and
+<a class="reference internal" href="refManual_ch3_sec10.html#ParentsTagger" title="ParentsTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParentsTagger</span></code></a> that record the indexes of parents in the parental
+population to each offspring.</li>
+</ul>
+<p>Some mutators could be applied both to populations and individuals. For example,
+an <a class="reference internal" href="refManual_ch3_sec10.html#IdTagger" title="IdTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">IdTagger</span></code></a> could be applied to a whole population and assign an unique
+ID to all individuals, or to offspring during mating.</p>
+<p>The following sections will introduce common features of all operators. The next
+chapter will explain all simuPOP operators in detail.</p>
+<div class="section" id="apply-operators-to-selected-replicates-and-virtual-subpopulations-at-selected-generations">
+<h2>Apply operators to selected replicates and (virtual) subpopulations at selected generations<a class="headerlink" href="#apply-operators-to-selected-replicates-and-virtual-subpopulations-at-selected-generations" title="Permalink to this headline">¶</a></h2>
+<p>Operators are, by default, applied to all generations during an evolutionary
+process. This can be changed using the <code class="docutils literal notranslate"><span class="pre">begin</span></code>, <code class="docutils literal notranslate"><span class="pre">end</span></code>, <code class="docutils literal notranslate"><span class="pre">step</span></code> and <code class="docutils literal notranslate"><span class="pre">at</span></code>
+parameters. As their names indicate, these parameters control the starting
+generation (<code class="docutils literal notranslate"><span class="pre">begin</span></code>), ending generation (<code class="docutils literal notranslate"><span class="pre">end</span></code>), generations between two
+applicable generations (<code class="docutils literal notranslate"><span class="pre">step</span></code>), and an explicit list of applicable
+generations (<code class="docutils literal notranslate"><span class="pre">at</span></code>, a single generation number is also acceptable). Other
+parameters will be ignored if <code class="docutils literal notranslate"><span class="pre">at</span></code> is specified. It is worth noting that, if
+an evolutionary process has a pre-sepcified ending generation, negative
+generations numbers are allowed. They are counted backward from the ending
+generation.</p>
+<p>For example, if a simulator starts at generation <code class="docutils literal notranslate"><span class="pre">0</span></code>, and the <code class="docutils literal notranslate"><span class="pre">evolve</span></code>
+function has parameter <code class="docutils literal notranslate"><span class="pre">gen=10</span></code>, the simulator will stop at the <em>beginning</em> of
+generation <code class="docutils literal notranslate"><span class="pre">10</span></code>. Generation <code class="docutils literal notranslate"><span class="pre">-1</span></code> refers to generation <code class="docutils literal notranslate"><span class="pre">9</span></code>, and generation
+<code class="docutils literal notranslate"><span class="pre">-2</span></code> refers to generation <code class="docutils literal notranslate"><span class="pre">8</span></code>, and so on. Example <a class="reference internal" href="#applicablegen"><span class="std std-ref">applicableGen</span></a> demonstrates how to set applicable generations of an operator.
+In this example, a population is initialized before evolution using an
+<a class="reference internal" href="refManual_ch3_sec2.html#InitGenotype" title="InitGenotype"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitGenotype</span></code></a> operator. allele frequency at locus <code class="docutils literal notranslate"><span class="pre">0</span></code> is calculated at
+generation <code class="docutils literal notranslate"><span class="pre">80</span></code>, <code class="docutils literal notranslate"><span class="pre">90</span></code>, but not <code class="docutils literal notranslate"><span class="pre">100</span></code> because the evolution stops at the
+beginning of generation <code class="docutils literal notranslate"><span class="pre">100</span></code>. A <a class="reference internal" href="refManual_ch3_sec3.html#PyEval" title="PyEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyEval</span></code></a> operator outputs generation
+number and allele frequency at the end of generation <code class="docutils literal notranslate"><span class="pre">80</span></code> and <code class="docutils literal notranslate"><span class="pre">90</span></code>. Another
+<a class="reference internal" href="refManual_ch3_sec3.html#PyEval" title="PyEval"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyEval</span></code></a> operator outputs similar information at generation <code class="docutils literal notranslate"><span class="pre">90</span></code> and
+<code class="docutils literal notranslate"><span class="pre">99</span></code>, before and after mating. Note, however, because allele frequencies are
+only calculated twice, the pre-mating allele frequency at generation <code class="docutils literal notranslate"><span class="pre">90</span></code> is
+actually calculated at generation <code class="docutils literal notranslate"><span class="pre">80</span></code>, and the allele frequencies display for
+generation <code class="docutils literal notranslate"><span class="pre">99</span></code> are calculated at generation <code class="docutils literal notranslate"><span class="pre">90</span></code>. At the end of the
+evolution, the population is saved to a file using a <a class="reference internal" href="refManual_ch3_sec14.html#SavePopulation" title="SavePopulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">SavePopulation</span></code></a>
+operator.</p>
+<p id="applicablegen"><strong>Example</strong>: <em>Applicable generations of an operator.</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">20</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;At the beginning of gen </span><span class="si">%d</span><span class="s2">: allele Freq: </span><span class="si">%.2f</span><span class="s2">\n&#39; % (gen, alleleFreq[0][0])&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">at</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">begin</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;At the end of gen </span><span class="si">%d</span><span class="s2">: allele freq: </span><span class="si">%.2f</span><span class="s2">\n&#39; % (gen, alleleFreq[0][0])&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">begin</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;At the end of gen </span><span class="si">%d</span><span class="s2">: allele Freq: </span><span class="si">%.2f</span><span class="s2">\n&#39; % (gen, alleleFreq[0][0])&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">at</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">finalOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">SavePopulation</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s1">&#39;sample.pop&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">100</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">At the end of gen 80: allele freq: 0.92</span>
+<span class="go">At the beginning of gen 90: allele Freq: 0.92</span>
+<span class="go">At the end of gen 90: allele freq: 0.93</span>
+<span class="go">At the end of gen 90: allele Freq: 0.93</span>
+<span class="go">At the beginning of gen 99: allele Freq: 0.93</span>
+<span class="go">At the end of gen 99: allele Freq: 0.93</span>
+<span class="go">100</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="applicableGen.py">Download applicableGen.py</a></p>
+</div>
+<div class="section" id="applicable-populations-and-virtual-subpopulations">
+<h2>Applicable populations and (virtual) subpopulations<a class="headerlink" href="#applicable-populations-and-virtual-subpopulations" title="Permalink to this headline">¶</a></h2>
+<p>A simulator can evolve multiple replicates of a population simultaneously.
+Different operators can be applied to different replicates of this population.
+This allows side by side comparison between simulations.</p>
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">reps</span></code> is used to control which replicate(s) an operator can be
+applied to. This parameter can be a list of replicate numbers or a single
+replicate number. Negative index is allowed where <code class="docutils literal notranslate"><span class="pre">-1</span></code> refers to the last
+replicate. This technique has been widely used to produce table-like output
+where a <a class="reference internal" href="refManual_ch3_sec3.html#PyOutput" title="PyOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyOutput</span></code></a> outputs a newline when it is applied to the last
+replicate of a simulator. Example <a class="reference internal" href="userGuide_ch5_sec14.html#hybridoperator"><span class="std std-ref">hybridOperator</span></a>
+demonstrates how to use this <code class="docutils literal notranslate"><span class="pre">reps</span></code> parameter. It is worth noting that
+negative indexes are <em>dynamic</em> indexes relative to number of active populations.
+For example, <code class="docutils literal notranslate"><span class="pre">rep=-1</span></code> will refer to a previous population if the last
+population has stopped evolving. Use a non-negative replicate number if this is
+not intended.</p>
+<p id="replicate"><strong>Example</strong>: <em>Apply operators to a subset of populations</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Simulator</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">20</span><span class="p">]),</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="s1">&#39;gen&#39;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;\t</span><span class="si">%.2f</span><span class="s2">&#39; % alleleFreq[0][0]&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOutput</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">reps</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">0    0.23    0.22    0.29</span>
+<span class="go">10   0.15    0.23    0.21</span>
+<span class="go">20   0.04    0.07    0.10</span>
+<span class="go">(30, 30, 30, 30, 30)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="replicate.py">Download replicate.py</a></p>
+<p>An operator can also be applied to specified (virtual) subpopulations. For
+example, an <code class="docutils literal notranslate"><span class="pre">initializer</span></code> can be applied to male individuals in the first
+subpopulation, and everyone in the second subpopulation using parameter
+<code class="docutils literal notranslate"><span class="pre">subPops=[(0,0)</span></code>, 1], if a virtual subpopulation is defined by individual sex.
+Generally speaking,</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">subPops=[]</span></code> applies the operator to all subpopulation. This is usually the
+default value of an operator.</li>
+<li><code class="docutils literal notranslate"><span class="pre">subPops=[vsp1,</span> <span class="pre">vsp2,...]</span></code> applies the operator all specified (virtual)
+subpopulations. (e.g. <code class="docutils literal notranslate"><span class="pre">subPops=[(0,0)</span></code>, 1]).</li>
+<li><code class="docutils literal notranslate"><span class="pre">subPops=sp</span></code> is an abbreviation for <code class="docutils literal notranslate"><span class="pre">subPops=[sp]</span></code>. If <code class="docutils literal notranslate"><span class="pre">sp</span></code> is virtual,
+it has to be written as <code class="docutils literal notranslate"><span class="pre">[sp]</span></code> because <code class="docutils literal notranslate"><span class="pre">subPops=(0,</span> <span class="pre">1)</span></code> is intepreted as two
+non-virtual subpopulation.</li>
+</ul>
+<p>However, not all operators support this parameter, and even if they do, their
+interpretations of parameter input may vary. Please refer to documentation for
+individual operators in <em>the simuPOP reference manual</em> for details.</p>
+</div>
+<div class="section" id="dynamically-determined-loci-parameter-loci">
+<h2>Dynamically determined loci (parameter <code class="docutils literal notranslate"><span class="pre">loci</span></code>) *<a class="headerlink" href="#dynamically-determined-loci-parameter-loci" title="Permalink to this headline">¶</a></h2>
+<p>Many operators accept a parameter <code class="docutils literal notranslate"><span class="pre">loci</span></code> to specify the applicable loci. This
+parameter can be</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>: all available loci of the population to which the operator is
+applied.</li>
+<li>[1, 2, 4, 5]: A list of loci indexes. When the operator is applied to a
+population, it will be applied to the specified loci.</li>
+<li><code class="docutils literal notranslate"><span class="pre">[('chr1',</span> <span class="pre">5),</span> <span class="pre">('chr1',</span> <span class="pre">10),</span> <span class="pre">('chr2',</span> <span class="pre">5)]</span></code>: A list of chromosome position
+pairs. That is to say, when the operator is applied to a population, it will
+find loci at specified position of specified chromosome. Here chromosome names
+are names specified by parameter <code class="docutils literal notranslate"><span class="pre">chromNames</span></code> of the <a class="reference internal" href="refManual_ch2_sec1.html#Population" title="Population"><code class="xref py py-class docutils literal notranslate"><span class="pre">Population</span></code></a>
+constructor. That is to say, the operator can be applied to all population with
+such chromosomes and loci at specified locations.</li>
+<li>func: A function with an optional parameter <code class="docutils literal notranslate"><span class="pre">pop</span></code>. When the operator is
+applied to a population, it will call this function, optionally pass the
+population to be applied to this function, and use its output as indexes of
+loci.</li>
+</ul>
+<p>The last usage is very interesting because it allows the determination of loci
+according to population property. For example, Example <a class="reference internal" href="#dynamicloci"><span class="std std-ref">dynamicLoci</span></a> shows an example with a <a class="reference internal" href="refManual_ch3_sec9.html#MaSelector" title="MaSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaSelector</span></code></a> that is applied to
+the locus with highest frequency at each generation by calling function
+<code class="docutils literal notranslate"><span class="pre">mostPopular</span></code>, which calculates allele frequency and pick the locus with
+highest allele frequency, This example looks silly, but the technique is very
+useful in simulating the introduction of disease loci by, for example, adding
+positive selection pressure to one of the chosen loci.</p>
+<p id="dynamicloci"><strong>Example</strong>: <em>Natural selection with dynamically determined loci</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;fitness&#39;</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">mostPopular</span><span class="p">(</span><span class="n">pop</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">alleleFreq</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">ALL_AVAIL</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">freq</span> <span class="o">=</span> <span class="p">[</span><span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">alleleFreq</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">totNumLoci</span><span class="p">())]</span>
+<span class="gp">... </span>    <span class="n">max_freq</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">selLoci</span> <span class="o">=</span> <span class="p">(</span><span class="n">freq</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">max_freq</span><span class="p">),</span> <span class="n">max_freq</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="p">[</span><span class="n">freq</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">max_freq</span><span class="p">)]</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MaSelector</span><span class="p">(</span><span class="n">fitness</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="n">mostPopular</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;gen=</span><span class="si">%d</span><span class="s2">, select against </span><span class="si">%d</span><span class="s2"> with frequency </span><span class="si">%.2f</span><span class="s2">\n&#39; % (gen, selLoci[0], selLoci[1])&quot;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">gen=0, select against 6 with frequency 0.45</span>
+<span class="go">gen=1, select against 7 with frequency 0.46</span>
+<span class="go">gen=2, select against 2 with frequency 0.51</span>
+<span class="go">gen=3, select against 2 with frequency 0.48</span>
+<span class="go">gen=4, select against 2 with frequency 0.45</span>
+<span class="go">gen=5, select against 9 with frequency 0.45</span>
+<span class="go">gen=6, select against 3 with frequency 0.46</span>
+<span class="go">gen=7, select against 9 with frequency 0.44</span>
+<span class="go">gen=8, select against 7 with frequency 0.47</span>
+<span class="go">gen=9, select against 3 with frequency 0.44</span>
+<span class="go">10</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="dynamicLoci.py">Download dynamicLoci.py</a></p>
+</div>
+<div class="section" id="write-output-of-operators-to-one-or-more-files">
+<h2>Write output of operators to one or more files<a class="headerlink" href="#write-output-of-operators-to-one-or-more-files" title="Permalink to this headline">¶</a></h2>
+<p>All operators we have seen, except for the <a class="reference internal" href="refManual_ch3_sec14.html#SavePopulation" title="SavePopulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">SavePopulation</span></code></a> operator in
+Example <a class="reference internal" href="#applicablegen"><span class="std std-ref">applicableGen</span></a>, write their output to the standard
+output, namely your terminal window. However, it would be much easier for
+bookkeeping and further analysis if these output can be redirected to disk
+files. Parameter <code class="docutils literal notranslate"><span class="pre">output</span></code> is designed for this purpose.</p>
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">output</span></code> can take the following values:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">''</span></code> (an empty string): No output.</li>
+<li><code class="docutils literal notranslate"><span class="pre">'&gt;'</span></code>: Write to standard output.</li>
+<li><code class="docutils literal notranslate"><span class="pre">'filename'</span></code> or <code class="docutils literal notranslate"><span class="pre">'&gt;filename'</span></code>: Write the output to a file named filename.
+If multiple operators write to the same file, or if the same operator writes to
+the file file several times, only the last write operation will succeed.</li>
+<li><code class="docutils literal notranslate"><span class="pre">'&gt;&gt;filename'</span></code>: Append the output to a file named filename. The file will be
+opened at the beginning of <code class="docutils literal notranslate"><span class="pre">evolve</span></code> function and closed at the end. An
+existing file will be cleared.</li>
+<li><code class="docutils literal notranslate"><span class="pre">'&gt;&gt;&gt;filename'</span></code>: This is similar to the <code class="docutils literal notranslate"><span class="pre">'&gt;&gt;'</span></code> form but the file will not
+be cleared at the beginning of the <code class="docutils literal notranslate"><span class="pre">evolve</span></code> function.</li>
+<li><code class="docutils literal notranslate"><span class="pre">'!expr'</span></code>: <code class="docutils literal notranslate"><span class="pre">expr</span></code> is considered as a Python expression that will be
+evaluated at a population’s local namespace whenever an output string is needed.
+For example, <code class="docutils literal notranslate"><span class="pre">'!''%d.txt''</span> <span class="pre">%</span> <span class="pre">gen'</span></code> would return <code class="docutils literal notranslate"><span class="pre">0.txt</span></code>, <code class="docutils literal notranslate"><span class="pre">1.txt</span></code> etc at
+generation <code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span></code>, ….</li>
+<li>File handle of an opened file. Actually any python object with a <code class="docutils literal notranslate"><span class="pre">write</span></code>
+function.</li>
+<li>A Python function that can accept a string as its only parameter
+(<code class="docutils literal notranslate"><span class="pre">func(msg)</span></code>). When an operator outputs a message, this function will be
+called with this message.</li>
+<li>A <a class="reference internal" href="refManual_ch2_sec5.html#WithMode" title="WithMode"><code class="xref py py-class docutils literal notranslate"><span class="pre">WithMode</span></code></a>(<code class="docutils literal notranslate"><span class="pre">output,</span> <span class="pre">'b'</span></code>) object with <code class="docutils literal notranslate"><span class="pre">output</span></code> being the any of
+the allowed output string or function. This object tells simuPOP that the output
+is opened in binary model so that it should output bytes instead of texts to it.
+This is mostly designed for Python 3 because file objects in Python 2 accepts
+string even if they are opened in binary mode.</li>
+</ul>
+<p>Because a table output such as the one in Example <a class="reference internal" href="userGuide_ch5_sec14.html#hybridoperator"><span class="std std-ref">hybridOperator</span></a> is written by several operators, it is clear that all of them
+need to use the <code class="docutils literal notranslate"><span class="pre">'&gt;&gt;'</span></code> output format.</p>
+<p>The <a class="reference internal" href="refManual_ch3_sec14.html#SavePopulation" title="SavePopulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">SavePopulation</span></code></a> operator in Example <a class="reference internal" href="#applicablegen"><span class="std std-ref">applicableGen</span></a> write to file <code class="docutils literal notranslate"><span class="pre">sample.pop</span></code>. This works well if there is only
+one replicate but not so when the operator is applied to multiple populations.
+Only the last population will be saved successfully! In this case, the
+expression form of parameter <code class="docutils literal notranslate"><span class="pre">output</span></code> should be used.</p>
+<p>The expression form of this parameter accepts a Python expression. Whenever a
+filename is needed, this expression is evaluated against the local namespace of
+the population it is applied to. Because the <code class="docutils literal notranslate"><span class="pre">evolve</span></code> function automatically
+sets variables <code class="docutils literal notranslate"><span class="pre">gen</span></code> and <code class="docutils literal notranslate"><span class="pre">rep</span></code> in a population’s local namespace, such
+information can be used to produce an output string. Of course, any variable in
+this namespace can be used so you are not limited to these two variable.</p>
+<p>Example <a class="reference internal" href="userGuide_ch5_sec14.html#hybridoperator"><span class="std std-ref">hybridOperator</span></a> demonstrates the use of these two
+parameters. In this example, a table is written to file <code class="docutils literal notranslate"><span class="pre">LD.txt</span></code> using
+<code class="docutils literal notranslate"><span class="pre">output='&gt;&gt;LD.txt'</span></code>. Similar operation to <code class="docutils literal notranslate"><span class="pre">output='R2.txt'</span></code> fails because
+only the last <span class="math notranslate nohighlight">\(R^{2}\)</span> value is written to this file. The last operator
+writes output for each replicate to their respective output file such as
+<code class="docutils literal notranslate"><span class="pre">LD_0.txt</span></code>, using an expression that involves variable <code class="docutils literal notranslate"><span class="pre">rep</span></code>.</p>
+<p id="output"><strong>Example</strong>: <em>Use the output and outputExpr parameters</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Simulator</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">rep</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simu</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">genotype</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">Recombinator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">LD</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;</span><span class="si">%.2f</span><span class="s2">\t&#39; % LD[0][1]&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;&gt;&gt;LD.txt&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOutput</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">reps</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;&gt;&gt;LD.txt&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;</span><span class="si">%.2f</span><span class="s2">\t&#39; % R2[0][1]&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;R2.txt&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;</span><span class="si">%.2f</span><span class="s2">\t&#39; % LD[0][1]&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;!&#39;&gt;&gt;LD_</span><span class="si">%d</span><span class="s2">.txt&#39; </span><span class="si">% r</span><span class="s2">ep&quot;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">100</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">(100, 100, 100)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;LD.txt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+<span class="go">0.25 0.24    0.24</span>
+<span class="go">0.21 0.20    0.21</span>
+<span class="go">0.16 0.15    0.17</span>
+<span class="go">0.15 0.13    0.13</span>
+<span class="go">0.11 0.10    0.13</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;R2.txt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>    <span class="c1"># Only the last write operation succeed.</span>
+<span class="go">0.20</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;LD_2.txt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>  <span class="c1"># Each replicate writes to a different file.</span>
+<span class="go">0.24 0.21    0.17    0.13    0.13</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="output.py">Download output.py</a></p>
+<p>Example <a class="reference internal" href="#outputfunc"><span class="std std-ref">outputFunc</span></a> demonstrates an advanced usage of the
+<code class="docutils literal notranslate"><span class="pre">output</span></code> parameter. In this example, a logging object is created to write to a
+logfile as well as the standard output. The <code class="docutils literal notranslate"><span class="pre">info</span></code> and <code class="docutils literal notranslate"><span class="pre">debug</span></code> functions of
+this object are assigned to two operators so that their outputs can be sent to
+both a logfile and to the console window. One of the advantages of using a
+logging mechanism is that debugging output could be suppressed easily by
+adjusting the logging level of the logging object. Note that function
+<code class="docutils literal notranslate"><span class="pre">logging.info()</span></code> automatically adds a new line to its input messages before it
+writes them to an output.</p>
+<p id="outputfunc"><strong>Example</strong>: <em>Output to a Python function</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># logging to a file simulation.log, with detailed debug information</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;simulation.log&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(levelname)s</span><span class="s1">: </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">filemode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">genotype</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">Recombinator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">LD</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;LD: </span><span class="si">%d</span><span class="s2">, </span><span class="si">%.2f</span><span class="s2">&#39; % (gen, LD[0][1])&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">output</span><span class="o">=</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">),</span>   <span class="c1"># send LD to console and a logfile</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;R2: </span><span class="si">%d</span><span class="s2">, </span><span class="si">%.2f</span><span class="s2">&#39; % (gen, R2[0][1])&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">output</span><span class="o">=</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">),</span>  <span class="c1"># send R2 only to a logfile</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">100</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">100</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;simulation.log&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+<span class="go">INFO: LD: 0, 0.25</span>
+<span class="go">DEBUG: R2: 0, 0.97</span>
+<span class="go">INFO: LD: 20, 0.20</span>
+<span class="go">DEBUG: R2: 20, 0.64</span>
+<span class="go">INFO: LD: 40, 0.18</span>
+<span class="go">DEBUG: R2: 40, 0.51</span>
+<span class="go">INFO: LD: 60, 0.12</span>
+<span class="go">DEBUG: R2: 60, 0.25</span>
+<span class="go">INFO: LD: 80, 0.10</span>
+<span class="go">DEBUG: R2: 80, 0.17</span>
+
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="outputFunc.py">Download outputFunc.py</a></p>
+</div>
+<div class="section" id="during-mating-operators">
+<h2>During-mating operators<a class="headerlink" href="#during-mating-operators" title="Permalink to this headline">¶</a></h2>
+<p>All operators in Examples <a class="reference internal" href="#applicablegen"><span class="std std-ref">applicableGen</span></a>, <a class="reference internal" href="#replicate"><span class="std std-ref">replicate</span></a> and <a class="reference internal" href="#output"><span class="std std-ref">output</span></a> are applied before or after mating.
+There is, however, a hidden during-mating operator that is called by
+<a class="reference internal" href="refManual_ch2_sec4.html#RandomMating" title="RandomMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomMating</span></code></a>(). This operator is called
+<a class="reference internal" href="refManual_ch3_sec5.html#MendelianGenoTransmitter" title="MendelianGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MendelianGenoTransmitter</span></code></a>() and is responsible for transmitting
+genotype from parents to offspring according to Mendel’s laws. All pre-defined
+mating schemes (see Section <a class="reference internal" href="userGuide_ch6_sec1.html#sec-mating-schemes"><span class="std std-ref">sec_Mating_Schemes</span></a>) use
+a special kind of during-mating operator to transmit genotypes. They are called
+<strong>genotype transmitters</strong> just to show the kind of task they perform. More
+during mating operators could be specified by replacing the default operator
+used in the <code class="docutils literal notranslate"><span class="pre">ops</span></code> parameter of a mating scheme (or an offspring generator if
+you are defining your own mating scheme).</p>
+<p>Operators used in a mating scheme honor applicability parameters <code class="docutils literal notranslate"><span class="pre">begin</span></code>,
+<code class="docutils literal notranslate"><span class="pre">step</span></code>, <code class="docutils literal notranslate"><span class="pre">end</span></code>, <code class="docutils literal notranslate"><span class="pre">at</span></code> and <code class="docutils literal notranslate"><span class="pre">reps</span></code> although they do not support negative
+population and replicate indexes. It is therefore possible to apply different
+during-mating operators at different generations. For example, a
+<a class="reference internal" href="refManual_ch3_sec5.html#Recombinator" title="Recombinator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Recombinator</span></code></a> is used in Example <a class="reference internal" href="#transmitter"><span class="std std-ref">transmitter</span></a> to
+transmit parental genotypes to offspring after generation 30 while the
+<a class="reference internal" href="refManual_ch3_sec5.html#MendelianGenoTransmitter" title="MendelianGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MendelianGenoTransmitter</span></code></a> is applied before that.</p>
+<p id="transmitter"><strong>Example</strong>: <em>Genotype transmitters</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">genotype</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(</span><span class="n">end</span><span class="o">=</span><span class="mi">29</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Recombinator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">begin</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">LD</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;gen </span><span class="si">%d</span><span class="s2">, LD: </span><span class="si">%.2f</span><span class="s2">\n&#39; % (gen, LD[0][1])&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span><span class="o">=</span><span class="mi">100</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">gen 0, LD: 0.25</span>
+<span class="go">gen 20, LD: 0.25</span>
+<span class="go">gen 40, LD: 0.23</span>
+<span class="go">gen 60, LD: 0.19</span>
+<span class="go">gen 80, LD: 0.15</span>
+<span class="go">100</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="transmitter.py">Download transmitter.py</a></p>
+<p>During-mating operators can be applied to (virtual) subpopulations using
+parameter <code class="docutils literal notranslate"><span class="pre">subPops</span></code>, which <strong>refers to (virtual) subpopulations in the
+offspring population</strong>. Section <a class="reference internal" href="userGuide_ch6_sec3.html#subsec-pre-defined-genotype-transmitters"><span class="std std-ref">subsec_Pre_defined_genotype_transmitters</span></a> and <a class="reference internal" href="userGuide_ch5_sec5.html#sec-genotype-transmitters"><span class="std std-ref">sec_Genotype_transmitters</span></a> list all genotype transmitters, Section
+<span class="xref std std-ref">subsec_Customized_genotype_transmitter</span> demonstrates how to define your own
+genotype transmitter, Section <a class="reference internal" href="userGuide_ch5_sec9.html#subsec-vspselection"><span class="std std-ref">subsec_vspSelection</span></a>
+demonstrates the use of during-mating operator in virtual subpopulations.</p>
+</div>
+<div class="section" id="function-form-of-an-operator">
+<span id="subsec-function-form"></span><h2>Function form of an operator<a class="headerlink" href="#function-form-of-an-operator" title="Permalink to this headline">¶</a></h2>
+<p>Operators are usually applied to populations through a simulator but they can
+also be applied to a population directly. For example, it is possible to create
+an <a class="reference internal" href="refManual_ch3_sec2.html#InitGenotype" title="InitGenotype"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitGenotype</span></code></a> operator and apply to a population as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">3</span><span class="p">,</span> <span class="o">.</span><span class="mi">2</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">])</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Similarly, you can apply the hybrid penetrance model defined in Example
+<a class="reference internal" href="userGuide_ch5_sec14.html#hybridoperator"><span class="std std-ref">hybridOperator</span></a> to a population by</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PyPenetrance</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">myPenetrance</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This usage is used so often that it deserves some simplification. Equivalent
+functions are defined for most operators. For example, function <code class="docutils literal notranslate"><span class="pre">initGenotype</span></code>
+is defined for operator <a class="reference internal" href="refManual_ch3_sec2.html#InitGenotype" title="InitGenotype"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitGenotype</span></code></a> as follows</p>
+<p id="funcform"><strong>Example</strong>: <em>The function form of operator texttt{InitGenotype</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP</span> <span class="k">import</span> <span class="n">InitGenotype</span><span class="p">,</span> <span class="n">Population</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">InitGenotype</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">2</span><span class="p">,</span> <span class="o">.</span><span class="mi">3</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">])</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="funcform.py">Download funcform.py</a></p>
+<p>These functions are called function form of operators. Using these functions,
+the above two example can be written as</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">3</span><span class="p">,</span> <span class="o">.</span><span class="mi">2</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pyPenetrance</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">myPenetrance</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>respectively. Note that applicability parameters such as <code class="docutils literal notranslate"><span class="pre">begin</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code>
+can still be passed, but they are ignored by these functions.</p>
+<p>Finally, it is worth noting that, if you have a function that manipulates
+population, you can make it an operator by wrapping it in a <a class="reference internal" href="refManual_ch3_sec13.html#PyOperator" title="PyOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyOperator</span></code></a>
+so that it can be called repeatedly during evolution. For example, for a
+function <code class="docutils literal notranslate"><span class="pre">myFunc</span></code> that works on a population, you can define a wrapper
+function</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">Func</span><span class="p">(</span><span class="n">pop</span><span class="p">):</span>
+    <span class="c1"># call myFunc</span>
+    <span class="n">myFunc</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>which can then use it in a <a class="reference internal" href="refManual_ch3_sec13.html#PyOperator" title="PyOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyOperator</span></code></a> as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PyOperator</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">Func</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The wrapper function is not needed if myFunc returns <code class="docutils literal notranslate"><span class="pre">True</span></code> by itself. It can
+also be simplifed to a lambda function</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PyOperator</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">pop</span><span class="p">:</span> <span class="n">myFunc</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>if you are certain that <code class="docutils literal notranslate"><span class="pre">myFunc</span></code> does not return any value (return <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Whereas output files specified by <code class="docutils literal notranslate"><span class="pre">'&gt;'</span></code> are closed immediately after they are
+written, those specified by <code class="docutils literal notranslate"><span class="pre">'&gt;&gt;'</span></code> and <code class="docutils literal notranslate"><span class="pre">'&gt;&gt;&gt;'</span></code> are not closed after the
+operator is applied to a population. This is not a problem when operators are
+used in a simulator because <a class="reference internal" href="refManual_ch2_sec1.html#Simulator.evolve" title="Simulator.evolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Simulator.evolve</span></code></a> closes all files opened by
+operators, but can cause trouble when the operator is applied directly to a
+population. For example, multiple calls to <a class="reference internal" href="refManual_ch3_sec15.html#dump" title="dump"><code class="xref py py-func docutils literal notranslate"><span class="pre">dump</span></code></a>(<code class="docutils literal notranslate"><span class="pre">pop,</span>
+<span class="pre">output='&gt;&gt;file'</span></code>) will dump pop to <code class="docutils literal notranslate"><span class="pre">file</span></code> repeatedly but <code class="docutils literal notranslate"><span class="pre">file</span></code> will not be
+closed afterward. In this case, <a class="reference internal" href="refManual_ch2_sec6.html#closeOutput" title="closeOutput"><code class="xref py py-func docutils literal notranslate"><span class="pre">closeOutput</span></code></a>(<code class="docutils literal notranslate"><span class="pre">'file'</span></code>) should be used
+to explicitly close the file.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Introduction to operators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#apply-operators-to-selected-replicates-and-virtual-subpopulations-at-selected-generations">Apply operators to selected replicates and (virtual) subpopulations at selected generations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#applicable-populations-and-virtual-subpopulations">Applicable populations and (virtual) subpopulations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dynamically-determined-loci-parameter-loci">Dynamically determined loci (parameter <code class="docutils literal notranslate"><span class="pre">loci</span></code>) *</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#write-output-of-operators-to-one-or-more-files">Write output of operators to one or more files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#during-mating-operators">During-mating operators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-form-of-an-operator">Function form of an operator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec2.html">Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec3.html">Expressions and statements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec4.html">Demographic changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec5.html">Genotype transmitters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html">Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec7.html">Penetrance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec8.html">Quantitative trait</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html">Natural Selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec10.html">Tagging operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html">Statistics calculation (operator <code class="docutils literal notranslate"><span class="pre">Stat</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec12.html">Conditional operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec13.html">Miscellaneous operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec14.html">Hybrid and Python operators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch5.html">simuPOP Operators</a><ul>
+      <li>Previous: <a href="userGuide_ch5.html" title="previous chapter">simuPOP Operators</a></li>
+      <li>Next: <a href="userGuide_ch5_sec2.html" title="next chapter">Initialization</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch5_sec1.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

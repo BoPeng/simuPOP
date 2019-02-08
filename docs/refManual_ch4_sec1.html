@@ -1,0 +1,241 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Module simuOpt &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Module simuPOP.utils" href="refManual_ch4_sec2.html" />
+    <link rel="prev" title="Utility Modules" href="refManual_ch4.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-simuOpt">
+<span id="module-simuopt"></span><h1>Module <a class="reference internal" href="#module-simuOpt" title="simuOpt"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuOpt</span></code></a><a class="headerlink" href="#module-simuOpt" title="Permalink to this headline">¶</a></h1>
+<p>Module <code class="docutils literal notranslate"><span class="pre">simuOpt</span></code> provides a function <code class="docutils literal notranslate"><span class="pre">simuOpt.setOptions</span></code> to control which
+simuPOP module to load, and how it is loaded, and a class <code class="docutils literal notranslate"><span class="pre">simuOpt.Params</span></code>
+that helps users manage simulation parameters.</p>
+<p>When simuPOP is loaded, it checkes a few environmental variables
+(<code class="docutils literal notranslate"><span class="pre">SIMUOPTIMIZED</span></code>, <code class="docutils literal notranslate"><span class="pre">SIMUALLELETYPE</span></code>, and <code class="docutils literal notranslate"><span class="pre">SIMUDEBUG</span></code>) to determine which
+simuPOP module to load, and how to load it. More options can be set using the
+<code class="docutils literal notranslate"><span class="pre">simuOpt.setOptions</span></code> function. For example, you can suppress the banner
+message when simuPOP is loaded and require a minimal version of simuPOP for
+your script. simuPOP recognize the following commandline arguments</p>
+<dl class="docutils">
+<dt><code class="docutils literal notranslate"><span class="pre">--optimized</span></code></dt>
+<dd>Load the optimized version of a simuPOP module.</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--gui=None|batch|interactive|True|wxPython|Tkinter</span></code></dt>
+<dd>Whether or not use a graphical toolkit and which one to use.
+<code class="docutils literal notranslate"><span class="pre">--gui=batch</span></code> is usually used to run a script in batch mode (do not start
+a parameter input dialog and use all default values unless a parameter is
+specified from command line or a configuraiton file. If
+<code class="docutils literal notranslate"><span class="pre">--gui=interactive</span></code>, an interactive shell will be used to solicit input
+from users. Otherwise, simuPOP will try to use a graphical parameter input
+dialog, and falls to an interactive mode when no graphical Toolkit is
+available. Please refer to parameter <code class="docutils literal notranslate"><span class="pre">gui</span></code> for <code class="docutils literal notranslate"><span class="pre">simuOpt.setOptions</span></code>
+for details.</dd>
+</dl>
+<p>class <code class="docutils literal notranslate"><span class="pre">params.Params</span></code> provides a powerful way to handle commandline
+arguments. Briefly speaking, a <code class="docutils literal notranslate"><span class="pre">Params</span></code> object can be created from a list
+of parameter specification dictionaries. The parameters are then become
+attributes of this object. A number of functions are provided to determine
+values of these parameters using commandline arguments, a configuration
+file, or a parameter input dialog (using <code class="docutils literal notranslate"><span class="pre">Tkinter</span></code> or <code class="docutils literal notranslate"><span class="pre">wxPython</span></code>).
+Values of these parameters can be accessed as attributes, or extracted
+as a list or a dictionary. Note that the <code class="docutils literal notranslate"><span class="pre">Params.getParam</span></code> function
+automatically handles the following commandline arguments.</p>
+<dl class="docutils">
+<dt><code class="docutils literal notranslate"><span class="pre">-h</span></code> or <code class="docutils literal notranslate"><span class="pre">--help</span></code></dt>
+<dd>Print usage message.</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--config=configFile</span></code></dt>
+<dd>Read parameters from a configuration file <em>configFile</em>.</dd>
+</dl>
+<div class="section" id="function-setoptions">
+<h2>Function setOptions<a class="headerlink" href="#function-setoptions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuOpt.setOptions">
+<code class="descclassname">simuOpt.</code><code class="descname">setOptions</code><span class="sig-paren">(</span><em>alleleType=None</em>, <em>optimized=None</em>, <em>gui=None</em>, <em>quiet=None</em>, <em>debug=None</em>, <em>version=None</em>, <em>revision=None</em>, <em>numThreads=None</em>, <em>plotter=None</em><span class="sig-paren">)</span><a class="headerlink" href="#simuOpt.setOptions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set options before simuPOP is loaded to control which simuPOP module to
+load, and how the module should be loaded.</p>
+<dl class="docutils">
+<dt>alleleType</dt>
+<dd>Use the standard, binary,long or mutant allele version of the simuPOP
+module if <code class="docutils literal notranslate"><span class="pre">alleleType</span></code> is set to ‘short’, ‘binary’, ‘long’, ‘mutant’,
+or ‘lineage’ respectively. If this parameter is not set, this function
+will try to get its value from environmental variable <code class="docutils literal notranslate"><span class="pre">SIMUALLELETYPE</span></code>.
+The standard (short) module will be used if the environmental variable
+is not defined.</dd>
+<dt>optimized</dt>
+<dd>Load the optimized version of a module if this parameter is set to
+<code class="docutils literal notranslate"><span class="pre">True</span></code> and the standard version if it is set to <code class="docutils literal notranslate"><span class="pre">False</span></code>. If this
+parameter is not set (<code class="docutils literal notranslate"><span class="pre">None</span></code>), the optimized version will be used
+if environmental variable <code class="docutils literal notranslate"><span class="pre">SIMUOPTIMIZED</span></code> is defined. The standard
+version will be used otherwise.</dd>
+<dt>gui</dt>
+<dd>Whether or not use graphical user interfaces, which graphical toolkit
+to use and how to process parameters in non-GUI mode. If this parameter
+is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default), this function will check environmental variable
+<code class="docutils literal notranslate"><span class="pre">SIMUGUI</span></code> or commandline option <code class="docutils literal notranslate"><span class="pre">--gui</span></code> for a value, and assume
+<code class="docutils literal notranslate"><span class="pre">True</span></code> if such an option is unavailable. If <code class="docutils literal notranslate"><span class="pre">gui=True</span></code>, simuPOP
+will use <code class="docutils literal notranslate"><span class="pre">wxPython</span></code>-based dialogs if <code class="docutils literal notranslate"><span class="pre">wxPython</span></code> is available, and
+use <code class="docutils literal notranslate"><span class="pre">Tkinter</span></code>-based dialogs if <code class="docutils literal notranslate"><span class="pre">Tkinter</span></code> is available and use an
+interactive shell if no graphical toolkit is available.
+<code class="docutils literal notranslate"><span class="pre">gui='Tkinter'</span></code> or <code class="docutils literal notranslate"><span class="pre">'wxPython'</span></code> can be used to specify the
+graphical toolkit to use. If <code class="docutils literal notranslate"><span class="pre">gui='interactive'</span></code>, a simuPOP script
+prompt users to input values of parameters. If <code class="docutils literal notranslate"><span class="pre">gui='batch'</span></code>,
+default values of unspecified parameters will be used. In any case,
+commandline arguments and a configuration file specified by parameter
+–config will be processed. This option is usually left to <code class="docutils literal notranslate"><span class="pre">None</span></code> so
+that the same script can be run in both GUI and batch mode using
+commandline option <code class="docutils literal notranslate"><span class="pre">--gui</span></code>.</dd>
+<dt>plotter</dt>
+<dd>(Deprecated)</dd>
+<dt>quiet</dt>
+<dd>If set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, suppress the banner message when a simuPOP module
+is loaded.</dd>
+<dt>debug</dt>
+<dd>A list of debug code (as string) that will be turned on when simuPOP
+is loaded. If this parameter is not set, a list of comma separated
+debug code specified in environmental variable <code class="docutils literal notranslate"><span class="pre">SIMUDEBUG</span></code>, if
+available, will be used. Note that setting <code class="docutils literal notranslate"><span class="pre">debug=[]</span></code> will remove
+any debug code that might have been by variable <code class="docutils literal notranslate"><span class="pre">SIMUDEBUG</span></code>.</dd>
+<dt>version</dt>
+<dd>A version string (e.g. 1.0.0) indicating the required version number
+for the simuPOP module to be loaded. simuPOP will fail to load if the
+installed version is older than the required version.</dd>
+<dt>revision</dt>
+<dd>Obsolete with the introduction of parameter version.</dd>
+<dt>numThreads</dt>
+<dd>Number of Threads that will be used to execute a simuPOP script. The
+values can be a positive number (number of threads) or 0 (all available
+cores of the computer, or whatever number set by environmental variable
+<code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code>). If this parameter is not set, the number of
+threads will be set to 1, or a value set by environmental variable
+<code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code>.</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Module <code class="docutils literal notranslate"><span class="pre">simuOpt</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#function-setoptions">Function setOptions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch4_sec2.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.utils</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch4_sec3.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.demography</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch4_sec4.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.sampling</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch4_sec5.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.gsl</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="refManual.html">&lt;no title&gt;</a><ul>
+  <li><a href="refManual_ch4.html">Utility Modules</a><ul>
+      <li>Previous: <a href="refManual_ch4.html" title="previous chapter">Utility Modules</a></li>
+      <li>Next: <a href="refManual_ch4_sec2.html" title="next chapter">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.utils</span></code></a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/refManual_ch4_sec1.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

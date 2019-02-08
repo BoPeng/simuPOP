@@ -1,0 +1,255 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Individual &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Population" href="userGuide_ch4_sec3.html" />
+    <link rel="prev" title="Genotypic structure" href="userGuide_ch4_sec1.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="individual">
+<h1>Individual<a class="headerlink" href="#individual" title="Permalink to this headline">¶</a></h1>
+<p>individuals are building blocks of a population. An individual object cannot be
+created independently, but references to inidividuals can be retrieved using
+member functions of a population object.</p>
+<div class="section" id="access-individual-genotype">
+<h2>Access individual genotype<a class="headerlink" href="#access-individual-genotype" title="Permalink to this headline">¶</a></h2>
+<p>From a user’s point of view, genotypes of an individual are stored sequentially
+and can be accessed locus by locus, or in batch. The alleles are arranged by
+position, chromosome and ploidy. That is to say, the first allele on the first
+chromosome of the first homologous set is followed by alleles at other loci on
+the same chromosome, then markers on the second and later chromosomes, followed
+by alleles on the second homologous set of the chromosomes for a diploid
+individual. A consequence of this memory layout is that alleles at the same
+locus of a non-haploid individual are separated by <code class="docutils literal notranslate"><span class="pre">Individual.totNumLoci()</span></code>
+loci. The memory layout of a diploid individual with two chromosomes is
+illustrated in Figure <a class="reference internal" href="#fig-genotype-layout"><span class="std std-ref">fig_genotype_layout</span></a>.</p>
+<p><strong>Figure</strong>: <em>Memory layout of individual genotype</em></p>
+<div class="figure" id="fig-genotype-layout">
+<a class="reference internal image-reference" href="Users/bpeng1/simuPOP/simuPOP/doc/figures/genotype.png"><img alt="Users/bpeng1/simuPOP/simuPOP/doc/figures/genotype.png" src="Users/bpeng1/simuPOP/simuPOP/doc/figures/genotype.png" style="width: 680px;" /></a>
+</div>
+<p>simuPOP provides several functions to read/write individual genotype. For
+example, <a class="reference internal" href="refManual_ch2_sec1.html#Individual.allele" title="Individual.allele"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Individual.allele</span></code></a>() and <a class="reference internal" href="refManual_ch2_sec1.html#Individual.setAllele" title="Individual.setAllele"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Individual.setAllele</span></code></a>() can
+be used to read and write single alleles. You could also access alleles in batch
+mode using functions <a class="reference internal" href="refManual_ch2_sec1.html#Individual.genotype" title="Individual.genotype"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Individual.genotype</span></code></a>() and
+<a class="reference internal" href="refManual_ch2_sec1.html#Individual.setGenotype" title="Individual.setGenotype"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Individual.setGenotype</span></code></a>(). It is worth noting that, instead of copying
+genotypes of an individual to a Python tuple or list, the return value of
+function <code class="docutils literal notranslate"><span class="pre">genotype([p,</span> <span class="pre">[ch]])</span></code> is a special python carray object that reflects
+the underlying genotypes. This object behaves like a regular Python list except
+that the underlying genotype will be changed if elements of this object are
+changed. Only <code class="docutils literal notranslate"><span class="pre">count(x)</span></code> and<code class="docutils literal notranslate"><span class="pre">index(x,</span> <span class="pre">[start,</span> <span class="pre">[stop]])</span></code> member functions
+can be used, but all comparison, assignment and slice operations are allowed. If
+you would like to copy the content of this <code class="docutils literal notranslate"><span class="pre">carray</span></code> to a Python list, use the
+<code class="docutils literal notranslate"><span class="pre">list</span></code> function. Example <a class="reference internal" href="#individualgenotype"><span class="std std-ref">individualGenotype</span></a>
+demonstrates the use of these functions.</p>
+<p id="individualgenotype"><strong>Example</strong>: <em>Access individual genotype</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">marker</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">totNumLoci</span><span class="p">()):</span>
+<span class="gp">... </span>        <span class="n">ind</span><span class="o">.</span><span class="n">setAllele</span><span class="p">(</span><span class="n">marker</span> <span class="o">%</span> <span class="mi">2</span><span class="p">,</span> <span class="n">marker</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">ind</span><span class="o">.</span><span class="n">setAllele</span><span class="p">(</span><span class="n">marker</span> <span class="o">%</span> <span class="mi">2</span><span class="p">,</span> <span class="n">marker</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> </span><span class="si">%d</span><span class="s1"> &#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">allele</span><span class="p">(</span><span class="n">marker</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">ind</span><span class="o">.</span><span class="n">allele</span><span class="p">(</span><span class="n">marker</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+<span class="gp">...</span>
+<span class="go">0 0</span>
+<span class="go">1 1</span>
+<span class="go">0 0</span>
+<span class="go">1 1</span>
+<span class="go">0 0</span>
+<span class="go">1 1</span>
+<span class="go">0 0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">individual</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geno</span> <span class="o">=</span> <span class="n">ind</span><span class="o">.</span><span class="n">genotype</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>      <span class="c1"># the second homologous copy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geno</span>
+<span class="go">[0, 0, 0, 0, 0, 0, 0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geno</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span><span class="o">.</span><span class="n">genotype</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">[0, 0, 3, 0, 0, 0, 0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geno</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>          <span class="c1"># direct modification of the underlying genotype</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span><span class="o">.</span><span class="n">genotype</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">[0, 0, 3, 4, 0, 0, 0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># set genotype (genotype, ploidy, chrom)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span><span class="o">.</span><span class="n">setGenotype</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geno</span>
+<span class="go">[0, 0, 2, 1, 2, 1, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geno</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>           <span class="c1"># count</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geno</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>           <span class="c1"># index</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span><span class="o">.</span><span class="n">setAllele</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>    <span class="c1"># change underlying genotype using setAllele</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">geno</span><span class="p">)</span>              <span class="c1"># geno is change</span>
+<span class="go">[0, 0, 2, 1, 2, 1, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">geno</span><span class="p">)</span>             <span class="c1"># but not geno</span>
+<span class="go">[0, 0, 2, 1, 2, 1, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geno</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>           <span class="c1"># can use regular Python slice operation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">genotype</span><span class="p">())</span>
+<span class="go">[0, 0, 0, 5, 0, 0, 0, 0, 0, 4, 4, 4, 1, 2]</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="individualGenotype.py">Download individualGenotype.py</a></p>
+<p>The same object will also be returned by function <a class="reference internal" href="refManual_ch2_sec1.html#Population.genotype" title="Population.genotype"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.genotype</span></code></a>().</p>
+</div>
+<div class="section" id="individual-sex-affection-status-and-information-fields">
+<h2>individual sex, affection status and information fields<a class="headerlink" href="#individual-sex-affection-status-and-information-fields" title="Permalink to this headline">¶</a></h2>
+<p>In addition to structural information shared by all individuals in a population,
+the individual class provides member functions to get and set <em>genotype</em>, <em>sex</em>,
+<em>affection status</em> and <em>information fields</em> of an individual. Example
+<a class="reference internal" href="#individuals"><span class="std std-ref">individuals</span></a> demonstrates how to access and modify
+individual sex, affection status and information fields. Note that <strong>information
+fields can be accessed as attributes of individuals</strong>. For example,
+<code class="docutils literal notranslate"><span class="pre">ind.info('father_idx')</span></code> is equivalent to <code class="docutils literal notranslate"><span class="pre">ind.father_idx</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ind.setInfo(35,</span> <span class="pre">'age')</span></code> is equivalent to <code class="docutils literal notranslate"><span class="pre">ind.age</span> <span class="pre">=</span> <span class="pre">35</span></code>.</p>
+<p id="individuals"><strong>Example</strong>: <em>Access Individual properties</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># get an individual</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">individual</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span><span class="o">.</span><span class="n">ploidy</span><span class="p">()</span>            <span class="c1"># access to genotypic structure</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span><span class="o">.</span><span class="n">numChrom</span><span class="p">()</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span><span class="o">.</span><span class="n">affected</span><span class="p">()</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span><span class="o">.</span><span class="n">setAffected</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>   <span class="c1"># access affection sim.status,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span><span class="o">.</span><span class="n">sex</span><span class="p">()</span>               <span class="c1"># sex,</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span><span class="o">.</span><span class="n">setInfo</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">)</span>     <span class="c1"># and information fields</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">5</span>               <span class="c1"># the same as ind.setInfo(4, &#39;x&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>           <span class="c1"># get information field x</span>
+<span class="go">5.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span><span class="o">.</span><span class="n">x</span>                   <span class="c1"># the same as ind.info(&#39;x&#39;)</span>
+<span class="go">5.0</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="individual.py">Download individual.py</a></p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec1.html">Genotypic structure</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Individual</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#access-individual-genotype">Access individual genotype</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#individual-sex-affection-status-and-information-fields">individual sex, affection status and information fields</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec3.html">Population</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch4.html">Individuals and Populations</a><ul>
+      <li>Previous: <a href="userGuide_ch4_sec1.html" title="previous chapter">Genotypic structure</a></li>
+      <li>Next: <a href="userGuide_ch4_sec3.html" title="next chapter">Population</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch4_sec2.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

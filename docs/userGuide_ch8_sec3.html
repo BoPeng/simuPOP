@@ -1,0 +1,184 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Mutation and selection models &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Output statistics" href="userGuide_ch8_sec4.html" />
+    <link rel="prev" title="Demographic model" href="userGuide_ch8_sec2.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="mutation-and-selection-models">
+<h1>Mutation and selection models<a class="headerlink" href="#mutation-and-selection-models" title="Permalink to this headline">¶</a></h1>
+<p>The thoretical model empolyees an infinite allele model where there is a single
+wild type allele and an infinite number of disease alleles. Each mutation would
+introduce a new disease allele and there is no back mutation (mutation from
+disease allele to wild type allele).</p>
+<p>This mutation model can be mimicked by a <span class="math notranslate nohighlight">\(k\)</span>-allele model with
+resaonably large <span class="math notranslate nohighlight">\(k\)</span>. We initialize all alleles to 0 which is the wild
+type (<span class="math notranslate nohighlight">\(A\)</span>) and all other alleles are considered as disease alleles
+(<span class="math notranslate nohighlight">\(a\)</span>). Because an allele in a <span class="math notranslate nohighlight">\(k-\)</span>allele mutation model can mutate
+to any other allele with equal probability, <span class="math notranslate nohighlight">\(P\left(A\rightarrow
+a\right)\gg P\left(a\rightarrow A\right)\)</span> since there are many more disease
+alleles than the wild type allele. If we choose a smaller <span class="math notranslate nohighlight">\(k\)</span> (e.g.
+<span class="math notranslate nohighlight">\(k=20\)</span>), recurrent and back mutations can on longer be ignored but it
+would be interesting to simulate such cases because they are more realistic than
+the infinite allele model in some cases.</p>
+<p>A <span class="math notranslate nohighlight">\(k\)</span>-allele model can be simulated using the <a class="reference internal" href="refManual_ch3_sec6.html#KAlleleMutator" title="KAlleleMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">KAlleleMutator</span></code></a>
+operator which accepts a mutation rate and a maximum allelic state as
+parameters.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">KAlleleMutator</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">rates</span><span class="o">=</span><span class="n">mu</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Because there are many possible disease alleles, a multi-allelic selector
+(<a class="reference internal" href="refManual_ch3_sec9.html#MaSelector" title="MaSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaSelector</span></code></a>) could be used to select against the disease alleles. This
+operator accept a single or a list of wild type alleles (<code class="docutils literal notranslate"><span class="pre">[0]</span></code> in this case)
+and treat all other alleles as disease alleles. A penetrance table is needed
+which specified the fitness of each individual when they have 0, 1 or 2 disease
+alleles respectively. In this example, we assume a recessive model in which only
+genotype <span class="math notranslate nohighlight">\(aa\)</span> causes genetic disadvantages. If we assume a selection
+pressure parameter <span class="math notranslate nohighlight">\(s\)</span>, the operator to use is</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MaSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">wildtype</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">penetrance</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Note that the use of this selector requires a population information field
+<code class="docutils literal notranslate"><span class="pre">fitness</span></code>.</p>
+<p>This example uses a single-locus selection model but the complete script allows
+the use of different kinds of multi-locus selection model. If we assume a
+multiplicative multi-locus selection model where fitness values at different
+loci are combined (multiplied), a multi-locus selection model
+(<a class="reference internal" href="refManual_ch3_sec9.html#MlSelector" title="MlSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlSelector</span></code></a>) could be used as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MlSelector</span><span class="p">([</span>
+    <span class="n">MaSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="n">loc1</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="o">-</span><span class="n">s1</span><span class="p">],</span> <span class="n">wildtype</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+    <span class="n">MaSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="n">loc2</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="o">-</span><span class="n">s2</span><span class="p">],</span> <span class="n">wildtype</span><span class="o">=</span><span class="mi">0</span><span class="p">)],</span>
+    <span class="n">mode</span><span class="o">=</span><span class="n">MULTIPLICATIVE</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>These multi-locus model treat disease alleles at different loci more or less
+independently. If more complex multi-locus models (e.g. models involve gene -
+gene and/or gene - interaction) are involved, a multi-locus selector that uses a
+multi-locus penetrance table could be used.</p>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch8.html">A real world example</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec1.html">Simulation scenario</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec2.html">Demographic model</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Mutation and selection models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec4.html">Output statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec5.html">Initialize and evolve the population</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec6.html">Option handling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch8.html">A real world example</a><ul>
+      <li>Previous: <a href="userGuide_ch8_sec2.html" title="previous chapter">Demographic model</a></li>
+      <li>Next: <a href="userGuide_ch8_sec4.html" title="next chapter">Output statistics</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch8_sec3.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

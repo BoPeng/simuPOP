@@ -1,0 +1,190 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Initialize and evolve the population &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Option handling" href="userGuide_ch8_sec6.html" />
+    <link rel="prev" title="Output statistics" href="userGuide_ch8_sec4.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="initialize-and-evolve-the-population">
+<h1>Initialize and evolve the population<a class="headerlink" href="#initialize-and-evolve-the-population" title="Permalink to this headline">¶</a></h1>
+<p>With appropriate operators to perform mutation, selection and output statistics,
+it is relatively easy to write a simulator to perform a simulation. This
+simulator would create a population, initialize alleles with an initial allic
+spectrum, and then evolve it according to specified demographic model. During
+the evolution, mutation and selection will be applied, statistics will be
+calculated and outputed.</p>
+<p id="reichevolve"><strong>Example</strong>: <em>Evolve a population subject to mutation and selection</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">N0</span><span class="p">,</span> <span class="n">N1</span><span class="p">,</span> <span class="n">G0</span><span class="p">,</span> <span class="n">G1</span><span class="p">,</span> <span class="n">spec</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="sd">&#39;&#39;&#39;Evolve a sim.Population using given demographic model</span>
+<span class="gp">... </span><span class="sd">    and observe the evolution of its allelic spectrum.</span>
+<span class="gp">... </span><span class="sd">    model: type of demographic model.</span>
+<span class="gp">... </span><span class="sd">    N0, N1, G0, G1: parameters of demographic model.</span>
+<span class="gp">... </span><span class="sd">    spec: initial allelic spectrum, should be a list of allele</span>
+<span class="gp">... </span><span class="sd">        frequencies for each allele.</span>
+<span class="gp">... </span><span class="sd">    s: selection pressure.</span>
+<span class="gp">... </span><span class="sd">    mu: mutation rate.</span>
+<span class="gp">... </span><span class="sd">    k: k for the k-allele model</span>
+<span class="gp">... </span><span class="sd">    &#39;&#39;&#39;</span>
+<span class="gp">... </span>    <span class="n">demo_func</span> <span class="o">=</span> <span class="n">demo_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">N0</span><span class="p">,</span> <span class="n">N1</span><span class="p">,</span> <span class="n">G0</span><span class="p">,</span> <span class="n">G1</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">demo_func</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;fitness&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="n">spec</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="p">],</span>
+<span class="gp">... </span>        <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">subPopSize</span><span class="o">=</span><span class="n">demo_func</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">KAlleleMutator</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">rates</span><span class="o">=</span><span class="n">mu</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">MaSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">s</span><span class="p">],</span> <span class="n">wildtype</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">ne</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">step</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;</span><span class="si">%d</span><span class="s1">: </span><span class="si">%.2f</span><span class="s1">\t</span><span class="si">%.2f</span><span class="s1">\n&quot; % (gen, 1 - alleleFreq[0][0], ne[0])&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                <span class="n">step</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="p">],</span>
+<span class="gp">... </span>        <span class="n">gen</span> <span class="o">=</span> <span class="n">G0</span> <span class="o">+</span> <span class="n">G1</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">simulate</span><span class="p">(</span><span class="s1">&#39;instant&#39;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.9</span><span class="p">]</span><span class="o">+</span><span class="p">[</span><span class="mf">0.02</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="go">0: 0.09      4.91</span>
+<span class="go">100: 0.12    2.63</span>
+<span class="go">200: 0.09    1.22</span>
+<span class="go">300: 0.02    2.85</span>
+<span class="go">400: 0.02    2.12</span>
+<span class="go">500: 0.05    1.02</span>
+<span class="go">600: 0.06    1.51</span>
+<span class="go">700: 0.08    1.58</span>
+<span class="go">800: 0.09    1.80</span>
+<span class="go">900: 0.08    1.79</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="reichEvolve.py">Download reichEvolve.py</a></p>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch8.html">A real world example</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec1.html">Simulation scenario</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec2.html">Demographic model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec3.html">Mutation and selection models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec4.html">Output statistics</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Initialize and evolve the population</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch8_sec6.html">Option handling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch8.html">A real world example</a><ul>
+      <li>Previous: <a href="userGuide_ch8_sec4.html" title="previous chapter">Output statistics</a></li>
+      <li>Next: <a href="userGuide_ch8_sec6.html" title="next chapter">Option handling</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch8_sec5.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

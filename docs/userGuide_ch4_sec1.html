@@ -1,0 +1,467 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Genotypic structure &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Individual" href="userGuide_ch4_sec2.html" />
+    <link rel="prev" title="Individuals and Populations" href="userGuide_ch4.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="genotypic-structure">
+<span id="sec-genotypic-structure"></span><h1>Genotypic structure<a class="headerlink" href="#genotypic-structure" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="index-0"></span><p id="index-1">Genotypic structure refers to structural information shared by all individuals
+in a population, including number of homologous copies of chromosomes (c.f.
+<code class="docutils literal notranslate"><span class="pre">ploidy(),</span> <span class="pre">ploidyName()</span></code>), chromosome types and names (c.f. <code class="docutils literal notranslate"><span class="pre">numChrom(),</span>
+<span class="pre">chromType(),</span> <span class="pre">chromName()</span></code>), position and name of each locus (c.f.
+<code class="docutils literal notranslate"><span class="pre">numLoci(ch),</span></code> <code class="docutils literal notranslate"><span class="pre">locusPos(loc),</span></code> <code class="docutils literal notranslate"><span class="pre">locusName(loc)</span></code>), and axillary
+information attached to each individual (c.f. <code class="docutils literal notranslate"><span class="pre">infoField(idx),</span> <span class="pre">infoFields()</span></code>).
+In addition to property access functions, a number of utility functions are
+provided to, for example, look up the index of a locus by its name (c.f.
+<code class="docutils literal notranslate"><span class="pre">locusByName()</span></code>, <code class="docutils literal notranslate"><span class="pre">chromBegin()</span></code>, <code class="docutils literal notranslate"><span class="pre">chromLocusPair()</span></code>).</p>
+<p>In simuPOP, locus is a (named) position and alleles are just different numbers
+at that position. <strong>A locus can be a gene, a nucleotide, or even a deletion,
+depending on how you define alleles and mutations</strong>. For example,</p>
+<ul class="simple">
+<li>A codon can be simulated as a locus with 64 allelic states, or three locus
+each with 4 allelic states. Alleles in the first case would be codons such as
+<code class="docutils literal notranslate"><span class="pre">AAC</span></code> and a mutation event would mutate one codon to another (e.g. <code class="docutils literal notranslate"><span class="pre">AAC</span></code> -&gt;
+<code class="docutils literal notranslate"><span class="pre">ACC</span></code>). Alleles in the second case would be <code class="docutils literal notranslate"><span class="pre">A</span></code>, <code class="docutils literal notranslate"><span class="pre">C</span></code>, <code class="docutils literal notranslate"><span class="pre">T</span></code> or <code class="docutils literal notranslate"><span class="pre">G</span></code>, and
+a mutation event would mutate one nucleotide to another (e.g. <code class="docutils literal notranslate"><span class="pre">A</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">G</span></code>).</li>
+<li>You can use 0 and 1 (and the binary module of simuPOP) to simulate SNP
+(single-nucleotide polymorphism) markers and ignore the exact meaning of 0 and
+1, or use 0, 1, 2, 3 to simulate different nucleotide (A, C, T, or G) in these
+markers. The mutation model in the second case would be more complex.</li>
+<li>For microsatellite markers, alleles are usually interpreted as the number of
+tandem repeats. It would be difficult (though doable) to simulate the expansion
+and contraction of genome caused by the mutation of microsatellite markers.</li>
+<li>The infinite site and infinite allele mutation models could be simulated using
+either a continuous sequence of nucleotides with a simple 2-allele mutation
+model, or a locus with a large number of possible allelic states. It is also
+possible to simulate an empty region (without any locus) with loci introduced by
+mutation events.</li>
+<li>If you consider deletion as a special allelic state, you can simulate gene
+deletions without shrinking a chromosome. For example, a deletion mutation event
+can set the allelic state of one or more loci to 0, which can no longer be
+mutated.</li>
+<li>Alleles in different individuals could be interpretted differently. For
+example, if you would like to simulate major chromosomal mutations such as
+inversion, you could use a super set of markers for different types of
+chromosomes and use an indicator (information field) to mark the type of
+chromosome and which markers are valid. Using virtual subpopulations, these
+individuals could be handled differently during mating.</li>
+<li>In an implementation of an infinite-sites model, <strong>Individual loci are used to
+store mutation events</strong>. In this example (Example <a class="reference internal" href="userGuide_ch5_sec6.html#infinitesites"><span class="std std-ref">infiniteSites</span></a>), 100 loci are allocated for each individual and they are used
+to store mutation events (location of a mutation) that happens in a 10Mb region.
+Whenever a mutation event happens, its location is stored as an allele of an
+individual. At the end of the evolution, each individual has a list of mutation
+events which can be readily translated to real alleles. Similar ideas could be
+used to simulate the accumulation of recombination events.</li>
+</ul>
+<p>In summary, the exact meaning of loci and their alleles are user defined. With
+appropriate mutation model and mating scheme, it is even possible to simulate
+phenotypic traits using this mechanism, although it is more natual to use
+information fields for quatitative traits.</p>
+<p>A genotypic structure can be retrieved from <em>Individual</em> and <em>Population</em>
+objects. <strong>Because a population consists of individuals of the same type,
+genotypic information can only be changed for all individuals at the population
+level</strong>. populations in a simulator usually have the same genotypic structure
+because they are created by as replicates, but their structure may change during
+evolution. Example <a class="reference internal" href="#genostructure"><span class="std std-ref">genostructure</span></a> demonstrates how to
+access genotypic structure functions at the population and individual levels.
+Note that <code class="docutils literal notranslate"><span class="pre">lociPos</span></code> determines the order at which loci are arranged on a
+chromosome. Loci positions and names will be rearranged if given <code class="docutils literal notranslate"><span class="pre">lociPos</span></code> is
+unordered.</p>
+<p id="genostructure"><strong>Example</strong>: <em>Genotypic structure functions</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">ploidy</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">lociPos</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span> <span class="n">chromNames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Chr1&#39;</span><span class="p">,</span> <span class="s1">&#39;Chr2&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">alleleNames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># access genotypic information from the sim.Population</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">ploidy</span><span class="p">()</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">ploidyName</span><span class="p">()</span>
+<span class="go">&#39;diploid&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">numChrom</span><span class="p">()</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">locusPos</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">2.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">alleleName</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">&#39;C&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># access from an individual</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">individual</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span><span class="o">.</span><span class="n">numLoci</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span><span class="o">.</span><span class="n">chromName</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">&#39;Chr1&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span><span class="o">.</span><span class="n">locusName</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># utility functions</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span><span class="o">.</span><span class="n">chromBegin</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span><span class="o">.</span><span class="n">chromByName</span><span class="p">(</span><span class="s1">&#39;Chr2&#39;</span><span class="p">)</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># loci pos can be unordered within each chromosome</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">lociPos</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">lociNames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;loc</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">lociPos</span><span class="p">()</span>
+<span class="go">(1.0, 3.0, 1.0, 2.0, 3.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">lociNames</span><span class="p">()</span>
+<span class="go">(&#39;loc1&#39;, &#39;loc0&#39;, &#39;loc2&#39;, &#39;loc4&#39;, &#39;loc3&#39;)</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="genoStru.py">Download genoStru.py</a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">simuPOP does not assume any unit for loci positions. Depending on your
+application, it can be basepair (bp), kilo-basepair (kb), mega base pair (mb) or
+even using genetic-map distance such as centiMorgan. It is your responsibility
+to interpret and use loci positions properly. For example, recombination rate
+between two adjacent markers can be specified as the product between their
+physical distance and a recombination intensity. The scale of this intensity
+will vary by the unit assumed.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Names of loci, alleles and subpopulations are optional. Empty names will be used
+if they are not specified. Whereas <code class="docutils literal notranslate"><span class="pre">locusName</span></code>, <code class="docutils literal notranslate"><span class="pre">subPopName</span></code> and
+<code class="docutils literal notranslate"><span class="pre">alleleName</span></code> always return a value (empty string or specified value) for any
+locus, subpopulation or allele, respectively, <code class="docutils literal notranslate"><span class="pre">lociNames</span></code>, <code class="docutils literal notranslate"><span class="pre">subPopNames</span></code> and
+<code class="docutils literal notranslate"><span class="pre">alleleNames</span></code> only return specified values, which can be empty lists.</p>
+</div>
+<div class="section" id="haploid-diploid-and-haplodiploid-populations">
+<h2>Haploid, diploid and haplodiploid populations<a class="headerlink" href="#haploid-diploid-and-haplodiploid-populations" title="Permalink to this headline">¶</a></h2>
+<p>simuPOP is most widely used to study human (diploid) populations. A large number
+of mating schemes, operators and population statistics are designed around the
+evolution of such a population. simuPOP also supports haploid and haplodiploid
+populations although there are fewer choices of mating schemes and operators.
+simuPOP can also support other types of populations such as triploid and
+tetraploid populations, but these features are largely untested due to their
+limited usage. It is expected that supports for these populations would be
+enhanced over time with additional dedicated operators and functions.</p>
+<p>For efficiency considerations, simuPOP saves the same numbers of homologous sets
+of chromosomes even if some individuals have different numbers of homologous
+sets in a population. For example, in a haplodiploid population, because male
+individuals have only one set of chromosomes, their second homologous set of
+chromosomes are <em>unused</em>, which are labeled as <code class="docutils literal notranslate"><span class="pre">'_'</span></code>, as shown in Example
+<a class="reference internal" href="#haplodiploid"><span class="std std-ref">haplodiploid</span></a>.</p>
+<p id="haplodiploid"><strong>Example</strong>: <em>An example of haplodiploid population</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="n">ploidy</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">HAPLODIPLOID</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+<span class="go">Ploidy: 2 (haplodiploid)</span>
+<span class="go">Chromosomes:</span>
+<span class="go">1:  (AUTOSOME, 3 loci)</span>
+<span class="go">   (1),  (2),  (3)</span>
+<span class="go">2:  (AUTOSOME, 5 loci)</span>
+<span class="go">   (1),  (2),  (3),  (4),  (5)</span>
+<span class="go">population size: 7 (2 subpopulations with 2, 5 Individuals)</span>
+<span class="go">Number of ancestral populations: 0</span>
+
+<span class="go">SubPopulation 0 (), 2 Individuals:</span>
+<span class="go">   0: MU 111 00001 | ___ _____</span>
+<span class="go">   1: MU 111 01110 | ___ _____</span>
+<span class="go">SubPopulation 1 (), 5 Individuals:</span>
+<span class="go">   2: MU 111 11110 | ___ _____</span>
+<span class="go">   3: MU 101 11111 | ___ _____</span>
+<span class="go">   4: MU 110 11111 | ___ _____</span>
+<span class="go">   5: MU 101 11101 | ___ _____</span>
+<span class="go">   6: MU 110 11001 | ___ _____</span>
+
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="haplodiploid.py">Download haplodiploid.py</a></p>
+</div>
+<div class="section" id="autosomes-sex-chromosomes-mitochondrial-and-other-types-of-chromosomes">
+<h2>Autosomes, sex chromosomes, mitochondrial, and other types of chromosomes *<a class="headerlink" href="#autosomes-sex-chromosomes-mitochondrial-and-other-types-of-chromosomes" title="Permalink to this headline">¶</a></h2>
+<p>The default chromosome type is autosome, which is the <em>normal</em> chromosomes in
+diploid, and in haploid populations. simuPOP supports four other types of
+chromosomes, namely <em>chromosome X</em>, <em>chromosome Y, mitochondrial,</em> and*
+customized* chromosome types. Sex chromosomes are only valid in haploid
+populations where chromosomes X and Y are used to determine the sex of an
+offspring. Mitochondrial DNAs can exists in haploid or diploid populations, and
+are inherited maternally. Customized chromosomes rely on user defined functions
+and operators to be passed from parents to offspring.</p>
+<p>Example <a class="reference internal" href="userGuide_ch4_sec3.html#subpopname"><span class="std std-ref">subPopName</span></a> shows how to specify different chromosome
+types, and how genotypes of these special chromosomes are arranged.</p>
+<p id="chromtypes"><strong>Example</strong>: <em>Different chromosome types</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">ploidy</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">chromTypes</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">AUTOSOME</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span> <span class="o">+</span> <span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">CHROMOSOME_X</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">CHROMOSOME_Y</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">MITOCHONDRIAL</span><span class="p">]</span>
+<span class="gp">... </span>        <span class="o">+</span> <span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">CUSTOMIZED</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">initGenotype</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># does not display genotypic structure information</span>
+<span class="go">SubPopulation 0 (), 6 Individuals:</span>
+<span class="go">   0: MU 111 000 011 __ 11 1111 1101 | 110 000 ___ 11 __ 1111 1011</span>
+<span class="go">   1: MU 111 111 101 __ 11 1110 1011 | 111 011 ___ 11 __ 1110 1011</span>
+<span class="go">   2: MU 110 101 011 __ 11 1011 0011 | 110 100 ___ 11 __ 1010 1111</span>
+<span class="go">   3: MU 010 011 111 __ 11 1111 1111 | 110 010 ___ 11 __ 1111 0111</span>
+<span class="go">   4: MU 101 000 111 __ 01 0111 0100 | 110 111 ___ 00 __ 0111 0001</span>
+<span class="go">   5: MU 111 010 111 __ 10 0111 1011 | 111 111 ___ 11 __ 0111 1011</span>
+
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="chromType.py">Download chromType.py</a></p>
+<p>The evolution of sex chromosomes follow the following rules</p>
+<ul class="simple">
+<li>There can be only one X chromosome and one Y chromosome. It is not allowed to
+have only one kind of sex chromosome.</li>
+<li>The Y chromosome of female individuals are ignored. The second homologous copy
+of the X chromosome and the first copy of the Y chromosome are ignored for male
+individuals.</li>
+<li>During mating, female parent pass one of her X chromosome to her offspring,
+male parent pass chromosome X or Y to his offspring. Recombination is allowed
+for the X chromosomes of females, but not allowed for males.</li>
+<li>The sex of offspring is determined by the types of sex chromosomes he/she
+inherits, XX for female, and XY for male.</li>
+</ul>
+<p>The evolution of mitochonrial DNAs follow the following rules</p>
+<ul class="simple">
+<li>There can be only one copy of mitochondrial DNA, exists for both males and
+females.</li>
+<li>In a non-haploid population where all chromosomes have multiple homologous
+copies, only the first copy is used for mitochondrial DNA.</li>
+<li>mtDNAs are inherited maternally</li>
+</ul>
+<p>Customized chromosomes are used to model more complex types of chromosomes. They
+rely on customized operators for inheritence. For example, if you would like to
+model multiple copies of mitochondrial DNAs (cytohets with multiple organellar
+chromosomes) in a cell, and the process of genetic drift of somatic cytoplasmic
+segregation of mtDNAs, you can use multiple customized chromosomes to model
+multiple cytohets (see section <a class="reference internal" href="userGuide_ch6_sec3.html#subsec-pre-defined-genotype-transmitters"><span class="std std-ref">subsec_Pre_defined_genotype_transmitters</span></a> for an Example). Figure
+<a class="reference internal" href="#fig-chromtypes"><span class="std std-ref">fig_chromTypes</span></a> depicts the possible chromosome structure
+of two diploid parents, and how offspring chromosomes are formed. It uses two
+customized chromosomes to model multiple copies of mitochondrial chromosomes
+that are passed randomly from mother to offspring. The second homologous copy of
+customized chromosomes are unused in this example.</p>
+<p><strong>Figure</strong>: <em>Inheritance of different types of chromosomes in a diploid population</em></p>
+<div class="figure" id="fig-chromtypes">
+<a class="reference internal image-reference" href="Users/bpeng1/simuPOP/simuPOP/doc/figures/chromType.png"><img alt="Users/bpeng1/simuPOP/simuPOP/doc/figures/chromType.png" src="Users/bpeng1/simuPOP/simuPOP/doc/figures/chromType.png" style="width: 680px;" /></a>
+</div>
+<p>individuals in this population have five chromosomes, one autosome (A), one X
+chromosome (X), one Y chromosome (Y) and two customized chromosomes (C). The
+customized chromosomes model multiple copies of mitochondrial chromosomes that
+are passed randomly from mother to offspring. Y chromosomes for the female
+parent, the second copy of chromosome X and the first copy of chromosome Y for
+the male parent, and the second copy of customized chromosomes are unused (gray
+chromosome regions). A male offspring inherits one copy of autosome from his
+mother (with recombination), one copy of autosome from his father (with
+recombination), an X chromosome from his mother (with recombination), a Y
+chromosome from his father (without recombination), and two copies of the first
+customized chromosome.</p>
+</div>
+<div class="section" id="information-fields">
+<span id="subsec-stru-infofields"></span><h2>Information fields<a class="headerlink" href="#information-fields" title="Permalink to this headline">¶</a></h2>
+<p>Different kinds of simulations require different kinds of individuals.
+individuals with only genotype information are sufficient to simulate the basic
+Wright-Fisher model. Sex is needed to simulate such a model in diploid
+populations with sex. individual fitness may be needed if selection is induced,
+and age may be needed if the population is age-structured. In addition,
+different types of quantitative traits or affection status may be needed to
+study the impact of genotype on Individual phenotype. Because it is infeasible
+to provide all such information to an individual, simuPOP keeps genotype, sex
+(<code class="docutils literal notranslate"><span class="pre">MALE</span></code> or <code class="docutils literal notranslate"><span class="pre">FEMALE</span></code>) and affection status as <em>built-in properties</em> of an
+individual, and all others as optional <em>information fields</em> (float numbers)
+attached to each individual.</p>
+<p>Information fields can be specified when a population is created, or added later
+using population member functions. They are essential for proper operation of
+many simuPOP operators. For example, all selection operators require information
+field <code class="docutils literal notranslate"><span class="pre">fitness</span></code> to store evaluated fitness values for each individual.
+Operator <a class="reference internal" href="refManual_ch3_sec4.html#Migrator" title="Migrator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Migrator</span></code></a> uses information field <code class="docutils literal notranslate"><span class="pre">migrate_to</span></code> to store the ID
+of subpopulation an individual will migrate to. An error will be raised if these
+operators are applied to a population without needed information fields.</p>
+<p id="basicinfofields"><strong>Example</strong>: <em>Basic usage of information fields</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">20</span><span class="p">],</span> <span class="n">ancGen</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;father_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;mother_idx&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">genotype</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">20</span><span class="o">+</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">20</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">Recombinator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mf">0.01</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">ParentsTagger</span><span class="p">()</span>
+<span class="gp">... </span>        <span class="p">]</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">indInfo</span><span class="p">(</span><span class="s1">&#39;mother_idx&#39;</span><span class="p">)</span>  <span class="c1"># mother of all offspring</span>
+<span class="go">(9.0, 8.0, 8.0, 0.0, 8.0, 9.0, 8.0, 7.0, 7.0, 9.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">individual</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mom</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">ancestor</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">mother_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">genotype</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="go">[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">mom</span><span class="o">.</span><span class="n">genotype</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="go">[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">mom</span><span class="o">.</span><span class="n">genotype</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="go">[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="infoField.py">Download infoField.py</a></p>
+<p>Example <a class="reference internal" href="#basicinfofields"><span class="std std-ref">basicInfoFields</span></a> demonstrates the basic usage of
+information fields. In this example, a population with two information fields
+<code class="docutils literal notranslate"><span class="pre">mother_idx</span></code> and <code class="docutils literal notranslate"><span class="pre">father_idx</span></code> are created. Besides the present generation,
+this population keeps one ancestral generations (<code class="docutils literal notranslate"><span class="pre">ancGen=1</span></code>, see Section
+<a class="reference internal" href="userGuide_ch4_sec3.html#subsec-ancestral-populations"><span class="std std-ref">subsec_Ancestral_populations</span></a> for details).
+After initializing each individual with two chromosomes with all zero and all
+one alleles respectively, the population evolves one generation, subject to
+recombination at rate 0.01. Parents of each individual are recorded, by operator
+<a class="reference internal" href="refManual_ch3_sec10.html#ParentsTagger" title="ParentsTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParentsTagger</span></code></a>, to information fields <code class="docutils literal notranslate"><span class="pre">mother_idx</span></code> and <code class="docutils literal notranslate"><span class="pre">father_idx</span></code>
+of each offspring<code class="docutils literal notranslate"><span class="pre">.</span></code></p>
+<p>After evolution, the population is extracted from the simulator, and the values
+of information field <code class="docutils literal notranslate"><span class="pre">mother_idx</span></code> of all individuals are printed. The next
+several statements get the first Individual from the population, and his mother
+from the parental generation using the indexes stored in this individual’s
+information fields. Genotypes at the first homologous copy of this individual’s
+chromosome is printed, along with two parental chromosomes.</p>
+<p><strong>Information fields can only be added or removed at the population level</strong>
+because all individuals need to have the same set of fields. Values of
+information fields could be accessed at Individual or population levels, using
+functions such as <a class="reference internal" href="refManual_ch2_sec1.html#Individual.info" title="Individual.info"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Individual.info</span></code></a>, <a class="reference internal" href="refManual_ch2_sec1.html#Individual.setInfo" title="Individual.setInfo"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Individual.setInfo</span></code></a>,
+<code class="docutils literal notranslate"><span class="pre">population.indInfo</span></code>, <a class="reference internal" href="refManual_ch2_sec1.html#Population.setIndInfo" title="Population.setIndInfo"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.setIndInfo</span></code></a>. These functions will be
+introduced in their respective classes.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Information fields can be located both by names and by indexes**,** the former
+provides better readability at a slight cost of performance because these names
+have to be translated into indexes each time. However, use of names are
+recommended in most cases for readability considerations.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Genotypic structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#haploid-diploid-and-haplodiploid-populations">Haploid, diploid and haplodiploid populations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#autosomes-sex-chromosomes-mitochondrial-and-other-types-of-chromosomes">Autosomes, sex chromosomes, mitochondrial, and other types of chromosomes *</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#information-fields">Information fields</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec2.html">Individual</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch4_sec3.html">Population</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch4.html">Individuals and Populations</a><ul>
+      <li>Previous: <a href="userGuide_ch4.html" title="previous chapter">Individuals and Populations</a></li>
+      <li>Next: <a href="userGuide_ch4_sec2.html" title="next chapter">Individual</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch4_sec1.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

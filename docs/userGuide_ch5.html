@@ -1,0 +1,299 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>simuPOP Operators &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Introduction to operators" href="userGuide_ch5_sec1.html" />
+    <link rel="prev" title="Population" href="userGuide_ch4_sec3.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="simupop-operators">
+<span id="cha-simupop-operators"></span><h1>simuPOP Operators<a class="headerlink" href="#simupop-operators" title="Permalink to this headline">¶</a></h1>
+<p>simuPOP is large, consisting of more than 70 operators and various functions
+that covers all important aspects of genetic studies. These includes mutation
+(<em>k</em>-allele, stepwise, generalized stepwise), migration (arbitrary, can create
+new subpopulation), recombination (uniform or nonuniform), gene conversion,
+quantitative trait, selection, penetrance (single or multi-locus, hybrid),
+ascertainment (case-control, affected sibpairs, random), statistics calculation
+(allele, genotype, haplotype, heterozygote number and frequency; expected
+heterozygosity; bi-allelic and multi-allelic <span class="math notranslate nohighlight">\(D\)</span>, <span class="math notranslate nohighlight">\(D'\)</span> and
+<span class="math notranslate nohighlight">\(r^{2}\)</span> linkage disequilibrium measures; <span class="math notranslate nohighlight">\(F_{st}\)</span>, <span class="math notranslate nohighlight">\(F_{it}\)</span>
+and <span class="math notranslate nohighlight">\(F_{is}\)</span>); pedigree tracing, visualization (using R or other Python
+modules). This chapter covers the basic and some not-so-basic usages of these
+operators, organized roughly by genetic factors.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5_sec1.html">Introduction to operators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec1.html#apply-operators-to-selected-replicates-and-virtual-subpopulations-at-selected-generations">Apply operators to selected replicates and (virtual) subpopulations at selected generations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec1.html#applicable-populations-and-virtual-subpopulations">Applicable populations and (virtual) subpopulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec1.html#dynamically-determined-loci-parameter-loci">Dynamically determined loci (parameter <code class="docutils literal notranslate"><span class="pre">loci</span></code>) *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec1.html#write-output-of-operators-to-one-or-more-files">Write output of operators to one or more files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec1.html#during-mating-operators">During-mating operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec1.html#function-form-of-an-operator">Function form of an operator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5_sec2.html">Initialization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec2.html#initialize-individual-sex-operator-initsex">Initialize individual sex (operator <code class="docutils literal notranslate"><span class="pre">InitSex</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec2.html#initialize-genotype-operator-initgenotype">Initialize genotype (operator <code class="docutils literal notranslate"><span class="pre">InitGenotype</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec2.html#initialize-information-fields-operator-initinfo">Initialize information fields (operator <code class="docutils literal notranslate"><span class="pre">InitInfo</span></code>)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5_sec3.html">Expressions and statements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec3.html#output-a-python-string-operator-pyoutput">Output a Python string (operator <code class="docutils literal notranslate"><span class="pre">PyOutput</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec3.html#execute-python-statements-operator-pyexec">Execute Python statements (operator <code class="docutils literal notranslate"><span class="pre">PyExec</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec3.html#evaluate-and-output-python-expressions-operator-pyeval">Evaluate and output Python expressions (operator <code class="docutils literal notranslate"><span class="pre">PyEval</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec3.html#expression-and-statement-involving-individual-information-fields-operator-infoeval-and-infoexec">Expression and statement involving individual information fields (operator <code class="docutils literal notranslate"><span class="pre">InfoEval</span></code> and <code class="docutils literal notranslate"><span class="pre">InfoExec</span></code>) *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec3.html#using-functions-in-external-modules-in-simupop-expressions-and-statements">Using functions in external modules in simuPOP expressions and statements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5_sec4.html">Demographic changes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec4.html#migration-operator-migrator">Migration (operator <code class="docutils literal notranslate"><span class="pre">Migrator</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="userGuide_ch5_sec4.html#migration-by-probability">Migration by probability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="userGuide_ch5_sec4.html#migration-by-proportion-and-counts">Migration by proportion and counts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="userGuide_ch5_sec4.html#theoretical-migration-models">Theoretical migration models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="userGuide_ch5_sec4.html#migrate-from-virtual-subpopulations">migrate from virtual subpopulations *</a></li>
+<li class="toctree-l3"><a class="reference internal" href="userGuide_ch5_sec4.html#arbitrary-migration-models">Arbitrary migration models **</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec4.html#migration-using-backward-migration-matrix-operator-backwardmigrator">Migration using backward migration matrix (operator <code class="docutils literal notranslate"><span class="pre">BackwardMigrator</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec4.html#split-subpopulations-operators-splitsubpops">Split subpopulations (operators <code class="docutils literal notranslate"><span class="pre">SplitSubPops</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec4.html#merge-subpopulations-operator-mergesubpops">Merge subpopulations (operator <code class="docutils literal notranslate"><span class="pre">MergeSubPops</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec4.html#resize-subpopulations-operator-resizesubpops">Resize subpopulations (operator <code class="docutils literal notranslate"><span class="pre">ResizeSubPops</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec4.html#time-dependent-migration-rate">Time-dependent migration rate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5_sec5.html">Genotype transmitters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec5.html#generic-genotype-transmitters-operators-genotransmitter-clonegenotransmitter-mendeliangenotransmitter-selfinggenotransmitter-haplodiploidgenotransmitter-and-mitochondrialgenotransmitter">Generic genotype transmitters (operators <code class="docutils literal notranslate"><span class="pre">GenoTransmitter</span></code>, <code class="docutils literal notranslate"><span class="pre">CloneGenoTransmitter</span></code>, <code class="docutils literal notranslate"><span class="pre">MendelianGenoTransmitter</span></code>, <code class="docutils literal notranslate"><span class="pre">SelfingGenoTransmitter</span></code>, <code class="docutils literal notranslate"><span class="pre">HaplodiploidGenoTransmitter</span></code>, and <code class="docutils literal notranslate"><span class="pre">MitochondrialGenoTransmitter</span></code>) *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec5.html#recombination-operator-recombinator">Recombination (Operator <code class="docutils literal notranslate"><span class="pre">Recombinator</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec5.html#gene-conversion-operator-recombinator">Gene conversion (Operator <code class="docutils literal notranslate"><span class="pre">Recombinator</span></code>) *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec5.html#tracking-all-recombination-events">Tracking all recombination events **</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5_sec6.html">Mutation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html#mutation-models-specified-by-rate-matrixes-matrixmutator">Mutation models specified by rate matrixes (<code class="docutils literal notranslate"><span class="pre">MatrixMutator</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html#k-allele-mutation-model-kallelemutator">k-allele mutation model (<code class="docutils literal notranslate"><span class="pre">KAlleleMutator</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html#diallelic-mutation-models-snpmutator">Diallelic mutation models (<code class="docutils literal notranslate"><span class="pre">SNPMutator</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html#nucleotide-mutation-models-acgtmutator">Nucleotide mutation models (<code class="docutils literal notranslate"><span class="pre">AcgtMutator</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html#mutation-model-for-microsatellite-markers-stepwisemutator">Mutation model for microsatellite markers (<code class="docutils literal notranslate"><span class="pre">StepwiseMutator</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html#simulating-arbitrary-mutation-models-using-a-hybrid-mutator-pymutator">Simulating arbitrary mutation models using a hybrid mutator (<code class="docutils literal notranslate"><span class="pre">PyMutator</span></code>)*</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html#mixed-mutation-models-mixedmutator">Mixed mutation models (<code class="docutils literal notranslate"><span class="pre">MixedMutator</span></code>) **</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html#context-dependent-mutation-models-contextmutator">Context-dependent mutation models (<code class="docutils literal notranslate"><span class="pre">ContextMutator</span></code>)**</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html#manually-introduced-mutations-pointmutator">Manually-introduced mutations (<code class="docutils literal notranslate"><span class="pre">PointMutator</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html#apply-mutation-to-virtual-subpopulations">Apply mutation to (virtual) subpopulations *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html#allele-mapping">Allele mapping **</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html#mutation-rate-and-transition-matrix-of-a-matrixmutator">Mutation rate and transition matrix of a <code class="docutils literal notranslate"><span class="pre">MatrixMutator</span></code>**</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html#infinite-sites-model-and-other-simulation-techniques">Infinite-sites model and other simulation techniques **</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html#recording-and-tracing-individual-mutants">Recording and tracing individual mutants **</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5_sec7.html">Penetrance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec7.html#map-penetrance-model-operator-mappenetrance">Map penetrance model (operator <code class="docutils literal notranslate"><span class="pre">MapPenetrance</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec7.html#multi-allele-penetrance-model-operator-mapenetrance">Multi-allele penetrance model (operator <code class="docutils literal notranslate"><span class="pre">MaPenetrance</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec7.html#multi-loci-penetrance-model-operator-mlpenetrance">Multi-loci penetrance model (operator <code class="docutils literal notranslate"><span class="pre">MlPenetrance</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec7.html#hybrid-penetrance-model-operator-pypenetrance">Hybrid penetrance model (operator <code class="docutils literal notranslate"><span class="pre">PyPenetrance</span></code>)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5_sec8.html">Quantitative trait</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec8.html#a-hybrid-quantitative-trait-operator-operator-pyquantrait">A hybrid quantitative trait operator (operator <code class="docutils literal notranslate"><span class="pre">PyQuanTrait</span></code>)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5_sec9.html">Natural Selection</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html#natural-selection-through-the-selection-of-parents">Natural selection through the selection of parents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html#natural-selection-through-the-selection-of-offspring">Natural selection through the selection of offspring *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html#are-two-selection-scenarios-equivalent">Are two selection scenarios equivalent? **</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html#map-selector-operator-mapselector">Map selector (operator <code class="docutils literal notranslate"><span class="pre">MapSelector</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html#multi-allele-selector-operator-maselector">Multi-allele selector (operator <code class="docutils literal notranslate"><span class="pre">MaSelector</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html#multi-locus-selection-models-operator-mlselector">Multi-locus selection models (operator <code class="docutils literal notranslate"><span class="pre">MlSelector</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html#a-hybrid-selector-operator-pyselector">A hybrid selector (operator <code class="docutils literal notranslate"><span class="pre">PySelector</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html#multi-locus-random-fitness-effects-operator-pymlselector">Multi-locus random fitness effects (operator <code class="docutils literal notranslate"><span class="pre">PyMlSelector</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html#alternative-implementations-of-natural-selection">Alternative implementations of natural selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html#frequency-dependent-or-dynamic-selection-pressure">Frequency dependent or dynamic selection pressure *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html#support-for-virtual-subpopulations">Support for virtual subpopulations *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html#natural-selection-in-heterogeneous-mating-schemes">Natural selection in heterogeneous mating schemes **</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5_sec10.html">Tagging operators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec10.html#inheritance-tagger-operator-inherittagger">Inheritance tagger (operator <code class="docutils literal notranslate"><span class="pre">InheritTagger</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec10.html#summarize-parental-informatin-fields-operator-summarytagger">Summarize parental informatin fields (operator <code class="docutils literal notranslate"><span class="pre">SummaryTagger)</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec10.html#tracking-parents-operator-parentstagger">Tracking parents (operator <code class="docutils literal notranslate"><span class="pre">ParentsTagger</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec10.html#tracking-index-of-offspring-within-families-operator-offspringtagger">Tracking index of offspring within families (operator <code class="docutils literal notranslate"><span class="pre">OffspringTagger</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec10.html#assign-unique-ids-to-individuals-operator-idtagger">Assign unique IDs to individuals (operator <code class="docutils literal notranslate"><span class="pre">IdTagger</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec10.html#tracking-pedigrees-operator-pedigreetagger">Tracking Pedigrees (operator <code class="docutils literal notranslate"><span class="pre">PedigreeTagger</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec10.html#a-hybrid-tagger-operator-pytagger">A hybrid tagger (operator <code class="docutils literal notranslate"><span class="pre">PyTagger</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec10.html#tagging-that-involves-other-parental-information">Tagging that involves other parental information</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5_sec11.html">Statistics calculation (operator <code class="docutils literal notranslate"><span class="pre">Stat</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html#how-statistics-calculation-works">How statistics calculation works</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html#defdict-datatype"><code class="docutils literal notranslate"><span class="pre">defdict</span></code> datatype</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html#support-for-virtual-subpopulations">Support for virtual subpopulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html#counting-individuals-by-sex-and-affection-status">Counting individuals by sex and affection status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html#number-of-segregating-and-fixed-sites">Number of segregating and fixed sites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html#allele-count-and-frequency">Allele count and frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html#genotype-count-and-frequency">Genotype count and frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html#homozygote-and-heterozygote-count-and-frequency">Homozygote and heterozygote count and frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html#haplotype-count-and-frequency">Haplotype count and frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html#summary-statistics-of-information-fields">Summary statistics of information fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html#linkage-disequilibrium">Linkage disequilibrium</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html#genetic-association">Genetic association</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html#population-structure">population structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html#hardy-weinberg-equilibrium-test">Hardy-Weinberg equilibrium test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html#measure-of-inbreeding">Measure of Inbreeding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html#effective-population-size">Effective population size</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html#other-statistics">Other statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html#support-for-sex-and-customized-chromosome-types">Support for sex and customized chromosome types</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5_sec12.html">Conditional operators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec12.html#conditional-operator-operator-ifelse">Conditional operator (operator <code class="docutils literal notranslate"><span class="pre">IfElse</span></code>) *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec12.html#conditionally-terminate-an-evolutionary-process-operator-terminateif">Conditionally terminate an evolutionary process (operator <code class="docutils literal notranslate"><span class="pre">TerminateIf</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec12.html#conditional-removal-of-individuals-operator-discardif">Conditional removal of individuals (operator <code class="docutils literal notranslate"><span class="pre">DiscardIf</span></code>)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5_sec13.html">Miscellaneous operators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec13.html#an-operator-that-does-nothing-operator-noneop">An operator that does nothing (operator <code class="docutils literal notranslate"><span class="pre">NoneOp</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec13.html#dump-the-content-of-a-population-operator-dumper">dump the content of a population (operator <code class="docutils literal notranslate"><span class="pre">Dumper</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec13.html#save-a-population-during-evolution-operator-savepopulation">Save a population during evolution (operator <code class="docutils literal notranslate"><span class="pre">SavePopulation</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec13.html#pause-and-resume-an-evolutionary-process-operator-pause">Pause and resume an evolutionary process (operator <code class="docutils literal notranslate"><span class="pre">Pause</span></code>) *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec13.html#measuring-execution-time-of-operators-operator-tictoc">Measuring execution time of operators (operator <code class="docutils literal notranslate"><span class="pre">TicToc</span></code>) *</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5_sec14.html">Hybrid and Python operators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec14.html#hybrid-operators">Hybrid operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec14.html#python-operator-pyoperator">Python operator <code class="docutils literal notranslate"><span class="pre">PyOperator</span></code> *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec14.html#during-mating-python-operator">During-mating Python operator *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec14.html#define-your-own-operators">Define your own operators *</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">simuPOP Operators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec1.html">Introduction to operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec2.html">Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec3.html">Expressions and statements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec4.html">Demographic changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec5.html">Genotype transmitters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html">Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec7.html">Penetrance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec8.html">Quantitative trait</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html">Natural Selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec10.html">Tagging operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html">Statistics calculation (operator <code class="docutils literal notranslate"><span class="pre">Stat</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec12.html">Conditional operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec13.html">Miscellaneous operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec14.html">Hybrid and Python operators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+      <li>Previous: <a href="userGuide_ch4_sec3.html" title="previous chapter">Population</a></li>
+      <li>Next: <a href="userGuide_ch5_sec1.html" title="next chapter">Introduction to operators</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch5.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

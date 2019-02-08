@@ -1,0 +1,729 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Non-random and customized mating schemes * &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Age structured populations with overlapping generations **" href="userGuide_ch6_sec4.html" />
+    <link rel="prev" title="Simulator" href="userGuide_ch6_sec2.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="non-random-and-customized-mating-schemes">
+<h1>Non-random and customized mating schemes *<a class="headerlink" href="#non-random-and-customized-mating-schemes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="the-structure-of-a-homogeneous-mating-scheme">
+<h2>The structure of a homogeneous mating scheme *<a class="headerlink" href="#the-structure-of-a-homogeneous-mating-scheme" title="Permalink to this headline">¶</a></h2>
+<p>A <em>homogeneous mating scheme</em> (<a class="reference internal" href="refManual_ch2_sec3.html#HomoMating" title="HomoMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">HomoMating</span></code></a>) populates an offspring
+generation as follows:</p>
+<ol class="arabic simple">
+<li>Create an empty offspring population (generation) with appropriate size.
+Parental and offspring generation can differ in size but they must have the same
+number of subpopulations.</li>
+<li>For each subpopulation, repeatedly choose a parent or a pair of parents from
+the parental generation. This is done by a simuPOP object called a <strong>parent
+chooser</strong>.</li>
+<li>One or more offspring are produced from the chosen parent(s) and are placed
+in the offspring population. This is done by a simuPOP <strong>offspring generator</strong>.
+An offspring generator uses one or more during-mating operators to transmit
+parental genotype to offspring. These operators are called <strong>genotype
+transmitters</strong>.</li>
+<li>After the offspring generation is populated, it will replace the parental
+generation and becomes the present generation of a population.</li>
+</ol>
+<p>To define a homogeneous mating scheme, you will need to provide a <code class="docutils literal notranslate"><span class="pre">chooser</span></code> (a
+<em>parent chooser</em> that is responsible for choosing one or two parents from the
+parental generation) and a <code class="docutils literal notranslate"><span class="pre">generator</span></code> (an <em>offspring generator</em> that is
+responsible for generating a number of offspring from the chosen parents). For
+example, a <code class="docutils literal notranslate"><span class="pre">selfingMating</span></code> mating scheme uses a <a class="reference internal" href="refManual_ch2_sec3.html#RandomParentChooser" title="RandomParentChooser"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomParentChooser</span></code></a>
+to choose a parent randomly from a population, possibly according to individual
+fitness, it uses a standard <a class="reference internal" href="refManual_ch2_sec3.html#OffspringGenerator" title="OffspringGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">OffspringGenerator</span></code></a> that uses a
+<code class="docutils literal notranslate"><span class="pre">selfingOffspringGenerator</span></code> to transmit genotype. The constructor of
+<a class="reference internal" href="refManual_ch2_sec3.html#HomoMating" title="HomoMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">HomoMating</span></code></a> also accepts parameters <code class="docutils literal notranslate"><span class="pre">subPopSize</span></code> (parameter to control
+offspring subpopulation sizes), <code class="docutils literal notranslate"><span class="pre">subPops</span></code> (applicable subpopulatiosn or
+virtual subpopulations), and <code class="docutils literal notranslate"><span class="pre">weight</span></code> (weighting parameter when used in a
+heterogeneous mating scheme). When this mating scheme is applied to the whole
+population, <code class="docutils literal notranslate"><span class="pre">subPopSize</span></code> is used to determine the subpopulation sizes of the
+offspring generation (see Section <a class="reference internal" href="userGuide_ch6_sec1.html#subsec-offspring-size"><span class="std std-ref">subsec_offspring_size</span></a> for details), parameters <code class="docutils literal notranslate"><span class="pre">subPops</span></code> and <code class="docutils literal notranslate"><span class="pre">weight</span></code> are
+ignored. Otherwise, the number of offspring this mating scheme will produce is
+determined by the heterogeneous mating scheme.</p>
+<p>Example <a class="reference internal" href="#randommating"><span class="std std-ref">RandomMating</span></a> demonstrates how the most commonly
+used mating scheme, the diploid sexual <a class="reference internal" href="refManual_ch2_sec4.html#RandomMating" title="RandomMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomMating</span></code></a> mating scheme is
+defined in <code class="docutils literal notranslate"><span class="pre">simuPOP.py</span></code>. This mating scheme uses a
+<a class="reference internal" href="refManual_ch2_sec3.html#RandomParentsChooser" title="RandomParentsChooser"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomParentsChooser</span></code></a> with replacement, and a standard
+<a class="reference internal" href="refManual_ch2_sec3.html#OffspringGenerator" title="OffspringGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">OffspringGenerator</span></code></a> using a default <a class="reference internal" href="refManual_ch3_sec5.html#MendelianGenoTransmitter" title="MendelianGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MendelianGenoTransmitter</span></code></a>.</p>
+<p id="randommating"><strong>Example</strong>: <em>Define a random mating scheme</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">RandomMating</span><span class="p">(</span><span class="n">numOffspring</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">sexMode</span><span class="o">=</span><span class="n">RANDOM_SEX</span><span class="p">,</span>
+        <span class="n">ops</span><span class="o">=</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span> <span class="n">subPopSize</span><span class="o">=</span><span class="p">[],</span>
+        <span class="n">subPops</span><span class="o">=</span><span class="n">ALL_AVAIL</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">selectionField</span><span class="o">=</span><span class="s1">&#39;fitness&#39;</span><span class="p">):</span>
+    <span class="s1">&#39;A basic diploid sexual random mating scheme.&#39;</span>
+    <span class="k">return</span> <span class="n">HomoMating</span><span class="p">(</span>
+        <span class="n">chooser</span><span class="o">=</span><span class="n">RandomParentsChooser</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">selectionField</span><span class="p">),</span>
+        <span class="n">generator</span><span class="o">=</span><span class="n">OffspringGenerator</span><span class="p">(</span><span class="n">ops</span><span class="p">,</span> <span class="n">numOffspring</span><span class="p">,</span> <span class="n">sexMode</span><span class="p">),</span>
+        <span class="n">subPopSize</span><span class="o">=</span><span class="n">subPopSize</span><span class="p">,</span>
+        <span class="n">subPops</span><span class="o">=</span><span class="n">subPops</span><span class="p">,</span>
+        <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="RandomMating.py">Download RandomMating.py</a></p>
+<p>Different parent choosers and offspring generators can be combined to define a
+large number of homogeneous mating schemes. Some of the parent choosers return
+one parent so they work with offspring generators that need one parent (e.g.
+selfing or clone offspring generator); some of the parent choosers return two
+parents so they work with offspring generators that need two parents (e.g.
+Mendelian offspring generator). For example, the standard <a class="reference internal" href="refManual_ch2_sec4.html#SelfMating" title="SelfMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">SelfMating</span></code></a>
+mating scheme uses a <a class="reference internal" href="refManual_ch2_sec3.html#RandomParentChooser" title="RandomParentChooser"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomParentChooser</span></code></a> but you can easily use a
+<a class="reference internal" href="refManual_ch2_sec3.html#SequentialParentChooser" title="SequentialParentChooser"><code class="xref py py-class docutils literal notranslate"><span class="pre">SequentialParentChooser</span></code></a> to choose parents sequentially and self-
+fertilize parents one by one. This is demonstrated in Example
+<a class="reference internal" href="#sequentialselfing"><span class="std std-ref">sequentialSelfing</span></a>.</p>
+<p id="sequentialselfing"><strong>Example</strong>: <em>Define a sequential selfing mating scheme</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">5</span><span class="o">*</span><span class="mi">3</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;parent_idx&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.2</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">)],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">Dumper</span><span class="p">(</span><span class="n">structure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">HomoMating</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">SequentialParentChooser</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">OffspringGenerator</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">SelfingGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">ParentsTagger</span><span class="p">(</span><span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;parent_idx&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="p">])</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">Dumper</span><span class="p">(</span><span class="n">structure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">SubPopulation 0 (), 100 Individuals:</span>
+<span class="go">   0: MU 441000142224423 | 431303440010114 |  0</span>
+<span class="go">   1: MU 334442443034342 | 113203441333201 |  0</span>
+<span class="go">   2: MU 034344042424240 | 344304121430212 |  0</span>
+<span class="go">   3: MU 132322330420043 | 141300223114240 |  0</span>
+<span class="go">   4: MU 111123040033342 | 344344221133120 |  0</span>
+
+<span class="go">SubPopulation 0 (), 100 Individuals:</span>
+<span class="go">   0: MU 441000142224423 | 431303440010114 |  0</span>
+<span class="go">   1: FU 334442443034342 | 113203441333201 |  1</span>
+<span class="go">   2: MU 344304121430212 | 034344042424240 |  2</span>
+<span class="go">   3: FU 141300223114240 | 132322330420043 |  3</span>
+<span class="go">   4: FU 344344221133120 | 111123040033342 |  4</span>
+
+<span class="go">1</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="sequentialSelfing.py">Download sequentialSelfing.py</a></p>
+</div>
+<div class="section" id="offspring-generators">
+<h2>Offspring generators *<a class="headerlink" href="#offspring-generators" title="Permalink to this headline">¶</a></h2>
+<p>An <a class="reference internal" href="refManual_ch2_sec3.html#OffspringGenerator" title="OffspringGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">OffspringGenerator</span></code></a> accepts a parameters <code class="docutils literal notranslate"><span class="pre">ops</span></code> (a list of during-
+mating operators), <code class="docutils literal notranslate"><span class="pre">numOffspring</span></code> (control number of offspring per mating
+event) and <code class="docutils literal notranslate"><span class="pre">sexMode</span></code> (control offspring sex). We have examined the last two
+parameters in detail in sections <a class="reference internal" href="userGuide_ch6_sec1.html#subsec-number-of-offspring"><span class="std std-ref">subsec_number_of_offspring</span></a> and <a class="reference internal" href="userGuide_ch6_sec1.html#subsec-offspring-sex"><span class="std std-ref">subsec_offspring_sex</span></a>.</p>
+<p>The most tricky parameter is the <code class="docutils literal notranslate"><span class="pre">ops</span></code> parameter. It accepts a list of during
+mating operators that are used to transmit genotypes from parent(s) to offspring
+and/or set individual information fields. The standard
+<a class="reference internal" href="refManual_ch2_sec3.html#OffspringGenerator" title="OffspringGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">OffspringGenerator</span></code></a> does not have any default operator so no genotype
+will be transmitted by default. All stock mating schemes use a default genotype
+transmitter. (e,g, a <a class="reference internal" href="refManual_ch3_sec5.html#MendelianGenoTransmitter" title="MendelianGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MendelianGenoTransmitter</span></code></a> in Example
+<a class="reference internal" href="#randommating"><span class="std std-ref">RandomMating</span></a> is passed to the offspring generator used in
+<a class="reference internal" href="refManual_ch2_sec4.html#RandomMating" title="RandomMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomMating</span></code></a>). Note that you need to specify all needed operators if
+you use parameter <code class="docutils literal notranslate"><span class="pre">ops</span></code> to change the operators used in a mating scheme (see
+Example <a class="reference internal" href="userGuide_ch6_sec1.html#heteromatingweight"><span class="std std-ref">HeteroMatingWeight</span></a>). That is to say, you can
+use <code class="docutils literal notranslate"><span class="pre">ops=Recombinator()</span></code> to replace a default
+<a class="reference internal" href="refManual_ch3_sec5.html#MendelianGenoTransmitter" title="MendelianGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MendelianGenoTransmitter</span></code></a>(), but you have to use <code class="docutils literal notranslate"><span class="pre">ops=[IdTagger(),</span>
+<span class="pre">MendelianGenoTransmitter()]</span></code> if you would like to add a during-mating operator
+to the default one.</p>
+<p>Another offspring generator is provided in simuPOP. This
+<code class="docutils literal notranslate"><span class="pre">ControlledOffspringGenerator</span></code>is used to control an evolutionary process so
+that the allele frequencies at certain loci follows some pre-simulated
+<em>frequency trajectories</em>. Please refer to Peng2007a for rationals behind such an
+offspring generator and its applications in the simulation of complex human
+diseases.</p>
+<p>Example <a class="reference internal" href="#controlledoffgenerator"><span class="std std-ref">controlledOffGenerator</span></a> demonstrates the
+use of such a controlled offspring generator. Instead of using a realistic
+frequency trajectory function, it forces allele frequency at locus 5 to increase
+linearly. In contrast, the allele frequency at locus 15 on the second chromosome
+oscillates as a result of genetic drift. Note that the random mating version of
+this mating scheme is defined in simuPOP as <a class="reference internal" href="refManual_ch2_sec4.html#ControlledRandomMating" title="ControlledRandomMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlledRandomMating</span></code></a>.</p>
+<p id="controlledoffgenerator"><strong>Example</strong>: <em>A controlled random mating scheme</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">traj</span><span class="p">(</span><span class="n">gen</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="p">[</span><span class="mf">0.5</span> <span class="o">+</span> <span class="n">gen</span> <span class="o">*</span> <span class="mf">0.01</span><span class="p">]</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># evolve the sim.Population while keeping allele frequency 0.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">HomoMating</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomParentChooser</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">ControlledOffspringGenerator</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">alleles</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">freqFunc</span><span class="o">=</span><span class="n">traj</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">ops</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">SelfingGenoTransmitter</span><span class="p">())),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;</span><span class="si">%.2f</span><span class="s1">\t</span><span class="si">%.2f</span><span class="s1">\n&quot; % (alleleFreq[5][0], alleleFreq[15][0])&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">0.50 0.51</span>
+<span class="go">0.51 0.51</span>
+<span class="go">0.52 0.51</span>
+<span class="go">0.53 0.52</span>
+<span class="go">0.54 0.54</span>
+<span class="go">5</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="controlledOffGenerator.py">Download controlledOffGenerator.py</a></p>
+</div>
+<div class="section" id="genotype-transmitters">
+<span id="subsec-pre-defined-genotype-transmitters"></span><h2>Genotype transmitters *<a class="headerlink" href="#genotype-transmitters" title="Permalink to this headline">¶</a></h2>
+<p>Although any during mating operators can be used in parameter <code class="docutils literal notranslate"><span class="pre">ops</span></code>of an
+offspring generator, those that transmit genotype from parents to offspring are
+customarily called <strong>genotype transmitters</strong>. simuPOP provides a number of
+genotype transmitters including clone, Mendelian, selfing, haplodiploid,
+genotype transmitter, and a Recombinator. They are usually used implicitly in a
+mating scheme, but they can also be used explicitly.</p>
+<p>Although simuPOP provides a number of genotype transmitters, they may still be
+cases where customized genotype transmitter is needed. For example, a
+Recombinator can be used to recombine parental chromosomes but it is well known
+that male and female individuals differ in recombination rates. How can you
+apply two different Recombinators to male and female Individuals separately?</p>
+<p>An immediate thought can be the use of virtual subpopulations. If you apply two
+random mating schemes to two virtual subpopulations defined by sex,
+<a class="reference internal" href="refManual_ch2_sec3.html#RandomParentsChooser" title="RandomParentsChooser"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomParentsChooser</span></code></a> will not work because no opposite sex can be found
+in each virtual subpopulation. In this case, a customized genotype transmitter
+can be used.</p>
+<p>A customized genotype transmitter is only a Python during-mating operator.
+Although it is possible to define a function and use a PyOperator directly
+(Example <a class="reference internal" href="userGuide_ch5_sec14.html#pyoperator"><span class="std std-ref">PyOperator</span></a>), it is much better to derive an
+operator from PyOperator, as the case in Example <a class="reference internal" href="userGuide_ch5_sec14.html#newoperator"><span class="std std-ref">newOperator</span></a>.</p>
+<p>Example <a class="reference internal" href="#sexspecificrec"><span class="std std-ref">sexSpecificRec</span></a> defines a
+<code class="docutils literal notranslate"><span class="pre">sexSpecificRecombinator</span></code> that uses, internally, two different Recombinators
+to recombine male and female parents. The key statement is the
+<code class="docutils literal notranslate"><span class="pre">PyOperator.__init__</span></code> line which initializes a Python operator with given
+function <code class="docutils literal notranslate"><span class="pre">self.transmitGenotype</span></code>. Example <a class="reference internal" href="#sexspecificrec"><span class="std std-ref">sexSpecificRec</span></a> outputs the population in two generations. You should notice
+that paternal chromosome are not recombined when they are transmitted to
+offspring.</p>
+<p id="sexspecificrec"><strong>Example</strong>: <em>A customized genotype transmitter for sex-specific recombination</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">sexSpecificRecombinator</span><span class="p">(</span><span class="n">PyOperator</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intensity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rates</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[],</span> <span class="n">convMode</span><span class="o">=</span><span class="n">NO_CONVERSION</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">maleIntensity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">maleRates</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">maleLoci</span><span class="o">=</span><span class="p">[],</span> <span class="n">maleConvMode</span><span class="o">=</span><span class="n">NO_CONVERSION</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="c1"># This operator is used to recombine maternal chromosomes</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">Recombinator</span> <span class="o">=</span> <span class="n">Recombinator</span><span class="p">(</span><span class="n">rates</span><span class="p">,</span> <span class="n">intensity</span><span class="p">,</span> <span class="n">loci</span><span class="p">,</span> <span class="n">convMode</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="c1"># This operator is used to recombine paternal chromosomes</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">maleRecombinator</span> <span class="o">=</span> <span class="n">Recombinator</span><span class="p">(</span><span class="n">maleRates</span><span class="p">,</span> <span class="n">maleIntensity</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">maleLoci</span><span class="p">,</span> <span class="n">maleConvMode</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="c1">#</span>
+<span class="gp">... </span>        <span class="n">PyOperator</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">transmitGenotype</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="c1">#</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">transmitGenotype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pop</span><span class="p">,</span> <span class="n">off</span><span class="p">,</span> <span class="n">dad</span><span class="p">,</span> <span class="n">mom</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="c1"># Form the first homologous copy of offspring.</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">Recombinator</span><span class="o">.</span><span class="n">transmitGenotype</span><span class="p">(</span><span class="n">mom</span><span class="p">,</span> <span class="n">off</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="c1"># Form the second homologous copy of offspring.</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">maleRecombinator</span><span class="o">.</span><span class="n">transmitGenotype</span><span class="p">(</span><span class="n">dad</span><span class="p">,</span> <span class="n">off</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="kc">True</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;father_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;mother_idx&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.4</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">]</span><span class="o">*</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sexSpecificRecombinator</span><span class="p">(</span><span class="n">rates</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">maleRates</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">ParentsTagger</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="n">Dumper</span><span class="p">(</span><span class="n">structure</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">SubPopulation 0 (), 10 Individuals:</span>
+<span class="go">   0: FU 230000130212000 130110020112120 | 310300000030330 000113003202000 |  6 7</span>
+<span class="go">   1: FU 110100000002000 223313300111002 | 331311301000220 002330110020020 |  6 7</span>
+<span class="go">   2: MU 230301121003012 032010332330303 | 303303022100031 310232031321031 |  5 0</span>
+<span class="go">   3: MU 103001320130222 031300110100023 | 303303022100031 003000012020002 |  5 9</span>
+<span class="go">   4: FU 210230113000000 231111000121000 | 303303022100031 003000012020002 |  5 8</span>
+<span class="go">   5: MU 322030133101023 110323303020211 | 322111021000001 301200303300133 |  2 8</span>
+<span class="go">   6: MU 210230113000000 231111000121000 | 331303300011323 310232031321031 |  5 8</span>
+<span class="go">   7: FU 200331312001001 200011203020203 | 031032120003212 101032020302120 |  3 1</span>
+<span class="go">   8: FU 230000130212000 223313300111002 | 303303022100031 003000012020002 |  5 7</span>
+<span class="go">   9: FU 200331312001001 130301011230300 | 322111021000001 320103032303101 |  2 1</span>
+
+<span class="go">SubPopulation 0 (), 10 Individuals:</span>
+<span class="go">   0: MU 230000130212000 223313300111002 | 322030133101023 301200303300133 |  5 8</span>
+<span class="go">   1: MU 230000130212000 130110020112120 | 303303022100031 310232031321031 |  2 0</span>
+<span class="go">   2: FU 303303022100031 003000012020002 | 322111021000001 301200303300133 |  5 4</span>
+<span class="go">   3: FU 331311301000220 223313300111002 | 322111021000001 110323303020211 |  5 1</span>
+<span class="go">   4: MU 200331312001001 101032020302120 | 230301121003012 032010332330303 |  2 7</span>
+<span class="go">   5: FU 031032120003212 200011203020203 | 103001320130222 031300110100023 |  3 7</span>
+<span class="go">   6: FU 200331312001001 320103032303101 | 303303022100031 032010332330303 |  2 9</span>
+<span class="go">   7: FU 200331312001001 320103032303101 | 303303022100031 310232031321031 |  2 9</span>
+<span class="go">   8: FU 200331312001001 130301011230300 | 303303022100031 031300110100023 |  3 9</span>
+<span class="go">   9: MU 303303022100031 003000012020002 | 210230113000000 231111000121000 |  6 4</span>
+
+<span class="go">2</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="sexSpecificRec.py">Download sexSpecificRec.py</a></p>
+</div>
+<div class="section" id="a-python-parent-chooser">
+<h2>A Python parent chooser *<a class="headerlink" href="#a-python-parent-chooser" title="Permalink to this headline">¶</a></h2>
+<p>Parent choosers are responsible for choosing one or two parents from a parental
+(virtual) subpopulation. simuPOP defines a few parent choosers that choose
+parent(s) sequentially, randomly (with or without replacement), or with
+additional conditions. Some of these parent choosers support natual selection.
+We have seen sequential and random parent choosers in Examples
+<a class="reference internal" href="#sequentialselfing"><span class="std std-ref">sequentialSelfing</span></a> and <a class="reference internal" href="#controlledoffgenerator"><span class="std std-ref">controlledOffGenerator</span></a>. Please refer to the simuPOP reference manual for
+details about these objects.</p>
+<p>A parent choosing scheme can be quite complicated in reality. For example,
+salamanders along a river may mate with their neighbors and form several
+subspecies. This behavior cannot be readily simulated using any pre-define
+parent choosers so a hybrid parent chooser <a class="reference internal" href="refManual_ch2_sec3.html#PyParentsChooser" title="PyParentsChooser"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyParentsChooser</span></code></a>() should
+be used.</p>
+<p>A <a class="reference internal" href="refManual_ch2_sec3.html#PyParentsChooser" title="PyParentsChooser"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyParentsChooser</span></code></a> accepts a user-defined Python generator function,
+instead of a normal python function, that returns a parent, or a pair of parents
+repeatedly. Briefly speaking, when a generator function is called, it returns a
+<em>generator</em> object that provides an iterator interface. Each time when this
+iterator iterates, this function resumes where it was stopped last time,
+executes and returns what the next <em>yield</em> statement returns. For example,
+example <a class="reference internal" href="#generator"><span class="std std-ref">generator</span></a> defines a function that calculate
+<span class="math notranslate nohighlight">\(f\left(k\right)=\sum_{i=1}^{k}\frac{1}{i}\)</span> for <span class="math notranslate nohighlight">\(k=1,...,5\)</span>. It does
+not calculate each <span class="math notranslate nohighlight">\(f\left(k\right)\)</span> repeatedly but returns
+<span class="math notranslate nohighlight">\(f\left(1\right)\)</span>, <span class="math notranslate nohighlight">\(f\left(2\right)\)</span>, … sequentially.</p>
+<p id="generator"><strong>Example</strong>: <em>A sample generator function</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">func</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">... </span>    <span class="nb">all</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">... </span>    <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="nb">all</span> <span class="o">+=</span> <span class="mf">1.</span><span class="o">/</span><span class="n">i</span>
+<span class="gp">... </span>        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="gp">... </span>        <span class="k">yield</span> <span class="nb">all</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">func</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%.3f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">1.000</span>
+<span class="go">1.500</span>
+<span class="go">1.833</span>
+<span class="go">2.083</span>
+<span class="go">2.283</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="generator.py">Download generator.py</a></p>
+<p>A <a class="reference internal" href="refManual_ch2_sec3.html#PyParentsChooser" title="PyParentsChooser"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyParentsChooser</span></code></a> accepts a parent generator function, which takes a
+population and a subpopulation index as parameters. When this parent chooser is
+applied to a subpopulation, it will call this generator function and ask the
+generated generator object repeated for either a parent, or a pair of parents
+(<em>references to individual objects or indexes relative to a subpopulation</em>).
+Note that <a class="reference internal" href="refManual_ch2_sec3.html#PyParentsChooser" title="PyParentsChooser"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyParentsChooser</span></code></a> does not support virtual subpopulation but
+you can mimic the effect by returning only parents from certain virtual
+subpopulations.</p>
+<p>Example <a class="reference internal" href="#pyparentschooser"><span class="std std-ref">PyParentsChooser</span></a> implements a hybrid parent
+chooser that chooses parents with equal social status (<code class="docutils literal notranslate"><span class="pre">rank</span></code>). In this parent
+chooser, all males and females are categorized by their sex and social status. A
+parent is chosen randomly, and then his/her spouse is chosen from females/males
+with the same social status. The rank of their offspring can increase or
+decrease randomly. It becomes obvious now that whereas a python function can
+return random male/female pair, the generator interface is much more efficient
+because the identification of sex/status groups is done only once.</p>
+<p id="pyparentschooser"><strong>Example</strong>: <em>A hybrid parent chooser that chooses parents by their social status</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">randint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">randomChooser</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">subPop</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">males</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">... </span>    <span class="n">females</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">... </span>    <span class="c1"># identify males and females in each social rank</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="n">males</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">(</span><span class="n">subPop</span><span class="p">)</span> \
+<span class="gp">... </span>            <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">sex</span><span class="p">()</span> <span class="o">==</span> <span class="n">sim</span><span class="o">.</span><span class="n">MALE</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="n">rank</span><span class="p">])</span>
+<span class="gp">... </span>        <span class="n">females</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">(</span><span class="n">subPop</span><span class="p">)</span> \
+<span class="gp">... </span>            <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">sex</span><span class="p">()</span> <span class="o">==</span> <span class="n">sim</span><span class="o">.</span><span class="n">FEMALE</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="n">rank</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="c1">#</span>
+<span class="gp">... </span>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="c1"># choose a rank randomly</span>
+<span class="gp">... </span>        <span class="n">rank</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">individual</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">pop</span><span class="o">.</span><span class="n">subPopSize</span><span class="p">(</span><span class="n">subPop</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">subPop</span><span class="p">)</span><span class="o">.</span><span class="n">rank</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">yield</span> <span class="n">males</span><span class="p">[</span><span class="n">rank</span><span class="p">][</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">males</span><span class="p">[</span><span class="n">rank</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)],</span> \
+<span class="gp">... </span>            <span class="n">females</span><span class="p">[</span><span class="n">rank</span><span class="p">][</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">females</span><span class="p">[</span><span class="n">rank</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">setRank</span><span class="p">(</span><span class="n">rank</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="s1">&#39;The rank of offspring can increase or drop to zero randomly&#39;</span>
+<span class="gp">... </span>    <span class="c1"># only use rank of the father</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="p">(</span><span class="n">rank</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">%</span> <span class="mi">3</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;rank&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitInfo</span><span class="p">(</span><span class="k">lambda</span> <span class="p">:</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;rank&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">HomoMating</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyParentsChooser</span><span class="p">(</span><span class="n">randomChooser</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">OffspringGenerator</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">PyTagger</span><span class="p">(</span><span class="n">setRank</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="p">])</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">5</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="PyParentsChooser.py">Download PyParentsChooser.py</a></p>
+<p>Built-in parent choosers could be used in a <a class="reference internal" href="refManual_ch2_sec3.html#PyParentsChooser" title="PyParentsChooser"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyParentsChooser</span></code></a> to choose
+parents. The parent chooser needs to be initialized with the parental population
+and subpopulation index. Calling the <code class="docutils literal notranslate"><span class="pre">chooseParents</span></code> function repeatedly will
+return pairs of individuals from the population (<code class="docutils literal notranslate"><span class="pre">None</span></code> will be returned for
+one of the parents if the parent chooser only returns one parent). The use of
+built-in parent choosers can improve the performance of your
+<a class="reference internal" href="refManual_ch2_sec3.html#PyParentsChooser" title="PyParentsChooser"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyParentsChooser</span></code></a>, especially for complex selection patterns (e.g. with
+natural selection). For example, <a class="reference internal" href="#builtinparentschooser"><span class="std std-ref">BuiltInParentsChooser</span></a> implements a similar mating scheme as Example
+<a class="reference internal" href="#pyparentschooser"><span class="std std-ref">PyParentsChooser</span></a> but uses a
+<a class="reference internal" href="refManual_ch2_sec3.html#RandomParentChooser" title="RandomParentChooser"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomParentChooser</span></code></a> to choose males randomly.</p>
+<p id="builtinparentschooser"><strong>Example</strong>: <em>Use built-in parent choosers in a Python parent chooser</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">randint</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">randomChooser</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">subPop</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">maleChooser</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">RandomParentChooser</span><span class="p">(</span><span class="n">sexChoice</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">MALE_ONLY</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">maleChooser</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">subPop</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">females</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">... </span>    <span class="c1"># identify females in each social rank</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="n">females</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">(</span><span class="n">subPop</span><span class="p">)</span> \
+<span class="gp">... </span>            <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">sex</span><span class="p">()</span> <span class="o">==</span> <span class="n">sim</span><span class="o">.</span><span class="n">FEMALE</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="n">rank</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="c1">#</span>
+<span class="gp">... </span>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="c1"># choose a random male</span>
+<span class="gp">... </span>        <span class="n">m</span> <span class="o">=</span> <span class="n">maleChooser</span><span class="o">.</span><span class="n">chooseParents</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">... </span>        <span class="n">rank</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">rank</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="c1"># find a female in the same rank</span>
+<span class="gp">... </span>        <span class="k">yield</span> <span class="n">m</span><span class="p">,</span> <span class="n">females</span><span class="p">[</span><span class="n">rank</span><span class="p">][</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">females</span><span class="p">[</span><span class="n">rank</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">setRank</span><span class="p">(</span><span class="n">rank</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="s1">&#39;The rank of offspring can increase or drop to zero randomly&#39;</span>
+<span class="gp">... </span>    <span class="c1"># only use rank of the father</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="p">(</span><span class="n">rank</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">%</span> <span class="mi">3</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">],</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;rank&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitInfo</span><span class="p">(</span><span class="k">lambda</span> <span class="p">:</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;rank&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">HomoMating</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyParentsChooser</span><span class="p">(</span><span class="n">randomChooser</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">OffspringGenerator</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">PyTagger</span><span class="p">(</span><span class="n">setRank</span><span class="p">),</span>
+<span class="gp">... </span>            <span class="p">])</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">5</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="BuiltInParentsChooser.py">Download BuiltInParentsChooser.py</a></p>
+</div>
+<div class="section" id="using-c-to-implement-a-parent-chooser">
+<span id="subsec-using-c"></span><h2>Using C++ to implement a parent chooser **<a class="headerlink" href="#using-c-to-implement-a-parent-chooser" title="Permalink to this headline">¶</a></h2>
+<p>A user defined parent chooser can be fairly complex and computationally
+intensive. For example, if a parent tends to find a spouse in his/her vincinity,
+geometric distances between all qualified individuals and a chosen parent need
+to be calculated for each mating event. If the optimization of the parent
+chooser can speed up the simulation significantly, it may be worthwhile to write
+the parent chooser in C++.</p>
+<p>Although it is feasible, and sometimes easier to derive a class from class
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ParentChooser</span></code> in mating.h (.cpp), modifying simuPOP source code is not
+recommended because you would have to modify a new version of simuPOP whenever
+you upgrade your simuPOP distribution. Implementing your parent choosing
+algorithm in another Python module is preferred.</p>
+<p>The first step is to write your own parent chooser in C/C++. Basically, you will
+need to pass all necessary information to the C++ level and implement an
+algorithm to choose parents randomly. Although simple function based solutions
+are possible, a C++ level class such as the <code class="docutils literal notranslate"><span class="pre">myParentsChooser</span></code>class defined
+in Example <a class="reference internal" href="#parentchooseheader"><span class="std std-ref">parentChooseHeader</span></a> is recommended. This
+class is initialized with indexes of male and female individuals and use a
+function <code class="docutils literal notranslate"><span class="pre">chooseParents</span></code> to return a pair of parents randomly. This parent
+chooser is very simple but more complicated parent selection scenarios can be
+implemented similarly.</p>
+<p id="parentchooseheader"><strong>Example</strong>: <em>Implement a parent chooser in C++</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#include &lt;stdlib.h&gt;</span>
+<span class="c1">#include &lt;vector&gt;</span>
+<span class="c1">#include &lt;utility&gt;</span>
+<span class="n">using</span> <span class="n">std</span><span class="p">::</span><span class="n">pair</span><span class="p">;</span>
+<span class="n">using</span> <span class="n">std</span><span class="p">::</span><span class="n">vector</span><span class="p">;</span>
+<span class="k">class</span> <span class="nc">myParentsChooser</span>
+<span class="p">{</span>
+<span class="n">public</span><span class="p">:</span>
+        <span class="o">//</span> <span class="n">A</span> <span class="n">constructor</span> <span class="n">takes</span> <span class="nb">all</span> <span class="n">locations</span> <span class="n">of</span> <span class="n">male</span> <span class="ow">and</span> <span class="n">female</span><span class="o">.</span>
+        <span class="n">myParentsChooser</span><span class="p">(</span><span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span> <span class="o">&amp;</span> <span class="n">m</span><span class="p">,</span> <span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span> <span class="o">&amp;</span> <span class="n">f</span><span class="p">)</span>
+                <span class="p">:</span> <span class="n">male_idx</span><span class="p">(</span><span class="n">m</span><span class="p">),</span> <span class="n">female_idx</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="p">{</span>
+                <span class="n">srand</span><span class="p">(</span><span class="n">time</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+        <span class="p">}</span>
+
+        <span class="n">pair</span><span class="o">&lt;</span><span class="n">unsigned</span> <span class="n">long</span><span class="p">,</span> <span class="n">unsigned</span> <span class="n">long</span><span class="o">&gt;</span> <span class="n">chooseParents</span><span class="p">()</span>
+        <span class="p">{</span>
+                <span class="n">unsigned</span> <span class="n">long</span> <span class="n">male</span> <span class="o">=</span> <span class="n">rand</span><span class="p">()</span> <span class="o">%</span> <span class="n">male_idx</span><span class="o">.</span><span class="n">size</span><span class="p">();</span>
+                <span class="n">unsigned</span> <span class="n">long</span> <span class="n">female</span> <span class="o">=</span> <span class="n">rand</span><span class="p">()</span> <span class="o">%</span> <span class="n">male_idx</span><span class="o">.</span><span class="n">size</span><span class="p">();</span>
+                <span class="k">return</span> <span class="n">std</span><span class="p">::</span><span class="n">make_pair</span><span class="p">(</span><span class="n">male</span><span class="p">,</span> <span class="n">female</span><span class="p">);</span>
+        <span class="p">}</span>
+<span class="n">private</span><span class="p">:</span>
+        <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span> <span class="n">male_idx</span><span class="p">;</span>
+        <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span> <span class="n">female_idx</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="myParentsChooser.h">Download myParentsChooser.h</a></p>
+<p>The second step is to wrap your C++ functions and classes to a Python module.
+There are many tools available but SWIG (<code class="docutils literal notranslate"><span class="pre">www.swig.org</span></code>) is arguably the most
+convenient and powerful one. To use SWIG, you will need to prepare an interface
+file, which basically tells SWIG which functions and classes you would like to
+expose and how to pass parameters between Python and C++. Example
+<a class="reference internal" href="#parentschooserinterface"><span class="std std-ref">parentsChooserInterface</span></a> lists an interface file
+for the C++ class defined in Example <a class="reference internal" href="#parentchooseheader"><span class="std std-ref">parentChooseHeader</span></a>. Please refer to the SWIG reference manual for details.</p>
+<p id="parentschooserinterface"><strong>Example</strong>: <em>An interface file for the myParentsChooser class</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">module</span> <span class="n">myParentsChooser</span>
+<span class="o">%</span><span class="p">{</span>
+<span class="c1">#include &quot;myParentsChooser.h&quot;</span>
+<span class="o">%</span><span class="p">}</span>
+<span class="o">//</span> <span class="n">std_vector</span><span class="o">.</span><span class="n">i</span> <span class="k">for</span> <span class="n">std</span><span class="p">::</span><span class="n">vector</span>
+<span class="o">%</span><span class="n">include</span> <span class="s2">&quot;std_vector.i&quot;</span>
+<span class="o">%</span><span class="n">template</span><span class="p">()</span> <span class="n">std</span><span class="p">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="o">//</span> <span class="n">stl</span><span class="o">.</span><span class="n">i</span> <span class="k">for</span> <span class="n">std</span><span class="p">::</span><span class="n">pair</span>
+<span class="o">%</span><span class="n">include</span> <span class="s2">&quot;stl.i&quot;</span>
+<span class="o">%</span><span class="n">template</span><span class="p">()</span> <span class="n">std</span><span class="p">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">unsigned</span> <span class="n">long</span><span class="p">,</span> <span class="n">unsigned</span> <span class="n">long</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="o">%</span><span class="n">include</span> <span class="s2">&quot;myParentsChooser.h&quot;</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="myParentsChooser.i">Download myParentsChooser.i</a></p>
+<p>The exact procedure to generate and compile a wrapper file varies from system to
+system, and from compiler to compiler. Fortunately, the standard Python module
+setup process supports SWIG. All you need to do is to write a Python
+<code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file and let the <code class="docutils literal notranslate"><span class="pre">distutil</span></code> module of Python handle all the
+details for you. A typical <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file is demonstrated in Example
+<a class="reference internal" href="#parentschoosersetup"><span class="std std-ref">parentsChooserSetup</span></a>.</p>
+<p id="parentschoosersetup"><strong>Example</strong>: <em>Building and installing the myParentsChooser module</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">distutils.core</span> <span class="k">import</span> <span class="n">setup</span><span class="p">,</span> <span class="n">Extension</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="c1"># Under linux/gcc, lib stdc++ is needed for C++ based extension.</span>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s1">&#39;linux2&#39;</span><span class="p">:</span>
+    <span class="n">libs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;stdc++&#39;</span><span class="p">]</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">libs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">setup</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;myParentsChooser&quot;</span><span class="p">,</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;A sample parent chooser&quot;</span><span class="p">,</span>
+    <span class="n">py_modules</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;myParentsChooser&#39;</span><span class="p">],</span>  <span class="c1"># will be generated by SWIG</span>
+    <span class="n">ext_modules</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Extension</span><span class="p">(</span><span class="s1">&#39;_myParentsChooser&#39;</span><span class="p">,</span>
+            <span class="n">sources</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;myParentsChooser.i&#39;</span><span class="p">],</span>
+            <span class="n">swig_opts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;-O&#39;</span><span class="p">,</span> <span class="s1">&#39;-shadow&#39;</span><span class="p">,</span> <span class="s1">&#39;-c++&#39;</span><span class="p">,</span> <span class="s1">&#39;-keyword&#39;</span><span class="p">,],</span>
+            <span class="n">include_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+  <span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="setup.py">Download setup.py</a></p>
+<p>You parent chooser can now be compiled and installed using the standard Python
+<code class="docutils literal notranslate"><span class="pre">setup.py</span></code> commands such as</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+</pre></div>
+</div>
+<p>Please refer to the Python reference manual for other building and installation
+options. Note that Python 2.4 and earlier do not support option swig_opts well
+so you might have to pass these options using command</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build_ext</span> <span class="o">--</span><span class="n">swig</span><span class="o">-</span><span class="n">opts</span><span class="o">=-</span><span class="n">O</span> <span class="o">-</span><span class="n">templatereduce</span> \
+    <span class="o">-</span><span class="n">shadow</span> <span class="o">-</span><span class="n">c</span><span class="o">++</span> <span class="o">-</span><span class="n">keyword</span> <span class="o">-</span><span class="n">nodefaultctor</span> <span class="n">install</span>
+</pre></div>
+</div>
+<p>Example <a class="reference internal" href="#parentchooseheader"><span class="std std-ref">parentChooseHeader</span></a> demonstrates how to use
+such a C++ parents chooser in your simuPOP script. It uses the same Python
+parent chooser interface as in <a class="reference internal" href="#pyparentschooser"><span class="std std-ref">PyParentsChooser</span></a>, but
+leaves all the (potentially) computationally intensive parts to the C++ level
+<code class="docutils literal notranslate"><span class="pre">myParentsChooser</span></code> object.</p>
+<p id="cppparentchooser"><strong>Example</strong>: <em>Implement a parent chooser in C++</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+
+<span class="c1"># The class myParentsChooser is defined in module myParentsChooser</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">myParentsChooser</span> <span class="k">import</span> <span class="n">myParentsChooser</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="c1"># if failed to import the C++ version, use a Python version</span>
+    <span class="kn">import</span> <span class="nn">random</span>
+    <span class="k">class</span> <span class="nc">myParentsChooser</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">maleIndexes</span><span class="p">,</span> <span class="n">femaleIndexes</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">maleIndexes</span> <span class="o">=</span> <span class="n">maleIndexes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">femaleIndexes</span> <span class="o">=</span> <span class="n">femaleIndexes</span>
+        <span class="k">def</span> <span class="nf">chooseParents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">maleIndexes</span><span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maleIndexes</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)],</span>\
+                <span class="bp">self</span><span class="o">.</span><span class="n">femaleIndexes</span><span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">femaleIndexes</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+
+<span class="k">def</span> <span class="nf">parentsChooser</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">sp</span><span class="p">):</span>
+    <span class="s1">&#39;How to call a C++ level parents chooser.&#39;</span>
+    <span class="c1"># create an object with needed information (such as x, y) ...</span>
+    <span class="n">pc</span> <span class="o">=</span> <span class="n">myParentsChooser</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">popSize</span><span class="p">())</span> <span class="k">if</span> <span class="n">pop</span><span class="o">.</span><span class="n">individual</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">sex</span><span class="p">()</span> <span class="o">==</span> <span class="n">sim</span><span class="o">.</span><span class="n">MALE</span><span class="p">],</span>
+        <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">popSize</span><span class="p">())</span> <span class="k">if</span> <span class="n">pop</span><span class="o">.</span><span class="n">individual</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">sex</span><span class="p">()</span> <span class="o">==</span> <span class="n">sim</span><span class="o">.</span><span class="n">FEMALE</span><span class="p">])</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># return indexes of parents repeatedly</span>
+        <span class="k">yield</span> <span class="n">pc</span><span class="o">.</span><span class="n">chooseParents</span><span class="p">()</span>
+
+<span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">simu</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+    <span class="p">],</span>
+    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">HomoMating</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">PyParentsChooser</span><span class="p">(</span><span class="n">parentsChooser</span><span class="p">),</span>
+        <span class="n">sim</span><span class="o">.</span><span class="n">OffspringGenerator</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">())),</span>
+    <span class="n">gen</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="cppParentChooser.py">Download cppParentChooser.py</a></p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec1.html">Mating Schemes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec2.html">Simulator</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Non-random and customized mating schemes *</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-structure-of-a-homogeneous-mating-scheme">The structure of a homogeneous mating scheme *</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#offspring-generators">Offspring generators *</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genotype-transmitters">Genotype transmitters *</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a-python-parent-chooser">A Python parent chooser *</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-c-to-implement-a-parent-chooser">Using C++ to implement a parent chooser **</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec4.html">Age structured populations with overlapping generations **</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec5.html">Tracing allelic lineage *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec6.html">Pedigrees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec7.html">Evolve a population following a specified pedigree structure **</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec8.html">Simulation of mitochondrial DNAs (mtDNAs) *</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch6.html">Evolving populations</a><ul>
+      <li>Previous: <a href="userGuide_ch6_sec2.html" title="previous chapter">Simulator</a></li>
+      <li>Next: <a href="userGuide_ch6_sec4.html" title="next chapter">Age structured populations with overlapping generations **</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch6_sec3.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

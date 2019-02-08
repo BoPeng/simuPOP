@@ -1,0 +1,852 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Module simuPOP.utils &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Module simuPOP.demography" href="refManual_ch4_sec3.html" />
+    <link rel="prev" title="Module simuOpt" href="refManual_ch4_sec1.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-simuPOP.utils">
+<span id="module-simupop-utils"></span><h1>Module <a class="reference internal" href="#module-simuPOP.utils" title="simuPOP.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">simuPOP.utils</span></code></a><a class="headerlink" href="#module-simuPOP.utils" title="Permalink to this headline">¶</a></h1>
+<p>This module provides some commonly used operators
+and format conversion utilities.</p>
+<div class="section" id="class-trajectory">
+<h2>class Trajectory<a class="headerlink" href="#class-trajectory" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.utils.Trajectory">
+<em class="property">class </em><code class="descclassname">simuPOP.utils.</code><code class="descname">Trajectory</code><a class="headerlink" href="#simuPOP.utils.Trajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <code class="docutils literal notranslate"><span class="pre">Trajectory</span></code> object contains frequencies of one or more loci in one
+or more subpopulations over several generations. It is usually returned by
+member functions of class <code class="docutils literal notranslate"><span class="pre">TrajectorySimulator</span></code> or equivalent global
+functions <code class="docutils literal notranslate"><span class="pre">simulateForwardTrajectory</span></code> and <code class="docutils literal notranslate"><span class="pre">simulateBackwardTrajectory</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Trajectory</span></code> object provides several member functions to facilitate
+the use of Trajectory-simulation techiniques. For example,
+<code class="docutils literal notranslate"><span class="pre">Trajectory.func()</span></code> returns a trajectory function that can be provided
+directly to a <a class="reference internal" href="refManual_ch2_sec3.html#ControlledOffspringGenerator" title="ControlledOffspringGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlledOffspringGenerator</span></code></a>; <code class="docutils literal notranslate"><span class="pre">Trajectory.mutators()</span></code>
+provides a list of <a class="reference internal" href="refManual_ch3_sec6.html#PointMutator" title="PointMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointMutator</span></code></a> that insert mutants at the right
+generations to initialize a trajectory.</p>
+<p>For more information about Trajectory simulation techniques and related
+controlled random mating scheme, please refer to the simuPOP user’s guide,
+and Peng et al (PLoS Genetics 3(3), 2007).</p>
+<dl class="method">
+<dt id="simuPOP.utils.Trajectory.Trajectory">
+<code class="descname">Trajectory</code><span class="sig-paren">(</span><em>endGen</em>, <em>nLoci</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.utils.Trajectory.Trajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a <code class="docutils literal notranslate"><span class="pre">Trajectory</span></code> object of alleles at <em>nLoci</em> loci with
+ending generation <em>endGen</em>. <em>endGen</em> is the generation when expected
+allele frequencies are reached after mating. Therefore, a trajectory
+for 1000 generations should have <code class="docutils literal notranslate"><span class="pre">endGen=999</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.utils.Trajectory.freq">
+<code class="descname">freq</code><span class="sig-paren">(</span><em>gen</em>, <em>subPop</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.utils.Trajectory.freq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return frequencies of all loci in subpopulation <em>subPop</em> at
+generation <em>gen</em> of the simulated Trajectory. Allele frequencies are
+assumed to be zero if <em>gen</em> is out of range of the simulated
+Trajectory.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.utils.Trajectory.func">
+<code class="descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.utils.Trajectory.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a Python function that returns allele frequencies for each
+locus at specified loci. If there are multiple subpopulations, allele
+frequencies are arranged in the order of <code class="docutils literal notranslate"><span class="pre">loc0_sp0</span></code>, <code class="docutils literal notranslate"><span class="pre">loc1_sp0</span></code>,
+…, <code class="docutils literal notranslate"><span class="pre">loc0_sp1</span></code>, <code class="docutils literal notranslate"><span class="pre">loc1_sp1</span></code>, … and so on. The returned function
+can be supplied directly to the <code class="docutils literal notranslate"><span class="pre">freqFunc</span></code> parameter of a controlled
+random mating scheme (<a class="reference internal" href="refManual_ch2_sec4.html#ControlledRandomMating" title="ControlledRandomMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlledRandomMating</span></code></a>) or a homogeneous
+mating scheme that uses a controlled offspring generator
+(<a class="reference internal" href="refManual_ch2_sec3.html#ControlledOffspringGenerator" title="ControlledOffspringGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlledOffspringGenerator</span></code></a>).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.utils.Trajectory.mutants">
+<code class="descname">mutants</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.utils.Trajectory.mutants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of mutants in the form of (loc, gen, subPop)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.utils.Trajectory.mutators">
+<code class="descname">mutators</code><span class="sig-paren">(</span><em>loci</em>, <em>inds=0</em>, <em>allele=1</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.utils.Trajectory.mutators" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of <a class="reference internal" href="refManual_ch3_sec6.html#PointMutator" title="PointMutator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointMutator</span></code></a> operators that introduce mutants
+at the beginning of simulated trajectories. These mutators should be
+added to the <code class="docutils literal notranslate"><span class="pre">preOps</span></code> parameter of <a class="reference internal" href="refManual_ch2_sec1.html#Simulator.evolve" title="Simulator.evolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Simulator.evolve</span></code></a> function to
+introduce a mutant at the beginning of a generation with zero allele
+frequency before mating, and a positive allele frequency after mating.
+A parameter <code class="docutils literal notranslate"><span class="pre">loci</span></code> is needed to specify actual loci indexes in the
+real forward simulation. Other than default parameters <code class="docutils literal notranslate"><span class="pre">inds=0</span></code> and
+<code class="docutils literal notranslate"><span class="pre">allele=1</span></code>, additional parameters could be passed to point mutator
+as keyward parameters.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-trajectorysimulator">
+<h2>class TrajectorySimulator<a class="headerlink" href="#class-trajectorysimulator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.utils.TrajectorySimulator">
+<em class="property">class </em><code class="descclassname">simuPOP.utils.</code><code class="descname">TrajectorySimulator</code><a class="headerlink" href="#simuPOP.utils.TrajectorySimulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Trajectory Simulator takes basic demographic and genetic (natural
+selection) information of an evolutionary process of a diploid population
+and allow the simulation of Trajectory of allele frequencies of one or
+more loci. Trajectories could be simulated in two ways: forward-time and
+backward-time. In a forward-time simulation, the simulation starts from
+certain allele frequency and simulate the frequency at the next generation
+using given demographic and genetic information. The simulation continues
+until an ending generation is reached. A Trajectory is successfully
+simulated if the allele frequency at the ending generation falls into a
+specified range. In a backward-time simulation, the simulation starts from
+the ending generation with a desired allele frequency and simulate the
+allele frequency at previous generations one by one until the allele gets
+lost (allele frequency equals zero).</p>
+<p>The result of a trajectory simulation is a trajectory object which can be
+used to direct the simulation of a special random mating process that
+controls the evolution of one or more disease alleles so that allele
+frequencies are consistent across replicate simulations. For more
+information about Trajectory simulation techniques and related controlled
+random mating scheme, please refer to the simuPOP user’s guide, and Peng et
+al (PLoS Genetics 3(3), 2007).</p>
+<dl class="method">
+<dt id="simuPOP.utils.TrajectorySimulator.TrajectorySimulator">
+<code class="descname">TrajectorySimulator</code><span class="sig-paren">(</span><em>N</em>, <em>nLoci=1</em>, <em>fitness=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.utils.TrajectorySimulator.TrajectorySimulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a trajectory Simulator using provided demographic and genetic
+(natural selection) parameters. Member functions <em>simuForward</em> and
+<em>simuBackward</em> can then be used to simulate trajectories within certain
+range of generations. This class accepts the following parameters</p>
+<dl class="docutils">
+<dt>N</dt>
+<dd>Parameter <em>N</em> accepts either a constant number for population size
+(e.g. N=1000), a list of subpopulation sizes (e.g. N=[1000, 2000]),
+or a demographic function that returns population or subpopulation
+sizes at each generation. During the evolution, multiple
+subpopulations can be merged into one, and one population can be
+split into several subpopulations. The number of subpopulation is
+determined by the return value of the demographic function. Note
+that <em>N</em> should be considered as the population size at the end of
+specified generation.</dd>
+<dt>nLoci</dt>
+<dd>Number of unlinked loci for which trajectories of allele
+frequencies are simulated. We assume a diploid population with
+diallelic loci. The Trajectory represents frequencies of a</dd>
+<dt>fitness</dt>
+<dd>Parameter fitness can be <code class="docutils literal notranslate"><span class="pre">None</span></code> (no selection), a list of fitness
+values for genotype with 0, 1, and 2 disease alleles (<em>AA</em>, <em>Aa</em>,
+and <em>aa</em>) at one or more loci; or a function that returns fitness
+values at each generation. When multiple loci are involved
+(<em>nLoci</em>), <em>fitness</em> can be a list of 3 (the same fitness values
+for all loci), a list of 3*nLoci (different fitness values for each
+locus) or a list of 3**nLoci (fitness value for each combination of
+genotype). The fitness function should accept generation number and
+a subpopulation index. The latter parameter allows, and is the only
+way to specify different fitness in each subpopulation.</dd>
+<dt>logger</dt>
+<dd>A logging object (see Python module <code class="docutils literal notranslate"><span class="pre">logging</span></code>) that can be used
+to output intermediate results with debug information.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.utils.TrajectorySimulator.simuBackward">
+<code class="descname">simuBackward</code><span class="sig-paren">(</span><em>endGen</em>, <em>endFreq</em>, <em>minMutAge=None</em>, <em>maxMutAge=None</em>, <em>maxAttempts=1000</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.utils.TrajectorySimulator.simuBackward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simulate trajectories of multiple disease susceptibility loci using
+a forward time approach. This function accepts allele frequencies of
+alleles of multiple unlinked loci (<em>endFreq</em>) at the end of generation
+<em>endGen</em>. Depending on the number of loci and subpopulations, parameter
+<em>beginFreq</em> can be a number (same frequency for all loci in all
+subpopulations), or a list of frequencies for each locus (same
+frequency in all subpopulations), or a list of frequencies for each
+locus in each subpopulation in the order of <code class="docutils literal notranslate"><span class="pre">loc0_sp0</span></code>, <code class="docutils literal notranslate"><span class="pre">loc1_sp0</span></code>,
+…, <code class="docutils literal notranslate"><span class="pre">loc0_sp1</span></code>, <code class="docutils literal notranslate"><span class="pre">loc1_sp1</span></code>, … and so on.</p>
+<p>This simulator will simulate a trajectory generation by generation and
+restart if the disease allele got fixed (instead of lost), or if the
+length simulated Trajectory does not fall into <em>minMutAge</em> and
+<em>maxMutAge</em> (ignored if <code class="docutils literal notranslate"><span class="pre">None</span></code> is given). This simulator will return
+<code class="docutils literal notranslate"><span class="pre">None</span></code> if no valid Trajectory is found after <code class="docutils literal notranslate"><span class="pre">maxAttempts</span></code> attemps.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.utils.TrajectorySimulator.simuForward">
+<code class="descname">simuForward</code><span class="sig-paren">(</span><em>beginGen</em>, <em>endGen</em>, <em>beginFreq</em>, <em>endFreq</em>, <em>maxAttempts=10000</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.utils.TrajectorySimulator.simuForward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simulate trajectories of multiple disease susceptibility loci using a
+forward time approach. This function accepts allele frequencies of
+alleles of multiple unlinked loci at the beginning generation (<code class="docutils literal notranslate"><span class="pre">freq</span></code>)
+at generation <code class="docutils literal notranslate"><span class="pre">beginGen</span></code>, and expected <em>range</em> of allele frequencies
+of these alleles (<code class="docutils literal notranslate"><span class="pre">endFreq</span></code>) at the end of generation <code class="docutils literal notranslate"><span class="pre">endGen</span></code>.
+Depending on the number of loci and subpopulations, these parameters
+accept the following inputs:</p>
+<dl class="docutils">
+<dt>beginGen</dt>
+<dd>Starting generation. The initial frequecies are considered as
+frequencies at the <em>beginning</em> of this generation.</dd>
+<dt>endGen</dt>
+<dd>Ending generation. The ending frequencies are considerd as
+frequencies at the <em>end</em> of this generation.</dd>
+<dt>beginFreq</dt>
+<dd>The initial allele frequency of involved loci in all subpopulations.
+It can be a number (same frequency for all loci in all
+subpopulations), or a list of frequencies for each locus (same
+frequency in all subpopulations), or a list of frequencies for each
+locus in each subpopulation in the order of <code class="docutils literal notranslate"><span class="pre">loc0_sp0</span></code>,
+<code class="docutils literal notranslate"><span class="pre">loc1_sp0</span></code>, …, <code class="docutils literal notranslate"><span class="pre">loc0_sp1</span></code>, <code class="docutils literal notranslate"><span class="pre">loc1_sp1</span></code>, … and so on.</dd>
+<dt>endFreq</dt>
+<dd>The range of acceptable allele frequencies at the ending generation.
+The ranges can be specified for all loci in all subpopulations,
+for all loci (allele frequency in the whole population is
+considered), or for all loci in all subpopulations, in the order
+of <code class="docutils literal notranslate"><span class="pre">loc0_sp0</span></code>, <code class="docutils literal notranslate"><span class="pre">loc1_sp0</span></code>, …. <code class="docutils literal notranslate"><span class="pre">loc0_sp1</span></code>, … and so on.</dd>
+</dl>
+<p>This simulator will simulate a trajectory generation by generation and
+restart if the resulting frequencies do not fall into specified range
+of frequencies. This simulator will return <code class="docutils literal notranslate"><span class="pre">None</span></code> if no valid
+Trajectory is found after <code class="docutils literal notranslate"><span class="pre">maxAttempts</span></code> attemps.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="function-simulateforwardtrajectory">
+<h2>Function simulateForwardTrajectory<a class="headerlink" href="#function-simulateforwardtrajectory" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuPOP.utils.simulateForwardTrajectory">
+<code class="descclassname">simuPOP.utils.</code><code class="descname">simulateForwardTrajectory</code><span class="sig-paren">(</span><em>N</em>, <em>beginGen</em>, <em>endGen</em>, <em>beginFreq</em>, <em>endFreq</em>, <em>nLoci=1</em>, <em>fitness=None</em>, <em>maxAttempts=10000</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.utils.simulateForwardTrajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a demographic model (<em>N</em>) and the fitness of genotype at one or
+more loci (<em>fitness</em>), this function simulates a trajectory of one or more
+unlinked loci (<em>nLoci</em>) from allele frequency <em>freq</em> at generation
+<em>beginGen</em> forward in time, until it reaches generation <em>endGen</em>. A
+<code class="docutils literal notranslate"><span class="pre">Trajectory</span></code> object will be returned if the allele frequency falls
+into specified ranges (<em>endFreq</em>). <code class="docutils literal notranslate"><span class="pre">None</span></code> will be returned if no valid
+Trajectory is simulated after <code class="docutils literal notranslate"><span class="pre">maxAttempts</span></code> attempts. Please refer to
+class <code class="docutils literal notranslate"><span class="pre">Trajectory</span></code>, <code class="docutils literal notranslate"><span class="pre">TrajectorySimulator</span></code> and their member functions
+for more details about allowed input for these parameters. If a <em>logger</em>
+object is given, it will send detailed debug information at <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code>
+level and ending allele frequencies at the <code class="docutils literal notranslate"><span class="pre">INFO</span></code> level. The latter
+can be used to adjust your fitness model and/or ending allele frequency
+if a trajectory is difficult to obtain because of parameter mismatch.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="function-simulatebackwardtrajectory">
+<h2>Function simulateBackwardTrajectory<a class="headerlink" href="#function-simulatebackwardtrajectory" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuPOP.utils.simulateBackwardTrajectory">
+<code class="descclassname">simuPOP.utils.</code><code class="descname">simulateBackwardTrajectory</code><span class="sig-paren">(</span><em>N</em>, <em>endGen</em>, <em>endFreq</em>, <em>nLoci=1</em>, <em>fitness=None</em>, <em>minMutAge=None</em>, <em>maxMutAge=None</em>, <em>maxAttempts=1000</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.utils.simulateBackwardTrajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a demographic model (<em>N</em>) and the fitness of genotype at one or
+more loci (<em>fitness</em>), this function simulates a trajectory of one or more
+unlinked loci (<em>nLoci</em>) from allele frequency <em>freq</em> at generation <em>endGen</em>
+backward in time, until all alleles get lost. A <code class="docutils literal notranslate"><span class="pre">Trajectory</span></code> object will
+be returned if the length of simulated Trajectory with <code class="docutils literal notranslate"><span class="pre">minMutAge</span></code> and
+<code class="docutils literal notranslate"><span class="pre">maxMutAge</span></code> (if specified). <code class="docutils literal notranslate"><span class="pre">None</span></code> will be returned if no valid
+Trajectory is simulated after <code class="docutils literal notranslate"><span class="pre">maxAttempts</span></code> attempts. Please refer to
+class <code class="docutils literal notranslate"><span class="pre">Trajectory</span></code>, <code class="docutils literal notranslate"><span class="pre">TrajectorySimulator</span></code> and their member functions
+for more details about allowed input for these parameters. If a <em>logger</em>
+object is given, it will send detailed debug information at <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code>
+level and ending generation and frequency at the <code class="docutils literal notranslate"><span class="pre">INFO</span></code> level. The latter
+can be used to adjust your fitness model and/or ending allele frequency
+if a trajectory is difficult to obtain because of parameter mismatch.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="class-progressbar">
+<h2>class ProgressBar<a class="headerlink" href="#class-progressbar" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.utils.ProgressBar">
+<em class="property">class </em><code class="descclassname">simuPOP.utils.</code><code class="descname">ProgressBar</code><a class="headerlink" href="#simuPOP.utils.ProgressBar" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">ProgressBar</span></code> class defines a progress bar. This class will use a
+text-based progress bar that outputs progressing dots (.) with intermediate
+numbers (e.g. 5 for 50%) under a non-GUI mode (<code class="docutils literal notranslate"><span class="pre">gui=False</span></code>) or not displaying
+any progress bar if <code class="docutils literal notranslate"><span class="pre">gui='batch'</span></code>. In the GUI mode, a Tkinter or wxPython
+progress dialog will be used (<code class="docutils literal notranslate"><span class="pre">gui=Tkinter</span></code>  or <code class="docutils literal notranslate"><span class="pre">gui=wxPython</span></code>). The default
+mode is determined by the global gui mode of simuPOP
+(see also <a class="reference internal" href="refManual_ch4_sec1.html#simuOpt.setOptions" title="simuOpt.setOptions"><code class="xref py py-func docutils literal notranslate"><span class="pre">simuOpt.setOptions</span></code></a>).</p>
+<p>This class is usually used as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">progress</span> <span class="o">=</span> <span class="n">ProgressBar</span><span class="p">(</span><span class="s2">&quot;Start simulation&quot;</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">500</span><span class="p">):</span>
+    <span class="c1"># i+1 can be ignored if the progress bar is updated by 1 step</span>
+    <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># if you would like to make sure the done message is displayed.</span>
+<span class="n">progress</span><span class="o">.</span><span class="n">done</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="simuPOP.utils.ProgressBar.ProgressBar">
+<code class="descname">ProgressBar</code><span class="sig-paren">(</span><em>message</em>, <em>totalCount</em>, <em>progressChar='.'</em>, <em>block=2</em>, <em>done=' Done.n'</em>, <em>gui=None</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.utils.ProgressBar.ProgressBar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a progress bar with <code class="docutils literal notranslate"><span class="pre">message</span></code>, which will be the title of
+a progress dialog or a message for textbased progress bar. Parameter
+<code class="docutils literal notranslate"><span class="pre">totalCount</span></code> specifies total expected steps. If a text-based progress
+bar is used, you could specified progress character and intervals at
+which progresses will be displayed using parameters <code class="docutils literal notranslate"><span class="pre">progressChar</span></code>
+and <code class="docutils literal notranslate"><span class="pre">block</span></code>. A ending message will also be displayed in text mode.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.utils.ProgressBar.done">
+<code class="descname">done</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.utils.ProgressBar.done" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finish progressbar, print ‘done’ message if in text-mode.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="simuPOP.utils.ProgressBar.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>count=None</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.utils.ProgressBar.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the progreebar with <code class="docutils literal notranslate"><span class="pre">count</span></code> steps done. The dialog or textbar
+may not be updated if it is updated by full percent(s). If <code class="docutils literal notranslate"><span class="pre">count</span></code> is
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, the progressbar increases by one step (not percent).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="function-viewvars">
+<h2>Function viewVars<a class="headerlink" href="#function-viewvars" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuPOP.utils.viewVars">
+<code class="descclassname">simuPOP.utils.</code><code class="descname">viewVars</code><span class="sig-paren">(</span><em>var</em>, <em>gui=None</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.utils.viewVars" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>list a variable in tree format, either in text format or in a</dt>
+<dd>wxPython window.</dd>
+<dt>var</dt>
+<dd>A dictionary variable to be viewed. Dictionary wrapper objects returned
+by <code class="docutils literal notranslate"><span class="pre">Population.dvars()</span></code> and <code class="docutils literal notranslate"><span class="pre">Simulator.dvars()</span></code> are also acceptable.</dd>
+<dt>gui</dt>
+<dd>If gui is <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">'Tkinter'</span></code>, a text presentation (use the
+pprint module) of the variable will be printed to the screen. If gui is
+<code class="docutils literal notranslate"><span class="pre">'wxPython'</span></code> and wxPython is available, a wxPython windows will be
+used. The default mode is determined by the global gui mode (see also
+<a class="reference internal" href="refManual_ch4_sec1.html#simuOpt.setOptions" title="simuOpt.setOptions"><code class="xref py py-func docutils literal notranslate"><span class="pre">simuOpt.setOptions</span></code></a>).</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="function-savecsv">
+<h2>Function saveCSV<a class="headerlink" href="#function-savecsv" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuPOP.utils.saveCSV">
+<code class="descclassname">simuPOP.utils.</code><code class="descname">saveCSV</code><span class="sig-paren">(</span><em>pop</em>, <em>filename=''</em>, <em>infoFields=[]</em>, <em>loci=True</em>, <em>header=True</em>, <em>subPops=ALL_AVAIL</em>, <em>genoFormatter=None</em>, <em>infoFormatter=None</em>, <em>sexFormatter={1: 'M'</em>, <em>2: 'F'}</em>, <em>affectionFormatter={True: 'A'</em>, <em>False: 'U'}</em>, <em>sep='</em>, <em>'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.utils.saveCSV" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is deprecated. Please use <code class="docutils literal notranslate"><span class="pre">export(format='csv')</span></code> instead.
+Save a simuPOP population <code class="docutils literal notranslate"><span class="pre">pop</span></code> in csv format. Columns of this
+file is arranged in the order of information fields (<code class="docutils literal notranslate"><span class="pre">infoFields</span></code>),
+sex (if <code class="docutils literal notranslate"><span class="pre">sexFormatter</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>), affection status (if
+<code class="docutils literal notranslate"><span class="pre">affectionFormatter</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>), and genotype (if <code class="docutils literal notranslate"><span class="pre">genoFormatter</span></code> is
+not <code class="docutils literal notranslate"><span class="pre">None</span></code>). This function only output individuals in the present
+generation of population <code class="docutils literal notranslate"><span class="pre">pop</span></code>. This function accepts the following
+parameters:</p>
+<dl class="docutils">
+<dt>pop</dt>
+<dd>A simuPOP population object.</dd>
+<dt>filename</dt>
+<dd>Output filename. Leading ‘&gt;’ characters are ignored. However, if the first
+character of this filename is ‘!’, the rest of the name will be evalulated
+in the population’s local namespace. If <code class="docutils literal notranslate"><span class="pre">filename</span></code> is empty, the content
+will be written to the standard output.</dd>
+<dt>infoFileds</dt>
+<dd>Information fields to be outputted. Default to none.</dd>
+<dt>loci</dt>
+<dd>If a list of loci is given, only genotype at these loci will be
+written. Default to <code class="docutils literal notranslate"><span class="pre">ALL_AVAIL</span></code>, meaning all available loci. You can
+set this parameter to <code class="docutils literal notranslate"><span class="pre">[]</span></code> if you do not want to output any genotype.</dd>
+<dt>header</dt>
+<dd>Whether or not a header should be written. These headers will include
+information fields, sex (if <code class="docutils literal notranslate"><span class="pre">sexFormatter</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>), affection
+status (if <code class="docutils literal notranslate"><span class="pre">affectionFormatter</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>) and loci names. If
+genotype at a locus needs more than one column, <code class="docutils literal notranslate"><span class="pre">_1</span></code>, <code class="docutils literal notranslate"><span class="pre">_2</span></code> etc will
+be appended to loci names. Alternatively, a complete header (a string)
+or a list of column names could be specified directly.</dd>
+<dt>subPops</dt>
+<dd>A list of (virtual) subpopulations. If specified, only individuals
+from these subpopulations will be outputed.</dd>
+<dt>infoFormatter</dt>
+<dd>A format string that is used to format all information fields. If
+unspecified, <code class="docutils literal notranslate"><span class="pre">str(value)</span></code> will be used for each information field.</dd>
+<dt>genoFormatter</dt>
+<dd>How to output genotype at specified loci. Acceptable values include
+<code class="docutils literal notranslate"><span class="pre">None</span></code> (output allele names), a dictionary with genotype as keys,
+(e.g. <code class="docutils literal notranslate"><span class="pre">genoFormatter={(0,0):1,</span> <span class="pre">(0,1):2,</span> <span class="pre">(1,0):2,</span> <span class="pre">(1,1):3}</span></code>, or a function
+with genotype (as a tuple of integers) as inputs. The dictionary value
+or the return value of this function can be a single or a list of
+number or strings.</dd>
+<dt>sexFormatter</dt>
+<dd>How to output individual sex. Acceptable values include <code class="docutils literal notranslate"><span class="pre">None</span></code> (no
+output) or a dictionary with keys <code class="docutils literal notranslate"><span class="pre">MALE</span></code> and <code class="docutils literal notranslate"><span class="pre">FEMALE</span></code>.</dd>
+<dt>affectionFormatter</dt>
+<dd>How to output individual affection status. Acceptable values include
+<code class="docutils literal notranslate"><span class="pre">None</span></code> (no output) or a dictionary with keys <code class="docutils literal notranslate"><span class="pre">True</span></code> and <code class="docutils literal notranslate"><span class="pre">False</span></code>.</dd>
+</dl>
+<p>Parameters <code class="docutils literal notranslate"><span class="pre">genoCode</span></code>, <code class="docutils literal notranslate"><span class="pre">sexCode</span></code>, and <code class="docutils literal notranslate"><span class="pre">affectionCode</span></code> from version
+1.0.0 have been renamed to <code class="docutils literal notranslate"><span class="pre">genoFormatter</span></code>, <code class="docutils literal notranslate"><span class="pre">sexFormatter</span></code> and
+<code class="docutils literal notranslate"><span class="pre">affectionFormatter</span></code> but can still be used.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="class-exporter">
+<h2>class Exporter<a class="headerlink" href="#class-exporter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="simuPOP.utils.Exporter">
+<em class="property">class </em><code class="descclassname">simuPOP.utils.</code><code class="descname">Exporter</code><a class="headerlink" href="#simuPOP.utils.Exporter" title="Permalink to this definition">¶</a></dt>
+<dd><p>An operator to export the current population in specified format.
+Currently supported file formats include:</p>
+<p>STRUCTURE (<a class="reference external" href="http://pritch.bsd.uchicago.edu/structure.html">http://pritch.bsd.uchicago.edu/structure.html</a>). This format
+accepts the following parameters:</p>
+<dl class="docutils">
+<dt>markerNames</dt>
+<dd>If set to True (default), output names of loci that are specified by parameter
+<em>lociNames</em> of the <a class="reference internal" href="refManual_ch2_sec1.html#Population" title="Population"><code class="xref py py-class docutils literal notranslate"><span class="pre">Population</span></code></a> class. No names will be outputted if loci are
+anonymous. A list of loci names are acceptable which will be outputted directly.</dd>
+<dt>recessiveAlleles</dt>
+<dd>If specified, value of this parameter will be outputted after the marker names
+line.</dd>
+<dt>interMarkerDistances</dt>
+<dd>If set to True (default), output distances between markers. The first marker
+of each chromosome has distance -1, as required by this format.</dd>
+<dt>phaseInformation</dt>
+<dd>If specified, output the value (0 or 1) of this parameter after the inter marker
+distances line. Note that simuPOP populations always have phase information.</dd>
+<dt>label</dt>
+<dd>Output 1-based indexes of individuals if this parameter is true (default)</dd>
+<dt>popData</dt>
+<dd>Output 1-based index of subpopulation if this parameter is set to true (default).</dd>
+<dt>popFlag</dt>
+<dd>Output value of this parameter (0 or 1) after popData if this parameter specified.</dd>
+<dt>locData</dt>
+<dd>Name of an information field with location information of each individual. Default
+to None (no location data)</dd>
+<dt>phenotype</dt>
+<dd>Name of an information field with phenotype information of each individual. Default
+to None (no phenotype)</dd>
+</dl>
+<p>Genotype information are always outputted. Alleles are coded the same way (0, 1, 2, etc)
+as they are stored in simuPOP.</p>
+<p>GENEPOP (<a class="reference external" href="http://genepop.curtin.edu.au/">http://genepop.curtin.edu.au/</a>). The genepop format accepts the following
+parameters:</p>
+<dl class="docutils">
+<dt>title</dt>
+<dd>The tile line. If unspecified, a line similar to ‘produced by simuPOP on XXX’
+will be outputted.</dd>
+<dt>adjust</dt>
+<dd>Adjust values of alleles by specified value (1 as default). This adjustment is
+necessary in many cases because GENEPOP treats allele 0 as missing values, and
+simuPOP treats allele 0 as a valid allele. Exporting alleles 0 and 1 as 1 and 2
+will allow GENEPOP to analyze simuPOP-exported files correctly.</dd>
+</dl>
+<p>Because 0 is reserved as missing data in this format, allele A is outputted as A+adjust.
+simuPOP will use subpopulation names (if available) and 1-based individual index
+to output individual label (e.g. SubPop2-3). If parameter subPops is used to output
+selected individuals, each subpop will be outputted as a separate subpopulation even
+if there are multiple virtual subpopulations from the same subpopulation. simuPOP
+currently only export diploid populations to this format.</p>
+<p>FSTAT (<a class="reference external" href="http://www2.unil.ch/popgen/softwares/fstat.htm">http://www2.unil.ch/popgen/softwares/fstat.htm</a>). The fstat format accepts
+the following parameters:</p>
+<dl class="docutils">
+<dt>lociNames</dt>
+<dd>Names of loci that will be outputted. If unspecified, simuPOP will try to use
+names of loci that are specified by parameter <em>lociNames</em> of the <a class="reference internal" href="refManual_ch2_sec1.html#Population" title="Population"><code class="xref py py-class docutils literal notranslate"><span class="pre">Population</span></code></a>
+class, or names in the form of chrX-Y.</dd>
+<dt>adjust</dt>
+<dd>Adjust values of alleles by specified value (1 as default). This adjustment is
+necessary in many cases because FSTAT treats allele 0 as missing values, and
+simuPOP treats allele 0 as a valid allele. Exporting alleles 0 and 1 as 1 and 2
+will allow FSTAT to analyze simuPOP-exported files correctly.</dd>
+</dl>
+<p>MAP (marker information format) output information about each loci. Each line of
+the map file describes a single marker and contains chromosome name, locus name,
+and position. Chromosome and loci names will be the names specified by parameters
+<code class="docutils literal notranslate"><span class="pre">chromNames</span></code> and <code class="docutils literal notranslate"><span class="pre">lociNames</span></code> of the <a class="reference internal" href="refManual_ch2_sec1.html#Population" title="Population"><code class="xref py py-class docutils literal notranslate"><span class="pre">Population</span></code></a> object, and will be
+chromosome index + 1, and ‘.’ if these parameters are not specified. This
+format output loci position to the third column. If the unit assumed in your
+population does not match the intended unit in the MAP file, (e.g. you would like
+to output position in basepair while the population uses Mbp), you can use parameter
+<code class="docutils literal notranslate"><span class="pre">posMultiplier</span></code> to adjust it. This format accepts the following parameters:</p>
+<dl class="docutils">
+<dt>posMultiplier</dt>
+<dd>A number that will be multiplied to loci positions (default to 1). The result
+will be outputted in the third column of the output.</dd>
+</dl>
+<p>PED (Linkage Pedigree pre MAKEPED format), with columns of family, individual,
+father mother, gender, affection status and genotypes. The output should be
+acceptable by HaploView or plink, which provides more details of this format in
+their documentation. If a population does not have <code class="docutils literal notranslate"><span class="pre">ind_id</span></code>, <code class="docutils literal notranslate"><span class="pre">father_id</span></code> or
+<code class="docutils literal notranslate"><span class="pre">mother_id</span></code>, this format will output individuals in specified (virtual)
+subpopulations in the current generation (parental generations are ignored)
+as unrelated individuals with 0, 0 as parent IDs. An incremental family
+ID will be assigned for each individual. If a population have <code class="docutils literal notranslate"><span class="pre">ind_id</span></code>,
+<code class="docutils literal notranslate"><span class="pre">father_id</span></code> and <code class="docutils literal notranslate"><span class="pre">mother_id</span></code>, parents will be recursively traced to separate
+all individuals in a (multigenerational) population into families of related
+individuals. father and mother id will be set to zero if one of them does not
+exist. This format uses 1 for MALE, 2 for FEMALE. If phenoField is <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+individual affection status will be outputted with 1 for Unaffected and 2
+for affected. Otherwise, values of an information field will be outputted as
+phenotype. Because 0 value indicates missing value, values of alleles will
+be adjusted by 1 by default, which should be avoided if you are using non-zero
+alleles to model ACTG alleles in simuPOP. This format will ignore subpopulation
+structure because parents might belong to different subpopulations. This format
+accepts the following parameters:</p>
+<dl class="docutils">
+<dt>idField</dt>
+<dd>A field for individual id, default to <code class="docutils literal notranslate"><span class="pre">ind_id</span></code>. Value at this field will be
+individual ID inside a pedigree.</dd>
+<dt>fatherField</dt>
+<dd>A field for father id, default to <code class="docutils literal notranslate"><span class="pre">father_id</span></code>. Value at this field will be
+used to output father of an individual, if an individual with this ID exists
+in the population.</dd>
+<dt>motherField</dt>
+<dd>A field for mother id, default to <code class="docutils literal notranslate"><span class="pre">mother_id</span></code>. Value at this field will be
+used to output mother of an individual, if an individual with this ID exists
+in the population.</dd>
+<dt>phenoField</dt>
+<dd>A field for individual phenotype that will be outputted as the sixth column of
+the PED file. If <code class="docutils literal notranslate"><span class="pre">None</span></code> is specified (default), individual affection status
+will be outputted (1 for unaffected and 2 for affected).</dd>
+<dt>adjust</dt>
+<dd>Adjust values of alleles by specified value (1 as default). This adjustment
+is necessary in many cases because LINKAGE/PED format treats allele 0 as
+missing values, and simuPOP treats allele 0 as a valid allele. You should set
+this paremter to zero if you have already used alleles 1, 2, 3, 4 to model
+A, C, T, and G alleles.</dd>
+</dl>
+<p>Phylip (Joseph Felsenstein’s Phylip format). Phylip is generally used for nuclotide
+sequences and protein sequences. This makes this format suitable for simulations
+of haploid populations (ploidy=1) with nucleotide or protein sequences (number of
+alleles = 4 or 24 with alleleNames as nucleotide or amino acid names). If your
+population does satisfy these conditions, you can still export it, with homologous
+chromosomes in a diploid population as two sequences, and with specified allele
+names for allele 0, 1, 2, …. This function outputs sequence name as SXXX where
+XXX is the 1-based index of individual and SXXX_Y (Y=1 or 2) for diploid individuals,
+unless names of sequences are provided by parameter seqNames. This format supports
+the following parameters:</p>
+<dl class="docutils">
+<dt>alleleNames</dt>
+<dd>Names of alleles 0, 1, 2, … as a single string (e.g. ‘ACTG’) or a list of
+single-character strings (e.g. [‘A’, ‘C’, ‘T’, ‘G’]). If this parameter is
+unspecified (default), this program will try to use names of alleles
+specified in alleleNames parameter of a Population, and raise an error if no
+name could be found.</dd>
+<dt>seqNames</dt>
+<dd>Names of each sequence outputted, for each individual, or for each sequences
+for non-haploid population. If unspecified, default names such as SXXX or
+SXXX_Y will be used.</dd>
+<dt>style</dt>
+<dd>Output style, can be ‘sequential’ (default) or ‘interleaved’. For sequential
+output, each sequence consists of for the first line a name and 90 symbols
+starting from column 11, and subsequent lines of 100 symbols. The interleaved
+style have subsequent lines as separate blocks.</dd>
+</dl>
+<p>MS (output from Richard R. Hudson’s MS or msHOT program). This format records
+genotypes of SNP markers at segregating site so all non-zero genotypes are
+recorded as 1. simuPOP by default outputs a single block of genotypes at
+all loci on the first chromosome, and for all individuals, unless parameter
+<code class="docutils literal notranslate"><span class="pre">splitBy</span></code> is specified to separate genotypes by chromosome or subpopulations.</p>
+<dl class="docutils">
+<dt>splitBy:</dt>
+<dd>simuPOP by default output segregating sites at all loci on the first
+chromosome for all individuals. If <code class="docutils literal notranslate"><span class="pre">splitBy</span></code> is set to <code class="docutils literal notranslate"><span class="pre">'subPop'</span></code>,
+genotypes for individuals in all or specified (parameter <code class="docutils literal notranslate"><span class="pre">subPops</span></code>)
+subpopulations are outputted in separate blocks. The subpopulations should
+have the same number of individuals to produce blocks of the same number
+of sequences. Alternatively, <code class="docutils literal notranslate"><span class="pre">splitBy</span></code> can be set to <code class="docutils literal notranslate"><span class="pre">chrom</span></code>, for
+which genotypes on different chromosomes will be outputted separately.</dd>
+</dl>
+<p>CSV (comma separated values). This is a general format that output genotypes in
+comma (or tab etc) separated formats. The function form of this operator
+<code class="docutils literal notranslate"><span class="pre">export(format='csv')</span></code> is similar to the now-deprecated <code class="docutils literal notranslate"><span class="pre">saveCSV</span></code> function,
+but its interface has been adjusted to match other formats supported by this
+operator. This format outputs a header (optiona), and one line for each individual
+with values of specified information fields, sex, affection status, and genotypes.
+All fields except for genotypes are optional. The output format is controlled by the
+following parameters:</p>
+<dl class="docutils">
+<dt>infoFileds</dt>
+<dd>Information fields to be outputted. Default to none.</dd>
+<dt>header</dt>
+<dd>Whether or not a header should be written. These headers will include
+information fields, sex (if <code class="docutils literal notranslate"><span class="pre">sexFormatter</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>), affection
+status (if <code class="docutils literal notranslate"><span class="pre">affectionFormatter</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>) and loci names. If
+genotype at a locus needs more than one column, <code class="docutils literal notranslate"><span class="pre">_1</span></code>, <code class="docutils literal notranslate"><span class="pre">_2</span></code> etc will
+be appended to loci names. Alternatively, a complete header (a string)
+or a list of column names could be specified directly.</dd>
+<dt>infoFormatter</dt>
+<dd>A format string that is used to format all information fields. If
+unspecified, <code class="docutils literal notranslate"><span class="pre">str(value)</span></code> will be used for each information field.</dd>
+<dt>genoFormatter</dt>
+<dd>How to output genotype at specified loci. Acceptable values include
+<code class="docutils literal notranslate"><span class="pre">None</span></code> (output allele values), a dictionary with genotype as keys,
+(e.g. <code class="docutils literal notranslate"><span class="pre">genoFormatter={(0,0):1,</span> <span class="pre">(0,1):2,</span> <span class="pre">(1,0):2,</span> <span class="pre">(1,1):3}</span></code>, or a function
+with genotype (as a tuple of integers) as inputs. The dictionary value
+or the return value of this function can be a single or a list of
+number or strings.</dd>
+<dt>sexFormatter</dt>
+<dd>How to output individual sex. Acceptable values include <code class="docutils literal notranslate"><span class="pre">None</span></code> (no
+output) or a dictionary with keys <code class="docutils literal notranslate"><span class="pre">MALE</span></code> and <code class="docutils literal notranslate"><span class="pre">FEMALE</span></code>.</dd>
+<dt>affectionFormatter</dt>
+<dd>How to output individual affection status. Acceptable values include
+<code class="docutils literal notranslate"><span class="pre">None</span></code> (no output) or a dictionary with keys <code class="docutils literal notranslate"><span class="pre">True</span></code> and <code class="docutils literal notranslate"><span class="pre">False</span></code>.</dd>
+<dt>delimiter</dt>
+<dd>Delimiter used to separate values, default to ‘,’.</dd>
+<dt>subPopFormatter</dt>
+<dd>How to output population membership. Acceptable values include
+<code class="docutils literal notranslate"><span class="pre">None</span></code> (no output), a string that will be used for the column name, or
+<code class="docutils literal notranslate"><span class="pre">True</span></code> which uses ‘pop’ as the column name. If present, the column is
+written with the string represenation of the (virtual) subpopulation.</dd>
+</dl>
+<p>This operator supports the usual applicability parameters such as begin,
+end, step, at, reps, and subPops. If subPops are specified, only
+individuals from specified (virtual) subPops are exported. Similar to
+other operators, parameter <code class="docutils literal notranslate"><span class="pre">output</span></code> can be an output specification string
+(<code class="docutils literal notranslate"><span class="pre">filename</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;&gt;filename</span></code>, <code class="docutils literal notranslate"><span class="pre">!expr</span></code>), filehandle (or any Python object
+with a <code class="docutils literal notranslate"><span class="pre">write</span></code> function), any python function. Unless explicitly stated for
+a particular format, this operator exports individuals from the current
+generation if there are multiple ancestral generations in the population.</p>
+<p>The Exporter class will make use of a progress bar to show the progress. The
+interface of the progress bar is by default determined by the global GUI status
+but you can also set it to, for example, <code class="docutils literal notranslate"><span class="pre">gui=False</span></code> to forcefully use a
+text-based progress bar, or <code class="docutils literal notranslate"><span class="pre">gui='batch'</span></code> to suppress the progress bar.</p>
+<dl class="method">
+<dt id="simuPOP.utils.Exporter.Exporter">
+<code class="descname">Exporter</code><span class="sig-paren">(</span><em>format</em>, <em>output</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=True</em>, <em>subPops=ALL_AVAIL</em>, <em>infoFields=[]</em>, <em>gui=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.utils.Exporter.Exporter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>PyOperator(func, param=None, begin=0, end=-1, step=1, at=[],</dt>
+<dd>reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])</dd>
+</dl>
+</div></blockquote>
+<p>Details:</p>
+<blockquote>
+<div>Create a pure-Python operator that calls a user-defined function
+when it is applied. If this operator is applied before or after
+mating, your function should have form func(pop) or func(pop,
+param) where pop is the population to which the operator is
+applied, param is the value specified in parameter param. param
+will be ignored if your function only accepts one parameter.
+Althernatively, the function should have form func(ind) with
+optional parameters pop and param. In this case, the function will
+be called for all individuals, or individuals in subpopulations
+subPops. Individuals for which the function returns False will be
+removed from the population. This operator can therefore perform
+similar functions as operator DiscardIf.  If this operator is
+applied during mating, your function should accept parameters pop,
+off (or ind), dad, mom and param where pop is the parental
+population, and off or ind, dad, and mom are offspring and their
+parents for each mating event, and param is an optional parameter.
+If subPops are provided, only offspring in specified (virtual)
+subpopulations are acceptable.  This operator does not support
+parameters output, and infoFields. If certain output is needed, it
+should be handled in the user defined function func. Because the
+status of files used by other operators through parameter output
+is undetermined during evolution, they should not be open or
+closed in this Python operator.</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="function-importpopulation">
+<h2>Function importPopulation<a class="headerlink" href="#function-importpopulation" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuPOP.utils.importPopulation">
+<code class="descclassname">simuPOP.utils.</code><code class="descname">importPopulation</code><span class="sig-paren">(</span><em>format</em>, <em>filename</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.utils.importPopulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function import and return a population from a file <em>filename</em> in
+specified <em>format</em>. Format-specific parameters can be used to define how the
+input should be interpreted and imported. This function supports the following
+file format.</p>
+<p>GENEPOP (<a class="reference external" href="http://genepop.curtin.edu.au/">http://genepop.curtin.edu.au/</a>). For input file of this format, this
+function ignores the first title line, load the second line as loci names,
+and import genotypes of different POP sections as different subpopulations.
+This format accepts the following parameters:</p>
+<dl class="docutils">
+<dt>adjust</dt>
+<dd>Adjust alleles by specified value (default to 0 for no adjustment). This
+parameter is mostly used to convert alleles 1 and 2 in a GenePop file to
+alleles 0 and 1 (with adjust=-1) in simuPOP. Negative allele (e.g. missing
+value 0) will be imported as regular allele with module-dependent values
+(e.g. -1 imported as 255 for standard module).</dd>
+</dl>
+<p>FSTAT (<a class="reference external" href="http://www2.unil.ch/popgen/softwares/fstat.htm">http://www2.unil.ch/popgen/softwares/fstat.htm</a>). This format accepts
+the following parameters:</p>
+<dl class="docutils">
+<dt>adjust</dt>
+<dd>Adjust alleles by specified value (default to 0 for no adjustment). This
+parameter is mostly used to convert alleles 1 and 2 in a GenePop file to
+alleles 0 and 1 (with adjust=-1) in simuPOP. Negative allele (e.g. missing
+value 0) will be imported as regular allele with module-dependent values
+(e.g. -1 imported as 255 for standard module).</dd>
+</dl>
+<p>Phylip (Joseph Felsenstein’s Phylip format). This function ignores sequence
+names and import sequences in a haploid (default) or diploid population (if
+there are even number of sequences). An list of allele names are required to
+translate symbols to allele names. This format accepts the following
+parameters:</p>
+<dl class="docutils">
+<dt>alleleNames</dt>
+<dd>Names of alleles 0, 1, 2, … as a single string (e.g. ‘ACTG’) or a list of
+single-character strings (e.g. [‘A’, ‘C’, ‘T’, ‘G’]). This will be used to
+translate symbols into numeric alleles in simuPOP. Allele names will continue
+to be used as allele names of the returned population.</dd>
+<dt>ploidy</dt>
+<dd>Ploidy of the returned population, default to 1 (haploid). There should be
+even number of sequences if ploidy=2 (haploid) is specified.</dd>
+</dl>
+<p>MS (output from Richard R. Hudson’s MS or msHOT program). The ms program generates
+npop blocks of nseq haploid chromosomes for command starting with
+<code class="docutils literal notranslate"><span class="pre">ms</span> <span class="pre">nsample</span> <span class="pre">nrepeat</span></code>. By default, the result is imported as a haploid
+population of size nsample. The population will have nrepeat subpopulations
+each with the same number of loci but different number of segregating sites.
+This behavior could be changed by the following parameters:</p>
+<dl class="docutils">
+<dt>ploidy</dt>
+<dd>If <code class="docutils literal notranslate"><span class="pre">ploidy</span></code> is set to 2, the sequenences will be paired so the population
+will have <code class="docutils literal notranslate"><span class="pre">nseq/2</span></code> individuals. An error will be raised if an odd number
+of sequences are simulated.</dd>
+<dt>mergeBy</dt>
+<dd>By default, replicate samples will be presented as subpopulations. All
+individuals have the same number of loci but individuals in different
+subpopulations have different segregating sites. If <code class="docutils literal notranslate"><span class="pre">mergeBy</span></code> is set
+to <code class="docutils literal notranslate"><span class="pre">&quot;chrom&quot;</span></code>, the replicates will be presented as separate chromosomes,
+each with a different set of loci determined by segregating sites.</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="function-export">
+<h2>Function export<a class="headerlink" href="#function-export" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="simuPOP.utils.export">
+<code class="descclassname">simuPOP.utils.</code><code class="descname">export</code><span class="sig-paren">(</span><em>pop</em>, <em>format</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#simuPOP.utils.export" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply operator <code class="docutils literal notranslate"><span class="pre">Exporter</span></code> to population <em>pop</em> in format <em>format</em>.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch4_sec1.html">Module <code class="docutils literal notranslate"><span class="pre">simuOpt</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.utils</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-trajectory">class Trajectory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-trajectorysimulator">class TrajectorySimulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-simulateforwardtrajectory">Function simulateForwardTrajectory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-simulatebackwardtrajectory">Function simulateBackwardTrajectory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-progressbar">class ProgressBar</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-viewvars">Function viewVars</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-savecsv">Function saveCSV</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-exporter">class Exporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-importpopulation">Function importPopulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-export">Function export</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch4_sec3.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.demography</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch4_sec4.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.sampling</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch4_sec5.html">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.gsl</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="refManual.html">&lt;no title&gt;</a><ul>
+  <li><a href="refManual_ch4.html">Utility Modules</a><ul>
+      <li>Previous: <a href="refManual_ch4_sec1.html" title="previous chapter">Module <code class="docutils literal notranslate"><span class="pre">simuOpt</span></code></a></li>
+      <li>Next: <a href="refManual_ch4_sec3.html" title="next chapter">Module <code class="docutils literal notranslate"><span class="pre">simuPOP.demography</span></code></a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/refManual_ch4_sec2.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

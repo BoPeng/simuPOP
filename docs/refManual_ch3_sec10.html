@@ -1,0 +1,399 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Tagging operators &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Statistics Calculation" href="refManual_ch3_sec11.html" />
+    <link rel="prev" title="Natural selection" href="refManual_ch3_sec9.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="tagging-operators">
+<h1>Tagging operators<a class="headerlink" href="#tagging-operators" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class-idtagger">
+<h2>class IdTagger<a class="headerlink" href="#class-idtagger" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="IdTagger">
+<em class="property">class </em><code class="descname">IdTagger</code><a class="headerlink" href="#IdTagger" title="Permalink to this definition">¶</a></dt>
+<dd><p>An  IdTagger gives a unique ID for each individual it is applies
+to. These ID can be used to uniquely identify an individual in a
+multi-generational population and be used to reliably reconstruct a
+Pedigree.</p>
+<p>To ensure uniqueness across populations, a single source of ID is
+used for this operator. individual IDs are assigned consecutively
+starting from 1. Value 1 instead of 0 is used because most software
+applications use 0 as missing values for parentship. If you would
+like to reset the sequence or start from a different number, you
+can call the <code class="docutils literal notranslate"><span class="pre">reset(startID)</span></code> function of any <a class="reference internal" href="#IdTagger" title="IdTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">IdTagger</span></code></a>.</p>
+<p>An <a class="reference internal" href="#IdTagger" title="IdTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">IdTagger</span></code></a> is usually used during-mating to assign ID to
+each offspring. However, if it is applied directly to a population,
+it will assign unique IDs to all individuals in this population.
+This property is usually used in the <code class="docutils literal notranslate"><span class="pre">preOps</span></code> parameter of
+function <a class="reference internal" href="refManual_ch2_sec1.html#Simulator.evolve" title="Simulator.evolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Simulator.evolve</span></code></a> to assign initial ID to a
+population.</p>
+<dl class="method">
+<dt id="IdTagger.IdTagger">
+<code class="descname">IdTagger</code><span class="sig-paren">(</span><em>begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, output=&quot;&quot;, infoFields=[&quot;ind_id&quot;]</em><span class="sig-paren">)</span><a class="headerlink" href="#IdTagger.IdTagger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an <a class="reference internal" href="#IdTagger" title="IdTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">IdTagger</span></code></a> that assign an unique ID for each
+individual it is applied to. The IDs are created sequentially
+and are stored in an information field specified in parameter
+<em>infoFields</em> (default to <code class="docutils literal notranslate"><span class="pre">ind_id</span></code>). This operator is
+considered a during-mating operator but it can be used to set ID
+for all individuals of a population when it is directly applied
+to the population.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="IdTagger.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><em>startID=1</em><span class="sig-paren">)</span><a class="headerlink" href="#IdTagger.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the global individual ID number so that IdTaggers will
+start from id (default to 1) again.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-inherittagger">
+<h2>class InheritTagger<a class="headerlink" href="#class-inherittagger" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="InheritTagger">
+<em class="property">class </em><code class="descname">InheritTagger</code><a class="headerlink" href="#InheritTagger" title="Permalink to this definition">¶</a></dt>
+<dd><p>An inheritance tagger passes values of parental information
+field(s) to the corresponding fields of offspring. If there are two
+parental values from parents of a sexual mating event, a parameter
+<em>mode</em> is used to specify how to assign offspring information
+fields.</p>
+<dl class="method">
+<dt id="InheritTagger.InheritTagger">
+<code class="descname">InheritTagger</code><span class="sig-paren">(</span><em>mode=PATERNAL</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>output=&quot;&quot;</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#InheritTagger.InheritTagger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an inheritance tagger that passes values of parental
+information fields (parameter <em>infoFields</em>) to the corresponding
+fields of offspring. If there is only one parent, values at the
+specified information fields are copied directly. If there are
+two parents, parameter <em>mode</em> specifies how to pass them to an
+offspring. More specifically,</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">mode=MATERNAL</span></code> Passing the value from mother.</li>
+<li><code class="docutils literal notranslate"><span class="pre">mode=PATERNAL</span></code> Passing the value from father.</li>
+<li><code class="docutils literal notranslate"><span class="pre">mode=MEAN</span></code> Passing the average of two values.</li>
+<li><code class="docutils literal notranslate"><span class="pre">mode=MAXIMUM</span></code> Passing the maximum value of two values.</li>
+<li><code class="docutils literal notranslate"><span class="pre">mode=MINIMUM</span></code> Passing the minimum value of two values.</li>
+<li><code class="docutils literal notranslate"><span class="pre">mode=SUMMATION</span></code> Passing the summation of two values.</li>
+<li><code class="docutils literal notranslate"><span class="pre">mode=MULTIPLICATION</span></code> Passing the multiplication of two
+values.</li>
+</ul>
+<p>An <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised if any of the parents
+does not exist. This operator does not support parameter
+<em>subPops</em> and does not output any information.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-summarytagger">
+<h2>class SummaryTagger<a class="headerlink" href="#class-summarytagger" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="SummaryTagger">
+<em class="property">class </em><code class="descname">SummaryTagger</code><a class="headerlink" href="#SummaryTagger" title="Permalink to this definition">¶</a></dt>
+<dd><p>A summary tagger summarize values of one or more parental
+information field to another information field of an offspring. If
+mating is sexual, two sets of parental values will be involved.</p>
+<dl class="method">
+<dt id="SummaryTagger.SummaryTagger">
+<code class="descname">SummaryTagger</code><span class="sig-paren">(</span><em>mode=MEAN</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>output=&quot;&quot;</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#SummaryTagger.SummaryTagger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a summary tagger that summarize values of one or more
+parental information field (<em>infoFields*[:-1]) to an offspring
+information field (*infoFields*[-1]). A parameter *mode</em>
+specifies how to pass summarize parental values. More
+specifically,</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">mode=MEAN</span></code> Passing the average of values.</li>
+<li><code class="docutils literal notranslate"><span class="pre">mode=MAXIMUM</span></code> Passing the maximum value of values.</li>
+<li><code class="docutils literal notranslate"><span class="pre">mode=Minumum</span></code> Passing the minimum value of values.</li>
+<li><code class="docutils literal notranslate"><span class="pre">mode=SUMMATION</span></code> Passing the sum of values.</li>
+<li><code class="docutils literal notranslate"><span class="pre">mode=MULTIPLICATION</span></code> Passing the multiplication of values.</li>
+</ul>
+<p>This operator does not support parameter <em>subPops</em> and does not
+output any information.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-parentstagger">
+<h2>class ParentsTagger<a class="headerlink" href="#class-parentstagger" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ParentsTagger">
+<em class="property">class </em><code class="descname">ParentsTagger</code><a class="headerlink" href="#ParentsTagger" title="Permalink to this definition">¶</a></dt>
+<dd><p>This tagging operator records the indexes of parents (relative to
+the parental generation) of each offspring in specified information
+fields ( default to <code class="docutils literal notranslate"><span class="pre">father_idx</span></code> and <code class="docutils literal notranslate"><span class="pre">mother_idx</span></code>). Only one
+information field should be specified if an asexsual mating scheme
+is used so there is one parent for each offspring. Information
+recorded by this operator is intended to be used to look up parents
+of each individual in multi-generational  Population.</p>
+<dl class="method">
+<dt id="ParentsTagger.ParentsTagger">
+<code class="descname">ParentsTagger</code><span class="sig-paren">(</span><em>begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, output=&quot;&quot;, infoFields=[&quot;father_idx&quot;, &quot;mother_idx&quot;]</em><span class="sig-paren">)</span><a class="headerlink" href="#ParentsTagger.ParentsTagger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a parents tagger that records the indexes of parents of
+each offspring when it is applied to an offspring during-mating.
+If two information fields are specified (parameter <em>infoFields</em>,
+with default value <code class="docutils literal notranslate"><span class="pre">['father_idx',</span> <span class="pre">'mother_idx']</span></code>), they are
+used to record the indexes of each individual’s father and
+mother. Value <code class="docutils literal notranslate"><span class="pre">-1</span></code> will be assigned if any of the parent is
+missing. If only one information field is given, it will be used
+to record the index of the first valid parent (father if both
+parents are valid). This operator ignores parameters <em>output</em>
+and <em>subPops</em>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-offspringtagger">
+<h2>class OffspringTagger<a class="headerlink" href="#class-offspringtagger" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="OffspringTagger">
+<em class="property">class </em><code class="descname">OffspringTagger</code><a class="headerlink" href="#OffspringTagger" title="Permalink to this definition">¶</a></dt>
+<dd><p>This tagging operator records the indexes of offspring within a
+family (sharing the same parent or parents) in specified
+information field (default to <code class="docutils literal notranslate"><span class="pre">offspring_idx</span></code>). This tagger can
+be used to control the number of offspring during mating.</p>
+<dl class="method">
+<dt id="OffspringTagger.OffspringTagger">
+<code class="descname">OffspringTagger</code><span class="sig-paren">(</span><em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>output=&quot;&quot;</em>, <em>infoFields=ALL_AVAIL</em><span class="sig-paren">)</span><a class="headerlink" href="#OffspringTagger.OffspringTagger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an offspring tagger that records the indexes of offspring
+within a family. The index is determined by successful
+production of offspring during a mating events so the it does
+not increase the index if a previous offspring is discarded, and
+it resets index even if adjacent families share the same
+parents. This operator ignores parameters <em>stage</em>, <em>output</em>, and
+<em>subPops</em>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-pedigreetagger">
+<h2>class PedigreeTagger<a class="headerlink" href="#class-pedigreetagger" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PedigreeTagger">
+<em class="property">class </em><code class="descname">PedigreeTagger</code><a class="headerlink" href="#PedigreeTagger" title="Permalink to this definition">¶</a></dt>
+<dd><p>This tagging operator records the ID of parents of each offspring
+in specified information fields (default to <code class="docutils literal notranslate"><span class="pre">father_id</span></code> and
+<code class="docutils literal notranslate"><span class="pre">mother_id</span></code>). Only one information field should be specified if
+an asexsual mating scheme is used so there is one parent for each
+offspring. Information recorded by this operator is intended to be
+used to record full pedigree information of an evolutionary
+process.</p>
+<dl class="method">
+<dt id="PedigreeTagger.PedigreeTagger">
+<code class="descname">PedigreeTagger</code><span class="sig-paren">(</span><em>idField=&quot;ind_id&quot;, output=&quot;&quot;, outputFields=[], outputLoci=[], begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[&quot;father_id&quot;, &quot;mother_id&quot;]</em><span class="sig-paren">)</span><a class="headerlink" href="#PedigreeTagger.PedigreeTagger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a pedigree tagger that records the ID of parents of each
+offspring when it is applied to an offspring during-mating. If
+two information fields are specified (parameter <em>infoFields</em>,
+with default value <code class="docutils literal notranslate"><span class="pre">['father_id',</span> <span class="pre">'mother_id']</span></code>), they are
+used to record the ID of each individual’s father and mother
+stored in the <em>idField</em> (default to <code class="docutils literal notranslate"><span class="pre">ind_id</span></code>) field of the
+parents. Value <code class="docutils literal notranslate"><span class="pre">-1</span></code> will be assigned if any of the parent is
+missing. If only one information field is given, it will be used
+to record the ID of the first valid parent (father if both
+pedigree are valid).</p>
+<p>This operator by default does not send any output. If a valid
+output stream is given (should be in the form of
+<code class="docutils literal notranslate"><span class="pre">'&gt;&gt;filename'</span></code> so that output will be concatenated), this
+operator will output the ID of offspring, IDs of his or her
+parent(s), sex and affection status of offspring, and values at
+specified information fields (<em>outputFields</em>) and loci
+(<em>outputLoci</em>) in the format of <code class="docutils literal notranslate"><span class="pre">off_id</span> <span class="pre">father_id</span> <span class="pre">mother_id</span> <span class="pre">M/F</span>
+<span class="pre">A/U</span> <span class="pre">fields</span> <span class="pre">genotype</span></code>. <code class="docutils literal notranslate"><span class="pre">father_id</span></code> or <code class="docutils literal notranslate"><span class="pre">mother_id</span></code> will be
+ignored if only one parent is involved. This file format can be
+loaded using function <a class="reference internal" href="refManual_ch2_sec6.html#loadPedigree" title="loadPedigree"><code class="xref py py-func docutils literal notranslate"><span class="pre">loadPedigree</span></code></a>.</p>
+<p>Because only offspring will be outputed, individuals in the top-
+most ancestral generation will not be outputed. This is usually
+not a problem because individuals who have offspring in the next
+generation will be constructed by function <a class="reference internal" href="refManual_ch2_sec6.html#loadPedigree" title="loadPedigree"><code class="xref py py-func docutils literal notranslate"><span class="pre">loadPedigree</span></code></a>,
+although their information fields and genotype will be missing.
+If you would like to create a file with complete pedigree
+information, you can apply this operator before evolution in the
+<em>initOps</em> parameter of functions <a class="reference internal" href="refManual_ch2_sec1.html#Population.evolve" title="Population.evolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.evolve</span></code></a> or
+<a class="reference internal" href="refManual_ch2_sec1.html#Simulator.evolve" title="Simulator.evolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Simulator.evolve</span></code></a>. This will output all individuals in
+the initial population (the top-most ancestral population after
+evolution) in the same format. Note that sex, affection status
+and genotype can be changed by other operators so this operator
+should usually be applied after all other operators are applied.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-pytagger">
+<h2>class PyTagger<a class="headerlink" href="#class-pytagger" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PyTagger">
+<em class="property">class </em><code class="descname">PyTagger</code><a class="headerlink" href="#PyTagger" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Python tagger takes some information fields from both parents,
+pass them to a user provided Python function and set the offspring
+individual fields with the return values.</p>
+<dl class="method">
+<dt id="PyTagger.PyTagger">
+<code class="descname">PyTagger</code><span class="sig-paren">(</span><em>func=None</em>, <em>begin=0</em>, <em>end=-1</em>, <em>step=1</em>, <em>at=[]</em>, <em>reps=ALL_AVAIL</em>, <em>subPops=ALL_AVAIL</em>, <em>output=&quot;&quot;</em>, <em>infoFields=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#PyTagger.PyTagger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a hybrid tagger that provides an user provided function
+<em>func</em> with values of specified information fields (determined
+by parameter names of this function) of parents and assign
+corresponding information fields of offspring with its return
+value. If more than one parent are available, maternal values
+are passed after paternal values. For example, if a function
+<code class="docutils literal notranslate"><span class="pre">func(A,</span> <span class="pre">B)</span></code> is passed, this operator will send two tuples
+with parental values of information fields <code class="docutils literal notranslate"><span class="pre">'A'</span></code> and <code class="docutils literal notranslate"><span class="pre">'B'</span></code>
+to this function and assign its return values to fields <code class="docutils literal notranslate"><span class="pre">'A'</span></code>
+and <code class="docutils literal notranslate"><span class="pre">'B'</span></code> of each offspring. The return value of this function
+should be a list, although a single value will be accepted if
+only one information field is specified. This operator ignores
+parameters <em>stage</em>, <em>output</em> and <em>subPops</em>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="refManual_ch3.html">Operator References</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec1.html">Base class for all operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec2.html">Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec3.html">Expression and Statements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec4.html">Demographic models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec5.html">Genotype transmitters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec6.html">Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec7.html">Penetrance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec8.html">Quantitative Trait</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec9.html">Natural selection</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Tagging operators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-idtagger">class IdTagger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-inherittagger">class InheritTagger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-summarytagger">class SummaryTagger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-parentstagger">class ParentsTagger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-offspringtagger">class OffspringTagger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-pedigreetagger">class PedigreeTagger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-pytagger">class PyTagger</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec11.html">Statistics Calculation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec12.html">Conditional operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec13.html">The Python operator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec14.html">Miscellaneous operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch3_sec15.html">Function form of operators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="refManual.html">&lt;no title&gt;</a><ul>
+  <li><a href="refManual_ch3.html">Operator References</a><ul>
+      <li>Previous: <a href="refManual_ch3_sec9.html" title="previous chapter">Natural selection</a></li>
+      <li>Next: <a href="refManual_ch3_sec11.html" title="next chapter">Statistics Calculation</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/refManual_ch3_sec10.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

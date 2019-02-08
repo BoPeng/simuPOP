@@ -1,0 +1,363 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Pre-defined mating schemes &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Utility Classes" href="refManual_ch2_sec5.html" />
+    <link rel="prev" title="Mating Schemes" href="refManual_ch2_sec3.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="pre-defined-mating-schemes">
+<h1>Pre-defined mating schemes<a class="headerlink" href="#pre-defined-mating-schemes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class-clonemating">
+<h2>class CloneMating<a class="headerlink" href="#class-clonemating" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="CloneMating">
+<em class="property">class </em><code class="descname">CloneMating</code><a class="headerlink" href="#CloneMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>A homogeneous mating scheme that uses a sequential parent chooser and
+a clone offspring generator.</p>
+<dl class="method">
+<dt id="CloneMating.CloneMating">
+<code class="descname">CloneMating</code><span class="sig-paren">(</span><em>numOffspring=1</em>, <em>sexMode=None</em>, <em>ops=CloneGenoTransmitter()</em>, <em>subPopSize=[]</em>, <em>subPops=ALL_AVAIL</em>, <em>weight=0</em>, <em>selectionField=None</em><span class="sig-paren">)</span><a class="headerlink" href="#CloneMating.CloneMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a clonal mating scheme that clones parents to offspring using
+a <a class="reference internal" href="refManual_ch3_sec5.html#CloneGenoTransmitter" title="CloneGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">CloneGenoTransmitter</span></code></a>. Please refer to class <a class="reference internal" href="refManual_ch2_sec3.html#OffspringGenerator" title="OffspringGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">OffspringGenerator</span></code></a>
+for parameters <em>ops</em> and <em>numOffspring</em>, and to class <a class="reference internal" href="refManual_ch2_sec3.html#HomoMating" title="HomoMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">HomoMating</span></code></a> for
+parameters  <em>subPopSize</em>, <em>subPops</em> and <em>weight</em>. Parameters <em>sexMode</em> and
+<em>selectionField</em> are ignored because this mating scheme does not support
+natural selection, and <a class="reference internal" href="refManual_ch3_sec5.html#CloneGenoTransmitter" title="CloneGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">CloneGenoTransmitter</span></code></a> copies sex from parents
+to offspring. Note that <a class="reference internal" href="refManual_ch3_sec5.html#CloneGenoTransmitter" title="CloneGenoTransmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">CloneGenoTransmitter</span></code></a> by default also copies
+all parental information fields to offspring.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-randomselection">
+<h2>class RandomSelection<a class="headerlink" href="#class-randomselection" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="RandomSelection">
+<em class="property">class </em><code class="descname">RandomSelection</code><a class="headerlink" href="#RandomSelection" title="Permalink to this definition">¶</a></dt>
+<dd><p>A homogeneous mating scheme that uses a random single-parent parent
+chooser with replacement, and a clone offspring generator. This mating
+scheme is usually used to simulate the basic haploid Wright-Fisher model
+but it can also be applied to diploid populations.</p>
+<dl class="method">
+<dt id="RandomSelection.RandomSelection">
+<code class="descname">RandomSelection</code><span class="sig-paren">(</span><em>numOffspring=1</em>, <em>sexMode=None</em>, <em>ops=CloneGenoTransmitter()</em>, <em>subPopSize=[]</em>, <em>subPops=ALL_AVAIL</em>, <em>weight=0</em>, <em>selectionField='fitness'</em><span class="sig-paren">)</span><a class="headerlink" href="#RandomSelection.RandomSelection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a mating scheme that select a parent randomly and copy him or
+her to the offspring population. Please refer to class
+<a class="reference internal" href="refManual_ch2_sec3.html#RandomParentChooser" title="RandomParentChooser"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomParentChooser</span></code></a> for parameter <em>selectionField</em>, to class
+<a class="reference internal" href="refManual_ch2_sec3.html#OffspringGenerator" title="OffspringGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">OffspringGenerator</span></code></a> for parameters <em>ops</em> and <em>numOffspring</em>, and to
+class <a class="reference internal" href="refManual_ch2_sec3.html#HomoMating" title="HomoMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">HomoMating</span></code></a> for parameters <em>subPopSize</em>, <em>subPops</em> and <em>weight</em>.
+Parameter <em>sexMode</em> is ignored because <code class="docutils literal notranslate"><span class="pre">cloneOffspringGenerator</span></code> copies
+sex from parents to offspring.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-randommating">
+<h2>class RandomMating<a class="headerlink" href="#class-randommating" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="RandomMating">
+<em class="property">class </em><code class="descname">RandomMating</code><a class="headerlink" href="#RandomMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>A homogeneous mating scheme that uses a random parents chooser with
+replacement and a Mendelian offspring generator. This mating scheme is
+widely used to simulate diploid sexual Wright-Fisher random mating.</p>
+<dl class="method">
+<dt id="RandomMating.RandomMating">
+<code class="descname">RandomMating</code><span class="sig-paren">(</span><em>numOffspring=1</em>, <em>sexMode=RANDOM_SEX</em>, <em>ops=MendelianGenoTransmitter()</em>, <em>subPopSize=[]</em>, <em>subPops=ALL_AVAIL</em>, <em>weight=0</em>, <em>selectionField='fitness'</em><span class="sig-paren">)</span><a class="headerlink" href="#RandomMating.RandomMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a random mating ssheme that selects two parents randomly and
+transmit genotypes according to Mendelian laws. Please refer to class
+<a class="reference internal" href="refManual_ch2_sec3.html#RandomParentsChooser" title="RandomParentsChooser"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomParentsChooser</span></code></a> for parameter <em>selectionField</em>, to class
+<a class="reference internal" href="refManual_ch2_sec3.html#OffspringGenerator" title="OffspringGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">OffspringGenerator</span></code></a> for parameters <em>ops</em>, <em>sexMode</em> and
+<em>numOffspring</em>, and to class <a class="reference internal" href="refManual_ch2_sec3.html#HomoMating" title="HomoMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">HomoMating</span></code></a> for parameters
+<em>subPopSize</em>, <em>subPops</em> and <em>weight</em>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-monogamousmating">
+<h2>class MonogamousMating<a class="headerlink" href="#class-monogamousmating" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="MonogamousMating">
+<em class="property">class </em><code class="descname">MonogamousMating</code><a class="headerlink" href="#MonogamousMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>A homogeneous mating scheme that uses a random parents chooser without
+replacement and a Mendelian offspring generator. It differs from the basic
+random mating scheme in that each parent can mate only once so there is no
+half-sibling in the population.</p>
+<dl class="method">
+<dt id="MonogamousMating.MonogamousMating">
+<code class="descname">MonogamousMating</code><span class="sig-paren">(</span><em>numOffspring=1</em>, <em>sexMode=RANDOM_SEX</em>, <em>ops=MendelianGenoTransmitter()</em>, <em>subPopSize=[]</em>, <em>subPops=ALL_AVAIL</em>, <em>weight=0</em>, <em>selectionField=None</em><span class="sig-paren">)</span><a class="headerlink" href="#MonogamousMating.MonogamousMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a monogamous mating scheme that selects each parent only
+once. Please refer to class <a class="reference internal" href="refManual_ch2_sec3.html#OffspringGenerator" title="OffspringGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">OffspringGenerator</span></code></a> for parameters
+<em>ops</em>, <em>sexMode</em> and <em>numOffspring</em>, and to class <a class="reference internal" href="refManual_ch2_sec3.html#HomoMating" title="HomoMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">HomoMating</span></code></a> for
+parameters <em>subPopSize</em>, <em>subPops</em> and <em>weight</em>. Parameter
+<em>selectionField</em> is ignored because this mating scheme does not
+support natural selection.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-polygamousmating">
+<h2>class PolygamousMating<a class="headerlink" href="#class-polygamousmating" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PolygamousMating">
+<em class="property">class </em><code class="descname">PolygamousMating</code><a class="headerlink" href="#PolygamousMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>A homogeneous mating scheme that uses a multi-spouse parents chooser
+and a Mendelian offspring generator. It differs from the basic random
+mating scheme in that each parent of sex <em>polySex</em> will have <em>polyNum</em>
+spouses.</p>
+<dl class="method">
+<dt id="PolygamousMating.PolygamousMating">
+<code class="descname">PolygamousMating</code><span class="sig-paren">(</span><em>polySex=MALE</em>, <em>polyNum=1</em>, <em>numOffspring=1</em>, <em>sexMode=RANDOM_SEX</em>, <em>ops=MendelianGenoTransmitter()</em>, <em>subPopSize=[]</em>, <em>subPops=ALL_AVAIL</em>, <em>weight=0</em>, <em>selectionField='fitness'</em><span class="sig-paren">)</span><a class="headerlink" href="#PolygamousMating.PolygamousMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a polygamous mating scheme that each parent mates with
+multiple spouses. Please refer to class <a class="reference internal" href="refManual_ch2_sec3.html#PolyParentsChooser" title="PolyParentsChooser"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolyParentsChooser</span></code></a> for
+parameters <em>polySex</em>, <em>polyNum</em> and <em>selectionField</em>, to class
+<a class="reference internal" href="refManual_ch2_sec3.html#OffspringGenerator" title="OffspringGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">OffspringGenerator</span></code></a> for parameters <em>ops</em>,  <em>sexMode</em> and
+<em>numOffspring</em>, and to class <a class="reference internal" href="refManual_ch2_sec3.html#HomoMating" title="HomoMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">HomoMating</span></code></a> for parameters
+<em>subPopSize</em>, <em>subPops</em> and <em>weight</em>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-haplodiploidmating">
+<h2>class HaplodiploidMating<a class="headerlink" href="#class-haplodiploidmating" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="HaplodiploidMating">
+<em class="property">class </em><code class="descname">HaplodiploidMating</code><a class="headerlink" href="#HaplodiploidMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>A homogeneous mating scheme that uses a random parents chooser with
+replacement and a haplodiploid offspring generator. It should be used
+in a haplodiploid population where male individuals only have one set
+of homologous chromosomes.</p>
+<dl class="method">
+<dt id="HaplodiploidMating.HaplodiploidMating">
+<code class="descname">HaplodiploidMating</code><span class="sig-paren">(</span><em>numOffspring=1.0</em>, <em>sexMode=RANDOM_SEX</em>, <em>ops=HaplodiploidGenoTransmitter()</em>, <em>subPopSize=[]</em>, <em>subPops=ALL_AVAIL</em>, <em>weight=0</em>, <em>selectionField='fitness'</em><span class="sig-paren">)</span><a class="headerlink" href="#HaplodiploidMating.HaplodiploidMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a mating scheme in haplodiploid populations. Please refer
+to class <a class="reference internal" href="refManual_ch2_sec3.html#RandomParentsChooser" title="RandomParentsChooser"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomParentsChooser</span></code></a> for parameter <em>selectionField</em>, to
+class <a class="reference internal" href="refManual_ch2_sec3.html#OffspringGenerator" title="OffspringGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">OffspringGenerator</span></code></a> for parameters <em>ops</em>, <em>sexMode</em> and
+<em>numOffspring</em>, and to class <a class="reference internal" href="refManual_ch2_sec3.html#HomoMating" title="HomoMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">HomoMating</span></code></a> for parameters
+<em>subPopSize</em>, <em>subPops</em> and <em>weight</em>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-selfmating">
+<h2>class SelfMating<a class="headerlink" href="#class-selfmating" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="SelfMating">
+<em class="property">class </em><code class="descname">SelfMating</code><a class="headerlink" href="#SelfMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>A homogeneous mating scheme that uses a random single-parent parent
+chooser with or without replacement (parameter <em>replacement</em>) and a
+selfing offspring generator. It is used to mimic self-fertilization
+in certain plant populations.</p>
+<dl class="method">
+<dt id="SelfMating.SelfMating">
+<code class="descname">SelfMating</code><span class="sig-paren">(</span><em>replacement=True</em>, <em>numOffspring=1</em>, <em>sexMode=RANDOM_SEX</em>, <em>ops=SelfingGenoTransmitter()</em>, <em>subPopSize=[]</em>, <em>subPops=ALL_AVAIL</em>, <em>weight=0</em>, <em>selectionField='fitness'</em><span class="sig-paren">)</span><a class="headerlink" href="#SelfMating.SelfMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a selfing mating scheme where two homologous copies of
+parental chromosomes are transmitted to offspring according to
+Mendelian laws. Please refer to class <a class="reference internal" href="refManual_ch2_sec3.html#RandomParentChooser" title="RandomParentChooser"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomParentChooser</span></code></a> for
+parameter <em>replacement</em> and  <em>selectionField</em>, to class
+<a class="reference internal" href="refManual_ch2_sec3.html#OffspringGenerator" title="OffspringGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">OffspringGenerator</span></code></a> for parameters <em>ops</em>, <em>sexMode</em> and
+<em>numOffspring</em>, and to class <a class="reference internal" href="refManual_ch2_sec3.html#HomoMating" title="HomoMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">HomoMating</span></code></a> for parameters
+<em>subPopSize</em>, <em>subPops</em> and <em>weight</em>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-hermaphroditicmating">
+<h2>class HermaphroditicMating<a class="headerlink" href="#class-hermaphroditicmating" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="HermaphroditicMating">
+<em class="property">class </em><code class="descname">HermaphroditicMating</code><a class="headerlink" href="#HermaphroditicMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>A hermaphroditic mating scheme that chooses two parents randomly
+from the population regardless of sex. The parents could be chosen
+with or without replacement (parameter <em>replacement</em>). Selfing (if
+the same parents are chosen) is allowed unless <em>allowSelfing</em> is
+set to <em>False</em></p>
+<dl class="method">
+<dt id="HermaphroditicMating.HermaphroditicMating">
+<code class="descname">HermaphroditicMating</code><span class="sig-paren">(</span><em>replacement=True</em>, <em>allowSelfing=True</em>, <em>numOffspring=1</em>, <em>sexMode=RANDOM_SEX</em>, <em>ops=MendelianGenoTransmitter()</em>, <em>subPopSize=[]</em>, <em>subPops=ALL_AVAIL</em>, <em>weight=0</em>, <em>selectionField='fitness'</em><span class="sig-paren">)</span><a class="headerlink" href="#HermaphroditicMating.HermaphroditicMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a hermaphroditic mating scheme where individuals can
+serve as father or mother, or both (self-fertilization). Please
+refer to class <a class="reference internal" href="refManual_ch2_sec3.html#CombinedParentsChooser" title="CombinedParentsChooser"><code class="xref py py-class docutils literal notranslate"><span class="pre">CombinedParentsChooser</span></code></a> for parameter <em>allowSelfing``,
+to :class:`RandomParentChooser` for parameter *replacement</em> and
+<em>selectionField</em>, to class <a class="reference internal" href="refManual_ch2_sec3.html#OffspringGenerator" title="OffspringGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">OffspringGenerator</span></code></a> for parameters <em>ops</em>,
+<em>sexMode</em> and <em>numOffspring</em>, and to class <a class="reference internal" href="refManual_ch2_sec3.html#HomoMating" title="HomoMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">HomoMating</span></code></a> for parameters
+<em>subPopSize</em>, <em>subPops</em> and <em>weight</em>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="class-controlledrandommating">
+<h2>class ControlledRandomMating<a class="headerlink" href="#class-controlledrandommating" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ControlledRandomMating">
+<em class="property">class </em><code class="descname">ControlledRandomMating</code><a class="headerlink" href="#ControlledRandomMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>A homogeneous mating scheme that uses a random sexual parents chooser
+with replacement and a controlled offspring generator using Mendelian
+genotype transmitter. It falls back to a regular random mating scheme
+if there is no locus to control or no trajectory is defined.</p>
+<dl class="method">
+<dt id="ControlledRandomMating.ControlledRandomMating">
+<code class="descname">ControlledRandomMating</code><span class="sig-paren">(</span><em>loci=[]</em>, <em>alleles=[]</em>, <em>freqFunc=None</em>, <em>numOffspring=1</em>, <em>sexMode=RANDOM_SEX</em>, <em>ops=MendelianGenoTransmitter()</em>, <em>subPopSize=[]</em>, <em>subPops=ALL_AVAIL</em>, <em>weight=0</em>, <em>selectionField='fitness'</em><span class="sig-paren">)</span><a class="headerlink" href="#ControlledRandomMating.ControlledRandomMating" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a random mating scheme that controls allele frequency at
+loci <em>loci</em>. At each generation, function <em>freqFunc</em> will be called to
+called to obtain intended frequencies of alleles <em>alleles</em> at loci
+<em>loci</em>. The controlled offspring generator will control the acceptance
+of offspring so that the generation reaches desired allele frequencies
+at these loci. If <em>loci</em> is empty or <em>freqFunc</em> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, this mating
+scheme works identically to a <code class="docutils literal notranslate"><span class="pre">RandomMating</span> <span class="pre">scheme</span></code>. Rationals and
+applications of this mating scheme is described in details in a paper <em>Peng
+et al, 2007 (PLoS Genetics)</em>. Please refer to class <a class="reference internal" href="refManual_ch2_sec3.html#RandomParentsChooser" title="RandomParentsChooser"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomParentsChooser</span></code></a>
+for parameters <em>selectionField</em>, to class <a class="reference internal" href="refManual_ch2_sec3.html#ControlledOffspringGenerator" title="ControlledOffspringGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlledOffspringGenerator</span></code></a>
+for parameters <em>loci</em>, <em>alleles</em>, <em>freqFunc</em>, to class
+<a class="reference internal" href="refManual_ch2_sec3.html#OffspringGenerator" title="OffspringGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">OffspringGenerator</span></code></a> for parameters <em>ops</em>, <em>sexMode</em> and <em>numOffspring</em>,
+and to class <a class="reference internal" href="refManual_ch2_sec3.html#HomoMating" title="HomoMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">HomoMating</span></code></a> for parameters <em>subPopSize</em>, <em>subPops</em> and
+<em>weight</em>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec1.html">Individual, Population, pedigree and Simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec2.html">Virtual splitters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec3.html">Mating Schemes</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Pre-defined mating schemes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-clonemating">class CloneMating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-randomselection">class RandomSelection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-randommating">class RandomMating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-monogamousmating">class MonogamousMating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-polygamousmating">class PolygamousMating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-haplodiploidmating">class HaplodiploidMating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-selfmating">class SelfMating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-hermaphroditicmating">class HermaphroditicMating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-controlledrandommating">class ControlledRandomMating</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec5.html">Utility Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refManual_ch2_sec6.html">Global functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="refManual.html">&lt;no title&gt;</a><ul>
+  <li><a href="refManual_ch2.html">simuPOP Components</a><ul>
+      <li>Previous: <a href="refManual_ch2_sec3.html" title="previous chapter">Mating Schemes</a></li>
+      <li>Next: <a href="refManual_ch2_sec5.html" title="next chapter">Utility Classes</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/refManual_ch2_sec4.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

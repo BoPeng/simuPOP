@@ -1,0 +1,561 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Tagging operators &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Statistics calculation (operator Stat)" href="userGuide_ch5_sec11.html" />
+    <link rel="prev" title="Natural Selection" href="userGuide_ch5_sec9.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="tagging-operators">
+<h1>Tagging operators<a class="headerlink" href="#tagging-operators" title="Permalink to this headline">¶</a></h1>
+<p>In simuPOP, tagging refers to the action of setting various information fields
+of offspring, usually using various parental information during the production
+of offspring. simuPOP provides a number of tagging operators (called taggers)
+for various purposes. Because tagging operators are during-mating operators,
+parameter <code class="docutils literal notranslate"><span class="pre">subPops</span></code> can be used to tag only offspring that belong to specified
+virtual subpopulation. (e.g. all male offspring)</p>
+<div class="section" id="inheritance-tagger-operator-inherittagger">
+<h2>Inheritance tagger (operator <a class="reference internal" href="refManual_ch3_sec10.html#InheritTagger" title="InheritTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">InheritTagger</span></code></a>)<a class="headerlink" href="#inheritance-tagger-operator-inherittagger" title="Permalink to this headline">¶</a></h2>
+<p>An inheritance tagger passes values of parental information field(s) to the
+corresponding offspring information field(s). Depending on the parameters, an
+InheritTagger can</p>
+<ul class="simple">
+<li>For asexual mating schemes, pass one or more information fields from parent to
+offspring.</li>
+<li>Pass one or more information fields from father to offspring
+(<code class="docutils literal notranslate"><span class="pre">mode=PATERNAL</span></code>).</li>
+<li>Pass one or more information fields from mother to offspring
+(<code class="docutils literal notranslate"><span class="pre">mode=MATERNAL</span></code>).</li>
+<li>Pass the maximal, minimal, sum, multiplcation or average of values of one or
+more information fields of both parents (<code class="docutils literal notranslate"><span class="pre">mode=MAXIMUM</span></code>, <code class="docutils literal notranslate"><span class="pre">MINIMUM</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ADDITION,</span> <span class="pre">MULTIPLICATION</span></code> or <code class="docutils literal notranslate"><span class="pre">MEAN</span></code>).</li>
+</ul>
+<p>This can be used to track the spread of certain information during evolution.
+For example, Example<a class="reference internal" href="#inherittagger"><span class="std std-ref">InheritTagger</span></a> tags the first
+individuals of ten subpopulations of size 1000. individuals in the offspring
+generation inherits the maximum value of field <code class="docutils literal notranslate"><span class="pre">x</span></code> from his/her parents so
+<code class="docutils literal notranslate"><span class="pre">x</span></code> is inherited regardless of the sex of parents. A Stat operator is used to
+calculate the number of offspring having this tag in each subpopulation. The
+results show that some tagged ancestors have many offspring, and some have none.
+If you run this simulation long enough, you can see that all ancestors become
+the ancestor of either none or all indiviudals in a population. Note that this
+simulation only considers genealogical inheritance and ancestors do not have to
+pass any genotype to the last generation.</p>
+<p id="inherittagger"><strong>Example</strong>: <em>Use an inherit tagger to track offspring of individuals</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">1000</span><span class="p">]</span><span class="o">*</span><span class="mi">10</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># tag the first individual of each subpopulation.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">numSubPop</span><span class="p">()):</span>
+<span class="gp">... </span>    <span class="n">pop</span><span class="o">.</span><span class="n">individual</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sp</span><span class="p">)</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InheritTagger</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">MAXIMUM</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">sumOfInfo</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;sumOfInfo_sp&#39;</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;, &quot;.join([&quot;</span><span class="si">%3d</span><span class="s1">&quot; </span><span class="si">% s</span><span class="s1">ubPop[i][&quot;sumOfInfo&quot;][&quot;x&quot;] for i in range(10)])+&quot;\n&quot;&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">  2,   1,   0,   1,   1,   2,   3,   3,   1,   1</span>
+<span class="go">  5,   1,   0,   1,   1,   3,   3,   5,   3,   0</span>
+<span class="go">  9,   2,   0,   2,   2,   7,   9,   5,  13,   0</span>
+<span class="go"> 21,   4,   0,   2,   5,  18,  11,   9,  27,   0</span>
+<span class="go"> 39,   5,   0,   6,   8,  36,  23,  20,  67,   0</span>
+<span class="go">5</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="InheritTagger.py">Download InheritTagger.py</a></p>
+</div>
+<div class="section" id="summarize-parental-informatin-fields-operator-summarytagger">
+<h2>Summarize parental informatin fields (operator <code class="docutils literal notranslate"><span class="pre">SummaryTagger)</span></code><a class="headerlink" href="#summarize-parental-informatin-fields-operator-summarytagger" title="Permalink to this headline">¶</a></h2>
+<p>A <a class="reference internal" href="refManual_ch3_sec10.html#SummaryTagger" title="SummaryTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">SummaryTagger</span></code></a> summarize values of one or more parental information
+fields and place the result in an offspring information field. If mating is
+sexual, two sets of values will be involved. Summarization methods include
+<code class="docutils literal notranslate"><span class="pre">MEAN</span></code>, <code class="docutils literal notranslate"><span class="pre">MINIMUM</span></code>, <code class="docutils literal notranslate"><span class="pre">MAXIMUM</span></code>, <code class="docutils literal notranslate"><span class="pre">SUMMATION</span></code> and <code class="docutils literal notranslate"><span class="pre">MULTIPLICATION</span></code>. The
+operator is usually used to summarize certain characteristic of parents of each
+offspring. For example, a <a class="reference internal" href="refManual_ch3_sec10.html#SummaryTagger" title="SummaryTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">SummaryTagger</span></code></a> is used in  Example
+<a class="reference internal" href="#summarytagger"><span class="std std-ref">SummaryTagger</span></a> to calculate the mean fitness of parents
+during each  mating event. The results are saved in the <code class="docutils literal notranslate"><span class="pre">avgFitness</span></code> field of
+offspring. Because allele 1 at locus 0 is under purifying selection, the allele
+frequency of this allele decreases. In the mean time, fitness of parents
+increases because less and less parents have this allele.</p>
+<p id="summarytagger"><strong>Example</strong>: <em>Using a summary tagger to calculate mean fitness of parents.</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;fitness&#39;</span><span class="p">,</span> <span class="s1">&#39;avgFitness&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">MaSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">wildtype</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">SummaryTagger</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">MEAN</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;fitness&#39;</span><span class="p">,</span> <span class="s1">&#39;avgFitness&#39;</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">meanOfInfo</span><span class="o">=</span><span class="s1">&#39;avgFitness&#39;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;gen </span><span class="si">%d</span><span class="s2">: allele freq: </span><span class="si">%.3f</span><span class="s2">, average fitness of parents: </span><span class="si">%.3f</span><span class="s2">\n&#39; % &quot;</span>
+<span class="gp">... </span>            <span class="s2">&quot;(gen, alleleFreq[0][1], meanOfInfo[&#39;avgFitness&#39;])&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">gen 0: allele freq: 0.473, average fitness of parents: 0.984</span>
+<span class="go">gen 10: allele freq: 0.421, average fitness of parents: 0.986</span>
+<span class="go">gen 20: allele freq: 0.388, average fitness of parents: 0.988</span>
+<span class="go">gen 30: allele freq: 0.288, average fitness of parents: 0.991</span>
+<span class="go">gen 40: allele freq: 0.256, average fitness of parents: 0.993</span>
+<span class="go">50</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="SummaryTagger.py">Download SummaryTagger.py</a></p>
+</div>
+<div class="section" id="tracking-parents-operator-parentstagger">
+<h2>Tracking parents (operator <a class="reference internal" href="refManual_ch3_sec10.html#ParentsTagger" title="ParentsTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParentsTagger</span></code></a>)<a class="headerlink" href="#tracking-parents-operator-parentstagger" title="Permalink to this headline">¶</a></h2>
+<p>A parents tagger is used to record the indexes of parents (in the parental
+population) in the information fields (default to <code class="docutils literal notranslate"><span class="pre">father_idx</span></code>,
+<code class="docutils literal notranslate"><span class="pre">mother_idx</span></code>) of their offspring. These indexes provide a way to track down an
+individuals parents, offspring and consequently all relatives in a multi-
+generation population. Because this operator has been extensively used in this
+guide, please refer to other sections for an Example (e.g. Example
+<a class="reference internal" href="userGuide_ch4_sec1.html#basicinfofields"><span class="std std-ref">basicInfoFields</span></a>).</p>
+<p>As long as parental generations do not change after the offspring generation is
+created, recorded parental indexes can be used to locate parents of an
+individual. However, in certain applications when parental generations change
+(e.g. to draw a pedigree from a large population), or when individuals can not
+be looked up easily using indexes (e.g. after individuals are saved to a file),
+giving every Individual an unique ID and refer to them using ID will be a better
+choice.</p>
+</div>
+<div class="section" id="tracking-index-of-offspring-within-families-operator-offspringtagger">
+<h2>Tracking index of offspring within families (operator <a class="reference internal" href="refManual_ch3_sec10.html#OffspringTagger" title="OffspringTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">OffspringTagger</span></code></a>)<a class="headerlink" href="#tracking-index-of-offspring-within-families-operator-offspringtagger" title="Permalink to this headline">¶</a></h2>
+<p>An offspring tagger is used to record the index of offspring within each family
+in an information field (default to <code class="docutils literal notranslate"><span class="pre">offspring_idx</span></code>) of offspring. Because the
+index is reset for each mating event, the index will be reset even if two
+adjacent families share the same parents. In addition, this operator records the
+relative index of an offspring so the index will not change if an offspring is
+re-generated when the previous offspring is discarded for any reason.</p>
+<p>Because during-mating selection operator discards offspring according their
+genotypes, a mating scheme can produce families with varying sizes even if
+<code class="docutils literal notranslate"><span class="pre">numOffspring</span></code> is set to a constant number. On the other hand, if we would
+like to ensure equal family size <em>N</em> in the presence of natural selection, we
+will have to produce more offspring so that there can be at least <em>N</em> offspring
+in each family after selection. Once <em>N</em> offspring have been generated,
+excessive offspring can be discarded according to <code class="docutils literal notranslate"><span class="pre">offspring_idx</span></code>. The
+following example demonstrates such a simulation scenario:</p>
+<p id="offspringtagger"><strong>Example</strong>: <em>Keeping constant family size in the presence of natural selection against offspring</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;offspring_idx&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="c1"># lethal recessive alleles</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MaSelector</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">wildtype</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.90</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">OffspringTagger</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">DiscardIf</span><span class="p">(</span><span class="s1">&#39;offspring_idx &gt; 4&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span> <span class="n">numOffspring</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">alleleFreq</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;gen </span><span class="si">%d</span><span class="s2">: allele freq: </span><span class="si">%.3f</span><span class="s2">\n&#39; % &quot;</span>
+<span class="gp">... </span>            <span class="s2">&quot;(gen, alleleFreq[0][1])&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">gen 0: allele freq: 0.445</span>
+<span class="go">gen 10: allele freq: 0.187</span>
+<span class="go">gen 20: allele freq: 0.089</span>
+<span class="go">gen 30: allele freq: 0.087</span>
+<span class="go">gen 40: allele freq: 0.059</span>
+<span class="go">50</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="OffspringTagger.py">Download OffspringTagger.py</a></p>
+<p>Because families with lethal alleles produce the same number of offspring as
+families without such alleles, natural selection happens within each families
+and is weaker than the case when natural selection is used to all offspring.
+This phenomena is generally referred to as reproductive compensation.</p>
+</div>
+<div class="section" id="assign-unique-ids-to-individuals-operator-idtagger">
+<h2>Assign unique IDs to individuals (operator <a class="reference internal" href="refManual_ch3_sec10.html#IdTagger" title="IdTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">IdTagger</span></code></a>)<a class="headerlink" href="#assign-unique-ids-to-individuals-operator-idtagger" title="Permalink to this headline">¶</a></h2>
+<p>Although it is possible to use generation number and individual indexes to
+locate individuals in an evolving population, an unique I D makes it much easier
+to identify individuals when migration is involved, and to analyze an
+evolutionary process outside of simuPOP. An operator <a class="reference internal" href="refManual_ch3_sec10.html#IdTagger" title="IdTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">IdTagger</span></code></a> (and its
+function form <a class="reference internal" href="refManual_ch3_sec15.html#tagID" title="tagID"><code class="xref py py-func docutils literal notranslate"><span class="pre">tagID</span></code></a>) is provided by simuPOP to assign an unique ID to
+all individuals during evolution.</p>
+<p>The IDs of individuals are usually stored in an information field named
+<code class="docutils literal notranslate"><span class="pre">ind_id</span></code>. To ensure uniqueness across populations, a single source of ID is
+used for this operator. individual IDs are assigned consecutively starting from
+0. If you would like to reset the sequence or start from a different number, you
+can call the <code class="docutils literal notranslate"><span class="pre">reset(startID)</span></code> function of any <a class="reference internal" href="refManual_ch3_sec10.html#IdTagger" title="IdTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">IdTagger</span></code></a>.</p>
+<p>An <a class="reference internal" href="refManual_ch3_sec10.html#IdTagger" title="IdTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">IdTagger</span></code></a> is usually used during-mating to assign ID to each
+offspring. However, if it is applied directly to a population, it will assign
+unique IDs to all individuals in this population. This property is usually used
+in the <code class="docutils literal notranslate"><span class="pre">preOps</span></code> parameter of function <a class="reference internal" href="refManual_ch2_sec1.html#Simulator.evolve" title="Simulator.evolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Simulator.evolve</span></code></a> to assign
+initial ID to a population. For example, two <a class="reference internal" href="refManual_ch3_sec10.html#IdTagger" title="IdTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">IdTagger</span></code></a> operators are
+used in Example <a class="reference internal" href="#idtagger"><span class="std std-ref">IdTagger</span></a> to assign IDs to all individuals.
+Although different operators are used, different IDs are assigned to
+individuals.</p>
+<p id="idtagger"><strong>Example</strong>: <em>Assign unique IDs to individuals</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;ind_id&#39;</span><span class="p">,</span> <span class="n">ancGen</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomSelection</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">CloneGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">ind_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">()])</span>
+<span class="go">[11, 12, 13, 14, 15, 16, 17, 18, 19, 20]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">useAncestralGen</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">ind_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">()])</span>
+<span class="go">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">tagID</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span> <span class="c1"># re-assign ID</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">ind_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">individuals</span><span class="p">()])</span>
+<span class="go">[21, 22, 23, 24, 25, 26, 27, 28, 29, 30]</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="IdTagger.py">Download IdTagger.py</a></p>
+</div>
+<div class="section" id="tracking-pedigrees-operator-pedigreetagger">
+<h2>Tracking Pedigrees (operator <a class="reference internal" href="refManual_ch3_sec10.html#PedigreeTagger" title="PedigreeTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">PedigreeTagger</span></code></a>)<a class="headerlink" href="#tracking-pedigrees-operator-pedigreetagger" title="Permalink to this headline">¶</a></h2>
+<p>A <a class="reference internal" href="refManual_ch3_sec10.html#PedigreeTagger" title="PedigreeTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">PedigreeTagger</span></code></a> is similar to a <a class="reference internal" href="refManual_ch3_sec10.html#ParentsTagger" title="ParentsTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParentsTagger</span></code></a> in that it
+records parental information in offspring’s information fields. However, instead
+of indexes of parents, this operator records an unique ID of each parent to make
+it easier to study and reconstruct a complete pedigree of a whole evolutionary
+process. The default information fields are <code class="docutils literal notranslate"><span class="pre">father_id</span></code> and <code class="docutils literal notranslate"><span class="pre">mother_id</span></code>.</p>
+<p>By default, the <a class="reference internal" href="refManual_ch3_sec10.html#PedigreeTagger" title="PedigreeTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">PedigreeTagger</span></code></a> does not produce any output. However, if
+a valid output string (or function) is specified, it will output the ID of
+offspring and their parents, sex and affection status of offspring, and
+optionally values at specified information fields (parameter <code class="docutils literal notranslate"><span class="pre">outputFields</span></code>)
+and genotype at specified loci (parameter <code class="docutils literal notranslate"><span class="pre">outputLoci</span></code>). Because this operator
+only outputs offspring, the saved file does not have detailed information of
+individuals in the top-most ancestral generation. If you would like to record
+complete pedigree information, you can apply <a class="reference internal" href="refManual_ch3_sec10.html#PedigreeTagger" title="PedigreeTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">PedigreeTagger</span></code></a> in the
+<code class="docutils literal notranslate"><span class="pre">initOps</span></code> operator of function <a class="reference internal" href="refManual_ch2_sec1.html#Simulator.evolve" title="Simulator.evolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Simulator.evolve</span></code></a> or
+<a class="reference internal" href="refManual_ch2_sec1.html#Population.evolve" title="Population.evolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Population.evolve</span></code></a> to output information of the initial population.
+Although this operator is primarily used to output pedigree information, values
+at specified information fields and genotypes at specified loci could also be
+outputed.</p>
+<p>Example <a class="reference internal" href="#pedigreetagger"><span class="std std-ref">PedigreeTagger</span></a> demonstrates how to output the
+complete pedigree of an evolutionary process. Note that <a class="reference internal" href="refManual_ch3_sec10.html#IdTagger" title="IdTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">IdTagger</span></code></a> has to
+be applied before <a class="reference internal" href="refManual_ch3_sec10.html#PedigreeTagger" title="PedigreeTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">PedigreeTagger</span></code></a> so that IDs of offspring could be
+assigned before they are outputted.</p>
+<p id="pedigreetagger"><strong>Example</strong>: <em>Output a complete pedigree of an evolutionary process</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;ind_id&#39;</span><span class="p">,</span> <span class="s1">&#39;father_id&#39;</span><span class="p">,</span> <span class="s1">&#39;mother_id&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PedigreeTagger</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s1">&#39;&gt;&gt;pedigree.txt&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PedigreeTagger</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s1">&#39;&gt;&gt;pedigree.txt&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">()]</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">100</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ped</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;pedigree.txt&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lines</span> <span class="o">=</span> <span class="n">ped</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ped</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># first few lines, saved by the first PedigreeTagger</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">[:</span><span class="mi">3</span><span class="p">]))</span>
+<span class="go">1 0 0 F U</span>
+<span class="go">2 0 0 F U</span>
+<span class="go">3 0 0 M U</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># last several lines, saved by the second PedigreeTagger</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]))</span>
+<span class="go">10098 9974 9915 F U</span>
+<span class="go">10099 9967 9997 M U</span>
+<span class="go">10100 9945 9936 M U</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># load this file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ped</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">loadPedigree</span><span class="p">(</span><span class="s1">&#39;pedigree.txt&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># should have 100 ancestral generations (plus one present generation)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ped</span><span class="o">.</span><span class="n">ancestralGens</span><span class="p">()</span>
+<span class="go">100</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="PedigreeTagger.py">Download PedigreeTagger.py</a></p>
+</div>
+<div class="section" id="a-hybrid-tagger-operator-pytagger">
+<h2>A hybrid tagger (operator <a class="reference internal" href="refManual_ch3_sec10.html#PyTagger" title="PyTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyTagger</span></code></a>)<a class="headerlink" href="#a-hybrid-tagger-operator-pytagger" title="Permalink to this headline">¶</a></h2>
+<p>A <a class="reference internal" href="refManual_ch3_sec10.html#PyTagger" title="PyTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyTagger</span></code></a> uses a user-defined function to pass parental information
+fields to offspring. When a mating event happens, this operator collect values
+of specified information fields of parents, pass them to a user-provided
+function, and use the return values to set corresponding offspring information
+fields. A typical usage of this operator is to set random environmental factors
+that are affected by parental values. Example <a class="reference internal" href="#pytagger"><span class="std std-ref">PyTagger</span></a>
+demonstrates such an example where the location of each offspring (x, y) is
+randomly assigned around the middle position of his or her parents.</p>
+<p id="pytagger"><strong>Example</strong>: <em>Use of a hybrid tagger to pass parental information to offspring</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">randomMove</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="sd">&#39;&#39;&#39;Pass parental information fields to offspring&#39;&#39;&#39;</span>
+<span class="gp">... </span>    <span class="c1"># shift right with high concentration of alleles...</span>
+<span class="gp">... </span>    <span class="n">off_x</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">normalvariate</span><span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">off_y</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">normalvariate</span><span class="p">((</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">off_x</span><span class="p">,</span> <span class="n">off_y</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">GenotypeSplitter</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">alleles</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitInfo</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyTagger</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">randomMove</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">minOfInfo</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">maxOfInfo</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;Range of x: </span><span class="si">%.2f</span><span class="s2">, </span><span class="si">%.2f</span><span class="s2">\n&#39; % (minOfInfo[&#39;x&#39;], maxOfInfo[&#39;x&#39;])&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Range of x: -0.17, 1.12</span>
+<span class="go">Range of x: -0.05, 1.14</span>
+<span class="go">Range of x: 0.01, 1.01</span>
+<span class="go">Range of x: 0.01, 1.04</span>
+<span class="go">Range of x: 0.06, 0.95</span>
+<span class="go">5</span>
+<span class="go">&gt;&gt;&gt;</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="PyTagger.py">Download PyTagger.py</a></p>
+</div>
+<div class="section" id="tagging-that-involves-other-parental-information">
+<h2>Tagging that involves other parental information<a class="headerlink" href="#tagging-that-involves-other-parental-information" title="Permalink to this headline">¶</a></h2>
+<p>If the way how parental information fields pass to their offspring is affected
+by parental genotype, sex, or affection status, you could use a Python operator
+(<a class="reference internal" href="refManual_ch3_sec13.html#PyOperator" title="PyOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyOperator</span></code></a>) during mating to explicitly obtain parental information
+and set offspring information fields.</p>
+<p>Alternatively, you can add another information field, translate needed
+information to this field and pass the genotype information in the form of
+information field. Operator <a class="reference internal" href="refManual_ch3_sec3.html#InfoExec" title="InfoExec"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoExec</span></code></a> could be helpful in this case.
+Example <a class="reference internal" href="#othertagging"><span class="std std-ref">otherTagging</span></a> demonstrates such an example where
+the number of affected parents are recorded in an information field. Before
+mating happens, a penetrance operator is used to assign affection status to
+parents. The affection status is then copied to an information field affected so
+that operator <a class="reference internal" href="refManual_ch3_sec10.html#SummaryTagger" title="SummaryTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">SummaryTagger</span></code></a> could be used to count the number of
+affected parents. Two <a class="reference internal" href="refManual_ch3_sec7.html#MaPenetrance" title="MaPenetrance"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaPenetrance</span></code></a> operators are used both before and
+after mating to assign affection status to both parental and offspring
+generations. This helps dividing the offspring generation into affected and
+unaffected virtual subpopulations. Not surprisingly, the average number of
+affected parents is larger for affected individuals than unaffected individuals.</p>
+<p id="othertagging"><strong>Example</strong>: <em>Tagging that involves other parental information</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;aff&#39;</span><span class="p">,</span> <span class="s1">&#39;numOfAff&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># define virtual subpopulations by affection sim.status</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">AffectionSplitter</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="c1"># get affection sim.status for parents</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MaPenetrance</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">wildtype</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">penetrance</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="c1"># set &#39;aff&#39; of parents</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InfoExec</span><span class="p">(</span><span class="s1">&#39;aff = ind.affected()&#39;</span><span class="p">,</span> <span class="n">exposeInd</span><span class="o">=</span><span class="s1">&#39;ind&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>        <span class="c1"># get number of affected parents for each offspring and store in numOfAff</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">SummaryTagger</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">SUMMATION</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;aff&#39;</span><span class="p">,</span> <span class="s1">&#39;numOfAff&#39;</span><span class="p">])]),</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="c1"># get affection sim.status for offspring</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">MaPenetrance</span><span class="p">(</span><span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">wildtype</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">penetrance</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="c1"># calculate mean &#39;numOfAff&#39; of offspring, for unaffected and affected subpopulations.</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">meanOfInfo</span><span class="o">=</span><span class="s1">&#39;numOfAff&#39;</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)],</span> <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;meanOfInfo_sp&#39;</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="c1"># print mean number of affected parents for unaffected and affected offspring.</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyEval</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;Mean number of affected parents: </span><span class="si">%.2f</span><span class="s2"> (unaff), </span><span class="si">%.2f</span><span class="s2"> (aff)\n&#39; % &quot;</span>
+<span class="gp">... </span>            <span class="s2">&quot;(subPop[(0,0)][&#39;meanOfInfo&#39;][&#39;numOfAff&#39;], subPop[(0,1)][&#39;meanOfInfo&#39;][&#39;numOfAff&#39;])&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Mean number of affected parents: 0.41 (unaff), 0.44 (aff)</span>
+<span class="go">Mean number of affected parents: 0.41 (unaff), 0.54 (aff)</span>
+<span class="go">Mean number of affected parents: 0.47 (unaff), 0.55 (aff)</span>
+<span class="go">Mean number of affected parents: 0.47 (unaff), 0.55 (aff)</span>
+<span class="go">Mean number of affected parents: 0.42 (unaff), 0.45 (aff)</span>
+<span class="go">5</span>
+<span class="go">&gt;&gt;&gt;</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="otherTagging.py">Download otherTagging.py</a></p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec1.html">Introduction to operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec2.html">Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec3.html">Expressions and statements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec4.html">Demographic changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec5.html">Genotype transmitters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec6.html">Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec7.html">Penetrance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec8.html">Quantitative trait</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec9.html">Natural Selection</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Tagging operators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#inheritance-tagger-operator-inherittagger">Inheritance tagger (operator <code class="docutils literal notranslate"><span class="pre">InheritTagger</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#summarize-parental-informatin-fields-operator-summarytagger">Summarize parental informatin fields (operator <code class="docutils literal notranslate"><span class="pre">SummaryTagger)</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tracking-parents-operator-parentstagger">Tracking parents (operator <code class="docutils literal notranslate"><span class="pre">ParentsTagger</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tracking-index-of-offspring-within-families-operator-offspringtagger">Tracking index of offspring within families (operator <code class="docutils literal notranslate"><span class="pre">OffspringTagger</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#assign-unique-ids-to-individuals-operator-idtagger">Assign unique IDs to individuals (operator <code class="docutils literal notranslate"><span class="pre">IdTagger</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tracking-pedigrees-operator-pedigreetagger">Tracking Pedigrees (operator <code class="docutils literal notranslate"><span class="pre">PedigreeTagger</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a-hybrid-tagger-operator-pytagger">A hybrid tagger (operator <code class="docutils literal notranslate"><span class="pre">PyTagger</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tagging-that-involves-other-parental-information">Tagging that involves other parental information</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec11.html">Statistics calculation (operator <code class="docutils literal notranslate"><span class="pre">Stat</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec12.html">Conditional operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec13.html">Miscellaneous operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch5_sec14.html">Hybrid and Python operators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch5.html">simuPOP Operators</a><ul>
+      <li>Previous: <a href="userGuide_ch5_sec9.html" title="previous chapter">Natural Selection</a></li>
+      <li>Next: <a href="userGuide_ch5_sec11.html" title="next chapter">Statistics calculation (operator <code class="docutils literal notranslate"><span class="pre">Stat</span></code>)</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch5_sec10.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

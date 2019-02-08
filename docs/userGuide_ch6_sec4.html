@@ -1,0 +1,312 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Age structured populations with overlapping generations ** &#8212; simuPOP  documentation</title>
+    <link rel="stylesheet" href="_static/simuPOP.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tracing allelic lineage *" href="userGuide_ch6_sec5.html" />
+    <link rel="prev" title="Non-random and customized mating schemes *" href="userGuide_ch6_sec3.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="age-structured-populations-with-overlapping-generations">
+<h1>Age structured populations with overlapping generations **<a class="headerlink" href="#age-structured-populations-with-overlapping-generations" title="Permalink to this headline">¶</a></h1>
+<p>Age is an important factor in many applications because it is related to many
+genetic (most obviously mating) and environmental factors that influence the
+evolution of a population. The evolution of age structured populations will lead
+to overlapping generations because parents can co-exist with their offspring in
+such a population. Although simuPOP is based on a discrete generation model, it
+can be used to simulate age structured populations.</p>
+<p>To evolve an age structured population, you will need to</p>
+<ul class="simple">
+<li>Define an information field <code class="docutils literal notranslate"><span class="pre">age</span></code> and use it to store age of all
+individuals. Age is usally assigned randomly at the beginning of a simulation.</li>
+<li>Define a virtual splitter that splits the parental population into several
+virtual subpopulation. The most important VSP consists of mating individuals
+(e.g. individuals with age between 20 and 40). Advanced features of virtual
+splitters can be used to define complex VSPs such as males between age 20 - 40
+and females between age 15-30 (use a <a class="reference internal" href="refManual_ch2_sec2.html#ProductSplitter" title="ProductSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProductSplitter</span></code></a> to split
+subpopulations by sex and age, and then a <a class="reference internal" href="refManual_ch2_sec2.html#CombinedSplitter" title="CombinedSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">CombinedSplitter</span></code></a> to join
+several smaller VSPs together).</li>
+<li>Use a heterogeneous mating scheme that clones most individuals to the next
+generation (year) and produce offspring from the mating VSP.</li>
+</ul>
+<p>Example <a class="reference internal" href="#agestructured"><span class="std std-ref">ageStructured</span></a> gives an example of the evolution
+of age-structured population.</p>
+<ul class="simple">
+<li>Information fields <code class="docutils literal notranslate"><span class="pre">ind_id</span></code>, <code class="docutils literal notranslate"><span class="pre">father_id</span></code> and <code class="docutils literal notranslate"><span class="pre">mother_id</span></code> and operators
+<a class="reference internal" href="refManual_ch3_sec10.html#IdTagger" title="IdTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">IdTagger</span></code></a> and <a class="reference internal" href="refManual_ch3_sec10.html#PedigreeTagger" title="PedigreeTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">PedigreeTagger</span></code></a> are used to track pedigree
+information during evolution.</li>
+<li>A <a class="reference internal" href="refManual_ch2_sec4.html#CloneMating" title="CloneMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">CloneMating</span></code></a> mating scheme is used to copy surviving individuals and
+a <a class="reference internal" href="refManual_ch2_sec4.html#RandomMating" title="RandomMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomMating</span></code></a> mating scheme is used to produce offspring.</li>
+<li><a class="reference internal" href="refManual_ch3_sec10.html#IdTagger" title="IdTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">IdTagger</span></code></a> and <a class="reference internal" href="refManual_ch3_sec10.html#PedigreeTagger" title="PedigreeTagger"><code class="xref py py-class docutils literal notranslate"><span class="pre">PedigreeTagger</span></code></a> are used in the <code class="docutils literal notranslate"><span class="pre">ops</span></code>
+parameter of <a class="reference internal" href="refManual_ch2_sec4.html#RandomMating" title="RandomMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomMating</span></code></a> because only new offspring should have a new
+ID and record parental IDs. If you use these operators in the <code class="docutils literal notranslate"><span class="pre">duringOps</span></code>
+parameter of the <code class="docutils literal notranslate"><span class="pre">evolve</span></code> function, individuals copied by <a class="reference internal" href="refManual_ch2_sec4.html#CloneMating" title="CloneMating"><code class="xref py py-class docutils literal notranslate"><span class="pre">CloneMating</span></code></a>
+will have a new ID, and a missing parental ID.</li>
+<li>The resulting population is age-structured so Pedigrees could be extracted
+from such a population.</li>
+<li>The penetrance function is age dependent. Because this penetrance function is
+applied to all individuals at each year and an individual will have the disease
+once he or she is affected, this penetrance function is more or less a hazard
+function.</li>
+</ul>
+<p id="agestructured"><strong>Example</strong>: <em>Example of the evolution of age-structured population.</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">simuPOP</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">N</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infoFields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="s1">&#39;ind_id&#39;</span><span class="p">,</span> <span class="s1">&#39;father_id&#39;</span><span class="p">,</span> <span class="s1">&#39;mother_id&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">setVirtualSplitter</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">InfoSplitter</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">75</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">demoModel</span><span class="p">(</span><span class="n">gen</span><span class="p">,</span> <span class="n">pop</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="sd">&#39;&#39;&#39;A demographic model that keep a constant supply of new individuals&#39;&#39;&#39;</span>
+<span class="gp">... </span>    <span class="c1"># number of individuals that will die</span>
+<span class="gp">... </span>    <span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">)])</span>
+<span class="gp">... </span>    <span class="c1"># individuals that will be kept, plus some new guys.</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">pop</span><span class="o">.</span><span class="n">popSize</span><span class="p">()</span> <span class="o">-</span> <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">()</span><span class="o">.</span><span class="n">popSize</span> <span class="o">+</span> <span class="n">N</span> <span class="o">//</span> <span class="mi">75</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">pene</span><span class="p">(</span><span class="n">geno</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">ind</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="s1">&#39;Define an age-dependent penetrance function&#39;</span>
+<span class="gp">... </span>    <span class="c1"># this disease does not occur in children</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">age</span> <span class="o">&lt;</span> <span class="mi">16</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="mi">0</span>
+<span class="gp">... </span>    <span class="c1"># if an individual is already affected, keep so</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">ind</span><span class="o">.</span><span class="n">affected</span><span class="p">():</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="mi">1</span>
+<span class="gp">... </span>    <span class="c1"># the probability of getting disease increases with age</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.001</span><span class="o">*</span><span class="n">age</span><span class="p">,</span> <span class="mf">0.001</span><span class="o">*</span><span class="n">age</span><span class="p">)[</span><span class="nb">sum</span><span class="p">(</span><span class="n">geno</span><span class="p">)]</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">outputstat</span><span class="p">(</span><span class="n">pop</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="s1">&#39;Calculate and output statistics&#39;</span>
+<span class="gp">... </span>    <span class="n">sim</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">popSize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">numOfAffected</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">ALL_AVAIL</span><span class="p">)],</span>
+<span class="gp">... </span>        <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;popSize_sp&#39;</span><span class="p">,</span> <span class="s1">&#39;propOfAffected_sp&#39;</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%.3f%%</span><span class="s1"> (size </span><span class="si">%d</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">subPopName</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="n">sp</span><span class="p">)),</span>
+<span class="gp">... </span>            <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="n">sp</span><span class="p">))</span><span class="o">.</span><span class="n">propOfAffected</span> <span class="o">*</span> <span class="mf">100.</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">pop</span><span class="o">.</span><span class="n">dvars</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="n">sp</span><span class="p">))</span><span class="o">.</span><span class="n">popSize</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="c1">#</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="kc">True</span>
+<span class="gp">...</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">initOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitSex</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="c1"># random assign age</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitInfo</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">75</span><span class="p">),</span> <span class="n">infoFields</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="c1"># random genotype</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">InitGenotype</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="c1"># assign an unique ID to everyone.</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOutput</span><span class="p">(</span><span class="s1">&#39;Prevalence of disease in each age group:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="c1"># increase the age of everyone by 1 before mating.</span>
+<span class="gp">... </span>    <span class="n">preOps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">InfoExec</span><span class="p">(</span><span class="s1">&#39;age += 1&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">matingScheme</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">HeteroMating</span><span class="p">([</span>
+<span class="gp">... </span>        <span class="c1"># all individuals with age &lt; 75 will be kept. Note that</span>
+<span class="gp">... </span>        <span class="c1"># CloneMating will keep individual sex, affection status and all</span>
+<span class="gp">... </span>        <span class="c1"># information fields (by default).</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">CloneMating</span><span class="p">(</span><span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">)],</span> <span class="n">weight</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="c1"># only individuals with age between 20 and 50 will mate and produce</span>
+<span class="gp">... </span>        <span class="c1"># offspring. The age of offspring will be zero.</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">RandomMating</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">IdTagger</span><span class="p">(),</span>                   <span class="c1"># give new born an ID</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">PedigreeTagger</span><span class="p">(),</span>             <span class="c1"># track parents of each individual</span>
+<span class="gp">... </span>            <span class="n">sim</span><span class="o">.</span><span class="n">MendelianGenoTransmitter</span><span class="p">(),</span>   <span class="c1"># transmit genotype</span>
+<span class="gp">... </span>        <span class="p">],</span>
+<span class="gp">... </span>        <span class="n">numOffspring</span><span class="o">=</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">UNIFORM_DISTRIBUTION</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">subPops</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)]),],</span>
+<span class="gp">... </span>        <span class="n">subPopSize</span><span class="o">=</span><span class="n">demoModel</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="c1"># number of individuals?</span>
+<span class="gp">... </span>    <span class="n">postOps</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyPenetrance</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">pene</span><span class="p">,</span> <span class="n">loci</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">sim</span><span class="o">.</span><span class="n">PyOperator</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">outputstat</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span>    <span class="n">gen</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">Prevalence of disease in each age group:</span>
+<span class="go">age &lt; 20: 0.578% (size 2596)</span>
+<span class="go">20 &lt;= age &lt; 50: 2.649% (size 4002)</span>
+<span class="go">50 &lt;= age &lt; 75: 4.217% (size 3249)</span>
+<span class="go">age &lt; 20: 0.526% (size 2660)</span>
+<span class="go">20 &lt;= age &lt; 50: 27.627% (size 3931)</span>
+<span class="go">50 &lt;= age &lt; 75: 50.317% (size 3313)</span>
+<span class="go">age &lt; 20: 0.489% (size 2660)</span>
+<span class="go">20 &lt;= age &lt; 50: 28.470% (size 3927)</span>
+<span class="go">50 &lt;= age &lt; 75: 61.757% (size 3347)</span>
+<span class="go">age &lt; 20: 0.639% (size 2660)</span>
+<span class="go">20 &lt;= age &lt; 50: 29.449% (size 3990)</span>
+<span class="go">50 &lt;= age &lt; 75: 62.384% (size 3246)</span>
+<span class="go">age &lt; 20: 0.526% (size 2660)</span>
+<span class="go">20 &lt;= age &lt; 50: 27.694% (size 3990)</span>
+<span class="go">50 &lt;= age &lt; 75: 64.030% (size 3325)</span>
+<span class="go">age &lt; 20: 0.865% (size 2660)</span>
+<span class="go">20 &lt;= age &lt; 50: 28.070% (size 3990)</span>
+<span class="go">50 &lt;= age &lt; 75: 60.782% (size 3325)</span>
+<span class="go">age &lt; 20: 0.489% (size 2660)</span>
+<span class="go">20 &lt;= age &lt; 50: 29.624% (size 3990)</span>
+<span class="go">50 &lt;= age &lt; 75: 60.812% (size 3325)</span>
+<span class="go">age &lt; 20: 0.526% (size 2660)</span>
+<span class="go">20 &lt;= age &lt; 50: 29.273% (size 3990)</span>
+<span class="go">50 &lt;= age &lt; 75: 61.714% (size 3325)</span>
+<span class="go">age &lt; 20: 0.789% (size 2660)</span>
+<span class="go">20 &lt;= age &lt; 50: 27.769% (size 3990)</span>
+<span class="go">50 &lt;= age &lt; 75: 61.233% (size 3325)</span>
+<span class="go">age &lt; 20: 0.639% (size 2660)</span>
+<span class="go">20 &lt;= age &lt; 50: 29.073% (size 3990)</span>
+<span class="go">50 &lt;= age &lt; 75: 59.669% (size 3325)</span>
+<span class="go">200</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># draw two Pedigrees from the last age-structured population</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simuPOP</span> <span class="k">import</span> <span class="n">sampling</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sample</span> <span class="o">=</span> <span class="n">sampling</span><span class="o">.</span><span class="n">drawNuclearFamilySample</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">families</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">numOffspring</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">affectedParents</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">affectedOffspring</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sim</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+<span class="go">Ploidy: 2 (diploid)</span>
+<span class="go">Chromosomes:</span>
+<span class="go">1:  (AUTOSOME, 1 loci)</span>
+<span class="go">   (1)</span>
+<span class="go">Information fields:</span>
+<span class="go">age ind_id father_id mother_id</span>
+<span class="go">population size: 8 (1 subpopulations with 8 Individuals)</span>
+<span class="go">Number of ancestral populations: 0</span>
+
+<span class="go">SubPopulation 0 (), 8 Individuals:</span>
+<span class="go">   0: MA 1 | 0 |  37 31578 27047 27596</span>
+<span class="go">   1: MU 1 | 0 |  29 32638 29986 29012</span>
+<span class="go">   2: MA 1 | 0 |  37 31579 27047 27596</span>
+<span class="go">   3: FA 1 | 0 |  57 29012 25317 22955</span>
+<span class="go">   4: MU 0 | 0 |  49 29986 27087 25888</span>
+<span class="go">   5: FA 1 | 1 |  67 27596 24124 24202</span>
+<span class="go">   6: FA 1 | 0 |  29 32637 29986 29012</span>
+<span class="go">   7: MA 1 | 0 |  71 27047 23653 20932</span>
+
+<span class="go">&gt;&gt;&gt;</span>
+
+<span class="go">now exiting runScriptInteractively...</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="ageStructured.py">Download ageStructured.py</a></p>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simuPOP</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch2.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch3.html">Loading and running simuPOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch4.html">Individuals and Populations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch5.html">simuPOP Operators</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide_ch6.html">Evolving populations</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec1.html">Mating Schemes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec2.html">Simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec3.html">Non-random and customized mating schemes *</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Age structured populations with overlapping generations **</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec5.html">Tracing allelic lineage *</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec6.html">Pedigrees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec7.html">Evolve a population following a specified pedigree structure **</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userGuide_ch6_sec8.html">Simulation of mitochondrial DNAs (mtDNAs) *</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch7.html">Utility Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userGuide_ch8.html">A real world example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch1.html">Front Matter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch2.html">simuPOP Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch3.html">Operator References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="refManual_ch4.html">Utility Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="userGuide.html">&lt;no title&gt;</a><ul>
+  <li><a href="userGuide_ch6.html">Evolving populations</a><ul>
+      <li>Previous: <a href="userGuide_ch6_sec3.html" title="previous chapter">Non-random and customized mating schemes *</a></li>
+      <li>Next: <a href="userGuide_ch6_sec5.html" title="next chapter">Tracing allelic lineage *</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2004-2019, Bo Peng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/userGuide_ch6_sec4.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

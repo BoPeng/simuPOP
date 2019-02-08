@@ -1,0 +1,15 @@
+{% extends "defindex.html" %}
+{% block tables %}
+  <table class="contentstable" align="center"><tr>
+    <td width="100%">
+      <p class="biglink"><a class="biglink" href="{{ pathto("userGuide") }}">simuPOP User's Guide</a><br/>
+         <span class="linkdescr">Teach you how to use simuPOP using tons of examples</span></p>
+    </td></tr>
+	<tr><td width="100%">
+      <p class="biglink"><a class="biglink" href="{{
+	  pathto("refManual") }}">simuPOP Reference Manual</a><br/>
+         <span class="linkdescr">Reference to all classes, functions and utility modules</span></p>
+    </td></tr>
+  </table>
+
+{% endblock %}
