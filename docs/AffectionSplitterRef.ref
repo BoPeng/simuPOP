@@ -1,0 +1,27 @@
+
+class AffectionSplitter
+-----------------------
+
+.. class:: AffectionSplitter
+
+   This class defines two VSPs according individual affection status.
+   The first VSP consists of unaffected invidiauls and the second VSP
+   consists of affected ones.
+
+
+   .. method:: AffectionSplitter(names=[])
+
+
+      Create a splitter that defined two VSPs by affection
+      status.These VSPs are named ``Unaffected`` and ``Affected``
+      unless a new set of names are specified by parameter *names*.
+
+
+   .. method:: AffectionSplitter.name(vsp)
+
+      Return ``"Unaffected"`` if *vsp=0* and ``"Affected"`` if
+      *vsp=1*, unless a new set of names are specified.
+
+   .. method:: AffectionSplitter.numVirtualSubPop()
+
+      Return 2.

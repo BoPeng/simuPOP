@@ -1,0 +1,35 @@
+
+class InfoExec
+--------------
+
+.. class:: InfoExec
+
+   Operator :class:`InfoExec` is similar to :class:`InfoEval` in that
+   it works at the individual level, using individual information
+   fields as variables. This is usually used to change the value of
+   information fields. For example, ``"b=a*2"`` will set the value of
+   information field ``b`` to ``a*a`` for all individuals.
+
+
+   .. method:: InfoExec(stmts="", usePopVars=False, exposeInd="", output="", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+
+      Create an operator that executes Python statements *stmts* using
+      individual information fields and population variables as
+      variables. If *exposeInd* is not empty, the individual itself
+      will be exposed in the population's local namespace as a
+      variable with name specified by *exposeInd*.
+
+      One or more python statements (*stmts*) are executed for each
+      individual. Information fields of these individuals are then
+      updated from the corresponding variables. For example, ``a=1``
+      will set information field *a* of all individuals to ``1``,
+      ``a=b`` will set information field *a* of all individuals to
+      information field ``b`` or a population variable ``b`` if ``b``
+      is not an information field but a population variable, and
+      ``a=ind.sex()`` will set information field *a* of all
+      individuals to its sex (needs ``exposeInd='ind'``.
+
+      Parameter *usePopVars* is obsolete because population variables
+      will always be usable.
+

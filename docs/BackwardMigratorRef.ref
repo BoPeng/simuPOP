@@ -1,0 +1,70 @@
+
+class BackwardMigrator
+----------------------
+
+.. class:: BackwardMigrator
+
+   This operator migrates individuals between all available or
+   specified subpopulations, according to a backward migration matrix.
+   It differs from :class:`Migrator` in how migration matrixes are
+   interpreted. Due to the limit of this model, this operator does not
+   support migration by information field, migration by count (*mode*
+   = ``BY_COUNT``), migration from virtual subpopulations, migration
+   between different number of subpopulations, and the creation of new
+   subpopulation, as operator :class:`Migrator` provides.
+
+   In contrast to a forward migration matrix where $m_{ij}$ is
+   considered the probability (proportion or count) of individuals
+   migrating from subpopulation ``i`` to ``j``, elements in a reverse
+   migration matrix $m_{ij}$ is considered the probability (proportion
+   or count) of individuals migrating from subpopulation ``j`` to
+   ``i``, namely the probability (proportion or count) of individuals
+   originats from subpopulation ``j``.
+
+   If migration is applied by probability, the row of the migration
+   matrix corresponding to a destination subpopulation is intepreted
+   as probabilities to orignate from each source subpopulation. Each
+   individual's source subpopulation is assigned randomly according to
+   these probabilities. Note that the probability of originating from
+   the present subpopulation is automatically calculated so the
+   corresponding matrix elements are ignored.
+
+   If migration is applied by proportion, the row of the migration
+   matrix corresponding to a destination subpopulation is intepreted
+   as proportions to originate from each source subpopulation. The
+   number of migrants from each source subpopulation is determined
+   before random indidividuals are chosen to migrate.
+
+   Unlike the forward migration matrix that describes how migration
+   should be performed, the backward migration matrix describes the
+   result of migration. The underlying forward migration matrix is
+   calculated at each generation and is in theory not the same across
+   generations.
+
+   This operator calculates the corresponding forward migration matrix
+   from backward matrix and current population size. This process is
+   not always feasible so an error will raise if no valid ending
+   population size or forward migration matrix could be determined.
+   Please refer to the  simuPOP user's guide for an explanation of the
+   theory behind forward and backward migration matrices.
+
+
+   .. method:: BackwardMigrator(rate=[], mode=BY_PROBABILITY, begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=["migrate_to"])
+
+
+      Create a  BackwardMigrator that moves individuals between
+      *subPop* subpopulations randomly according to a backward
+      migration matrix *rate*. The size of the matrix should match the
+      number of subpopulations.
+
+      Depending on the value of parameter *mode*, elements in the
+      migration matrix (*rate*) are interpreted as either the
+      probabilities to originate from source subpopulations (*mode* =
+      ``BY_PROBABILITY``) or proportions of individuals originate from
+      the source (virtual) subpopulations (*mode* =
+      ``BY_PROPORTION``). Migration by count is not supported by this
+      operator.
+
+      Please refer to operator :class:`BaseOperator` for a detailed
+      explanation for all parameters.
+

@@ -1,0 +1,14 @@
+
+class SystemError
+-----------------
+
+.. class:: SystemError
+
+   exception, thrown if system error occurs
+
+
+   .. method:: SystemError(msg)
+
+
+      FIXME: No document
+

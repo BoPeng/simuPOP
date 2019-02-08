@@ -1,0 +1,173 @@
+
+class Individual
+----------------
+
+.. class:: Individual
+
+   A :class:`Population` consists of individuals with the same
+   genotypic structure. An :class:`Individual` object cannot be
+   created independently, but refences to inidividuals can be
+   retrieved using member functions of a :class:`Population` object.
+   In addition to structural information shared by all individuals in
+   a population (provided by class :class:`GenoStruTrait`), the
+   :class:`Individual` class provides member functions to get and set
+   *genotype*, *sex*, *affection status* and *information fields* of
+   an individual.
+
+   Genotypes of an individual are stored sequentially and can be
+   accessed locus by locus, or in batch. The alleles are arranged by
+   position, chromosome and ploidy. That is to say, the first allele
+   on the first chromosome of the first homologous set is followed by
+   alleles at other loci on the same chromsome, then markers on the
+   second and later chromosomes, followed by alleles on the second
+   homologous set of the chromosomes for a diploid individual. A
+   consequence of this memory layout is that alleles at the same locus
+   of a non-haploid individual are separated by
+   ``Individual::totNumLoci()`` loci. It is worth noting that access
+   to invalid chromosomes, such as the Y chromosomes of female
+   individuals, is not restricted.
+
+
+   .. method:: Individual()
+
+
+      An :class:`Individual` object cannot be created directly. It has
+      to be accessed from a :class:`Population` object using functions
+      such as ``Population::Individual(idx)``.
+
+
+   .. method:: Individual.affected()
+
+      Return ``True`` if this individual is affected.
+
+   .. method:: Individual.allele(idx, ploidy=-1, chrom=-1)
+
+      return the current allele at a locus, using its absolute index
+      *idx*. If a ploidy *ploidy* and/or a chromosome indexes is
+      given, *idx* is relative to the beginning of specified
+      homologous copy of chromosomes (if *chrom=-1*) or the beginning
+      of the specified homologous copy of specified chromosome (if
+      *chrom* >= 0).
+
+   .. method:: Individual.alleleChar(idx, ploidy=-1, chrom=-1)
+
+      return the name of ``allele(idx, ploidy, chrom)``. If idx is
+      invalid (e.g. second homologus copy of chromosome Y), '_' is
+      returned.
+
+   .. method:: Individual.alleleLineage(idx, ploidy=-1, chrom=-1)
+
+      return the lineage of the allele at a locus, using its absolute
+      index *idx*. If a ploidy *ploidy* and/or a chromosome indexes is
+      given, *idx* is relative to the beginning of specified
+      homologous copy of chromosomes (if *chrom=-1*) or the beginning
+      of the specified homologous copy of specified chromosome (if
+      *chrom* >= 0). **This function returns 0 for modules without
+      lineage information.**
+
+   .. method:: Individual.__cmp__(rhs)
+
+      a python function used to compare the individual objects
+
+   .. method:: Individual.genotype(ploidy=ALL_AVAIL, chroms=ALL_AVAIL)
+
+      return an editable array (a ``carray`` object) that represents
+      all alleles of an individual. If *ploidy* or *chroms* is given,
+      only alleles on the specified chromosomes and homologous copy of
+      chromosomes will be returned. If multiple chromosomes are
+      specified, there should not be gaps between chromosomes. This
+      function ignores type of chromosomes so it will return unused
+      alleles for sex and mitochondrial chromosomes.
+
+   .. method:: Individual.info(field)
+
+      Return the value of an information field *filed* (by index or
+      name). ``ind.info(name)`` is equivalent to ``ind.name`` although
+      the function form allows the use of indexes of information
+      fieldes.
+
+   .. method:: Individual.lineage(ploidy=ALL_AVAIL, chroms=ALL_AVAIL)
+
+      return an editable array (a ``carray_lineage`` object) that
+      represents the lineages of all alleles of an individual. If
+      *ploidy* or *chroms* is given, only lineages on the specified
+      chromosomes and homologous copy of chromosomes will be returned.
+      If multiple chromosomes are specified, there should not be gaps
+      between chromosomes. This function ignores type of chromosomes
+      so it will return lineage of unused alleles for sex and
+      mitochondrial chromosomes. A ``None`` object will be returned
+      for modules without lineage information.
+
+   .. method:: Individual.mutants(ploidy=ALL_AVAIL, chroms=ALL_AVAIL)
+
+      return an itertor that iterate through all mutants (non-zero
+      alleles) of an individual. Each mutant is presented as a tuple
+      of (index, value) where index is the index of mutant ranging
+      from zero to  totNumLoci() *  ploidy() - 1, so you will have to
+      adjust indexes to check multiple alleles at a locus. If *ploidy*
+      or *chroms* is given, only alleles on the specified chromosomes
+      and homologous copy of chromosomes will be iterated. If multiple
+      chromosomes are specified, there should not be gaps between
+      chromosomes. This function ignores type of chromosomes so it
+      will return unused alleles for sex and mitochondrial
+      chromosomes.
+
+   .. method:: Individual.setAffected(affected)
+
+      set affection status to *affected* (``True`` or ``False``).
+
+   .. method:: Individual.setAllele(allele, idx, ploidy=-1, chrom=-1)
+
+      set allele *allele* to a locus, using its absolute index *idx*.
+      If a ploidy *ploidy* and/or a chromosome indexes are given,
+      *idx* is relative to the beginning of specified homologous copy
+      of chromosomes (if *chrom=-1*) or the beginning of the specified
+      homologous copy of specified chromosome (if *chrom* >= 0).
+
+   .. method:: Individual.setAlleleLineage(lineage, idx, ploidy=-1, chrom=-1)
+
+      set lineage *lineage* to an allele, using its absolute index
+      *idx*. If a ploidy *ploidy* and/or a chromosome indexes are
+      given, *idx* is relative to the beginning of specified
+      homologous copy of chromosomes (if *chrom=-1*) or the beginning
+      of the specified homologous copy of specified chromosome (if
+      *chrom* >= 0). This function does nothing for modules without
+      lineage information.
+
+   .. method:: Individual.setGenotype(geno, ploidy=ALL_AVAIL, chroms=ALL_AVAIL)
+
+      Fill the genotype of an individual using a list of alleles
+      *geno*. If parameters *ploidy* and/or *chroms* are specified,
+      alleles will be copied to only all or specified chromosomes on
+      selected homologous copies of chromosomes. ``geno`` will be
+      reused if its length is less than number of alleles to be
+      filled. This function ignores type of chromosomes so it will set
+      genotype for unused alleles for sex and mitochondrial
+      chromosomes.
+
+   .. method:: Individual.setInfo(value, field)
+
+      set the value of an information field *field* (by index or name)
+      to *value*. ``ind.setInfo(value, field)`` is equivalent to
+      ``ind.field = value`` although the function form allows the use
+      of indexes of information fieldes.
+
+   .. method:: Individual.setLineage(lineage, ploidy=ALL_AVAIL, chroms=ALL_AVAIL)
+
+      Fill the lineage of an individual using a list of IDs *lineage*.
+      If parameters *ploidy* and/or *chroms* are specified, lineages
+      will be copied to only all or specified chromosomes on selected
+      homologous copies of chromosomes. ``lineage`` will be reused if
+      its length is less than number of allelic lineage to be filled.
+      This function ignores type of chromosomes so it will set lineage
+      to unused alleles for sex and mitochondrial chromosomes. It does
+      nothing for modules without lineage information.
+
+   .. method:: Individual.setSex(sex)
+
+      set individual sex to ``MALE`` or ``FEMALE``.
+
+   .. method:: Individual.sex()
+
+      return the sex of an individual, ``1`` for male and ``2`` for
+      female.

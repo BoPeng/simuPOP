@@ -1,0 +1,194 @@
+
+class GenoStruTrait
+-------------------
+
+.. class:: GenoStruTrait
+
+   All individuals in a population share the same genotypic properties
+   such as number of chromosomes, number and position of loci, names
+   of markers, chromosomes, and information fields. These properties
+   are stored in this :class:`GenoStruTrait` class and are accessible
+   from both :class:`Individual` and :class:`Population` classes.
+   Currently, a genotypic structure consists of
+
+   + Ploidy, namely the number of homologous sets of chromosomes, of a
+     population. Haplodiploid population is also supported.
+
+   + Number of chromosomes and number of loci on each chromosome.
+
+   + Positions of loci, which determine the relative distance between
+     loci on the same chromosome. No unit is assumed so these
+     positions can be ordinal (``1``, ``2``, ``3``, ..., the default),
+     in physical distance (``bp``, ``kb`` or ``mb``), or in map
+     distance (e.g. ``centiMorgan``) depending on applications.
+
+   + Names of alleles, which can either be shared by all loci or be
+     specified for each locus.
+
+   + Names of loci and chromosomes.
+
+   + Names of information fields attached to each individual.
+
+   In addition to basic property access functions, this class provides
+   some utility functions such as ``locusByName``, which looks up a
+   locus by its name.
+
+
+   .. method:: GenoStruTrait()
+
+
+      A :class:`GenoStruTrait` object is created with the construction
+      of a :class:`Population` object and cannot be initialized
+      directly.
+
+
+   .. method:: GenoStruTrait.absLocusIndex(chrom, locus)
+
+      return the absolute index of locus *locus* on chromosome
+      *chrom*. c.f. ``chromLocusPair``.
+
+   .. method:: GenoStruTrait.alleleName(allele, locus=0)
+
+      return the name of allele *allele* at *lcous* specified by the
+      *alleleNames* parameter of the :class:`Population` function.
+      *locus* could be ignored if alleles at all loci share the same
+      names. If the name of an allele is unspecified, its value
+      (``'0'``, ``'1'``, ``'2'``, etc) is returned.
+
+   .. method:: GenoStruTrait.alleleNames(locus=0)
+
+      return a list of allele names at \locus given by the
+      *alleleNames* parameter of the :class:`Population` function.
+      *locus* could be ignored if alleles at all loci share the same
+      names. This list does not have to cover all possible allele
+      states of a population so ``alleleNames()[``*allele*``]`` might
+      fail (use ``alleleNames(``*allele*``)`` instead).
+
+   .. method:: GenoStruTrait.chromBegin(chrom)
+
+      return the index of the first locus on chromosome *chrom*.
+
+   .. method:: GenoStruTrait.chromByName(name)
+
+      return the index of a chromosome by its *name*.
+
+   .. method:: GenoStruTrait.chromEnd(chrom)
+
+      return the index of the last locus on chromosome *chrom* plus 1.
+
+   .. method:: GenoStruTrait.chromLocusPair(locus)
+
+      return the chromosome and relative index of a locus using its
+      absolute index *locus*. c.f. ``absLocusIndex``.
+
+   .. method:: GenoStruTrait.chromName(chrom)
+
+      return the name of a chromosome *chrom*.
+
+   .. method:: GenoStruTrait.chromNames()
+
+      return a list of the names of all chromosomes.
+
+   .. method:: GenoStruTrait.chromType(chrom)
+
+      return the type of a chromosome *chrom* (``CUSTOMIZED``,
+      ``AUTOSOME``, ``CHROMOSOME_X``, ``CHROMOSOME_Y`` or
+      ``MITOCHONDRIAL``.
+
+   .. method:: GenoStruTrait.chromTypes()
+
+      return the type of all chromosomes (``CUSTOMIZED``,
+      ``AUTOSOME``, ``CHROMOSOME_X``, ``CHROMOSOME_Y``, or
+      ``MITOCHONDRIAL``).
+
+   .. method:: GenoStruTrait.indexesOfLoci(loci=ALL_AVAIL)
+
+      return the indexes of loci with positions *positions* (list of
+      (chr, pos) pairs). Raise a :class:`ValueError` if any of the
+      loci cannot be found.
+
+   .. method:: GenoStruTrait.infoField(idx)
+
+      return the name of information field *idx*.
+
+   .. method:: GenoStruTrait.infoFields()
+
+      return a list of the names of all information fields of the
+      population.
+
+   .. method:: GenoStruTrait.infoIdx(name)
+
+      return the index of information field *name*. Raise an
+      :class:`IndexError` if *name* is not one of the information
+      fields.
+
+   .. method:: GenoStruTrait.lociByNames(names)
+
+      return the indexes of loci with names *names*. Raise a
+      :class:`ValueError` if any of the loci cannot be found.
+
+   .. method:: GenoStruTrait.lociDist(locus1, locus2)
+
+      Return the distance between loci *locus1* and *locus2* on the
+      same chromosome. A negative value will be returned if *locus1*
+      is after *locus2*.
+
+   .. method:: GenoStruTrait.lociNames()
+
+      return the names of all loci specified by the *lociNames*
+      parameter of the :class:`Population` function. An empty list
+      will be returned if *lociNames* was not specified.
+
+   .. method:: GenoStruTrait.lociPos()
+
+      return the positions of all loci, specified by the *lociPos*
+      prameter of the :class:`Population` function. The default
+      positions are 1, 2, 3, 4, ... on each chromosome.
+
+   .. method:: GenoStruTrait.locusByName(name)
+
+      return the index of a locus with name *name*. Raise a
+      :class:`ValueError` if no locus is found. Note that empty
+      strings are used for loci without name but you cannot lookup
+      such loci using this function.
+
+   .. method:: GenoStruTrait.locusName(locus)
+
+      return the name of locus *locus* specified by the *lociNames*
+      parameter of the :class:`Population` function. An empty string
+      will be returned if no name has been given to locus *locus*.
+
+   .. method:: GenoStruTrait.locusPos(locus)
+
+      return the position of locus *locus* specified by the *lociPos*
+      parameter of the :class:`Population` function.
+
+   .. method:: GenoStruTrait.numChrom()
+
+      return the number of chromosomes.
+
+   .. method:: GenoStruTrait.numLoci(chrom)
+
+      return the number of loci on chromosome *chrom*.
+
+   .. method:: GenoStruTrait.numLoci()
+
+      return a list of the number of loci on all chromosomes.
+
+   .. method:: GenoStruTrait.ploidy()
+
+      return the number of homologous sets of chromosomes, specified
+      by the *ploidy* parameter of the :class:`Population` function.
+      Return 2 for a haplodiploid population because two sets of
+      chromosomes are stored for both males and females in such a
+      population.
+
+   .. method:: GenoStruTrait.ploidyName()
+
+      return the ploidy name of this population, can be one of
+      ``haploid``, ``diploid``, ``haplodiploid``, ``triploid``,
+      ``tetraploid`` or ``#-ploid`` where ``#`` is the ploidy number.
+
+   .. method:: GenoStruTrait.totNumLoci()
+
+      return the total number of loci on all chromosomes.

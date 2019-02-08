@@ -1,0 +1,20 @@
+
+class PolygamousMating
+----------------------
+
+.. class:: PolygamousMating
+
+   A homogeneous mating scheme that uses a multi-spouse parents chooser
+   and a Mendelian offspring generator. It differs from the basic random
+   mating scheme in that each parent of sex *polySex* will have *polyNum*
+   spouses.
+
+   .. method:: PolygamousMating.PolygamousMating(polySex=MALE, polyNum=1, numOffspring=1, sexMode=RANDOM_SEX, ops=MendelianGenoTransmitter(), subPopSize=[], subPops=ALL_AVAIL, weight=0, selectionField='fitness')
+
+      Creates a polygamous mating scheme that each parent mates with
+      multiple spouses. Please refer to class :class:`PolyParentsChooser` for
+      parameters *polySex*, *polyNum* and *selectionField*, to class
+      :class:`OffspringGenerator` for parameters *ops*,  *sexMode* and
+      *numOffspring*, and to class :class:`HomoMating` for parameters
+      *subPopSize*, *subPops* and *weight*.
+

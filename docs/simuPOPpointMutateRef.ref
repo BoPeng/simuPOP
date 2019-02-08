@@ -1,0 +1,8 @@
+
+Function pointMutate
+--------------------
+
+
+.. function:: pointMutate(pop, *args, **kwargs)
+
+   Function form of operator :class:`PointMutator`

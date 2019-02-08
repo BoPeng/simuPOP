@@ -1,0 +1,10 @@
+
+Function pyQuanTrait
+--------------------
+
+
+.. function:: pyQuanTrait(pop, func, loci=[], ancGens=True, *args, **kwargs)
+
+   Apply opertor :class:`PyQuanTrait` to population *pop*. Unlike the
+   operator form of this operator that only handles the current generation,
+   this function by default assign affection status to all generations.

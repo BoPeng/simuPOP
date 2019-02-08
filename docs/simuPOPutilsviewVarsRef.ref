@@ -1,0 +1,20 @@
+
+Function viewVars
+-----------------
+
+
+.. function:: viewVars(var, gui=None)
+
+   list a variable in tree format, either in text format or in a
+       wxPython window.
+   
+   var
+       A dictionary variable to be viewed. Dictionary wrapper objects returned
+       by ``Population.dvars()`` and ``Simulator.dvars()`` are also acceptable.
+   
+   gui
+       If gui is ``False`` or ``'Tkinter'``, a text presentation (use the
+       pprint module) of the variable will be printed to the screen. If gui is
+       ``'wxPython'`` and wxPython is available, a wxPython windows will be
+       used. The default mode is determined by the global gui mode (see also
+       :func:`simuOpt.setOptions`).

@@ -1,0 +1,8 @@
+
+Function kAlleleMutate
+----------------------
+
+
+.. function:: kAlleleMutate(pop, *args, **kwargs)
+
+   Function form of operator :class:`KAlleleMutator`

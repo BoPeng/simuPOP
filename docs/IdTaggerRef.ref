@@ -1,0 +1,42 @@
+
+class IdTagger
+--------------
+
+.. class:: IdTagger
+
+   An  IdTagger gives a unique ID for each individual it is applies
+   to. These ID can be used to uniquely identify an individual in a
+   multi-generational population and be used to reliably reconstruct a
+   Pedigree.
+
+   To ensure uniqueness across populations, a single source of ID is
+   used for this operator. individual IDs are assigned consecutively
+   starting from 1. Value 1 instead of 0 is used because most software
+   applications use 0 as missing values for parentship. If you would
+   like to reset the sequence or start from a different number, you
+   can call the ``reset(startID)`` function of any :class:`IdTagger`.
+
+   An :class:`IdTagger` is usually used during-mating to assign ID to
+   each offspring. However, if it is applied directly to a population,
+   it will assign unique IDs to all individuals in this population.
+   This property is usually used in the ``preOps`` parameter of
+   function :meth:`Simulator.evolve` to assign initial ID to a
+   population.
+
+
+   .. method:: IdTagger(begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, output="", infoFields=["ind_id"])
+
+
+      Create an :class:`IdTagger` that assign an unique ID for each
+      individual it is applied to. The IDs are created sequentially
+      and are stored in an information field specified in parameter
+      *infoFields* (default to ``ind_id``). This operator is
+      considered a during-mating operator but it can be used to set ID
+      for all individuals of a population when it is directly applied
+      to the population.
+
+
+   .. method:: IdTagger.reset(startID=1)
+
+      Reset the global individual ID number so that IdTaggers will
+      start from id (default to 1) again.

@@ -1,0 +1,39 @@
+
+class BaseQuanTrait
+-------------------
+
+.. class:: BaseQuanTrait
+
+   A quantitative trait in  simuPOP is simply an information field. A
+   quantitative trait model simply assigns values to one or more
+   information fields (called trait fields) of each individual
+   according to its genetic (genotype) and environmental (information
+   field) factors. It can be applied at any stage of an evolutionary
+   cycle. If a quantitative trait operator is applied before or after
+   mating, it will set the trait fields of all parents and offspring.
+   If it is applied during mating, it will set the trait fields of
+   each offspring.
+
+   When a quantitative trait operator is applied to a population, it
+   is only applied to the current generation. You can, however, use
+   parameter *ancGen=-1* to set the trait field of all ancestral
+   generations, or a generation index to apply to only ancestral
+   generation younger than *ancGen*. Note that this parameter is
+   ignored if the operator is applied during mating.
+
+
+   .. method:: BaseQuanTrait(ancGens=UNSPECIFIED, begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+
+      Create a base quantitative trait operator. This operator assigns
+      one or more quantitative traits to trait fields in the present
+      generation (default). If ``ALL_AVAIL`` or a list of ancestral
+      generations are specified, this operator will be applied to
+      individuals in these generations as well. A quantitative trait
+      operator can be applied to specified (virtual) subpopulations
+      (parameter *subPops*) and replicates (parameter *reps*).
+
+
+   .. method:: BaseQuanTrait.apply(pop)
+
+      set ``qtrait`` to all individual

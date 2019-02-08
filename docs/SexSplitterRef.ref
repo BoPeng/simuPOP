@@ -1,0 +1,27 @@
+
+class SexSplitter
+-----------------
+
+.. class:: SexSplitter
+
+   This splitter defines two VSPs by individual sex. The first VSP
+   consists of all male individuals and the second VSP consists of all
+   females in a subpopulation.
+
+
+   .. method:: SexSplitter(names=[])
+
+
+      Create a sex splitter that defines male and female VSPs. These
+      VSPs are named ``Male`` and ``Female`` unless a new set of names
+      are specified by parameter *names*.
+
+
+   .. method:: SexSplitter.name(vsp)
+
+      Return ``"Male"`` if *vsp=0* and ``"Female"`` otherwise, unless
+      a new set of names are specified.
+
+   .. method:: SexSplitter.numVirtualSubPop()
+
+      Return ``2``.

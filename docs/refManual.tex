@@ -1,0 +1,430 @@
+%% LyX 2.3.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[oneside,english]{manual}
+\usepackage[scaled=0.7]{beramono}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{color}
+\usepackage{babel}
+\usepackage{makeidx}
+\makeindex
+\usepackage[authoryear]{natbib}
+\usepackage[unicode=true,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=true,bookmarksopenlevel=2,
+ breaklinks=true,pdfborder={0 0 1},backref=false,colorlinks=true]
+ {hyperref}
+\hypersetup{pdftitle={simuPOP Reference Manual},
+ pdfauthor={Bo Peng},
+ pdfkeywords={simuPOP},
+ linkcolor=TitleColor,urlcolor=LinkColor}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\renewcommand{\py@ptsize}{12pt}
+\setreleaseinfo{Release 1.1.7 (\mbox{Rev: 5000})}
+% file revision $Rev: 3372$
+\authoraddress{
+{\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
+{\bf Email: } \textsf{bpeng@mdanderson.org}\\
+{\bf URL: } \textsf{http://simupop.sourceforge.net} \\
+{\bf Mailing List: } \textsf{simupop-list@lists.sourceforge.net}
+}
+\author{Bo Peng}
+\date{December 2004\\
+\hfill{}\\
+Last modified \\
+\today }
+
+\ifhtml
+\chapter*{Front Matter\label{front}}
+\fi
+
+\usepackage{listings}
+\renewcommand{\lstlistlistingname}{List of Examples}
+\renewcommand{\lstlistingname}{Example}
+
+\sloppy
+
+\definecolor{TitleColor}{rgb}{0.126,0.263,0.361}
+\definecolor{LinkColor}{rgb}{0.208,0.374,0.486}
+\definecolor{VerbatimColor}{rgb}{0,0,0}
+\definecolor{VerbatimBorderColor}{rgb}{0,0,0}
+
+\usepackage{sectsty}
+\sectionfont{\color{TitleColor}}
+\subsectionfont{\color{TitleColor}}
+\subsubsectionfont{\color{TitleColor}}
+
+\newlength{\admonitionwidth} 
+\setlength{\admonitionwidth}{0.7\textwidth}
+
+\makeatother
+
+\usepackage{listings}
+\lstset{basicstyle={\ttfamily\color{VerbatimColor}},
+language=Python,
+showspaces=false,
+showstringspaces=false,
+showtabs=false,
+xleftmargin=15pt}
+\begin{document}
+\title{simuPOP Reference Manual}
+
+\maketitle
+\noindent\begin{minipage}[c][1\totalheight]{1\columnwidth}%
+\vspace{7.5in} 
+
+ \copyright{}  2004-2008 Bo Peng \vspace{.3cm} \hrule \vspace{0.1cm} Permission
+is granted to make and distribute verbatim copies of this manual provided
+the copyright notice and this permission notice are preserved on all
+copies. Permission is granted to copy and distribute modified versions
+of this manual under the conditions for verbatim copying, provided
+also that the sections entitled Copying and GNU General Public License
+are included exactly as in the original, and provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one. Permission is granted to copy and distribute
+translations of this manual into another language, under the above
+conditions for modified versions, except that this permission notice
+may be stated in a translation approved by the Free Software Foundation.%
+\end{minipage}
+\begin{abstract}
+simuPOP is a general-purpose individual-based forward-time population
+genetics simulation environment. Unlike coalescent-based programs,
+simuPOP evolves populations forward in time, subject to arbitrary
+number of genetic and environmental forces such as mutation, recombination,
+migration and population/subpopulation size changes. In contrast to
+competing applications that use command-line options or configuration
+files to direct the execution of a limited number of predefined evolutionary
+scenarios, users of simuPOP\textquoteright s scripting interface could
+make use of many of its unique features, such as customized chromosome
+types, arbitrary nonrandom mating schemes, virtual subpopulations,
+information fields and Python operators, to construct and study almost
+arbitrarily complex evolutionary scenarios. 
+
+simuPOP is provided as a number of Python modules, which consist of
+a large number of Python objects and functions, including population,
+mating schemes, operators (objects that manipulate populations) and
+simulators to coordinate the evolutionary processes. It is the users\textquoteright{}
+responsibility to write a Python script to glue these pieces together
+and form a simulation. At a more user-friendly level, an increasing
+number of functions and scripts contributed by simuPOP users is available
+in the online simuPOP cookbook. They provide useful functions for
+different applications (e.g. load and manipulate HapMap samples, import
+and export files from another application) and allow users who are
+unfamiliar with simuPOP to perform a large number of simulations ranging
+from basic population genetics models to generating datasets under
+complex evolutionary scenarios.
+
+This document provides complete references to all classes and functions
+of simuPOP and its utility modules. Please refer to the \emph{simuPOP
+user's guide} for a detailed introduction to simuPOP concepts, and
+a number of examples on how to use simuPOP to perform various simulations.
+All resources, including a pdf version of this guide and a mailing
+list can be found at the simuPOP homepage \texttt{http://simupop.sourceforge.net}.
+
+\textbf{How to cite simuPOP:}
+
+\begin{quote}
+Bo Peng and Marek Kimmel (2005) simuPOP: a forward-time population
+genetics simulation environment. \emph{bioinformatics}, \textbf{21}
+(18): 3686-3687.
+
+Bo Peng and Christopher Amos (2008) Forward-time simulations of nonrandom
+mating populations using simuPOP. \emph{bioinformatics}, \textbf{24}
+(11): 1408-1409.
+\end{quote}
+\end{abstract}
+\tableofcontents{}
+
+\include{simuPOP_ref}
+
+\chapter{\hspace{0cm}simuPOP Components}
+
+\section{Individual\index{Individual}, Population\index{Population}, pedigree\index{Pedigree}
+and Simulator\index{Simulator}}
+
+\GenoStruTraitRef
+\IndividualRef
+\PopulationRef
+\PedigreeRef
+\SimulatorRef
+
+\section{Virtual splitters}
+
+\BaseVspSplitterRef
+\SexSplitterRef
+\AffectionSplitterRef
+\InfoSplitterRef
+\ProportionSplitterRef
+\RangeSplitterRef
+\GenotypeSplitterRef
+\CombinedSplitterRef
+\ProductSplitterRef
+
+\section{Mating Schemes\index{mating scheme}}
+
+\MatingSchemeRef
+\HomoMatingRef
+\HeteroMatingRef
+\ConditionalMatingRef
+\PedigreeMatingRef
+\SequentialParentChooserRef
+\simuPOPSequentialParentsChooserRef
+\RandomParentChooserRef
+\RandomParentsChooserRef
+\PolyParentsChooserRef
+\CombinedParentsChooserRef
+\PyParentsChooserRef
+\OffspringGeneratorRef
+\ControlledOffspringGeneratorRef
+
+\section{Pre-defined mating schemes}
+
+\simuPOPCloneMatingRef
+\simuPOPRandomSelectionRef
+\simuPOPRandomMatingRef
+\simuPOPMonogamousMatingRef
+\simuPOPPolygamousMatingRef
+\simuPOPHaplodiploidMatingRef
+\simuPOPSelfMatingRef
+\simuPOPHermaphroditicMatingRef
+\simuPOPControlledRandomMatingRef
+
+\section{Utility Classes}
+
+\simuPOPWithArgsRef
+\simuPOPWithModeRef
+\RNGRef
+\WeightedSamplerRef
+
+\section{Global functions}
+
+\closeOutputRef
+\describeEvolProcessRef
+\loadPopulationRef
+\loadPedigreeRef
+\moduleInfoRef
+\getRNGRef
+\simuPOPsetRNGRef
+\setOptionsRef
+\turnOnDebugRef
+\turnOffDebugRef
+
+\chapter{Operator References}
+
+\section{Base class for all operators}
+
+\BaseOperatorRef
+
+\section{Initialization\index{initializer}}
+
+\InitSexRef
+\InitInfoRef
+\InitGenotypeRef
+\InitLineageRef
+
+\section{Expression and Statements}
+
+\PyOutputRef
+\PyEvalRef
+\PyExecRef
+\InfoEvalRef
+\InfoExecRef
+
+\section{Demographic models\index{Migrator}}
+
+\MigratorRef
+\BackwardMigratorRef
+\SplitSubPopsRef
+\MergeSubPopsRef
+\ResizeSubPopsRef
+
+\section{Genotype transmitters}
+
+\GenoTransmitterRef
+\CloneGenoTransmitterRef
+\MendelianGenoTransmitterRef
+\SelfingGenoTransmitterRef
+\HaplodiploidGenoTransmitterRef
+\MitochondrialGenoTransmitterRef
+\RecombinatorRef
+\MutSpaceRecombinatorRef
+
+\section{Mutation\index{Mutation}}
+
+\BaseMutatorRef
+\MatrixMutatorRef
+\KAlleleMutatorRef
+\StepwiseMutatorRef
+\PyMutatorRef
+\MixedMutatorRef
+\ContextMutatorRef
+\PointMutatorRef
+\simuPOPSNPMutatorRef
+\simuPOPAcgtMutatorRef
+\MutSpaceRevertFixedSitesRef
+\MutSpaceMutatorRef
+
+\section{Penetrance\index{penetrance}}
+
+\BasePenetranceRef
+\MapPenetranceRef
+\MaPenetranceRef
+\MlPenetranceRef
+\PyPenetranceRef
+\PyMlPenetranceRef
+
+\section{Quantitative Trait\index{quantitative trait}}
+
+\BaseQuanTraitRef
+\PyQuanTraitRef
+
+\section{Natural selection\index{selection} }
+
+\BaseSelectorRef
+\MapSelectorRef
+\MaSelectorRef
+\MlSelectorRef
+\PySelectorRef
+\PyMlSelectorRef
+\MutSpaceSelectorRef
+
+\section{Tagging operators}
+
+\IdTaggerRef
+\InheritTaggerRef
+\SummaryTaggerRef
+\ParentsTaggerRef
+\OffspringTaggerRef
+\PedigreeTaggerRef
+\PyTaggerRef
+
+\section{Statistics Calculation}
+
+\StatRef
+
+\section{Conditional operators}
+
+\IfElseRef
+\TerminateIfRef
+\DiscardIfRef
+
+\section{The Python operator}
+
+\PyOperatorRef
+
+\section{Miscellaneous operators}
+
+\NoneOpRef
+\DumperRef
+\SavePopulationRef
+\PauseRef
+\TicTocRef
+
+\section{Function form of operators}
+
+\simuPOPacgtMutateRef
+\simuPOPcontextMutateRef
+\simuPOPdiscardIfRef
+\simuPOPdumpRef
+\simuPOPinfoEvalRef
+\simuPOPinfoExecRef
+\simuPOPinitGenotypeRef
+\simuPOPinitInfoRef
+\simuPOPinitSexRef
+\simuPOPkAlleleMutateRef
+\simuPOPmaPenetranceRef
+\simuPOPmapPenetranceRef
+\simuPOPmatrixMutateRef
+\simuPOPmergeSubPopsRef
+\simuPOPmigrateRef
+\simuPOPbackwardMigrateRef
+\simuPOPmixedMutateRef
+\simuPOPmlPenetranceRef
+\simuPOPpointMutateRef
+\simuPOPpyEvalRef
+\simuPOPpyExecRef
+\simuPOPpyMutateRef
+\simuPOPpyPenetranceRef
+\simuPOPpyMlPenetranceRef
+\simuPOPpyQuanTraitRef
+\simuPOPresizeSubPopsRef
+\simuPOPsnpMutateRef
+\simuPOPsplitSubPopsRef
+\simuPOPstatRef
+\simuPOPstepwiseMutateRef
+\simuPOPtagIDRef
+
+\chapter{Utility Modules}
+
+\section{Module \texttt{simuOpt}}
+
+\simuOptRef
+\simuOptsetOptionsRef
+
+\section{Module \texttt{simuPOP.utils}}
+
+\simuPOPutilsRef
+\simuPOPutilsTrajectoryRef
+\simuPOPutilsTrajectorySimulatorRef
+\simuPOPutilssimulateForwardTrajectoryRef
+\simuPOPutilssimulateBackwardTrajectoryRef
+\simuPOPutilsProgressBarRef
+\simuPOPutilsviewVarsRef
+\simuPOPutilssaveCSVRef
+\simuPOPutilsExporterRef
+\simuPOPutilsimportPopulationRef
+\simuPOPutilsexportRef
+
+\section{Module \texttt{simuPOP.demography}}
+
+\simuPOPdemographyRef
+\simuPOPutilsmigrIslandRatesRef
+\simuPOPutilsmigrHierarchicalIslandRatesRef
+\simuPOPutilsmigrSteppingStoneRatesRef
+\simuPOPdemographymigrtwoDSteppingStoneRatesRef
+\simuPOPdemographyEventBasedModelRef
+\simuPOPdemographyDemographicEventRef
+\simuPOPdemographyExpansionEventRef
+\simuPOPdemographyResizeEventRef
+\simuPOPdemographySplitEventRef
+\simuPOPdemographyMergeEventRef
+\simuPOPdemographyAdmixtureEventRef
+\simuPOPdemographyInstantChangeModelRef
+\simuPOPdemographyExponentialGrowthModelRef
+\simuPOPdemographyLinearGrowthModelRef
+\simuPOPdemographyMultiStageModelRef
+\simuPOPdemographyOutOfAfricaModelRef
+\simuPOPdemographySettlementOfNewWorldModelRef
+\simuPOPdemographyCosiModelRef
+
+\section{Module \texttt{simuPOP.sampling}}
+
+\simuPOPsamplingRef
+\simuPOPsamplingBaseSamplerRef
+\simuPOPsamplingRandomSamplerRef
+\simuPOPsamplingdrawRandomSampleRef
+\simuPOPsamplingdrawRandomSamplesRef
+\simuPOPsamplingCaseControlSamplerRef
+\simuPOPsamplingdrawCaseControlSampleRef
+\simuPOPsamplingdrawCaseControlSamplesRef
+\simuPOPsamplingPedigreeSamplerRef
+\simuPOPsamplingAffectedSibpairSamplerRef
+\simuPOPsamplingdrawAffectedSibpairSampleRef
+\simuPOPsamplingdrawAffectedSibpairSamplesRef
+\simuPOPsamplingNuclearFamilySamplerRef
+\simuPOPsamplingdrawNuclearFamilySampleRef
+\simuPOPsamplingdrawNuclearFamilySamplesRef
+\simuPOPsamplingThreeGenFamilySamplerRef
+\simuPOPsamplingdrawThreeGenFamilySampleRef
+\simuPOPsamplingdrawThreeGenFamilySamplesRef
+\simuPOPsamplingCombinedSamplerRef
+\simuPOPsamplingdrawCombinedSampleRef
+\simuPOPsamplingdrawCombinedSamplesRef
+
+\section{Module \texttt{simuPOP.gsl}}
+
+\simuPOPgslRef\printindex
+\end{document}

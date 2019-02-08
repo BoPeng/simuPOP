@@ -1,0 +1,9 @@
+
+Function infoExec
+-----------------
+
+
+.. function:: infoExec(pop, *args, **kwargs)
+
+   Execute *stmts* for each individual, using information fields as variables.
+   Please refer to operator :class:`InfoExec` for details.

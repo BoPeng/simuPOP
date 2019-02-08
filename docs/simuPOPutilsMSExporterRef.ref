@@ -1,0 +1,16 @@
+
+class MSExporter
+----------------
+
+.. class:: MSExporter
+
+   An exporter to export given population in MS format
+
+   .. method:: MSExporter.MSExporter(splitBy=None)
+
+      Initialize self.  See help(type(self)) for accurate signature.
+
+   .. method:: MSExporter.export(pop, output, subPops, infoFields, gui)
+
+      Export in MS format
+

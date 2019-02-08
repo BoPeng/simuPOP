@@ -1,0 +1,8 @@
+
+Function loadPopulation
+-----------------------
+
+
+.. function:: loadPopulation(file)
+
+   load a population from a file saved by ``Population::save()``.

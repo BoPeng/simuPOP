@@ -1,0 +1,31 @@
+
+class Dumper
+------------
+
+.. class:: Dumper
+
+   This operator dumps the content of a population in a human readable
+   format. Because this output format is not structured and can not be
+   imported back to  simuPOP, this operator is usually used to dump a
+   small population to a terminal for demonstration and debugging
+   purposes.
+
+
+   .. method:: Dumper(genotype=True, structure=True, ancGens=UNSPECIFIED, width=1, max=100, loci=[], output=">", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
+
+
+      Create a operator that dumps the genotype structure (if
+      *structure* is ``True``) and genotype (if *genotype* is
+      ``True``) to an *output* ( default to standard terminal output).
+      Because a population can be large, this operator will only
+      output the first 100 (parameter *max*) individuals of the
+      present generation (parameter *ancGens*). All loci will be
+      outputed unless parameter *loci* are used to specify a subset of
+      loci. This operator by default output values of all information
+      fields unless parameter *infoFields* is used to specify a subset
+      of info fields to display. If a list of (virtual) subpopulations
+      are specified, this operator will only output individuals in
+      these outputs. Please refer to class :class:`BaseOperator` for a
+      detailed explanation for common parameters such as *output* and
+      *stage*.
+

@@ -1,0 +1,14 @@
+
+Function drawRandomSample
+-------------------------
+
+
+.. function:: drawRandomSample(pop, sizes, subPops=ALL_AVAIL)
+
+   Draw ``sizes`` random individuals from a population. If a single ``sizes``
+   is given, individuals are drawn randomly from the whole population or
+   from specified (virtual) subpopulations (parameter ``subPops``). Otherwise,
+   a list of numbers should be used to specify number of samples from each
+   subpopulation, which can be all subpopulations if ``subPops=ALL_AVAIL``
+   (default), or from each of the specified (virtual) subpopulations. This
+   function returns a population with all extracted individuals.

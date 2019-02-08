@@ -1,0 +1,16 @@
+
+class CSVExporter
+-----------------
+
+.. class:: CSVExporter
+
+   An exporter to export given population in csv format
+
+   .. method:: CSVExporter.CSVExporter(header=True, genoFormatter=None, infoFormatter=None, sexFormatter={1: 'M', 2: 'F'}, affectionFormatter={True: 'A', False: 'U'}, delimiter=',', subPopFormatter=None)
+
+      Initialize self.  See help(type(self)) for accurate signature.
+
+   .. method:: CSVExporter.export(pop, output, subPops, infoFields, gui)
+
+      Export in CSV format
+

@@ -1,0 +1,24 @@
+
+class DemographicEvent
+----------------------
+
+.. class:: DemographicEvent
+
+   A demographic events that will be applied to one or more populations at
+   specified generations. The interface of a DemographicEvent is very similar to
+   an simuPOP operator, but the applicable parameters are handled so that
+   the generations are relative to the demographic model, not the populations
+   to which the event is applied.
+
+   .. method:: DemographicEvent.DemographicEvent(ops=[], output='', begin=0, end=-1, step=1, at=[], reps=True, subPops=ALL_AVAIL, infoFields=[])
+
+      Create a demographic event that will be applied at specified
+      generations according to applicability parameters ``reps``, ``begin``, 
+      ``end``, ``step`` and ``at``. Parameter ``subPops`` is usually used
+      to specify the subpopulations affected by the event. One or more simuPOP
+      operators, if specified in ``ops``, will be applied when the event
+      happens. Parameters ``output`` and ``infoFields`` are currently ignored.
+
+   .. method:: DemographicEvent.apply(pop)
+
+

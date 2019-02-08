@@ -1,0 +1,16 @@
+
+class GenePopExporter
+---------------------
+
+.. class:: GenePopExporter
+
+   An exporter to export given population in structure format
+
+   .. method:: GenePopExporter.GenePopExporter(title=None, adjust=1)
+
+      Initialize self.  See help(type(self)) for accurate signature.
+
+   .. method:: GenePopExporter.export(pop, output, subPops, infoFields, gui)
+
+      Export in genepop format
+

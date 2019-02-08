@@ -1,0 +1,12 @@
+
+Function tagID
+--------------
+
+
+.. function:: tagID(pop, reset=False, *args, **kwargs)
+
+   Apply operator :class:`IdTagger` to population *pop* to assign a unique ID
+   to all individuals in the population. Individuals ID will starts from a
+   system wide index. You can reset this start ID using parameter ``reset``
+   which can be ``True`` (reset to 1) or a non-negative number (start from
+   this number).

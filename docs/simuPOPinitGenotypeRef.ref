@@ -1,0 +1,8 @@
+
+Function initGenotype
+---------------------
+
+
+.. function:: initGenotype(pop, *args, **kwargs)
+
+   Apply operator :class:`InitGenotype` to population *pop*.

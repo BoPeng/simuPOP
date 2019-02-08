@@ -1,0 +1,24 @@
+
+class AcgtMutator
+-----------------
+
+.. class:: AcgtMutator
+
+   This mutation operator assumes alleles 0, 1, 2, 3 as nucleotides ``A``,
+   ``C``, ``G`` and ``T`` and use a 4 by 4 mutation rate matrix to mutate them.
+   Although a general model needs 12 parameters, less parameters are needed
+   for specific nucleotide mutation models (parameter ``model``). The length
+   and meaning of parameter ``rate`` is model dependent.
+
+   .. method:: AcgtMutator.AcgtMutator(rate=[], model='general', loci=True, mapIn=[], mapOut=[], output='', begin=0, end=-1, step=1, at=[], reps=True, subPops=ALL_AVAIL, infoFields=['ind_id'], lineageMode=115)
+
+      Create a mutation model that mutates between nucleotides ``A``,
+      ``C``, ``G``, and ``T`` (alleles are coded in that order as 0, 1, 2
+      and 3). Currently supported models are Jukes and Cantor 1969 model
+      (``JC69``), Kimura's 2-parameter model (``K80``), Felsenstein 1981
+      model (``F81``), Hasgawa, Kishino and Yano 1985 model (``HKY85``),
+      Tamura 1992 model (``T92``), Tamura and Nei 1993 model (``TN93``),
+      Generalized time reversible model (``GTR``), and a general model
+      (``general``) with 12 parameters. Please refer to the simuPOP user's
+      guide for detailed information about each model.
+

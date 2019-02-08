@@ -1,0 +1,21 @@
+
+class SelfMating
+----------------
+
+.. class:: SelfMating
+
+   A homogeneous mating scheme that uses a random single-parent parent
+   chooser with or without replacement (parameter *replacement*) and a
+   selfing offspring generator. It is used to mimic self-fertilization
+   in certain plant populations.
+
+   .. method:: SelfMating.SelfMating(replacement=True, numOffspring=1, sexMode=RANDOM_SEX, ops=SelfingGenoTransmitter(), subPopSize=[], subPops=ALL_AVAIL, weight=0, selectionField='fitness')
+
+      Creates a selfing mating scheme where two homologous copies of
+      parental chromosomes are transmitted to offspring according to
+      Mendelian laws. Please refer to class :class:`RandomParentChooser` for
+      parameter *replacement* and  *selectionField*, to class
+      :class:`OffspringGenerator` for parameters *ops*, *sexMode* and
+      *numOffspring*, and to class :class:`HomoMating` for parameters
+      *subPopSize*, *subPops* and *weight*.
+

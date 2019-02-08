@@ -1,0 +1,10 @@
+
+Function stat
+-------------
+
+
+.. function:: stat(pop, *args, **kwargs)
+
+   Apply operator :class:`Stat` with specified parameters to population *pop*.
+   Resulting statistics could be accessed from the local namespace of ``pop``
+   using functions ``pop.vars()`` or ``pop.dvars()``

@@ -1,0 +1,15 @@
+
+class GenePopImporter
+---------------------
+
+.. class:: GenePopImporter
+
+   FIXME: No document
+
+   .. method:: GenePopImporter.GenePopImporter(adjust=0)
+
+      Initialize self.  See help(type(self)) for accurate signature.
+
+   .. method:: GenePopImporter.importFrom(filename)
+
+

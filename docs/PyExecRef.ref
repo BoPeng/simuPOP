@@ -1,0 +1,26 @@
+
+class PyExec
+------------
+
+.. class:: PyExec
+
+   This operator executes given Python statements in a population's
+   local namespace when it is applied to this population.
+
+
+   .. method:: PyExec(stmts="", exposePop="", output=">", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=Py_False, infoFields=[])
+
+
+      Create a :class:`PyExec` operator that executes statements
+      *stmts* in a population's local namespace when it is applied to
+      this population. This namespace can either be the population's
+      local namespace (``pop.vars()``), or namespaces ``subPop[sp]``
+      for each (virtual) subpop (``pop.vars(subpop)``) in specified
+      *subPops*. If *exposePop* is given, current population will be
+      exposed in its local namespace as a variable named by
+      *exposePop*. Although multiple statements can be executed, it is
+      recommended that you use this operator to execute short
+      statements and use :class:`PyOperator` for more complex once.
+      Note that exposed population variables will be removed after the
+      statements are executed.
+

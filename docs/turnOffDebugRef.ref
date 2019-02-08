@@ -1,0 +1,10 @@
+
+Function turnOffDebug
+---------------------
+
+
+.. function:: turnOffDebug(code="DBG_ALL")
+
+   Turn off debug code *code*. More than one code could be specified
+   using a comma separated string. Default to turn off all debug
+   codes.

@@ -1,0 +1,18 @@
+
+class defdict
+-------------
+
+.. class:: defdict
+
+   defdict() --> dict with default value
+   
+   The default value is returned when an invalid key is used.
+
+   .. method:: defdict.defdict(*args, **kwargs)
+
+      Initialize self.  See help(type(self)) for accurate signature.
+
+   .. method:: defdict.fromkeys(type, iterable, value)
+
+      Returns a new dict with keys from iterable and values equal to value.
+

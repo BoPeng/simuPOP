@@ -1,0 +1,9 @@
+
+Function discardIf
+------------------
+
+
+.. function:: discardIf(pop, *args, **kwargs)
+
+   Apply operator :class:`DiscardIf` to population *pop* to remove individuals according
+   to an expression or a Python function.

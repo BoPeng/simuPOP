@@ -1,0 +1,34 @@
+
+class InfoEval
+--------------
+
+.. class:: InfoEval
+
+   Unlike operator :class:`PyEval` and :class:`PyExec` that work at
+   the population level, in a population's local namespace, operator
+   :class:`InfoEval` works at the individual level, working with
+   individual information fields. When this operator is applied to a
+   population, information fields of eligible individuals are put into
+   the local namespace of the population. A Python expression is then
+   evaluated for each individual. The result is written to an output.
+
+
+   .. method:: InfoEval(expr="", stmts="", usePopVars=False, exposeInd="", output=">", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+
+      Create an operator that evaluate a Python expression *expr*
+      using individual information fields and population variables as
+      variables. If *exposeInd* is not empty, the individual itself
+      will be exposed in the population's local namespace as a
+      variable with name specified by *exposeInd*.
+
+      A Python expression (*expr*) is evaluated for each individual.
+      The results are converted to strings and are written to an
+      output specified by parameter *output*. Optionally, a statement
+      (or several statements separated by newline) can be executed
+      before *expr* is evaluated. The evaluation of this statement may
+      change the value of information fields.
+
+      Parameter *usePopVars* is obsolete because population variables
+      are always usable in such expressions.
+

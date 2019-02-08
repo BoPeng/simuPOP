@@ -1,0 +1,36 @@
+
+class ContextMutator
+--------------------
+
+.. class:: ContextMutator
+
+   This context-dependent mutator accepts a list of mutators and use
+   one of them to mutate an allele depending on the context of the
+   mutated allele.
+
+
+   .. method:: ContextMutator(rates=[], loci=ALL_AVAIL, mutators=[], contexts=[], mapIn=[], mapOut=[], output="", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=["ind_id"], lineageMode=FROM_INFO)
+
+
+      Create a mutator that choose one of the specified *mutators* to
+      mutate an allele when a mutation event happens. The mutators are
+      choosen according to the context of the mutated allele, which is
+      specified as a list of alleles to the left and right of an
+      allele (\parameter *contexts*). For example, ``contexts=[(0,0),
+      (0,1), (1,1)]`` indicates which mutators should be used to
+      mutate allele ``X`` in the context of ``0X0``, ``0X1``, and
+      ``1X1``. A context can include more than one alleles at both
+      left and right sides of a mutated allele but all contexts should
+      have the same (even) number of alleles. If an allele does not
+      have full context (e.g. when a locus is the first locus on a
+      chromosome), unavailable alleles will be marked as -1. There
+      should be a mutator for each context but an additional mutator
+      can be specified as the default mutator for unmatched contexts.
+      If parameters *mapIn* is specified, both mutated allele and its
+      context alleles will be mapped. Most parameters, including
+      *loci*, *mapIn*, *mapOut*, *rep*, and *subPops* of mutators
+      specified in parameter *mutators* are ignored. This mutator by
+      default applies to all loci unless parameter *loci* is
+      specified. Please refer to classes ``mutator`` and
+      :class:`BaseOperator` for descriptions of other parameters.
+

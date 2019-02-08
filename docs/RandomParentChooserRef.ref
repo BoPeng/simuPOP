@@ -1,0 +1,42 @@
+
+class RandomParentChooser
+-------------------------
+
+.. class:: RandomParentChooser
+
+   This parent chooser chooses a parent randomly from a (virtual)
+   parental subpopulation. Parents are chosen with or without
+   replacement. If parents are chosen with replacement, a parent can
+   be selected multiple times. If individual fitness values are
+   assigned to individuals ( stored in an information field
+   *selectionField* (default to ``"fitness"``), individuals will be
+   chosen at a probability proportional to his or her fitness value.
+   If parents are chosen without replacement, a parent can be chosen
+   only once. An :class:`RuntimeError` will be raised if all parents
+   are exhausted. Natural selection is disabled in the without-
+   replacement case.
+
+
+   .. method:: RandomParentChooser(replacement=True, selectionField="fitness", sexChoice=ANY_SEX)
+
+
+      Create a random parent chooser that choose parents with or
+      without replacement (parameter *replacement*, default to
+      ``True``). If selection is enabled and information field
+      *selectionField* exists in the passed population, the
+      probability that a parent is chosen is proportional to his/her
+      fitness value stored in *selectionField*. This parent chooser by
+      default chooses parent from all individuals (``ANY_SEX``), but
+      it can be made to select only male (``MALE_ONLY``) or female
+      (``FEMALE_ONLY``) individuals by setting parameter *sexChoice*.
+
+
+   .. method:: RandomParentChooser.chooseParents()
+
+      Return chosen parents from a population if the parent chooser
+      object is created with a population.
+
+   .. method:: RandomParentChooser.initialize(pop, subPop)
+
+      Initialize a parent chooser for subpopulation *subPop* of
+      *population* pop.

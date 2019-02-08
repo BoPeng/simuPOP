@@ -1,0 +1,28 @@
+
+class ParentChooser
+-------------------
+
+.. class:: ParentChooser
+
+   A parent chooser repeatedly chooses parent(s) from a parental
+   population and pass them to an offspring generator. A parent
+   chooser can select one or two parents, which should be matched by
+   the offspring generator. This class is the base class of all parent
+   choosers, and should not be used directly.
+
+
+   .. method:: ParentChooser(selectionField="")
+
+
+      FIXME: No document
+
+
+   .. method:: ParentChooser.chooseParents()
+
+      Return chosen parents from a population if the parent chooser
+      object is created with a population.
+
+   .. method:: ParentChooser.initialize(pop, subPop)
+
+      Initialize a parent chooser for subpopulation *subPop* of
+      *population* pop.

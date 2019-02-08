@@ -1,0 +1,43 @@
+
+.. module:: simuOpt
+
+Module ``simuOpt`` provides a function ``simuOpt.setOptions`` to control which
+simuPOP module to load, and how it is loaded, and a class ``simuOpt.Params``
+that helps users manage simulation parameters.
+
+When simuPOP is loaded, it checkes a few environmental variables
+(``SIMUOPTIMIZED``, ``SIMUALLELETYPE``, and ``SIMUDEBUG``) to determine which
+simuPOP module to load, and how to load it. More options can be set using the
+``simuOpt.setOptions`` function. For example, you can suppress the banner
+message when simuPOP is loaded and require a minimal version of simuPOP for
+your script. simuPOP recognize the following commandline arguments
+
+``--optimized``
+    Load the optimized version of a simuPOP module.
+
+``--gui=None|batch|interactive|True|wxPython|Tkinter``
+    Whether or not use a graphical toolkit and which one to use.
+    ``--gui=batch`` is usually used to run a script in batch mode (do not start
+    a parameter input dialog and use all default values unless a parameter is
+    specified from command line or a configuraiton file. If
+    ``--gui=interactive``, an interactive shell will be used to solicit input
+    from users. Otherwise, simuPOP will try to use a graphical parameter input
+    dialog, and falls to an interactive mode when no graphical Toolkit is
+    available. Please refer to parameter ``gui`` for ``simuOpt.setOptions``
+    for details.
+
+class ``params.Params`` provides a powerful way to handle commandline
+arguments. Briefly speaking, a ``Params`` object can be created from a list
+of parameter specification dictionaries. The parameters are then become
+attributes of this object. A number of functions are provided to determine
+values of these parameters using commandline arguments, a configuration
+file, or a parameter input dialog (using ``Tkinter`` or ``wxPython``).
+Values of these parameters can be accessed as attributes, or extracted
+as a list or a dictionary. Note that the ``Params.getParam`` function
+automatically handles the following commandline arguments.
+
+``-h`` or ``--help``
+    Print usage message.
+
+``--config=configFile``
+    Read parameters from a configuration file *configFile*.

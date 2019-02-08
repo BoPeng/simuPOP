@@ -1,0 +1,29 @@
+
+class pyIndIterator
+-------------------
+
+.. class:: pyIndIterator
+
+   this class implements a Python itertor class that can be used to
+   iterate through individuals in a (sub)population. If allInds are
+   true, visiblility of individuals will not be checked. Otherwise, a
+   functor will be used to check if indiviudals belong to a specified
+   virtual subpopulation.
+
+   An instance of this class is returned by population::Individuals()
+   and Population::Individuals(subPop)
+
+
+   .. method:: pyIndIterator(begin, end, allInds, func)
+
+
+      FIXME: No document
+
+
+   .. method:: pyIndIterator.__iter__()
+
+      FIXME: No document
+
+   .. method:: pyIndIterator.next()
+
+      FIXME: No document

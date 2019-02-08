@@ -1,0 +1,33 @@
+
+class CombinedSampler
+---------------------
+
+.. class:: CombinedSampler
+
+   A combined sampler accepts a list of sampler objects, draw samples and
+   combine the returned sample into a single population. An id field is
+   required to use this sampler, which will be used to remove extra copies of
+   individuals who have been drawn by different samplers.
+
+   .. method:: CombinedSampler.CombinedSampler(samplers=[], idField='ind_id')
+
+      samplers
+          A list of samplers
+
+   .. method:: CombinedSampler.drawSample(pop)
+
+      Draw and return a sample.
+
+   .. method:: CombinedSampler.drawSamples(pop, numOfSamples)
+
+      Draw multiple samples and return a list of populations.
+
+   .. method:: CombinedSampler.prepareSample(pop, rearrange)
+
+      Prepare passed population object for sampling according to parameter
+      ``subPops``. If samples are drawn from the whole population, a
+      Population will be trimmed if only selected (virtual) subpopulations
+      are used. If samples are drawn separately from specified subpopulations,
+      Population ``pop`` will be rearranged (if ``rearrange==True``) so that
+      each subpoulation corresponds to one element in parameter ``subPops``.
+

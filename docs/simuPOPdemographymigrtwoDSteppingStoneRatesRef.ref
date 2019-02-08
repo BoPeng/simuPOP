@@ -1,0 +1,11 @@
+
+Function migrtwoDSteppingStoneRates
+-----------------------------------
+
+
+.. function:: migr2DSteppingStoneRates(r, m, n, diagonal=False, circular=False)
+
+   migration rate matrix for 2D stepping stone model, with or without
+   diagonal neighbors (4 or 8 neighbors for central patches). The boundaries
+   are connected if circular is True. Otherwise individuals from corner and
+   bounary patches will migrate to their neighbors with higher probability.

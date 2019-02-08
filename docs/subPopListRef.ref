@@ -1,0 +1,24 @@
+
+class subPopList
+----------------
+
+.. class:: subPopList
+
+   A class to specify (virtual) subpopulation list. Using a dedicated
+   class allows users to specify a single subpopulation, or a list of
+   (virutal) subpoulations easily.
+
+
+   .. method:: subPopList(obj=None)
+
+
+      FIXME: No document
+
+
+   .. method:: subPopList.expandFrom(pop)
+
+      expand ALL_AVAIL and [(ALL_AVAIL, vsp), ...] according to pop
+
+   .. method:: subPopList.__len__()
+
+      FIXME: No document

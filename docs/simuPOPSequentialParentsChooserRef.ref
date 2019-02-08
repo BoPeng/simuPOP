@@ -1,0 +1,17 @@
+
+class SequentialParentsChooser
+------------------------------
+
+.. class:: SequentialParentsChooser
+
+   This parent chooser chooses two parents (a father and a mother)
+   sequentially from their respective sex groups. Selection is not considered.
+   If all fathers (or mothers) are exhausted, this parent chooser will choose
+   fathers (or mothers) from the beginning of the (virtual) subpopulation
+   again.
+
+   .. method:: SequentialParentsChooser.SequentialParentsChooser()
+
+      Create a parent chooser that chooses two parents sequentially from a
+      parental (virtual) subpopulation.
+

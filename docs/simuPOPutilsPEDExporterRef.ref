@@ -1,0 +1,16 @@
+
+class PEDExporter
+-----------------
+
+.. class:: PEDExporter
+
+   An exporter to export given population in PED format
+
+   .. method:: PEDExporter.PEDExporter(idField='ind_id', fatherField='father_id', motherField='mother_id', phenoField=None, adjust=1)
+
+      Initialize self.  See help(type(self)) for accurate signature.
+
+   .. method:: PEDExporter.export(pop, output, subPops, infoFields, gui)
+
+      Export in PED format
+

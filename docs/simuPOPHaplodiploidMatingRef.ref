@@ -1,0 +1,19 @@
+
+class HaplodiploidMating
+------------------------
+
+.. class:: HaplodiploidMating
+
+   A homogeneous mating scheme that uses a random parents chooser with
+   replacement and a haplodiploid offspring generator. It should be used
+   in a haplodiploid population where male individuals only have one set
+   of homologous chromosomes.
+
+   .. method:: HaplodiploidMating.HaplodiploidMating(numOffspring=1.0, sexMode=RANDOM_SEX, ops=HaplodiploidGenoTransmitter(), subPopSize=[], subPops=ALL_AVAIL, weight=0, selectionField='fitness')
+
+      Creates a mating scheme in haplodiploid populations. Please refer
+      to class :class:`RandomParentsChooser` for parameter *selectionField*, to
+      class :class:`OffspringGenerator` for parameters *ops*, *sexMode* and
+      *numOffspring*, and to class :class:`HomoMating` for parameters
+      *subPopSize*, *subPops* and *weight*.
+

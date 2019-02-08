@@ -1,0 +1,47 @@
+
+class StepwiseMutator
+---------------------
+
+.. class:: StepwiseMutator
+
+   A stepwise mutation model treats alleles at a locus as the number
+   of tandem repeats of microsatellite or minisatellite markers. When
+   a mutation event happens, the number of repeats (allele) either
+   increase or decrease. A standard stepwise mutation model increases
+   of decreases an allele by 1 with equal probability. More complex
+   models (generalized stepwise mutation model) are also allowed. Note
+   that an allele cannot be mutated beyond boundaries (0 and maximum
+   allowed allele).
+
+
+   .. method:: StepwiseMutator(rates=[], loci=ALL_AVAIL, incProb=0.5, maxAllele=0, mutStep=[], mapIn=[], mapOut=[], output="", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=["ind_id"], lineageMode=FROM_INFO)
+
+
+      Create a stepwise mutation mutator that mutates an allele by
+      increasing or decreasing it. This mutator by default applies to
+      all loci unless parameter *loci* is specified. A single mutation
+      rate will be used for all loci if a single value of parameter
+      *rates* is given. Otherwise, a list of mutation rates can be
+      specified for each locus in parameter *loci*.
+
+      When a mutation event happens, this operator increases or
+      decreases an allele by *mutStep* steps. Acceptable input of
+      parameter *mutStep* include
+
+      + A number: This is the default mode with default value 1.
+
+      + ``(GEOMETRIC_DISTRIBUTION, p)``: The number of steps follows a
+        a geometric distribution with parameter *p*.
+
+      + A Python function: This user defined function accepts the
+        allele being mutated and return the steps to mutate.
+
+      The mutation process is usually neutral in the sense that
+      mutating up and down is equally likely. You can adjust parameter
+      *incProb* to change this behavior.
+
+      If you need to use other generalized stepwise mutation models,
+      you can implement them using a :class:`PyMutator`. If
+      performance becomes a concern, I may add them to this operator
+      if provided with a reliable reference.
+

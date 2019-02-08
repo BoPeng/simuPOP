@@ -1,0 +1,101 @@
+
+class OffspringGenerator
+------------------------
+
+.. class:: OffspringGenerator
+
+   An *offspring generator* generates offspring from parents chosen by
+   a parent chooser. It is responsible for creating a certain number
+   of offspring, determinning their sex, and transmitting genotypes
+   from parents to offspring.
+
+
+   .. method:: OffspringGenerator(ops, numOffspring=1, sexMode=RANDOM_SEX)
+
+
+      Create a basic offspring generator. This offspring generator
+      uses *ops* genotype transmitters to transmit genotypes from
+      parents to offspring.
+
+      A number of *during-mating operators* (parameter *ops*) can be
+      used to, among other possible duties such as setting information
+      fields of offspring, transmit genotype from parents to
+      offspring. This general offspring generator does not have any
+      default during-mating operator but all stock mating schemes use
+      an offspring generator with a default operator. For example, a
+      ``mendelianOffspringGenerator`` is used by :class:`RandomMating`
+      to trasmit genotypes. Note that applicability parameters
+      ``begin``, ``step``, ``end``, ``at`` and ``reps`` could be used
+      in these operators but negative population and generation
+      indexes are unsupported.
+
+      Parameter *numOffspring* is used to control the number of
+      offspring per mating event, or in another word the number of
+      offspring in each family. It can be a number, a Python function
+      or generator, or a mode parameter followed by some optional
+      arguments. If a number is given, given number of offspring will
+      be generated at each mating event. If a Python function is
+      given, it will be called each time when a mating event happens.
+      When a generator function is specified, it will be called for
+      each subpopulation to provide number of offspring for all mating
+      events during the populating of this subpopulation. Current
+      generation number will be passed to this function or generator
+      function if parameter "gen" is used in this function. In the
+      last case, a tuple (or a list) in one of the following forms can
+      be given:
+
+      + ``(GEOMETRIC_DISTRIBUTION, p)``
+
+      + ``(POISSON_DISTRIBUTION, p)``, p > 0
+
+      + ``(BINOMIAL_DISTRIBUTION, p, N)``, 0 < p <=1, N > 0
+
+      + ``(UNIFORM_DISTRIBUTION, a, b)``, 0 <= a <= b.
+
+      In this case, the number of offspring will be determined
+      randomly following the specified statistical distributions.
+      Because families with zero offspring are silently ignored, the
+      distribution of the observed number of offspring per mating
+      event (excluding zero) follows zero-truncated versions of these
+      distributions.
+
+      Parameter *numOffspring* specifies the number of offspring per
+      mating event but the actual surviving offspring can be less than
+      specified. More spefically, if any during-mating operator
+      returns ``False``, an offspring will be discarded so the
+      actually number of offspring of a mating event will be reduced.
+      This is essentially how during-mating selector works.
+
+      Parameter *sexMode* is used to control the sex of each
+      offspring. Its default value is usually *RANDOM_SEX* which
+      assign ``MALE`` or ``FEMALE`` to each individual randomly, with
+      equal probabilities. If ``NO_SEX`` is given, offspring sex will
+      not be changed. *sexMode* can also be one of
+
+      + ``(PROB_OF_MALES, p)`` where ``p`` is the probability of male
+        for each offspring,
+
+      + ``(NUM_OF_MALES, n)`` where ``n`` is the number of males in a
+        mating event. If ``n`` is greater than or equal to the number
+        of offspring in this family, all offspring in this family will
+        be ``MALE``.
+
+      + ``(NUM_OF_FEMALES, n)`` where ``n`` is the number of females
+        in a mating event,
+
+      + ``(SEQUENCE_OF_SEX, s1, s2 ...)`` where ``s1``, ``s2`` etc are
+        MALE or FEMALE. The sequence will be used for each mating
+        event. It will be reused if the number of offspring in a
+        mating event is greater than the length of sequence.
+
+      + ``(GLOBAL_SEQUENCE_OF_SEX, s1, s2, ...)`` where ``s1``, ``s2``
+        etc are MALE or FEMALE. The sequence will be used across
+        mating events. It will be reused if the number of offspring in
+        a subpopulation is greater than the length of sequence.
+
+      Finally, parameter *sexMode* accepts a function or a generator
+      function. A function will be called whenever an offspring is
+      produced. A generator will be created at each subpopulation and
+      will be used to produce sex for all offspring in this
+      subpopulation. No parameter is accepted.
+

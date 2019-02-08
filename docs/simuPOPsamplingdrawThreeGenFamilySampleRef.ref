@@ -1,0 +1,20 @@
+
+Function drawThreeGenFamilySample
+---------------------------------
+
+
+.. function:: drawThreeGenFamilySample(pop, families, numOffspring, pedSize, numOfAffected=0, subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id', motherField='mother_id')
+
+   Draw three-generation families from a population. Such families consist
+   of grant parents, their children, spouse of these children, and grand
+   children. Number of offspring, total number of individuals, and total
+   number of affected individuals in a pedigree should be specified using
+   parameters ``numOffspring``, ``pedSize`` and ``numOfAffected``, which can all
+   be a single number, or a range ``[a, b]`` (``b`` is incldued). If a single
+   ``families`` is given, Pedigrees are drawn randomly from the whole
+   Population or from specified (virtual) subpopulations (parameter
+   ``subPops``). Otherwise, a list of numbers should be used to specify
+   numbers of families from each subpopulation, which can be all
+   subpopulations if ``subPops=ALL_AVAIL`` (default), or from each of the
+   specified (virtual) subpopulations. This function returns a population that
+   contains extracted individuals.

@@ -1,0 +1,35 @@
+
+class BaseSampler
+-----------------
+
+.. class:: BaseSampler
+
+   A sampler extracts individuals from a simuPOP population and return them
+   as separate populations. This base class defines the common interface of
+   all sampling classes, including how samples prepared and returned.
+
+   .. method:: BaseSampler.BaseSampler(subPops=ALL_AVAIL)
+
+      Create a sampler with parameter ``subPops``, which will be used
+      to prepare population for sampling. ``subPops`` should be a list of
+      (virtual) subpopulations from which samples are drawn. The default
+      value is ALL_AVAIL, which means all available subpopulations of a
+      Population.
+
+   .. method:: BaseSampler.drawSample(pop)
+
+      Draw and return a sample.
+
+   .. method:: BaseSampler.drawSamples(pop, numOfSamples)
+
+      Draw multiple samples and return a list of populations.
+
+   .. method:: BaseSampler.prepareSample(pop, rearrange)
+
+      Prepare passed population object for sampling according to parameter
+      ``subPops``. If samples are drawn from the whole population, a
+      Population will be trimmed if only selected (virtual) subpopulations
+      are used. If samples are drawn separately from specified subpopulations,
+      Population ``pop`` will be rearranged (if ``rearrange==True``) so that
+      each subpoulation corresponds to one element in parameter ``subPops``.
+

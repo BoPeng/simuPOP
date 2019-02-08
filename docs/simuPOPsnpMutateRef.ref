@@ -1,0 +1,8 @@
+
+Function snpMutate
+------------------
+
+
+.. function:: snpMutate(pop, *args, **kwargs)
+
+   Function form of operator :class:`SNPMutator`

@@ -1,0 +1,10 @@
+
+Function drawCombinedSamples
+----------------------------
+
+
+.. function:: drawCombinedSamples(pop, samplers, numOfSamples=1, idField='ind_id')
+
+   Draw combined samples ``numOfSamples`` numOfSamples and return a list of populations.
+   Please refer to function ``drawCombinedSample`` for details about
+   parameters ``samplers`` and ``idField``.

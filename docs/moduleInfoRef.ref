@@ -1,0 +1,43 @@
+
+Function moduleInfo
+-------------------
+
+
+.. function:: moduleInfo()
+
+   Return a dictionary with information regarding the currently loaded
+   simuPOP module. This dictionary has the following keys:
+
+   + ``revision:`` revision number.
+
+   + ``version:`` simuPOP version string.
+
+   + ``optimized:`` Is this module optimized (``True`` or ``False``).
+
+   + ``alleleType:`` Allele type of the module (``short``, ``long`` or
+     ``binary``).
+
+   + ``maxAllele:`` the maximum allowed allele state, which is ``1``
+     for binary modules, ``255`` for short modules and ``65535`` for
+     long modules.
+
+   + ``compiler:`` the compiler that compiles this module.
+
+   + ``date:`` date on which this module is compiled.
+
+   + ``python:`` version of python.
+
+   + ``platform:`` platform of the module.
+
+   + ``wordsize:`` size of word, can be either 32 or 64.
+
+   + ``alleleBits:`` the number of bits used to store an allele
+
+   + ``maxNumSubPop:`` maximum number of subpopulations.
+
+   + ``maxIndex:`` maximum index size (limits population size * total
+     number of marker).
+
+   + ``debug:`` A dictionary with debugging codes as keys and the
+     status of each debugging code (``True`` or ``False``) as their
+     values.

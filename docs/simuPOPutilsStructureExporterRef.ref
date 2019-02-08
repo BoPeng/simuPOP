@@ -1,0 +1,16 @@
+
+class StructureExporter
+-----------------------
+
+.. class:: StructureExporter
+
+   An exporter to export given population in structure format
+
+   .. method:: StructureExporter.StructureExporter(markerNames=True, recessiveAlleles=None, interMarkerDistances=True, phaseInformation=None, label=True, popData=True, popFlag=None, locData=None, phenotype=None)
+
+      Initialize self.  See help(type(self)) for accurate signature.
+
+   .. method:: StructureExporter.export(pop, output, subPops, infoFields, gui)
+
+      export in structure format
+

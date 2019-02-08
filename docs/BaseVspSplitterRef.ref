@@ -1,0 +1,50 @@
+
+class BaseVspSplitter
+---------------------
+
+.. class:: BaseVspSplitter
+
+   This class is the base class of all virtual subpopulation (VSP)
+   splitters, which provide ways to define groups of individuals in a
+   subpopulation who share certain properties. A splitter defines a
+   fixed number of named VSPs. They do not have to add up to the whole
+   subpopulation, nor do they have to be distinct. After a splitter is
+   assigned to a population, many functions and operators can be
+   applied to individuals within specified VSPs.
+
+   Each VSP has a name. A default name is determined by each splitter
+   but you can also assign a name to each VSP. The name of a VSP can
+   be retrieved by function ``BaseVspSplitter.name()`` or
+   ``Population.subPopName()``.
+
+   Only one VSP splitter can be assigned to a population, which
+   defined VSPs for all its subpopulations. If different splitters are
+   needed for different subpopulations, a :class:`CombinedSplitter`
+   can be used.
+
+
+   .. method:: BaseVspSplitter(names=[])
+
+
+      This is a virtual class that cannot be instantiated.
+
+
+   .. method:: BaseVspSplitter.clone()
+
+      All VSP splitter defines a ``clone()`` function to create an
+      identical copy of itself.
+
+   .. method:: BaseVspSplitter.name(vsp)
+
+      Return the name of VSP *vsp* (an index between ``0`` and
+      ``numVirtualSubPop()``).
+
+   .. method:: BaseVspSplitter.numVirtualSubPop()
+
+      Return the number of VSPs defined by this splitter.
+
+   .. method:: BaseVspSplitter.vspByName(name)
+
+      Return the index of a virtual subpopulation from its name. If
+      multiple virtual subpopulations share the same name, the first
+      vsp is returned.

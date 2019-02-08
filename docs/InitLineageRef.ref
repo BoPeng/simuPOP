@@ -1,0 +1,37 @@
+
+class InitLineage
+-----------------
+
+.. class:: InitLineage
+
+   This operator assigns lineages at all or part of loci with given
+   values. This operator initializes all chromosomes, including unused
+   lineage locations and customized chromosomes.
+
+
+   .. method:: InitLineage(lineage=[], mode=PER_ALLELE, loci=ALL_AVAIL, ploidy=ALL_AVAIL, begin=0, end=1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=["ind_id"])
+
+
+      This function creates an initializer that initializes lineages
+      with either a specified set of values or from the field
+      *infoFields* (default to ``ind_id``), whose value will be saved
+      as the lineage of modified alleles. If a list of values is
+      specified in parameter *lineage*, each value in this list is
+      applied to one or more alleles so that each allele
+      (``PER_ALLELE``, default mode), alleles on each chromosome
+      (``PER_CHROMOSOME``), on chromosomes of each ploidy
+      (``PER_PLOIDY``), or for each individual (``PER_INDIVIDUAL``)
+      have the same lineage. A single value is allowed and values in
+      *lineage* will be re-used if not enough values are provided. If
+      an empty list is provided, values 1, 2, 3, .. will be used to
+      provide an unique identify for each allele, genotype,
+      chromosome, etc. If a valid field is specified (default to
+      ``ind_id``), the value of this field will be used for all
+      alleles of each individual if *mode* is set to ``FROM_INFO``, or
+      be adjusted to produce positive values for alleles on the frist
+      ploidy, and negative values for the second ploidy (and so on) if
+      *mode* equals to ``FROM_INFO_SIGNED``. If *loci*, *ploidy*
+      and/or *subPops* are specified, only specified loci, ploidy, and
+      individuals in these (virtual) subpopulations will be
+      initialized.
+

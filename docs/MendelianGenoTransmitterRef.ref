@@ -1,0 +1,31 @@
+
+class MendelianGenoTransmitter
+------------------------------
+
+.. class:: MendelianGenoTransmitter
+
+   This Mendelian offspring generator accepts two parents and pass
+   their genotypes to an offspring following Mendel's laws. Sex
+   chromosomes are handled according to the sex of the offspring,
+   which is usually determined in advance by an offspring generator.
+   Customized chromosomes are not handled.
+
+
+   .. method:: MendelianGenoTransmitter(output="", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+
+      Create a Mendelian genotype transmitter (a during-mating
+      operator) that transmits genotypes from parents to offspring
+      following Mendel's laws. Autosomes and sex chromosomes are
+      handled but customized chromosomes are ignored. Parameters
+      *subPops* and *infoFields* are ignored. This operator also
+      copies allelic lineage when it is executed in a module with
+      lineage allele type.
+
+
+   .. method:: MendelianGenoTransmitter.transmitGenotype(parent, offspring, ploidy)
+
+      Transmit genotype from parent to offspring, and fill the
+      *ploidy* homologous set of chromosomes. This function does not
+      set genotypes of customized chromosomes and handles sex
+      chromosomes properly, according to offspring sex and ``ploidy``.

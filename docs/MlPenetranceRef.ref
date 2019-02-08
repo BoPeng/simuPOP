@@ -1,0 +1,43 @@
+
+class MlPenetrance
+------------------
+
+.. class:: MlPenetrance
+
+   This penetrance operator is created by a list of penetrance
+   operators. When it is applied to an individual, it applies these
+   penetrance operators to the individual, obtain a list of penetrance
+   values, and compute a combined penetrance value from them and
+   assign affection status accordingly. ADDITIVE, multiplicative, and
+   a heterogeneour multi-locus model are supported. Please refer to
+   Neil Rish (1989) "Linkage Strategies for
+
+   Genetically Complex Traits" for some analysis of these models.
+
+
+   .. method:: MlPenetrance(ops, mode=MULTIPLICATIVE, ancGens=UNSPECIFIED, begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+
+      Create a multiple-locus penetrance operator from a list
+      penetrance operator *ops*. When this operator is applied to an
+      individual (parents when used before mating and offspring when
+      used during mating), it applies these operators to the
+      individual and obtain a list of (usually single-locus)
+      penetrance values. These penetrance values are combined to a
+      single penetrance value using
+
+      + *Prod(f_i)*, namely the product of individual penetrance if
+        *mode* = ``MULTIPLICATIVE``,
+
+      + *sum(f_i)* if *mode* = ``ADDITIVE``, and
+
+      + *1-Prod(1 - f_i)* if *mode* = ``HETEROGENEITY``
+
+      0 or 1 will be returned if the combined penetrance value is less
+      than zero or greater than 1.
+
+      Applicability parameters (begin, end, step, at, reps, subPops)
+      could be used in both :class:`MlSelector` and selectors in
+      parameter *ops*, but parameters in :class:`MlSelector` will be
+      interpreted first.
+

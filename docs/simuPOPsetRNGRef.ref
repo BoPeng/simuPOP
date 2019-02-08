@@ -1,0 +1,9 @@
+
+Function setRNG
+---------------
+
+
+.. function:: setRNG(name='', seed=0)
+
+   Set random number generator. This function is obsolete but is provided
+   for compatibility purposes. Please use setOptions instead

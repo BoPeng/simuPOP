@@ -1,0 +1,30 @@
+
+class PyMutator
+---------------
+
+.. class:: PyMutator
+
+   This hybrid mutator accepts a Python function that determines how
+   to mutate an allele when an mutation event happens.
+
+
+   .. method:: PyMutator(rates=[], loci=ALL_AVAIL, func=None, context=0, mapIn=[], mapOut=[], output="", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=["ind_id"], lineageMode=FROM_INFO)
+
+
+      Create a hybrid mutator that uses a user-provided function to
+      mutate an allele when a mutation event happens. This function
+      (parameter *func*) accepts the allele to be mutated as parameter
+      ``allele``, locus index ``locus``, and optional array of alleles
+      as parameter ``context``, which are *context* alleles the left
+      and right of the mutated allele. Invalid context alleles (e.g.
+      left allele to the first locus of a chromosome) will be marked
+      by -1. The return value of this function will be used to mutate
+      the passed allele. The passed, returned and context alleles
+      might be altered if parameter *mapIn* and *mapOut* are used.
+      This mutator by default applies to all loci unless parameter
+      *loci* is specified. A single mutation rate will be used for all
+      loci if a single value of parameter *rates* is given. Otherwise,
+      a list of mutation rates can be specified for each locus in
+      parameter *loci*. Please refer to classes ``mutator`` and
+      :class:`BaseOperator` for descriptions of other parameters.
+

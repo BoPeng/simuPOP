@@ -1,0 +1,19 @@
+
+class RandomMating
+------------------
+
+.. class:: RandomMating
+
+   A homogeneous mating scheme that uses a random parents chooser with
+   replacement and a Mendelian offspring generator. This mating scheme is
+   widely used to simulate diploid sexual Wright-Fisher random mating.
+
+   .. method:: RandomMating.RandomMating(numOffspring=1, sexMode=RANDOM_SEX, ops=MendelianGenoTransmitter(), subPopSize=[], subPops=ALL_AVAIL, weight=0, selectionField='fitness')
+
+      Creates a random mating ssheme that selects two parents randomly and
+      transmit genotypes according to Mendelian laws. Please refer to class
+      :class:`RandomParentsChooser` for parameter *selectionField*, to class
+      :class:`OffspringGenerator` for parameters *ops*, *sexMode* and
+      *numOffspring*, and to class :class:`HomoMating` for parameters
+      *subPopSize*, *subPops* and *weight*.
+

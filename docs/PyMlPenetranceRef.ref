@@ -1,0 +1,42 @@
+
+class PyMlPenetrance
+--------------------
+
+.. class:: PyMlPenetrance
+
+   This penetrance operator is a multi-locus Python penetrance
+   operator that assigns penetrance values by combining locus and
+   genotype specific penetrance values. It differs from a
+   :class:`PyPenetrance` in that the python function is responsible
+   for penetrance values values for each gentoype type at each locus,
+   which can potentially be random, and locus or gentoype-specific.
+
+
+   .. method:: PyMlPenetrance(func, mode=MULTIPLICATIVE, loci=ALL_AVAIL, ancGens=UNSPECIFIED, output="", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+
+      Create a penetrance operator that assigns individual affection
+      status according to penetrance values combined from locus-
+      specific penetrance values that are determined by a Python call-
+      back function. The callback function accepts parameter *loc*,
+      *alleles* (both optional) and returns location- or genotype-
+      specific penetrance values that can be constant or random. The
+      penetrance values for each genotype will be cached so the same
+      penetrance values will be assigned to genotypes with previously
+      assigned values. Note that a function that does not examine the
+      genotype naturally assumes a dominant model where genotypes with
+      one or two mutants have the same penetrance value. Because
+      genotypes at a locus are passed separately and in no particular
+      order, this function is also responsible for assigning
+      consistent fitness values for genotypes at the same locus (a
+      class is usually used). This operator currently ignores
+      chromosome types so unused alleles will be passed for loci on
+      sex or mitochondrial chromosomes. This operator also ignores the
+      phase of genotype so genotypes (a,b) and (b,a) are assumed to
+      have the same fitness effect.
+
+      Individual penetrance will be combined in ``ADDITIVE``,
+      ``MULTIPLICATIVE``, or ``HETEROGENEITY`` mode from penetrance
+      values of loci with at least one non-zero allele (See
+      :class:`MlPenetrance` for details).
+

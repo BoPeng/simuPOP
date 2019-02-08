@@ -1,0 +1,8 @@
+
+Function revertFixedSites
+-------------------------
+
+
+.. function:: revertFixedSites(pop, *args, **kwargs)
+
+   Function form of operator :class:`RevertFixedSites`

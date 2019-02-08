@@ -1,0 +1,8 @@
+
+Function dump
+-------------
+
+
+.. function:: dump(pop, *args, **kwargs)
+
+   Apply operator :class:`Dumper` to population *pop*.

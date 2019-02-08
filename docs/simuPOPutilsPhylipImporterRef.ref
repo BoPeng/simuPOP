@@ -1,0 +1,15 @@
+
+class PhylipImporter
+--------------------
+
+.. class:: PhylipImporter
+
+   FIXME: No document
+
+   .. method:: PhylipImporter.PhylipImporter(alleleNames, ploidy=1)
+
+      Initialize self.  See help(type(self)) for accurate signature.
+
+   .. method:: PhylipImporter.importFrom(filename)
+
+

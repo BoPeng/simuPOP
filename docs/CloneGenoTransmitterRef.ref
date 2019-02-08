@@ -1,0 +1,31 @@
+
+class CloneGenoTransmitter
+--------------------------
+
+.. class:: CloneGenoTransmitter
+
+   This during mating operator copies parental genotype directly to
+   offspring. This operator works for all mating schemes when one or
+   two parents are involved. If both parents are passed, maternal
+   genotype are copied. In addition to genotypes on all non-customized
+   or specified chromosomes, sex and information fields are by default
+   also coped copied from parent to offspring.
+
+
+   .. method:: CloneGenoTransmitter(output="", chroms=ALL_AVAIL, begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
+
+
+      Create a clone genotype transmitter (a during-mating operator)
+      that copies genotypes from parents to offspring. If two parents
+      are specified, genotypes are copied maternally. After genotype
+      transmission, offspring sex and affection status is copied from
+      the parent even if sex has been determined by an offspring
+      generator. All or specified information fields (parameter
+      *infoFields*, default to ``ALL_AVAIL``) will also be copied from
+      parent to offspring. Parameters *subPops* is ignored. This
+      operator by default copies genotypes on all autosome and sex
+      chromosomes (excluding customized chromosomes), unless a
+      parameter *chroms* is used to specify which chromosomes to copy.
+      This operator also copies allelic lineage when it is executed in
+      a module with lineage allele type.
+

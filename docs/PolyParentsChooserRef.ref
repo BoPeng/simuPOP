@@ -1,0 +1,35 @@
+
+class PolyParentsChooser
+------------------------
+
+.. class:: PolyParentsChooser
+
+   This parent chooser is similar to random parents chooser but
+   instead of selecting a new pair of parents each time, one of the
+   parents in this parent chooser will mate with several spouses
+   before he/she is replaced. This mimicks multi-spouse mating schemes
+   such as polygyny or polyandry in some populations. Natural
+   selection is supported for both sexes.
+
+
+   .. method:: PolyParentsChooser(polySex=MALE, polyNum=1, selectionField="fitness")
+
+
+      Create a multi-spouse parents chooser where each father (if
+      *polySex* is MALE) or mother (if *polySex* is FEMALE) has
+      *polyNum* spouses. The parents are chosen with replacement. If
+      individual fitness values are assigned (stored to information
+      field ``selectionField``, default to ``"fitness"``), the
+      probability that an individual is chosen is proportional to
+      his/her fitness value among all individuals with the same sex.
+
+
+   .. method:: PolyParentsChooser.chooseParents()
+
+      Return chosen parents from a population if the parent chooser
+      object is created with a population.
+
+   .. method:: PolyParentsChooser.initialize(pop, subPop)
+
+      Initialize a parent chooser for subpopulation *subPop* of
+      *population* pop.

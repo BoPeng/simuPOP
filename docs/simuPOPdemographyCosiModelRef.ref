@@ -1,0 +1,49 @@
+
+class CosiModel
+---------------
+
+.. class:: CosiModel
+
+   A dempgraphic model for Africa, Asia and Europe, as described in 
+   Schaffner et al, Genome Research, 2005, and implemented in the coalescent
+   simulator cosi.
+
+   .. method:: CosiModel.CosiModel(T0, N_A=12500, N_AF=24000, N_OoA=7700, N_AF1=100000, N_AS1=100000, N_EU1=100000, T_AF=17000, T_OoA=3500, T_EU_AS=2000, T_AS_exp=400, T_EU_exp=350, T_AF_exp=200, F_OoA=0.085, F_AS=0.067, F_EU=0.02, F_AF=0.02, m_AF_EU=3.2e-05, m_AF_AS=8e-06, ops=[], infoFields=[], scale=1)
+
+      Counting **backward in time**, this model evolves a population for a
+      total of ``T0`` generations. The ancient population ``Ancestral`` started
+      at size ``N_Ancestral`` and expanded at ``T_AF`` generations from now,
+      to pop ``AF`` with size ``N_AF``. The Out of Africa population split from
+      the ``AF`` population at ``T_OoA`` generations ago. The ``OoA`` population
+      split into two subpopulations ``AS`` and ``EU`` but keep the same size.
+      At the generations of ``T_EU_exp``, ``T_AS_exp``, and ``T_AF_exp`` ago,
+      three populations expanded to modern population sizes of ``N_AF1``, 
+      ``N_AS1`` and ``N_EU1`` exponentially, respectively. Migrations are
+      allowed between ``AF`` and ``EU`` populations
+      with rate ``m_AF_EU``, and between ``AF`` and ``AS`` with rate ``m_AF_AS``.
+      
+      Four bottlenecks happens in the ``AF``, ``OoA``, ``EU`` and ``AS`` populations.
+      They are supposed to happen 200 generations after population split and last
+      for 200 generations. The intensity is parameterized in F, which is number
+      of generations devided by twice the effective size during bottleneck.
+      So the bottleneck size is 100/F. 
+      
+      This model merges all subpopulations if it is applied to a population with
+      multiple subpopulation. Although parameters are configurable, we assume
+      the order of events so dramatically changes of parameters might need
+      to errors.  If a scaling factor ``scale`` is specified, all population
+      sizes and generation numbers will be divided by, and migration rates
+      will be multiplied by a factor of ``scale``.
+
+   .. method:: CosiModel.plot(filename='', title='', initSize=[])
+
+      Evolve a haploid population using a :class:`RandomSelection` mating scheme
+      using the demographic model. Print population size changes duringe evolution.
+      An initial population size could be specified using parameter ``initSize``
+      for a demographic model with dynamic initial population size. If a filename
+      is specified and if matplotlib is available, this function draws a figure
+      to depict the demographic model and save it to ``filename``. An optional
+      ``title`` could be specified to the figure. Note that this function can
+      not be plot demographic models that works for particular mating schemes
+      (e.g. genotype dependent).
+

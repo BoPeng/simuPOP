@@ -1,0 +1,30 @@
+
+class AminoAcidMutator
+----------------------
+
+.. class:: AminoAcidMutator
+
+   This operator has not been implemented.
+
+   .. method:: AminoAcidMutator.AminoAcidMutator(rate=[], model='general', loci=True, mapIn=[], mapOut=[], output='', begin=0, end=-1, step=1, at=[], reps=True, subPops=ALL_AVAIL, infoFields=['ind_id'], lineageMode=115)
+
+      Usage:
+      
+          MatrixMutator(rate, loci=ALL_AVAIL, mapIn=[], mapOut=[],
+            output="", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
+            subPops=ALL_AVAIL, infoFields="ind_id", lineageMode=FROM_INFO)
+      
+      Details:
+      
+          Create a mutator that mutates alleles 0, 1, ..., n-1 using a n by
+          n matrix rate. Item (i,j) of this matrix specifies the probability
+          at which allele i mutates to allele j. Diagnal items (i, i) are
+          ignored because they are automatically determined by other
+          probabilities. Only one mutation rate matrix can be specified
+          which will be used for all loci in the applied population, or loci
+          specified by parameter loci. If alleles other than 0, 1, ..., n-1
+          exist in the population, they will not be mutated although a
+          warning message will be given if debugging code DBG_WARNING is
+          turned on. Please refer to classes mutator and BaseOperator for
+          detailed explanation of other parameters.
+

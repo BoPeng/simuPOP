@@ -1,0 +1,35 @@
+
+class ProductSplitter
+---------------------
+
+.. class:: ProductSplitter
+
+   This splitter takes several splitters and take their intersections
+   as new VSPs. For example, if the first splitter defines ``3`` VSPs
+   and the second splitter defines ``2``, ``6`` VSPs will be defined
+   by splitting 3 VSPs defined by the first splitter each to two VSPs.
+   This splitter is usually used to define finer VSPs from existing
+   VSPs.
+
+
+   .. method:: ProductSplitter(splitters=[], names=[])
+
+
+      Create a product splitter using a list of *splitters*. For
+      example, ``ProductSplitter([SexSplitter(),
+      AffectionSplitter()])`` defines four VSPs by male unaffected,
+      male affected, female unaffected, and female affected
+      individuals. VSP names are usually determined by splitters, but
+      can also be specified using parameter *names*.
+
+
+   .. method:: ProductSplitter.name(vsp)
+
+      Return the name of a VSP *vsp*, which is the names of indivdual
+      VSPs separated by a comma, unless a new set of names is
+      specified for each VSP.
+
+   .. method:: ProductSplitter.numVirtualSubPop()
+
+      Return the number of VSPs defined by this splitter, which is the
+      sum of the number of VSPs of all combined splitters.

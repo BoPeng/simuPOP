@@ -1,0 +1,33 @@
+
+class SummaryTagger
+-------------------
+
+.. class:: SummaryTagger
+
+   A summary tagger summarize values of one or more parental
+   information field to another information field of an offspring. If
+   mating is sexual, two sets of parental values will be involved.
+
+
+   .. method:: SummaryTagger(mode=MEAN, begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, output="", infoFields=[])
+
+
+      Creates a summary tagger that summarize values of one or more
+      parental information field (*infoFields*[:-1]) to an offspring
+      information field (*infoFields*[-1]). A parameter *mode*
+      specifies how to pass summarize parental values. More
+      specifically,
+
+      + ``mode=MEAN`` Passing the average of values.
+
+      + ``mode=MAXIMUM`` Passing the maximum value of values.
+
+      + ``mode=Minumum`` Passing the minimum value of values.
+
+      + ``mode=SUMMATION`` Passing the sum of values.
+
+      + ``mode=MULTIPLICATION`` Passing the multiplication of values.
+
+      This operator does not support parameter *subPops* and does not
+      output any information.
+

@@ -1,0 +1,16 @@
+
+class PhylipExporter
+--------------------
+
+.. class:: PhylipExporter
+
+   An exporter to export sequence data in Phylip format
+
+   .. method:: PhylipExporter.PhylipExporter(alleleNames=None, seqNames=None, style='sequential')
+
+      Initialize self.  See help(type(self)) for accurate signature.
+
+   .. method:: PhylipExporter.export(pop, output, subPops, infoFields, gui)
+
+      Export in Phylip format
+

@@ -1,0 +1,89 @@
+
+class Migrator
+--------------
+
+.. class:: Migrator
+
+   This operator migrates individuals from (virtual) subpopulations to
+   other subpopulations, according to either pre-specified destination
+   subpopulation stored in an information field, or randomly according
+   to a migration matrix.
+
+   In the former case, values in a specified information field
+   (default to *migrate_to*) are considered as destination
+   subpopulation for each individual. If *subPops* is given, only
+   individuals in specified (virtual) subpopulations will be migrated
+   where others will stay in their original subpopulation. Negative
+   values are not allowed in this information field because they do
+   not represent a valid destination subpopulation ID.
+
+   In the latter case, a migration matrix is used to randomly assign
+   destination subpoulations to each individual. The elements in this
+   matrix can be probabilities to migrate, proportions of individuals
+   to migrate, or exact number of individuals to migrate.
+
+   By default, the migration matrix should have ``m`` by ``m``
+   elements if there are ``m`` subpopulations. Element ``(i, j)`` in
+   this matrix represents migration probability, rate or count from
+   subpopulation ``i`` to ``j``. If *subPops* (length ``m``) and/or
+   *toSubPops* (length ``n``) are given, the matrix should have ``m``
+   by ``n`` elements, corresponding to specified source and
+   destination subpopulations. Subpopulations in *subPops* can be
+   virtual subpopulations, which makes it possible to migrate, for
+   example, males and females at different rates from a subpopulation.
+   If a subpopulation in *toSubPops* does not exist, it will be
+   created. In case that all individuals from a subpopulation are
+   migrated, the empty subpopulation will be kept.
+
+   If migration is applied by probability, the row of the migration
+   matrix corresponding to a source subpopulation is intepreted as
+   probabilities to migrate to each destination subpopulation. Each
+   individual's detination subpopulation is assigned randomly
+   according to these probabilities. Note that the probability of
+   staying at the present subpopulation is automatically calculated so
+   the corresponding matrix elements are ignored.
+
+   If migration is applied by proportion, the row of the migration
+   matrix corresponding to a source subpopulation is intepreted as
+   proportions to migrate to each destination subpopulation. The
+   number of migrants to each destination subpopulation is determined
+   before random indidividuals are chosen to migrate.
+
+   If migration is applied by counts, the row of the migration matrix
+   corresponding to a source subpopulation is intepreted as number of
+   individuals to migrate to each detination subpopulation. The
+   migrants are chosen randomly.
+
+   This operator goes through all source (virtual) subpopulations and
+   assign detination subpopulation of each individual to an
+   information field. Unexpected results may happen if individuals
+   migrate from overlapping virtual subpopulations.
+
+
+   .. method:: Migrator(rate=[], mode=BY_PROBABILITY, toSubPops=ALL_AVAIL, begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=["migrate_to"])
+
+
+      Create a  Migrator that moves individuals from source (virtual)
+      subpopulations *subPops* (default to migrate from all
+      subpopulations) to destination subpopulations *toSubPops*
+      (default to all subpopulations), according to existing values in
+      an information field *infoFields*[0], or randomly according to a
+      migration matrix *rate*. In the latter case, the size of the
+      matrix should match the number of source and destination
+      subpopulations.
+
+      Depending on the value of parameter *mode*, elements in the
+      migration matrix (*rate*) are interpreted as either the
+      probabilities to migrate from source to destination
+      subpopulations (*mode* = ``BY_PROBABILITY``), proportions of
+      individuals in the source (virtual) subpopulations to the
+      destination subpopulations (*mode* = ``BY_PROPORTION``), numbers
+      of migrants in the source (virtual) subpopulations (*mode* =
+      ``BY_COUNTS``), or ignored completely (*mode* =
+      ``BY_IND_INFO``). In the last case, parameter *subPops* is
+      respected (only individuals in specified (virtual)
+      subpopulations will migrate) but *toSubPops* is ignored.
+
+      Please refer to operator :class:`BaseOperator` for a detailed
+      explanation for all parameters.
+

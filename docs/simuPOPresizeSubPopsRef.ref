@@ -1,0 +1,10 @@
+
+Function resizeSubPops
+----------------------
+
+
+.. function:: resizeSubPops(pop, *args, **kwargs)
+
+   Resize subpopulations *subPops* of population *pop* into new sizes
+   *size*. Individuals will be added or removed accordingly. Please refer to
+   the operator form of this funciton (:class:`ResizeSubPops`) for details

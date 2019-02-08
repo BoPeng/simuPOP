@@ -1,0 +1,14 @@
+
+class StopIteration
+-------------------
+
+.. class:: StopIteration
+
+   exception, thrown if out of memory
+
+
+   .. method:: StopIteration(msg)
+
+
+      FIXME: No document
+

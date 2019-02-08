@@ -1,0 +1,29 @@
+
+Function migrHierarchicalIslandRates
+------------------------------------
+
+
+.. function:: migrHierarchicalIslandRates(r1, r2, n)
+
+   Return the migration rate matrix for a hierarchical island model
+   where there are different migration rate within and across groups
+   of islands.
+   
+   r1
+       Within group migration rates. It can be a number or a list of numbers
+       for each group of the islands.
+   
+   r2
+       Across group migration rates which is the probability that someone will
+       migrate to a subpopulation outside of his group. A list of r2 could be
+       specified for each group of the islands.
+   
+   n
+       Number of islands in each group. E.g. n=[5, 4] specifies two groups of
+       islands with 5 and 4 islands each.
+   
+   For individuals in an island, the probability that it remains in the same
+   island is 1-r1-r2 (r1, r2 might vary by island groups), that it migrates
+   to another island in the same group is r1 and migrates to another island
+   outside of the group is r2. migrate rate to a specific island depends on
+   the size of group.

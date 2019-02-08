@@ -1,0 +1,22 @@
+
+class HermaphroditicMating
+--------------------------
+
+.. class:: HermaphroditicMating
+
+   A hermaphroditic mating scheme that chooses two parents randomly
+   from the population regardless of sex. The parents could be chosen
+   with or without replacement (parameter *replacement*). Selfing (if
+   the same parents are chosen) is allowed unless *allowSelfing* is 
+   set to *False*
+
+   .. method:: HermaphroditicMating.HermaphroditicMating(replacement=True, allowSelfing=True, numOffspring=1, sexMode=RANDOM_SEX, ops=MendelianGenoTransmitter(), subPopSize=[], subPops=ALL_AVAIL, weight=0, selectionField='fitness')
+
+      Creates a hermaphroditic mating scheme where individuals can
+      serve as father or mother, or both (self-fertilization). Please 
+      refer to class :class:`CombinedParentsChooser` for parameter *allowSelfing``,
+      to :class:`RandomParentChooser` for parameter *replacement* and
+      *selectionField*, to class :class:`OffspringGenerator` for parameters *ops*,
+      *sexMode* and *numOffspring*, and to class :class:`HomoMating` for parameters
+      *subPopSize*, *subPops* and *weight*.
+

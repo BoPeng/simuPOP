@@ -1,0 +1,23 @@
+
+class pyPopIterator
+-------------------
+
+.. class:: pyPopIterator
+
+   This class implements a Python itertor class that can be used to
+   iterate through populations in a population.
+
+
+   .. method:: pyPopIterator(begin, end)
+
+
+      FIXME: No document
+
+
+   .. method:: pyPopIterator.__iter__()
+
+      FIXME: No document
+
+   .. method:: pyPopIterator.next()
+
+      FIXME: No document

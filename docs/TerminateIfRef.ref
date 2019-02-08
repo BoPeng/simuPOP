@@ -1,0 +1,28 @@
+
+class TerminateIf
+-----------------
+
+.. class:: TerminateIf
+
+   This operator evaluates an expression in a population's local
+   namespace and terminate the evolution of this population, or the
+   whole simulator, if the return value of this expression is
+   ``True``. Termination caused by an operator will stop the execution
+   of all operators after it. The generation at which the population
+   is terminated will be counted in the *evolved generations* (return
+   value from ``Simulator::evolve``) if termination happens after
+   mating.
+
+
+   .. method:: TerminateIf(condition="", stopAll=False, message="", output="", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+
+      Create a terminator with an expression *condition*, which will
+      be evalulated in a population's local namespace when the
+      operator is applied to this population. If the return value of
+      *condition* is ``True``, the evolution of the population will be
+      terminated. If *stopAll* is set to ``True``, the evolution of
+      all replicates of the simulator will be terminated. If this
+      operator is allowed to write to an *output* (default to ""), the
+      generation number, proceeded with an optional *message*.
+

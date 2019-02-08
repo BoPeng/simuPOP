@@ -1,0 +1,15 @@
+
+Function drawAffectedSibpairSample
+----------------------------------
+
+
+.. function:: drawAffectedSibpairSample(pop, families, subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id', motherField='mother_id')
+
+   Draw affected sibpair samples from a population. If a single
+   ``families`` is given, affected sibpairs and their parents are drawn
+   randomly from the whole population or from specified (virtual)
+   subpopulations (parameter ``subPops``). Otherwise, a list of numbers should
+   be used to specify number of families from each subpopulation, which can be
+   all subpopulations if ``subPops=ALL_AVAIL`` (default), or from each of the
+   specified (virtual) subpopulations. This function returns a population that
+   contains extracted individuals.

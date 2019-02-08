@@ -1,0 +1,14 @@
+
+class RuntimeError
+------------------
+
+.. class:: RuntimeError
+
+   exception, thrown if a runtime error occurs
+
+
+   .. method:: RuntimeError(msg)
+
+
+      FIXME: No document
+

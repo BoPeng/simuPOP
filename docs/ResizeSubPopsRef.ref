@@ -1,0 +1,27 @@
+
+class ResizeSubPops
+-------------------
+
+.. class:: ResizeSubPops
+
+   This operator resizes subpopulations to specified sizes.
+   individuals are added or removed depending on the new subpopulation
+   sizes.
+
+
+   .. method:: ResizeSubPops(subPops=ALL_AVAIL, sizes=[], proportions=[], propagate=True, begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, infoFields=[])
+
+
+      Resize given subpopulations *subPops* to new sizes *size*, or
+      sizes proportional to original sizes (parameter *proportions*).
+      All subpopulations will be resized if *subPops* is not
+      specified. If the new size of a subpopulation is smaller than
+      its original size, extra individuals will be removed. If the new
+      size is larger, new individuals with empty genotype will be
+      inserted, unless parameter *propagate* is set to ``True``
+      (default). In this case, existing individuals will be copied
+      sequentially, and repeatedly if needed.
+
+      Please refer to operator :class:`BaseOperator` for a detailed
+      explanation for all parameters.
+

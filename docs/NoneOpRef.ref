@@ -1,0 +1,16 @@
+
+class NoneOp
+------------
+
+.. class:: NoneOp
+
+   This operator does nothing when it is applied to a population. It
+   is usually used as a placeholder when an operator is needed
+   syntactically.
+
+
+   .. method:: NoneOp(output=">", begin=0, end=0, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+
+      Create a :class:`NoneOp`.
+

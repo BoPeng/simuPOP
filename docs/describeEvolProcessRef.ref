@@ -1,0 +1,11 @@
+
+Function describeEvolProcess
+----------------------------
+
+
+.. function:: describeEvolProcess(initOps=[], preOps=[], matingScheme=MatingScheme, postOps=[], finalOps=[], gen=-1, numRep=1)
+
+   This function takes the same parameters as :meth:`Simulator.evolve`
+   and output a description of how an evolutionary process will be
+   executed. It is recommended that you call this function if you have
+   any doubt how your simulation will proceed.

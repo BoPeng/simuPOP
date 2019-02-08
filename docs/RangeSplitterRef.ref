@@ -1,0 +1,33 @@
+
+class RangeSplitter
+-------------------
+
+.. class:: RangeSplitter
+
+   This class defines a splitter that groups individuals in certain
+   ranges into VSPs.
+
+
+   .. method:: RangeSplitter(ranges, names=[])
+
+
+      Create a splitter according to a number of individual ranges
+      defined in *ranges*. For example, ``RangeSplitter(ranges=[[0,
+      20], [40, 50]])`` defines two VSPs. The first VSP consists of
+      individuals ``0``, ``1``, ..., ``19``, and the sceond VSP
+      consists of individuals ``40``, ``41``, ..., ``49``. Note that a
+      nested list has to be used even if only one range is defined. A
+      default set of names are given to each VSP unless a new set of
+      names is given by parameter *names*.
+
+
+   .. method:: RangeSplitter.name(vsp)
+
+      Return the name of VSP *vsp*, which is ``"Range [a, b)"`` where
+      ``[a, b)`` is range ``ranges[vsp]``. A user specified name will
+      be returned if specified.
+
+   .. method:: RangeSplitter.numVirtualSubPop()
+
+      Return the number of VSPs, which is the number of ranges defined
+      in parameter *ranges*.

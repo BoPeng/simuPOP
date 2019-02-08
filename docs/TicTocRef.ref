@@ -1,0 +1,29 @@
+
+class TicToc
+------------
+
+.. class:: TicToc
+
+   This operator, when called, output the difference between current
+   and the last called clock time. This can be used to estimate
+   execution time of each generation. Similar information can also be
+   obtained from ``turnOnDebug("DBG_PROFILE")``, but this operator has
+   the advantage of measuring the duration between several generations
+   by setting ``step`` parameter. As an advanced feature that mainly
+   used for performance testing, this operator accepts a parameter
+   *stopAfter* (seconds), and will stop the evolution of a population
+   if the overall time exceeds *stopAfter*. Note that elapsed time is
+   only checked when this operator is applied to a population so it
+   might not be able to stop the evolution process right after
+   *stopAfter* seconds. This operator can also be applied during
+   mating. Note that to avoid excessive time checking, this operator
+   does not always check system time accurately.
+
+
+   .. method:: TicToc(output=">", stopAfter=0, begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+
+      Create a :class:`TicToc` operator that outputs the elapsed since
+      the last time it was applied, and the overall time since the
+      first time this operator is applied.
+

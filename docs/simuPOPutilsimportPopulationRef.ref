@@ -1,0 +1,69 @@
+
+Function importPopulation
+-------------------------
+
+
+.. function:: importPopulation(format, filename, *args, **kwargs)
+
+   This function import and return a population from a file *filename* in
+   specified *format*. Format-specific parameters can be used to define how the
+   input should be interpreted and imported. This function supports the following
+   file format.
+   
+   GENEPOP (http://genepop.curtin.edu.au/). For input file of this format, this
+   function ignores the first title line, load the second line as loci names,
+   and import genotypes of different POP sections as different subpopulations.
+   This format accepts the following parameters:
+   
+   adjust
+       Adjust alleles by specified value (default to 0 for no adjustment). This
+       parameter is mostly used to convert alleles 1 and 2 in a GenePop file to
+       alleles 0 and 1 (with adjust=-1) in simuPOP. Negative allele (e.g. missing
+       value 0) will be imported as regular allele with module-dependent values
+       (e.g. -1 imported as 255 for standard module).
+   
+   
+   FSTAT (http://www2.unil.ch/popgen/softwares/fstat.htm). This format accepts
+   the following parameters:
+   
+   adjust
+       Adjust alleles by specified value (default to 0 for no adjustment). This
+       parameter is mostly used to convert alleles 1 and 2 in a GenePop file to
+       alleles 0 and 1 (with adjust=-1) in simuPOP. Negative allele (e.g. missing
+       value 0) will be imported as regular allele with module-dependent values
+       (e.g. -1 imported as 255 for standard module).
+   
+   Phylip (Joseph Felsenstein's Phylip format). This function ignores sequence
+   names and import sequences in a haploid (default) or diploid population (if
+   there are even number of sequences). An list of allele names are required to
+   translate symbols to allele names. This format accepts the following
+   parameters:
+   
+   alleleNames
+       Names of alleles 0, 1, 2, ... as a single string (e.g. 'ACTG') or a list of 
+       single-character strings (e.g. ['A', 'C', 'T', 'G']). This will be used to
+       translate symbols into numeric alleles in simuPOP. Allele names will continue
+       to be used as allele names of the returned population.
+   
+   ploidy
+       Ploidy of the returned population, default to 1 (haploid). There should be
+       even number of sequences if ploidy=2 (haploid) is specified.
+   
+   MS (output from Richard R. Hudson's MS or msHOT program). The ms program generates
+   npop blocks of nseq haploid chromosomes for command starting with 
+   ``ms nsample nrepeat``. By default, the result is imported as a haploid
+   population of size nsample. The population will have nrepeat subpopulations
+   each with the same number of loci but different number of segregating sites.
+   This behavior could be changed by the following parameters:
+   
+   ploidy
+       If ``ploidy`` is set to 2, the sequenences will be paired so the population
+       will have ``nseq/2`` individuals. An error will be raised if an odd number
+       of sequences are simulated.
+       
+   mergeBy
+       By default, replicate samples will be presented as subpopulations. All
+       individuals have the same number of loci but individuals in different
+       subpopulations have different segregating sites. If ``mergeBy`` is set
+       to ``"chrom"``, the replicates will be presented as separate chromosomes,
+       each with a different set of loci determined by segregating sites.

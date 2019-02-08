@@ -1,0 +1,56 @@
+
+class GenotypeSplitter
+----------------------
+
+.. class:: GenotypeSplitter
+
+   This class defines a VSP splitter that defines VSPs according to
+   individual genotype at specified loci.
+
+
+   .. method:: GenotypeSplitter(loci, alleles, phase=False, names=[])
+
+
+      Create a splitter that defines VSPs by individual genotype at
+      *loci* (can be indexes or names of one or more loci). Each list
+      in a list *allele* defines a VSP, which is a list of allowed
+      alleles at these *loci*. If only one VSP is defined, the outer
+      list of the nested list can be ignored. If phase if true, the
+      order of alleles in each list is significant. If more than one
+      set of alleles are given, Individuals having either of them is
+      qualified.
+
+      For example, in a haploid population, ``loci=1, alleles=[0, 1]``
+      defines a VSP with individuals having allele ``0`` or ``1`` at
+      locus ``1``, ``alleles=[[0, 1], [2]]`` defines two VSPs with
+      indivdiuals in the second VSP having allele ``2`` at locus
+      ``1``. If multiple loci are involved, alleles at each locus need
+      to be defined. For example, VSP defined by ``loci=[0, 1],
+      alleles=[0, 1, 1, 1]`` consists of individuals having alleles
+      ``[0, 1]`` or ``[1, 1]`` at loci ``[0, 1]``.
+
+      In a haploid population, ``loci=1, alleles=[0, 1]`` defines a
+      VSP with individuals having genotype ``[0, 1]`` or ``[1, 0]`` at
+      locus ``1``. ``alleles[[0, 1], [2, 2]]`` defines two VSPs with
+      indivdiuals in the second VSP having genotype ``[2, 2]`` at
+      locus ``1``. If *phase* is set to ``True``, the first VSP will
+      only has individuals with genotype ``[0, 1]``. In the multiple
+      loci case, alleles should be arranged by haplotypes, for
+      example, ``loci=[0, 1], alleles=[0, 0, 1, 1], phase=True``
+      defines a VSP with individuals having genotype ``-0-0-, -1-1-``
+      at loci ``0`` and ``1``. If ``phase=False`` (default), genotypes
+      ``-1-1-, -0-0-``, ``-0-1-`` and ``-1-0-`` are all allowed.
+
+      A default set of names are given to each VSP unless a new set of
+      names is given by parameter *names*.
+
+
+   .. method:: GenotypeSplitter.name(vsp)
+
+      Return name of VSP *vsp*, which is ``"Genotype
+      loc1,loc2:genotype"`` as defined by parameters *loci* and
+      *alleles*. A user provided name will be returned if specified.
+
+   .. method:: GenotypeSplitter.numVirtualSubPop()
+
+      number of virtual subpops of subpopulation sp

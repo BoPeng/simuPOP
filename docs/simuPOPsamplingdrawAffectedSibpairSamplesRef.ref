@@ -1,0 +1,10 @@
+
+Function drawAffectedSibpairSamples
+-----------------------------------
+
+
+.. function:: drawAffectedSibpairSamples(pop, families, numOfSamples=1, subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id', motherField='mother_id')
+
+   Draw ``numOfSamples`` affected sibpair samplesa from population ``pop`` and
+   return a list of populations. Please refer to function
+   ``drawAffectedSibpairSample`` for a description of other parameters.

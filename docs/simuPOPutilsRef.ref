@@ -1,0 +1,5 @@
+
+.. module:: simuPOP.utils
+
+This module provides some commonly used operators
+and format conversion utilities.

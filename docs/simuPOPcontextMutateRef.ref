@@ -1,0 +1,8 @@
+
+Function contextMutate
+----------------------
+
+
+.. function:: contextMutate(pop, *args, **kwargs)
+
+   Function form of operator :class:`ContextMutator`

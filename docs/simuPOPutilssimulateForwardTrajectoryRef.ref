@@ -1,0 +1,20 @@
+
+Function simulateForwardTrajectory
+----------------------------------
+
+
+.. function:: simulateForwardTrajectory(N, beginGen, endGen, beginFreq, endFreq, nLoci=1, fitness=None, maxAttempts=10000, logger=None)
+
+   Given a demographic model (*N*) and the fitness of genotype at one or
+   more loci (*fitness*), this function simulates a trajectory of one or more
+   unlinked loci (*nLoci*) from allele frequency *freq* at generation
+   *beginGen* forward in time, until it reaches generation *endGen*. A
+   ``Trajectory`` object will be returned if the allele frequency falls
+   into specified ranges (*endFreq*). ``None`` will be returned if no valid
+   Trajectory is simulated after ``maxAttempts`` attempts. Please refer to
+   class ``Trajectory``, ``TrajectorySimulator`` and their member functions
+   for more details about allowed input for these parameters. If a *logger*
+   object is given, it will send detailed debug information at ``DEBUG``
+   level and ending allele frequencies at the ``INFO`` level. The latter
+   can be used to adjust your fitness model and/or ending allele frequency
+   if a trajectory is difficult to obtain because of parameter mismatch.

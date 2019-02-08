@@ -1,0 +1,10 @@
+
+Function turnOnDebug
+--------------------
+
+
+.. function:: turnOnDebug(code="")
+
+   Set debug code *code*. More than one code could be specified using
+   a comma separated string. Name of available codes are available
+   from ``moduleInfo()['debug'].keys()``.

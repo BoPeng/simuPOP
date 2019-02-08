@@ -1,0 +1,10 @@
+
+Function drawRandomSamples
+--------------------------
+
+
+.. function:: drawRandomSamples(pop, sizes, numOfSamples=1, subPops=ALL_AVAIL)
+
+   Draw ``numOfSamples`` random samples from a population and return a list of
+   populations. Please refer to function ``drawRandomSample`` for more details
+   about parameters ``sizes`` and ``subPops``.

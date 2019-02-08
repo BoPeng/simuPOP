@@ -1,0 +1,16 @@
+
+Function evolvepop
+------------------
+
+
+.. function:: evolve_pop(self, initOps=[], preOps=[], matingScheme=MatingScheme(), postOps=[], finalOps=[], gen=-1, dryrun=False)
+
+   Evolve the current population *gen* generations using mating scheme
+   *matingScheme* and operators *initOps* (applied before evolution), *preOps*
+   (applied to the parental population at the beginning of each life cycle),
+   *postOps* (applied to the offspring population at the end of each life
+   cycle) and *finalOps* (applied at the end of evolution). More specifically,
+   this function creates a *Simulator* using the current population, call its
+   *evolve* function using passed parameters and then replace the current
+   population with the evolved population. Please refer to function 
+   :meth:`Simulator.evolve` for more details about each parameter.

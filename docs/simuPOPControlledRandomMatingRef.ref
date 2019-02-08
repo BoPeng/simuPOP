@@ -1,0 +1,28 @@
+
+class ControlledRandomMating
+----------------------------
+
+.. class:: ControlledRandomMating
+
+   A homogeneous mating scheme that uses a random sexual parents chooser
+   with replacement and a controlled offspring generator using Mendelian
+   genotype transmitter. It falls back to a regular random mating scheme
+   if there is no locus to control or no trajectory is defined.
+
+   .. method:: ControlledRandomMating.ControlledRandomMating(loci=[], alleles=[], freqFunc=None, numOffspring=1, sexMode=RANDOM_SEX, ops=MendelianGenoTransmitter(), subPopSize=[], subPops=ALL_AVAIL, weight=0, selectionField='fitness')
+
+      Creates a random mating scheme that controls allele frequency at
+      loci *loci*. At each generation, function *freqFunc* will be called to
+      called to obtain intended frequencies of alleles *alleles* at loci
+      *loci*. The controlled offspring generator will control the acceptance
+      of offspring so that the generation reaches desired allele frequencies
+      at these loci. If *loci* is empty or *freqFunc* is ``None``, this mating
+      scheme works identically to a ``RandomMating scheme``. Rationals and
+      applications of this mating scheme is described in details in a paper *Peng
+      et al, 2007 (PLoS Genetics)*. Please refer to class :class:`RandomParentsChooser`
+      for parameters *selectionField*, to class :class:`ControlledOffspringGenerator`
+      for parameters *loci*, *alleles*, *freqFunc*, to class
+      :class:`OffspringGenerator` for parameters *ops*, *sexMode* and *numOffspring*,
+      and to class :class:`HomoMating` for parameters *subPopSize*, *subPops* and
+      *weight*.
+

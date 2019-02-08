@@ -1,0 +1,17 @@
+
+.. module:: simuPOP.demography
+
+This module provides some commonly used demographic models. In addition
+to several migration rate generation functions, it provides models that
+encapsulate complete demographic features of one or more populations (
+population growth, split, bottleneck, admixture, migration). These models
+provides:
+
+1. The model itself can be passed to parameter subPopSize of a mating
+   scheme to determine the size of the next generation. More importantly,
+   it performs necessary actions of population size change when needed.
+
+2. The model provides attribute num_gens, which can be passed to parameter
+   ``gens`` of ``Simulator.evolve`` or ``Population.evolve`` function.
+   A demographic model can also terminate an evolutionary process by
+   returnning an empty list so ``gens=model.num_gens`` is no longer required.

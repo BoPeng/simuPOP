@@ -1,0 +1,59 @@
+
+class SplitSubPops
+------------------
+
+.. class:: SplitSubPops
+
+   Split a given list of subpopulations according to either sizes of
+   the resulting subpopulations, proportion of individuals, or an
+   information field. The resulting subpopulations will have the same
+   name as the original subpopulation.
+
+
+   .. method:: SplitSubPops(subPops=ALL_AVAIL, sizes=[], proportions=[], names=[], randomize=True, begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, infoFields=[])
+
+
+      Split a list of subpopulations *subPops* into finer
+      subpopulations. A single subpopulation is acceptable but virtual
+      subpopulations are not allowed. All subpopulations will be split
+      if *subPops* is not specified.
+
+      The subpopulations can be split in three ways:
+
+      + If parameter *sizes* is given, each subpopulation will be
+        split into subpopulations with given size. The *sizes* should
+        add up to the size of all orignal subpopulations.
+
+      + If parameter *proportions* is given, each subpopulation will
+        be split into subpopulations with corresponding proportion of
+        individuals. *proportions* should add up to ``1``.
+
+      + If an information field is given (parameter *infoFields*),
+        individuals having the same value at this information field
+        will be grouped into a subpopulation. The number of resulting
+        subpopulations is determined by the number of distinct values
+        at this information field.
+
+      If parameter ``randomize`` is ``True`` (default), individuals
+      will be randomized before a subpopulation is split. This is
+      designed to remove artificial order of individuals introduced
+      by, for example, some non- random mating schemes. Note that,
+      however, the original individual order is not guaranteed even if
+      this parameter is set to ``False``.
+
+      Unless the last subpopulation is split, the indexes of existing
+      subpopulations will be changed. If a subpopulation has a name,
+      this name will become the name for all subpopulations separated
+      from this subpopulation. Optionally, you can assign names to the
+      new subpopulations using a list of names specified in parameter
+      *names*. Because the same set of names will be used for all
+      subpopulations, this parameter is not recommended when multiple
+      subpopulations are split.
+
+      Please refer to operator :class:`BaseOperator` for a detailed
+      explanation for all parameters.
+
+      .. note::
+
+         Unlike operator :class:`Migrator`, this operator does not
+         require an information field such as ``migrate_to``.

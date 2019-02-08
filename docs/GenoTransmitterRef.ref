@@ -1,0 +1,44 @@
+
+class GenoTransmitter
+---------------------
+
+.. class:: GenoTransmitter
+
+   This during mating operator is the base class of all genotype
+   transmitters. It is made available to users because it provides a
+   few member functions that can be used by derived transmitters, and
+   by customized Python during mating operators.
+
+
+   .. method:: GenoTransmitter(output="", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+
+      Create a base genotype transmitter.
+
+
+   .. method:: GenoTransmitter.clearChromosome(ind, ploidy, chrom)
+
+      Clear (set alleles to zero) chromosome *chrom* on the *ploidy-
+      th* homologous set of chromosomes of individual *ind*. It is
+      equivalent to ``ind.setGenotype([0], ploidy, chrom)``, except
+      that it also clears allele lineage if it is executed in a module
+      with lineage allele type.
+
+   .. method:: GenoTransmitter.copyChromosome(parent, parPloidy, offspring, ploidy, chrom)
+
+      Transmit chromosome *chrom* on the *parPloidy* set of homologous
+      chromosomes from *parent* to the *ploidy* set of homologous
+      chromosomes of *offspring*. It is equivalent to
+      ``offspring.setGenotype(parent.genotype(parPloidy, chrom),
+      polidy, chrom)``, except that it also copies allelic lineage
+      when it is executed in a module with lineage allele type.
+
+   .. method:: GenoTransmitter.copyChromosomes(parent, parPloidy, offspring, ploidy)
+
+      Transmit the *parPloidy* set of homologous chromosomes from
+      *parent* to the *ploidy* set of homologous chromosomes of
+      *offspring*. Customized chromosomes are not copied. It is
+      equivalent to
+      ``offspring.setGenotype(parent.genotype(parPloidy), ploidy)``,
+      except that it also copies allelic lineage when it is executed
+      in a module with lineage allele type.

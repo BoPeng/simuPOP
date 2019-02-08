@@ -1,0 +1,217 @@
+
+class Pedigree
+--------------
+
+.. class:: Pedigree
+
+   The pedigree class is derived from the population class. Unlike a
+   population class that emphasizes on individual properties, the
+   pedigree class emphasizes on relationship between individuals. An
+   unique ID for all individuals is needed to create a pedigree object
+   from a population object. Compared to the :class:`Population`
+   class, a :class:`Pedigree` object is optimized for access
+   individuals by their IDs, regardless of population structure and
+   ancestral generations. Note that the implementation of some
+   algorithms rely on the fact that parental IDs are smaller than
+   their offspring because individual IDs are assigned sequentially
+   during evolution. Pedigrees with manually assigned IDs should try
+   to obey such a rule.
+
+
+   .. method:: Pedigree(pop, loci=[], infoFields=[], ancGens=ALL_AVAIL, idField="ind_id", fatherField="father_id", motherField="mother_id", stealPop=False)
+
+
+      Create a pedigree object from a population, using a subset of
+      loci (parameter *loci*, can be a list of loci indexes, names, or
+      ``ALL_AVAIL``, default to no locus), information fields
+      (parameter *infoFields*, default to no information field besides
+      *idField*, *fatherField* and *motherField*), and ancestral
+      generations (parameter *ancGens*, default to all ancestral
+      generations). By default, information field ``father_id``
+      (parameter *fatherField*) and ``mother_id`` (parameter
+      *motherField*) are used to locate parents identified by
+      ``ind_id`` (parameter *idField*), which should store an unique
+      ID for all individuals. Multiple individuls with the same ID are
+      allowed and will be considered as the same individual, but a
+      warning will be given if they actually differ in genotype or
+      information fields. Operators :class:`IdTagger` and
+      :class:`PedigreeTagger` are usually used to assign such IDs,
+      although function ``sampling.indexToID`` could be used to assign
+      unique IDs and construct parental IDs from index based
+      relationship recorded by operator :class:`ParentsTagger`. A
+      pedigree object could be constructed with one or no parent but
+      certain functions such as relative tracking will not be
+      available for such pedigrees. In case that your are no longer
+      using your population object, you could steal the content from
+      the population by setting *stealPop* to ``True``.
+
+
+   .. method:: Pedigree.clone()
+
+      Create a cloned copy of a  Pedigree.
+
+   .. method:: Pedigree.identifyAncestors(IDs=ALL_AVAIL, subPops=ALL_AVAIL, ancGens=ALL_AVAIL)
+
+      If a list of individuals (*IDs*) is given, this function traces
+      backward in time and find all ancestors of these individuals. If
+      *IDs* is ``ALL_AVAIL``, ancestors of all individuals in the
+      present generation will be located. If a list of (virtual)
+      subpopulations (*subPops*) or ancestral geneartions (*ancGens*)
+      is given, the search will be limited to individuals in these
+      subpopulations and generations. This could be used to, for
+      example, find all fathers of *IDs*. This function returns a list
+      of IDs, which includes valid specified IDs. Invalid IDs will be
+      silently ignored. Note that parameters *subPops* and *ancGens*
+      will limit starting IDs if ``IDs`` is set to ``ALL_AVAIL``, but
+      specified IDs will not be trimmed according to these parameters.
+
+   .. method:: Pedigree.identifyFamilies(pedField="", subPops=ALL_AVAIL, ancGens=ALL_AVAIL)
+
+      This function goes through all individuals in a pedigree and
+      group related individuals into families. If an information field
+      *pedField* is given, indexes of families will be assigned to
+      this field of each family member. The return value is a list of
+      family sizes corresponding to families 0, 1, 2, ... etc. If a
+      list of (virtual) subpopulations (parameter *subPops*) or
+      ancestral generations are specified (parameter *ancGens*), the
+      search will be limited to individuals in these subpopulations
+      and generations.
+
+   .. method:: Pedigree.identifyOffspring(IDs=[], subPops=ALL_AVAIL, ancGens=ALL_AVAIL)
+
+      This function traces forward in time and find all offspring of
+      individuals specified in parameter *IDs*. If a list of (virtual)
+      subpopulations (*subPops*) or ancestral geneartions (*ancGens*)
+      is given, the search will be limited to individuals in these
+      subpopulations and generations. This could be used to, for
+      example, find all male offspring of *IDs*. This function returns
+      a list of IDs, which includes valid starting *IDs*. Invalid IDs
+      are silently ignored. Note that parameters *subPops* and
+      *ancGens* will limit search result but will not be used to trim
+      specified *IDs*.
+
+   .. method:: Pedigree.indByID(id)
+
+      Return a reference to individual with *id*. An
+      :class:`IndexError` will be raised if no individual with *id* is
+      found. An float *id* is acceptable as long as it rounds closely
+      to an integer.
+
+   .. method:: Pedigree.individualsWithRelatives(infoFields, sex=[], affectionStatus=[], subPops=ALL_AVAIL, ancGens=ALL_AVAIL)
+
+      Return a list of IDs of individuals who have non-negative values
+      at information fields *infoFields*. Additional requirements
+      could be specified by parameters *sex* and *affectionStatus*.
+      *sex* can be ``ANY_SEX`` (default), ``MALE_ONLY``,
+      ``FEMALE_ONLY``, ``SAME_SEX`` or ``OPPOSITE_SEX``, and
+      *affectionStatus* can be ``AFFECTED``, ``UNAFFECTED`` or
+      ``ANY_AFFECTION_STATUS`` (default). This function by default
+      check all individuals in all ancestral generations, but you
+      could limit the search using parameter *subPops* (a list of
+      (virtual) subpopulations) and ancestral generations *ancGens*.
+      Relatives fall out of specified subpopulations and ancestral
+      generaions will be considered invalid.
+
+   .. method:: Pedigree.locateRelatives(relType, resultFields=[], sex=ANY_SEX, affectionStatus=ANY_AFFECTION_STATUS, ancGens=ALL_AVAIL)
+
+      This function locates relatives (of type *relType*) of each
+      individual and store their IDs in information fields
+      *relFields*. The length of *relFields* determines how many
+      relatives an individual can have.
+
+      Parameter *relType* specifies what type of relative to locate,
+      which can be
+
+      + ``SPOUSE`` locate spouses with whom an individual has at least
+        one common offspring.
+
+      + ``OUTBRED_SPOUSE`` locate non-slibling spouses, namely spouses
+        with no shared parent.
+
+      + ``OFFSPRING`` all offspring of each individual.
+
+      + ``COMMON_OFFSPRING`` common offspring between each individual
+        and its spouse (located by ``SPOUSE`` or ``OUTBRED_SPOUSE``).
+        *relFields* should consist of an information field for spouse
+        and ``m-1`` fields for offspring where ``m`` is the number of
+        fields.
+
+      + ``FULLSIBLING`` siblings with common father and mother,
+
+      + ``SIBLING`` siblings with at least one common parent.
+
+      Optionally, you can specify the sex and affection status of
+      relatives you would like to locate, using parameters *sex* and
+      *affectionStatus*. *sex* can be ``ANY_SEX`` (default),
+      ``MALE_ONLY``, ``FEMALE_ONLY``, ``SAME_SEX`` or
+      ``OPPOSITE_SEX``, and *affectionStatus* can be ``AFFECTED``,
+      ``UNAFFECTED`` or ``ANY_AFFECTION_STATUS`` (default). Only
+      relatives with specified properties will be located.
+
+      This function will by default go through all ancestral
+      generations and locate relatives for all individuals. This can
+      be changed by setting parameter *ancGens* to certain ancestral
+      generations you would like to process.
+
+   .. method:: Pedigree.save(filename, infoFields=[], loci=[])
+
+      Save a pedigree to file *filename*. This function goes through
+      all individuals of a pedigree and outputs in each line the ID of
+      individual, IDs of his or her parents, sex (``'M'`` or ``'F'``),
+      affection status (``'A'`` or ``'U'``), values of specified
+      information fields *infoFields* and genotypes at specified loci
+      (parameter ``loci``, which can be a list of loci indexes, names,
+      or ``ALL_AVAIL``). Allele numbers, instead of their names are
+      outputed. Two columns are used for each locus if the population
+      is diploid. This file can be loaded using function
+      :func:`loadPedigree` although additional information such as
+      names of information fields need to be specified. This format
+      differs from a ````.ped file used in some genetic analysis
+      software in that there is no family ID and IDs of all
+      individuals have to be unique. Note that parental IDs will be
+      set to zero if the parent is not in the pedigree object.
+      Therefore, the parents of individuals in the top-most ancestral
+      generation will always be zero.
+
+   .. method:: Pedigree.traceRelatives(fieldPath, sex=[], affectionStatus=[], resultFields=[], ancGens=ALL_AVAIL)
+
+      Trace a relative path in a population and record the result in
+      the given information fields *resultFields*. This function is
+      used to locate more distant relatives based on the relatives
+      located by function ``locateRelatives``. For example, after
+      siblings and offspring of all individuals are located, you can
+      locate mother's sibling's offspring using a *relative path*, and
+      save their indexes in each individuals information fields
+      *resultFields*.
+
+      A *relative path* consits of a *fieldPath* that specifies which
+      information fields to look for at each step, a *sex* specifies
+      sex choices at each generation, and a *affectionStatus* that
+      specifies affection status at each generation. *fieldPath*
+      should be a list of information fields, *sex* and
+      *affectionStatus* are optional. If specified, they should be a
+      list of ``ANY_SEX``, ``MALE_ONLY``, ``FEMALE_ONLY``,
+      ``SAME_SEX`` and ``OppsiteSex`` for parameter *sex*, and a list
+      of ``UNAFFECTED``, ``AFFECTED`` and ``ANY_AFFECTION_STATUS`` for
+      parameter *affectionStatus*.
+
+      For example, if ``fieldPath = [['father_id', 'mother_id'],
+      ['sib1', 'sib2'], ['off1', 'off2']]``, and ``sex = [ANY_SEX,
+      MALE_ONLY, FEMALE_ONLY]``, this function will locate
+      ``father_id`` and ``mother_id`` for each individual, find all
+      individuals referred by ``father_id`` and ``mother_id``, find
+      informaton fields ``sib1`` and ``sib2`` from these parents and
+      locate male individuals referred by these two information
+      fields. Finally, the information fields ``off1`` and ``off2``
+      from these siblings are located and are used to locate their
+      female offspring. The results are father or mother's brother's
+      daughters. Their indexes will be saved in each individuals
+      information fields *resultFields*. If a list of ancestral
+      generations is given in parameter *ancGens* is given, only
+      individuals in these ancestral generations will be processed.
+
+   .. method:: Pedigree.asPopulation()
+
+      Convert the existing pedigree object to a population. This
+      function will behave like a regular population after this
+      function call.

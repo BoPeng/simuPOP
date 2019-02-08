@@ -1,0 +1,10 @@
+
+Function maPenetrance
+---------------------
+
+
+.. function:: maPenetrance(pop, loci, penetrance, wildtype=0, ancGens=True, *args, **kwargs)
+
+   Apply opertor :class:`MaPenetrance` to population *pop*. Unlike the
+   operator form of this operator that only handles the current generation,
+   this function by default assign affection status to all generations.

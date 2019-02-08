@@ -1,0 +1,20 @@
+
+class CloneMating
+-----------------
+
+.. class:: CloneMating
+
+   A homogeneous mating scheme that uses a sequential parent chooser and
+   a clone offspring generator.
+
+   .. method:: CloneMating.CloneMating(numOffspring=1, sexMode=None, ops=CloneGenoTransmitter(), subPopSize=[], subPops=ALL_AVAIL, weight=0, selectionField=None)
+
+      Create a clonal mating scheme that clones parents to offspring using
+      a :class:`CloneGenoTransmitter`. Please refer to class :class:`OffspringGenerator`
+      for parameters *ops* and *numOffspring*, and to class :class:`HomoMating` for
+      parameters  *subPopSize*, *subPops* and *weight*. Parameters *sexMode* and
+      *selectionField* are ignored because this mating scheme does not support
+      natural selection, and :class:`CloneGenoTransmitter` copies sex from parents
+      to offspring. Note that :class:`CloneGenoTransmitter` by default also copies
+      all parental information fields to offspring.
+

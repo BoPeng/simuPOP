@@ -1,0 +1,63 @@
+
+class BasePenetrance
+--------------------
+
+.. class:: BasePenetrance
+
+   A penetrance model models the probability that an individual has a
+   certain disease provided that he or she has certain genetic
+   (genotype) and environmental (information field) riske factors. A
+   penetrance operator calculates this probability according to
+   provided information and set his or her affection status randomly.
+   For example, an individual will have probability 0.8 to be affected
+   if the penetrance is 0.8. This class is the base class to all
+   penetrance operators and defines a common interface for all
+   penetrance operators.
+
+   A penetrance operator can be applied at any stage of an
+   evolutionary cycle. If it is applied before or after mating, it
+   will set affection status of all parents and offspring,
+   respectively. If it is applied during mating, it will set the
+   affection status of each offspring. You can also apply a penetrance
+   operator to an individual using its ``applyToIndividual`` member
+   function.
+
+   By default, a penetrance operator assigns affection status of
+   individuals but does not save the actual penetrance value. However,
+   if an information field is specified, penetrance values will be
+   saved to this field for future analysis.
+
+   When a penetrance operator is applied to a population, it is only
+   applied to the current generation. You can, however, use parameter
+   *ancGens* to set affection status for all ancestral generations
+   (``ALL_AVAIL``), or individuals in specified generations if a list
+   of ancestral generations is specified. Note that this parameter is
+   ignored if the operator is applied during mating.
+
+
+   .. method:: BasePenetrance(ancGens=UNSPECIFIED, begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+
+      Create a base penetrance operator. This operator assign
+      individual affection status in the present generation (default).
+      If ``ALL_AVAIL`` or a list of ancestral generations are spcified
+      in parameter *ancGens*, individuals in specified ancestral
+      generations will be processed. A penetrance operator can be
+      applied to specified (virtual) subpopulations (parameter
+      *subPops*) and replicates (parameter *reps*). If an informatio
+      field is given, penetrance value will be stored in this
+      information field of each individual.
+
+
+   .. method:: BasePenetrance.apply(pop)
+
+      set penetrance to all individuals and record penetrance if
+      requested
+
+   .. method:: BasePenetrance.applyToIndividual(ind, pop=None)
+
+      Apply the penetrance operator to a single individual *ind* and
+      set his or her affection status. A population reference can be
+      passed if the penetrance model depends on population properties
+      such as generation number. This function returns the affection
+      status.

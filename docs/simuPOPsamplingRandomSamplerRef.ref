@@ -1,0 +1,29 @@
+
+class RandomSampler
+-------------------
+
+.. class:: RandomSampler
+
+   A sampler that draws individuals randomly.
+
+   .. method:: RandomSampler.RandomSampler(sizes, subPops=ALL_AVAIL)
+
+      Creates a random sampler with specified number of individuals.
+
+   .. method:: RandomSampler.drawSample(input_pop)
+
+      Draw a random sample from passed population.
+
+   .. method:: RandomSampler.drawSamples(pop, numOfSamples)
+
+      Draw multiple samples and return a list of populations.
+
+   .. method:: RandomSampler.prepareSample(pop, rearrange)
+
+      Prepare passed population object for sampling according to parameter
+      ``subPops``. If samples are drawn from the whole population, a
+      Population will be trimmed if only selected (virtual) subpopulations
+      are used. If samples are drawn separately from specified subpopulations,
+      Population ``pop`` will be rearranged (if ``rearrange==True``) so that
+      each subpoulation corresponds to one element in parameter ``subPops``.
+

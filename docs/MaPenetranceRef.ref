@@ -1,0 +1,49 @@
+
+class MaPenetrance
+------------------
+
+.. class:: MaPenetrance
+
+   This operator is called a 'multi-allele' penetrance operator
+   because it groups multiple alleles into two groups: wildtype and
+   non-wildtype alleles. Alleles in each allele group are assumed to
+   have the same effect on individual penetrance. If we denote all
+   wildtype alleles as ``A``, and all non-wildtype alleles ``a``, this
+   operator assign  Individual penetrance according to genotype
+   ``AA``, ``Aa``, ``aa`` in the diploid case, and ``A`` and ``a`` in
+   the haploid case.
+
+
+   .. method:: MaPenetrance(loci, penetrance, wildtype=0, ancGens=UNSPECIFIED, begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+
+      Creates a multi-allele penetrance operator that groups multiple
+      alleles into a wildtype group (with alleles *wildtype*, default
+      to ``[0]``), and a non-wildtype group. A list of penetrance
+      values is specified through parameter *penetrance*, for
+      genotypes at one or more *loci*. Parameter *loci* can be a list
+      of loci indexes, names, list of chromosome position pairs,
+      ``ALL_AVAIL``, or a function with optional parameter ``pop``
+      that will be called at each ganeeration to determine indexes of
+      loci. If we denote wildtype alleles using capital letters ``A``,
+      ``B`` ... and non-wildtype alleles using small letters ``a``,
+      ``b`` ..., the penetrance values should be for
+
+      + genotypes ``A`` and ``a`` for the haploid single-locus case,
+
+      + genotypes ``AB``, ``Ab``, ``aB`` and ``bb`` for haploid
+        two=locus cases,
+
+      + genotypes ``AA``, ``Aa`` and ``aa`` for diploid single-locus
+        cases,
+
+      + genotypes ``AABB``, ``AABb``, ``AAbb``, ``AaBB``, ``AaBb``,
+        ``Aabb``, ``aaBB``, ``aaBb``, and ``aabb`` for diploid two-
+        locus cases,
+
+      + and in general 2**n for diploid and 3**n for haploid cases if
+        there are ``n`` loci.
+
+      This operator does not support haplodiploid populations and sex
+      chromosomes.
+

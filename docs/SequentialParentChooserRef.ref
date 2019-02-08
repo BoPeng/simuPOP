@@ -1,0 +1,32 @@
+
+class SequentialParentChooser
+-----------------------------
+
+.. class:: SequentialParentChooser
+
+   This parent chooser chooses a parent from a parental (virtual)
+   subpopulation sequentially. Natural selection is not considered. If
+   the last parent is reached, this parent chooser will restart from
+   the beginning of the (virtual) subpopulation.
+
+
+   .. method:: SequentialParentChooser(sexChoice=ANY_SEX)
+
+
+      Create a parent chooser that chooses a parent from a parental
+      (virtual) subpopulation sequentially. Parameter *choice* can be
+      ``ANY_SEX`` (default), ``MALE_ONLY`` and ``FEMALE_ONLY``. In the
+      latter two cases, only male or female individuals are selected.
+      A :class:`RuntimeError` will be raised if there is no male or
+      female individual from the population.
+
+
+   .. method:: SequentialParentChooser.chooseParents()
+
+      Return chosen parents from a population if the parent chooser
+      object is created with a population.
+
+   .. method:: SequentialParentChooser.initialize(pop, subPop)
+
+      Initialize a parent chooser for subpopulation *subPop* of
+      *population* pop.

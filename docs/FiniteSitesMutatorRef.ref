@@ -1,0 +1,41 @@
+
+class FiniteSitesMutator
+------------------------
+
+.. class:: FiniteSitesMutator
+
+   This is an infite site mutation model in mutational space. The
+   alleles in the population is assumed to be locations of mutants. A
+   mutation rate is given that mutate alleles in 'regions'. If number
+   of mutants for an individual exceed the number of loci, 10 loci
+   will be added to everyone in the population.
+
+
+   .. method:: FiniteSitesMutator(rate, ranges, model=1, output="", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=["ind_id"], lineageMode=FROM_INFO)
+
+
+      This operator accepts a list of ranges which is the 'real range'
+      of each chromosome. Mutation happens with muation rate *rate*
+      and mutants will be recorded to the population (instead of
+      alleles). By default, this mutator assumes an finite-allele
+      model where all mutations are allowed and if a mutant (allele 1)
+      is mutated, it will be mutated to allele 0 (back mutation).
+      Alternatively (*model* = 2), an infinite-sites mutation model
+      can be used where mutations can happen only at a new locus.
+      Mutations happen at a locus with existing mutants will be moved
+      to a random locus without existing mutant. A warning message
+      will be printed if there is no vacant locus available. If a
+      valid *output* is given, mutants will be outputted in the format
+      of "gen mutant ind type" where type is 0 for forward (0->1), 1
+      for backward (1->0), 2 for relocated mutations, and 3 for
+      ignored mutation because no vacent locus is available. The
+      second mode has the advantage that all mutants in the simulated
+      population can be traced to a single mutation event. If the
+      regions are reasonably wide and mutation rates are low, these
+      two mutation models should yield similar results.
+
+
+   .. method:: FiniteSitesMutator.apply(pop)
+
+      Apply an operator to population *pop* directly, without checking
+      its applicability.

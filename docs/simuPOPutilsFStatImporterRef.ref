@@ -1,0 +1,15 @@
+
+class FStatImporter
+-------------------
+
+.. class:: FStatImporter
+
+   FIXME: No document
+
+   .. method:: FStatImporter.FStatImporter(adjust=0)
+
+      Initialize self.  See help(type(self)) for accurate signature.
+
+   .. method:: FStatImporter.importFrom(filename)
+
+

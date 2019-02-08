@@ -1,0 +1,32 @@
+
+class MatrixMutator
+-------------------
+
+.. class:: MatrixMutator
+
+   A matrix mutator mutates alleles ``0``, ``1``, ..., ``n-1`` using a
+   ``n`` by ``n`` matrix, which specifies the probability at which
+   each allele mutates to another. Conceptually speaking, this mutator
+   goes through all mutable allele and mutate it to another state
+   according to probabilities in the corresponding row of the rate
+   matrix. Only one mutation rate matrix can be specified which will
+   be used for all specified loci. #
+
+
+   .. method:: MatrixMutator(rate, loci=ALL_AVAIL, mapIn=[], mapOut=[], output="", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=["ind_id"], lineageMode=FROM_INFO)
+
+
+      Create a mutator that mutates alleles ``0``, ``1``, ..., ``n-1``
+      using a ``n`` by ``n`` matrix ``rate``. Item ``(i,j)`` of this
+      matrix specifies the probability at which allele *i* mutates to
+      allele *j*. Diagnal items ``(i, i)`` are ignored because they
+      are automatically determined by other probabilities. Only one
+      mutation rate matrix can be specified which will be used for all
+      loci in the applied population, or loci specified by parameter
+      *loci*. If alleles other than ``0``, ``1``, ..., ``n-1`` exist
+      in the population, they will not be mutated although a warning
+      message will be given if debugging code ``DBG_WARNING`` is
+      turned on. Please refer to classes ``mutator`` and
+      :class:`BaseOperator` for detailed explanation of other
+      parameters.
+

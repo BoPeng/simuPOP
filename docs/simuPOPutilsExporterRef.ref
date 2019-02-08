@@ -1,0 +1,286 @@
+
+class Exporter
+--------------
+
+.. class:: Exporter
+
+   An operator to export the current population in specified format.
+   Currently supported file formats include:
+   
+   STRUCTURE (http://pritch.bsd.uchicago.edu/structure.html). This format
+   accepts the following parameters:
+   
+   markerNames
+       If set to True (default), output names of loci that are specified by parameter
+       *lociNames* of the :class:`Population` class. No names will be outputted if loci are
+       anonymous. A list of loci names are acceptable which will be outputted directly.
+   
+   recessiveAlleles
+       If specified, value of this parameter will be outputted after the marker names
+       line.
+   
+   interMarkerDistances
+       If set to True (default), output distances between markers. The first marker
+       of each chromosome has distance -1, as required by this format.
+   
+   phaseInformation
+       If specified, output the value (0 or 1) of this parameter after the inter marker
+       distances line. Note that simuPOP populations always have phase information.
+   
+   label
+       Output 1-based indexes of individuals if this parameter is true (default)
+   
+   popData
+       Output 1-based index of subpopulation if this parameter is set to true (default).
+   
+   popFlag
+       Output value of this parameter (0 or 1) after popData if this parameter specified.
+   
+   locData
+       Name of an information field with location information of each individual. Default
+       to None (no location data)
+   
+   phenotype
+       Name of an information field with phenotype information of each individual. Default
+       to None (no phenotype)
+   
+       
+   Genotype information are always outputted. Alleles are coded the same way (0, 1, 2, etc)
+   as they are stored in simuPOP.
+   
+   GENEPOP (http://genepop.curtin.edu.au/). The genepop format accepts the following
+   parameters:
+   
+   title
+       The tile line. If unspecified, a line similar to 'produced by simuPOP on XXX'
+       will be outputted.
+   
+   adjust
+       Adjust values of alleles by specified value (1 as default). This adjustment is
+       necessary in many cases because GENEPOP treats allele 0 as missing values, and 
+       simuPOP treats allele 0 as a valid allele. Exporting alleles 0 and 1 as 1 and 2
+       will allow GENEPOP to analyze simuPOP-exported files correctly.
+   
+   Because 0 is reserved as missing data in this format, allele A is outputted as A+adjust.
+   simuPOP will use subpopulation names (if available) and 1-based individual index
+   to output individual label (e.g. SubPop2-3). If parameter subPops is used to output
+   selected individuals, each subpop will be outputted as a separate subpopulation even 
+   if there are multiple virtual subpopulations from the same subpopulation. simuPOP 
+   currently only export diploid populations to this format.
+   
+   FSTAT (http://www2.unil.ch/popgen/softwares/fstat.htm). The fstat format accepts
+   the following parameters:
+   
+   lociNames
+       Names of loci that will be outputted. If unspecified, simuPOP will try to use
+       names of loci that are specified by parameter *lociNames* of the :class:`Population`
+       class, or names in the form of chrX-Y.
+   
+   adjust
+       Adjust values of alleles by specified value (1 as default). This adjustment is
+       necessary in many cases because FSTAT treats allele 0 as missing values, and 
+       simuPOP treats allele 0 as a valid allele. Exporting alleles 0 and 1 as 1 and 2
+       will allow FSTAT to analyze simuPOP-exported files correctly.
+       
+   MAP (marker information format) output information about each loci. Each line of
+   the map file describes a single marker and contains chromosome name, locus name,
+   and position. Chromosome and loci names will be the names specified by parameters
+   ``chromNames`` and ``lociNames`` of the :class:`Population` object, and will be
+   chromosome index + 1, and '.' if these parameters are not specified. This
+   format output loci position to the third column. If the unit assumed in your
+   population does not match the intended unit in the MAP file, (e.g. you would like
+   to output position in basepair while the population uses Mbp), you can use parameter
+   ``posMultiplier`` to adjust it. This format accepts the following parameters:
+   
+   posMultiplier
+       A number that will be multiplied to loci positions (default to 1). The result
+       will be outputted in the third column of the output.
+   
+   
+   PED (Linkage Pedigree pre MAKEPED format), with columns of family, individual,
+   father mother, gender, affection status and genotypes. The output should be 
+   acceptable by HaploView or plink, which provides more details of this format in
+   their documentation. If a population does not have ``ind_id``, ``father_id`` or 
+   ``mother_id``, this format will output individuals in specified (virtual) 
+   subpopulations in the current generation (parental generations are ignored) 
+   as unrelated individuals with 0, 0 as parent IDs. An incremental family
+   ID will be assigned for each individual. If a population have ``ind_id``,
+   ``father_id`` and ``mother_id``, parents will be recursively traced to separate
+   all individuals in a (multigenerational) population into families of related
+   individuals. father and mother id will be set to zero if one of them does not
+   exist. This format uses 1 for MALE, 2 for FEMALE. If phenoField is ``None``,
+   individual affection status will be outputted with 1 for Unaffected and 2
+   for affected. Otherwise, values of an information field will be outputted as
+   phenotype. Because 0 value indicates missing value, values of alleles will
+   be adjusted by 1 by default, which should be avoided if you are using non-zero
+   alleles to model ACTG alleles in simuPOP. This format will ignore subpopulation
+   structure because parents might belong to different subpopulations. This format
+   accepts the following parameters:
+   
+   idField
+       A field for individual id, default to ``ind_id``. Value at this field will be
+       individual ID inside a pedigree.
+   
+   fatherField
+       A field for father id, default to ``father_id``. Value at this field will be
+       used to output father of an individual, if an individual with this ID exists
+       in the population.
+   
+   motherField
+       A field for mother id, default to ``mother_id``. Value at this field will be
+       used to output mother of an individual, if an individual with this ID exists
+       in the population.
+   
+   phenoField
+       A field for individual phenotype that will be outputted as the sixth column of
+       the PED file. If ``None`` is specified (default), individual affection status
+       will be outputted (1 for unaffected and 2 for affected).
+   
+   adjust
+       Adjust values of alleles by specified value (1 as default). This adjustment
+       is necessary in many cases because LINKAGE/PED format treats allele 0 as
+       missing values, and simuPOP treats allele 0 as a valid allele. You should set
+       this paremter to zero if you have already used alleles 1, 2, 3, 4 to model 
+       A, C, T, and G alleles.
+       
+   Phylip (Joseph Felsenstein's Phylip format). Phylip is generally used for nuclotide
+   sequences and protein sequences. This makes this format suitable for simulations
+   of haploid populations (ploidy=1) with nucleotide or protein sequences (number of
+   alleles = 4 or 24 with alleleNames as nucleotide or amino acid names). If your
+   population does satisfy these conditions, you can still export it, with homologous
+   chromosomes in a diploid population as two sequences, and with specified allele
+   names for allele 0, 1, 2, .... This function outputs sequence name as SXXX where
+   XXX is the 1-based index of individual and SXXX_Y (Y=1 or 2) for diploid individuals,
+   unless names of sequences are provided by parameter seqNames. This format supports
+   the following parameters:
+   
+   alleleNames
+       Names of alleles 0, 1, 2, ... as a single string (e.g. 'ACTG') or a list of 
+       single-character strings (e.g. ['A', 'C', 'T', 'G']). If this parameter is
+       unspecified (default), this program will try to use names of alleles
+       specified in alleleNames parameter of a Population, and raise an error if no
+       name could be found.
+   
+   seqNames
+       Names of each sequence outputted, for each individual, or for each sequences
+       for non-haploid population. If unspecified, default names such as SXXX or
+       SXXX_Y will be used.
+   
+   style
+       Output style, can be 'sequential' (default) or 'interleaved'. For sequential
+       output, each sequence consists of for the first line a name and 90 symbols
+       starting from column 11, and subsequent lines of 100 symbols. The interleaved
+       style have subsequent lines as separate blocks.
+       
+   MS (output from Richard R. Hudson's MS or msHOT program). This format records
+   genotypes of SNP markers at segregating site so all non-zero genotypes are
+   recorded as 1. simuPOP by default outputs a single block of genotypes at
+   all loci on the first chromosome, and for all individuals, unless parameter
+   ``splitBy`` is specified to separate genotypes by chromosome or subpopulations.
+   
+   splitBy:
+       simuPOP by default output segregating sites at all loci on the first 
+       chromosome for all individuals. If ``splitBy`` is set to ``'subPop'``,
+       genotypes for individuals in all or specified (parameter ``subPops``) 
+       subpopulations are outputted in separate blocks. The subpopulations should
+       have the same number of individuals to produce blocks of the same number
+       of sequences. Alternatively, ``splitBy`` can be set to ``chrom``, for
+       which genotypes on different chromosomes will be outputted separately.
+   
+   
+   CSV (comma separated values). This is a general format that output genotypes in
+   comma (or tab etc) separated formats. The function form of this operator 
+   ``export(format='csv')`` is similar to the now-deprecated ``saveCSV`` function,
+   but its interface has been adjusted to match other formats supported by this
+   operator. This format outputs a header (optiona), and one line for each individual
+   with values of specified information fields, sex, affection status, and genotypes.
+   All fields except for genotypes are optional. The output format is controlled by the
+   following parameters:
+   
+   infoFileds
+       Information fields to be outputted. Default to none.
+   
+   header
+       Whether or not a header should be written. These headers will include
+       information fields, sex (if ``sexFormatter`` is not ``None``), affection
+       status (if ``affectionFormatter`` is not ``None``) and loci names. If
+       genotype at a locus needs more than one column, ``_1``, ``_2`` etc will
+       be appended to loci names. Alternatively, a complete header (a string)
+       or a list of column names could be specified directly.
+   
+   infoFormatter
+       A format string that is used to format all information fields. If
+       unspecified, ``str(value)`` will be used for each information field.
+   
+   genoFormatter
+       How to output genotype at specified loci. Acceptable values include
+       ``None`` (output allele values), a dictionary with genotype as keys,
+       (e.g. ``genoFormatter={(0,0):1, (0,1):2, (1,0):2, (1,1):3}``, or a function
+       with genotype (as a tuple of integers) as inputs. The dictionary value
+       or the return value of this function can be a single or a list of
+       number or strings.
+   
+   sexFormatter
+       How to output individual sex. Acceptable values include ``None`` (no
+       output) or a dictionary with keys ``MALE`` and ``FEMALE``.
+   
+   affectionFormatter
+       How to output individual affection status. Acceptable values include
+       ``None`` (no output) or a dictionary with keys ``True`` and ``False``.
+   
+   delimiter
+       Delimiter used to separate values, default to ','.
+   
+   subPopFormatter
+       How to output population membership. Acceptable values include
+       ``None`` (no output), a string that will be used for the column name, or
+       ``True`` which uses 'pop' as the column name. If present, the column is
+       written with the string represenation of the (virtual) subpopulation.
+   
+   This operator supports the usual applicability parameters such as begin,
+   end, step, at, reps, and subPops. If subPops are specified, only
+   individuals from specified (virtual) subPops are exported. Similar to
+   other operators, parameter ``output`` can be an output specification string
+   (``filename``, ``>>filename``, ``!expr``), filehandle (or any Python object
+   with a ``write`` function), any python function. Unless explicitly stated for
+   a particular format, this operator exports individuals from the current
+   generation if there are multiple ancestral generations in the population.
+   
+   The Exporter class will make use of a progress bar to show the progress. The
+   interface of the progress bar is by default determined by the global GUI status
+   but you can also set it to, for example, ``gui=False`` to forcefully use a 
+   text-based progress bar, or ``gui='batch'`` to suppress the progress bar.
+
+   .. method:: Exporter.Exporter(format, output, begin=0, end=-1, step=1, at=[], reps=True, subPops=ALL_AVAIL, infoFields=[], gui=None, *args, **kwargs)
+
+      Usage:
+      
+          PyOperator(func, param=None, begin=0, end=-1, step=1, at=[],
+            reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+      
+      Details:
+      
+          Create a pure-Python operator that calls a user-defined function
+          when it is applied. If this operator is applied before or after
+          mating, your function should have form func(pop) or func(pop,
+          param) where pop is the population to which the operator is
+          applied, param is the value specified in parameter param. param
+          will be ignored if your function only accepts one parameter.
+          Althernatively, the function should have form func(ind) with
+          optional parameters pop and param. In this case, the function will
+          be called for all individuals, or individuals in subpopulations
+          subPops. Individuals for which the function returns False will be
+          removed from the population. This operator can therefore perform
+          similar functions as operator DiscardIf.  If this operator is
+          applied during mating, your function should accept parameters pop,
+          off (or ind), dad, mom and param where pop is the parental
+          population, and off or ind, dad, and mom are offspring and their
+          parents for each mating event, and param is an optional parameter.
+          If subPops are provided, only offspring in specified (virtual)
+          subpopulations are acceptable.  This operator does not support
+          parameters output, and infoFields. If certain output is needed, it
+          should be handled in the user defined function func. Because the
+          status of files used by other operators through parameter output
+          is undetermined during evolution, they should not be open or
+          closed in this Python operator.
+

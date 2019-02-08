@@ -1,0 +1,39 @@
+
+class PedigreeSampler
+---------------------
+
+.. class:: PedigreeSampler
+
+   The base class of all pedigree based sampler.
+
+   .. method:: PedigreeSampler.PedigreeSampler(families, subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id', motherField='mother_id')
+
+      Creates a pedigree sampler with parameters
+      
+      families
+          number of families. This can be a number or a list of numbers. In
+          the latter case, specified families are drawn from each
+          subpopulation.
+      
+      subPops
+          A list of (virtual) subpopulations from which samples are drawn.
+          The default value is ALL_AVAIL, which means all available
+          subpopulations of a population.
+
+   .. method:: PedigreeSampler.drawSample(input_pop)
+
+      Randomly select Pedigrees
+
+   .. method:: PedigreeSampler.drawSamples(pop, numOfSamples)
+
+      Draw multiple samples and return a list of populations.
+
+   .. method:: PedigreeSampler.family(id)
+
+      Get the family of individual with id.
+
+   .. method:: PedigreeSampler.prepareSample(pop, loci=[], infoFields=[], ancGens=True)
+
+      Prepare self.pedigree, some pedigree sampler might need additional loci and
+      information fields for this sampler.
+

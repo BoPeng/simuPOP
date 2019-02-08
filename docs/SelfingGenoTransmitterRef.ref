@@ -1,0 +1,23 @@
+
+class SelfingGenoTransmitter
+----------------------------
+
+.. class:: SelfingGenoTransmitter
+
+   A genotype transmitter (during-mating operator) that transmits
+   parental genotype of a parent through self-fertilization. That is
+   to say, the offspring genotype is formed according to Mendel's
+   laws, only that a parent serves as both maternal and paternal
+   parents.
+
+
+   .. method:: SelfingGenoTransmitter(output="", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+
+      Create a self-fertilization genotype transmitter that transmits
+      genotypes of a parent to an offspring through self-
+      fertilization. Cutsomized chromosomes are not handled.
+      Parameters *subPops* and *infoFields* are ignored. This operator
+      also copies allelic lineage when it is executed in a module with
+      lineage allele type.
+

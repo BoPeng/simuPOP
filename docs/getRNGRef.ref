@@ -1,0 +1,8 @@
+
+Function getRNG
+---------------
+
+
+.. function:: getRNG()
+
+   return the currently used random number generator

@@ -1,0 +1,94 @@
+
+class BaseMutator
+-----------------
+
+.. class:: BaseMutator
+
+   Class ``mutator`` is the base class of all mutators. It handles all
+   the work of picking an allele at specified loci from certain
+   (virtual) subpopulation with certain probability, and calling a
+   derived mutator to mutate the allele. Alleles can be changed before
+   and after mutation if existing allele numbers do not match those of
+   a mutation model.
+
+
+   .. method:: BaseMutator(rates=[], loci=ALL_AVAIL, mapIn=[], mapOut=[], context=0, output="", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=["ind_id"], lineageMode=FROM_INFO)
+
+
+      A mutator mutates alleles from one state to another with given
+      probability. This base mutator does not perform any mutation but
+      it defines common behaviors of all mutators.
+
+      By default, a mutator mutates all alleles in all populations of
+      a simulator at all generations. A number of parameters can be
+      used to restrict mutations to certain generations (parameters
+      *begin*, *end*, *step* and *at*), replicate populations
+      (parameter *rep*), (virtual) subpopulations (parameter
+      *subPops*) and loci (parameter *loci*). Parameter *loci* can be
+      a list of loci indexes, names, list of chromosome position
+      pairs, ``ALL_AVAIL``, or a function with optional parameter
+      ``pop`` that will be called at each ganeeration to determine
+      indexes of loci. Please refer to class :class:`BaseOperator` for
+      a detailed explanation of these parameters.
+
+      Parameter *rate* or its equivalence specifies the probability
+      that a a mutation event happens. The exact form and meaning of
+      *rate* is mutator-specific. If a single rate is specified, it
+      will be applied to all *loci*. If a list of mutation rates are
+      given, they will be applied to each locus specified in parameter
+      *loci*. Note that not all mutators allow specification of
+      multiple mutation rate, especially when the mutation rate itself
+      is a list or matrix.
+
+      Alleles at a locus are non-negative numbers 0, 1, ... up to the
+      maximum allowed allele for the loaded module (1 for binary, 255
+      for short and 65535 for long modules). Whereas some general
+      mutation models treat alleles as numbers, other models assume
+      specific interpretation of alleles. For example, an
+      :class:`AcgtMutator` assumes alleles ``0``, ``1``, ``2`` and
+      ``3`` as nucleotides ``A``, ``C``, ``G`` and ``T``. Using a
+      mutator that is incompatible with your simulation will certainly
+      yield erroneous results.
+
+      If your simulation assumes different alleles with a mutation
+      model, you can map an allele to the allele used in the model and
+      map the mutated allele back. This is achieved using a *mapIn*
+      list with its ``i-th`` item being the corresponding allele of
+      real allele ``i``, and a *mapOut* list with its *i-th* item
+      being the real allele of allele ``i`` assumed in the model. For
+      example ``mapIn=[0, 0, 1]`` and ``mapOut=[1, 2]`` would allow
+      the use of a :class:`SNPMutator` to mutate between alleles 1 and
+      2, instead of 0 and 1. Parameters *mapIn* and *mapOut* also
+      accept a user-defined Python function that returns a
+      corresponding allele for a given allele. This allows easier
+      mapping between a large number of alleles and advanced models
+      such as random emission of alleles.
+
+      If a valid information field is specified for parameter
+      *infoFields* (default to ``ind_id``) for modules with lineage
+      allele type, the lineage of the mutated alleles will be the ID
+      (stored in the first field of *infoFields*) of individuals that
+      harbor the mutated alleles if *lineageMode* is set to
+      ``FROM_INFO`` (default). If *lineageMode* is set to
+      ``FROM_INFO_SIGNED``, the IDs will be assigned a sign depending
+      on the ploidy the mutation happens (1 for ploidy 0, -1 for
+      ploidy 1, etc). The lineage information will be transmitted
+      along with the alleles so this feature allows you to track the
+      source of mutants during evolution.A
+
+      A mutator by default does not produce any output. However, if an
+      non-empty output is specified, the operator will output
+      generation number, locus, ploidy, original allele, mutant, and
+      values of all information field specified by parameter
+      ``infoFields`` (e.g. individual ID if ``ind_id`` is specified).
+
+      Some mutation models are context dependent. Namely, how an
+      allele mutates will depend on its adjecent alleles. Whereas most
+      simuPOP mutators are context independent, some of them accept a
+      parameter *context* which is the number of alleles to the left
+      and right of the mutated allele. For example *context=1* will
+      make the alleles to the immediate left and right to a mutated
+      allele available to a mutator. These alleles will be mapped in
+      if parameter *mapIn* is defined. How exactly a mutator makes use
+      of these information is mutator dependent.
+

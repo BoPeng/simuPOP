@@ -1,0 +1,21 @@
+
+class RandomSelection
+---------------------
+
+.. class:: RandomSelection
+
+   A homogeneous mating scheme that uses a random single-parent parent
+   chooser with replacement, and a clone offspring generator. This mating
+   scheme is usually used to simulate the basic haploid Wright-Fisher model
+   but it can also be applied to diploid populations.
+
+   .. method:: RandomSelection.RandomSelection(numOffspring=1, sexMode=None, ops=CloneGenoTransmitter(), subPopSize=[], subPops=ALL_AVAIL, weight=0, selectionField='fitness')
+
+      Create a mating scheme that select a parent randomly and copy him or
+      her to the offspring population. Please refer to class 
+      :class:`RandomParentChooser` for parameter *selectionField*, to class
+      :class:`OffspringGenerator` for parameters *ops* and *numOffspring*, and to
+      class :class:`HomoMating` for parameters *subPopSize*, *subPops* and *weight*.
+      Parameter *sexMode* is ignored because ``cloneOffspringGenerator`` copies
+      sex from parents to offspring.
+

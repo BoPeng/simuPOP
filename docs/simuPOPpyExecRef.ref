@@ -1,0 +1,8 @@
+
+Function pyExec
+---------------
+
+
+.. function:: pyExec(pop, *args, **kwargs)
+
+   Execute *stmts* in population *pop*\ 's local namespace.

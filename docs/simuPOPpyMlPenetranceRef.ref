@@ -1,0 +1,10 @@
+
+Function pyMlPenetrance
+-----------------------
+
+
+.. function:: pyMlPenetrance(pop, func, mode, loci=[], ancGens=True, *args, **kwargs)
+
+   Apply opertor :class:`PyMlPenetrance` to population *pop*. Unlike the
+   operator form of this operator that only handles the current generation,
+   this function by default assign affection status to all generations.

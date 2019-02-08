@@ -1,0 +1,9 @@
+
+Function aspopulation
+---------------------
+
+
+.. function:: as_population(self)
+
+   Convert the existing pedigree object to a population. This function will
+   behave like a regular population after this function call.

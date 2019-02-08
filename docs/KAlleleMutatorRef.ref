@@ -1,0 +1,27 @@
+
+class KAlleleMutator
+--------------------
+
+.. class:: KAlleleMutator
+
+   This mutator implements a *k-allele* mutation model that assumes
+   *k* allelic states (alleles 0, 1, 2, ..., *k-1*) at each locus.
+   When a mutation event happens, it mutates an allele to any other
+   states with equal probability.
+
+
+   .. method:: KAlleleMutator(k, rates=[], loci=ALL_AVAIL, mapIn=[], mapOut=[], output="", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=["ind_id"], lineageMode=FROM_INFO)
+
+
+      Create a k-allele mutator that mutates alleles to one of the
+      other ``k-1`` alleles with equal probability. This mutator by
+      default applies to all loci unless parameter *loci* is
+      specified. A single mutation rate will be used for all loci if a
+      single value of parameter *rates* is given. Otherwise, a list of
+      mutation rates can be specified for each locus in parameter
+      *loci*. If the mutated allele is larger than or equal to ``k``,
+      it will not be mutated. A warning message will be displayed if
+      debugging code ``DBG_WARNING`` is turned on. Please refer to
+      classes ``mutator`` and :class:`BaseOperator` for descriptions
+      of other parameters.
+

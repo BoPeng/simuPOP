@@ -1,0 +1,34 @@
+
+class MatingScheme
+------------------
+
+.. class:: MatingScheme
+
+   This mating scheme is the base class of all mating schemes. It
+   evolves a population generation by generation but does not actually
+   transmit genotype.
+
+
+   .. method:: MatingScheme(subPopSize=[])
+
+
+      Create a base mating scheme that evolves a population without
+      transmitting genotypes. At each generation, this mating scheme
+      creates an offspring generation according to parameter
+      *subPopSize*, which can be a list of subpopulation sizes (or a
+      number if there is only one subpopulation) or a Python function
+      which will be called at each generation, just before mating, to
+      determine the subpopulation sizes of the offspring generation.
+      The function should be defined with one or both parameters of
+      ``gen`` and ``pop`` where ``gen`` is the current generation
+      number and ``pop`` is the parental population just before
+      mating. The return value of this function should be a list of
+      subpopulation sizes for the offspring generation. A single
+      number can be returned if there is only one subpopulation. The
+      passed parental population is usually used to determine
+      offspring population size from parental population size but you
+      can also modify this population to prepare for mating. A common
+      practice is to split and merge parental populations in this
+      function so that you demographic related information and actions
+      could be implemented in the same function.
+

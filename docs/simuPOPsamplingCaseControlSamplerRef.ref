@@ -1,0 +1,25 @@
+
+class CaseControlSampler
+------------------------
+
+.. class:: CaseControlSampler
+
+   A sampler that draws affected and unaffected individuals randomly.
+
+   .. method:: CaseControlSampler.CaseControlSampler(cases, controls, subPops=ALL_AVAIL)
+
+      Ceates a case-control sampler with specified number of cases
+      and controls.
+
+   .. method:: CaseControlSampler.drawSample(input_pop)
+
+      Draw a case control sample
+
+   .. method:: CaseControlSampler.drawSamples(pop, numOfSamples)
+
+      Draw multiple samples and return a list of populations.
+
+   .. method:: CaseControlSampler.prepareSample(input_pop)
+
+      Find out indexes all affected and unaffected individuales.
+

@@ -1,0 +1,42 @@
+
+class InheritTagger
+-------------------
+
+.. class:: InheritTagger
+
+   An inheritance tagger passes values of parental information
+   field(s) to the corresponding fields of offspring. If there are two
+   parental values from parents of a sexual mating event, a parameter
+   *mode* is used to specify how to assign offspring information
+   fields.
+
+
+   .. method:: InheritTagger(mode=PATERNAL, begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, output="", infoFields=[])
+
+
+      Creates an inheritance tagger that passes values of parental
+      information fields (parameter *infoFields*) to the corresponding
+      fields of offspring. If there is only one parent, values at the
+      specified information fields are copied directly. If there are
+      two parents, parameter *mode* specifies how to pass them to an
+      offspring. More specifically,
+
+      + ``mode=MATERNAL`` Passing the value from mother.
+
+      + ``mode=PATERNAL`` Passing the value from father.
+
+      + ``mode=MEAN`` Passing the average of two values.
+
+      + ``mode=MAXIMUM`` Passing the maximum value of two values.
+
+      + ``mode=MINIMUM`` Passing the minimum value of two values.
+
+      + ``mode=SUMMATION`` Passing the summation of two values.
+
+      + ``mode=MULTIPLICATION`` Passing the multiplication of two
+        values.
+
+      An :class:`RuntimeError` will be raised if any of the parents
+      does not exist. This operator does not support parameter
+      *subPops* and does not output any information.
+

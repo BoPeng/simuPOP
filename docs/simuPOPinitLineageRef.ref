@@ -1,0 +1,8 @@
+
+Function initLineage
+--------------------
+
+
+.. function:: initLineage(pop, *args, **kwargs)
+
+   Apply operator :class:`InitLineage` to population *pop*.

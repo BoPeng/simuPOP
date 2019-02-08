@@ -1,0 +1,123 @@
+
+class TrajectorySimulator
+-------------------------
+
+.. class:: TrajectorySimulator
+
+   A Trajectory Simulator takes basic demographic and genetic (natural
+   selection) information of an evolutionary process of a diploid population
+   and allow the simulation of Trajectory of allele frequencies of one or
+   more loci. Trajectories could be simulated in two ways: forward-time and
+   backward-time. In a forward-time simulation, the simulation starts from
+   certain allele frequency and simulate the frequency at the next generation
+   using given demographic and genetic information. The simulation continues
+   until an ending generation is reached. A Trajectory is successfully
+   simulated if the allele frequency at the ending generation falls into a
+   specified range. In a backward-time simulation, the simulation starts from
+   the ending generation with a desired allele frequency and simulate the
+   allele frequency at previous generations one by one until the allele gets
+   lost (allele frequency equals zero).
+   
+   The result of a trajectory simulation is a trajectory object which can be
+   used to direct the simulation of a special random mating process that
+   controls the evolution of one or more disease alleles so that allele 
+   frequencies are consistent across replicate simulations. For more
+   information about Trajectory simulation techniques and related controlled
+   random mating scheme, please refer to the simuPOP user's guide, and Peng et
+   al (PLoS Genetics 3(3), 2007).
+
+   .. method:: TrajectorySimulator.TrajectorySimulator(N, nLoci=1, fitness=None, logger=None)
+
+      Create a trajectory Simulator using provided demographic and genetic
+      (natural selection) parameters. Member functions *simuForward* and
+      *simuBackward* can then be used to simulate trajectories within certain
+      range of generations. This class accepts the following parameters
+      
+      N
+          Parameter *N* accepts either a constant number for population size
+          (e.g. N=1000), a list of subpopulation sizes (e.g. N=[1000, 2000]),
+          or a demographic function that returns population or subpopulation
+          sizes at each generation. During the evolution, multiple
+          subpopulations can be merged into one, and one population can be
+          split into several subpopulations. The number of subpopulation is
+          determined by the return value of the demographic function. Note
+          that *N* should be considered as the population size at the end of
+          specified generation.
+      
+      nLoci
+          Number of unlinked loci for which trajectories of allele
+          frequencies are simulated. We assume a diploid population with
+          diallelic loci. The Trajectory represents frequencies of a 
+      
+      fitness
+          Parameter fitness can be ``None`` (no selection), a list of fitness
+          values for genotype with 0, 1, and 2 disease alleles (*AA*, *Aa*,
+          and *aa*) at one or more loci; or a function that returns fitness
+          values at each generation. When multiple loci are involved
+          (*nLoci*), *fitness* can be a list of 3 (the same fitness values
+          for all loci), a list of 3*nLoci (different fitness values for each
+          locus) or a list of 3**nLoci (fitness value for each combination of
+          genotype). The fitness function should accept generation number and
+          a subpopulation index. The latter parameter allows, and is the only
+          way to specify different fitness in each subpopulation.
+      
+      logger
+          A logging object (see Python module ``logging``) that can be used
+          to output intermediate results with debug information.
+
+   .. method:: TrajectorySimulator.simuBackward(endGen, endFreq, minMutAge=None, maxMutAge=None, maxAttempts=1000)
+
+      Simulate trajectories of multiple disease susceptibility loci using
+      a forward time approach. This function accepts allele frequencies of
+      alleles of multiple unlinked loci (*endFreq*) at the end of generation
+      *endGen*. Depending on the number of loci and subpopulations, parameter
+      *beginFreq* can be a number (same frequency for all loci in all
+      subpopulations), or a list of frequencies for each locus (same
+      frequency in all subpopulations), or a list of frequencies for each
+      locus in each subpopulation in the order of ``loc0_sp0``, ``loc1_sp0``,
+      ..., ``loc0_sp1``, ``loc1_sp1``, ... and so on.
+      
+      This simulator will simulate a trajectory generation by generation and
+      restart if the disease allele got fixed (instead of lost), or if the 
+      length simulated Trajectory does not fall into *minMutAge* and
+      *maxMutAge* (ignored if ``None`` is given). This simulator will return
+      ``None`` if no valid Trajectory is found after ``maxAttempts`` attemps.
+
+   .. method:: TrajectorySimulator.simuForward(beginGen, endGen, beginFreq, endFreq, maxAttempts=10000)
+
+      Simulate trajectories of multiple disease susceptibility loci using a
+      forward time approach. This function accepts allele frequencies of
+      alleles of multiple unlinked loci at the beginning generation (``freq``)
+      at generation ``beginGen``, and expected *range* of allele frequencies
+      of these alleles (``endFreq``) at the end of generation ``endGen``.
+      Depending on the number of loci and subpopulations, these parameters
+      accept the following inputs:
+      
+      beginGen
+          Starting generation. The initial frequecies are considered as
+          frequencies at the *beginning* of this generation.
+      
+      endGen
+          Ending generation. The ending frequencies are considerd as
+          frequencies at the *end* of this generation.
+          
+      beginFreq
+          The initial allele frequency of involved loci in all subpopulations.
+          It can be a number (same frequency for all loci in all
+          subpopulations), or a list of frequencies for each locus (same
+          frequency in all subpopulations), or a list of frequencies for each
+          locus in each subpopulation in the order of ``loc0_sp0``,
+          ``loc1_sp0``, ..., ``loc0_sp1``, ``loc1_sp1``, ... and so on.
+      
+      endFreq
+          The range of acceptable allele frequencies at the ending generation.
+          The ranges can be specified for all loci in all subpopulations,
+          for all loci (allele frequency in the whole population is
+          considered), or for all loci in all subpopulations, in the order
+          of ``loc0_sp0``, ``loc1_sp0``, .... ``loc0_sp1``, ... and so on.
+      
+      This simulator will simulate a trajectory generation by generation and
+      restart if the resulting frequencies do not fall into specified range
+      of frequencies. This simulator will return ``None`` if no valid
+      Trajectory is found after ``maxAttempts`` attemps.
+

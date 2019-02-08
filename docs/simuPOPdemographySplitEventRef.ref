@@ -1,0 +1,22 @@
+
+class SplitEvent
+----------------
+
+.. class:: SplitEvent
+
+   A demographic event that splits a specified population into two or
+   more subpopulations.
+
+   .. method:: SplitEvent.SplitEvent(sizes=[], names=[], ops=[], output='', begin=0, end=-1, step=1, at=[], reps=True, subPops=ALL_AVAIL, infoFields=[])
+
+      A demographic event that splits a subpopulation specified by
+      ``subPops`` to two or more subpopulations, with specified ``sizes``
+      and ``names``. ``sizes`` can be a list of numbers, proportions
+      (e.g. ``[1., 500]`` keeps the original population and copies 500
+      individuals to create a new subpupulation). Note that ``sizes``
+      and ``names``, if specified, should include the source subpopulation
+      as its first element.
+
+   .. method:: SplitEvent.apply(pop)
+
+

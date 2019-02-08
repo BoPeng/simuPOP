@@ -1,0 +1,22 @@
+
+class SavePopulation
+--------------------
+
+.. class:: SavePopulation
+
+   An operator that save populations to specified files.
+
+
+   .. method:: SavePopulation(output="", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+
+      Create an operator that saves a population to *output* when it
+      is applied to the population. This operator supports all output
+      specifications (``''``, ``'filename'``, ``'filename'`` prefixed
+      by one or more '>' characters, and ``'!expr'``) but output from
+      different operators will always replace existing files
+      (effectively ignore '>' specification). Parameter *subPops* is
+      ignored. Please refer to class :class:`BaseOperator` for a
+      detailed description about common operator parameters such as
+      *stage* and *begin*.
+

@@ -1,0 +1,42 @@
+
+.. module:: simuPOP.gsl
+
+This module exposes the following GSL (GUN Scientific Library) functions used
+by simuPOP to the user interface. Although more functions may be added from time
+to time, this module is not intended to become a complete wrapper for GSL. Please
+refer to the GSL reference manual (http://www.gnu.org/software/gsl/manual/html_node/)
+for details about these functions. Note that random number generation functions
+are wrapped into the simuPOP.RNG class.
+
+- ``gsl_cdf_gaussian_P(x, sigma)``
+- ``gsl_cdf_gaussian_Q(x, sigma)``
+- ``gsl_cdf_gaussian_Pinv(P, sigma)``
+- ``gsl_cdf_gaussian_Qinv(Q, sigma)``
+- ``gsl_cdf_ugaussian_P(x)``
+- ``gsl_cdf_ugaussian_Q(x)``
+- ``gsl_cdf_ugaussian_Pinv(P)``
+- ``gsl_cdf_ugaussian_Qinv(Q)``
+- ``gsl_cdf_exponential_P(x, mu)``
+- ``gsl_cdf_exponential_Q(x, mu)``
+- ``gsl_cdf_exponential_Pinv(P, mu)``
+- ``gsl_cdf_exponential_Qinv(Q, mu)``
+- ``gsl_cdf_chisq_P(x, nu)``
+- ``gsl_cdf_chisq_Q(x, nu)``
+- ``gsl_cdf_chisq_Pinv(P, nu)``
+- ``gsl_cdf_chisq_Qinv(Q, nu)``
+- ``gsl_cdf_gamma_P(x, a, b)``
+- ``gsl_cdf_gamma_Q(x, a, b)``
+- ``gsl_cdf_gamma_Pinv(P, a, b)``
+- ``gsl_cdf_gamma_Qinv(Q, a, b)``
+- ``gsl_ran_gamma_pdf(x, a, b)``
+- ``gsl_cdf_beta_P(x, a, b)``
+- ``gsl_cdf_beta_Q(x, a, b)``
+- ``gsl_cdf_beta_Pinv(P, a, b)``
+- ``gsl_cdf_beta_Qinv(Q, a, b)``
+- ``gsl_ran_beta_pdf(x, a, b)``
+- ``gsl_cdf_binomial_P(k, p, n)``
+- ``gsl_cdf_binomial_Q(k, p, n)``
+- ``gsl_ran_binomial_pdf(k, p, n)``
+- ``gsl_cdf_poisson_P(k, mu)``
+- ``gsl_cdf_poisson_Q(k, mu)``
+- ``gsl_ran_poisson_pdf(k, mu)``

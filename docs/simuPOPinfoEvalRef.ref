@@ -1,0 +1,9 @@
+
+Function infoEval
+-----------------
+
+
+.. function:: infoEval(pop, *args, **kwargs)
+
+   Evaluate *expr* for each individual, using information fields as variables.
+   Please refer to operator :class:`InfoEval` for details.

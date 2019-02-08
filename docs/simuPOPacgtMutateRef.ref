@@ -1,0 +1,8 @@
+
+Function acgtMutate
+-------------------
+
+
+.. function:: acgtMutate(pop, *args, **kwargs)
+
+   Function form of operator :class:`AcgtMutator`

@@ -1,0 +1,11 @@
+
+Function drawCaseControlSamples
+-------------------------------
+
+
+.. function:: drawCaseControlSamples(pop, cases, controls, numOfSamples=1, subPops=ALL_AVAIL)
+
+   Draw ``numOfSamples`` case-control samples from a population with ``cases``
+   affected and ``controls`` unaffected individuals and return a list of
+   populations. Please refer to function ``drawCaseControlSample`` for a
+   detailed descriptions of parameters.

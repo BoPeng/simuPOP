@@ -1,0 +1,14 @@
+
+Function setOptions
+-------------------
+
+
+.. function:: setOptions(numThreads=-1, name=None, seed=0)
+
+   First argument is to set number of thread in openMP. The number of
+   threads can be be positive, integer (number of threads) or 0, which
+   implies all available cores, or a number set by environmental
+   variable ``OMP_NUM_THREADS``. Second and third argument is to set
+   the type or seed of existing random number generator using
+   RNG*name* with *seed*. If using openMP, it sets the type or seed of
+   random number generator of each thread.

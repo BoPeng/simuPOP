@@ -1,0 +1,17 @@
+
+Function indexToID
+------------------
+
+
+.. function:: indexToID(pop, idField='ind_id', fatherField='father_id', motherField='mother_id', fatherIndex='father_idx', motherIndex='mother_idx', reset=False)
+
+   This function adds information field idField (default to ``'ind_id'``)
+   to population ``pop`` and assigns an unique ID to every individual in this
+   Population. It then adds information fields fatherField (default to
+   ``'fatherField'``) and motherField (default to ``'motherField'``) and set
+   their values with IDs according to the established index based
+   parents-children relationship. Existing information fields will be used if
+   idField, fatherField or motherField already exist. This function uses a
+   system-wide ID generator for unique IDs, which does not have to start from
+   zero. A parameter ``reset`` could be used to reset starting ID to zero
+   (if ``reset=True``) or a specified number (``reset=number``).

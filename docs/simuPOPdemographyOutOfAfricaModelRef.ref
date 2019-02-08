@@ -1,0 +1,45 @@
+
+class OutOfAfricaModel
+----------------------
+
+.. class:: OutOfAfricaModel
+
+   A dempgraphic model for the CHB, CEU, and YRI populations, as defined in
+   Gutenkunst 2009, Plos Genetics. The model is depicted in Figure 2, and the 
+   default parameters are listed in Table 1 of this paper.
+
+   .. method:: OutOfAfricaModel.OutOfAfricaModel(T0, N_A=7300, N_AF=12300, N_B=2100, N_EU0=1000, r_EU=0.004, N_AS0=510, r_AS=0.0055, m_AF_B=0.00025, m_AF_EU=3e-05, m_AF_AS=1.9e-05, m_EU_AS=9.6e-05, T_AF=8800, T_B=5600, T_EU_AS=848, ops=[], infoFields=[], outcome=['AF', 'EU', 'AS'], scale=1)
+
+      Counting **backward in time**, this model evolves a population for ``T0``
+      generations (required parameter). The ancient population ``A`` started at
+      size ``N_A`` and expanded at ``T_AF`` generations from now, to pop ``AF``
+      with size ``N_AF``. Pop ``B`` split from pop ``AF`` at ``T_B`` generations
+      from now, with size ``N_B``; Pop ``AF`` remains as ``N_AF`` individuals. 
+      Pop ``EU`` and  ``AS`` split from pop ``B`` at ``T_EU_AS`` generations
+      from now; with size ``N_EU0`` individuals and ``N_ASO`` individuals,
+      respectively. Pop ``EU`` grew exponentially with rate ``r_EU``; Pop
+      ``AS`` grew exponentially with rate ``r_AS``. The ``YRI``, ``CEU`` and
+      ``CHB`` samples are drawn from ``AF``, ``EU`` and ``AS`` populations
+      respectively. Additional operators could be added to ``ops``. Information
+      fields required by these operators should be passed to ``infoFields``. If 
+      a scaling factor ``scale`` is specified, all population sizes and
+      generation numbers will be divided by a factor of ``scale``. This demographic
+      model by default returns all populations (``AF``, ``EU``, ``AS``) but
+      you can choose to keep only selected subpopulations using parameter
+      ``outcome`` (e.g. ``outcome=['EU', 'AS']``).
+      
+      This model merges all subpopulations if it is applied to an initial 
+      population with multiple subpopulation.
+
+   .. method:: OutOfAfricaModel.plot(filename='', title='', initSize=[])
+
+      Evolve a haploid population using a :class:`RandomSelection` mating scheme
+      using the demographic model. Print population size changes duringe evolution.
+      An initial population size could be specified using parameter ``initSize``
+      for a demographic model with dynamic initial population size. If a filename
+      is specified and if matplotlib is available, this function draws a figure
+      to depict the demographic model and save it to ``filename``. An optional
+      ``title`` could be specified to the figure. Note that this function can
+      not be plot demographic models that works for particular mating schemes
+      (e.g. genotype dependent).
+

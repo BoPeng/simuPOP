@@ -1,0 +1,35 @@
+
+class InstantChangeModel
+------------------------
+
+.. class:: InstantChangeModel
+
+   A model for instant population change (growth, resize, merge, split).
+
+   .. method:: InstantChangeModel.InstantChangeModel(T=None, N0=[], G=[], NG=[], ops=[], infoFields=[], removeEmptySubPops=False)
+
+      An instant population growth model that evolves a population
+      from size ``N0`` to ``NT`` for ``T`` generations with population
+      size changes at generation ``G`` to ``NT``. If ``G`` is a list,
+      multiple population size changes are allowed. In that case, a list
+      (or a nested list) of population size should be provided to parameter
+      ``NT``. Both ``N0`` and ``NT`` supports fixed (an integer), dynamic
+      (keep passed poulation size) and proportional (an float number) population
+      size. Optionally, one or more operators (e.g. a migrator) ``ops``
+      can be applied to population. Required information fields by these
+      operators should be passed to parameter ``infoFields``. If ``removeEmpty``
+      option is set to ``True``, empty subpopulation will be removed. This
+      option can be used to remove subpopulations.
+
+   .. method:: InstantChangeModel.plot(filename='', title='', initSize=[])
+
+      Evolve a haploid population using a :class:`RandomSelection` mating scheme
+      using the demographic model. Print population size changes duringe evolution.
+      An initial population size could be specified using parameter ``initSize``
+      for a demographic model with dynamic initial population size. If a filename
+      is specified and if matplotlib is available, this function draws a figure
+      to depict the demographic model and save it to ``filename``. An optional
+      ``title`` could be specified to the figure. Note that this function can
+      not be plot demographic models that works for particular mating schemes
+      (e.g. genotype dependent).
+

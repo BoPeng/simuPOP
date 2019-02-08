@@ -1,0 +1,33 @@
+
+.. module:: simuPOP.sampling
+
+This module provides classes and functions that could be used to draw samples
+from a simuPOP population. These functions accept a list of parameters such
+as ``subPops`` ((virtual) subpopulations from which samples will be drawn) and
+``numOfSamples`` (number of samples to draw) and return a list of populations. Both
+independent individuals and dependent individuals (Pedigrees) are supported.
+
+Independent individuals could be drawn from any Population. pedigree
+information is not necessary and is usually ignored. Unique IDs are not needed
+either although such IDs could help you identify samples in the parent
+Population.
+
+Pedigrees could be drawn from multi-generational populations or age-structured
+populations. All individuals are required to have a unique ID (usually tracked
+by operator ``IdTagger`` and are stored in information field ``ind_id``).
+Parents of individuals are usually tracked by operator ``PedigreeTagger`` and
+are stored in information fields ``father_id`` and ``mother_id``. If parental
+information is tracked using operator ``ParentsTagger`` and information fields
+``father_idx`` and ``mother_idx``, a function ``sampling.indexToID`` can be
+used to convert index based pedigree to ID based Pedigree. Note that
+``ParentsTagger`` can not be used to track Pedigrees in age-structured
+populations because they require parents of each individual resides in a
+parental generation.
+
+All sampling functions support virtual subpopulations through parameter
+``subPops``, although sample size specification might vary. This feature
+allows you to draw samples with specified properties. For example, you
+could select only female individuals for cases of a female-only disease,
+or select individuals within certain age-range. If you specify a list
+of (virtual) subpopulations, you are usually allowed to draw certain
+number of individuals from each subpopulation.

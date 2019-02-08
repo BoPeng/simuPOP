@@ -1,0 +1,27 @@
+
+class ConditionalMating
+-----------------------
+
+.. class:: ConditionalMating
+
+   A conditional mating scheme that applies different mating schemes
+   according to a condition (similar to operator  IfElse). The
+   condition can be a fixed condition, an expression or a user-defined
+   function, to determine which mating scheme to be used.
+
+
+   .. method:: ConditionalMating(cond, ifMatingScheme, elseMatingScheme)
+
+
+      Create a conditional mating scheme that applies mating scheme
+      *ifMatingScheme* if the condition *cond* is ``True``, or
+      *elseMatingScheme* if *cond* is ``False``. If a Python
+      expression (a string) is given to parameter *cond*, the
+      expression will be evalulated in parental population's local
+      namespace. When a Python function is specified, it accepts
+      parameter ``pop`` for the parental population. The return value
+      of this function should be ``True`` or ``False``. Otherwise,
+      parameter *cond* will be treated as a fixed condition (converted
+      to ``True`` or ``False``) upon which *ifMatingScheme* or
+      *elseMatingScheme* will alway be applied.
+

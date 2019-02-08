@@ -1,0 +1,23 @@
+
+class RevertFixedSites
+----------------------
+
+.. class:: RevertFixedSites
+
+   This operator checks all or specified loci of a population and
+   revert all mutants at loci to wildtype alleles if they are fixed in
+   the population. If a list of (virtual) subpopulations are
+   specified, alleles are reverted if they are fixed in each
+   subpopulation, regardless if the alleles are fixed in other
+   subpopulations.
+
+
+   .. method:: RevertFixedSites(loci=ALL_AVAIL, output="", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=["ind_id"])
+
+
+      Create an operator to set all alleles to zero at specified
+      (parameter *loci*) or all loci if they are fixed (having one
+      non-zero allele) at these loci. If parameter *subPops* are
+      specified, only individuals in these subpopulations are
+      considered.
+

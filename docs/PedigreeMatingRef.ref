@@ -1,0 +1,40 @@
+
+class PedigreeMating
+--------------------
+
+.. class:: PedigreeMating
+
+   This mating scheme evolves a population following an existing
+   pedigree structure. If the :class:`Pedigree` object has ``N``
+   ancestral generations and a present generation, it can be used to
+   evolve a population for ``N`` generations, starting from the
+   topmost ancestral generation. At the *k-th* generation, this mating
+   scheme produces an offspring generation according to subpopulation
+   structure of the ``N-k-1`` ancestral generation in the pedigree
+   object (e.g. producing the offspring population of generation 0
+   according to the ``N-1`` ancestral generation of the pedigree
+   object ). For each offspring, this mating scheme copies individual
+   ID and sex from the corresponing individual in the pedigree object.
+   It then locates the parents of each offspring using their IDs in
+   the pedigree object. A list of during mating operators are then
+   used to transmit parental genotype to the offspring. The population
+   being evolved must have an information field ``'ind_id'``.
+
+
+   .. method:: PedigreeMating(ped, ops, idField="ind_id")
+
+
+      Creates a pedigree mating scheme that evolves a population
+      according to :class:`Pedigree` object *ped*. The evolved
+      population should contain individuals with ID (at information
+      field *idField*, default to ``'ind_id'``) that match those
+      individual in the topmost ancestral generation who have
+      offspring. After parents of each individuals are determined from
+      their IDs, a list of during-mating operators *ops* are applied
+      to transmit genotypes. The return value of these operators are
+      not checked.
+
+
+   .. method:: PedigreeMating.parallelizable()
+
+      FIXME: No document

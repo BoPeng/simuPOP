@@ -1,0 +1,44 @@
+
+class CombinedSplitter
+----------------------
+
+.. class:: CombinedSplitter
+
+   This splitter takes several splitters and stacks their VSPs
+   together. For example, if the first splitter defines ``3`` VSPs and
+   the second splitter defines ``2``, the two VSPs from the second
+   splitter become the fourth (index ``3``) and the fifth (index
+   ``4``) VSPs of the combined splitter. In addition, a new set of
+   VSPs could be defined as the union of one or more of the original
+   VSPs. This splitter is usually used to define different types of
+   VSPs to a population.
+
+
+   .. method:: CombinedSplitter(splitters=[], vspMap=[], names=[])
+
+
+      Create a combined splitter using a list of *splitters*. For
+      example, ``CombinedSplitter([SexSplitter(),
+      AffectionSplitter()])`` defines a combined splitter with four
+      VSPs, defined by male (vsp ``0``), female (vsp ``1``),
+      unaffected (vsp ``2``) and affected individuals (vsp ``3``).
+      Optionally, a new set of VSPs could be defined by parameter
+      *vspMap*. Each item in this parameter is a list of VSPs that
+      will be combined to a single VSP. For example, ``vspMap=[(0, 2),
+      (1, 3)]`` in the previous example will define two VSPs defined
+      by male or unaffected, and female or affected individuals. VSP
+      names are usually determined by splitters, but can also be
+      specified using parameter *names*.
+
+
+   .. method:: CombinedSplitter.name(vsp)
+
+      Return the name of a VSP *vsp*, which is the name a VSP defined
+      by one of the combined splitters unless a new set of names is
+      specified. If a *vspMap* was used, names from different VSPs
+      will be joined by ``"or"``.
+
+   .. method:: CombinedSplitter.numVirtualSubPop()
+
+      Return the number of VSPs defined by this splitter, which is the
+      sum of the number of VSPs of all combined splitters.

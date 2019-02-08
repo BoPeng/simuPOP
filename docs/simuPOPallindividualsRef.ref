@@ -1,0 +1,15 @@
+
+Function allindividuals
+-----------------------
+
+
+.. function:: all_individuals(self, subPops=ALL_AVAIL, ancGens=True)
+
+   Return an iterator that iterat through all (virtual) subpopulations in
+   all ancestral generations. A list of (virtual) subpopulations (*subPops*)
+   and a list of ancestral generations (*ancGens*, can be a single number)
+   could be specified to iterate through only selected subpopulation and
+   generations. Value ``ALL_AVAIL`` is acceptable in the specification of
+   ``sp`` and/or ``vsp`` in specifying a virtual subpopulation ``(sp, vsp)``
+   for the iteration through all or specific virtual subpopulation in all or
+   specific subpopulations.

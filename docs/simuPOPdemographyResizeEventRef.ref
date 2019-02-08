@@ -1,0 +1,22 @@
+
+class ResizeEvent
+-----------------
+
+.. class:: ResizeEvent
+
+   A demographic event that resize specified subpopulations
+
+   .. method:: ResizeEvent.ResizeEvent(sizes=[], names=[], removeEmptySubPops=False, ops=[], output='', begin=0, end=-1, step=1, at=[], reps=True, subPops=ALL_AVAIL, infoFields=[])
+
+      A demographic event that resizes given subpopulations ``subPops`` to new
+      ``sizes`` (integer type), or sizes proportional to original sizes (if a float
+      number is given). For example, ``sizes=[0.5, 500]`` will resize the first
+      subpopulation to half of its original size, and the second subpopulation to
+      size ``500``. If the new size is larger, existing individuals will be copied
+      to sequentially, and repeatedly if needed. If the size of a subpopulation is
+      0 and ``removeEmptySubPops`` is ``True``, empty subpopulations will be
+      removed. A new set of names could be assigned to the population being resized.
+
+   .. method:: ResizeEvent.apply(pop)
+
+

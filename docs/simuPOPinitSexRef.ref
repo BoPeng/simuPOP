@@ -1,0 +1,8 @@
+
+Function initSex
+----------------
+
+
+.. function:: initSex(pop, *args, **kwargs)
+
+   Apply operator :class:`InitSex` to population *pop*.

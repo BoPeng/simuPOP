@@ -1,0 +1,130 @@
+
+class Simulator
+---------------
+
+.. class:: Simulator
+
+   A  simuPOP simulator is responsible for evolving one or more
+   populations forward in time, subject to various *operators*.
+   Populations in a simulator are created from one or more replicates
+   of specified populations. A number of functions are provided to
+   access and manipulate populations, and most importantly, to evolve
+   them.
+
+
+   .. method:: Simulator(pops, rep=1, stealPops=True)
+
+
+      Create a simulator with *rep* (default to ``1``) replicates of
+      populations *pops*, which is a list of populations although a
+      single population object is also acceptable. Contents of passed
+      populations are by default moved to the simulator to avoid
+      duplication of potentially large population objects, leaving
+      empty populations behind. This behavior can be changed by
+      setting *stealPops* to ``False``, in which case populations are
+      copied to the simulator.
+
+
+   .. method:: Simulator.add(pop, stealPop=True)
+
+      Add a population *pop* to the end of an existing simulator. This
+      function by default moves *pop* to the simulator, leaving an
+      empty population for passed population object. If *steal* is set
+      to ``False``, the population will be copied to the simulator,
+      and thus unchanged.
+
+   .. method:: Simulator.clone()
+
+      Clone a simulator, along with all its populations. Note that
+      Python assign statement ``simu1 = simu`` only creates a symbolic
+      link to an existing simulator.
+
+   .. method:: Simulator.__cmp__(rhs)
+
+      a Pyton function used to compare the simulator objects Note that
+      mating schemes are not tested.
+
+   .. method:: Simulator.dvars(rep, subPop=[])
+
+      Return a wrapper of Python dictionary returned by ``vars(rep,
+      subPop)`` so that dictionary keys can be accessed as attributes.
+
+   .. method:: Simulator.evolve(initOps=[], preOps=[], matingScheme=MatingScheme, postOps=[], finalOps=[], gen=-1, dryrun=False)
+
+      Evolve all populations *gen* generations, subject to several
+      lists of operators which are applied at different stages of an
+      evolutionary process. Operators *initOps* are applied to all
+      populations (subject to applicability restrictions of the
+      operators, imposed by the *rep* parameter of these operators)
+      before evolution. They are used to initialize populations before
+      evolution. Operators *finalOps* are applied to all populations
+      after the evolution.
+
+      Operators *preOps*, and *postOps* are applied during the life
+      cycle of each generation. These operators can be applied at all
+      or some of the generations, to all or some of the evolving
+      populations, depending the *begin*, *end*, *step*, *at* and
+      *reps* parameters of these operators. These operators are
+      applied in the order at which they are specified. populations in
+      a simulator are evolved one by one. At each generation,
+      operators *preOps* are applied to the parental generations. A
+      mating scheme is then used to populate an offspring generation.
+      For each offspring, his or her sex is determined before during-
+      mating operators of the mating scheme are used to transmit
+      parental genotypes. After an offspring generation is
+      successfully generated and becomes the current generation,
+      operators *postOps* are applied to the offspring generation. If
+      any of the *preOps* and *postOps* fails (return ``False``), the
+      evolution of a population will be stopped. The generation number
+      of a population, which is the variable ``"gen"`` in each
+      populations local namespace, is increased by one if an offspring
+      generation has been successfully populated even if a post-mating
+      operator fails. Another variable ``"rep"`` will also be set to
+      indicate the index of each population in the simulator. Note
+      that populations in a simulator does not have to have the same
+      generation number. You could reset a population's generation
+      number by changing this variable.
+
+      Parameter *gen* can be set to a non-negative number, which is
+      the number of generations to evolve. If a simulator starts at
+      the beginning of a generation ``g`` (for example 0), a simulator
+      will stop at the beginning (instead of the end) of generation
+      ``g + gen`` (for example gen). If *gen* is negative (default),
+      the evolution will continue indefinitely, until all replicates
+      are stopped by operators that return ``False`` at some point
+      (these operators are called *terminators*). At the end of the
+      evolution, the generations that each replicates have evolved are
+      returned. Note that *finalOps* are applied to all applicable
+      population, including those that have stopped before others.
+
+      If parameter *dryrun* is set to ``True``, this function will
+      print a description of the evolutionary process generated by
+      function ``describeEvolProcess()`` and exits.
+
+   .. method:: Simulator.extract(rep)
+
+      Extract the *rep-th* population from a simulator. This will
+      reduce the number of populations in this simulator by one.
+
+   .. method:: Simulator.numRep()
+
+      Return the number of replicates.
+
+   .. method:: Simulator.population(rep)
+
+      Return a reference to the *rep-th* population of a simulator.
+      The reference will become invalid once the simulator starts
+      evolving or becomes invalid (removed). If an independent copy of
+      the population is needed, you can use ``population.clone()`` to
+      create a cloned copy or ``simulator.extract()`` to remove the
+      population from the simulator.
+
+   .. method:: Simulator.populations()
+
+      Return a Python iterator that can be used to iterate through all
+      populations in a simulator.
+
+   .. method:: Simulator.vars(rep, subPop=[])
+
+      Return the local namespace of the *rep-th* population,
+      equivalent to ``x.Population(rep).vars(subPop)``.

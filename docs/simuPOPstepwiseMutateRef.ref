@@ -1,0 +1,8 @@
+
+Function stepwiseMutate
+-----------------------
+
+
+.. function:: stepwiseMutate(pop, *args, **kwargs)
+
+   Function form of operator :class:`StepwiseMutator`

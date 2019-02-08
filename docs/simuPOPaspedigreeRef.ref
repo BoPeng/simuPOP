@@ -1,0 +1,9 @@
+
+Function aspedigree
+-------------------
+
+
+.. function:: as_pedigree(self, idField='ind_id', fatherField='father_id', motherField='mother_id')
+
+   Convert the existing population object to a pedigree. After this function
+   pedigree function should magically be usable for this function.

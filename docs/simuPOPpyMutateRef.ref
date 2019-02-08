@@ -1,0 +1,8 @@
+
+Function pyMutate
+-----------------
+
+
+.. function:: pyMutate(pop, *args, **kwargs)
+
+   Function form of operator :class:`PyMutator`

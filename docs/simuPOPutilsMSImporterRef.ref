@@ -1,0 +1,15 @@
+
+class MSImporter
+----------------
+
+.. class:: MSImporter
+
+   FIXME: No document
+
+   .. method:: MSImporter.MSImporter(ploidy=1, mergeBy='subPop')
+
+      Initialize self.  See help(type(self)) for accurate signature.
+
+   .. method:: MSImporter.importFrom(filename)
+
+

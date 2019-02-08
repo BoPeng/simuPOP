@@ -1,0 +1,30 @@
+
+class ProportionSplitter
+------------------------
+
+.. class:: ProportionSplitter
+
+   This splitter divides subpopulations into several VSPs by
+   proportion.
+
+
+   .. method:: ProportionSplitter(proportions=[], names=[])
+
+
+      Create a splitter that divides subpopulations by *proportions*,
+      which should be a list of float numbers (between ``0`` and
+      ``1``) that add up to ``1``. A default set of names are given to
+      each VSP unless a new set of names is given by parameter
+      *names*.
+
+
+   .. method:: ProportionSplitter.name(vsp)
+
+      Return the name of VSP *vsp*, which is ``"Prop p"`` where
+      ``p=propotions[vsp]``. A user specified name will be returned if
+      specified.
+
+   .. method:: ProportionSplitter.numVirtualSubPop()
+
+      Return the number of VSPs defined by this splitter, which is the
+      length of parameter *proportions*.

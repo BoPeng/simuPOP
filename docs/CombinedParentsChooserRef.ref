@@ -1,0 +1,39 @@
+
+class CombinedParentsChooser
+----------------------------
+
+.. class:: CombinedParentsChooser
+
+   This parent chooser accepts two parent choosers. It takes one
+   parent from each parent chooser and return them as father and
+   mother. Because two parent choosers do not have to choose parents
+   from the same virtual subpopulation, this parent chooser allows you
+   to choose parents from different subpopulations.
+
+
+   .. method:: CombinedParentsChooser(fatherChooser, motherChooser, allowSelfing=True)
+
+
+      Create a Python parent chooser using two parent choosers
+      *fatherChooser* and *motherChooser*. It takes one parent from
+      each parent chooser and return them as father and mother. If two
+      valid parents are returned, the first valid parent (father) will
+      be used for *fatherChooser*, the second valid parent (mother)
+      will be used for *motherChooser*. Although these two parent
+      choosers are supposed to return a father and a mother
+      respectively, the sex of returned parents are not checked so it
+      is possible to return parents with the same sex using this
+      parents chooser. This choose by default allows the selection of
+      the same parents as father and mother (self-fertilization),
+      unless a parameter *allowSelfing* is used to disable it.
+
+
+   .. method:: CombinedParentsChooser.chooseParents()
+
+      Return chosen parents from a population if the parent chooser
+      object is created with a population.
+
+   .. method:: CombinedParentsChooser.initialize(pop, subPop)
+
+      Initialize a parent chooser for subpopulation *subPop* of
+      *population* pop.

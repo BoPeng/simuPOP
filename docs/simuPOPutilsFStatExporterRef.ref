@@ -1,0 +1,16 @@
+
+class FStatExporter
+-------------------
+
+.. class:: FStatExporter
+
+   An exporter to export given population in fstat format
+
+   .. method:: FStatExporter.FStatExporter(lociNames=None, adjust=1)
+
+      Initialize self.  See help(type(self)) for accurate signature.
+
+   .. method:: FStatExporter.export(pop, output, subPops, infoFields, gui)
+
+      Export in FSTAT format
+

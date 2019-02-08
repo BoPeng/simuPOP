@@ -1,0 +1,17 @@
+
+Function migrIslandRates
+------------------------
+
+
+.. function:: migrIslandRates(r, n)
+
+   migration rate matrix
+   
+   ::
+   
+            x m/(n-1) m/(n-1) ....
+            m/(n-1) x ............
+            .....
+            .... m/(n-1) m/(n-1) x
+   
+       where x = 1-m

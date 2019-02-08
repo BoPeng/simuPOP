@@ -1,0 +1,8 @@
+
+Function matrixMutate
+---------------------
+
+
+.. function:: matrixMutate(pop, *args, **kwargs)
+
+   Function form of operator :class:`MatrixMutator`

@@ -1,0 +1,38 @@
+
+class PyEval
+------------
+
+.. class:: PyEval
+
+   A :class:`PyEval` operator evaluates a Python expression in a
+   population's local namespace when it is applied to this population.
+   The result is written to an output specified by parameter *output*.
+
+
+   .. method:: PyEval(expr="", stmts="", exposePop="", output=">", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=Py_False, infoFields=[])
+
+
+      Create a :class:`PyEval` operator that evaluates a Python
+      expression *expr* in a population's local namespaces when it is
+      applied to this population. This namespace can either be the
+      population's local namespace (``pop.vars()``), or namespaces
+      ``subPop[sp]`` for (virtual) subpop (``pop.vars(subpop)``) in
+      specified *subPops*. If Python statements *stmts* is given (a
+      single or multi-line string), the statement will be executed
+      before *expr*. If *exposePop* is set to an non-empty string, the
+      current population will be exposed in its own local namespace as
+      a variable with this name. This allows the execution of
+      expressions such as ``'pop.individual(0).allele(0)'``. The
+      result of *expr* will be sent to an output stream specified by
+      parameter ``output``. The exposed population variable will be
+      removed after *expr* is evaluated. Please refer to class
+      :class:`BaseOperator` for other parameters.
+
+      .. note::
+
+         Although the statements and expressions are evaluated in a
+         population's local namespace, they have access to a global
+         namespace which is the module global namespace. It is
+         therefore possible to refer to any module variable in these
+         expressions. Such mixed use of local and global variables is,
+         however, strongly discouraged.

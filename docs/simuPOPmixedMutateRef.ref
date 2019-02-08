@@ -1,0 +1,8 @@
+
+Function mixedMutate
+--------------------
+
+
+.. function:: mixedMutate(pop, *args, **kwargs)
+
+   Function form of operator :class:`MixedMutator`

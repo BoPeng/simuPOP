@@ -1,0 +1,14 @@
+
+class IndexError
+----------------
+
+.. class:: IndexError
+
+   exception, thrown if index out of range
+
+
+   .. method:: IndexError(msg)
+
+
+      FIXME: No document
+

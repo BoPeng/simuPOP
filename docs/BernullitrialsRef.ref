@@ -1,0 +1,83 @@
+
+class Bernullitrials
+--------------------
+
+.. class:: Bernullitrials
+
+   this class encapsulate behavior of a sequence of Bernulli trial.
+   the main idea is that when doing a sequence of Bernulli trials of
+   the same probability, we can use much quicker algorithms instead of
+   doing n Bernulli trials
+
+   For example, when N=10000, p=0.001. The usual way to do N Bin(p)
+   trials is to do N randUnif(0,1)<p comparison.
+
+   using the new method, we can use geometric distrubution to find the
+   next true event.
+
+   Also, for the cases of p=0.5, random bits are generated.
+
+   This class maintain a two dimensional table: a vector of
+   probabilities cross expected number of trials       p1 p2 p3 p4 p5
+
+   trial 1 trial 2 ... trial N
+
+   We expect that N is big (usually populaiton size) and p_i are small
+
+   using fast bernulliTrial method for fix p, we can fill up this
+   table very quickly column by column
+
+   This class will provide easy access to row (each trial) or column
+   (called each prob) of this table.
+
+   if this table is accessed row by row (each trial), a internal index
+   is used.
+
+   if index exceeds N, trials will be generated all again. if trial
+   will be called, e.g., N+2 times all the time, this treatment might
+   not be very efficient.
+
+
+   .. method:: Bernullitrials(, prob, trials=0)
+
+
+      FIXME: No document
+
+
+   .. method:: Bernullitrials.doTrial()
+
+      generate the trial table, reset m_cur
+
+   .. method:: Bernullitrials.probSize()
+
+      FIXME: No document
+
+   .. method:: Bernullitrials.probSuccRate()
+
+      return the succ rate for current trial, used for verification
+      pruposes
+
+   .. method:: Bernullitrials.setTrialSucc(idx, succ)
+
+      FIXME: No document
+
+   .. method:: Bernullitrials.trial()
+
+      if necessary, do trail again.
+
+   .. method:: Bernullitrials.trialFirstSucc(idx)
+
+      FIXME: No document
+
+   .. method:: Bernullitrials.trialNextSucc(idx, pos)
+
+      FIXME: No document
+
+   .. method:: Bernullitrials.trialSucc(idx)
+
+      FIXME: No document
+
+   .. method:: Bernullitrials.trialSuccRate(index)
+
+      return the succ rate for one index, used for verification
+      pruposes

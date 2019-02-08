@@ -1,0 +1,8 @@
+
+Function backwardMigrate
+------------------------
+
+
+.. function:: backwardMigrate(pop, *args, **kwargs)
+
+   Function form of operator :class:`BackwardMigrator`.

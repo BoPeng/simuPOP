@@ -1,0 +1,24 @@
+
+class InitInfo
+--------------
+
+.. class:: InitInfo
+
+   This operator initializes given information fields with a sequence
+   of values, or a user-provided function such as ``random.random``.
+
+
+   .. method:: InitInfo(values, begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+
+      Create an operator that initialize individual information fields
+      *infoFields* using a sequence of values or a user-defined
+      function. If a list of values are given, it will be used
+      sequentially for all individuals. The values will be reused if
+      its length is less than the number of individuals. The values
+      will be assigned repeatedly regardless of subpopulation
+      boundaries. If a Python function is given, it will be called,
+      without any argument, whenever a value is needed. If a list of
+      (virtual) subpopulation is specified in parameter *subPop*, only
+      individuals in these subpopulations will be initialized.
+

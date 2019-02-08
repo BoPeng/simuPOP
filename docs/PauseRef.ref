@@ -1,0 +1,37 @@
+
+class Pause
+-----------
+
+.. class:: Pause
+
+   This operator pauses the evolution of a simulator at given
+   generations or at a key stroke. When a simulator is stopped, you
+   can go to a Python shell to examine the status of an evolutionary
+   process, resume or stop the evolution.
+
+
+   .. method:: Pause(stopOnKeyStroke=False, prompt=True, output=">", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+
+      Create an operator that pause the evolution of a population when
+      it is applied to this population. If *stopOnKeyStroke* is
+      ``False`` (default), it will always pause a population when it
+      is applied, if this parameter is set to ``True``, the operator
+      will pause a population if *any* key has been pressed. If a
+      specific character is set, the operator will stop when this key
+      has been pressed. This allows, for example, the use of several
+      pause operators to pause different populations.
+
+      After a population has been paused, a message will be displayed
+      (unless *prompt* is set to ``False``) and tells you how to
+      proceed. You can press ``'s'`` to stop the evolution of this
+      population, ``'S'`` to stop the evolution of all populations, or
+      ``'p'`` to enter a Python shell. The current population will be
+      available in this Python shell as ``"pop_X_Y"`` when ``X`` is
+      generation number and ``Y`` is replicate number. The evolution
+      will continue after you exit this interactive Python shell.
+
+      .. note::
+
+         Ctrl-C will be intercepted even if a specific character is
+         specified in parameter *stopOnKeyStroke*.

@@ -1,0 +1,23 @@
+
+class OffspringTagger
+---------------------
+
+.. class:: OffspringTagger
+
+   This tagging operator records the indexes of offspring within a
+   family (sharing the same parent or parents) in specified
+   information field (default to ``offspring_idx``). This tagger can
+   be used to control the number of offspring during mating.
+
+
+   .. method:: OffspringTagger(begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, output="", infoFields=ALL_AVAIL)
+
+
+      Create an offspring tagger that records the indexes of offspring
+      within a family. The index is determined by successful
+      production of offspring during a mating events so the it does
+      not increase the index if a previous offspring is discarded, and
+      it resets index even if adjacent families share the same
+      parents. This operator ignores parameters *stage*, *output*, and
+      *subPops*.
+

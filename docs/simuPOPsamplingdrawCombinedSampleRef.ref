@@ -1,0 +1,12 @@
+
+Function drawCombinedSample
+---------------------------
+
+
+.. function:: drawCombinedSample(pop, samplers, idField='ind_id')
+
+   Draw different types of samples using a list of ``samplers``. A
+   Population consists of all individuals from these samples will
+   be returned. An ``idField`` that stores an unique ID for all individuals
+   is needed to remove duplicated individuals who are drawn multiple
+   numOfSamples from these samplers.

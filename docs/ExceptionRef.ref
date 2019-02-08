@@ -1,0 +1,21 @@
+
+class Exception
+---------------
+
+.. class:: Exception
+
+   exception handler. Exceptions will be passed to Python.
+
+
+   .. method:: Exception(msg)
+
+
+      constructor
+
+      msg
+         error message
+
+
+   .. method:: Exception.message()
+
+      return error message

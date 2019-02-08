@@ -1,0 +1,10 @@
+
+Function mergeSubPops
+---------------------
+
+
+.. function:: mergeSubPops(pop, *args, **kwargs)
+
+   Merge subpopulations *subPops* of population *pop* into a single
+   subpopulation. Please refer to the operator form of this funciton
+   (:class:`MergeSubPops`) for details

@@ -1,0 +1,33 @@
+
+class AdmixtureEvent
+--------------------
+
+.. class:: AdmixtureEvent
+
+   This event implements a population admixture event that mix
+   individuals from specified subpopulations to either a new 
+   subpopulation or an existing subpopulation.
+
+   .. method:: AdmixtureEvent.AdmixtureEvent(sizes=[], toSubPop=None, name='', ops=[], output='', begin=0, end=-1, step=1, at=[], reps=True, subPops=ALL_AVAIL, infoFields=[])
+
+      Create an admixed population by choosing individuals
+      from all or specified subpopulations (``subPops``) and creating
+      an admixed population ``toSubPop``. The admixed population will
+      be appended to the population as a new subpopulation with name
+      ``name`` if ``toSubPop`` is ``None`` (default), or replace an
+      existing subpopulation with name or index ``toSubPop``. The admixed
+      population consists of individuals from ``subPops`` according to
+      specified ``sizes``. Its size is maximized to have the largest
+      number of individuals from the source population when a new population
+      is created, or equal to the size of the existing destination population.
+      The parameter ``sizes`` should be a list of float numbers 
+      between 0 and 1, and add up to 1 (e.g. ``[0.4, 0.4, 0.2]``, although
+      this function ignores the last element and set it to 1 minus the 
+      sum of the other numbers). Alternatively, parameter ``sizes`` can
+      be a list of numbers used to explicitly specify the size of admixed
+      population and number of individuals from each source subpopulation.
+      In all cases, the size of source populations will be kept constant.
+
+   .. method:: AdmixtureEvent.apply(pop)
+
+

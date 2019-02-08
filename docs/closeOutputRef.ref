@@ -1,0 +1,16 @@
+
+Function closeOutput
+--------------------
+
+
+.. function:: closeOutput(output="")
+
+   Output files specified by ``'>'`` are closed immediately after they
+   are written. Those specified by ``'>>'`` and ``'>>>'`` are closed
+   by a simulator after ``Simulator.evolve()``. However, these files
+   will be kept open if the operators are applied directly to a
+   population using the operators' function form. In this case,
+   function :func:`closeOutput` can be used to close a specific file
+   *output*, and close all unclosed files if *output* is unspecified.
+   An exception will be raised if *output* does not exist or it has
+   already been closed.

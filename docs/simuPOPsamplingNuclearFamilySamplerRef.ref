@@ -1,0 +1,48 @@
+
+class NuclearFamilySampler
+--------------------------
+
+.. class:: NuclearFamilySampler
+
+   A sampler that draws nuclear families with specified number of affected
+   parents and offspring.
+
+   .. method:: NuclearFamilySampler.NuclearFamilySampler(families, numOffspring, affectedParents=0, affectedOffspring=0, subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id', motherField='mother_id')
+
+      Creates a nuclear family sampler with parameters
+      
+      families
+          number of families. This can be a number or a list of numbers. In the latter
+          case, specified families are drawn from each subpopulation.
+      
+      numOffspring
+          number of offspring. This can be a fixed number or a range [min, max].
+      
+      affectedParents
+          number of affected parents. This can be a fixed number or a range [min, max].
+      
+      affectedOffspring
+          number of affected offspring. This can be a fixed number of a range [min, max].
+      
+      subPops
+          A list of (virtual) subpopulations from which samples are drawn.
+          The default value is ALL_AVAIL, which means all available
+          subpopulations of a population.
+
+   .. method:: NuclearFamilySampler.drawSample(input_pop)
+
+      Randomly select Pedigrees
+
+   .. method:: NuclearFamilySampler.drawSamples(pop, numOfSamples)
+
+      Draw multiple samples and return a list of populations.
+
+   .. method:: NuclearFamilySampler.family(id)
+
+      Return id, its spouse and their children
+
+   .. method:: NuclearFamilySampler.prepareSample(input_pop)
+
+      Prepare self.pedigree, some pedigree sampler might need additional loci and
+      information fields for this sampler.
+

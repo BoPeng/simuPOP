@@ -1,0 +1,28 @@
+
+class AffectedSibpairSampler
+----------------------------
+
+.. class:: AffectedSibpairSampler
+
+   A sampler that draws a nuclear family with two affected offspring.
+
+   .. method:: AffectedSibpairSampler.AffectedSibpairSampler(families, subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id', motherField='mother_id')
+
+      Initialize an affected sibpair sampler.
+
+   .. method:: AffectedSibpairSampler.drawSample(input_pop)
+
+      Randomly select Pedigrees
+
+   .. method:: AffectedSibpairSampler.drawSamples(pop, numOfSamples)
+
+      Draw multiple samples and return a list of populations.
+
+   .. method:: AffectedSibpairSampler.family(id)
+
+      Return id, its spouse and their children
+
+   .. method:: AffectedSibpairSampler.prepareSample(input_pop)
+
+      Find the father or all affected sibpair families
+

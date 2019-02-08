@@ -1,0 +1,10 @@
+
+Function drawThreeGenFamilySamples
+----------------------------------
+
+
+.. function:: drawThreeGenFamilySamples(pop, families, numOffspring, pedSize, numOfAffected=0, numOfSamples=1, subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id', motherField='mother_id')
+
+   Draw ``numOfSamples`` three-generation pedigree samples from population ``pop``
+   and return a list of populations. Please refer to function
+   ``drawThreeGenFamilySample`` for a description of other parameters.

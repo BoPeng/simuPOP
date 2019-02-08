@@ -1,0 +1,22 @@
+
+class lociList
+--------------
+
+.. class:: lociList
+
+   FIXME: No document
+
+
+   .. method:: lociList(obj=Py_True)
+
+
+      FIXME: No document
+
+
+   .. method:: lociList.dynamic()
+
+      FIXME: No document
+
+   .. method:: lociList.empty()
+
+      FIXME: No document

@@ -1,0 +1,34 @@
+
+class LinearGrowthModel
+-----------------------
+
+.. class:: LinearGrowthModel
+
+   A model for linear population growth with carry capacity.
+
+   .. method:: LinearGrowthModel.LinearGrowthModel(T=None, N0=[], NT=None, r=None, ops=[], infoFields=[])
+
+      An linear population growth model that evolves a population from size
+      ``N0`` to ``NT`` for ``T`` generations with ``r*N0`` individuals added
+      at each generation. ``N0``, ``NT`` and ``r`` can be a list of population
+      sizes or growth rates for multiple subpopulations. The initial population
+      will be resized to ``N0`` (split if necessary). Zero or negative growth
+      rates are allowed. The model will automatically determine ``T``, ``r``
+      or ``NT`` if one of them is unspecified. If all of them are specified,
+      ``NT`` is intepretted as carrying capacity of the model, namely the 
+      population will keep contant after it reaches size ``NT``. Optionally,
+      one or more operators (e.g. a migrator) ``ops`` can be applied to 
+      population.
+
+   .. method:: LinearGrowthModel.plot(filename='', title='', initSize=[])
+
+      Evolve a haploid population using a :class:`RandomSelection` mating scheme
+      using the demographic model. Print population size changes duringe evolution.
+      An initial population size could be specified using parameter ``initSize``
+      for a demographic model with dynamic initial population size. If a filename
+      is specified and if matplotlib is available, this function draws a figure
+      to depict the demographic model and save it to ``filename``. An optional
+      ``title`` could be specified to the figure. Note that this function can
+      not be plot demographic models that works for particular mating schemes
+      (e.g. genotype dependent).
+

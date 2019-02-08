@@ -1,0 +1,19 @@
+
+class vspID
+-----------
+
+.. class:: vspID
+
+   A class to specify virtual subpopulation, which is composed of a
+   subpopulation ID and a virtual subpopulation ID.
+
+
+   .. method:: vspID(id)
+
+
+      Create a subpopulation id. Accept id as well as names.
+
+
+   .. method:: vspID.resolve(pop)
+
+      FIXME: No document

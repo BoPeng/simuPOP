@@ -1,0 +1,8 @@
+
+Function migrate
+----------------
+
+
+.. function:: migrate(pop, *args, **kwargs)
+
+   Function form of operator :class:`Migrator`.

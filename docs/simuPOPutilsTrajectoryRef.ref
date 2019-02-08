@@ -1,0 +1,63 @@
+
+class Trajectory
+----------------
+
+.. class:: Trajectory
+
+   A ``Trajectory`` object contains frequencies of one or more loci in one
+   or more subpopulations over several generations. It is usually returned by
+   member functions of class ``TrajectorySimulator`` or equivalent global
+   functions ``simulateForwardTrajectory`` and ``simulateBackwardTrajectory``.
+   
+   The ``Trajectory`` object provides several member functions to facilitate
+   the use of Trajectory-simulation techiniques. For example,
+   ``Trajectory.func()`` returns a trajectory function that can be provided
+   directly to a :class:`ControlledOffspringGenerator`; ``Trajectory.mutators()``
+   provides a list of :class:`PointMutator` that insert mutants at the right
+   generations to initialize a trajectory.
+   
+   For more information about Trajectory simulation techniques and related
+   controlled random mating scheme, please refer to the simuPOP user's guide,
+   and Peng et al (PLoS Genetics 3(3), 2007).
+
+   .. method:: Trajectory.Trajectory(endGen, nLoci)
+
+      Create a ``Trajectory`` object of alleles at *nLoci* loci with
+      ending generation *endGen*. *endGen* is the generation when expected
+      allele frequencies are reached after mating. Therefore, a trajectory
+      for 1000 generations should have ``endGen=999``.
+
+   .. method:: Trajectory.freq(gen, subPop)
+
+      Return frequencies of all loci in subpopulation *subPop* at
+      generation *gen* of the simulated Trajectory. Allele frequencies are
+      assumed to be zero if *gen* is out of range of the simulated
+      Trajectory.
+
+   .. method:: Trajectory.func()
+
+      Return a Python function that returns allele frequencies for each
+      locus at specified loci. If there are multiple subpopulations, allele
+      frequencies are arranged in the order of ``loc0_sp0``, ``loc1_sp0``,
+      ..., ``loc0_sp1``, ``loc1_sp1``, ... and so on. The returned function
+      can be supplied directly to the ``freqFunc`` parameter of a controlled
+      random mating scheme (:class:`ControlledRandomMating`) or a homogeneous
+      mating scheme that uses a controlled offspring generator
+      (:class:`ControlledOffspringGenerator`).
+
+   .. method:: Trajectory.mutants()
+
+      Return a list of mutants in the form of (loc, gen, subPop)
+
+   .. method:: Trajectory.mutators(loci, inds=0, allele=1, *args, **kwargs)
+
+      Return a list of :class:`PointMutator` operators that introduce mutants
+      at the beginning of simulated trajectories. These mutators should be
+      added to the ``preOps`` parameter of :meth:`Simulator.evolve` function to
+      introduce a mutant at the beginning of a generation with zero allele
+      frequency before mating, and a positive allele frequency after mating.
+      A parameter ``loci`` is needed to specify actual loci indexes in the
+      real forward simulation. Other than default parameters ``inds=0`` and
+      ``allele=1``, additional parameters could be passed to point mutator
+      as keyward parameters.
+

@@ -1,0 +1,11 @@
+
+Function splitSubPops
+---------------------
+
+
+.. function:: splitSubPops(pop, *args, **kwargs)
+
+   Split subpopulations (*subPops*) of population *pop* according to either
+   *sizes* or *proportions* of the resulting subpopulations, or an information
+   field. Please refer to the operator form of this function (``splitSubPop``)
+   for details.

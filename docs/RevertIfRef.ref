@@ -1,0 +1,30 @@
+
+class RevertIf
+--------------
+
+.. class:: RevertIf
+
+   This operator replaces the current evolving population by a
+   population loaded from a specified filename if certain condition is
+   met. It is mostly used to return to a previously saved state if the
+   simulation process fails to met a condition (e.g. a disease allele
+   is lost).
+
+
+   .. method:: RevertIf(cond, fromPop="", ops=[], output="", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+
+      Replaces the current evolving population by a population loaded
+      from *fromPop*, which should be a file saved by function
+      ``Population.save()`` or operator :class:`SavePopulation`. If a
+      Python expression (a string) is given to parameter *cond*, the
+      expression will be evalulated in each population's local
+      namespace when this operator is applied. When a Python function
+      with optional parameter ``pop`` is specified, it should accept
+      the current population (to parameter ``pop``) and converts and
+      return ``True`` or ``False``. Otherwise, parameter *cond* will
+      be treated as a fixed condition (converted to ``True`` or
+      ``False``) upon which the population is reverted. After the
+      population is reverted, an optional list of operators *ops*
+      could be applied to the population.
+

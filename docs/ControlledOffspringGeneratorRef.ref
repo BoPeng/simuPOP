@@ -1,0 +1,49 @@
+
+class ControlledOffspringGenerator
+----------------------------------
+
+.. class:: ControlledOffspringGenerator
+
+   This offspring generator populates an offspring population and
+   controls allele frequencies at specified loci. At each generation,
+   expected allele frequencies at these loci are passed from a user
+   defined allele frequency *trajectory* function. The offspring
+   population is populated in two steps. At the first step, only
+   families with disease alleles are accepted until until the expected
+   number of disease alleles are met. At the second step, only
+   families with wide type alleles are accepted to populate the rest
+   of the offspring generation. This method is described in detail in
+   "Peng et al, (2007) PLoS Genetics".
+
+
+   .. method:: ControlledOffspringGenerator(loci, alleles, freqFunc, ops=[], numOffspring=1, sexMode=RANDOM_SEX)
+
+
+      Create an offspring generator that selects offspring so that
+      allele frequency at specified loci in the offspring generation
+      reaches specified allele frequency. At the beginning of each
+      generation, expected allele frequency of *alleles* at *loci* is
+      returned from a user-defined trajectory function *freqFunc*.
+      Parameter *loci* can be a list of loci indexes, names, or
+      ALL_AVAIL. If there is no subpopulation, this function should
+      return a list of frequencies for each locus. If there are
+      multiple subpopulations, *freqFunc* can return a list of allele
+      frequencies for all subpopulations or combined frequencies that
+      ignore population structure. In the former case, allele
+      frequencies should be arranged by loc0_sp0, loc1_sp0, ...
+      loc0_sp1, loc1_sp1, ..., and so on. In the latter case, overall
+      expected number of alleles are scattered to each subpopulation
+      in proportion to existing number of alleles in each
+      subpopulation, using a multinomial distribution.
+
+      After the expected alleles are calculated, this offspring
+      generator accept and reject families according to their genotype
+      at *loci* until allele frequecies reach their expected values.
+      The rest of the offspring generation is then filled with
+      families without only wild type alleles at these *loci*.
+
+      This offspring generator is derived from class
+      *OffspringGenerator*. Please refer to class *OffspringGenerator*
+      for a detailed description of parameters *ops*, *numOffspring*
+      and *sexMode*.
+

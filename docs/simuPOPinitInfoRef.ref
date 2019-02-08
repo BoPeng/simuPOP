@@ -1,0 +1,8 @@
+
+Function initInfo
+-----------------
+
+
+.. function:: initInfo(pop, *args, **kwargs)
+
+   Apply operator :class:`InitInfo` to population *pop*.

@@ -1,0 +1,48 @@
+
+class ThreeGenFamilySampler
+---------------------------
+
+.. class:: ThreeGenFamilySampler
+
+   A sampler that draws three-generation families with specified pedigree
+   size and number of affected individuals.
+
+   .. method:: ThreeGenFamilySampler.ThreeGenFamilySampler(families, numOffspring, pedSize, numOfAffected=0, subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id', motherField='mother_id')
+
+      families
+          number of families. This can be a number or a list of numbers. In the latter
+          case, specified families are drawn from each subpopulation.
+      
+      numOffspring
+          number of offspring. This can be a fixed number or a range [min, max].
+      
+      pedSize
+          number of individuals in the Pedigree. This can be a fixed number or
+          a range [min, max].
+      
+      numAfffected
+          number of affected individuals in the Pedigree. This can be a fixed number
+          or a range [min, max]
+      
+      subPops
+          A list of (virtual) subpopulations from which samples are drawn.
+          The default value is ALL_AVAIL, which means all available
+          subpopulations of a population.
+
+   .. method:: ThreeGenFamilySampler.drawSample(input_pop)
+
+      Randomly select Pedigrees
+
+   .. method:: ThreeGenFamilySampler.drawSamples(pop, numOfSamples)
+
+      Draw multiple samples and return a list of populations.
+
+   .. method:: ThreeGenFamilySampler.family(id)
+
+      Return id, its spouse, their children, children's spouse and grandchildren
+
+   .. method:: ThreeGenFamilySampler.prepareSample(input_pop)
+
+      Prepare self.pedigree, some pedigree sampler might need additional loci and
+      information fields for this sampler.
+

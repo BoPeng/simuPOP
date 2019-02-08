@@ -1,0 +1,14 @@
+
+class StopEvolution
+-------------------
+
+.. class:: StopEvolution
+
+   exception, throw if an operator would like to stop all replicates.
+
+
+   .. method:: StopEvolution(msg)
+
+
+      FIXME: No document
+

@@ -1,0 +1,8 @@
+
+Function dvars
+--------------
+
+
+.. function:: dvars(self, *args, **kwargs)
+
+   FIXME: No document

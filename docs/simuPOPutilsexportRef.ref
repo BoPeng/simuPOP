@@ -1,0 +1,8 @@
+
+Function export
+---------------
+
+
+.. function:: export(pop, format, *args, **kwargs)
+
+   Apply operator ``Exporter`` to population *pop* in format *format*.

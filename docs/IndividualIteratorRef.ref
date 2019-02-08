@@ -1,0 +1,28 @@
+
+class IndividualIterator
+------------------------
+
+.. class:: IndividualIterator
+
+   this class implements a C++ iterator class that iterate through
+   individuals in a (sub)population. If allInds are true, the
+   visiblility of individuals will not be checked. Note that
+   IndividualIterator*will* iterate through only visible individuals,
+   and allInds is only provided when we know in advance that all
+   individuals are visible. This is a way to obtain better performance
+   in simple cases.
+
+
+   .. method:: IndividualIterator()
+
+
+      FIXME: No document
+
+
+   .. method:: IndividualIterator.rawIter()
+
+      FIXME: No document
+
+   .. method:: IndividualIterator.valid()
+
+      FIXME: No document

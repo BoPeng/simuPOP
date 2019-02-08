@@ -1,0 +1,16 @@
+
+class MapExporter
+-----------------
+
+.. class:: MapExporter
+
+   An exporter to export loci information in MAP format
+
+   .. method:: MapExporter.MapExporter(posMultiplier=1)
+
+      Initialize self.  See help(type(self)) for accurate signature.
+
+   .. method:: MapExporter.export(pop, output, subPops, infoFields, gui)
+
+      Export in MAP format
+

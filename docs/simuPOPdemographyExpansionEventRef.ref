@@ -1,0 +1,29 @@
+
+class ExpansionEvent
+--------------------
+
+.. class:: ExpansionEvent
+
+   A demographic event that increase applicable population size by
+   ``N*r`` (to size ``N*(1+r)``), or ``s`` (to size ``N+s``) at each applicable
+   generation. The first model leads to an exponential population expansion
+   model with rate ``r`` (``N(t)=N(0)*exp(r*t)``), where the second model leads to
+   an linear population growth model (``N(t)=N(0)+s*t``) and this is why the
+   parameter is called ``slopes``. Note that if both population
+   size and ``r`` are small (e.g. ``N*r<1``),  the population might not expand
+   as expected.
+
+   .. method:: ExpansionEvent.ExpansionEvent(rates=[], slopes=[], capacity=[], name='', ops=[], output='', begin=0, end=-1, step=1, at=[], reps=True, subPops=ALL_AVAIL, infoFields=[])
+
+      A demographic event that expands all or specified subpopulations
+      (``subPops``) exponentially by a rate of ``rates``, or linearly by a slope
+      of ``slopes``, unless carray capacity (``capacity``) of the population has
+      been reached. Parameter ``rates`` can be a single number or a list of rates
+      for all subpopulations. Parameter ``slopes`` should be a number, or a list
+      of numbers for all subpopulations. ``subPops`` can be a ``ALL_AVAIL`` or a list
+      of subpopulation index or names. ``capacity`` can be empty (no limit on
+      carrying capacity), or one or more numbers for each of the subpopulations.
+
+   .. method:: ExpansionEvent.apply(pop)
+
+

@@ -1,0 +1,18 @@
+
+class uintList
+--------------
+
+.. class:: uintList
+
+   FIXME: No document
+
+
+   .. method:: uintList(obj=Py_True)
+
+
+      FIXME: No document
+
+
+   .. method:: uintList.unspecified()
+
+      FIXME: No document

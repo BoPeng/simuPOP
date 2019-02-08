@@ -1,0 +1,16 @@
+
+class WithArgs
+--------------
+
+.. class:: WithArgs
+
+   This class wraps around a user-provided function and provides an
+   attribute ``args`` so that simuPOP knows which parameters to send to the
+   function. This is only needed if the function can not be defined with
+   allowed parameters.
+
+   .. method:: WithArgs.WithArgs(func, args)
+
+      Return a callable object that wraps around function ``func``.
+      Parameter ``args`` should be a list of parameter names.
+

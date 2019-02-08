@@ -1,0 +1,44 @@
+
+class InfoSplitter
+------------------
+
+.. class:: InfoSplitter
+
+   This splitter defines VSPs according to the value of an information
+   field of each indivdiual. A VSP is defined either by a value or a
+   range of values.
+
+
+   .. method:: InfoSplitter(field, values=[], cutoff=[], ranges=[], names=[])
+
+
+      Create an infomration splitter using information field *field*.
+      If parameter *values* is specified, each item in this list
+      defines a VSP in which all individuals have this value at
+      information field *field*. If a set of cutoff values are defined
+      in parameter *cutoff*, individuals are grouped by intervals
+      defined by these cutoff values. For example, ``cutoff=[1,2]``
+      defines three VSPs with ``v < 1``, ``1 <= v < 2`` and ``v >=2``
+      where ``v`` is the value of an individual at information field
+      *field*. If parameter ``ranges`` is specified, each range
+      defines a VSP. For example, ``ranges=[[1, 3], [2, 5]]`` defines
+      two VSPs with ``1 <= v < 3`` and ``2 <= 3 < 5``. Of course, only
+      one of the parameters *values*, *cutoff* and *ranges* should be
+      defined, and values in *cutoff* should be distinct, and in an
+      increasing order. A default set of names are given to each VSP
+      unless a new set of names is given by parameter *names*.
+
+
+   .. method:: InfoSplitter.name(vsp)
+
+      Return the name of a VSP *vsp*, which is ``field = value`` if
+      VSPs are defined by values in parameter *values*, or ``field <
+      value`` (the first VSP), ``v1 <= field < v2`` and ``field >= v``
+      (the last VSP) if VSPs are defined by cutoff values. A user-
+      specified name, if specified, will be returned instead.
+
+   .. method:: InfoSplitter.numVirtualSubPop()
+
+      Return the number of VSPs defined by this splitter, which is the
+      length parameter *values* or the length of *cutoff* plus one,
+      depending on which parameter is specified.

@@ -1,0 +1,35 @@
+
+class HomoMating
+----------------
+
+.. class:: HomoMating
+
+   A homogeneous mating scheme that uses a parent chooser to choose
+   parents from a prental generation, and an offspring generator to
+   generate offspring from chosen parents. It can be either used
+   directly, or within a heterogeneous mating scheme. In the latter
+   case, it can be applied to a (virtual) subpopulation.
+
+
+   .. method:: HomoMating(chooser, generator, subPopSize=[], subPops=ALL_AVAIL, weight=0)
+
+
+      Create a homogeneous mating scheme using a parent chooser
+      *chooser* and an offspring generator *generator*.
+
+      If this mating scheme is used directly in a simulator, it will
+      be responsible for creating an offspring population according to
+      parameter *subPopSize*. This parameter can be a list of
+      subpopulation sizes (or a number if there is only one
+      subpopulation) or a Python function which will be called at each
+      generation to determine the subpopulation sizes of the offspring
+      generation. Please refer to class :class:`MatingScheme` for
+      details about this parameter.
+
+      If this mating shcme is used within a heterogeneous mating
+      scheme. Parameters *subPops* and *weight* are used to determine
+      which (virtual) subpopulations this mating scheme will be
+      applied to, and how many offspring this mating scheme will
+      produce. Please refer to mating scheme :class:`HeteroMating` for
+      the use of these two parameters.
+

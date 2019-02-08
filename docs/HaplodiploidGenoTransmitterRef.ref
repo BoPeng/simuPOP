@@ -1,0 +1,25 @@
+
+class HaplodiploidGenoTransmitter
+---------------------------------
+
+.. class:: HaplodiploidGenoTransmitter
+
+   A genotype transmitter (during-mating operator) for haplodiploid
+   populations. The female parent is considered as diploid and the
+   male parent is considered as haploid (only the first homologous
+   copy is valid). If the offspring is ``FEMALE``, she will get a
+   random copy of two homologous chromosomes of her mother, and get
+   the only paternal copy from her father. If the offspring is
+   ``MALE``, he will only get a set of chromosomes from his mother.
+
+
+   .. method:: HaplodiploidGenoTransmitter(output="", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[])
+
+
+      Create a haplodiploid genotype transmitter (during-mating
+      operator) that transmit parental genotypes from parents to
+      offspring in a haplodiploid population. Parameters *subPops* and
+      *infoFields* are ignored. This operator also copies allelic
+      lineage when it is executed in a module with lineage allele
+      type.
+

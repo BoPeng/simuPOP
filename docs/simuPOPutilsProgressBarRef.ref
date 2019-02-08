@@ -1,0 +1,42 @@
+
+class ProgressBar
+-----------------
+
+.. class:: ProgressBar
+
+   The ``ProgressBar`` class defines a progress bar. This class will use a
+   text-based progress bar that outputs progressing dots (.) with intermediate
+   numbers (e.g. 5 for 50%) under a non-GUI mode (``gui=False``) or not displaying
+   any progress bar if ``gui='batch'``. In the GUI mode, a Tkinter or wxPython 
+   progress dialog will be used (``gui=Tkinter``  or ``gui=wxPython``). The default
+   mode is determined by the global gui mode of simuPOP
+   (see also :func:`simuOpt.setOptions`).
+   
+   This class is usually used as follows::
+   
+       progress = ProgressBar("Start simulation", 500)
+       for i in range(500):
+           # i+1 can be ignored if the progress bar is updated by 1 step
+           progress.update(i+1)   
+       # if you would like to make sure the done message is displayed.
+       progress.done()
+
+   .. method:: ProgressBar.ProgressBar(message, totalCount, progressChar='.', block=2, done=' Done.\n', gui=None)
+
+      Create a progress bar with ``message``, which will be the title of
+      a progress dialog or a message for textbased progress bar. Parameter
+      ``totalCount`` specifies total expected steps. If a text-based progress
+      bar is used, you could specified progress character and intervals at
+      which progresses will be displayed using parameters ``progressChar``
+      and ``block``. A ending message will also be displayed in text mode.
+
+   .. method:: ProgressBar.done()
+
+      Finish progressbar, print 'done' message if in text-mode.
+
+   .. method:: ProgressBar.update(count=None)
+
+      Update the progreebar with ``count`` steps done. The dialog or textbar
+      may not be updated if it is updated by full percent(s). If ``count`` is
+      ``None``, the progressbar increases by one step (not percent).
+

@@ -1,0 +1,36 @@
+
+class WeightedSampler
+---------------------
+
+.. class:: WeightedSampler
+
+   A random number generator that returns ``0``, ``1``, ..., ``k-1``
+   with probabilites that are proportional to their weights. For
+   example, a weighted sampler with weights ``4``, ``3``, ``2`` and
+   ``1`` will return numbers ``0``, ``1``, ``2`` and ``3`` with
+   probabilities ``0.4``, ``0.3``, ``0.2`` and ``0.1``, respectively.
+   If an additional parameter ``N`` is specified, the weighted sampler
+   will return exact proportions of numbers if ``N`` numbers are
+   returned. The version without additional parameter is similar to
+   the ``sample(prob, replace=FALSE)`` function of the R statistical
+   package.
+
+
+   .. method:: WeightedSampler(weights=[], N=0)
+
+
+      Creates a weighted sampler that returns ``0``, ``1``, ...
+      ``k-1`` when a list of ``k`` weights are specified (*weights*).
+      *weights* do not have to add up to 1. If a non-zero *N* is
+      specified, exact proportions of numbers will be returned in *N*
+      returned numbers.
+
+
+   .. method:: WeightedSampler.draw()
+
+      Returns a random number between ``0`` and ``k-1`` with
+      probabilities that are proportional to specified weights.
+
+   .. method:: WeightedSampler.drawSamples(n=1)
+
+      Returns a list of *n* random numbers

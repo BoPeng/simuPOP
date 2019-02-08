@@ -1,0 +1,93 @@
+
+class BaseSelector
+------------------
+
+.. class:: BaseSelector
+
+   This class is the base class to all selectors, namely operators
+   that perform natural selection. It defines a common interface for
+   all selectors.
+
+   A selector can be applied before mating or during mating. If a
+   selector is applied to one or more (virtual) subpopulations of a
+   parental population before mating, it sets individual fitness
+   values to all involved parents to an information field (default to
+   *fitness*). When a mating scheme that supports natural selection is
+   applied to the parental population, it will select parents with
+   probabilities that are proportional to individual fitness stored in
+   an information field (default to *fitness*).  Individual fitness is
+   considered **relative** fitness and can be any non-negative number.
+   This simple process has some implications that can lead to advanced
+   usages of natural selection in  simuPOP:
+
+   + It is up to the mating scheme how to handle individual fitness.
+     Some mating schemes do not support natural selection at all.
+
+   + A mating scheme performs natural selection according to fitness
+     values stored in an information field. It does not care how these
+     values are set. For example, fitness values can be inherited from
+     a parent using a tagging operator, or set directly using a Python
+     operator.
+
+   + A mating scheme can treat any information field as fitness field.
+     If an specified information field does not exist, or if all
+     individuals have the same fitness values (e.g. 0), the mating
+     scheme selects parents randomly.
+
+   + Multiple selectors can be applied to the same parental
+     generation. individual fitness is determined by the last fitness
+     value it is assigned.
+
+   + A selection operator can be applied to virtual subpopulations and
+     set fitness values only to part of the individuals.
+
+   + individuals with zero fitness in a subpopulation with anyone
+     having a positive fitness value will not be selected to produce
+     offspring. This can sometimes lead to unexpected behaviors. For
+     example, if you only assign fitness value to part of the
+     individuals in a subpopulation, the rest of them will be
+     effectively discarded. If you migrate individuals with valid
+     fitness values to a subpopulation with all individuals having
+     zero fitness, the migrants will be the only mating parents.
+
+   + It is possible to assign multiple fitness values to different
+     information fields so that different homogeneous mating schemes
+     can react to different fitness schemes when they are used in a
+     heterogeneous mating scheme.
+
+   + You can apply a selector to the offspring generation using the
+     *postOps* parameter of :meth:`Simulator.evolve`, these fitness
+     values will be used when the offspring generation becomes
+     parental generation in the next generation.
+
+   Alternatively, a selector can be used as a during mating operator.
+   In this case, it caculates fitness value for each offspring which
+   will be treated as **absolute** fitness, namely the probability for
+   each offspring to survive. This process uses the fact that an
+   individual will be discarded when any of the during mating
+   operators returns *False*. It is important to remember that:
+
+   + individual fitness needs to be between 0 and 1 in this case.
+
+   + Fitness values are not stored so the population does not need an
+     information field *fitness*.
+
+   + This method applies natural selection to offspring instead of
+     parents. These two implementation can be identical or different
+     depending on the mating scheme used.
+
+   + Seleting offspring is less efficient than the selecting parents,
+     especially when fitness values are low.
+
+   + Parameter *subPops* are applied to the offspring population and
+     is used to judge if an operator should be applied. It thus does
+     not make sense to apply a selector to a virtual subpopulation
+     with affected individuals.
+
+
+   .. method:: BaseSelector(output="", begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=ALL_AVAIL)
+
+
+      Create a base selector object. This operator should not be
+      created directly.
+

@@ -1,0 +1,41 @@
+
+class PyParentsChooser
+----------------------
+
+.. class:: PyParentsChooser
+
+   This parent chooser accepts a Python generator function that
+   repeatedly yields one or two parents, which can be references to
+   individual objects or indexes relative to each subpopulation. The
+   parent chooser calls the generator function with parental
+   population and a subpopulation index for each subpopulation and
+   retrieves parents repeatedly using the iterator interface of the
+   generator function.
+
+   This parent chooser does not support virtual subpopulation
+   directly. However, because virtual subpopulations are defined in
+   the passed parental population, it is easy to return parents from a
+   particular virtual subpopulation using virtual subpopulation
+   related functions.
+
+
+   .. method:: PyParentsChooser(generator)
+
+
+      Create a Python parent chooser using a Python generator function
+      *parentsGenerator*. This function should accept one or both of
+      parameters *pop* (the parental population) and *subPop* (index
+      of subpopulation) and return the reference or index (relative to
+      subpopulation) of a parent or a pair of parents repeatedly using
+      the iterator interface of the generator function.
+
+
+   .. method:: PyParentsChooser.chooseParents()
+
+      Return chosen parents from a population if the parent chooser
+      object is created with a population.
+
+   .. method:: PyParentsChooser.initialize(pop, subPop)
+
+      Initialize a parent chooser for subpopulation *subPop* of
+      *population* pop.

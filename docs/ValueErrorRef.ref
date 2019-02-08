@@ -1,0 +1,14 @@
+
+class ValueError
+----------------
+
+.. class:: ValueError
+
+   exception, thrown if value of range etc
+
+
+   .. method:: ValueError(msg)
+
+
+      FIXME: No document
+

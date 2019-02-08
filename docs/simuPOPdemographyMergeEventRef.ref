@@ -1,0 +1,18 @@
+
+class MergeEvent
+----------------
+
+.. class:: MergeEvent
+
+   A demographic event that merges one or more subpopulation to
+   a single one.
+
+   .. method:: MergeEvent.MergeEvent(name='', ops=[], output='', begin=0, end=-1, step=1, at=[], reps=True, subPops=ALL_AVAIL, infoFields=[])
+
+      A demographic event that merges subpopulations into a single subpopulation.
+      The merged subpopulation will have the name of the first merged subpopulation
+      unless a separate ``name`` is supported.
+
+   .. method:: MergeEvent.apply(pop)
+
+

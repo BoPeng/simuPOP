@@ -1,0 +1,28 @@
+
+class PyTagger
+--------------
+
+.. class:: PyTagger
+
+   A Python tagger takes some information fields from both parents,
+   pass them to a user provided Python function and set the offspring
+   individual fields with the return values.
+
+
+   .. method:: PyTagger(func=None, begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, output="", infoFields=[])
+
+
+      Create a hybrid tagger that provides an user provided function
+      *func* with values of specified information fields (determined
+      by parameter names of this function) of parents and assign
+      corresponding information fields of offspring with its return
+      value. If more than one parent are available, maternal values
+      are passed after paternal values. For example, if a function
+      ``func(A, B)`` is passed, this operator will send two tuples
+      with parental values of information fields ``'A'`` and ``'B'``
+      to this function and assign its return values to fields ``'A'``
+      and ``'B'`` of each offspring. The return value of this function
+      should be a list, although a single value will be accepted if
+      only one information field is specified. This operator ignores
+      parameters *stage*, *output* and *subPops*.
+

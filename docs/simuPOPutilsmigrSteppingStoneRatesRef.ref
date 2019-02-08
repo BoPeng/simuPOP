@@ -1,0 +1,28 @@
+
+Function migrSteppingStoneRates
+-------------------------------
+
+
+.. function:: migrSteppingStoneRates(r, n, circular=False)
+
+   migration rate matrix for circular stepping stone model (X=1-m)
+   
+   ::
+   
+              X   m/2               m/2
+              m/2 X   m/2           0
+              0   m/2 x   m/2 ......0
+              ...
+              m/2 0 ....       m/2  X
+   
+   or non-circular
+   
+   ::
+   
+              X   m/2               m/2
+              m/2 X   m/2           0
+              0   m/2 X   m/2 ......0
+              ...
+              ...              m   X
+   
+       This function returns [[1]] when there is only one subpopulation.
