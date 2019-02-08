@@ -15,7 +15,7 @@ import sys, os, time
 extensions = []
 #'sphinx.ext.refcounting', 'sphinx.ext.coverage',
 #              'sphinx.ext.doctest', 'sphinx.ext.pngmath']
-templates_path = ['tools']
+templates_path = ['static']
 
 # General substitutions.
 project = 'simuPOP'
