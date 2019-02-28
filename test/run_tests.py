@@ -61,11 +61,6 @@ def importTests():
     return tests
 
 if __name__ == '__main__':
-    try:
-        # python 3 does not have raw_input
-        input = raw_input
-    except NameError:
-        pass
     if True not in [arg in ['short', 'long', 'binary', 'mutant', 'lineage'] for arg in sys.argv]:
         for allele in ['binary', 'short', 'long', 'mutant', 'lineage']:
             for numThreads in [1, 4]:
