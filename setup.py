@@ -539,7 +539,7 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
         res['src'].append('build/%s/%s' % (modu, src))
     #
     # lib
-    res['libraries'] = []
+    res['libraries'] = ['boost_regex', 'boost_iostreams', 'boost_serialization']
     res['include_dirs'] = ['.', 'gsl'] + common_extra_include_dirs
     # define_macros (deep copy)
     res['define_macros'] = COMMON_MACROS + MACROS[modu]
