@@ -32,9 +32,6 @@ A standard simuPOP package has boost and needed SWIG-generated wrapper files so
 you should be able to run this script and install simuPOP using:
   > python setup.py install
 
-If your copy of simuPOP is checked out from the subversion server, you will
-need to download a supported version of boost (see variable boost_versions
-below) and uncompress it under the simuPOP source directory.
 
 """
 import os, sys, platform, shutil, glob, re, tempfile, subprocess
@@ -184,70 +181,6 @@ else:
 USE_ICC = False
 if distutils.sysconfig.get_config_var('CC') is not None:
     USE_ICC = 'icc' in distutils.sysconfig.get_config_var('CC')
-
-# simuPOP works with these boost versions. Newer versions will be used if these
-# versions are not available, and will most likely work just fine.
-boost_versions = ['1_35_0', '1_36_0', '1_37_0', '1_38_0', '1_39_0', '1_40_0',
-    '1_42_0', '1_43_0', '1_44_0', '1_45_0', '1_46_0', '1_46_1', '1_47_0',
-    '1_48_0', '1_49_0']
-invalid_boost_versions = ['1_41_0']
-
-included_version = [x for x in boost_versions if os.path.isdir('boost_' + x)]
-invalid_version = [x for x in invalid_boost_versions if os.path.isdir('boost_' + x)]
-unsupported_version = [x for x in glob.glob('boost_*') if os.path.isdir(x) \
-    and x[6:] not in invalid_version + included_version]
-
-boost_dir = ''
-if len(included_version) > 0:
-    boost_dir = 'boost_' + included_version[-1]  # use the latest version
-elif len(invalid_version) > 0:
-    print('This version of boost is known to cause problems to simuPOP: ' + ', '.join(invalid_version))
-
-if boost_dir == '' and len(unsupported_version) > 0:
-    print('This version of boost is not tested. It may or may not work: ' + ', '.join(unsupported_version))
-    boost_dir = unsupported_version[-1]  # use the latest version
-
-if boost_dir == '':
-    def downloadProgress(count, blockSize, totalSize):
-        perc = count * blockSize * 100 // totalSize
-        if perc > downloadProgress.counter:
-            sys.stdout.write('.' * (perc - downloadProgress.counter))
-            downloadProgress.counter = perc
-        sys.stdout.flush()
-    from urllib.request import urlretrieve
-    import tarfile
-    downloadProgress.counter = 0
-    try:
-        BOOST_URL = 'http://downloads.sourceforge.net/project/boost/boost/1.49.0/boost_1_49_0.tar.gz?r=&ts=1440446866&use_mirror=iweb'
-        sys.stdout.write('Downloading boost C++ library 1.49.0 ')
-        sys.stdout.flush()
-        if not os.path.isfile('boost_1_49_0.tar.gz'):
-            urlretrieve(BOOST_URL, 'boost_1_49_0.tar.gz', downloadProgress)
-        sys.stdout.write('\n')
-        # extract needed files
-        with tarfile.open('boost_1_49_0.tar.gz', 'r:gz') as tar:
-            files = [h for h in tar.getmembers() if h.name.startswith('boost_1_49_0/boost') \
-                or h.name.startswith('boost_1_49_0/libs/iostreams') \
-                or h.name.startswith('boost_1_49_0/libs/serialization') \
-                or h.name.startswith('boost_1_49_0/libs/regex') \
-                or h.name.startswith('boost_1_49_0/libs/detail') ]
-            sys.stdout.write('Extracting %d files\n' % len(files))
-            tar.extractall(members=files)
-        EMBEDED_BOOST = True
-        boost_dir = 'boost_1_49_0'
-    except Exception as e:
-        print(e)
-        print('The boost C++ library version 1.49.0 is not found under the current directory. Will try to use the system libraries.')
-        print('Cannot find or download an useful version of boost header files.')
-        print('Please download boost from http://www.boost.org and unpack it under the simuPOP directory')
-        sys.exit(1)
-elif len(included_version + unsupported_version) > 1:
-    print('Using boost version: %s' % boost_dir)
-
-boost_include_dir = boost_dir
-boost_serialization_dir = os.path.join(boost_dir, 'libs', 'serialization', 'src')
-boost_iostreams_dir = os.path.join(boost_dir, 'libs', 'iostreams', 'src')
-boost_regex_dir = os.path.join(boost_dir, 'libs', 'regex', 'src')
 
 ############################################################################
 #
@@ -432,9 +365,7 @@ LIB_FILES = [
     'gsl/cdf/gamma.c',
     'gsl/cdf/poisson.c',
     'gsl/error.c'
-] + [x for x in glob.glob(os.path.join(boost_serialization_dir, '*.cpp')) if 'xml' not in x and 'binary' not in x]\
-  + [x for x in glob.glob(os.path.join(boost_iostreams_dir, '*.cpp')) if 'bzip' not in x]\
-  + glob.glob(os.path.join(boost_regex_dir, '*.cpp'))
+]
 
 GSL_FILES = [
     'gsl/error.c',
@@ -609,7 +540,7 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     #
     # lib
     res['libraries'] = []
-    res['include_dirs'] = ['.', 'gsl', boost_include_dir] + common_extra_include_dirs
+    res['include_dirs'] = ['.', 'gsl'] + common_extra_include_dirs
     # define_macros (deep copy)
     res['define_macros'] = COMMON_MACROS + MACROS[modu]
     if 'op' in modu:
@@ -661,7 +592,7 @@ if __name__ == '__main__':
         c = new_compiler(verbose=1)
         # -w suppress all warnings caused by the use of boost libraries
         objects = c.compile(LIB_FILES,
-            include_dirs=['gsl', 'gsl/specfunc', 'build', '.', boost_include_dir] + common_extra_include_dirs,
+            include_dirs=['gsl', 'gsl/specfunc', 'build', '.'] + common_extra_include_dirs,
             output_dir='build',
             extra_preargs = common_extra_compile_args + NO_WARNING_ARG + SHLIB_ARG,
             macros = COMMON_MACROS + STD_MACROS
@@ -669,7 +600,7 @@ if __name__ == '__main__':
         c.create_static_lib(objects, "simuPOP_shstd", output_dir='build')
         #
         objects = c.compile(LIB_FILES,
-            include_dirs=['gsl', 'gsl/specfunc', 'build', '.', boost_include_dir] + common_extra_include_dirs,
+            include_dirs=['gsl', 'gsl/specfunc', 'build', '.'] + common_extra_include_dirs,
             output_dir='build',
             extra_preargs = common_extra_compile_args + NO_WARNING_ARG + SHLIB_ARG,
             macros = COMMON_MACROS + OPT_MACROS
