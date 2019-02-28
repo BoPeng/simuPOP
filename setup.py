@@ -26,7 +26,7 @@
 #
 
 """
-simuPOP installer: 
+simuPOP installer:
 
 A standard simuPOP package has boost and needed SWIG-generated wrapper files so
 you should be able to run this script and install simuPOP using:
@@ -141,6 +141,13 @@ def windows_compile_parallel(
 
     return objects
 
+def is_maverick():
+    try:
+        ver = [int(x) for x in platform.mac_ver()[0].split('.')]
+        return ver >= [10, 9, 0]
+    except:
+        return False
+
 
 if os.name == 'nt':
     VS10PATH =  os.environ.get('VS100COMNTOOLS')
@@ -169,8 +176,9 @@ else:
         print('Can not obtain version of gcc, and openMP is disable')
         USE_OPENMP = False
     # use parallel build
-    import distutils.ccompiler
-    distutils.ccompiler.CCompiler.compile = linux_compile_parallel
+    if not is_maverick():
+        import distutils.ccompiler
+        distutils.ccompiler.CCompiler.compile = linux_compile_parallel
 
 
 USE_ICC = False
@@ -202,7 +210,7 @@ if boost_dir == '' and len(unsupported_version) > 0:
 if boost_dir == '':
     def downloadProgress(count, blockSize, totalSize):
         perc = count * blockSize * 100 // totalSize
-        if perc > downloadProgress.counter: 
+        if perc > downloadProgress.counter:
             sys.stdout.write('.' * (perc - downloadProgress.counter))
             downloadProgress.counter = perc
         sys.stdout.flush()
@@ -279,7 +287,7 @@ def replaceIntHeader(file):
     input.close()
     # replace file with temp file
     shutil.copyfile(name, file)
-    os.remove(name)    
+    os.remove(name)
     # restore old file modification time
     try:
         os.utime(file, (-1, time))
@@ -338,8 +346,8 @@ SOURCE_FILES = [
 ]
 
 # since it is troublesome to link to external gsl library,
-# I embed some GSL files with simuPOP. 
-LIB_FILES = [ 
+# I embed some GSL files with simuPOP.
+LIB_FILES = [
     'gsl/sys/infnan.c',
     'gsl/sys/coerce.c',
     'gsl/sys/fdiv.c',
@@ -423,13 +431,13 @@ LIB_FILES = [
     'gsl/cdf/chisqinv.c',
     'gsl/cdf/gamma.c',
     'gsl/cdf/poisson.c',
-    'gsl/error.c' 
+    'gsl/error.c'
 ] + [x for x in glob.glob(os.path.join(boost_serialization_dir, '*.cpp')) if 'xml' not in x and 'binary' not in x]\
   + [x for x in glob.glob(os.path.join(boost_iostreams_dir, '*.cpp')) if 'bzip' not in x]\
   + glob.glob(os.path.join(boost_regex_dir, '*.cpp'))
 
 GSL_FILES = [
-    'gsl/error.c', 
+    'gsl/error.c',
     'gsl/sys/infnan.c',
     'gsl/sys/coerce.c',
     'gsl/sys/fdiv.c',
@@ -479,12 +487,12 @@ SWIG_RUNTIME_FLAGS = '-python -external-runtime'
 SWIG_OUTDIR = 'src'
 if not os.path.isdir('build'):
     os.mkdir('build')
-                
+
 COMMON_MACROS = [
     ('BOOST_UBLAS_NDEBUG', None),
     ('_HAS_ITERATOR_DEBUGGING', 0),
     ]
- 
+
 if not USE_ICC and USE_OPENMP:
     COMMON_MACROS.append(('_GLIBCXX_PARALLEL', None))
 
@@ -510,7 +518,7 @@ MACROS = {
     'lin':    [('SIMUPOP_MODULE', 'simuPOP_lin'),  ('LINEAGE', None)] + STD_MACROS,
     'linop':  [('SIMUPOP_MODULE', 'simuPOP_linop'),('LINEAGE', None)] + OPT_MACROS
 }
- 
+
 WRAP_INFO = {
     'std':    ['src/simuPOP_std_wrap.cpp', 'src/simuPOP_std.i', ''],
     'op':     ['src/simuPOP_op_wrap.cpp', 'src/simuPOP_op.i', '-DOPTIMIZED'],
@@ -526,32 +534,25 @@ WRAP_INFO = {
 
 DESCRIPTION = """
 simuPOP is a forward-time population genetics simulation environment.
-The core of simuPOP is a scripting language (Python) that provides 
-a large number of objects and functions to manipulate populations, 
-and a mechanism to evolve populations forward in time. Using this 
-R/Splus-like environment, users can create, manipulate and evolve 
-populations interactively, or write a script and run it as a batch 
+The core of simuPOP is a scripting language (Python) that provides
+a large number of objects and functions to manipulate populations,
+and a mechanism to evolve populations forward in time. Using this
+R/Splus-like environment, users can create, manipulate and evolve
+populations interactively, or write a script and run it as a batch
 file. Owing to its flexible and extensible design, simuPOP can simulate
-large and complex evolutionary processes with ease. At a more 
+large and complex evolutionary processes with ease. At a more
 user-friendly level, simuPOP provides an increasing number of built-in
-scripts that perform simulations ranging from implementation of basic 
-population genetics models to generating datasets under complex 
+scripts that perform simulations ranging from implementation of basic
+population genetics models to generating datasets under complex
 evolutionary scenarios.
 """
-            
-def is_maverick():
-    try:
-        ver = [int(x) for x in platform.mac_ver()[0].split('.')]
-        return ver >= [10, 9, 0]
-    except:
-        return False
-        
+
 #
 # starting from mac osx 10.9 (Maverick), the clang compiler uses libc++ as its default
-# standard c++ library. This caused many problems, the most significant one is that 
-# the iterator class of vector<bool> hides its pointer and offset so that I cannot 
+# standard c++ library. This caused many problems, the most significant one is that
+# the iterator class of vector<bool> hides its pointer and offset so that I cannot
 # access the underlying array directly. This makes it impossible to implement function
-# copyGenotype for binary modules. Fortunately, the compiler provides options to 
+# copyGenotype for binary modules. Fortunately, the compiler provides options to
 # continue to use libstdc++. Hopefully this quick fix can work a little bit longer.
 #
 
@@ -559,7 +560,7 @@ common_library_dirs = ['build']
 common_extra_link_args = []
 common_extra_include_dirs = []
 
-if os.name == 'nt':  
+if os.name == 'nt':
     #common_library_dirs.append('development/win32')
     if 'LOCALAPPDATA' in os.environ:
         conda_lib = os.path.join(os.environ['LOCALAPPDATA'], 'Continuum', 'Anaconda3', 'Library')
@@ -570,12 +571,12 @@ if os.name == 'nt':
     # /EHsc is for VC exception handling,
     # /wd4819 disables warning messages for non-unicode character in boost/uitlity/enable_if.hpp
     # /wd4996 disables warning messages for unsafe function call in boost/serialization
-    # /wd4068 disables warning messages for unknown pragma set by gcc 
+    # /wd4068 disables warning messages for unknown pragma set by gcc
     common_extra_compile_args = ['/O2', '/GR', '/EHsc', '/wd4819', '/wd4996', '/wd4068']
     # Enable openMP if USE_OPENMP = True
     if USE_OPENMP:
         if USE_ICC:
-            common_extra_compile_args.append('/Qopenmp')   
+            common_extra_compile_args.append('/Qopenmp')
         else:
             common_extra_compile_args.append('/openmp')
 else:
@@ -655,7 +656,7 @@ if __name__ == '__main__':
         SHLIB_ARG = ['-fPIC']
 
     try:
-        # try to get 
+        # try to get
         print('Building static libraries')
         c = new_compiler(verbose=1)
         # -w suppress all warnings caused by the use of boost libraries
@@ -684,7 +685,7 @@ if __name__ == '__main__':
     # or if the wrap files are older than any of the source files.
     if not os.path.isfile('src/gsl_wrap.c') or (not os.path.isfile('src/swigpyrun.h')) or \
             False in [os.path.isfile(WRAP_INFO[x][0]) for x in MODULES]:
-        # generate header file 
+        # generate header file
         print("Generating external runtime header file src/swigpyrun.h...")
         os.system('swig {} src/swigpyrun.h'.format(SWIG_RUNTIME_FLAGS))
         # try the first option set with the first library
@@ -755,7 +756,7 @@ if __name__ == '__main__':
         maintainer_email = "bpeng@mdanderson.org",
         url = "http://simupop.sourceforge.net",
         description = "Forward-time population genetics simulation environment",
-        long_description = DESCRIPTION, 
+        long_description = DESCRIPTION,
         download_url = 'http://sourceforge.net/projects/simupop/files/simupop/',
         classifiers = [
             'Development Status :: 5 - Production/Stable',
@@ -771,14 +772,14 @@ if __name__ == '__main__':
         ],
         platforms = ['all'],
         #
-        package_dir = {'simuPOP': 'src'}, 
+        package_dir = {'simuPOP': 'src'},
         py_modules = [
-            'simuOpt', 
+            'simuOpt',
             'simuPOP.__init__',
             'simuPOP.gsl',
-            'simuPOP.utils', 
-            'simuPOP.demography', 
-            'simuPOP.sampling', 
+            'simuPOP.utils',
+            'simuPOP.demography',
+            'simuPOP.sampling',
         ] + ['simuPOP.simuPOP_%s' % x for x in MODULES],
         ext_modules = EXT_MODULES,
         cmdclass = {'build_py': build_py},
