@@ -1848,12 +1848,26 @@ bool HeteroMating::mate(Population &pop, Population &scratch)
 
 		// weight.
 		double overall_pos = std::accumulate(w_pos.begin(), w_pos.end(), 0.);
+
+		// if it happens to be the case that positive weight happens at empty population
+		// we need to distribute the weight to other populations.
+		if (!all_zero && overall_pos == 0) {
+			for (size_t i = 0; i < m.size(); ++i)
+			{
+				// if there is no negative weight, use population size as weight
+				if (w_neg[i] == 0)
+					w_pos[i] = static_cast<double>(parentSize[i]);
+			}
+		}
+		// re-calculate overall pos
+		overall_pos = std::accumulate(w_pos.begin(), w_pos.end(), 0.);
 		double overall_neg = std::accumulate(w_neg.begin(), w_neg.end(), 0.);
 		(void)overall_neg; // silent warning about unused variable.
-		DBG_FAILIF(fcmp_eq(overall_pos, 0.) && fcmp_eq(overall_neg, 0.), ValueError,
-				   "Overall weight is zero");
 		//
 		size_t all = scratch.subPopSize(sp);
+
+		DBG_FAILIF(all > 0 && fcmp_eq(overall_pos, 0.) && fcmp_eq(overall_neg, 0.), ValueError,
+				   "No valid parents to produce an non-empty offspring population.");
 		// first count negative ones
 		for (size_t i = 0; i < m.size(); ++i)
 		{
