@@ -405,6 +405,24 @@ class TestMatingSchemes(unittest.TestCase):
         self.assertEqual(marks.count(1.), 0)
         self.assertEqual(marks.count(2.), 0)
 
+    def testWeightByWithEmptySubpop(self):
+        '''Test weightBy option when there are empty subpopulations'''
+        pop = Population(size=[1000, 0], loci=2, infoFields='mark')
+        pop.setVirtualSplitter(RangeSplitter([[0, 500], [200, 1000]]))
+        # weighting scheme of -0.5, 2, 3
+        pop.evolve(
+            initOps=InitSex(sex=[MALE, FEMALE]),
+            matingScheme=HeteroMating([
+                RandomMating(weight=-0.5,
+                    ops=[InfoExec('mark=0'), MendelianGenoTransmitter()]),
+                RandomMating(subPops=[(ALL_AVAIL, 0)], weight=1,
+                    ops=[InfoExec('mark=1'), MendelianGenoTransmitter()]),
+                RandomMating(subPops=[(ALL_AVAIL, 1)], weight=2,
+                    ops=[InfoExec('mark=2'), MendelianGenoTransmitter()])
+            ], weightBy=MALE_ONLY),
+            gen = 1
+        )
+
     def testPolygamousMating(self):
         'Testing polygamous mating scheme'
         pop = Population(size=[200], loci=[3,5], infoFields=['father_idx', 'mother_idx'])
