@@ -196,9 +196,13 @@ except ImportError:
 
 
 def simuPOP_version():
-    import simuPOP_version
-    SIMUPOP_VER = simuPOP_version.SIMUPOP_VER
-    SIMUPOP_REV = simuPOP_version.SIMUPOP_REV
+    # obtain version of simuPOP
+    with open('src/_version.py') as version:
+        for line in version:
+            if line.startswith('__version__'):
+                SIMUPOP_VER = eval(line.split('=')[1])
+            elif line.startswith('__revision__'):
+                SIMUPOP_REV = eval(line.split('=')[1])
     return SIMUPOP_VER, SIMUPOP_REV
 
 

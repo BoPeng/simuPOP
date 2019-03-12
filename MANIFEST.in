@@ -7,7 +7,6 @@ include ChangeLog
 include COPYING
 include TODO
 include AUTHORS
-include simuPOP_version.py
 include MANIFEST.in 
 include setup.py
 
@@ -71,6 +70,7 @@ include src/simuPOP_mu_wrap.cpp
 include src/simuPOP_muop_wrap.cpp
 include src/simuPOP_lin_wrap.cpp
 include src/simuPOP_linop_wrap.cpp
+include src/_version.py
 include src/simuPOP_std.py
 include src/simuPOP_op.py 
 include src/simuPOP_la.py
