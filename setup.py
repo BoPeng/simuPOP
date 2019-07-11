@@ -437,7 +437,7 @@ LIB_FILES = [
     'gsl/cdf/poisson.c',
     'gsl/error.c'
 ] + [x for x in glob.glob(os.path.join(boost_serialization_dir, '*.cpp')) if 'xml' not in x and 'binary' not in x]\
-  + [x for x in glob.glob(os.path.join(boost_iostreams_dir, '*.cpp')) if 'bzip' not in x and 'zstd' not in x]\
+  + [x for x in glob.glob(os.path.join(boost_iostreams_dir, '*.cpp')) if 'bzip' not in x and 'zstd' not in x and 'lzma' not in x]\
   + glob.glob(os.path.join(boost_regex_dir, '*.cpp'))
 
 GSL_FILES = [
@@ -498,7 +498,8 @@ COMMON_MACROS = [
     ('BOOST_ALL_NO_LIB', None),
     ('NO_ZLIB', 0),
     ('NO_BZIP', 1),
-    ('NO_ZSTD', 1)
+    ('NO_ZSTD', 1),
+    ('NO_LZMA', 1)
     ]
 
 if not USE_ICC and USE_OPENMP:
