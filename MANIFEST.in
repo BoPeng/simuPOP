@@ -290,43 +290,43 @@ include doc/refManual.pdf
 include development/win32/stdint.h
 recursive-include development/win32/zlib-1.2.3 *.h *.c
 
-# bundle boost 1.49.0
-recursive-include boost_1_49_0/boost *.hpp *.ipp
-recursive-include boost_1_49_0/libs/iostreams/src *.cpp
-recursive-include boost_1_49_0/libs/serialization/src *.cpp *.ipp
-recursive-include boost_1_49_0/libs/regex/src *.cpp *.hpp
-recursive-include boost_1_49_0/libs/detail *.cpp
-prune boost_1_49_0/boost/accumulators
-prune boost_1_49_0/boost/algorithm
-prune boost_1_49_0/boost/asio
-prune boost_1_49_0/boost/assign
-prune boost_1_49_0/boost/bimap
-prune boost_1_49_0/boost/chrono
-prune boost_1_49_0/boost/circular_buffer
-prune boost_1_49_0/boost/date_time
-prune boost_1_49_0/boost/flyweight
-prune boost_1_49_0/boost/function_types
-prune boost_1_49_0/boost/fusion
-prune boost_1_49_0/boost/geometry
-prune boost_1_49_0/boost/gil
-prune boost_1_49_0/boost/graph
-prune boost_1_49_0/boost/icl
-prune boost_1_49_0/boost/interprocess
-prune boost_1_49_0/boost/intrusive
-prune boost_1_49_0/boost/mpi
-prune boost_1_49_0/boost/msm
-prune boost_1_49_0/boost/phoenix
-prune boost_1_49_0/boost/polygon
-prune boost_1_49_0/boost/property_tree
-prune boost_1_49_0/boost/proto
-prune boost_1_49_0/boost/ptr_container
-prune boost_1_49_0/boost/python
-prune boost_1_49_0/boost/random
-prune boost_1_49_0/boost/signals2
-prune boost_1_49_0/boost/spirit
-prune boost_1_49_0/boost/test
-prune boost_1_49_0/boost/thread
-prune boost_1_49_0/boost/units
-prune boost_1_49_0/boost/variant
-prune boost_1_49_0/boost/wave
-prune boost_1_49_0/boost/xpressive
+# bundle boost 1.70.0
+recursive-include boost_1_70_0/boost *.hpp *.ipp
+recursive-include boost_1_70_0/libs/iostreams/src *.cpp
+recursive-include boost_1_70_0/libs/serialization/src *.cpp *.ipp
+recursive-include boost_1_70_0/libs/regex/src *.cpp *.hpp
+recursive-include boost_1_70_0/libs/detail *.cpp
+prune boost_1_70_0/boost/accumulators
+prune boost_1_70_0/boost/algorithm
+prune boost_1_70_0/boost/asio
+prune boost_1_70_0/boost/assign
+prune boost_1_70_0/boost/bimap
+prune boost_1_70_0/boost/chrono
+prune boost_1_70_0/boost/circular_buffer
+prune boost_1_70_0/boost/date_time
+prune boost_1_70_0/boost/flyweight
+prune boost_1_70_0/boost/function_types
+prune boost_1_70_0/boost/fusion
+prune boost_1_70_0/boost/geometry
+prune boost_1_70_0/boost/gil
+prune boost_1_70_0/boost/graph
+prune boost_1_70_0/boost/icl
+prune boost_1_70_0/boost/interprocess
+prune boost_1_70_0/boost/intrusive
+prune boost_1_70_0/boost/mpi
+prune boost_1_70_0/boost/msm
+prune boost_1_70_0/boost/phoenix
+prune boost_1_70_0/boost/polygon
+prune boost_1_70_0/boost/property_tree
+prune boost_1_70_0/boost/proto
+prune boost_1_70_0/boost/ptr_container
+prune boost_1_70_0/boost/python
+prune boost_1_70_0/boost/random
+prune boost_1_70_0/boost/signals2
+prune boost_1_70_0/boost/spirit
+prune boost_1_70_0/boost/test
+prune boost_1_70_0/boost/thread
+prune boost_1_70_0/boost/units
+prune boost_1_70_0/boost/variant
+prune boost_1_70_0/boost/wave
+prune boost_1_70_0/boost/xpressive
