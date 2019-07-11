@@ -102,8 +102,8 @@ using std::ofstream;
 #  include <windows.h>
 #endif
 
-#include "boost/pending/lowest_bit.hpp"
-using boost::lowest_bit;
+#include "boost/dynamic_bitset/detail/lowest_bit.hpp"
+using boost::detail::lowest_bit;
 
 
 using boost::regex;

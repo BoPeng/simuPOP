@@ -64,7 +64,7 @@
 #include <boost/iostreams/device/file.hpp>
 
 #include "boost/lexical_cast.hpp"
-#include "boost/pending/lowest_bit.hpp"
+#include "boost/dynamic_bitset/detail/lowest_bit.hpp"
 
 #include "boost/regex.hpp"
 

@@ -189,7 +189,7 @@ if distutils.sysconfig.get_config_var('CC') is not None:
 # versions are not available, and will most likely work just fine.
 boost_versions = ['1_35_0', '1_36_0', '1_37_0', '1_38_0', '1_39_0', '1_40_0',
     '1_42_0', '1_43_0', '1_44_0', '1_45_0', '1_46_0', '1_46_1', '1_47_0',
-    '1_48_0', '1_49_0']
+    '1_48_0', '1_70_0']
 invalid_boost_versions = ['1_41_0']
 
 included_version = [x for x in boost_versions if os.path.isdir('boost_' + x)]
@@ -218,23 +218,23 @@ if boost_dir == '':
     import tarfile
     downloadProgress.counter = 0
     try:
-        BOOST_URL = 'http://downloads.sourceforge.net/project/boost/boost/1.49.0/boost_1_49_0.tar.gz?r=&ts=1440446866&use_mirror=iweb'
-        sys.stdout.write('Downloading boost C++ library 1.49.0 ')
+        BOOST_URL = 'http://downloads.sourceforge.net/project/boost/boost/1.70.0/boost_1_70_0.tar.gz?r=&ts=1440446866&use_mirror=iweb'
+        sys.stdout.write('Downloading boost C++ library 1.70.0 ')
         sys.stdout.flush()
-        if not os.path.isfile('boost_1_49_0.tar.gz'):
-            urlretrieve(BOOST_URL, 'boost_1_49_0.tar.gz', downloadProgress)
+        if not os.path.isfile('boost_1_70_0.tar.gz'):
+            urlretrieve(BOOST_URL, 'boost_1_70_0.tar.gz', downloadProgress)
         sys.stdout.write('\n')
         # extract needed files
-        with tarfile.open('boost_1_49_0.tar.gz', 'r:gz') as tar:
-            files = [h for h in tar.getmembers() if h.name.startswith('boost_1_49_0/boost') \
-                or h.name.startswith('boost_1_49_0/libs/iostreams') \
-                or h.name.startswith('boost_1_49_0/libs/serialization') \
-                or h.name.startswith('boost_1_49_0/libs/regex') \
-                or h.name.startswith('boost_1_49_0/libs/detail') ]
+        with tarfile.open('boost_1_70_0.tar.gz', 'r:gz') as tar:
+            files = [h for h in tar.getmembers() if h.name.startswith('boost_1_70_0/boost') \
+                or h.name.startswith('boost_1_70_0/libs/iostreams') \
+                or h.name.startswith('boost_1_70_0/libs/serialization') \
+                or h.name.startswith('boost_1_70_0/libs/regex') \
+                or h.name.startswith('boost_1_70_0/libs/detail') ]
             sys.stdout.write('Extracting %d files\n' % len(files))
             tar.extractall(members=files)
         EMBEDED_BOOST = True
-        boost_dir = 'boost_1_49_0'
+        boost_dir = 'boost_1_70_0'
     except Exception as e:
         print(e)
         print('The boost C++ library version 1.49.0 is not found under the current directory. Will try to use the system libraries.')
@@ -437,7 +437,7 @@ LIB_FILES = [
     'gsl/cdf/poisson.c',
     'gsl/error.c'
 ] + [x for x in glob.glob(os.path.join(boost_serialization_dir, '*.cpp')) if 'xml' not in x and 'binary' not in x]\
-  + [x for x in glob.glob(os.path.join(boost_iostreams_dir, '*.cpp')) if 'bzip' not in x]\
+  + [x for x in glob.glob(os.path.join(boost_iostreams_dir, '*.cpp')) if 'bzip' not in x and 'zstd' not in x]\
   + glob.glob(os.path.join(boost_regex_dir, '*.cpp'))
 
 GSL_FILES = [
@@ -495,17 +495,15 @@ if not os.path.isdir('build'):
 COMMON_MACROS = [
     ('BOOST_UBLAS_NDEBUG', None),
     ('_HAS_ITERATOR_DEBUGGING', 0),
+    ('BOOST_ALL_NO_LIB', None),
+    ('NO_ZLIB', 0),
+    ('NO_BZIP', 1),
+    ('NO_ZSTD', 1)
     ]
 
 if not USE_ICC and USE_OPENMP:
     COMMON_MACROS.append(('_GLIBCXX_PARALLEL', None))
 
-if os.name == 'nt':
-    COMMON_MACROS.extend([('BOOST_ALL_NO_LIB', None),
-        ('NO_ZLIB', 0), ('NO_BZIP' , 1),
-        # this one disables a lot of warnings about VC Checked iterators.
-        #('_SCL_SECURE_NO_WARNINGS', None)
-    ])
 
 STD_MACROS = [('_SECURE_SCL', 1)]
 OPT_MACROS = [('NDEBUG', None), ('_SECURE_SCL', 0), ('OPTIMIZED', None)]
@@ -589,8 +587,8 @@ else:
         common_library_dirs.append(os.environ['CONDA_PREFIX'] + 'lib')
     common_extra_compile_args = ['-O3', '-Wall', '-Wno-unknown-pragmas', '-Wno-unused-parameter']
     if is_maverick():
-        common_extra_link_args.append('-stdlib=libstdc++')
-        common_extra_include_dirs.append('/usr/include/c++/4.2.1')
+        #common_extra_link_args.append('-stdlib=libstdc++')
+        #common_extra_include_dirs.append('/usr/include/c++/4.2.1')
         common_extra_compile_args.append('-Wno-error=unused-command-line-argument')
     if not USE_ICC:   # for gcc, turn on extra warning message
         common_extra_compile_args.append('-Wextra')
