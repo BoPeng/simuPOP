@@ -291,7 +291,7 @@ include development/win32/stdint.h
 recursive-include development/win32/zlib-1.2.3 *.h *.c
 
 # bundle boost 1.70.0
-recursive-include boost_1_70_0/boost *.hpp *.ipp
+recursive-include boost_1_70_0/boost *.hpp *.ipp *.h
 recursive-include boost_1_70_0/libs/iostreams/src *.cpp
 recursive-include boost_1_70_0/libs/serialization/src *.cpp *.ipp
 recursive-include boost_1_70_0/libs/regex/src *.cpp *.hpp
