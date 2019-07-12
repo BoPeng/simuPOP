@@ -603,37 +603,39 @@ else:
 # TR1_SUPPORT = 0, use <nap>
 # TR1_SUPPORT = 1, use <unordered_map>
 # TR1_SUPPORT = 2, use <tr1/unordered_map>
+if any(x.startswith('bdist') or x == 'install' for x in sys.argv):
+    from distutils.core import Distribution
+    from distutils.command.config import config
 
-from distutils.core import Distribution
-from distutils.command.config import config
+    c = config(Distribution({'negative_opt': {'quiet': True}}))
+    print('Testing the availability of unordered_map')
+    if c.try_compile(
+        '/* need something */ ',
+        ['unordered_map'],
+        include_dirs=common_extra_include_dirs,
+        lang='c++'):
+        COMMON_MACROS.append(('TR1_SUPPORT', 1))
+    elif c.try_compile(
+        '/* need something */',
+        ['tr1/unordered_map'],
+        include_dirs=common_extra_include_dirs,
+        lang='c++'):
+        COMMON_MACROS.append(('TR1_SUPPORT', 2))
+    else:
+        COMMON_MACROS.append(('TR1_SUPPORT', 0))
 
-c = config(Distribution({'negative_opt': {'quiet': True}}))
-print('Testing the availability of unordered_map')
-if c.try_compile(
-    '/* need something */ ',
-    ['unordered_map'],
-    include_dirs=common_extra_include_dirs,
-    lang='c++'):
-    COMMON_MACROS.append(('TR1_SUPPORT', 1))
-elif c.try_compile(
-    '/* need something */',
-    ['tr1/unordered_map'],
-    include_dirs=common_extra_include_dirs,
-    lang='c++'):
-    COMMON_MACROS.append(('TR1_SUPPORT', 2))
+    print('Testing support for binary iterator')
+    support_binary_modules = os.name == 'nt' or c.try_compile('''
+    #include <vector>
+    #include <iostream>
+    using namespace std;
+    int main () {
+    cout << _S_word_bit;
+    }'''
+    , [],
+        lang='c++')
 else:
-    COMMON_MACROS.append(('TR1_SUPPORT', 0))
-
-print('Testing support for binary iterator')
-support_binary_modules = os.name == 'nt' or c.try_compile('''
-#include <vector>
-#include <iostream>
-using namespace std;
-int main () {
-  cout << _S_word_bit;
-}'''
-, [],
-    lang='c++')
+    support_binary_modules = True
 
 if not USE_ICC and USE_OPENMP:
     COMMON_MACROS.append(('_GLIBCXX_PARALLEL', None))
@@ -702,28 +704,29 @@ if __name__ == '__main__':
         NO_WARNING_ARG = ['-w']
         SHLIB_ARG = ['-fPIC']
 
-    try:
-        # try to get
-        print('Building static libraries')
-        c = new_compiler(verbose=1)
-        # -w suppress all warnings caused by the use of boost libraries
-        objects = c.compile(LIB_FILES,
-            include_dirs=['gsl', 'gsl/specfunc', 'build', '.', boost_include_dir] + common_extra_include_dirs,
-            output_dir='build',
-            extra_preargs = common_extra_compile_args + NO_WARNING_ARG + SHLIB_ARG,
-            macros = COMMON_MACROS + STD_MACROS
-        )
-        c.create_static_lib(objects, "simuPOP_shstd", output_dir='build')
-        #
-        objects = c.compile(LIB_FILES,
-            include_dirs=['gsl', 'gsl/specfunc', 'build', '.', boost_include_dir] + common_extra_include_dirs,
-            output_dir='build',
-            extra_preargs = common_extra_compile_args + NO_WARNING_ARG + SHLIB_ARG,
-            macros = COMMON_MACROS + OPT_MACROS
-        )
-        c.create_static_lib(objects, "simuPOP_shop", output_dir='build')
-    except Exception as e:
-        sys.exit("Failed to build a shared supporting library: {}".format(e))
+    if any(x.startswith('bdist') or x == 'install' for x in sys.argv):
+        try:
+            # try to get
+            print('Building static libraries')
+            c = new_compiler(verbose=1)
+            # -w suppress all warnings caused by the use of boost libraries
+            objects = c.compile(LIB_FILES,
+                include_dirs=['gsl', 'gsl/specfunc', 'build', '.', boost_include_dir] + common_extra_include_dirs,
+                output_dir='build',
+                extra_preargs = common_extra_compile_args + NO_WARNING_ARG + SHLIB_ARG,
+                macros = COMMON_MACROS + STD_MACROS
+            )
+            c.create_static_lib(objects, "simuPOP_shstd", output_dir='build')
+            #
+            objects = c.compile(LIB_FILES,
+                include_dirs=['gsl', 'gsl/specfunc', 'build', '.', boost_include_dir] + common_extra_include_dirs,
+                output_dir='build',
+                extra_preargs = common_extra_compile_args + NO_WARNING_ARG + SHLIB_ARG,
+                macros = COMMON_MACROS + OPT_MACROS
+            )
+            c.create_static_lib(objects, "simuPOP_shop", output_dir='build')
+        except Exception as e:
+            sys.exit("Failed to build a shared supporting library: {}".format(e))
 
     #
     # Generate Wrapping files
