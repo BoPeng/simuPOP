@@ -606,7 +606,6 @@ else:
 
 from distutils.core import Distribution
 from distutils.command.config import config
-from contextlib import redirect_stderr, redirect_stdout
 
 c = config(Distribution({'negative_opt': {'quiet': True}}))
 print('Testing the availability of unordered_map')
@@ -626,10 +625,14 @@ else:
     COMMON_MACROS.append(('TR1_SUPPORT', 0))
 
 print('Testing support for binary iterator')
-has_binary_modules = c.try_compile(
-    '''
+support_binary_modules = os.name == 'nt' or c.try_compile('''
+#include <vector>
+#include <iostream>
 using namespace std;
-std::_S_word_bit;''', [],
+int main () {
+  cout << _S_word_bit;
+}'''
+, [],
     lang='c++')
 
 if not USE_ICC and USE_OPENMP:
@@ -679,9 +682,13 @@ if __name__ == '__main__':
     # create source file for each module
     if 'TRAVIS' in os.environ:
         # only build and test half of the modules to save time
-        MODULES = ['std', 'la', 'ba', 'mu', 'lin']
+        MODULES = ['std', 'la', 'mu', 'lin']
+        if support_binary_modules:
+            MODULES.append('ba')
     else:
-        MODULES = ['std', 'op', 'la', 'laop', 'ba', 'baop', 'mu', 'muop', 'lin', 'linop']
+        MODULES = ['std', 'op', 'la', 'laop', 'mu', 'muop', 'lin', 'linop']
+        if support_binary_modules:
+            MODULES.extend(['ba', 'baop'])
     COMMON_MACROS.extend([
         ('SIMUPOP_VER', SIMUPOP_VER),
         ('SIMUPOP_REV', SIMUPOP_REV)
