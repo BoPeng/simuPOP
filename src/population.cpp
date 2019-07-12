@@ -2969,13 +2969,8 @@ void Population::recodeAlleles(const uintListFunc & newAlleles, const lociList &
 	// unordered map does not appear to work here, perhaps std::pair<Allele, size_t>
 	// is not hashable.
 	//
-	//#if TR1_SUPPORT == 0
 	typedef std::map<Allele, Allele> AlleleMap;
 	typedef std::map<std::pair<Allele, size_t>, Allele> AlleleLocusMap;
-	//#else
-	//typedef std::tr1::unordered_map<Allele, Allele> AlleleMap;
-	//typedef std::tr1::unordered_map<std::pair<Allele, size_t>, Allele> AlleleLocusMap;
-	//#endif
 
 	AlleleMap alleleMap;
 	AlleleLocusMap alleleLocusMap;

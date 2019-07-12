@@ -1362,6 +1362,8 @@ Pedigree loadPedigree(const string & file, const string & idField, const string 
 	// individual and their parents
 #if TR1_SUPPORT == 0
 	typedef std::map<size_t, IndInfo *> IdMap;
+#elif TR1_SUPPORT == 1
+	typedef std::unordered_map<size_t, IndInfo *> IdMap;
 #else
 	typedef std::tr1::unordered_map<size_t, IndInfo *> IdMap;
 #endif
