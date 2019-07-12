@@ -55,12 +55,6 @@ const size_t NOT_FOUND = -1;
 #  define WORDTYPE unsigned
 #  define BITPTR(ref) ref._Myptr
 #  define BITOFF(ref) ref._Myoff
-#  if _MSC_VER >= 1400
-//   unordered_map in ''
-#    define TR1_SUPPORT 1
-#  else
-#    define TR1_SUPPORT 0
-#  endif
 #else
 #  define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 #  if GCC_VERSION > 30400
@@ -68,17 +62,6 @@ const size_t NOT_FOUND = -1;
 #  else
 // previous version uses _M_word_bit
 #    define WORDBIT std::_M_word_bit
-#  endif
-#  if GCC_VERSION > 40000
-//   unordered_map in 'tr1/'
-#    if defined(__INTEL_COMPILER)
-//     intel c++ does not yet support tr1 because it cannot handle gcc tr1 headers such as type_traits
-#      define TR1_SUPPORT 0
-#    else
-#      define TR1_SUPPORT 2
-#    endif
-#  else
-#    define TR1_SUPPORT 0
 #  endif
 #  define WORDTYPE std::_Bit_type
 #  define BITPTR(ref) ref._M_p

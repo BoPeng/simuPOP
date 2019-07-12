@@ -256,10 +256,7 @@ boost_regex_dir = os.path.join(boost_dir, 'libs', 'regex', 'src')
 ############################################################################
 
 from distutils.sysconfig import get_config_var
-try:
-   from distutils.command.build_py import build_py_2to3 as build_py
-except ImportError:
-   from distutils.command.build_py import build_py
+from distutils.command.build_py import build_py
 
 
 def simuPOP_version():
@@ -502,8 +499,6 @@ COMMON_MACROS = [
     ('NO_LZMA', 1)
     ]
 
-if not USE_ICC and USE_OPENMP:
-    COMMON_MACROS.append(('_GLIBCXX_PARALLEL', None))
 
 
 STD_MACROS = [('_SECURE_SCL', 1)]
@@ -534,6 +529,7 @@ WRAP_INFO = {
     'lin':    ['src/simuPOP_lin_wrap.cpp', 'src/simuPOP_lin.i', '-DLINEAGE'],
     'linop':  ['src/simuPOP_linop_wrap.cpp', 'src/simuPOP_linop.i', '-DLINEAGE -DOPTIMIZED'],
 }
+
 
 DESCRIPTION = """
 simuPOP is a forward-time population genetics simulation environment.
@@ -601,6 +597,43 @@ else:
     # if Intel ICC is used, turn off remark 981
     if USE_ICC:
         common_extra_compile_args.extend(['-wd981', '-wd191'])
+
+
+# 
+# TR1_SUPPORT = 0, use <nap>
+# TR1_SUPPORT = 1, use <unordered_map>
+# TR1_SUPPORT = 2, use <tr1/unordered_map>
+
+from distutils.core import Distribution
+from distutils.command.config import config
+from contextlib import redirect_stderr, redirect_stdout
+
+c = config(Distribution({'negative_opt': {'quiet': True}}))
+print('Testing the availability of unordered_map')
+if c.try_compile(
+    '/* need something */ ',
+    ['unordered_map'],
+    include_dirs=common_extra_include_dirs,
+    lang='c++'):
+    COMMON_MACROS.append(('TR1_SUPPORT', 1))
+elif c.try_compile(
+    '/* need something */',
+    ['tr1/unordered_map'],
+    include_dirs=common_extra_include_dirs,
+    lang='c++'):
+    COMMON_MACROS.append(('TR1_SUPPORT', 2))
+else:
+    COMMON_MACROS.append(('TR1_SUPPORT', 0))
+
+print('Testing support for binary iterator')
+has_binary_modules = c.try_compile(
+    '''
+using namespace std;
+std::_S_word_bit;''', [],
+    lang='c++')
+
+if not USE_ICC and USE_OPENMP:
+    COMMON_MACROS.append(('_GLIBCXX_PARALLEL', None))
 
 #
 def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
