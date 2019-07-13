@@ -733,6 +733,8 @@ public:
 private:
 #  if TR1_SUPPORT == 0
 	typedef std::map<unsigned int, int> MutCounter;
+#  elif TR1_SUPPORT == 1
+	typedef std::unordered_map<unsigned int, int> MutCounter;
 #  else
 	// this is faster than std::map
 	typedef std::tr1::unordered_map<unsigned int, int> MutCounter;

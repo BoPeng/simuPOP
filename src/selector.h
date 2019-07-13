@@ -687,6 +687,10 @@ private:
 #  if TR1_SUPPORT == 0
 	typedef std::map<unsigned int, SelCoef> SelMap;
 	typedef std::map<unsigned int, int> MutCounter;
+#  elif TR1_SUPPORT == 1
+	// this is faster than std::map
+	typedef std::unordered_map<size_t, SelCoef> SelMap;
+	typedef std::unordered_map<size_t, size_t> MutCounter;
 #  else
 	// this is faster than std::map
 	typedef std::tr1::unordered_map<size_t, SelCoef> SelMap;
