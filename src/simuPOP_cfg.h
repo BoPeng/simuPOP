@@ -56,16 +56,31 @@ const size_t NOT_FOUND = -1;
 #  define BITPTR(ref) ref._Myptr
 #  define BITOFF(ref) ref._Myoff
 #else
-#  define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
-#  if GCC_VERSION > 30400
-#    define WORDBIT std::_S_word_bit
-#  else
+#  if defined(USE_LIBCPP)
+#   include <vector>
+// new libc++
+class my__bit_iterator
+{
+public:
+    std::vector<bool>::__storage_type * __seg_;
+    unsigned          __ctz_;
+};
+#    define WORDTYPE std::vector<bool>::__storage_type
+#    define WORDBIT (sizeof(WORDTYPE)*CHAR_BIT)
+#    define BITPTR(ref) reinterpret_cast<my__bit_iterator*>(&ref)->__seg_
+#    define BITOFF(ref) reinterpret_cast<my__bit_iterator*>(&ref)->__ctz_
+# else
+#    define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
+#    if GCC_VERSION > 30400
+#      define WORDBIT std::_S_word_bit
+#    else
 // previous version uses _M_word_bit
-#    define WORDBIT std::_M_word_bit
-#  endif
-#  define WORDTYPE std::_Bit_type
-#  define BITPTR(ref) ref._M_p
-#  define BITOFF(ref) ref._M_offset
+#      define WORDBIT std::_M_word_bit
+#    endif
+#    define WORDTYPE std::_Bit_type
+#    define BITPTR(ref) ref._M_p
+#    define BITOFF(ref) ref._M_offset
+# endif
 
 // Gcc 4.2 does not support threadprivate
 #  if GCC_VERSION > 43000 || defined(__INTEL_COMPILER)

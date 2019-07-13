@@ -36,7 +36,7 @@
 typedef std::map<ULONG, simuPOP::Individual *> IdMap;
 #elif TR1_SUPPORT == 1
 #include <unordered_map>
-typedef std::tr1::unordered_map<size_t, simuPOP::Individual *> IdMap;
+typedef std::unordered_map<size_t, simuPOP::Individual *> IdMap;
 #else
 #include <tr1/unordered_map>
 typedef std::tr1::unordered_map<size_t, simuPOP::Individual *> IdMap;
@@ -773,8 +773,13 @@ void RandomParentChooser::initialize(Population &pop, size_t sp)
 		if (!m_replacement)
 			for (IndIterator it = pop.indIterator(sp); it.valid(); ++it)
 				m_index.push_back(it.rawIter());
-		if (m_selection)
-			fitness = vectorf(pop.infoBegin(fit_id, sp), pop.infoEnd(fit_id, sp));
+		if (m_selection) {
+			IndInfoIterator it = pop.infoBegin(fit_id, sp);
+			IndInfoIterator it_end = pop.infoEnd(fit_id, sp);
+			for (; it != it_end; ++it) {
+				fitness.push_back(*it);
+			}
+		}
 	}
 
 	if (m_selection)

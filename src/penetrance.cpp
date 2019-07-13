@@ -539,9 +539,9 @@ double PyMlPenetrance::getPenetranceValue(const LocGenotype & geno) const
 {
 	LocGenotype tmp(geno);
 
-	if (geno.second.size() == 2 && geno.second[0] > geno.second[1]) {
-		tmp.second[0] = geno.second[1];
-		tmp.second[1] = geno.second[0];
+	if (geno.second.size() == 2 && TO_ALLELE(geno.second[0]) > TO_ALLELE(geno.second[1])) {
+		tmp.second[0] = TO_ALLELE(geno.second[1]);
+		tmp.second[1] = TO_ALLELE(geno.second[0]);
 	}
 	GenoPenetranceMap::iterator sit = m_penetFactory.find(tmp);
 	if (sit != m_penetFactory.end())
@@ -557,19 +557,19 @@ double PyMlPenetrance::getPenetranceValue(const LocGenotype & geno) const
 		res = m_func("(i)", geno.first);
 	else if (m_searchMode == 12) {
 		if (nGeno == 1)
-			res = m_func("((i))", geno.second[0]);
+			res = m_func("((i))", TO_ALLELE(geno.second[0]));
 		else
-			res = m_func("((ii))", geno.second[0], geno.second[1]);
+			res = m_func("((ii))", TO_ALLELE(geno.second[0]), TO_ALLELE(geno.second[1]));
 	} else if (m_searchMode == 13) {
 		if (nGeno == 1)
-			res = m_func("((i)i)", geno.second[0], geno.first);
+			res = m_func("((i)i)", TO_ALLELE(geno.second[0]), geno.first);
 		else
-			res = m_func("((ii)i)", geno.second[0], geno.second[1], geno.first);
+			res = m_func("((ii)i)", TO_ALLELE(geno.second[0]), TO_ALLELE(geno.second[1]), geno.first);
 	} else if (m_searchMode == 14) {
 		if (nGeno == 1)
-			res = m_func("(i(i))", geno.first, geno.second[0]);
+			res = m_func("(i(i))", geno.first, TO_ALLELE(geno.second[0]));
 		else
-			res = m_func("(i(ii))", geno.first, geno.second[0], geno.second[1]);
+			res = m_func("(i(ii))", geno.first, TO_ALLELE(geno.second[0]), TO_ALLELE(geno.second[1]));
 	}
 
 

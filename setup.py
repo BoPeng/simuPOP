@@ -598,8 +598,36 @@ else:
     if USE_ICC:
         common_extra_compile_args.extend(['-wd981', '-wd191'])
 
+# simplified version of distutils.ccompiler.CCompiler.try_compile
+# that actually removes its temporary files.
+def try_compile(body='', ext='.cpp'):
+    tmpdir = tempfile.mkdtemp(prefix='simupop-install-')
+    devnull = oldstderr = None
+    try:
+        try:
+            fname = os.path.join(tmpdir, 'test_compile' + ext)
+            with open(fname, 'w') as cpp:
+                cpp.write(body)
+            # Redirect stderr to /dev/null to hide any error messages
+            # from the compiler.
+            # This will have to be changed if we ever have to check
+            # for a function on Windows.
+            devnull = open(os.devnull, 'w')
+            oldstderr = os.dup(sys.stderr.fileno())
+            os.dup2(devnull.fileno(), sys.stderr.fileno())
+            cc = new_compiler()
+            objects = cc.compile([fname], output_dir=tmpdir)
+        except:
+            return False
+        return True
+    finally:
+        if oldstderr is not None:
+            os.dup2(oldstderr, sys.stderr.fileno())
+        if devnull is not None:
+            devnull.close()
+        shutil.rmtree(tmpdir)
 
-# 
+#
 # TR1_SUPPORT = 0, use <nap>
 # TR1_SUPPORT = 1, use <unordered_map>
 # TR1_SUPPORT = 2, use <tr1/unordered_map>
@@ -607,33 +635,31 @@ if any(x.startswith('bdist') or x == 'install' for x in sys.argv):
     from distutils.core import Distribution
     from distutils.command.config import config
 
-    c = config(Distribution({'negative_opt': {'quiet': True}}))
-    print('Testing the availability of unordered_map')
-    if c.try_compile(
-        '/* need something */ ',
-        ['unordered_map'],
-        include_dirs=common_extra_include_dirs,
-        lang='c++'):
+    if try_compile('#include <unordered_map>'):
+        print('Testing tr1 support: \033[92myes\033[0m')
         COMMON_MACROS.append(('TR1_SUPPORT', 1))
-    elif c.try_compile(
-        '/* need something */',
-        ['tr1/unordered_map'],
-        include_dirs=common_extra_include_dirs,
-        lang='c++'):
+    elif try_compile('$include <tr1/unordered_map>'):
+        print('Testing tr1 support: \033[92mwith tr1 prefix\033[0m')
         COMMON_MACROS.append(('TR1_SUPPORT', 2))
     else:
+        print('Testing tr1 support: \033[92mno\033[0m')
         COMMON_MACROS.append(('TR1_SUPPORT', 0))
 
-    print('Testing support for binary iterator')
-    support_binary_modules = os.name == 'nt' or c.try_compile('''
-    #include <vector>
-    #include <iostream>
-    using namespace std;
-    int main () {
+    if os.name == 'nt':
+        print('Testing c++ library: \033[92mvisual c++\033[0m')
+    elif try_compile('''
+#include <vector>
+#include <iostream>
+using namespace std;
+int main () {
     cout << _S_word_bit;
-    }'''
-    , [],
-        lang='c++')
+}
+'''):
+        print('Testing c++ library: \033[92mlibstdc++\033[0m')
+    else:
+        COMMON_MACROS.append(('USE_LIBCPP', 1))
+        print('Testing c++ library: \033[92mlibc++\033[0m')
+
 else:
     support_binary_modules = True
 
@@ -684,13 +710,9 @@ if __name__ == '__main__':
     # create source file for each module
     if 'TRAVIS' in os.environ:
         # only build and test half of the modules to save time
-        MODULES = ['std', 'la', 'mu', 'lin']
-        if support_binary_modules:
-            MODULES.append('ba')
+        MODULES = ['std', 'ba', 'la', 'mu', 'lin']
     else:
-        MODULES = ['std', 'op', 'la', 'laop', 'mu', 'muop', 'lin', 'linop']
-        if support_binary_modules:
-            MODULES.extend(['ba', 'baop'])
+        MODULES = ['std', 'op', 'ba', 'baop', 'la', 'laop', 'mu', 'muop', 'lin', 'linop']
     COMMON_MACROS.extend([
         ('SIMUPOP_VER', SIMUPOP_VER),
         ('SIMUPOP_REV', SIMUPOP_REV)

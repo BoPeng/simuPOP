@@ -39,7 +39,7 @@ using std::set;
 typedef std::map<ULONG, pair<ULONG, ULONG> > IndexMap;
 #elif TR1_SUPPORT == 1
 #  include <unordered_map>
-typedef std::tr1::unordered_map<size_t, pair<size_t, size_t> > IndexMap;
+typedef std::unordered_map<size_t, pair<size_t, size_t> > IndexMap;
 #else
 #  include <tr1/unordered_map>
 typedef std::tr1::unordered_map<size_t, pair<size_t, size_t> > IndexMap;

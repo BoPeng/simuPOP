@@ -1666,7 +1666,7 @@ size_t Population::mergeSubPops(const uintList & subPops, const string & name, i
 	for (size_t sp = 0; sp < static_cast<size_t>(toSubPop); ++sp)
 		if (find(sps.begin(), sps.end(), sp) == sps.end())
 			sp_order.push_back(sp);
-	// all merged subpopulations 
+	// all merged subpopulations
 	sp_order.insert(sp_order.end(), sps.begin(), sps.end());
 	// subpopulations after toSubPop
 	for (size_t sp = toSubPop; sp < numSubPop(); ++sp)
@@ -3162,13 +3162,24 @@ vectorf Population::indInfo(const uintString & field, vspID subPopID)
 		"This operation is not allowed when there is an activated virtual subpopulation");
 	vspID subPop = subPopID.resolve(*this);
 	size_t idx = field.empty() ? field.value() : infoIdx(field.name());
+	vectorf ret;
 	if (subPop.valid()) {
 		activateVirtualSubPop(subPop);
-		vectorf ret(infoBegin(idx, subPop), infoEnd(idx, subPop));
+		IndInfoIterator it = infoBegin(idx, subPop);
+		IndInfoIterator it_end = infoEnd(idx, subPop);
+		for (; it != it_end; ++it) {
+			ret.push_back(*it);
+		}
 		deactivateVirtualSubPop(subPop.subPop());
 		return ret;
-	} else
-		return vectorf(infoBegin(idx), infoEnd(idx));
+	} else {
+		IndInfoIterator it = infoBegin(idx);
+		IndInfoIterator it_end = infoEnd(idx);
+		for (; it != it_end; ++it) {
+			ret.push_back(*it);
+		}
+		return ret;
+	}
 }
 
 

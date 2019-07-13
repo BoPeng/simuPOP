@@ -868,7 +868,7 @@ public:
 	}
 
 	// clean up circular refs. Because such objects might exist during
-	// the creation of evolutionary scenario, we wait till the end of 
+	// the creation of evolutionary scenario, we wait till the end of
 	// each evolutionary cycle to clean up the mess
 	void cleanup()
 	{
@@ -3916,11 +3916,13 @@ Bernullitrials::Bernullitrials(RNG & /* rng */, const vectorf & prob, ULONG tria
 		m_N = trials;
 
 	// initialize the table
+	BitSet::iterator beg_it;
 	for (size_t i = 0; i < probSize(); ++i) {
 		DBG_FAILIF(m_prob[i] < 0 || m_prob[i] > 1, ValueError,
 			(boost::format("Probability for a Bernulli trail should be between 0 and 1 (value %1% at index %2%)") % m_prob[i] % i).str());
 		m_table[i].resize(m_N);
-		m_pointer[i] = const_cast<WORDTYPE *>(BITPTR(m_table[i].begin()));
+		beg_it = m_table[i].begin();
+		m_pointer[i] = const_cast<WORDTYPE *>(BITPTR(beg_it));
 	}
 }
 
@@ -3948,11 +3950,13 @@ void Bernullitrials::setParameter(const vectorf & prob, size_t trials)
 	//DBG_FAILIF(trials <= 0, ValueError, "trial number can not be zero.");
 	DBG_FAILIF(prob.empty(), ValueError, "probability table can not be empty.");
 
+	BitSet::iterator beg_it;
 	for (size_t i = 0; i < probSize(); ++i) {
 		DBG_FAILIF(m_prob[i] < 0 || m_prob[i] > 1, ValueError,
 			(boost::format("Probability for a Bernulli trail should be between 0 and 1 (value %1% at index %2%)") % m_prob[i] % i).str());
 		m_table[i].resize(m_N);
-		m_pointer[i] = const_cast<WORDTYPE *>(BITPTR(m_table[i].begin()));
+		beg_it = m_table[i].begin();
+		m_pointer[i] = const_cast<WORDTYPE *>(BITPTR(beg_it));
 	}
 }
 
@@ -3962,8 +3966,10 @@ void Bernullitrials::setAll(size_t idx, bool v)
 {
 	WORDTYPE * ptr = m_pointer[idx];
 
-	DBG_ASSERT(BITOFF(m_table[idx].begin()) == 0, SystemError, "Start of a vector<bool> is not 0");
-	DBG_ASSERT(BITPTR(m_table[idx].begin()) == m_pointer[idx],
+	BitSet::iterator beg_it = m_table[idx].begin();
+
+	DBG_ASSERT(BITOFF(beg_it) == 0, SystemError, "Start of a vector<bool> is not 0");
+	DBG_ASSERT(BITPTR(beg_it) == m_pointer[idx],
 		SystemError, "Pointers mismatch");
 
 	size_t blk = m_N / WORDBIT;
@@ -4140,7 +4146,8 @@ size_t Bernullitrials::trialNextSucc(size_t idx, size_t pos) const
 	BitSet::const_iterator it = bs.begin() + pos;
 	WORDTYPE * ptr = const_cast<WORDTYPE *>(BITPTR(it));
 	size_t offset = BITOFF(it);
-	size_t i = ptr - const_cast<WORDTYPE *>(BITPTR(bs.begin()));
+	BitSet::const_iterator beg_it = bs.begin();
+	size_t i = ptr - const_cast<WORDTYPE *>(BITPTR(beg_it));
 
 	// mask out bits before pos
 	WORDTYPE tmp = *ptr & ~g_bitMask[offset];
@@ -4263,10 +4270,12 @@ void Bernullitrials_T::setAll(size_t idx, bool v)
 void Bernullitrials_T::doTrial()
 {
 	// reset all values to 0
+	BitSet::iterator beg_it;
 	for (size_t i = 0; i < m_N; ++i) {
 		m_table[i].clear();
 		m_table[i].resize(m_prob.size(), 0);
-		m_pointer[i] = const_cast<WORDTYPE *>(BITPTR(m_table[i].begin()));
+		beg_it = m_table[i].begin();
+		m_pointer[i] = const_cast<WORDTYPE *>(BITPTR(beg_it));
 	}
 	// for each column
 	for (size_t cl = 0, clEnd = m_prob.size(); cl < clEnd; ++cl) {
@@ -4353,7 +4362,8 @@ size_t Bernullitrials_T::probNextSucc(size_t pos) const
 	BitSet::const_iterator it = bs.begin() + pos;
 	WORDTYPE * ptr = const_cast<WORDTYPE *>(BITPTR(it));
 	size_t offset = BITOFF(it);
-	size_t i = ptr - const_cast<WORDTYPE *>(BITPTR(bs.begin()));
+	BitSet::const_iterator beg_it = bs.begin();
+	size_t i = ptr - const_cast<WORDTYPE *>(BITPTR(beg_it));
 
 	// mask out bits before pos
 	WORDTYPE tmp = *ptr & ~g_bitMask[offset];
