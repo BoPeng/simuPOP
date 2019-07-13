@@ -60,87 +60,6 @@ if sys.version_info[0] <= 2 and sys.version_info[1] <= 4:
 # Change this to False if you would like to compile simuPOP without openMP support
 USE_OPENMP = True
 
-# parallel compilation
-import multiprocessing, multiprocessing.pool
-def linux_compile_parallel(
-        self,
-        sources,
-        output_dir=None,
-        macros=None,
-        include_dirs=None,
-        debug=0,
-        extra_preargs=None,
-        extra_postargs=None,
-        depends=None):
-    # Copied from distutils.ccompiler.CCompiler
-    macros, objects, extra_postargs, pp_opts, build = self._setup_compile(
-        output_dir, macros, include_dirs, sources, depends, extra_postargs)
-    cc_args = self._get_cc_args(pp_opts, debug, extra_preargs)
-    #
-    def _single_compile(obj):
-        try:
-            src, ext = build[obj]
-        except KeyError:
-            return
-        self._compile(obj, src, ext, cc_args, extra_postargs, pp_opts)
-    # convert to list, imap is evaluated on-demand
-    list(multiprocessing.pool.ThreadPool(multiprocessing.cpu_count()).imap(_single_compile, objects))
-    return objects
-
-def windows_compile_parallel(
-        self,
-        sources,
-        output_dir=None,
-        macros=None,
-        include_dirs=None,
-        debug=0,
-        extra_preargs=None,
-        extra_postargs=None,
-        depends=None):
-
-    # Copied from distutils.msvc9compiler.MSVCCompiler
-
-    if not self.initialized:
-        self.initialize()
-
-    macros, objects, extra_postargs, pp_opts, build = self._setup_compile(
-        output_dir, macros, include_dirs, sources, depends, extra_postargs)
-
-    compile_opts = extra_preargs or []
-    compile_opts.append('/c')
-
-    if debug:
-        compile_opts.extend(self.compile_options_debug)
-    else:
-        compile_opts.extend(self.compile_options)
-
-    def _single_compile(obj):
-
-        try:
-            src, ext = build[obj]
-        except KeyError:
-            return
-
-        input_opt = src # "/Tp" + src
-        output_opt = "/Fo" + obj
-        try:
-            self.spawn(
-                ['cl.exe']
-                + compile_opts
-                + pp_opts
-                + [input_opt, output_opt]
-                + extra_postargs)
-
-        except DistutilsExecError as msg:
-            raise CompileError(msg)
-
-    # convert to list, imap is evaluated on-demand
-
-    list(multiprocessing.pool.ThreadPool(multiprocessing.cpu_count()).imap(
-        _single_compile, objects))
-
-    return objects
-
 def is_maverick():
     try:
         ver = [int(x) for x in platform.mac_ver()[0].split('.')]
@@ -153,11 +72,6 @@ if os.name == 'nt':
     VS10PATH =  os.environ.get('VS100COMNTOOLS')
     if VS10PATH is None or not os.path.isfile(VS10PATH.replace('Common7\\Tools\\','VC\\lib\\vcomp.lib')):
         USE_OPENMP = False
-    #
-    import distutils.msvccompiler
-    import distutils.msvc9compiler
-    distutils.msvccompiler.MSVCCompiler.compile = windows_compile_parallel
-    distutils.msvc9compiler.MSVCCompiler.compile = windows_compile_parallel
 else:
     p = subprocess.Popen('gcc -v', shell=True,
         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -175,11 +89,6 @@ else:
     except:
         print('Can not obtain version of gcc, and openMP is disable')
         USE_OPENMP = False
-    # use parallel build
-    if not is_maverick():
-        import distutils.ccompiler
-        distutils.ccompiler.CCompiler.compile = linux_compile_parallel
-
 
 USE_ICC = False
 if distutils.sysconfig.get_config_var('CC') is not None:
