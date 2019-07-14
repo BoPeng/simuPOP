@@ -16,6 +16,13 @@ or the [Python 2.x branch of simuPOP](https://github.com/BoPeng/simuPOP/tree/pyt
 (e.g. `simuOpt.Param`, `simuPOP.plotting`) in simuPOP 1.1.7 and earlier are removed in simuPOP 1.1.8+, so simuPOP 1.1.7 would be your best
 bet for the execution of legendary simuPOP scripts.
 
+## Documenation
+
+The user guide and reference manual of simuPOP is available at http://bopeng.github.io/simuPOP/. simuPOP is also introduced in the following two books:
+
+1. **Forward-Time Population Genetics Simulations: Methods, Implementation, and Applications** by Bo Peng, Marek Kimmel and Christopher I Amos, published by Wiley & Sons Inc, and available at [Amazon](http://www.amazon.com/gp/product/0470503483/?tag=wwwwileycom-20) and other bookstores.
+2. **Bioinformatics with Python Cookbook** by Tiago Antao, available at [Amazon](https://www.amazon.com/Bioinformatics-Python-Cookbook-Tiago-Antao/dp/1782175113)
+
 ## Change Log since 1.1.7
 
 ### simuPOP 1.1.10
