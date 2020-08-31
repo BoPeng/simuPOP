@@ -2280,6 +2280,8 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 				double D_max = D > 0 ? std::min(P_A * (1 - P_B), (1 - P_A) * P_B) : std::min(P_A * P_B, (1 - P_A) * (1 - P_B));
 				// fcmp_eq is the float comparison operator, which treat (-1e-10, 1e-10) or so as 0 (platform dependent)
 				double Dp = fcmp_eq(D_max, 0.) ? 0. : D / D_max;
+				// https://github.com/BoPeng/simuPOP/issues/84
+				Dp = std::min(std::max(Dp, -1.0), 1.0);
 				double r2 = (fcmp_eq(P_A, 0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1)) ? 0. : D * D / P_A / (1 - P_A) / P_B / (1 - P_B);
 				// if turnOnDebug(DBG_STATOR) is called in python, the following will be printed.
 				DBG_DO(DBG_STATOR, cerr << "P_AB: " << P_AB
@@ -2292,8 +2294,8 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 					(boost::format("Calculated LD value %1% out of range of [-1/4, 1/4]") % LD[idx]).str());
 
 				D_prime[idx] = Dp;
-				DBG_ASSERT(fcmp_ge(D_prime[idx], -1) && fcmp_le(D_prime[idx], 1), SystemError,
-					(boost::format("Calculated D' value %1% out of range of [-1, 1]") % D_prime[idx]).str());
+				// DBG_ASSERT(fcmp_ge(D_prime[idx], -1) && fcmp_le(D_prime[idx], 1), SystemError,
+				// 	(boost::format("Calculated D' value %1% out of range of [-1, 1]") % D_prime[idx]).str());
 
 				R2[idx] = r2;
 				DBG_ASSERT(fcmp_ge(R2[idx], 0) && fcmp_le(R2[idx], 1), SystemError,
@@ -4731,5 +4733,3 @@ bool statEffectiveSize::LDEffectiveSize(Population & pop) const
 
 
 }
-
-
