@@ -80,6 +80,7 @@ __all__ = [
     'MULTIPLICATIVE',
     'ADDITIVE',
     'HETEROGENEITY',
+    'EXPONENTIAL',
     #
     'BY_IND_INFO',
     'BY_PROBABILITY',
@@ -94,7 +95,7 @@ __all__ = [
     'MINIMUM',
     'SUMMATION',
     'MULTIPLICATION',
-    # 
+    #
     'PER_LOCI',
     'PER_CHROMOSOME',
     'PER_PLOIDY',
@@ -105,7 +106,7 @@ __all__ = [
     'HAPLODIPLOID',
     'ALL_AVAIL',
     'UNSPECIFIED',
-    # 
+    #
     # type
     'defdict',
     #
@@ -179,7 +180,7 @@ __all__ = [
     'SelfingGenoTransmitter',
     'CloneGenoTransmitter',
     'Recombinator',
-    # 
+    #
     'PointMutator',
     'MatrixMutator',
     'MixedMutator',
@@ -287,6 +288,12 @@ __all__ = [
     'mlPenetrance',
     'pyPenetrance',
     #
+    'mapSelect',
+    'maSelect',
+    'mlSelect',
+    'pySelect',
+    'pyMlSelect',
+    #
     'pyQuanTrait',
     #
     # For testing only
@@ -294,7 +301,7 @@ __all__ = [
     'Bernullitrials',
     'Bernullitrials_T',
     'WeightedSampler',
-    # 
+    #
     # modules are not loaded by default because they require rpy or matplotlib
     #
     #'utils',
@@ -340,7 +347,7 @@ if simuOptions['Version'] is not None:
     if (expMajor > myMajor) or (expMajor == myMajor and expMinor > myMinor) or \
         (expMajor == myMajor and expMinor == myMinor and expRelease > myRelease):
         raise ImportError('simuPOP version %s is installed but version >= %s is required. ' % \
-            (__version__, simuOptions['Version']) + 
+            (__version__, simuOptions['Version']) +
             'Please upgrade your simuPOP installation.')
 
 if simuOptions['Revision'] is not None:
@@ -394,7 +401,7 @@ def evolve_pop(self, initOps=[], preOps=[], matingScheme=MatingScheme(), postOps
     cycle) and *finalOps* (applied at the end of evolution). More specifically,
     this function creates a *Simulator* using the current population, call its
     *evolve* function using passed parameters and then replace the current
-    population with the evolved population. Please refer to function 
+    population with the evolved population. Please refer to function
     ``Simulator.evolve`` for more details about each parameter.'''
     if dryrun:
         print(describeEvolProcess(initOps, preOps, matingScheme, postOps, finalOps, gen, 1))
@@ -572,7 +579,7 @@ if sys.version_info[0] == 3:
 ## mating schemes, it does not appear to be a good idea to expose (although
 ## still hidden) functions such as BaseOperator.applicability() to the Python
 ## interface.
-## 
+##
 
 ## def describeEvolProcess(initOps = [], preOps = [], matingScheme = None,
 ##     postOps = [], finalOps = [], gen = -1, numRep = 1):
@@ -581,7 +588,7 @@ if sys.version_info[0] == 3:
 ##     recommended that you call this function if you have any doubt on how your
 ##     simulation will proceed.'''
 ##     allDesc = [''] * numRep
-## 
+##
 ##     # handle single inputs
 ##     if not hasattr(initOps, '__iter__'):
 ##         initOps = [initOps]
@@ -591,7 +598,7 @@ if sys.version_info[0] == 3:
 ##         postOps = [postOps]
 ##     if not hasattr(finalOps, '__iter__'):
 ##         finalOps = [finalOps]
-## 
+##
 ##     for curRep in range(numRep):
 ##         desc = ''
 ##         if not initOps:
@@ -674,8 +681,8 @@ class WithMode:
     or file handle (acceptable by parameter ``output`` of operators) so
     that simuPOP knows which mode the output should be written to. For
     example, if the output of the operator is a binary compressed stream,
-    ``WithMode(output, 'b')`` could be used to tell the operators to 
-    output bytes instead of string. This is most needed for Python 3 
+    ``WithMode(output, 'b')`` could be used to tell the operators to
+    output bytes instead of string. This is most needed for Python 3
     because files in Python 2 accepts string even if they are opened in
     binary mode.'''
     def __init__(self, output, mode=''):
@@ -732,7 +739,7 @@ class RandomSelection(HomoMating):
     def __init__(self, numOffspring = 1, sexMode = None, ops = CloneGenoTransmitter(),
         subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
         '''Create a mating scheme that select a parent randomly and copy him or
-        her to the offspring population. Please refer to class 
+        her to the offspring population. Please refer to class
         ``RandomParentChooser`` for parameter *selectionField*, to class
         ``OffspringGenerator`` for parameters *ops* and *numOffspring*, and to
         class ``HomoMating`` for parameters *subPopSize*, *subPops* and *weight*.
@@ -751,7 +758,7 @@ class RandomMating(HomoMating):
     '''A homogeneous mating scheme that uses a random parents chooser with
     replacement and a Mendelian offspring generator. This mating scheme is
     widely used to simulate diploid sexual Wright-Fisher random mating.'''
-    def __init__(self, numOffspring = 1, sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(), 
+    def __init__(self, numOffspring = 1, sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(),
         subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
         '''Creates a random mating ssheme that selects two parents randomly and
         transmit genotypes according to Mendelian laws. Please refer to class
@@ -860,14 +867,14 @@ class HermaphroditicMating(HomoMating):
     '''A hermaphroditic mating scheme that chooses two parents randomly
     from the population regardless of sex. The parents could be chosen
     with or without replacement (parameter *replacement*). Selfing (if
-    the same parents are chosen) is allowed unless *allowSelfing* is 
+    the same parents are chosen) is allowed unless *allowSelfing* is
     set to *False* '''
     def __init__(self, replacement=True, allowSelfing=True, numOffspring = 1,
-        sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(), 
+        sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(),
         subPopSize = [], subPops = ALL_AVAIL, weight = 0,
         selectionField = 'fitness'):
         '''Creates a hermaphroditic mating scheme where individuals can
-        serve as father or mother, or both (self-fertilization). Please 
+        serve as father or mother, or both (self-fertilization). Please
         refer to class ``CombinedParentsChooser`` for parameter *allowSelfing``,
         to ``RandomParentChooser`` for parameter *replacement* and
         *selectionField*, to class ``OffspringGenerator`` for parameters *ops*,
@@ -883,7 +890,7 @@ class HermaphroditicMating(HomoMating):
             subPops = subPops,
             weight = weight)
 
-## 
+##
 ## def consanguineousMating(infoFields = [], func = None, param = None,
 ##         replacement = False, numOffspring = 1.,    sexMode = RANDOM_SEX,
 ##         ops = MendelianGenoTransmitter(), subPopSize = [],
@@ -905,7 +912,7 @@ class HermaphroditicMating(HomoMating):
 ##         subPopSize = subPopSize,
 ##         subPops = subPops,
 ##         weight = weight)
-## 
+##
 
 class ControlledRandomMating(HomoMating):
     '''A homogeneous mating scheme that uses a random sexual parents chooser
@@ -1076,7 +1083,7 @@ class AminoAcidMutator(MatrixMutator):
     '''
     This operator has not been implemented.
     '''
-    def __init__(self, rate=[], model='general', loci=ALL_AVAIL, mapIn=[], mapOut=[], 
+    def __init__(self, rate=[], model='general', loci=ALL_AVAIL, mapIn=[], mapOut=[],
         output='', begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
         infoFields=['ind_id'], lineageMode=FROM_INFO):
         MatrixMutator.__init__(self, rate, loci, mapIn, mapOut,
@@ -1244,6 +1251,26 @@ def pyMlPenetrance(pop, func, mode, loci=[], ancGens = ALL_AVAIL, *args, **kwarg
     this function by default assign affection status to all generations.'''
     PyMlPenetrance(func, loci, mode, ancGens, *args, **kwargs).apply(pop)
 
+def mapSelect(pop, loci, fitness, *args, **kwargs):
+    '''Apply opertor ``MapSelector`` to population *pop*.'''
+    MapSelector(loci, fitness, *args, **kwargs).apply(pop)
+
+def maSelect(pop, loci, fitness, wildtype=0, *args, **kwargs):
+    '''Apply opertor ``MaSelector`` to population *pop*. '''
+    MaSelector(loci, fitness, wildtype, *args, **kwargs).apply(pop)
+
+def mlSelect(pop, ops, mode=MULTIPLICATIVE, *args, **kwargs):
+    '''Apply opertor ``MlSelector`` to population *pop*.'''
+    MlSelector(ops, mode, *args, **kwargs).apply(pop)
+
+def pySelect(pop, func, loci=[], *args, **kwargs):
+    '''Apply opertor ``PySelector`` to population *pop*.'''
+    PySelector(func, loci, *args, **kwargs).apply(pop)
+
+def pyMlSelect(pop, func, mode=EXPONENTIAL, loci=[], ancGens = ALL_AVAIL, *args, **kwargs):
+    '''Apply opertor ``PyMlSelector`` to population *pop*.'''
+    PyMlSelector(func, mode, loci, *args, **kwargs).apply(pop)
+
 def pyQuanTrait(pop, func, loci=[], ancGens = ALL_AVAIL, *args, **kwargs):
     '''Apply opertor ``PyQuanTrait`` to population *pop*. Unlike the
     operator form of this operator that only handles the current generation,
@@ -1259,4 +1286,3 @@ def setRNG(name='', seed=0):
     '''Set random number generator. This function is obsolete but is provided
     for compatibility purposes. Please use setOptions instead'''
     setOptions(name=name, seed=seed)
-
