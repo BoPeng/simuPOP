@@ -25,6 +25,9 @@ The user guide and reference manual of simuPOP is available at http://bopeng.git
 
 ## Change Log since 1.1.7
 
+### simuPOP 1.1.12
+* [#102](https://github.com/BoPeng/simuPOP/issues/102): Fix compatibility issues with Python 3.11
+* [#98](https://github.com/BoPeng/simuPOP/issues/98): Write banner messaged to stderr insted of stdout
 
 ### simuPOP 1.1.11
 * [#94](https://github.com/BoPeng/simuPOP/issues/94): Fix `HeteroMating` when being used in a `ConditionalMating` mating scheme.
