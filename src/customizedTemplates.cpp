@@ -685,11 +685,19 @@ PyObject * newcarrayobject_template<GenoIterator>(GenoIterator begin, GenoIterat
 	}
 	//
 	op->ob_iter = begin;
+#if PY_VERSION_HEX >= 0x030b0000
+#  ifdef MUTANTALLELE
+	Py_SET_SIZE(op, end.index() - begin.index());
+#  else
+	Py_SET_SIZE(op, end - begin);
+#  endif
+# else
 #  ifdef MUTANTALLELE
 	Py_SIZE(op) = end.index() - begin.index();
 #  else
 	Py_SIZE(op) = end - begin;
 #  endif
+#endif
 	return (PyObject *)op;
 }
 
@@ -708,7 +716,11 @@ PyObject * newcarrayobject_template<LineageIterator>(LineageIterator begin, Line
 	}
 	//
 	op->ob_iter = begin;
+#if PY_VERSION_HEX >= 0x030b0000
+	Py_SET_SIZE(op, end - begin);
+#else
 	Py_SIZE(op) = end - begin;
+#endif
 	return (PyObject *)op;
 }
 
@@ -1510,7 +1522,11 @@ PyObject * newcarrayobject_template<GenoIterator>(GenoIterator begin, GenoIterat
 	}
 	//
 	op->ob_iter = begin;
+#if PY_VERSION_HEX >= 0x030b0000
+	Py_SET_SIZE(op, end - begin);
+#else
 	Py_SIZE(op) = end - begin;
+#endif
 	return (PyObject *)op;
 }
 
@@ -1529,7 +1545,11 @@ PyObject * newcarrayobject_template<LineageIterator>(LineageIterator begin, Line
 	}
 	//
 	op->ob_iter = begin;
+#if PY_VERSION_HEX >= 0x030b0000
+	Py_SET_SIZE(op, end - begin);
+#else
 	Py_SIZE(op) = end - begin;
+#endif
 	return (PyObject *)op;
 }
 
