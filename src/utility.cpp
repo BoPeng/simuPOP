@@ -88,7 +88,10 @@ using std::ofstream;
 
 // compile and eval enables compiling string to byte code
 #include "compile.h"
+
+#if PY_VERSION_HEX < 0x030b0000
 #include "eval.h"
+#endif
 
 // for kbhit
 #if  defined (_WIN32) || defined (__WIN32__)

@@ -11,8 +11,8 @@ simuPOP is part of the [conda-forge](https://conda-forge.github.io/), if you use
 conda install -c conda-forge simuPOP
 ```
 
-If you would like to use simuPOP with Python 2.5 - 2.7, please compile simuPOP from source, using either [simuPOP 1.1.7](https://pypi.python.org/pypi/simuPOP/1.1.7), 
-or the [Python 2.x branch of simuPOP](https://github.com/BoPeng/simuPOP/tree/python2). Note that features that has been marked deprecated 
+If you would like to use simuPOP with Python 2.5 - 2.7, please compile simuPOP from source, using either [simuPOP 1.1.7](https://pypi.python.org/pypi/simuPOP/1.1.7),
+or the [Python 2.x branch of simuPOP](https://github.com/BoPeng/simuPOP/tree/python2). Note that features that has been marked deprecated
 (e.g. `simuOpt.Param`, `simuPOP.plotting`) in simuPOP 1.1.7 and earlier are removed in simuPOP 1.1.8+, so simuPOP 1.1.7 would be your best
 bet for the execution of legendary simuPOP scripts.
 
@@ -24,6 +24,15 @@ The user guide and reference manual of simuPOP is available at http://bopeng.git
 2. **Bioinformatics with Python Cookbook** by Tiago Antao, available at [Amazon](https://www.amazon.com/Bioinformatics-Python-Cookbook-Tiago-Antao/dp/1782175113)
 
 ## Change Log since 1.1.7
+
+### simuPOP 1.1.12
+* [#102](https://github.com/BoPeng/simuPOP/issues/102): Fix compatibility issues with Python 3.11
+* [#98](https://github.com/BoPeng/simuPOP/issues/98): Write banner messaged to stderr insted of stdout
+
+### simuPOP 1.1.11
+* [#94](https://github.com/BoPeng/simuPOP/issues/94): Fix `HeteroMating` when being used in a `ConditionalMating` mating scheme.
+* [#93](https://github.com/BoPeng/simuPOP/issues/93): Add function form of selection operators such as `maSelect` (for `MapSelector`) and `mlSelect` (for `MlSelector`).
+
 
 ### simuPOP 1.1.10
 * [#70](https://github.com/BoPeng/simuPOP/issues/70): Fix compatibility with Mac OS using `libc++` instead of `libstdc++`.

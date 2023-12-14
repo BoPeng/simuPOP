@@ -1759,7 +1759,7 @@ HeteroMating::~HeteroMating()
 		delete *it;
 }
 
-HeteroMating::HeteroMating(const HeteroMating &rhs) : MatingScheme(rhs), m_shuffleOffspring(rhs.m_shuffleOffspring)
+HeteroMating::HeteroMating(const HeteroMating &rhs) : MatingScheme(rhs), m_shuffleOffspring(rhs.m_shuffleOffspring), m_weightBy(rhs.m_weightBy)
 {
 	vectormating::const_iterator it = rhs.m_matingSchemes.begin();
 	vectormating::const_iterator it_end = rhs.m_matingSchemes.end();

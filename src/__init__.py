@@ -24,7 +24,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-
 """
 simuPOP core module.
 """
@@ -80,6 +79,7 @@ __all__ = [
     'MULTIPLICATIVE',
     'ADDITIVE',
     'HETEROGENEITY',
+    'EXPONENTIAL',
     #
     'BY_IND_INFO',
     'BY_PROBABILITY',
@@ -94,7 +94,7 @@ __all__ = [
     'MINIMUM',
     'SUMMATION',
     'MULTIPLICATION',
-    # 
+    #
     'PER_LOCI',
     'PER_CHROMOSOME',
     'PER_PLOIDY',
@@ -105,7 +105,7 @@ __all__ = [
     'HAPLODIPLOID',
     'ALL_AVAIL',
     'UNSPECIFIED',
-    # 
+    #
     # type
     'defdict',
     #
@@ -179,7 +179,7 @@ __all__ = [
     'SelfingGenoTransmitter',
     'CloneGenoTransmitter',
     'Recombinator',
-    # 
+    #
     'PointMutator',
     'MatrixMutator',
     'MixedMutator',
@@ -287,6 +287,12 @@ __all__ = [
     'mlPenetrance',
     'pyPenetrance',
     #
+    'mapSelect',
+    'maSelect',
+    'mlSelect',
+    'pySelect',
+    'pyMlSelect',
+    #
     'pyQuanTrait',
     #
     # For testing only
@@ -294,7 +300,7 @@ __all__ = [
     'Bernullitrials',
     'Bernullitrials_T',
     'WeightedSampler',
-    # 
+    #
     # modules are not loaded by default because they require rpy or matplotlib
     #
     #'utils',
@@ -334,23 +340,33 @@ else:
 
 __version__ = moduleInfo()['version']
 
+    
 if simuOptions['Version'] is not None:
-    expMajor, expMinor, expRelease = [int(x) for x in re.match(r'^(\d+)\.(\d+)\.(\d+)', simuOptions['Version']).groups()]
-    myMajor, myMinor, myRelease = [int(x) for x in re.match(r'^(\d+)\.(\d+)\.(\d+)', __version__).groups()]
+    expMajor, expMinor, expRelease = [
+        int(x) for x in re.match(r'^(\d+)\.(\d+)\.(\d+)',
+                                 simuOptions['Version']).groups()
+    ]
+    myMajor, myMinor, myRelease = [
+        int(x) for x in re.match(r'^(\d+)\.(\d+)\.(\d+)', __version__).groups()
+    ]
     if (expMajor > myMajor) or (expMajor == myMajor and expMinor > myMinor) or \
         (expMajor == myMajor and expMinor == myMinor and expRelease > myRelease):
         raise ImportError('simuPOP version %s is installed but version >= %s is required. ' % \
-            (__version__, simuOptions['Version']) + 
+            (__version__, simuOptions['Version']) +
             'Please upgrade your simuPOP installation.')
 
 if simuOptions['Revision'] is not None:
     rev = moduleInfo()['revision']
     if rev < simuOptions['Revision']:
-        raise ImportError('simuPOP version %s (revision %d) is installed ' % (__version__, rev) +
-            'but simuPOP revision >= %d is required. ' % simuOptions['Revision'] +
-            'Please upgrade your simuPOP installation.')
+        raise ImportError('simuPOP version %s (revision %d) is installed ' %
+                          (__version__, rev) +
+                          'but simuPOP revision >= %d is required. ' %
+                          simuOptions['Revision'] +
+                          'Please upgrade your simuPOP installation.')
     if 'DBG_COMPATIBILITY' in simuOptions['Debug']:
-        print('WARNING: parameter revision in simuOpt.setOptions is obsolete and might be removed from a future version of simuPOP.')
+        print(
+            'WARNING: parameter revision in simuOpt.setOptions is obsolete and might be removed from a future version of simuPOP.', file=sys.stderr
+        )
 
 # set number of threads in openMP
 if simuOptions['NumThreads'] is not None:
@@ -358,17 +374,20 @@ if simuOptions['NumThreads'] is not None:
 
 if not simuOptions['Quiet']:
     info = moduleInfo()
-    print("simuPOP Version %s : Copyright (c) 2004-2016 Bo Peng" % (__version__))
+    print("simuPOP Version %s : Copyright (c) 2004-2016 Bo Peng" %
+          (__version__), file=sys.stderr)
     # compile date, compiler etc are macros that are replaced during compile time.
     print("Revision %d (%s) for Python %s (%dbit, %d%s)" % \
             (info['revision'], info['date'], info['python'], info['wordsize'], info['threads'],
-                    'thread' if info['threads'] <= 1 else 'threads'))
-    print("Random Number Generator is set to %s with random seed 0x%08x." % (getRNG().name(), getRNG().seed()))
+                    'thread' if info['threads'] <= 1 else 'threads'), file=sys.stderr)
+    print("Random Number Generator is set to %s with random seed 0x%08x." %
+          (getRNG().name(), getRNG().seed()), file=sys.stderr)
     # MaxAllele + 1 since 0 is one of the allelic states
     print("This is the %s %s allele version with %d maximum allelic states." % \
-            ('optimized' if info['optimized'] else 'standard', info['alleleType'], info['maxAllele']+1))
-    print("For more information, please visit http://simupop.sourceforge.net,")
-    print("or email simupop-list@lists.sourceforge.net (subscription required).")
+            ('optimized' if info['optimized'] else 'standard', info['alleleType'], info['maxAllele']+1), file=sys.stderr)
+    print("For more information, please visit http://simupop.sourceforge.net,", file=sys.stderr)
+    print(
+        "or email simupop-list@lists.sourceforge.net (subscription required).", file=sys.stderr)
     # Turn on general debug information when not in 'quiet' mode
     # This will print out error messages when needed.
     turnOnDebug('DBG_GENERAL')
@@ -378,15 +397,21 @@ if not simuOptions['Quiet']:
 if simuOptions['Debug'] != []:
     for g in simuOptions['Debug']:
         if g not in ['', None]:
-            print("Turn on debug '%s'" % g)
+            print("Turn on debug '%s'" % g, file=sys.stderr)
             turnOnDebug(g)
-
 
 ALL_AVAIL = True
 UNSPECIFIED = False
 
-def evolve_pop(self, initOps=[], preOps=[], matingScheme=MatingScheme(), postOps=[],
-    finalOps=[], gen=-1, dryrun=False):
+
+def evolve_pop(self,
+               initOps=[],
+               preOps=[],
+               matingScheme=MatingScheme(),
+               postOps=[],
+               finalOps=[],
+               gen=-1,
+               dryrun=False):
     '''Evolve the current population *gen* generations using mating scheme
     *matingScheme* and operators *initOps* (applied before evolution), *preOps*
     (applied to the parental population at the beginning of each life cycle),
@@ -394,10 +419,12 @@ def evolve_pop(self, initOps=[], preOps=[], matingScheme=MatingScheme(), postOps
     cycle) and *finalOps* (applied at the end of evolution). More specifically,
     this function creates a *Simulator* using the current population, call its
     *evolve* function using passed parameters and then replace the current
-    population with the evolved population. Please refer to function 
+    population with the evolved population. Please refer to function
     ``Simulator.evolve`` for more details about each parameter.'''
     if dryrun:
-        print(describeEvolProcess(initOps, preOps, matingScheme, postOps, finalOps, gen, 1))
+        print(
+            describeEvolProcess(initOps, preOps, matingScheme, postOps,
+                                finalOps, gen, 1), file=sys.stderr)
         return (0,)
     if isinstance(self, Pedigree):
         raise ValueError("Evolving a pedigree object directly is not allowed.")
@@ -409,7 +436,9 @@ def evolve_pop(self, initOps=[], preOps=[], matingScheme=MatingScheme(), postOps
     self.swap(simu.population(0))
     return gen[0]
 
+
 Population.evolve = evolve_pop
+
 
 def all_individuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL):
     '''Return an iterator that iterat through all (virtual) subpopulations in
@@ -441,7 +470,8 @@ def all_individuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL):
                         raise ValueError('Invalid subpopulation ID %s' % subPop)
                     if subPop[0] is ALL_AVAIL:
                         # (ALL_AVAIL, ALL_AVAIL)
-                        if subPop[1] is ALL_AVAIL and self.numVirtualSubPop() > 0:
+                        if subPop[1] is ALL_AVAIL and self.numVirtualSubPop(
+                        ) > 0:
                             for sp in range(self.numSubPop()):
                                 for vsp in range(self.numVirtualSubPop()):
                                     for ind in self.individuals([sp, vsp]):
@@ -453,10 +483,11 @@ def all_individuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL):
                                     yield ind
                     else:
                         # (sp, ALL_AVAIL)
-                        if subPop[1] is ALL_AVAIL and self.numVirtualSubPop() > 0:
-                                for vsp in range(self.numVirtualSubPop()):
-                                    for ind in self.individuals([subPop[0], vsp]):
-                                        yield ind
+                        if subPop[1] is ALL_AVAIL and self.numVirtualSubPop(
+                        ) > 0:
+                            for vsp in range(self.numVirtualSubPop()):
+                                for ind in self.individuals([subPop[0], vsp]):
+                                    yield ind
                         # (sp, vsp)
                         else:
                             for ind in self.individuals(subPop):
@@ -466,22 +497,35 @@ def all_individuals(self, subPops=ALL_AVAIL, ancGens=ALL_AVAIL):
                         yield ind
     self.useAncestralGen(curGen)
 
+
 Population.allIndividuals = all_individuals
 
-def as_pedigree(self, idField='ind_id', fatherField='father_id', motherField='mother_id'):
+
+def as_pedigree(self,
+                idField='ind_id',
+                fatherField='father_id',
+                motherField='mother_id'):
     '''Convert the existing population object to a pedigree. After this function
     pedigree function should magically be usable for this function.
     '''
     if isinstance(self, Pedigree):
         return
-    ped = Pedigree(self, loci=ALL_AVAIL, infoFields=ALL_AVAIL, ancGens=ALL_AVAIL,
-        idField=idField, fatherField=fatherField, motherField=motherField,
+    ped = Pedigree(
+        self,
+        loci=ALL_AVAIL,
+        infoFields=ALL_AVAIL,
+        ancGens=ALL_AVAIL,
+        idField=idField,
+        fatherField=fatherField,
+        motherField=motherField,
         stealPop=True)
     # swap ped and this object. (I do not know if this is the right thing to do)
     self.__class__, ped.__class__ = ped.__class__, self.__class__
     self.this, ped.this = ped.this, self.this
 
+
 Population.asPedigree = as_pedigree
+
 
 def as_population(self):
     '''Convert the existing pedigree object to a population. This function will
@@ -495,41 +539,53 @@ def as_population(self):
     self.__class__, pop.__class__ = pop.__class__, self.__class__
     self.this, pop.this = pop.this, self.this
 
+
 Pedigree.asPopulation = as_population
+
 
 # Other definitions that does not really belong to simuUtil.py
 class _dw(object):
+
     def __init__(self, var):
         try:
             self.__dict__ = var
         except TypeError:
-            raise TypeError("The returned value is not a dictionary.\nNote: simu.vars() is a list so simu.dvars() is not allowed. \n    Use simu.dvars(rep) for population namespace.")
+            raise TypeError(
+                "The returned value is not a dictionary.\nNote: simu.vars() is a list so simu.dvars() is not allowed. \n    Use simu.dvars(rep) for population namespace."
+            )
+
     def clear(self):
         self.__dict__.clear()
+
     def __repr__(self):
         return str(self.__dict__)
+
 
 def dvars(self, *args, **kwargs):
     return _dw(self.vars(*args, **kwargs))
 
+
 Population.dvars = dvars
 Simulator.dvars = dvars
+
 
 # expose the clone() method to Python copy module.
 def _deepcopy(self, memo):
     return self.clone()
 
-Population.__deepcopy__ = _deepcopy
-Simulator.__deepcopy__ = _deepcopy
-BaseOperator.__deepcopy__ = _deepcopy
-
 
 Population.__deepcopy__ = _deepcopy
 Simulator.__deepcopy__ = _deepcopy
 BaseOperator.__deepcopy__ = _deepcopy
+
+Population.__deepcopy__ = _deepcopy
+Simulator.__deepcopy__ = _deepcopy
+BaseOperator.__deepcopy__ = _deepcopy
+
 
 def ind_setInfo2(self, field, value):
     self.setInfo(value, field)
+
 
 def ind_setInfo3(self, field, value):
     if field == 'this':
@@ -537,11 +593,13 @@ def ind_setInfo3(self, field, value):
     else:
         self.setInfo(value, field)
 
+
 def ind_getInfo3(self, field):
     if field == 'this':
         return self.__dict__['this']
     else:
         return self.info(field)
+
 
 if sys.version_info[0] == 3:
     Individual.__setattr__ = ind_setInfo3
@@ -553,6 +611,7 @@ else:
 
 def obj_equal(self, obj):
     return self.__cmp__(obj) == 0
+
 
 if sys.version_info[0] == 3:
     Population.__eq__ = obj_equal
@@ -572,7 +631,7 @@ if sys.version_info[0] == 3:
 ## mating schemes, it does not appear to be a good idea to expose (although
 ## still hidden) functions such as BaseOperator.applicability() to the Python
 ## interface.
-## 
+##
 
 ## def describeEvolProcess(initOps = [], preOps = [], matingScheme = None,
 ##     postOps = [], finalOps = [], gen = -1, numRep = 1):
@@ -581,7 +640,7 @@ if sys.version_info[0] == 3:
 ##     recommended that you call this function if you have any doubt on how your
 ##     simulation will proceed.'''
 ##     allDesc = [''] * numRep
-## 
+##
 ##     # handle single inputs
 ##     if not hasattr(initOps, '__iter__'):
 ##         initOps = [initOps]
@@ -591,7 +650,7 @@ if sys.version_info[0] == 3:
 ##         postOps = [postOps]
 ##     if not hasattr(finalOps, '__iter__'):
 ##         finalOps = [finalOps]
-## 
+##
 ##     for curRep in range(numRep):
 ##         desc = ''
 ##         if not initOps:
@@ -653,12 +712,14 @@ if sys.version_info[0] == 3:
 ##     desc += 'Replicate' + ' '.join(reps) + ':\n' + allDesc[-1]
 ##     return formatDescription(desc)
 
+
 class WithArgs:
     '''This class wraps around a user-provided function and provides an
     attribute ``args`` so that simuPOP knows which parameters to send to the
     function. This is only needed if the function can not be defined with
     allowed parameters.
     '''
+
     def __init__(self, func, args):
         '''Return a callable object that wraps around function ``func``.
         Parameter ``args`` should be a list of parameter names.
@@ -669,15 +730,17 @@ class WithArgs:
     def __call__(self, *args, **kwargs):
         return self.func(*args, **kwargs)
 
+
 class WithMode:
     '''This class wraps around a user-provided output string, function
     or file handle (acceptable by parameter ``output`` of operators) so
     that simuPOP knows which mode the output should be written to. For
     example, if the output of the operator is a binary compressed stream,
-    ``WithMode(output, 'b')`` could be used to tell the operators to 
-    output bytes instead of string. This is most needed for Python 3 
+    ``WithMode(output, 'b')`` could be used to tell the operators to
+    output bytes instead of string. This is most needed for Python 3
     because files in Python 2 accepts string even if they are opened in
     binary mode.'''
+
     def __init__(self, output, mode=''):
         '''Return an object that wraps around ``output`` and tells simuPOP
         to output string in ``mode``. This class currently only support
@@ -688,25 +751,34 @@ class WithMode:
 
 # mating schemes
 
+
 class SequentialParentsChooser(CombinedParentsChooser):
     '''This parent chooser chooses two parents (a father and a mother)
     sequentially from their respective sex groups. Selection is not considered.
     If all fathers (or mothers) are exhausted, this parent chooser will choose
     fathers (or mothers) from the beginning of the (virtual) subpopulation
     again.'''
+
     def __init__(self):
         '''Create a parent chooser that chooses two parents sequentially from a
         parental (virtual) subpopulation.'''
         CombinedParentsChooser.__init__(self,
-            SequentialParentChooser(MALE_ONLY),
-            SequentialParentChooser(FEMALE_ONLY))
+                                        SequentialParentChooser(MALE_ONLY),
+                                        SequentialParentChooser(FEMALE_ONLY))
 
 
 class CloneMating(HomoMating):
     '''A homogeneous mating scheme that uses a sequential parent chooser and
     a clone offspring generator.'''
-    def __init__(self, numOffspring = 1, sexMode = None, ops = CloneGenoTransmitter(),
-        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = None):
+
+    def __init__(self,
+                 numOffspring=1,
+                 sexMode=None,
+                 ops=CloneGenoTransmitter(),
+                 subPopSize=[],
+                 subPops=ALL_AVAIL,
+                 weight=0,
+                 selectionField=None):
         '''Create a clonal mating scheme that clones parents to offspring using
         a ``CloneGenoTransmitter``. Please refer to class ``OffspringGenerator``
         for parameters *ops* and *numOffspring*, and to class ``HomoMating`` for
@@ -716,12 +788,13 @@ class CloneMating(HomoMating):
         to offspring. Note that ``CloneGenoTransmitter`` by default also copies
         all parental information fields to offspring.
         '''
-        HomoMating.__init__(self,
-            chooser = SequentialParentChooser(),
-            generator = OffspringGenerator(ops, numOffspring, RANDOM_SEX),
-            subPopSize = subPopSize,
-            subPops = subPops,
-            weight = weight)
+        HomoMating.__init__(
+            self,
+            chooser=SequentialParentChooser(),
+            generator=OffspringGenerator(ops, numOffspring, RANDOM_SEX),
+            subPopSize=subPopSize,
+            subPops=subPops,
+            weight=weight)
 
 
 class RandomSelection(HomoMating):
@@ -729,30 +802,45 @@ class RandomSelection(HomoMating):
     chooser with replacement, and a clone offspring generator. This mating
     scheme is usually used to simulate the basic haploid Wright-Fisher model
     but it can also be applied to diploid populations.'''
-    def __init__(self, numOffspring = 1, sexMode = None, ops = CloneGenoTransmitter(),
-        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
+
+    def __init__(self,
+                 numOffspring=1,
+                 sexMode=None,
+                 ops=CloneGenoTransmitter(),
+                 subPopSize=[],
+                 subPops=ALL_AVAIL,
+                 weight=0,
+                 selectionField='fitness'):
         '''Create a mating scheme that select a parent randomly and copy him or
-        her to the offspring population. Please refer to class 
+        her to the offspring population. Please refer to class
         ``RandomParentChooser`` for parameter *selectionField*, to class
         ``OffspringGenerator`` for parameters *ops* and *numOffspring*, and to
         class ``HomoMating`` for parameters *subPopSize*, *subPops* and *weight*.
         Parameter *sexMode* is ignored because ``cloneOffspringGenerator`` copies
         sex from parents to offspring.
         '''
-        HomoMating.__init__(self,
-            chooser = RandomParentChooser(True, selectionField),
-            generator = OffspringGenerator(ops, numOffspring, RANDOM_SEX),
-            subPopSize = subPopSize,
-            subPops = subPops,
-            weight = weight)
+        HomoMating.__init__(
+            self,
+            chooser=RandomParentChooser(True, selectionField),
+            generator=OffspringGenerator(ops, numOffspring, RANDOM_SEX),
+            subPopSize=subPopSize,
+            subPops=subPops,
+            weight=weight)
 
 
 class RandomMating(HomoMating):
     '''A homogeneous mating scheme that uses a random parents chooser with
     replacement and a Mendelian offspring generator. This mating scheme is
     widely used to simulate diploid sexual Wright-Fisher random mating.'''
-    def __init__(self, numOffspring = 1, sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(), 
-        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
+
+    def __init__(self,
+                 numOffspring=1,
+                 sexMode=RANDOM_SEX,
+                 ops=MendelianGenoTransmitter(),
+                 subPopSize=[],
+                 subPops=ALL_AVAIL,
+                 weight=0,
+                 selectionField='fitness'):
         '''Creates a random mating ssheme that selects two parents randomly and
         transmit genotypes according to Mendelian laws. Please refer to class
         ``RandomParentsChooser`` for parameter *selectionField*, to class
@@ -760,12 +848,13 @@ class RandomMating(HomoMating):
         *numOffspring*, and to class ``HomoMating`` for parameters
         *subPopSize*, *subPops* and *weight*.
         '''
-        HomoMating.__init__(self,
-            chooser = RandomParentsChooser(True, selectionField),
-            generator = OffspringGenerator(ops, numOffspring, sexMode),
-            subPopSize = subPopSize,
-            subPops = subPops,
-            weight = weight)
+        HomoMating.__init__(
+            self,
+            chooser=RandomParentsChooser(True, selectionField),
+            generator=OffspringGenerator(ops, numOffspring, sexMode),
+            subPopSize=subPopSize,
+            subPops=subPops,
+            weight=weight)
 
 
 class MonogamousMating(HomoMating):
@@ -773,8 +862,15 @@ class MonogamousMating(HomoMating):
     replacement and a Mendelian offspring generator. It differs from the basic
     random mating scheme in that each parent can mate only once so there is no
     half-sibling in the population.'''
-    def __init__(self, numOffspring = 1, sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(),
-        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = None):
+
+    def __init__(self,
+                 numOffspring=1,
+                 sexMode=RANDOM_SEX,
+                 ops=MendelianGenoTransmitter(),
+                 subPopSize=[],
+                 subPops=ALL_AVAIL,
+                 weight=0,
+                 selectionField=None):
         '''Creates a monogamous mating scheme that selects each parent only
         once. Please refer to class ``OffspringGenerator`` for parameters
         *ops*, *sexMode* and *numOffspring*, and to class ``HomoMating`` for
@@ -782,12 +878,13 @@ class MonogamousMating(HomoMating):
         *selectionField* is ignored because this mating scheme does not
         support natural selection.
         '''
-        HomoMating.__init__(self,
-            chooser = RandomParentsChooser(replacement=False),
-            generator = OffspringGenerator(ops, numOffspring, sexMode),
-            subPopSize = subPopSize,
-            subPops = subPops,
-            weight = weight)
+        HomoMating.__init__(
+            self,
+            chooser=RandomParentsChooser(replacement=False),
+            generator=OffspringGenerator(ops, numOffspring, sexMode),
+            subPopSize=subPopSize,
+            subPops=subPops,
+            weight=weight)
 
 
 class PolygamousMating(HomoMating):
@@ -795,21 +892,30 @@ class PolygamousMating(HomoMating):
     and a Mendelian offspring generator. It differs from the basic random
     mating scheme in that each parent of sex *polySex* will have *polyNum*
     spouses.'''
-    def __init__(self, polySex=MALE, polyNum=1, numOffspring = 1,
-        sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(), subPopSize = [],
-        subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
+
+    def __init__(self,
+                 polySex=MALE,
+                 polyNum=1,
+                 numOffspring=1,
+                 sexMode=RANDOM_SEX,
+                 ops=MendelianGenoTransmitter(),
+                 subPopSize=[],
+                 subPops=ALL_AVAIL,
+                 weight=0,
+                 selectionField='fitness'):
         '''Creates a polygamous mating scheme that each parent mates with
         multiple spouses. Please refer to class ``PolyParentsChooser`` for
         parameters *polySex*, *polyNum* and *selectionField*, to class
         ``OffspringGenerator`` for parameters *ops*,  *sexMode* and
         *numOffspring*, and to class ``HomoMating`` for parameters
         *subPopSize*, *subPops* and *weight*. '''
-        HomoMating.__init__(self,
-            chooser = PolyParentsChooser(polySex, polyNum),
-            generator = OffspringGenerator(ops, numOffspring, sexMode),
-            subPopSize = subPopSize,
-            subPops = subPops,
-            weight = weight)
+        HomoMating.__init__(
+            self,
+            chooser=PolyParentsChooser(polySex, polyNum),
+            generator=OffspringGenerator(ops, numOffspring, sexMode),
+            subPopSize=subPopSize,
+            subPops=subPops,
+            weight=weight)
 
 
 class HaplodiploidMating(HomoMating):
@@ -817,21 +923,28 @@ class HaplodiploidMating(HomoMating):
     replacement and a haplodiploid offspring generator. It should be used
     in a haplodiploid population where male individuals only have one set
     of homologous chromosomes.'''
-    def __init__(self, numOffspring = 1., sexMode = RANDOM_SEX,
-        ops = HaplodiploidGenoTransmitter(), subPopSize = [], subPops = ALL_AVAIL,
-        weight = 0, selectionField = 'fitness'):
+
+    def __init__(self,
+                 numOffspring=1.,
+                 sexMode=RANDOM_SEX,
+                 ops=HaplodiploidGenoTransmitter(),
+                 subPopSize=[],
+                 subPops=ALL_AVAIL,
+                 weight=0,
+                 selectionField='fitness'):
         '''Creates a mating scheme in haplodiploid populations. Please refer
         to class ``RandomParentsChooser`` for parameter *selectionField*, to
         class ``OffspringGenerator`` for parameters *ops*, *sexMode* and
         *numOffspring*, and to class ``HomoMating`` for parameters
         *subPopSize*, *subPops* and *weight*.
         '''
-        HomoMating.__init__(self,
-            chooser = RandomParentsChooser(True, selectionField),
-            generator = OffspringGenerator(ops, numOffspring, sexMode),
-            subPopSize = subPopSize,
-            subPops = subPops,
-            weight = weight)
+        HomoMating.__init__(
+            self,
+            chooser=RandomParentsChooser(True, selectionField),
+            generator=OffspringGenerator(ops, numOffspring, sexMode),
+            subPopSize=subPopSize,
+            subPops=subPops,
+            weight=weight)
 
 
 class SelfMating(HomoMating):
@@ -839,9 +952,16 @@ class SelfMating(HomoMating):
     chooser with or without replacement (parameter *replacement*) and a
     selfing offspring generator. It is used to mimic self-fertilization
     in certain plant populations.'''
-    def __init__(self, replacement=True, numOffspring = 1, sexMode = RANDOM_SEX,
-        ops = SelfingGenoTransmitter(), subPopSize = [], subPops = ALL_AVAIL, weight = 0,
-        selectionField = 'fitness'):
+
+    def __init__(self,
+                 replacement=True,
+                 numOffspring=1,
+                 sexMode=RANDOM_SEX,
+                 ops=SelfingGenoTransmitter(),
+                 subPopSize=[],
+                 subPops=ALL_AVAIL,
+                 weight=0,
+                 selectionField='fitness'):
         '''Creates a selfing mating scheme where two homologous copies of
         parental chromosomes are transmitted to offspring according to
         Mendelian laws. Please refer to class ``RandomParentChooser`` for
@@ -849,41 +969,52 @@ class SelfMating(HomoMating):
         ``OffspringGenerator`` for parameters *ops*, *sexMode* and
         *numOffspring*, and to class ``HomoMating`` for parameters
         *subPopSize*, *subPops* and *weight*. '''
-        HomoMating.__init__(self,
-            chooser = RandomParentChooser(replacement, selectionField),
-            generator = OffspringGenerator(ops, numOffspring, sexMode),
-            subPopSize = subPopSize,
-            subPops = subPops,
-            weight = weight)
+        HomoMating.__init__(
+            self,
+            chooser=RandomParentChooser(replacement, selectionField),
+            generator=OffspringGenerator(ops, numOffspring, sexMode),
+            subPopSize=subPopSize,
+            subPops=subPops,
+            weight=weight)
+
 
 class HermaphroditicMating(HomoMating):
     '''A hermaphroditic mating scheme that chooses two parents randomly
     from the population regardless of sex. The parents could be chosen
     with or without replacement (parameter *replacement*). Selfing (if
-    the same parents are chosen) is allowed unless *allowSelfing* is 
+    the same parents are chosen) is allowed unless *allowSelfing* is
     set to *False* '''
-    def __init__(self, replacement=True, allowSelfing=True, numOffspring = 1,
-        sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(), 
-        subPopSize = [], subPops = ALL_AVAIL, weight = 0,
-        selectionField = 'fitness'):
+
+    def __init__(self,
+                 replacement=True,
+                 allowSelfing=True,
+                 numOffspring=1,
+                 sexMode=RANDOM_SEX,
+                 ops=MendelianGenoTransmitter(),
+                 subPopSize=[],
+                 subPops=ALL_AVAIL,
+                 weight=0,
+                 selectionField='fitness'):
         '''Creates a hermaphroditic mating scheme where individuals can
-        serve as father or mother, or both (self-fertilization). Please 
+        serve as father or mother, or both (self-fertilization). Please
         refer to class ``CombinedParentsChooser`` for parameter *allowSelfing``,
         to ``RandomParentChooser`` for parameter *replacement* and
         *selectionField*, to class ``OffspringGenerator`` for parameters *ops*,
         *sexMode* and *numOffspring*, and to class ``HomoMating`` for parameters
         *subPopSize*, *subPops* and *weight*. '''
-        HomoMating.__init__(self,
-            chooser = CombinedParentsChooser(
+        HomoMating.__init__(
+            self,
+            chooser=CombinedParentsChooser(
                 RandomParentChooser(replacement, selectionField),
                 RandomParentChooser(replacement, selectionField),
                 allowSelfing=allowSelfing),
-            generator = OffspringGenerator(ops, numOffspring, sexMode),
-            subPopSize = subPopSize,
-            subPops = subPops,
-            weight = weight)
+            generator=OffspringGenerator(ops, numOffspring, sexMode),
+            subPopSize=subPopSize,
+            subPops=subPops,
+            weight=weight)
 
-## 
+
+##
 ## def consanguineousMating(infoFields = [], func = None, param = None,
 ##         replacement = False, numOffspring = 1.,    sexMode = RANDOM_SEX,
 ##         ops = MendelianGenoTransmitter(), subPopSize = [],
@@ -905,16 +1036,26 @@ class HermaphroditicMating(HomoMating):
 ##         subPopSize = subPopSize,
 ##         subPops = subPops,
 ##         weight = weight)
-## 
+##
+
 
 class ControlledRandomMating(HomoMating):
     '''A homogeneous mating scheme that uses a random sexual parents chooser
     with replacement and a controlled offspring generator using Mendelian
     genotype transmitter. It falls back to a regular random mating scheme
     if there is no locus to control or no trajectory is defined.'''
-    def __init__(self, loci=[], alleles=[], freqFunc=None,
-        numOffspring = 1, sexMode = RANDOM_SEX, ops = MendelianGenoTransmitter(),
-        subPopSize = [], subPops = ALL_AVAIL, weight = 0, selectionField = 'fitness'):
+
+    def __init__(self,
+                 loci=[],
+                 alleles=[],
+                 freqFunc=None,
+                 numOffspring=1,
+                 sexMode=RANDOM_SEX,
+                 ops=MendelianGenoTransmitter(),
+                 subPopSize=[],
+                 subPops=ALL_AVAIL,
+                 weight=0,
+                 selectionField='fitness'):
         '''Creates a random mating scheme that controls allele frequency at
         loci *loci*. At each generation, function *freqFunc* will be called to
         called to obtain intended frequencies of alleles *alleles* at loci
@@ -930,34 +1071,52 @@ class ControlledRandomMating(HomoMating):
         and to class ``HomoMating`` for parameters *subPopSize*, *subPops* and
         *weight*.
         '''
-        if (type(loci) in [type([]), type(())] and len(loci) == 0) or (freqFunc is None):
-            HomoMating.__init__(self,
-                chooser = RandomParentsChooser(True, selectionField),
-                generator = OffspringGenerator(ops, numOffspring, sexMode),
-                subPopSize = subPopSize,
-                subPops = subPops,
-                weight = weight)
+        if (type(loci) in [type([]), type(
+            ())] and len(loci) == 0) or (freqFunc is None):
+            HomoMating.__init__(
+                self,
+                chooser=RandomParentsChooser(True, selectionField),
+                generator=OffspringGenerator(ops, numOffspring, sexMode),
+                subPopSize=subPopSize,
+                subPops=subPops,
+                weight=weight)
         else:
-            HomoMating.__init__(self,
-                chooser = RandomParentsChooser(True, selectionField),
-                generator = ControlledOffspringGenerator(loci, alleles, freqFunc,
-                    ops, numOffspring, sexMode),
-                subPopSize = subPopSize,
-                subPops = subPops,
-                weight = weight)
+            HomoMating.__init__(
+                self,
+                chooser=RandomParentsChooser(True, selectionField),
+                generator=ControlledOffspringGenerator(loci, alleles, freqFunc,
+                                                       ops, numOffspring,
+                                                       sexMode),
+                subPopSize=subPopSize,
+                subPops=subPops,
+                weight=weight)
 
 
 class SNPMutator(MatrixMutator):
     '''A mutator model that assumes two alleles 0 and 1 and accepts mutation
     rate from 0 to 1, and from 1 to 0 alleles. '''
-    def __init__(self, u=0, v=0, loci=ALL_AVAIL, mapIn=[], mapOut=[], output='',
-        begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-        infoFields=['ind_id'], lineageMode=FROM_INFO):
+
+    def __init__(self,
+                 u=0,
+                 v=0,
+                 loci=ALL_AVAIL,
+                 mapIn=[],
+                 mapOut=[],
+                 output='',
+                 begin=0,
+                 end=-1,
+                 step=1,
+                 at=[],
+                 reps=ALL_AVAIL,
+                 subPops=ALL_AVAIL,
+                 infoFields=['ind_id'],
+                 lineageMode=FROM_INFO):
         '''Return a ``MatrixMutator`` with proper mutate matrix for a two-allele
         mutation model using mutation rate from allele 0 to 1 (parameter ``u``)
         and from 1 to 0 (parameter ``v``)'''
-        MatrixMutator.__init__(self, [[1-u, u], [v, 1-v]], loci, mapIn, mapOut,
-            output, begin, end, step, at, reps, subPops, infoFields, lineageMode)
+        MatrixMutator.__init__(self, [[1 - u, u], [v, 1 - v]], loci, mapIn,
+                               mapOut, output, begin, end, step, at, reps,
+                               subPops, infoFields, lineageMode)
 
 
 class AcgtMutator(MatrixMutator):
@@ -966,9 +1125,22 @@ class AcgtMutator(MatrixMutator):
     Although a general model needs 12 parameters, less parameters are needed
     for specific nucleotide mutation models (parameter ``model``). The length
     and meaning of parameter ``rate`` is model dependent.'''
-    def __init__(self, rate=[], model='general', loci=ALL_AVAIL, mapIn=[], mapOut=[], output='',
-        begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-        infoFields=['ind_id'], lineageMode=FROM_INFO):
+
+    def __init__(self,
+                 rate=[],
+                 model='general',
+                 loci=ALL_AVAIL,
+                 mapIn=[],
+                 mapOut=[],
+                 output='',
+                 begin=0,
+                 end=-1,
+                 step=1,
+                 at=[],
+                 reps=ALL_AVAIL,
+                 subPops=ALL_AVAIL,
+                 infoFields=['ind_id'],
+                 lineageMode=FROM_INFO):
         '''Create a mutation model that mutates between nucleotides ``A``,
         ``C``, ``G``, and ``T`` (alleles are coded in that order as 0, 1, 2
         and 3). Currently supported models are Jukes and Cantor 1969 model
@@ -982,105 +1154,131 @@ class AcgtMutator(MatrixMutator):
         if model == 'JC69':
             if type(rate) in [type(()), type([])]:
                 if len(rate) != 1:
-                    raise ValueError('A Jukes and Cantor 1969 model needs one parameter mu.')
+                    raise ValueError(
+                        'A Jukes and Cantor 1969 model needs one parameter mu.')
                 mu = rate[0]
             else:
                 mu = rate
-            m = [[0,     mu/4., mu/4., mu/4.],
-                 [mu/4., 0,     mu/4., mu/4.],
-                 [mu/4., mu/4., 0,     mu/4.],
-                 [mu/4., mu/4., mu/4., 0    ]]
+            m = [[0, mu / 4., mu / 4., mu / 4.], [mu / 4., 0, mu / 4., mu / 4.],
+                 [mu / 4., mu / 4., 0, mu / 4.], [mu / 4., mu / 4., mu / 4., 0]]
         elif model == 'K80':
             if len(rate) != 2:
-                raise ValueError('A Kimura 2-parameter model requires two parameters mu and k')
+                raise ValueError(
+                    'A Kimura 2-parameter model requires two parameters mu and k'
+                )
             mu, k = rate
-            m = [[0,       mu/4.,   mu*k/4., mu/4.  ],
-                 [mu/4.,   0,       mu/4.,   mu*k/4.],
-                 [mu*k/4., mu/4.,   0,       mu/4.  ],
-                 [mu/4.,   mu*k/4., mu/4.,   0      ]]
+            m = [[0, mu / 4., mu * k / 4., mu / 4.],
+                 [mu / 4., 0, mu / 4., mu * k / 4.],
+                 [mu * k / 4., mu / 4., 0, mu / 4.],
+                 [mu / 4., mu * k / 4., mu / 4., 0]]
         elif model == 'F81':
             if len(rate) != 4:
-                raise ValueError('A Felsenstein 1981 model requires four parameters mu, pi_A, pi_C and pi_G')
+                raise ValueError(
+                    'A Felsenstein 1981 model requires four parameters mu, pi_A, pi_C and pi_G'
+                )
             mu, piA, piC, piG = rate
             piT = 1 - piA - piC - piG
             if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
                 piG < 0 or piG > 1 or piT < 0 or piT > 1:
                 raise ValueError('Basic frequencies should be between 0 and 1')
-            m = [[0,      mu*piC, mu*piG, mu*piT],
-                 [mu*piA, 0,      mu*piG, mu*piT],
-                 [mu*piA, mu*piC, 0,      mu*piT],
-                 [mu*piA, mu*piC, mu*piG, 0     ]]
+            m = [[0, mu * piC, mu * piG, mu * piT],
+                 [mu * piA, 0, mu * piG, mu * piT],
+                 [mu * piA, mu * piC, 0, mu * piT],
+                 [mu * piA, mu * piC, mu * piG, 0]]
         elif model == 'HKY85':
             if len(rate) != 5:
-                raise ValueError('A Hasegawa, Kishino and Yano 1985 model requires five parameters mu, k, pi_A, pi_C and pi_G')
+                raise ValueError(
+                    'A Hasegawa, Kishino and Yano 1985 model requires five parameters mu, k, pi_A, pi_C and pi_G'
+                )
             mu, k, piA, piC, piG = rate
             piT = 1 - piA - piC - piG
             if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
                 piG < 0 or piG > 1 or piT < 0 or piT > 1:
                 raise ValueError('Basic frequencies should be between 0 and 1')
-            m = [[0,        mu*piC,   mu*k*piG, mu*piT  ],
-                 [mu*piA,   0,        mu*piG,   mu*k*piT],
-                 [mu*k*piA, mu*piC,   0,        mu*piT  ],
-                 [mu*piA,   mu*k*piC, mu*piG,   0       ]]
+            m = [[0, mu * piC, mu * k * piG, mu * piT],
+                 [mu * piA, 0, mu * piG, mu * k * piT],
+                 [mu * k * piA, mu * piC, 0, mu * piT],
+                 [mu * piA, mu * k * piC, mu * piG, 0]]
         elif model == 'T92':
             if len(rate) != 2:
-                raise ValueError('A Tamura 1992 model requires two parameters mu and pi_GC')
+                raise ValueError(
+                    'A Tamura 1992 model requires two parameters mu and pi_GC')
             mu, piGC = rate
-            piG = piC = piGC/2.
-            piA = piT = (1 - piGC)/2.
+            piG = piC = piGC / 2.
+            piA = piT = (1 - piGC) / 2.
             if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
                 piG < 0 or piG > 1 or piT < 0 or piT > 1:
                 raise ValueError('Basic frequencies should be between 0 and 1')
-            m = [[0,      mu*piC, mu*piG, mu*piT],
-                 [mu*piA, 0,      mu*piG, mu*piT],
-                 [mu*piA, mu*piC, 0,      mu*piT],
-                 [mu*piA, mu*piC, mu*piG, 0     ]]
+            m = [[0, mu * piC, mu * piG, mu * piT],
+                 [mu * piA, 0, mu * piG, mu * piT],
+                 [mu * piA, mu * piC, 0, mu * piT],
+                 [mu * piA, mu * piC, mu * piG, 0]]
         elif model == 'TN93':
             if len(rate) != 6:
-                raise ValueError('A Tamura and Nei 1993 model requires six parameters mu, k1, k2, pi_A, pi_C and pi_G')
+                raise ValueError(
+                    'A Tamura and Nei 1993 model requires six parameters mu, k1, k2, pi_A, pi_C and pi_G'
+                )
             mu, k1, k2, piA, piC, piG = rate
             piT = 1 - piA - piC - piG
             if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
                 piG < 0 or piG > 1 or piT < 0 or piT > 1:
                 raise ValueError('Basic frequencies should be between 0 and 1')
-            m = [[0,         mu*piC,    mu*k1*piG, mu*piT   ],
-                 [mu*piA,    0,         mu*piG,    mu*k2*piT],
-                 [mu*k1*piA, mu*piC,    0,         mu*piT   ],
-                 [mu*piA,    mu*k2*piC, mu*piG,    0        ]]
+            m = [[0, mu * piC, mu * k1 * piG, mu * piT],
+                 [mu * piA, 0, mu * piG, mu * k2 * piT],
+                 [mu * k1 * piA, mu * piC, 0, mu * piT],
+                 [mu * piA, mu * k2 * piC, mu * piG, 0]]
         elif model == 'GTR':
             if len(rate) != 9:
-                raise ValueError('A generalized time reversible model requires nine parameters x1, ..., x6, pi_A, pi_C and pi_G')
+                raise ValueError(
+                    'A generalized time reversible model requires nine parameters x1, ..., x6, pi_A, pi_C and pi_G'
+                )
             x1, x2, x3, x4, x5, x6, piA, piC, piG = rate
             piT = 1 - piA - piC - piG
             if piA < 0 or piA > 1 or piC < 0 or piC > 1 or \
                 piG < 0 or piG > 1 or piT < 0 or piT > 1:
                 raise ValueError('Basic frequencies should be between 0 and 1')
-            m = [[0,  piA*x1/piC, piA*x2/piG, piA*x3/piT],
-                 [x1, 0,          piC*x4/piG, piC*x5/piT],
-                 [x2, x4,         0,          piG*x6/piT],
-                 [x3, x5,         x6,         0         ]]
+            m = [[0, piA * x1 / piC, piA * x2 / piG, piA * x3 / piT],
+                 [x1, 0, piC * x4 / piG, piC * x5 / piT],
+                 [x2, x4, 0, piG * x6 / piT], [x3, x5, x6, 0]]
         elif model == 'general':
             if len(rate) != 12:
-                raise ValueError('Please specify 12 parameters for this general nucleotide mutation model')
-            m = [[0,       rate[0],  rate[1],  rate[2]],
-                 [rate[3], 0,        rate[4],  rate[5]],
-                 [rate[6], rate[7],  0,        rate[8]],
-                 [rate[9], rate[10], rate[11], 0      ]]
+                raise ValueError(
+                    'Please specify 12 parameters for this general nucleotide mutation model'
+                )
+            m = [[0, rate[0], rate[1], rate[2]], [rate[3], 0, rate[4], rate[5]],
+                 [rate[6], rate[7], 0, rate[8]],
+                 [rate[9], rate[10], rate[11], 0]]
         else:
-            raise ValueError('Unrecognized nucleotide mutation model %s' % model)
-        MatrixMutator.__init__(self, m, loci, mapIn, mapOut,
-            output, begin, end, step, at, reps, subPops, infoFields, lineageMode)
+            raise ValueError('Unrecognized nucleotide mutation model %s' %
+                             model)
+        MatrixMutator.__init__(self, m, loci, mapIn, mapOut, output, begin, end,
+                               step, at, reps, subPops, infoFields, lineageMode)
 
 
 class AminoAcidMutator(MatrixMutator):
     '''
     This operator has not been implemented.
     '''
-    def __init__(self, rate=[], model='general', loci=ALL_AVAIL, mapIn=[], mapOut=[], 
-        output='', begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL,
-        infoFields=['ind_id'], lineageMode=FROM_INFO):
-        MatrixMutator.__init__(self, rate, loci, mapIn, mapOut,
-            output, begin, end, step, at, reps, subPops, infoFields, lineageMode)
+
+    def __init__(self,
+                 rate=[],
+                 model='general',
+                 loci=ALL_AVAIL,
+                 mapIn=[],
+                 mapOut=[],
+                 output='',
+                 begin=0,
+                 end=-1,
+                 step=1,
+                 at=[],
+                 reps=ALL_AVAIL,
+                 subPops=ALL_AVAIL,
+                 infoFields=['ind_id'],
+                 lineageMode=FROM_INFO):
+        MatrixMutator.__init__(self, rate, loci, mapIn, mapOut, output, begin,
+                               end, step, at, reps, subPops, infoFields,
+                               lineageMode)
+
 
 #
 # functions to corresponding operators
@@ -1088,21 +1286,26 @@ def dump(pop, *args, **kwargs):
     'Apply operator ``Dumper`` to population *pop*.'
     Dumper(*args, **kwargs).apply(pop)
 
+
 def initSex(pop, *args, **kwargs):
     'Apply operator ``InitSex`` to population *pop*.'
     InitSex(*args, **kwargs).apply(pop)
+
 
 def initInfo(pop, *args, **kwargs):
     'Apply operator ``InitInfo`` to population *pop*.'
     InitInfo(*args, **kwargs).apply(pop)
 
+
 def initGenotype(pop, *args, **kwargs):
     'Apply operator ``InitGenotype`` to population *pop*.'
     InitGenotype(*args, **kwargs).apply(pop)
 
+
 def initLineage(pop, *args, **kwargs):
     'Apply operator ``InitLineage`` to population *pop*.'
     InitLineage(*args, **kwargs).apply(pop)
+
 
 def pyEval(pop, *args, **kwargs):
     '''Evaluate statements *stmts* (optional) and expression *expr* in
@@ -1114,9 +1317,11 @@ def pyEval(pop, *args, **kwargs):
     '''
     return PyEval(*args, **kwargs).evaluate(pop)
 
+
 def pyExec(pop, *args, **kwargs):
     '''Execute *stmts* in population *pop*\ 's local namespace.'''
     PyExec(*args, **kwargs).apply(pop)
+
 
 def infoEval(pop, *args, **kwargs):
     '''Evaluate *expr* for each individual, using information fields as variables.
@@ -1124,19 +1329,23 @@ def infoEval(pop, *args, **kwargs):
     '''
     InfoEval(*args, **kwargs).apply(pop)
 
+
 def infoExec(pop, *args, **kwargs):
     '''Execute *stmts* for each individual, using information fields as variables.
     Please refer to operator ``InfoExec`` for details.
     '''
     InfoExec(*args, **kwargs).apply(pop)
 
+
 def migrate(pop, *args, **kwargs):
     'Function form of operator ``Migrator``.'
     Migrator(*args, **kwargs).apply(pop)
 
+
 def backwardMigrate(pop, *args, **kwargs):
     'Function form of operator ``BackwardMigrator``.'
     BackwardMigrator(*args, **kwargs).apply(pop)
+
 
 def splitSubPops(pop, *args, **kwargs):
     '''Split subpopulations (*subPops*) of population *pop* according to either
@@ -1145,11 +1354,13 @@ def splitSubPops(pop, *args, **kwargs):
     for details.'''
     SplitSubPops(*args, **kwargs).apply(pop)
 
+
 def mergeSubPops(pop, *args, **kwargs):
     '''Merge subpopulations *subPops* of population *pop* into a single
     subpopulation. Please refer to the operator form of this funciton
     (``MergeSubPops``) for details'''
     MergeSubPops(*args, **kwargs).apply(pop)
+
 
 def resizeSubPops(pop, *args, **kwargs):
     '''Resize subpopulations *subPops* of population *pop* into new sizes
@@ -1157,51 +1368,63 @@ def resizeSubPops(pop, *args, **kwargs):
     the operator form of this funciton (``ResizeSubPops``) for details'''
     ResizeSubPops(*args, **kwargs).apply(pop)
 
+
 def matrixMutate(pop, *args, **kwargs):
     'Function form of operator ``MatrixMutator``'
     MatrixMutator(*args, **kwargs).apply(pop)
+
 
 def snpMutate(pop, *args, **kwargs):
     'Function form of operator ``SNPMutator``'
     SNPMutator(*args, **kwargs).apply(pop)
 
+
 def acgtMutate(pop, *args, **kwargs):
     'Function form of operator ``AcgtMutator``'
     AcgtMutator(*args, **kwargs).apply(pop)
+
 
 def kAlleleMutate(pop, *args, **kwargs):
     'Function form of operator ``KAlleleMutator``'
     KAlleleMutator(*args, **kwargs).apply(pop)
 
+
 def stepwiseMutate(pop, *args, **kwargs):
     'Function form of operator ``StepwiseMutator``'
     StepwiseMutator(*args, **kwargs).apply(pop)
+
 
 def pyMutate(pop, *args, **kwargs):
     'Function form of operator ``PyMutator``'
     PyMutator(*args, **kwargs).apply(pop)
 
+
 def mixedMutate(pop, *args, **kwargs):
     'Function form of operator ``MixedMutator``'
     MixedMutator(*args, **kwargs).apply(pop)
+
 
 def contextMutate(pop, *args, **kwargs):
     'Function form of operator ``ContextMutator``'
     ContextMutator(*args, **kwargs).apply(pop)
 
+
 def pointMutate(pop, *args, **kwargs):
     'Function form of operator ``PointMutator``'
     PointMutator(*args, **kwargs).apply(pop)
 
+
 def revertFixedSites(pop, *args, **kwargs):
     'Function form of operator ``RevertFixedSites``'
     RevertFixedSites(*args, **kwargs).apply(pop)
+
 
 def stat(pop, *args, **kwargs):
     '''Apply operator ``Stat`` with specified parameters to population *pop*.
     Resulting statistics could be accessed from the local namespace of ``pop``
     using functions ``pop.vars()`` or ``pop.dvars()``'''
     Stat(*args, **kwargs).apply(pop)
+
 
 def tagID(pop, reset=False, *args, **kwargs):
     '''Apply operator ``IdTagger`` to population *pop* to assign a unique ID
@@ -1214,49 +1437,94 @@ def tagID(pop, reset=False, *args, **kwargs):
         IdTagger().reset(reset)
     IdTagger(*args, **kwargs).apply(pop)
 
-def mapPenetrance(pop, loci, penetrance, ancGens = ALL_AVAIL, *args, **kwargs):
+
+def mapPenetrance(pop, loci, penetrance, ancGens=ALL_AVAIL, *args, **kwargs):
     '''Apply opertor ``MapPenetrance`` to population *pop*. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
     MapPenetrance(loci, penetrance, ancGens, *args, **kwargs).apply(pop)
 
-def maPenetrance(pop, loci, penetrance, wildtype=0, ancGens = ALL_AVAIL, *args, **kwargs):
+
+def maPenetrance(pop,
+                 loci,
+                 penetrance,
+                 wildtype=0,
+                 ancGens=ALL_AVAIL,
+                 *args,
+                 **kwargs):
     '''Apply opertor ``MaPenetrance`` to population *pop*. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
-    MaPenetrance(loci, penetrance, wildtype, ancGens, *args, **kwargs).apply(pop)
+    MaPenetrance(loci, penetrance, wildtype, ancGens, *args,
+                 **kwargs).apply(pop)
 
-def mlPenetrance(pop, ops, mode, ancGens = ALL_AVAIL, *args, **kwargs):
+
+def mlPenetrance(pop, ops, mode, ancGens=ALL_AVAIL, *args, **kwargs):
     '''Apply opertor ``MapPenetrance`` to population *pop*. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
     MlPenetrance(ops, mode, ancGens, *args, **kwargs).apply(pop)
 
-def pyPenetrance(pop, func, loci=[], ancGens = ALL_AVAIL, *args, **kwargs):
+
+def pyPenetrance(pop, func, loci=[], ancGens=ALL_AVAIL, *args, **kwargs):
     '''Apply opertor ``PyPenetrance`` to population *pop*. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
     PyPenetrance(func, loci, ancGens, *args, **kwargs).apply(pop)
 
-def pyMlPenetrance(pop, func, mode, loci=[], ancGens = ALL_AVAIL, *args, **kwargs):
+
+def pyMlPenetrance(pop,
+                   func,
+                   mode,
+                   loci=[],
+                   ancGens=ALL_AVAIL,
+                   *args,
+                   **kwargs):
     '''Apply opertor ``PyMlPenetrance`` to population *pop*. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
     PyMlPenetrance(func, loci, mode, ancGens, *args, **kwargs).apply(pop)
 
-def pyQuanTrait(pop, func, loci=[], ancGens = ALL_AVAIL, *args, **kwargs):
+
+def mapSelect(pop, loci, fitness, *args, **kwargs):
+    '''Apply opertor ``MapSelector`` to population *pop*.'''
+    MapSelector(loci, fitness, *args, **kwargs).apply(pop)
+
+
+def maSelect(pop, loci, fitness, wildtype=0, *args, **kwargs):
+    '''Apply opertor ``MaSelector`` to population *pop*. '''
+    MaSelector(loci, fitness, wildtype, *args, **kwargs).apply(pop)
+
+
+def mlSelect(pop, ops, mode=MULTIPLICATIVE, *args, **kwargs):
+    '''Apply opertor ``MlSelector`` to population *pop*.'''
+    MlSelector(ops, mode, *args, **kwargs).apply(pop)
+
+
+def pySelect(pop, func, loci=[], *args, **kwargs):
+    '''Apply opertor ``PySelector`` to population *pop*.'''
+    PySelector(func, loci, *args, **kwargs).apply(pop)
+
+
+def pyMlSelect(pop, func, mode=EXPONENTIAL, loci=[], *args, **kwargs):
+    '''Apply opertor ``PyMlSelector`` to population *pop*.'''
+    PyMlSelector(func, mode, loci, *args, **kwargs).apply(pop)
+
+
+def pyQuanTrait(pop, func, loci=[], ancGens=ALL_AVAIL, *args, **kwargs):
     '''Apply opertor ``PyQuanTrait`` to population *pop*. Unlike the
     operator form of this operator that only handles the current generation,
     this function by default assign affection status to all generations.'''
     PyQuanTrait(func, loci, ancGens, *args, **kwargs).apply(pop)
+
 
 def discardIf(pop, *args, **kwargs):
     '''Apply operator ``DiscardIf`` to population *pop* to remove individuals according
     to an expression or a Python function.'''
     DiscardIf(*args, **kwargs).apply(pop)
 
+
 def setRNG(name='', seed=0):
     '''Set random number generator. This function is obsolete but is provided
     for compatibility purposes. Please use setOptions instead'''
     setOptions(name=name, seed=seed)
-

@@ -1513,13 +1513,21 @@ PyObject * PyDefDict_New()
 
 int initCustomizedTypes(PyObject * m)
 {
+#if PY_VERSION_HEX >= 0x030b0000
+	Py_SET_TYPE(&Arraytype, &PyType_Type);
+	if (PyType_Ready(&Arraytype) < 0)
+		return -1;
+	//
+	Py_SET_TYPE(&defdict_type, &PyType_Type);
+	defdict_type.tp_base = &PyDict_Type;
+#else
 	Py_TYPE(&Arraytype) = &PyType_Type;
 	if (PyType_Ready(&Arraytype) < 0)
 		return -1;
 	//
 	Py_TYPE(&defdict_type) = &PyType_Type;
 	defdict_type.tp_base = &PyDict_Type;
-
+#endif
 	if (PyType_Ready(&defdict_type) < 0)
 		return -1;
 
