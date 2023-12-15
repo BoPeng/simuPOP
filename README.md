@@ -1,5 +1,5 @@
 simuPOP is a general-purpose individual-based forward-time population genetics
-simulation environment. Please refer to the simuPOP homepage http://simupop.sourceforge.net for details.
+simulation environment. Please refer to the simuPOP homepage [https://bopeng.github.io/simuPOP/](https://bopeng.github.io/simuPOP/) for details.
 
 ## Installation
 
