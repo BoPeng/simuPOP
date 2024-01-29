@@ -1878,12 +1878,8 @@ bool HeteroMating::mate(Population &pop, Population &scratch)
 		{
 			if (fcmp_gt(w_neg[i], 0.))
 			{
-				vspSize[i] = static_cast<ULONG>(parentSize[i] * w_neg[i]);
-				DBG_ASSERT(all >= vspSize[i], ValueError,
-						   (boost::format("Mating scheme with a negative weight of %1% would like to produce %2%"
-										  " offspring, but there are only %3% unclaimed offspring left.") %
-							w_neg[i] % vspSize[i] % all)
-							   .str());
+				// issue 114, allow parental subpopulation to be larger than offspring subpopulation.
+				vspSize[i] = std::min(all, static_cast<ULONG>(parentSize[i] * w_neg[i]));
 				all -= vspSize[i];
 			}
 		}
