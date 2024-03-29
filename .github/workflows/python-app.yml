@@ -22,9 +22,9 @@ jobs:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
@@ -32,7 +32,6 @@ jobs:
         run: |
           sudo apt-get install libboost-all-dev
           ln -s /usr/include/boost/ ./boost_1_70_0
-          ls -la
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
