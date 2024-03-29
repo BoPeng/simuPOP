@@ -98,8 +98,8 @@ if distutils.sysconfig.get_config_var('CC') is not None:
 # versions are not available, and will most likely work just fine.
 boost_versions = ['1_35_0', '1_36_0', '1_37_0', '1_38_0', '1_39_0', '1_40_0',
     '1_42_0', '1_43_0', '1_44_0', '1_45_0', '1_46_0', '1_46_1', '1_47_0',
-    '1_48_0', '1_70_0']
-invalid_boost_versions = ['1_41_0']
+    '1_48_0', '1_62_0', '1_72_0', '1_74_0']
+invalid_boost_versions = ['1_41_0', '1_71_0']
 
 included_version = [x for x in boost_versions if os.path.isdir('boost_' + x)]
 invalid_version = [x for x in invalid_boost_versions if os.path.isdir('boost_' + x)]
@@ -127,23 +127,25 @@ if boost_dir == '':
     import tarfile
     downloadProgress.counter = 0
     try:
-        BOOST_URL = 'http://downloads.sourceforge.net/project/boost/boost/1.70.0/boost_1_70_0.tar.gz?r=&ts=1440446866&use_mirror=iweb'
-        sys.stdout.write('Downloading boost C++ library 1.70.0 ')
+        boost_version = boost_versions[-1]
+        dot_boost_version = boost_version.replace('_', '.')
+        BOOST_URL = f'http://downloads.sourceforge.net/project/boost/boost/{dot_boost_version}/boost_{boost_version}.tar.gz?r=&ts=1440446866&use_mirror=iweb'
+        sys.stdout.write(f'Downloading boost C++ library {dot_boost_version}')
         sys.stdout.flush()
-        if not os.path.isfile('boost_1_70_0.tar.gz'):
-            urlretrieve(BOOST_URL, 'boost_1_70_0.tar.gz', downloadProgress)
+        if not os.path.isfile(f'boost_{boost_version}.tar.gz'):
+            urlretrieve(BOOST_URL, f'boost_{boost_version}.tar.gz', downloadProgress)
         sys.stdout.write('\n')
         # extract needed files
-        with tarfile.open('boost_1_70_0.tar.gz', 'r:gz') as tar:
-            files = [h for h in tar.getmembers() if h.name.startswith('boost_1_70_0/boost') \
-                or h.name.startswith('boost_1_70_0/libs/iostreams') \
-                or h.name.startswith('boost_1_70_0/libs/serialization') \
-                or h.name.startswith('boost_1_70_0/libs/regex') \
-                or h.name.startswith('boost_1_70_0/libs/detail') ]
+        with tarfile.open(f'boost_{boost_version}.tar.gz', 'r:gz') as tar:
+            files = [h for h in tar.getmembers() if h.name.startswith(f'boost_{boost_version}/boost') \
+                or h.name.startswith(f'boost_{boost_version}/libs/iostreams') \
+                or h.name.startswith(f'boost_{boost_version}/libs/serialization') \
+                or h.name.startswith(f'boost_{boost_version}/libs/regex') \
+                or h.name.startswith(f'boost_{boost_version}/libs/detail') ]
             sys.stdout.write('Extracting %d files\n' % len(files))
             tar.extractall(members=files)
         EMBEDED_BOOST = True
-        boost_dir = 'boost_1_70_0'
+        boost_dir = f'boost_{boost_version}'
     except Exception as e:
         print(e)
         print('The boost C++ library version 1.49.0 is not found under the current directory. Will try to use the system libraries.')
@@ -766,6 +768,3 @@ if __name__ == '__main__':
         cmdclass = {'build_py': build_py},
         **setup_params
     )
-
-
-

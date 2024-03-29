@@ -92,8 +92,6 @@ from simuPOP import ALL_AVAIL, Pedigree, OUTBRED_SPOUSE, COMMON_OFFSPRING, FEMAL
     MALE, AFFECTED, tagID, getRNG
 
 import random
-def random_shuffle(x):
-    random.shuffle(x, getRNG().randUniform)
 
 def isSequence(obj):
     return hasattr(obj, '__iter__')
@@ -173,7 +171,7 @@ class BaseSampler:
         '''
         if numOfSamples < 0:
             raise ValueError("Negative number of samples are unacceptable")
-        # 
+        #
         return [self.drawSample(pop) for x in range(numOfSamples)]
 
 
@@ -200,7 +198,7 @@ class RandomSampler(BaseSampler):
                 size = self.pop.popSize()
             # randomly choose size individuals
             values = list(range(self.pop.popSize()))
-            random_shuffle(values)
+            random.shuffle(values)
             indexes = values[:size]
         else:
             indexes = []
@@ -210,7 +208,7 @@ class RandomSampler(BaseSampler):
                     print('Warning: sample size (%d) at subpopulation %d is greater than subpopulation size %d ' \
                         % (size, sp, self.pop.subPopSize(sp)))
                 values = list(range(self.pop.subPopBegin(sp), self.pop.subPopEnd(sp)))
-                random_shuffle(values)
+                random.shuffle(values)
                 indexes.extend(values[:size])
         return self.pop.extractIndividuals(indexes = indexes)
 
@@ -308,14 +306,14 @@ class CaseControlSampler(BaseSampler):
             self.prepareSample(input_pop)
         #
         if not isSequence(self.cases):
-            random_shuffle(self.affected)
-            random_shuffle(self.unaffected)
+            random.shuffle(self.affected)
+            random.shuffle(self.unaffected)
             indexes = self.affected[:self.cases] + self.unaffected[:self.controls]
         else:
             indexes = []
             for sp in range(self.pop.numSubPop()):
-                random_shuffle(self.affected[sp])
-                random_shuffle(self.unaffected[sp])
+                random.shuffle(self.affected[sp])
+                random.shuffle(self.unaffected[sp])
                 indexes.extend(self.affected[sp][:self.cases[sp]])
                 indexes.extend(self.unaffected[sp][:self.controls[sp]])
         return self.pop.extractIndividuals(indexes = indexes)
@@ -332,7 +330,7 @@ def drawCaseControlSample(pop, cases, controls, subPops=ALL_AVAIL):
     specified (virtual) subpopulations. This function returns a population with
     all extracted individuals.
     '''
-    return CaseControlSampler(cases, controls, subPops).drawSample(pop) 
+    return CaseControlSampler(cases, controls, subPops).drawSample(pop)
 
 
 def drawCaseControlSamples(pop, cases, controls, numOfSamples=1, subPops=ALL_AVAIL):
@@ -341,7 +339,7 @@ def drawCaseControlSamples(pop, cases, controls, numOfSamples=1, subPops=ALL_AVA
     populations. Please refer to function ``drawCaseControlSample`` for a
     detailed descriptions of parameters.
     '''
-    return CaseControlSampler(cases, controls, subPops).drawSamples(pop, numOfSamples) 
+    return CaseControlSampler(cases, controls, subPops).drawSamples(pop, numOfSamples)
 
 
 class PedigreeSampler(BaseSampler):
@@ -399,7 +397,7 @@ class PedigreeSampler(BaseSampler):
                     % (self.families, len(self.selectedIDs)))
             # a tuple might be returned
             self.selectedIDs = list(self.selectedIDs)
-            random_shuffle(self.selectedIDs)
+            random.shuffle(self.selectedIDs)
             # we select families one by one to exclude overlapping families.
             IDs = set()
             cnt = 0
@@ -422,7 +420,7 @@ class PedigreeSampler(BaseSampler):
                 #
                 # a tuple might be returned
                 self.selectedIDs[sp] = list(self.selectedIDs[sp])
-                random_shuffle(self.selectedIDs[sp])
+                random.shuffle(self.selectedIDs[sp])
                 # we select families one by one to exclude overlapping families.
                 cnt = 0
                 for id in self.selectedIDs[sp]:
@@ -475,7 +473,7 @@ class AffectedSibpairSampler(PedigreeSampler):
                     subPops=sp))
 
 
-def drawAffectedSibpairSample(pop, families, subPops=ALL_AVAIL, 
+def drawAffectedSibpairSample(pop, families, subPops=ALL_AVAIL,
     idField='ind_id', fatherField='father_id', motherField='mother_id'):
     '''Draw affected sibpair samples from a population. If a single
     ``families`` is given, affected sibpairs and their parents are drawn
@@ -488,9 +486,9 @@ def drawAffectedSibpairSample(pop, families, subPops=ALL_AVAIL,
     '''
     return AffectedSibpairSampler(families, subPops, idField, fatherField,
         motherField).drawSample(pop)
- 
 
-def drawAffectedSibpairSamples(pop, families, numOfSamples=1, subPops=ALL_AVAIL, 
+
+def drawAffectedSibpairSamples(pop, families, numOfSamples=1, subPops=ALL_AVAIL,
     idField='ind_id', fatherField='father_id', motherField='mother_id'):
     '''Draw ``numOfSamples`` affected sibpair samplesa from population ``pop`` and
     return a list of populations. Please refer to function
@@ -625,7 +623,7 @@ def drawNuclearFamilySample(pop, families, numOffspring, affectedParents=0,
     '''
     return NuclearFamilySampler(families, numOffspring, affectedParents,
         affectedOffspring, subPops, idField, fatherField, motherField).drawSample(pop)
- 
+
 
 def drawNuclearFamilySamples(pop, families, numOffspring, affectedParents=0,
     affectedOffspring=0, numOfSamples=1, subPops=ALL_AVAIL, idField='ind_id',
@@ -777,7 +775,7 @@ def drawThreeGenFamilySample(pop, families, numOffspring, pedSize, numOfAffected
     '''
     return ThreeGenFamilySampler(families, numOffspring, pedSize, numOfAffected,
         subPops, idField, fatherField, motherField).drawSample(pop)
- 
+
 
 def drawThreeGenFamilySamples(pop, families, numOffspring, pedSize, numOfAffected=0,
     numOfSamples=1, subPops=ALL_AVAIL, idField='ind_id', fatherField='father_id',
@@ -836,4 +834,3 @@ def drawCombinedSamples(pop, samplers, numOfSamples=1, idField='ind_id'):
     parameters ``samplers`` and ``idField``.
     '''
     return CombinedSampler(samplers, idField=idField).drawSamples(pop, numOfSamples)
-
