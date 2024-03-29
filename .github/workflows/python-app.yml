@@ -29,17 +29,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
       - name: Install boost
-        uses: MarkusJx/install-boost@v2.4.5
-        id: install-boost
-        with:
-          # REQUIRED: Specify the required boost version
-          # A list of supported versions can be found here:
-          # https://github.com/MarkusJx/prebuilt-boost/blob/main/versions-manifest.json
-          boost_version: 1.74.0
-          # OPTIONAL: Specify a platform version
-          platform_version: 22.04
-          # OPTIONAL: Specify a custom install location
-          boost_install_dir: /home/runner/boost_1_74_0
+        run: sudo apt-get install libboost-all-dev
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
