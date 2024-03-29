@@ -29,8 +29,8 @@
 % file revision $Rev: 3372$
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
-{\bf Email: } \textsf{bpeng@mdanderson.org}\\
-{\bf URL: } \textsf{http://simupop.sourceforge.net} \\
+{\bf Email: } \textsf{Bo.Peng@bcm.edu}\\
+{\bf URL: } \textsf{https://github.com/BoPeng/simuPOP} \\
 {\bf Mailing List: } \textsf{simupop-list@lists.sourceforge.net}
 }
 \author{Bo Peng}
@@ -86,7 +86,7 @@ xleftmargin=10pt}
 
 \maketitle
 \noindent\begin{minipage}[c][1\totalheight]{1\columnwidth}%
-\vspace{7.5in} 
+\vspace{7.5in}
 
  \copyright{}  2004-2008 Bo Peng \vspace{.3cm} \hrule \vspace{0.1cm} Permission
 is granted to make and distribute verbatim copies of this manual provided
@@ -113,7 +113,7 @@ scenarios, users of simuPOP\textquoteright s scripting interface could
 make use of many of its unique features, such as customized chromosome
 types, arbitrary nonrandom mating schemes, virtual subpopulations,
 information fields and Python operators, to construct and study almost
-arbitrarily complex evolutionary scenarios. 
+arbitrarily complex evolutionary scenarios.
 
 simuPOP is provided as a number of Python modules, which consist of
 a large number of Python objects and functions, including population,
@@ -137,7 +137,7 @@ Python 2.x, examples in this book are written in a style that is compatible
 with both versions of Python. For a complete and detailed description
 about all simuPOP functions and classes, please refer to the \emph{simuPOP
 Reference Manual}. All resources, including a pdf version of this
-guide and a mailing list can be found at the simuPOP homepage \texttt{http://simupop.sourceforge.net}.
+guide and a mailing list can be found at the simuPOP homepage \texttt{https://github.com/BoPeng/simuPOP}.
 
 \textbf{How to cite simuPOP:}
 
@@ -170,7 +170,7 @@ biological studies. More specifically,
 \item simuPOP is a \textbf{population genetics simulator} that simulates
 the evolution of populations. It uses a discrete generation model
 although overlapping generations could be simulated using nonrandom
-mating schemes. 
+mating schemes.
 \item simuPOP explicitly models \textbf{populations with individuals} who
 have their own genotype, sex, and auxiliary information such as age.
 The evolution of a population is modeled by populating an offspring
@@ -198,7 +198,7 @@ simulators to coordinate the evolutionary processes. It is the users\textquoteri
 responsibility to write a Python script to glue these pieces together
 and form a simulation. At a more user-friendly level, an increasing
 number of functions and scripts contributed by simuPOP users is available
-in the online simuPOP cookbook (\texttt{http://simupop.sourceforge.net/cookbook}).
+in the online simuPOP cookbook (\texttt{https://github.com/BoPeng/simuPOP/cookbook}).
 They provide useful functions for different applications (e.g. load
 and manipulate HapMap samples, import and export files from another
 application) and allow users who are unfamiliar with simuPOP to perform
@@ -308,7 +308,7 @@ and to store origin of each allele so that it is easy to track allelic
 lineage during evolution.
 \item The core of simuPOP is implemented in C++ which is heavily optimized
 for large-scale simulations. simuPOP can be executed in multiple threads
-with boosted performance on modern multi-core CPUs. 
+with boosted performance on modern multi-core CPUs.
 \item In addition to autosomes and sex chromosomes, simuPOP supports arbitrary
 types of chromosomes through customizable genotype transmitters. Random
 maternal transmission of mitochondrial DNAs is supported as a special
@@ -328,7 +328,7 @@ populations.
 A hybrid operator calls a user-provided Python function to implement
 arbitrary genetic effects. For example, a hybrid mutator passes to-be-mutated
 alleles to a function and mutates these alleles according to the returned
-values. 
+values.
 \item simuPOP provides more than 60 operators that cover all important aspects
 of genetic studies. These include mutation (\emph{e.g. k}-allele,
 stepwise, generalized stepwise and context-sensitive mutation models),
@@ -348,7 +348,7 @@ For example, positive assortative mating can be implemented by mating
 individuals with similar properties such as ancestry and overlapping
 generations could be simulated by copying individuals acorss generations.
 The number of offspring per mating event can be fixed or can follow
-a statistical distribution. 
+a statistical distribution.
 \end{enumerate}
 A number of forward-time simulation programs are available. If we
 exclude early forward-time simulation applications developed primarily
@@ -390,7 +390,7 @@ can be outputted.
 \section{License, Distribution and Installation}
 
 simuPOP is distributed under a GPL license and is hosted at\texttt{
-http://simupop.sourceforge.net}, the world's largest development and
+https://github.com/BoPeng/simuPOP}, the world's largest development and
 download repository of Open Source code and applications. simuPOP
 is available on any platform where Python is available, and is currently
 tested under both 32 and 64 bit versions of Windows (Windows 2000
@@ -411,11 +411,11 @@ ways, examples in this guide are written in a style that is compatible
 with both versions of Python. Some non-classic usages include the
 use of \texttt{a//b} instead of \texttt{a/b} for floored division
 and \texttt{list(range(3))} instead of \texttt{range(3)} for sequece
-\texttt{{[}0,1,2{]}} In particular, we use 
+\texttt{{[}0,1,2{]}} In particular, we use
 \begin{lstlisting}
 print("Population size is %d" % size)
 \end{lstlisting}
- instead of 
+ instead of
 \begin{lstlisting}
 print "Population size is %d" % size
 \end{lstlisting}
@@ -502,7 +502,7 @@ can be used as a shortcut for \texttt{infoFields={[}'x'{]}}.
 \end{itemize}
 The same rules also hold for function names. For example, \texttt{Population.addInfoFields()}
 accept a list of information fields but \texttt{pop.addInfoFields('field')}
-is also acceptable. 
+is also acceptable.
 \end{itemize}
 
 \section{Other help sources}
@@ -516,10 +516,10 @@ book, or at least go through the following online Python tutorials:
 If you are new to simuPOP, please read this guide before you dive
 into \emph{the simuPOP reference manual}, which describes all the
 details of simuPOP but does not show you how to use them. Both documents
-are available online at \texttt{http://simupop.sourceforge.net} in
+are available online at \texttt{https://github.com/BoPeng/simuPOP} in
 both searchable HTML format and PDF format.
 
-A \emph{simuPOP online cookbook} (\texttt{http://simupop.sourceforge.net}/\texttt{cookbook})
+A \emph{simuPOP online cookbook} (\texttt{https://github.com/BoPeng/simuPOP}/\texttt{cookbook})
 is a wiki-based website where you can browse and download examples,
 functions and scripts for various simulation scenarios, and upload
 your own code snippets for the benefit of all simuPOP users. Please
@@ -601,7 +601,7 @@ in Example \ref{lst:Reference-to-Population}. The subsequent use
 of this \texttt{pop} object may crash simuPOP because the simulator
 \texttt{simu} is destroyed, along with all its internal populations,
 after \texttt{func()} is finished, leaving \texttt{pop} referring
-to an invalid object. 
+to an invalid object.
 
 \begin{lstlisting}[caption={Reference to a population in a
 simulator},label={lst:Reference-to-Population}]
@@ -629,7 +629,7 @@ the simulator using the \texttt{extract} function
 \begin{lstlisting}
 return simu.extract(0)
 \end{lstlisting}
-would be more efficient. 
+would be more efficient.
 
 The \texttt{clone()} function exists for all simuPOP classes (objects)
 such as \emph{simulator}, \emph{mating schemes} and \emph{operators}.
@@ -795,7 +795,7 @@ and see whether or not an exception will be raised in optimized modules.
 versions}
 
 There are ten flavors of the core simuPOP module: short, long, binary,
-mutant, and lineage allele modules, and their optimized versions. 
+mutant, and lineage allele modules, and their optimized versions.
 \begin{itemize}
 \item The short allele modules use \emph{8 bits} to store each allele which
 limits the possible allele states to 256. This is enough most of the
@@ -825,7 +825,7 @@ and the cost of storing each allele is 8 (value) + 32 (lineage) bits.
 \end{itemize}
 Despite of differences in internal memory layout, all these modules
 have the same interface, although some functions behave differently
-in terms of functionality and performance. 
+in terms of functionality and performance.
 
 Standard libraries have detailed debug and run-time validation mechanism
 to make sure a simulation executes correctly. Whenever something unusual
@@ -905,7 +905,7 @@ in multiple threads. For example, if your script uses a sex mode of
 to the global sequence of sexes (e.g. male, male, female), simuPOP
 will only use on thread to generate offspring because it is not feasible
 to assign individual sex from a single source of list across multiple
-threads. 
+threads.
 
 \subsection{Graphical user interface}
 
@@ -968,7 +968,7 @@ help information of the constructor of class \texttt{Population}:
 functions of their base classes. For example, class \texttt{Population}
 and \texttt{Individual} are both derived from class \texttt{GenoStruTrait}.
 Therefore, you can use all \texttt{GenoStruTrait} member functions
-from these classes. 
+from these classes.
 
 In addition, the constructor of a derived class also calls the constructor
 of its base class so you may have to refer to the base class for some
@@ -999,14 +999,14 @@ However, the reason is clear if you turn on debug information:
 >>> turnOnDebug(DBG_POPULATION)
 >>> Population(1, loci=100).individual(0).genotype()
 Constructor of population is called
-Destructor of population is called 
+Destructor of population is called
 Segmentation fault (core dumped)
 \end{lstlisting}
 \texttt{Population(1, loci={[}100{]})} creates a temporary object
 that is destroyed right after the execution of the command. When Python
 tries to display the genotype, it will refer to an invalid location.
 The correct method to print the genotype is to create a persistent
-population object: 
+population object:
 
 \begin{lstlisting}
 >>> pop = Population(1, loci=[100])
@@ -1018,7 +1018,7 @@ is set, it will output warning messages for some common misuse of
 simuPOP. For example, it will warn you that population object returned
 by function \texttt{Simulator.population()} is a temporary object
 that will become invalid once a simulator is changed. If you are new
-to simuPOP, it is recommended that you use 
+to simuPOP, it is recommended that you use
 \begin{lstlisting}
 import simuOpt
 simuOpt.setOptions(optimized=False, debug='DBG_WARNING')
@@ -1058,7 +1058,7 @@ all instances of simuPOP even if they are initialized at the same
 time. After simuPOP is loaded, you can reset this system RNG with
 a different random number generator (c.f. \texttt{moduleInfo(){[}'availableRNGs'{]}}\index{moduleInfo})
 or use a specified seed using function , \texttt{setRNG(name, seed)}\index{setRNG}.
- 
+
 
 \texttt{getRNG().seed()} returns the seed of the simuPOP random number
 generator. It can be used to replay your simulation if \texttt{getRNG()}
@@ -1094,7 +1094,7 @@ example, look up the index of a locus by its name (c.f. \texttt{locusByName()},
 In simuPOP, locus is a (named) position and alleles are just different
 numbers at that position. \textbf{A locus can be a gene, a nucleotide,
 or even a deletion, depending on how you define alleles and mutations}.
-For example, 
+For example,
 \begin{itemize}
 \item A codon can be simulated as a locus with 64 allelic states, or three
 locus each with 4 allelic states. Alleles in the first case would
@@ -1173,7 +1173,7 @@ will be used if they are not specified. Whereas \texttt{locusName},
 (empty string or specified value) for any locus, subpopulation or
 allele, respectively, \texttt{lociNames}, \texttt{subPopNames} and
 \texttt{alleleNames} only return specified values, which can be empty
-lists. 
+lists.
 \end{note}
 
 \subsection{Haploid, diploid and haplodiploid populations}
@@ -1439,7 +1439,7 @@ resize subpopulations, and move individuals between subpopulations
 (migration).
 
 Example \ref{subPopName} demonstrates how to use some of the subpopulation
-related functions. 
+related functions.
 
 \lstinputlisting[caption={Manipulation of subpopulations},label={subPop}]{log/subPop.log}
 
@@ -1510,7 +1510,7 @@ individuals.
 A \texttt{CombinedSplitter} can be used if your simulation needs more
 than one sets of VSPs. For example, you may want to split your subpopulations
 both by sex and by affection status. In this case, you can define
-a combined splitter using 
+a combined splitter using
 \begin{lstlisting}
 CombinedSplitter(splitters=[SexSplitter(), AffectionSplitter()])
 \end{lstlisting}
@@ -1542,7 +1542,7 @@ you want to consider Individuals with information field a < 0 or a
 $0\leq a<100$ and $a\geq100$, respectively. The trick here is to
 use parameter \texttt{vspMap} of a \texttt{CombinedSplitter}. If this
 parameter is defined, multiple VSPs could be groups or reordered to
-define a new set of VSPs. For example, 
+define a new set of VSPs. For example,
 \begin{lstlisting}
 CombinedSplitter(splitters=[InfoSplitter(field='a', cutoff=[0, 100])], vspMap=[[0,2], 1])
 \end{lstlisting}
@@ -1662,7 +1662,7 @@ generation. \texttt{idx} \texttt{= 1} for the parental generation,
 \texttt{2} for grand-parental, ..., and \texttt{0} for the present
 generation. This is useful because most population functions act on
 the \emph{present} generation. You should always call \texttt{setAncestralPop(0)}
-after you examined the ancestral generations. 
+after you examined the ancestral generations.
 \end{itemize}
 If a population has several ancestral generations, they are referred
 by their indexes 0 (the latest generation), 1 (parental generation),
@@ -1729,15 +1729,15 @@ or more information fields. simuPOP will pass individual for parameter
 in this example) of each individual to this function. The present
 population structure will be kept, even if some subpopulations are
 left empty. For example, you could remove the first thirty individuals
-of a population using 
+of a population using
 \begin{lstlisting}
 pop.removeIndividuals(indexes=range(30))
 \end{lstlisting}
-or remove all individuals at age 20 or 30 using 
+or remove all individuals at age 20 or 30 using
 \begin{lstlisting}
 pop.removeIndividuals(IDs=(20, 30), idField='age')
 \end{lstlisting}
-or remove all individuals with age between 20 and 30 using 
+or remove all individuals with age between 20 and 30 using
 \begin{lstlisting}
 pop.removeIndividuals(filter=lambda age: age >=20 and age <=30)
 \end{lstlisting}
@@ -1815,7 +1815,7 @@ If you need to save a simuPOP population in a format that is recognizable
 by a particular software, you can use functions \texttt{importPopulation},
 \texttt{export}, and operator \texttt{Exporter} if you would like
 to export populations during evolution. These functions are defined
-in module \texttt{simuPOP.utils}. 
+in module \texttt{simuPOP.utils}.
 
 \subsection{Import and export datasets in unsupported formats {*}}
 
@@ -2035,7 +2035,7 @@ the any of the allowed output string or function. This object tells
 simuPOP that the output is opened in binary model so that it should
 output bytes instead of texts to it. This is mostly designed for Python
 3 because file objects in Python 2 accepts string even if they are
-opened in binary mode. 
+opened in binary mode.
 \end{itemize}
 Because a table output such as the one in Example \ref{hybridOperator}
 is written by several operators, it is clear that all of them need
@@ -2134,12 +2134,12 @@ as follows
 \lstinputlisting[caption={The function form of operator \texttt{InitGenotype}},label={funcform}]{log/funcform.log}
 
 These functions are called function form of operators. Using these
-functions, the above two example can be written as 
+functions, the above two example can be written as
 
 \begin{lstlisting}
 initGenotype(pop, freq=[.3, .2, .5])
 \end{lstlisting}
-and 
+and
 
 \begin{lstlisting}
 pyPenetrance(pop, func=myPenetrance, loci=[10, 30, 50])
@@ -2237,7 +2237,7 @@ will assign these haplotypes with different frequencies. If there
 are more than two loci, the haplotypes will be repeated.
 \item By frequency of haplotypes. For example, \texttt{InitGenotype(haplotypes={[}{[}0,
 0{]}, {[}1,1{]}, {[}0,1{]},{[}1,1{]}{]}, prop={[}0.2, 0.2, 0.3, 0.3{]})}
-will assign four haplotypes with exact proportions. 
+will assign four haplotypes with exact proportions.
 \item By a list of genotype. For example, \texttt{InitGenotype(genotype={[}1,
 2, 2, 1{]})} will assign genotype \texttt{1}, \texttt{2}, \texttt{2},
 \texttt{1} repeatedly to a population. If individuals in this population
@@ -2275,7 +2275,7 @@ or a Python function. If a value or a list of value is given, it will
 be used repeatedly to assign values of specified information fields
 of all applicable individuals. For example, \texttt{initInfo(pop,
 values=1, infoFields='x')} will assign value \texttt{1} to information
-field \texttt{x} of all individuals, and 
+field \texttt{x} of all individuals, and
 \begin{lstlisting}
 initInfo(pop, values=[1, 2, 3], infoFields='x', subPops=[(0,1)])
 \end{lstlisting}
@@ -2287,7 +2287,7 @@ The \texttt{values} parameter also accepts a Python function. This
 feature is usually used to assign random values to an information
 field. For example, \texttt{values=random.random} would assign a random
 value between 0 and 1. If a function takes parameters, a lambda function
-can be used. For example, 
+can be used. For example,
 \begin{lstlisting}
 initInfo(pop, lambda : random.randint(2, 5), infoFields=['x', 'y'])
 \end{lstlisting}
@@ -2339,7 +2339,7 @@ to access properties of a population other than its variables. Example
 \ref{PyEval} demonstrates both features. In this example, two statements
 are executed to count the number of unique parents in an offspring
 population and save them as variables \texttt{numFather} and \texttt{numMother}.
-The operator outputs these two variables alone with a generation number. 
+The operator outputs these two variables alone with a generation number.
 
 \lstinputlisting[caption={Evaluate a expression and statements in a population's local namespace.},label={PyEval}]{log/PyEval.log}
 
@@ -2410,7 +2410,7 @@ the namespace explicitly, using something like
 \begin{lstlisting}
 exec('import random', pop.vars(), pop.vars())
 \end{lstlisting}
-before you evolve the population. 
+before you evolve the population.
 
 Example \ref{outputByInterval} demonstrates the application of this
 technique. This example imports the \texttt{time} module in the population's
@@ -2433,7 +2433,7 @@ detail in section \ref{subsec:offspring-size}. In summary,
 \item The subpopulation sizes of the offspring generation will be the same
 as the parental generation if subPopSize is not set.
 \item The offspring generation will have a fixed size if \texttt{subPopSize}
-is set to a number (no subpopulation) or a list of subpopulation sizes. 
+is set to a number (no subpopulation) or a list of subpopulation sizes.
 \item The subpopulation sizes of an offspring generation will be determined
 by the return value of a demographic function if \texttt{subPopSize}
 is set to such a function (a function that returns subpopulation sizes
@@ -2482,7 +2482,7 @@ Needless to say, $m$ and $n$ are determined by the number of \emph{from}
 and \emph{to} subpopulations.
 \end{itemize}
 Example \ref{migrateByProb} demonstrate the use of a \texttt{Migrator}
-to migrate individuals between three subpopulations. Note that 
+to migrate individuals between three subpopulations. Note that
 \begin{itemize}
 \item Operator \texttt{Migrator} relies on an information field \texttt{migrate\_to}
 (configurable) to record destination subpopulation of each individual
@@ -2595,7 +2595,7 @@ if the conversion process fails.
 To explain the differences between forward and backward migration
 matrices, let us assume that there are $d$ subpopulations with population
 sizes $S=\left[S_{1},S_{2},...,S_{d}\right]$, and a forward migration
-matrix 
+matrix
 \[
 F=\left[\begin{array}{cccc}
 f_{11} & f_{12} & \cdots & f_{1d}\\
@@ -2608,7 +2608,7 @@ where $f_{ij}$ is the probability that an individual will migration
 from subpopulation $i$ to $j$. After migration happens, subppulation
 sizes are changed to $S'=\left[S'_{1},S'_{2},...,S'_{d}\right]$,
 and the origin of individuals in each subpopulation can be described
-by the backward migration matrix 
+by the backward migration matrix
 \[
 B=\left[\begin{array}{cccc}
 b_{11} & b_{12} & \cdots & b_{1d}\\
@@ -2618,11 +2618,11 @@ b_{d1} & b_{d2} & \cdots & b_{dd}
 \end{array}\right]
 \]
 where $b_{ij}$ is the probability that an individual in subpopulation
-$i$ originates from subpopulation $j$. 
+$i$ originates from subpopulation $j$.
 
 These qualities can be derived from original population sizes and
 the forward migration matrix. That is to say, the size of new subpopulation
-$k$ is the sum of all migrants to this subpopulation 
+$k$ is the sum of all migrants to this subpopulation
 \[
 S'_{k}={\displaystyle \sum_{i=1}^{d}}S_{i}f_{ik}
 \]
@@ -2632,7 +2632,7 @@ from this subpopulation
 S_{k}={\displaystyle \sum_{i=1}^{d}}S'_{i}b_{ik}
 \]
 and the composition of subpopulation $k$ (e.g. individuals originate
-from subpopulation $j$) is 
+from subpopulation $j$) is
 \[
 b_{kj}=\dfrac{S_{j}f_{jk}}{S'_{k}}
 \]
@@ -2641,7 +2641,7 @@ In matrix form, these formulas can be written as
 \[
 S'=F^{T}S
 \]
- 
+
 \[
 S=B^{T}S'
 \]
@@ -2652,7 +2652,7 @@ B=diag(S')^{-1}F^{T}diag(S)
 \]
 
 Therefore, given a backward migration matrix $B$ and current population
-size $S$, we can derive a forward migration matrix using 
+size $S$, we can derive a forward migration matrix using
 \[
 S'=\left(B^{T}\right)^{-1}S
 \]
@@ -2666,7 +2666,7 @@ Note that $F=B$ is always true if $B$ is symmetric and $S_{i}=S_{j}$
 case. Also note that $B$ might not be inversable and $S'$ and $F$
 might be invalid (e.g. negative population size or forward migration
 rate) for given $B$ and $S$. simuPOP will terminate with an error
-message in these cases. 
+message in these cases.
 
 The following example \ref{backwardMigration} demonstrates how to
 use a backward migration matrix to perform migration. It initializes
@@ -2677,7 +2677,7 @@ overseved backward migration matrix is similar to specified migration
 matrix despite of stochastic effects. This example also uses turnOnDebug
 function to let the operator print the expected subpopulation size
 ($S'$) and calculate forward migration matrix ($F$) at each generation,
-which, as expected, vary from generation to generation. 
+which, as expected, vary from generation to generation.
 
 \lstinputlisting[caption={Migration using a backward migration matrix},label={backwardMigration}]{log/backwardMigrate.log}
 
@@ -2753,7 +2753,7 @@ of pre-determined migration matrices. You can use a number of \texttt{Migrators}
 that are applied at different generations. For example, you can use
 the following operators to apply the first migration scheme during
 first ten generations (0, ..., 9), and the second migration scheme
-during the rest of the evolutionary process: 
+during the rest of the evolutionary process:
 \begin{lstlisting}
 preOps=[
     Migrator(rate=M1, end=9),
@@ -2810,7 +2810,7 @@ as mitochondrial chromosomes and transmit maternal mitochondrial chromosomes
 randomly to an offspring. This genotype transmitter can be applied
 to populations of \textbf{any ploidy} type. It trasmits the first
 homologous copy of chromosomes maternally and clears alleles on other
-homologous copies of chromosomes of an offspring. 
+homologous copies of chromosomes of an offspring.
 \end{itemize}
 
 \subsection{Recombination (Operator \texttt{Recombinator})}
@@ -2833,7 +2833,7 @@ Recombination rates could be specified in the following ways:
 it will be the recombination rate between all adjacent loci, regardless
 of loci position.
 \item If recombination happens only after certain loci, you can specify
-these loci using parameter \texttt{loci}. For example, 
+these loci using parameter \texttt{loci}. For example,
 \begin{lstlisting}
 Recombinator(rates=0.1, loci=[2, 5])
 \end{lstlisting}
@@ -2871,7 +2871,7 @@ to a population
 Population(size=100, loci=[4], lociPos=[0.1, 0.2, 0.4, 0.8])
 \end{lstlisting}
 The recombination rates between adjacent markers will be \texttt{0.1{*}0.1},
-\texttt{0.1{*}0.2} and \texttt{0.1{*}0.4} respectively. 
+\texttt{0.1{*}0.2} and \texttt{0.1{*}0.4} respectively.
 \end{enumerate}
 \lstinputlisting[caption={Genetic recombination at all and selected loci},label={recRate}]{log/recRate.log}
 
@@ -3044,7 +3044,7 @@ on.
 \subsection{k-allele mutation model (\texttt{KAlleleMutator})}
 
 A $k$-allele model assumes $k$ alleles $\left(0,1,...,k-1\right)$
-at a locus and mutate between them using rate matrix 
+at a locus and mutate between them using rate matrix
 \[
 p_{ij}=\left(\begin{array}{cccc}
 1-\mu & \frac{\mu}{k-1} & \cdots & \frac{\mu}{k-1}\\
@@ -3148,7 +3148,7 @@ below:
 The Jukes and Cantor model is similar to a $4$-allele model but its
 definition of $\mu$ is different. More specifically, when a mutation
 event happens at rate $\mu$, an allele will have equal probability
-to mutate to any of the 4 allelic states. 
+to mutate to any of the 4 allelic states.
 \[
 R=\left(\begin{array}{cccc}
 - & \frac{\mu}{4} & \frac{\mu}{4} & \frac{\mu}{4}\\
@@ -3176,11 +3176,11 @@ R=\left(\begin{array}{cccc}
 \]
 
 \item Felsenstein 1981 model: \texttt{model='F81'}, rate={[}$\mu$, $\pi_{A}$,
-$\pi_{C}$, $\pi_{G}${]}. 
+$\pi_{C}$, $\pi_{G}${]}.
 
 This model assumes different base frequencies but the same probabilities
 for transitions and transversions. $\pi_{T}$ is calculated from $\pi_{A}$,
-$\pi_{C}$ and $\pi_{G}$. 
+$\pi_{C}$ and $\pi_{G}$.
 \[
 R=\left(\begin{array}{cccc}
 - & \mu\pi_{C} & \mu\pi_{G} & \mu\pi_{T}\\
@@ -3363,23 +3363,23 @@ mutator can be specified to mutate alleles with unknown context. Example
 rates under different contexts.
 
 \lstinputlisting[caption={A context-dependent mutation model},label={ContextMutator}]{log/ContextMutator.log}Note
-that although 
+that although
 \begin{lstlisting}
 ContextMutator(mutators=[
     SNPMutator(u=0.1),
     SNPMutator(u=1)],
     contexts=[(0, 0), (1, 1)],
     rates=0.01
-)    
+)
 \end{lstlisting}
-and 
+and
 \begin{lstlisting}
 ContextMutator(mutators=[
     SNPMutator(u=0.001),
     SNPMutator(u=0.01)],
     contexts=[(0, 0), (1, 1)],
     rates=1
-)    
+)
 \end{lstlisting}
 both apply two \texttt{SNPMutator} at mutation rates \texttt{0.001}
 and \texttt{0.01}, the former is more efficient because it triggers
@@ -3444,7 +3444,7 @@ model, you may want to use the \texttt{pop.recodeAlleles()} function
 to recode your alleles so that appropriate mutation models could be
 applied. If this is not possible, you can use a general mutation model
 with your own mutation matrix, or an advanced feature called \textbf{allele
-mapping}. 
+mapping}.
 
 Allele mapping is done through two parameters \emph{mapIn} and \emph{mapOut},
 which map alleles in your population to and from alleles assumed in
@@ -3498,7 +3498,7 @@ as the overall mutation rate, and then
 Because $\mu$ is usually very small and is the same for all alleles,
 this step can be implemented efficiently.
 \item When a mutation event happens, mutation allele $i$ to allele $j$
-with probability 
+with probability
 \[
 \mbox{Pr}\left(i\rightarrow j\right)=\begin{cases}
 1-\frac{1}{\mu}\left(1-p_{ii}\right) & \mbox{if }i=j\\
@@ -3510,7 +3510,7 @@ Because steps 1 and 2 are independent, it is easy to verify that
 \[
 p_{ij}=\mu\mbox{Pr}\left(i\rightarrow j\right)
 \]
-if $i\ne j$ and 
+if $i\ne j$ and
 \[
 p_{ii}=\left(1-\mu\right)+\mu\mbox{Pr}\left(i\rightarrow i\right)
 \]
@@ -3518,7 +3518,7 @@ where the first and second items are probabilities of no-mutation
 at steps 1 and 2. $\mu$ was chosen as the smallest $\mu$ that makes
 $0\leq\mbox{Pr}\left(i\rightarrow i\right)\leq1$ for all $i$.
 
-For example, for a $k$-allele model with 
+For example, for a $k$-allele model with
 \[
 p_{ij}=\left(\begin{array}{cccc}
 1-\mu & \frac{\mu}{k-1} & \cdots & \frac{\mu}{k-1}\\
@@ -3527,7 +3527,7 @@ p_{ij}=\left(\begin{array}{cccc}
 \frac{\mu}{k-1} & \frac{\mu}{k-1} & \cdots & 1-\mu
 \end{array}\right)
 \]
-$\mu$ is directly $\mu$ for the first step and 
+$\mu$ is directly $\mu$ for the first step and
 \[
 \mbox{Pr}\left(i\rightarrow j\right)=\begin{cases}
 0 & \mbox{if }i=j\\
@@ -3539,7 +3539,7 @@ model could be interpreted as the probability of mutation, and a mutation
 event would mutate an allele to any other allele with equal probability.
 
 For a classical mutation model with $P\left(A\rightarrow a\right)=u$
-and $P\left(a\rightarrow A\right)=v$, 
+and $P\left(a\rightarrow A\right)=v$,
 \[
 p_{ij}=\left(\begin{array}{cc}
 1-u & u\\
@@ -3628,7 +3628,7 @@ dictionary variable. As we can see from the output, because the KAlleleMutator
 uses a higher mutation rate (0.01) at locus 1 than mutation rate (0.001)
 at locus 0, there are 10 times more mutants at the second locus. There
 are about 3/4 mutations on the locus on chromosome X and 1/4 mutations
-on the locus on chromosome Y, for obvious reasons. 
+on the locus on chromosome Y, for obvious reasons.
 
 \lstinputlisting[caption={Count number of mutants from mutator outputs},label={countMutants}]{log/countMutants.log}
 
@@ -3684,7 +3684,7 @@ This operator supports haplodiploid populations and sex chromosomes.
 In these cases, only valid alleles should be listed which can lead
 to dictionary keys with different lengths. In addition, although less
 used because of potentially a large number of keys, this operator
-can act on multiple loci. For example, 
+can act on multiple loci. For example,
 \begin{itemize}
 \item keys \texttt{(a1,a2)} and \texttt{(a1,)} can be used to specify fitness
 values for female and male individuals in a haplodiploid population,
@@ -3710,7 +3710,7 @@ are assumed to have the same impact on fitness.
 \end{itemize}
 The default wildtype group contains allele 0 so the two allele groups
 are zero and non-zero alleles. Example \ref{MaPenetrance} demonstrates
-the use of this operator. 
+the use of this operator.
 
 \lstinputlisting[caption={A multi-allele penetrance model},label={MaPenetrance}]{log/MaPenetrance.log}
 
@@ -3778,7 +3778,7 @@ def pfunc(geno):
 and use this function in an operator \texttt{PySelector(func=pfunc,
 loci=loci)}. If your penetrance model depends on genotype as well
 as some information fields, you can define a function in the form
-of 
+of
 
 \begin{lstlisting}
 def pfunc(geno, fields):
@@ -3834,7 +3834,7 @@ field\_name, gen)} where \texttt{field\_name} should be name of existing
 fields. simuPOP will pass genotype and value of specified fields according
 to name of the passed function. Note that geno are arrange locus by
 locus, namely in the order of \texttt{A1},\texttt{A2},\texttt{B1},\texttt{B2}
-for loci \texttt{A} and \texttt{B}. 
+for loci \texttt{A} and \texttt{B}.
 
 A quantitative trait operator can be applied before or after mating
 and assign values to the trait fields of all parents or offspring,
@@ -3918,7 +3918,7 @@ is less efficient than selection through parents. In addition, absolute
 fitness is usually more difficult to estimate than relative fitness.
 So, unless there are compelling reasons (e.g. simulating realistic
 scenarios of survival competition among offspring), selection through
-parents are recommended. 
+parents are recommended.
 
 Example \ref{selectOffspring} gives an example of natural selection
 through the selection of offspring. This example looks almost identical
@@ -3957,11 +3957,11 @@ and each offspring has certain probability to survive.
 
 Now, if we select through parents, the proportion of parents with
 genotype $AA$ will be the number of $AA$ individuals times its probability
-to be chosen: 
+to be chosen:
 \[
 n_{AA}\frac{w_{AA}}{\sum_{n=1}^{N}w_{n}}
 \]
-This is, however, exactly 
+This is, however, exactly
 \[
 n_{AA}\frac{w_{AA}}{\sum_{n=1}^{N}w_{n}}=\frac{n_{AA}w_{AA}}{n_{AA}w_{AA}+n_{Aa}w_{Aa}+n_{aa}w_{aa}}=\frac{P_{AA}w_{AA}}{P_{AA}w_{AA}+P_{Aa}w_{Aa}+P_{aa}w_{aa}}=P_{AA}'
 \]
@@ -3988,7 +3988,7 @@ $s_{2}=w_{12}-w_{22}$, the stable allele frequency of allele 0 is
 \[
 p=\frac{s_{2}}{s_{1}+s_{2}}
 \]
-which is $\frac{2}{3}$ in the example ($s_{1}=.1$, $s_{2}=.2$). 
+which is $\frac{2}{3}$ in the example ($s_{1}=.1$, $s_{2}=.2$).
 
 \lstinputlisting[caption={A selector that uses pre-defined fitness value},label={MapSelector}]{log/MapSelector.log}
 
@@ -4098,7 +4098,7 @@ def fitness_func(geno):
 \end{lstlisting}
 and use this function in an operator \texttt{PySelector(func=fitness\_func,
 loci=loci)}. If your selection model depends on genotype as well as
-some information fields, you can define a function in the form of 
+some information fields, you can define a function in the form of
 
 \begin{lstlisting}
 def fitness_func(geno, field1, field2):
@@ -4122,7 +4122,7 @@ to a user-specified Python function, and take its return value as
 fitness. As you can imagine, the incorporation of information fields
 and generation number allow the implementation of very complex selection
 scenarios such as gene environment interaction and varying selection
-pressures. 
+pressures.
 
 Example \ref{PySelector} demonstrates how to use a \texttt{PySelector}
 to specify fitness values according to a fitness table and the smoking
@@ -4155,7 +4155,7 @@ to implement a fitness model where each mutant has a random fitness
 drawn from a Gamma distribution. An additive model is used so a homozygote
 will have a fitness penalty that doubles that of a heterozygote. Because
 the fitness values of heterozygote and homozygote at each locus are
-requested separately, a class is used to store locus-specific s values. 
+requested separately, a class is used to store locus-specific s values.
 
 The fitness value of each locus-genotype pair is outputted to a file,
 and it should be interesting to plot the distribution of allele frequency
@@ -4167,7 +4167,7 @@ from stronger negative natural selection are supposed to be rarer.
 \subsection{Alternative implementations of natural selection}
 
 If you know how natural selection works in simuPOP, you do not have
-to use a selector to perform natural selection. For example, 
+to use a selector to perform natural selection. For example,
 \begin{itemize}
 \item If you choose to use fitness values of parents to perform probabilistic
 natural selection during mating, you just need to set individual fitness
@@ -4202,7 +4202,7 @@ to select against, but not remove, affected parents, and similarly
 \texttt{InfoExec('fitness = 1 - 0.01{*}(LDL > 250)')} to select against
 individuals according to a quantitative trait. For this particular
 example, a \texttt{DiscardIf} operator could be used, although it
-can be slower because of the explicit removal of parents. 
+can be slower because of the explicit removal of parents.
 
 \lstinputlisting[caption={Natural selection according to individual affection status},label={peneSelector}]{log/peneSelector.log}
 
@@ -4212,7 +4212,7 @@ If individual fitness depends on individual information fields and/or
 population variables, you will have to calculate individual fitness
 using expressions or functions. In order to access individual information
 fields and population variable and calculate individual fitness, you
-have the option to 
+have the option to
 \begin{itemize}
 \item Use a \texttt{PySelector} and pass genotype, values of information
 fields, references to individual and population to a user-provided
@@ -4295,7 +4295,7 @@ to tag only offspring that belong to specified virtual subpopulation.
 
 An inheritance tagger passes values of parental information field(s)
 to the corresponding offspring information field(s). Depending on
-the parameters, an InheritTagger can 
+the parameters, an InheritTagger can
 \begin{itemize}
 \item For asexual mating schemes, pass one or more information fields from
 parent to offspring.
@@ -4376,7 +4376,7 @@ Because families with lethal alleles produce the same number of offspring
 as families without such alleles, natural selection happens within
 each families and is weaker than the case when natural selection is
 used to all offspring. This phenomena is generally referred to as
-reproductive compensation. 
+reproductive compensation.
 
 \subsection{Assign unique IDs to individuals (operator \texttt{IdTagger})}
 
@@ -4570,7 +4570,7 @@ statisic calculated. Other statistics could be calculated and outputted
 if their names are specified in parameter \texttt{vars}. Variable
 names ending with \texttt{\_sp} is interpreted as variables that will
 be calculated and outputted in all or specified (virtual) subpopulations.
-For example, parameter \texttt{vars} in  
+For example, parameter \texttt{vars} in
 \begin{lstlisting}
 Stat(alleleFreq=[0], subPops=[0, (1, 0)], vars=['alleleFreq_sp', 'alleleNum_sp'])
 \end{lstlisting}
@@ -4603,7 +4603,7 @@ subpopulations. During the calculation of summary statistics, these
 subpopulations are treated as separate subpopulations so some individuals
 can be counted more than once. For example, individuals in virtual
 subpopulation (0, 1) will be counted twice during the calculation
-of allele frequency and population size in operator 
+of allele frequency and population size in operator
 \begin{lstlisting}
 Stat(alleleFreq=[0], popSize=True, subPops=[0, (0, 1)])
 \end{lstlisting}
@@ -4787,7 +4787,7 @@ decreases gradually.
 Parameter \emph{LD} accepts a list of loci-pairs (e.g. \texttt{LD={[}(0,1),(2,3){]}})
 with optional primary alleles at two loci (e.g. \texttt{LD={[}(0,1,0,0),(2,3){]}}).
 For each pair of loci, this operator calculates linkage disequilibrium
-and optional association measures between them. 
+and optional association measures between them.
 
 Assuming that two loci are both diallelic, one with alleles $A$ and
 $a$, and the other with alleles $B$ and $b$. If we denote $P_{x}$,
@@ -4795,13 +4795,13 @@ $P_{xy}$ as allele and haplotype frequencies for allele $x$ and
 haplotype $xy$, respectively, the linkage disequilibrium measures
 \textbf{with respect to primaries alleles} \emph{A} and \emph{B} are
 \begin{itemize}
-\item Basic LD measure $D$: 
+\item Basic LD measure $D$:
 \[
 D=P_{AB}-P_{A}P_{B}
 \]
 \emph{D} ranges from -0.25 to 0.25. The sign depends on the choice
 of alleles (\emph{A} and \emph{B}) at two loci.
-\item Lewontin's $D'=D/D_{max}$ where 
+\item Lewontin's $D'=D/D_{max}$ where
 \[
 D_{max}=\begin{cases}
 \min\left(P_{A}\left(1-P_{B}\right),\left(1-P_{A}\right)P_{B}\right) & \textrm{if }D>0\\
@@ -4810,7 +4810,7 @@ D_{max}=\begin{cases}
 \]
 \emph{$D'$} ranges from -1 to 1. The sign depends on the choice of
 alleles (\emph{A} and \emph{B}) at two loci.
-\item $r^{2}$ ($\Delta^{2}$ in \citet{Devlin1995}) 
+\item $r^{2}$ ($\Delta^{2}$ in \citet{Devlin1995})
 \[
 r^{2}=\frac{D^{2}}{P_{A}\left(1-P_{A}\right)P_{B}\left(1-P_{B}\right)}
 \]
@@ -4857,7 +4857,7 @@ at two loci.
 \item $\chi^{2}$ and its $p$-value (variable \texttt{LD\_ChiSq} and \texttt{LD\_ChiSq\_p},
 respectively). A one-side $\chi^{2}$ test with $\left(m-1\right)\times\left(n-1\right)$
 degrees of freedom will be used.
-\item Cramer V statistic (variable \texttt{CramerV}): 
+\item Cramer V statistic (variable \texttt{CramerV}):
 \[
 V=\sqrt{\frac{\chi^{2}}{N\times\mbox{min}\left(m-1,n-1\right)}}
 \]
@@ -5005,7 +5005,7 @@ is determined by a mating scheme, namely how parents are selected
 and how offsprings are generated. In the context of forward-time simulation,
 if we populate an offspring population from a parental population,
 a true effective population size can be calculated, under certain
-assumptions, as 
+assumptions, as
 \[
 Ne=\frac{kN-1}{k-1+V_{k}/k}
 \]
@@ -5156,7 +5156,7 @@ If you would like to calculate some summary statistics that involves
 individual information fields but cannot be calculated using parameters
 such as minOfInfo, you can try to use operators such as InfoExec to
 process individuals one by one and collect result. For example, you
-can use operators 
+can use operators
 \begin{lstlisting}
 PyExec('s=0')
 InfoExec('s+=x*x')
@@ -5179,7 +5179,7 @@ For example, when pair-wise difference between haplotypes is calculated
 using parameter \texttt{neutrality}, it will pick the right haplotypes
 for X, and Y chromosomes. However, because neutrality is calculated
 based on a group of haplotypes of all specified loci, even if the
-loci are collected across chromosomes, you can not use operator 
+loci are collected across chromosomes, you can not use operator
 \begin{lstlisting}
 Stat(neutrality=ALL_AVAIL)
 \end{lstlisting}
@@ -5247,7 +5247,7 @@ certain events in a population. For example, Example \ref{IfElse}
 records the number of generations the frequency of an allele goes
 below 0.4 and beyong 0.6 before it gets lost or fixed in the population.
 Note that a list of else-operators can also be executed when the condition
-is not met. 
+is not met.
 
 \lstinputlisting[caption={A conditional opeartor with dynamic condition},label={IfElse}]{log/IfElse.log}
 
@@ -5298,7 +5298,7 @@ fields as variables so operator \texttt{DiscardIf('age > 80')} will
 discard all individuals with age > 80, and \texttt{DiscardIf('1-fitness')}
 will remove individuals according to 1 minus their fitness. Optionally,
 the offspring itself can be used in the expression if parameter exposeInd
-is used to set the variable name of the offspring. 
+is used to set the variable name of the offspring.
 
 Alternatively, a Python function can be passed to this operator. This
 function should be defined with parameters \texttt{pop}, \texttt{off},
@@ -5610,7 +5610,7 @@ be used to simulate mating in heterogeneous populations such as populations
 with age structure.
 \item A \textbf{pedigree mating scheme} evolves a population by following
 the pedigree structure of a pedigree. This mating scheme is used to
-a replay a recorded or manually created evolutionary process. 
+a replay a recorded or manually created evolutionary process.
 \end{itemize}
 This section describes some standard features of mating schemes and
 most pre-defined mating schemes. The next section will demonstrate
@@ -5745,14 +5745,14 @@ for all mating events.
 \item If a tuple (or list) with more than one numbers is given, the first
 number must be one of \texttt{GEOMETRIC\_DISTRIBUTION}, \texttt{POISSON\_DISTRIBUTION},
 \texttt{BINOMIAL\_DISTRIBUTION} and \texttt{UNIFORM\_DISTRIBUTION},
-with one or two additional parameters. 
+with one or two additional parameters.
 \end{itemize}
 The number of offspring in the last case will then follow a specific
-statistical distribution. More specifically, 
+statistical distribution. More specifically,
 \begin{itemize}
 \item \texttt{numOffspring=(GEOMETRIC\_DISTRIBUTION, p)}: The number of
 offspring for each mating event follows a geometric distribution with
-mean $1/p$ and variance $\left(1-p\right)/p^{2}$: 
+mean $1/p$ and variance $\left(1-p\right)/p^{2}$:
 \[
 \mbox{Pr}\left(k\right)=p\left(1-p\right)^{k-1}\;\textrm{ for }k\geq1
 \]
@@ -5772,7 +5772,7 @@ The mean number of offspring is therefore $\frac{1}{1-e^{-p}}p$,
 which is 2.31 for $p=2$.
 \item \texttt{numOffspring=(BINOMIAL\_DISTRIBUTION, p, n): }The number of
 offspring for each mating event follows a Binomial distribution with
-mean $np$ and variance $np\left(1-p\right)$. 
+mean $np$ and variance $np\left(1-p\right)$.
 \[
 \mbox{Pr}\left(k\right)=\frac{n!}{k!\left(n-k\right)!}p^{k}\left(1-p\right)^{n-k}\;\textrm{ for }n\geq k\geq0
 \]
@@ -5781,7 +5781,7 @@ of the observed number of offspring (excluding zero) follows a zero-truncated
 Bionimial distribution, with mean number of offspring being $\frac{np}{\left(1-p\right)^{n}}$.
 \item \texttt{numOffspring=(UNIFORM\_DISTRIBUTION, a, b):} The number of
 offspring for each mating event follows a discrete uniform distribution
-with lower bound $a$ and upper bound $b$. 
+with lower bound $a$ and upper bound $b$.
 \[
 \mbox{Pr}\left(k\right)=\frac{1}{b-a+1}\;\textrm{ for }b\geq k\geq a
 \]
@@ -5869,7 +5869,7 @@ probability.
 \item \texttt{sexMode=(NUM\_OF\_MALES, n)}: The first \texttt{n} offspring
 in each family will be \texttt{Male}. If the number of offspring at
 a mating event is less than or equal to \texttt{n}, all offspring
-will be male. 
+will be male.
 \item \texttt{sexMode=(NUM\_OF\_FEMALES, n)}: The first \texttt{n} offspring
 in each family will be \texttt{Female}.
 \item \texttt{sexMode=(SEQUENCE\_OF\_SEX, s1, s2, ...)}: Use sequence \texttt{s1},
@@ -5895,7 +5895,7 @@ strictly, or in special mating schemes, usually for animal populations,
 where only a certain number of male or female Individuals are allowed
 in a family. It worth noting that a genotype transmitter can override
 specified offspring sex. This is the case for \texttt{CloneGenoTransmitter}
-where an offspring inherits both genotype and sex from his/her parent. 
+where an offspring inherits both genotype and sex from his/her parent.
 
 Example \ref{sexMode} demonstrates how to use parameter \texttt{sexMode}.
 In this example, a function \texttt{checkSexMode} is defined. It takes
@@ -6047,7 +6047,7 @@ defined by proportions of individuals. In this mating scheme, 20\%
 of individuals go through self-mating and 80\% of individuals go through
 random mating. This can be seen from the parental indexes of individuals
 in the offspring generation: individuals whose \texttt{mother\_idx}
-are \texttt{-1} are genetically only derived from their fathers. 
+are \texttt{-1} are genetically only derived from their fathers.
 
 It might be surprising that offspring resulted from two mating schemes
 mix with each other so the same VSPs in the next generation include
@@ -6105,7 +6105,7 @@ there are three mating schemes working on the same parental subpopulation
 \item Mating scheme B works on a virtual subpopulation of size 500
 \item Mating scheme C works on another virtual subpopulation of size 800
 \end{itemize}
-Assuming the corresponding offspring subpopulation has $N$ individuals, 
+Assuming the corresponding offspring subpopulation has $N$ individuals,
 \begin{itemize}
 \item If all weights are 0, the offspring subpopulation is divided in proportion
 to parental (virtual) subpopulation sizes. In this example, the mating
@@ -6163,7 +6163,7 @@ mating schemes to populations with different properties. The condition
 can be a constant (True or False), an expression that will be evaluated
 in the local namspace of the parental population, or a function that
 can take parental population as its input paramter (with parameter
-name \texttt{pop}). 
+name \texttt{pop}).
 
 Using variable \texttt{rep} and \texttt{gen} in the local namespace
 of the parental population, we can use this mating scheme to apply
@@ -6193,11 +6193,11 @@ with one replicate is actually used.
 
 A simulator could be created by one or more replicates of a list of
 populations. For example, you could create a simulator from five replicates
-of a population using 
+of a population using
 \begin{lstlisting}
 Simulator(pop, rep=5)
 \end{lstlisting}
-or from a list of populations using 
+or from a list of populations using
 \begin{lstlisting}
 Simulator([pop, pop1, pop2])
 \end{lstlisting}
@@ -6216,7 +6216,7 @@ all populations using function \texttt{Simulator.populations()}. These
 functions return references to the populations so that you can access
 populations. Modifying these references will change the corresponding
 populations within the simulator. The references will become invalid
-once the simulator object is destoryed. 
+once the simulator object is destoryed.
 
 Example \ref{Simulator} demonstrates different ways to create a simulator
 and how to access populations within it.
@@ -6280,7 +6280,7 @@ a mating scheme will be called during mating to transmit genotype
 (and possibly information fields etc) from parental to offspring,
 subject to replicate and generation applicability restraint specified
 by parameters \texttt{begin}, \texttt{end}, \texttt{step}, \texttt{at},
-and \texttt{reps}. 
+and \texttt{reps}.
 \item Operators specified in parameter postOps of function \texttt{Simulator.evolve}
 will be applied to the offspring population at each generation, subject
 to replicate and generation applicability restraint specified by parameters
@@ -6376,7 +6376,7 @@ An \texttt{OffspringGenerator} accepts a parameters \texttt{ops} (a
 list of during-mating operators), \texttt{numOffspring} (control number
 of offspring per mating event) and \texttt{sexMode} (control offspring
 sex). We have examined the last two parameters in detail in sections
-\ref{subsec:number-of-offspring} and \ref{subsec:offspring-sex}. 
+\ref{subsec:number-of-offspring} and \ref{subsec:offspring-sex}.
 
 The most tricky parameter is the \texttt{ops} parameter. It accepts
 a list of during mating operators that are used to transmit genotypes
@@ -6436,7 +6436,7 @@ case, a customized genotype transmitter can be used.
 A customized genotype transmitter is only a Python during-mating operator.
 Although it is possible to define a function and use a PyOperator
 directly (Example \ref{PyOperator}), it is much better to derive
-an operator from PyOperator, as the case in Example \ref{newOperator}. 
+an operator from PyOperator, as the case in Example \ref{newOperator}.
 
 Example \ref{sexSpecificRec} defines a \texttt{sexSpecificRecombinator}
 that uses, internally, two different Recombinators to recombine male
@@ -6509,7 +6509,7 @@ can improve the performance of your \texttt{PyParentsChooser}, especially
 for complex selection patterns (e.g. with natural selection). For
 example, \ref{BuiltInParentsChooser} implements a similar mating
 scheme as Example \ref{PyParentsChooser} but uses a \texttt{RandomParentChooser}
-to choose males randomly. 
+to choose males randomly.
 
 \lstinputlisting[caption={Use built-in parent choosers in a Python parent chooser},label={BuiltInParentsChooser}]{log/BuiltInParentsChooser.log}
 
@@ -6520,7 +6520,7 @@ intensive. For example, if a parent tends to find a spouse in his/her
 vincinity, geometric distances between all qualified individuals and
 a chosen parent need to be calculated for each mating event. If the
 optimization of the parent chooser can speed up the simulation significantly,
-it may be worthwhile to write the parent chooser in C++. 
+it may be worthwhile to write the parent chooser in C++.
 
 Although it is feasible, and sometimes easier to derive a class from
 class \texttt{ParentChooser} in mating.h (.cpp), modifying simuPOP
@@ -6613,7 +6613,7 @@ VSPs together).
 the next generation (year) and produce offspring from the mating VSP.
 \end{itemize}
 Example \ref{ageStructured} gives an example of the evolution of
-age-structured population. 
+age-structured population.
 \begin{itemize}
 \item Information fields \texttt{ind\_id}, \texttt{father\_id} and \texttt{mother\_id}
 and operators \texttt{IdTagger} and \texttt{PedigreeTagger} are used
@@ -6723,7 +6723,7 @@ This is basically how module \texttt{simuPOP.sampling} works.
 A new pedigree can be created from a population object with an ID
 field (default to \texttt{ind\_id}), and two optional parental ID
 fields (default to \texttt{father\_id} and \texttt{mother\_id}). For
-example, 
+example,
 \begin{lstlisting}
 ped = Pedigree(pop, infoFields=ALL_AVAIL)
 \end{lstlisting}
@@ -6777,7 +6777,7 @@ It also allows you to limit the result by sex and affection status
 More distant relationship can be derived from these relationship using
 function \texttt{Pedigree.traceRelatives}. This function accepts a
 path of information fields and follows the path to identify relatives.
-For example 
+For example
 
 \begin{lstlisting}
 sibFields = ['sib1', 'sib2']
@@ -6812,11 +6812,11 @@ In a diaploid population when there is only one parent, you can see
 that only a small portion of ancestors have offspring in the last
 generation.
 \item Function \texttt{Pedigree.identifyOffspring} identifies all offspring
-of specified individuals across multiple generations. 
+of specified individuals across multiple generations.
 \item Function \texttt{Pedigree.identifyFamilies} groups all related individuals
 into families and assign a family ID to all family members. You might
 be surprised by how large this kind of family can be when parents
-are allowed to have multiple spouses. 
+are allowed to have multiple spouses.
 \end{itemize}
 All these functions support parameters \texttt{subPops} and \texttt{ancGens}
 so that you can limit your search in specific subpopulations and ancestral
@@ -6876,7 +6876,7 @@ object. It then locates the parents of each offspring using their
 IDs in the pedigree object. A list of during mating operators are
 then used to transmit parental genotype to the offspring.
 
-To use this mating scheme, you should 
+To use this mating scheme, you should
 \begin{itemize}
 \item Prepare a pedigree object with \texttt{N} ancestral generations (and
 a present generation). Parental information should be available at
@@ -6929,7 +6929,7 @@ and some were copied using \texttt{CloneGenoTransitter}, an \texttt{IfElse}
 operator has to be used to transmit genotypes correctly. This example
 uses the function condition of the \texttt{IfElse} operator and makes
 use of the fact that parent \texttt{mom} will be \texttt{None} if
-an individual is copied from his or her father. 
+an individual is copied from his or her father.
 
 \bibliographystyle{plainnat}
 \bibliography{simuPOP}
@@ -6975,7 +6975,7 @@ only one mitochondrial chromosome is allowed in simuPOP, you will
 have to use customized chromosome types if you would like to simulate
 this process. Fortunately, operator \texttt{MitochondrialGenoTransmitter}
 can select random organelles from multiple customized chromosomes,
-if no chromosome of type \texttt{MITOCHONDRIAL} is present. 
+if no chromosome of type \texttt{MITOCHONDRIAL} is present.
 
 Example \ref{mtDNA_evolve} demonstrates the fixation of mutant in
 cells with multiple organelles. Althogh mutations are introduced to
@@ -7016,7 +7016,7 @@ The \texttt{simuPOP.utils} module provides a few utility functions
 and classes. They do not belong to the simuPOP core but are distributed
 with simuPOP because they are frequently used and play an important
 role in some specialized simulation techniques. Please refer to the
-simuPOP online cookbook (\texttt{http://simupop.sourceforge.net/cookbook})
+simuPOP online cookbook (\texttt{https://github.com/BoPeng/simuPOP/cookbook})
 for more utility modules and functions.
 
 \subsection{Trajectory simulation (classes \texttt{Trajectory} and \texttt{TrajectorySimulator})}
@@ -7128,7 +7128,7 @@ a forward-time simulation will be performed.
 allele frequencies at each DSL using a backward approach.
 \item Evolve a population forward-in-time, using designed demographic and
 selection models. A \texttt{ControlledRandomMating} scheme instead
-of the usual \texttt{RandomMating} scheme should be used. 
+of the usual \texttt{RandomMating} scheme should be used.
 \end{enumerate}
 Figure \ref{fig:backTrajectory} plots simulated trajectories of two
 unlinked loci.
@@ -7187,7 +7187,7 @@ genotype and basic information of a population. Because formats GENEPOP
 and FSTAT formats uses allele 0 to indicate missing value, true alleles
 in these formats start at value 1. If you would like to import alleles
 with starting value 0, you can use parameter adjust=-1 to adjust imported
-values, if you data do not have any missing value. 
+values, if you data do not have any missing value.
 
 \subsection{Export simuPOP population to files in \texttt{STRUCTURE, GENEPOP},
 \texttt{FSTAT, Phylip, PED, MAP, MS,} and \texttt{CSV} formats (function
@@ -7214,7 +7214,7 @@ with default value \texttt{1} to export alleles 0, 1 etc to 1, 2,
 .... The same applies to function \texttt{importPopulation} where
 some file formats accepts a parameter \texttt{adjust} (with default
 value 1) to adjust allele values. Please refer to the simuPOP reference
-manual for a detailed list of acceptable parameters for each format. 
+manual for a detailed list of acceptable parameters for each format.
 
 Example \ref{importExport} demonstrates how to import and export
 a population in formats FSTAT and STRUCTURE. For the FSTAT format,
@@ -7237,7 +7237,7 @@ parameters. \lstinputlisting[caption={Export and import in MS format},label={imp
 If the file format you are interested in is not supported, you can
 export data in csv format and convert the file by yourself. You can
 also try to write your own import or export functions as described
-in the advanced topics section of this guide. 
+in the advanced topics section of this guide.
 
 \subsection{Export simuPOP population in csv format (function \texttt{saveCSV},
 deprecated)}
@@ -7262,7 +7262,7 @@ formats. \lstinputlisting[caption={Using function saveCSV to save a simuPOP popu
 \subsection{Predefined migration models \label{subsec:Predefined-migration-models}}
 
 The following functions are defined to generate migration matrixes
-for popular migration models. 
+for popular migration models.
 \begin{itemize}
 \item \texttt{migrIslandRates(r, n)} returns a $n\times n$ migration matrix
 \[
@@ -7332,7 +7332,7 @@ the corner patch has a probability of $r/2$ or $r/3$ (if range=8)
 to migrate, and a side patch has a probability $r/3$ or $r/5$ to
 migrate. If \texttt{circular} is set to \texttt{True}, the lattice
 will be conceptually connected to a ball so that there is no boundary
-effect. For example, for a 3 by 2 lattice 
+effect. For example, for a 3 by 2 lattice
 \[
 \left(\begin{array}{cc}
 0 & 1\\
@@ -7341,7 +7341,7 @@ effect. For example, for a 3 by 2 lattice
 \end{array}\right)
 \]
 with \texttt{diagonal=False} and \texttt{circular=False}, the migration
-matrix will be 
+matrix will be
 \[
 \left(\begin{array}{cccccc}
 1-r & \frac{r}{2} & \frac{r}{2}\\
@@ -7389,7 +7389,7 @@ operator \texttt{TerminateIf})
 \end{itemize}
 Using an object-oriented approach, a demographic model defined in
 this module encapsulates all these in a single object. More specifically,
-a demographic object \texttt{model} is a callable Python object that 
+a demographic object \texttt{model} is a callable Python object that
 \begin{itemize}
 \item has attribute \texttt{model.init\_size} and \texttt{model.info\_fields}
 to determine the initial population size and required information
@@ -7430,30 +7430,30 @@ growth with carrying capacity, shrink, split and merge, and bottleneck.
 
 For example,
 \begin{itemize}
-\item 
+\item
 \begin{lstlisting}
 InstantChangeModel(T=1000, N0=1000, G=500, NG=2000)
 \end{lstlisting}
 defines an instant population growth model that expands a population
 of size from 1000 to 2000 instantly at generation 500
-\item 
+\item
 \begin{lstlisting}
 InstantChangeModel(T=1000, N0=1000, G=[500, 600], NG=[100, 1000])
 \end{lstlisting}
 defines a bottleneck model that introduces a bottleneck of size 100
 between generation 500 and 600 to a population of size 1000
-\item 
+\item
 \begin{lstlisting}
 InstantChangeModel(T=1000, N0=1000, G=500, NG=[[400, 600]])
 \end{lstlisting}
 defines a bottleneck model that split a population of size into two
-subpopulations of sizes 400 and 600 at generation 500 
-\item 
+subpopulations of sizes 400 and 600 at generation 500
+\item
 \begin{lstlisting}
 ExponentialGrowthModel(T=100, N0=1000, NT=10000)
 \end{lstlisting}
 expands a population of size 1000 to 10000 in 100 generations
-\item 
+\item
 \begin{lstlisting}
 ExponentialGrowthModel(T=100, N0=[200, 800], r=[0.02, 0.01],
     ops=Migrator(rate=[[0, 0.1], [0.1, 0]])
@@ -7462,7 +7462,7 @@ expands a population of two subpopulation sizes at rate \texttt{0.02}
 and \texttt{0.01} for \texttt{100} generations, with migration between
 these two subpopulations. The initial population will be resized (split
 if necessary) to two populations of sizes 200 and 800.
-\item 
+\item
 \begin{lstlisting}
 LinearGrowthModel(N0=(200, 'A'), r=0.02, NT=1000)
 \end{lstlisting}
@@ -7482,52 +7482,52 @@ rates are specified) will stop after it reaches the specified size.
 A demographic model does not have to have a fixed initial population
 size. If an initial population size is not provided, its size will
 be determined from the population when it is first applied to. For
-example 
+example
 \begin{itemize}
-\item 
+\item
 \begin{lstlisting}
 InstantChangeModel(T=100, G=50, NT=[0.5, 0.5])
 \end{lstlisting}
 split a population into two equally sized subpopulations at generation
 50. The ending population size is set to \texttt{{[}0.5, 0.5{]}},
 which means 50\% of the size at time \texttt{G}.
-\item 
+\item
 \begin{lstlisting}
 InstantChangeModel(T=100, G=50, NT=[None, 100])
 \end{lstlisting}
 forks a population of size 100 from the main population at generation
 50. \texttt{NT={[}None, 100{]}} is equivalent to \texttt{NT={[}1.0,
 100{]}} in this case.
-\item 
+\item
 \begin{lstlisting}
 InstantChangeModel(T=0, removEmptySubPops=True)
 \end{lstlisting}
 removes all empty subpopulations from the existing subpopulation.
 Here we do not specify an input population size because the the size
 of the input population will be kept.
-\item 
+\item
 \begin{lstlisting}
 InstantChangeMoel(T=0, N0=[None, 0, None], removEmptySubPops=True)
 \end{lstlisting}
 removes the second of the three subpopulations while keep other two
 subpopulations intact. The input population of this demographic model
 must have three subpopulations.
-\item 
+\item
 \begin{lstlisting}
 ExponentialGrowthModel(T=100, NT=[10000, 20000])
 \end{lstlisting}
 expands a population of two subpopulations to sizes \texttt{10000}
 and \texttt{20000} in \texttt{100} generations. An error will be raised
 if the population does not have two subpopulations.
-\item 
+\item
 \begin{lstlisting}
-ExponentialGrowthModel(T=100, N0=[1., 400], NT=[10000, 20000], 
+ExponentialGrowthModel(T=100, N0=[1., 400], NT=[10000, 20000],
     ops=Migrator(rate=[[0, 0.1], [0.1, 0]])
 \end{lstlisting}
 split a population into two subpopulations. The first one keeps all
 individuals (100\%), the second one with 400 individuals, and then
 expands them, with migration, to sizes \texttt{10000} and \texttt{20000}
-in \texttt{100} generations. 
+in \texttt{100} generations.
 \end{itemize}
 The demography model also defines two models for population admxture.
 The HI model (Hybrid Isolation) model creates a separate subpopulation
@@ -7536,7 +7536,7 @@ The CGF (Continuous Gene Flow) model replaces $1-\mu$ individuals
 from the doner population at each generation, thus keep both the recipient
 and doner population constant in size. For example,
 \begin{itemize}
-\item 
+\item
 \begin{lstlisting}
 AdmixtureModel(model=('HI', 1, 3, 0.5, 'Admixed'), T=10)
 \end{lstlisting}
@@ -7545,7 +7545,7 @@ Creates a separate population with 50\% of individuals from subpopulation
 sizes 1 and 3 have the same number of individuals. An optional name
 Admixed is assigned to the new subpopulation. The admixed population
 will evolve independently for 10 generations.
-\item 
+\item
 \begin{lstlisting}
 AdmixtureModel(model=('CGF', 1, 3, 0.9), T=10)
 \end{lstlisting}
@@ -7557,20 +7557,20 @@ to initialize a population. As a matter of fact, they are mostly stacked
 to other demographic models to form more complex demographic models,
 in model \texttt{MultiStageModel}. For example,
 \begin{itemize}
-\item 
+\item
 \begin{lstlisting}
 MultiStageModel([
-    InstantChangeModel(T=1000, N0=1000, G=[500, 600], NG=[100, 1000]),  
+    InstantChangeModel(T=1000, N0=1000, G=[500, 600], NG=[100, 1000]),
     ExponentialGrowthModel(T=100, NT=10000)
 ])
 \end{lstlisting}
 defines a demographic model with a bottleneck followed by exponential
 population growth. \texttt{N0} of the second stage is not specified
-because it is determined from its previous stage. 
-\item 
+because it is determined from its previous stage.
+\item
 \begin{lstlisting}
 MultiStageModel([
-    LinearGrowthModel(T=100, N0=1000, r=0.01),  
+    LinearGrowthModel(T=100, N0=1000, r=0.01),
     ExponentialGrowthModel(T=100, N0=[0.4, 0.6], r=0.001),
     ExponentialGrowthModel(r=0.01, NT=[2000, 4000]),
     AdmixtureModel(model=('HI', 0, 1, 0.8, 'admixed'), T=10)
@@ -7612,7 +7612,7 @@ that changes population sizes. This approach can be easier to use
 because it conforms with the way many demographic models are specified,
 also because the events can be specified for a subset of subpopulations
 so you can, for example, split one subpopulation without worrying
-about its impact on other subpopulations. 
+about its impact on other subpopulations.
 
 A event-based demographic model is defined using
 \begin{lstlisting}
@@ -7622,12 +7622,12 @@ where\texttt{ T} and \texttt{N0} are the duration and initial size
 of the demographic model, respectively, and ops is the operators that
 will be applied to the population (without checking applicability).
 Parameter \texttt{events} acepts one or more of \texttt{DemographicEvent}
-and its derived classes. For example, 
+and its derived classes. For example,
 
 \begin{lstlisting}
 ExpansionEvent(rates=0.05, begin=500)
 \end{lstlisting}
-expands all subpopulations exponentially at a rate of 0.05, and 
+expands all subpopulations exponentially at a rate of 0.05, and
 
 \begin{lstlisting}
 ExpansionEvent(rates=[0.05, 0.01], capacity=10000, subPops=[0, 2], begin=500)
@@ -7644,7 +7644,7 @@ starting from generation 500.
 
 Simiarly, you can split, merge, and resize subpopulations using events
 \texttt{SplitEvent}, \texttt{MergeEvent}, and \texttt{ResizeEvent}.
-For example, 
+For example,
 
 \begin{lstlisting}
 SplitEvent(subPops='AF', sizes=[500, 500], names=['AF', 'EU'], at=-4000)
@@ -7652,7 +7652,7 @@ SplitEvent(subPops='AF', sizes=[500, 500], names=['AF', 'EU'], at=-4000)
 splits an ancestral population named AF to two populations AF and
 EU at 4000 generations before the end of the demographic model. The
 AF population will be expanded automatically if it does not have 1000
-individuals. 
+individuals.
 
 Finally, an \texttt{AdmixtureEvent} mix two or more subpopulations
 by certain proportions, and either create a new subpopulation or replace
@@ -7793,13 +7793,13 @@ sampling types, and a combined sampling type that allows you to draw
 different types of samples. For each sampling type \texttt{X}, a sampler
 class and two functions \texttt{DrawXSample} and \texttt{DrawXSamples}
 are provided The first function returns a population with all sampled
-individuals and the second function returns a list of sample populations. 
+individuals and the second function returns a list of sample populations.
 
 If you would like to define your own sampling type, you can derive
 your sampler from one of the existing sampler classes. These sampler
 classes provide member functions \texttt{prepareSample}, \texttt{drawSample}
 and \texttt{drawSamples} and you typically only need to extend \texttt{prepareSample}
-of an appropriate base class. 
+of an appropriate base class.
 
 \subsection{Sampling individuals randomly (class \texttt{RandomSampler}, functions
 \texttt{drawRandomSample} and \texttt{drawRandomSamples})}
@@ -7870,7 +7870,7 @@ If you have R and rpy installed on your system, you can install the
 \texttt{simuPOP.sampling} module provides a function \texttt{plotPedigree}
 to use this library to plot Pedigrees. Example \ref{plotPedigree}
 demonstrates how to use function sampling.indexToID to prepare a pedigree
-and how to use sampling.DrawPedigree to plot it. 
+and how to use sampling.DrawPedigree to plot it.
 
 Figure \ref{fig:Pedigree} plots a small three-generational population
 with 15 individuals at each generation. It is pretty clear that random
@@ -8002,9 +8002,9 @@ remained simple.
 
 This example is a simplified version of the \texttt{simuCDCV.py} script
 that simulates this evolution process and observe the allelic spectra
-of both types of diseases. The complete script is available at \href{http://simupop.sourceforge.net/cookbook}{the simuPOP online cookbook}.
+of both types of diseases. The complete script is available at \href{https://github.com/BoPeng/simuPOP/cookbook}{the simuPOP online cookbook}.
 The results are published in \citet{Peng2007}, which has much more
-detailed discussion about the simulations, and the parameters used. 
+detailed discussion about the simulations, and the parameters used.
 
 \section{Demographic model}
 
@@ -8048,7 +8048,7 @@ way is to wrap these functions by another function that accept \texttt{N0},
 \texttt{G0}, \texttt{N1} and \texttt{G1} as parameters. That is demonstrated
 in Example \ref{reichDemo} where a function \texttt{demo\_model}
 is defined to return either an instant or an exponential population
-growth demographic function. 
+growth demographic function.
 
 \lstinputlisting[caption={A demographic function producer},label={reichDemo}]{log/reichDemo.log}
 \begin{note}
@@ -8192,7 +8192,7 @@ PyOperator(func=ne, param=[0], step=5)
 PyEval(r'"%.3f" % ne[0]', step=5)
 \end{lstlisting}
 would calculate effective number of alleles at locus 0 and output
-it. 
+it.
 
 The biggest difference between \texttt{PyEval} and \texttt{PyOperator}
 is that \texttt{PyOperator} is no longer evaluated in the population's
@@ -8219,7 +8219,7 @@ selection will be applied, statistics will be calculated and outputed.
 
 \section{Option handling}
 
-Everything seems to be perfect until you need to 
+Everything seems to be perfect until you need to
 \begin{enumerate}
 \item Run more simulations with different parameters such as initial population
 size and mutaion rate. This requires the script to get its parameters
@@ -8243,7 +8243,7 @@ A script written in this style follows the following order:
 \begin{enumerate}
 \item First comment block
 
-The first line of the script should always be 
+The first line of the script should always be
 \begin{lstlisting}
 #!/usr/bin/env python
 \end{lstlisting}
@@ -8332,7 +8332,7 @@ script}
 
 \item The help message of this script could be displayed using the Help
 button of the parameter input dialog, or using command \texttt{simuCDCV.py
--h}. 
+-h}.
 \item Using parameter \texttt{-{}-gui=False}, the script will be run in
 batch mode. You can specify parameters using
 \begin{lstlisting}

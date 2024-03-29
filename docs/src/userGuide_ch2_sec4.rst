@@ -2,7 +2,7 @@ License, Distribution and Installation
 ======================================
 
 simuPOP is distributed under a GPL license and is hosted at\
-``http://simupop.sourceforge.net``, the world's largest development and download
+``https://github.com/BoPeng/simuPOP``, the world's largest development and download
 repository of Open Source code and applications. simuPOP is available on any
 platform where Python is available, and is currently tested under both 32 and 64
 bit versions of Windows (Windows 2000 and later), Linux (Redhat and Ubuntu),
@@ -42,5 +42,3 @@ modules such as ``simuPOP.plotter`` and :mod:`simuPOP.sampling` makes use of
 that you install R and RPy with simuPOP**. In addition, although simuPOP uses
 the standard ``Tkinter`` GUI toolkit when a graphical user interface is needed,
 it can make use of a ``wxPython`` toolkit if it is available.
-
-

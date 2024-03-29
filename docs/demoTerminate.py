@@ -4,10 +4,10 @@
 # $File: demoTerminate.py $
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #
 
 # This script is an example in the simuPOP user's guide. Please refer to
-# the user's guide (http://simupop.sourceforge.net/manual) for a detailed
+# the user's guide (https://github.com/BoPeng/simuPOP/manual) for a detailed
 # description of this example.
 #
 
@@ -32,11 +32,11 @@ import simuPOP as sim
 import simuPOP.demography as demo
 
 model = demo.MultiStageModel([
-    demo.InstantChangeModel(N0=1000, 
+    demo.InstantChangeModel(N0=1000,
         ops=[
             sim.Stat(alleleFreq=sim.ALL_AVAIL, numOfSegSites=sim.ALL_AVAIL),
             # terminate if the average allele frequency of segregating sites
-            # are more than 0.1 
+            # are more than 0.1
             sim.TerminateIf('sum([x[1] for x in alleleFreq.values() if '
                 'x[1] != 0])/(1 if numOfSegSites==0 else numOfSegSites) > 0.1')
         ]
@@ -58,5 +58,3 @@ pop.evolve(
             'else numOfSegSites))', step=50)
     ],
 )
-
-

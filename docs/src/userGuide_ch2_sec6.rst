@@ -11,10 +11,10 @@ least go through the following online Python tutorials:
 If you are new to simuPOP, please read this guide before you dive into *the
 simuPOP reference manual*, which describes all the details of simuPOP but does
 not show you how to use them. Both documents are available online at
-``http://simupop.sourceforge.net`` in both searchable HTML format and PDF
+``https://github.com/BoPeng/simuPOP`` in both searchable HTML format and PDF
 format.
 
-A *simuPOP online cookbook* (``http://simupop.sourceforge.net``/``cookbook``) is
+A *simuPOP online cookbook* (``https://github.com/BoPeng/simuPOP``/``cookbook``) is
 a wiki-based website where you can browse and download examples, functions and
 scripts for various simulation scenarios, and upload your own code snippets for
 the benefit of all simuPOP users. Please consider contributing to this cookbook
@@ -24,5 +24,3 @@ If you cannot find the answer you need, or if you believe that you have
 encountered a bug, or if you would like to request a feature, please subscribe
 to the simuPOP mailinglist (``simupop-list@lists.sourceforge.net``) and send
 your questions there.
-
-

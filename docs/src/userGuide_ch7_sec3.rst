@@ -292,7 +292,7 @@ population when it is first applied to. For example
 
 *  ::
 
-     ExponentialGrowthModel(T=100, N0=[1., 400], NT=[10000, 20000], 
+     ExponentialGrowthModel(T=100, N0=[1., 400], NT=[10000, 20000],
          ops=Migrator(rate=[[0, 0.1], [0.1, 0]])
 
   split a population into two subpopulations. The first one keeps all individuals
@@ -331,7 +331,7 @@ demographic models to form more complex demographic models, in model
 *  ::
 
      MultiStageModel([
-         InstantChangeModel(T=1000, N0=1000, G=[500, 600], NG=[100, 1000]),  
+         InstantChangeModel(T=1000, N0=1000, G=[500, 600], NG=[100, 1000]),
          ExponentialGrowthModel(T=100, NT=10000)
      ])
 
@@ -342,7 +342,7 @@ demographic models to form more complex demographic models, in model
 *  ::
 
      MultiStageModel([
-         LinearGrowthModel(T=100, N0=1000, r=0.01),  
+         LinearGrowthModel(T=100, N0=1000, r=0.01),
          ExponentialGrowthModel(T=100, N0=[0.4, 0.6], r=0.001),
          ExponentialGrowthModel(r=0.01, NT=[2000, 4000]),
          AdmixtureModel(model=('HI', 0, 1, 0.8, 'admixed'), T=10)
@@ -363,7 +363,7 @@ demographic models to form more complex demographic models, in model
 
   .. figure:: log/MultiStage.png
      :width: 680
-  
+
 
 Example :ref:`demoModel <demoModel>` defines a demographic model use it to
 evolve a population. The demographic model is depicted in Figure
@@ -378,15 +378,15 @@ evolve a population. The demographic model is depicted in Figure
    >>> import simuPOP as sim
    >>> from simuPOP.demography import *
    >>> model = MultiStageModel([
-   ...     InstantChangeModel(T=200, 
+   ...     InstantChangeModel(T=200,
    ...         # start with an ancestral population of size 1000
    ...         N0=(1000, 'Ancestral'),
    ...         # change population size at 50 and 60
-   ...         G=[50, 60], 
+   ...         G=[50, 60],
    ...         # change to population size 200 and back to 1000
    ...         NG=[(200, 'bottleneck'), (1000, 'Post-Bottleneck')]),
    ...     ExponentialGrowthModel(
-   ...         T=50, 
+   ...         T=50,
    ...         # split the population into two subpopulations
    ...         N0=[(400, 'P1'), (600, 'P2')],
    ...         # expand to size 4000 and 5000 respectively
@@ -410,9 +410,9 @@ evolve a population. The demographic model is depicted in Figure
    250
    >>> # print out population size and frequency
    >>> for idx, name in enumerate(pop.subPopNames()):
-   ...     print('%s (%d): %.4f' % (name, pop.subPopSize(name), 
+   ...     print('%s (%d): %.4f' % (name, pop.subPopSize(name),
    ...         pop.dvars(idx).alleleFreq[0][0]))
-   ... 
+   ...
    P1 (4000): 0.6185
    P2 (5000): 0.7218
    >>> # get a visual presentation of the demographic model
@@ -619,9 +619,9 @@ rounding error accumulates over time.
    250
    >>> # print out population size and frequency
    >>> for idx, name in enumerate(pop.subPopNames()):
-   ...     print('%s (%d): %.4f' % (name, pop.subPopSize(name), 
+   ...     print('%s (%d): %.4f' % (name, pop.subPopSize(name),
    ...         pop.dvars(idx).alleleFreq[0][0]))
-   ... 
+   ...
    P1 (4000): 0.6185
    P2 (5000): 0.7218
    >>> # get a visual presentation of the demographic model
@@ -681,7 +681,7 @@ rounding error accumulates over time.
    247: 3648 (P1), 4593 (P2)
    248: 3820 (P1), 4792 (P2)
    249: 4000 (P1), 5000 (P2)
-   >>> 
+   >>>
 
    now exiting runScriptInteractively...
 
@@ -714,7 +714,7 @@ The :mod:`simuPOP.demography` module currently defines the following models
 
   .. figure:: log/OutOfAfrica.png
      :width: 680
-  
+
 
 * The settlement of new world model for Mexican American
   (:ref:`fig_Settlement_of_New <fig_Settlement_of_New>`) ( Gutenkunst, 2009, PLoS
@@ -731,7 +731,7 @@ The :mod:`simuPOP.demography` module currently defines the following models
 
   .. figure:: log/SettlementOfNewWorld.png
      :width: 680
-  
+
 
 * The demographic model developed by cosi (Schaffner, 2005, genome research).
 
@@ -745,7 +745,7 @@ The :mod:`simuPOP.demography` module currently defines the following models
 
   .. figure:: log/Cosi.png
      :width: 680
-  
+
 
 These functions all accept a parameter scale. If specified, it will scale all
 population sizes and generation numbers by the specified scaling factor. For
@@ -786,16 +786,16 @@ equally sized subpopulations and expand rate a rate of 0.01 to size 2000 and
    Revision 4583 (Oct 10 2018) for Python 3.6.6 (64bit, 0thread)
    Random Number Generator is set to mt19937 with random seed 0x81aae4a664e115de.
    This is the standard short allele version with 256 maximum allelic states.
-   For more information, please visit http://simupop.sourceforge.net,
+   For more information, please visit https://github.com/BoPeng/simuPOP,
    or email simupop-list@lists.sourceforge.net (subscription required).
    >>> import simuPOP.demography as demo
-   >>> 
+   >>>
    >>> model = demo.MultiStageModel([
-   ...     demo.InstantChangeModel(N0=1000, 
+   ...     demo.InstantChangeModel(N0=1000,
    ...         ops=[
    ...             sim.Stat(alleleFreq=sim.ALL_AVAIL, numOfSegSites=sim.ALL_AVAIL),
    ...             # terminate if the average allele frequency of segregating sites
-   ...             # are more than 0.1 
+   ...             # are more than 0.1
    ...             sim.TerminateIf('sum([x[1] for x in alleleFreq.values() if '
    ...                 'x[1] != 0])/(1 if numOfSegSites==0 else numOfSegSites) > 0.1')
    ...         ]
@@ -803,7 +803,7 @@ equally sized subpopulations and expand rate a rate of 0.01 to size 2000 and
    ...     demo.ExponentialGrowthModel(N0=[0.5, 0.5], r=0.01, NT=[2000, 5000])
    ...     ]
    ... )
-   >>> 
+   >>>
    >>> pop = sim.Population(size=model.init_size, loci=100)
    >>> pop.evolve(
    ...     initOps=sim.InitSex(),
@@ -825,10 +825,8 @@ equally sized subpopulations and expand rate a rate of 0.01 to size 2000 and
    250: [2000, 2007], 0.199
    300: [2000, 3310], 0.230
    343
-   >>> 
+   >>>
 
    now exiting runScriptInteractively...
 
 `Download demoTerminate.py <demoTerminate.py>`_
-
-

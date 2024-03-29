@@ -36,10 +36,8 @@ evolutionary processes. It is the users' responsibility to write a Python script
 to glue these pieces together and form a simulation. At a more user-friendly
 level, an increasing number of functions and scripts contributed by simuPOP
 users is available in the online simuPOP cookbook
-(``http://simupop.sourceforge.net/cookbook``). They provide useful functions for
+(``https://github.com/BoPeng/simuPOP/cookbook``). They provide useful functions for
 different applications (e.g. load and manipulate HapMap samples, import and
 export files from another application) and allow users who are unfamiliar with
 simuPOP to perform a large number of simulations ranging from basic population
 genetics models to generating datasets under complex evolutionary scenarios.
-
-

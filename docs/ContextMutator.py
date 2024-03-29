@@ -4,10 +4,10 @@
 # $File: ContextMutator.py $
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #
 
 # This script is an example in the simuPOP user's guide. Please refer to
-# the user's guide (http://simupop.sourceforge.net/manual) for a detailed
+# the user's guide (https://github.com/BoPeng/simuPOP/manual) for a detailed
 # description of this example.
 #
 
@@ -46,10 +46,9 @@ pop.evolve(
             rates=0.01
         ),
         sim.Stat(alleleFreq=[1, 4], step=5),
-        sim.PyEval(r"'Gen: %2d freq1: %.3f, freq2: %.3f\n'" + 
+        sim.PyEval(r"'Gen: %2d freq1: %.3f, freq2: %.3f\n'" +
             " % (gen, alleleFreq[1][1], alleleFreq[4][1])", step=5)
-    ], 
+    ],
     matingScheme=sim.RandomMating(),
     gen = 20
 )
-

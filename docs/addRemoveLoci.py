@@ -4,10 +4,10 @@
 # $File: addRemoveLoci.py $
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #
 
 # This script is an example in the simuPOP user's guide. Please refer to
-# the user's guide (http://simupop.sourceforge.net/manual) for a detailed
+# the user's guide (https://github.com/BoPeng/simuPOP/manual) for a detailed
 # description of this example.
 #
 
@@ -32,7 +32,7 @@ import simuOpt
 simuOpt.setOptions(debug='DBG_WARNING')
 import simuPOP as sim
 pop = sim.Population(10, loci=3, chromNames=['chr1'])
-# 1 1 1, 
+# 1 1 1,
 pop.setGenotype([1])
 # 1 1 1, 0 0 0
 pop.addChrom(lociPos=[0.5, 1, 2], lociNames=['rs1', 'rs2', 'rs3'],
@@ -50,9 +50,8 @@ pop.removeLoci(8)
 # loci names can also be used.
 pop.removeLoci(['rs1', 'rs7'])
 sim.dump(pop)
-# add loci from another population 
+# add loci from another population
 pop2 = sim.Population(10, loci=2, lociPos=[0.1, 2.2], chromNames='chr3')
 pop.addLociFrom(pop2)
 pop.addLociFrom(pop2, byName=2)
 sim.dump(pop, genotype=False)
-

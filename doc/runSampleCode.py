@@ -5,10 +5,10 @@
 # $Rev: 2894 $
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2009 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2009 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@
 # * execute, but do not write the output between these two lines
 #   #begin_ignore
 #   #end
-# 
+#
 # * expect error so do not stop when an error happens
 #   #expecterror
 
@@ -54,7 +54,7 @@ class runScriptInteractively(code.InteractiveConsole):
             raise EOFError
         sys.stdout.write(prompt + l)
         return l.strip("\n")
-    
+
     def exit(self):
         self.file.close()
 
@@ -187,4 +187,3 @@ if __name__ == '__main__':
         runScript(sys.argv[1], sys.argv[2])
     else:
         runSampleCode('userGuide.py', sys.argv[1:])
-

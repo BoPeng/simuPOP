@@ -4,10 +4,10 @@
  *  $Rev$
  *
  *  This file is part of simuPOP, a forward-time population genetics
- *  simulation environment. Please visit http://simupop.sourceforge.net
+ *  simulation environment. Please visit https://github.com/BoPeng/simuPOP
  *  for details.
  *
- *  Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+ *  Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -265,7 +265,7 @@ bool Migrator::apply(Population & pop) const
 
 
 
-BackwardMigrator::BackwardMigrator(const floatMatrix & rate, int mode, 
+BackwardMigrator::BackwardMigrator(const floatMatrix & rate, int mode,
 	int begin, int end, int step, const intList & at,
 	const intList & reps, const subPopList & subPops, const stringList & infoFields)
 	: BaseOperator("", begin, end, step, at, reps, subPops, infoFields),
@@ -280,13 +280,13 @@ BackwardMigrator::BackwardMigrator(const floatMatrix & rate, int mode,
 	size_t sz = m_rate.size();
 	boost::numeric::ublas::matrix<double> Bt(sz, sz);
 	for (size_t i = 0; i < sz; ++i) {
-		if (m_rate[i].size() != sz) 
+		if (m_rate[i].size() != sz)
 			throw ValueError("A m by m matrix is required for backward migration matrix.");
 		//
 		for (size_t j = 0; j < sz; ++j) {
 			if (i == j) {
 				Bt(i, i) = accumulate(m_rate[i].begin(), m_rate[i].end(), 0.0) - m_rate[i][i];
-				Bt(i, i) = 1. - Bt(i, i);				
+				Bt(i, i) = 1. - Bt(i, i);
 			} else
 				Bt(i, j) = m_rate[j][i];
 			if (fcmp_lt(Bt(i, j), 0.))
@@ -303,7 +303,7 @@ BackwardMigrator::BackwardMigrator(const floatMatrix & rate, int mode,
 	if (res != 0)
 		throw RuntimeError("Failed to convert backward matrix to forward migration matrix. (Matrix is not inversable).");
 	m_inverse_rate.assign(boost::numeric::ublas::identity_matrix<double>(sz));
-	// backsubstite to get the inverse		
+	// backsubstite to get the inverse
 	lu_substitute(Bt, pm, m_inverse_rate);
 
 	/*
@@ -326,13 +326,13 @@ bool BackwardMigrator::apply(Population & pop) const
 	subPopList VSPs = applicableSubPops(pop);
 	if (VSPs.size() <= 1)
 		return true;
-	
+
 	DBG_FAILIF(VSPs.size() != m_rate.size(),
 		ValueError, "Number of 'from' subpopulations should match number of rows of migration rate matrix.");
-	
+
 	vectoru subPops;
 	for (size_t i = 0; i < VSPs.size(); ++i) {
-		DBG_FAILIF(VSPs[i].isVirtual(), ValueError, 
+		DBG_FAILIF(VSPs[i].isVirtual(), ValueError,
 			"BackwardMigrator does not support virtual subpupulations.")
 		DBG_FAILIF(m_rate[i].size() != VSPs.size(), ValueError,
 			"A square matrix is required for BackwardMigrator")
@@ -372,7 +372,7 @@ bool BackwardMigrator::apply(Population & pop) const
 	// now, we need to calculate a forward migration matrix from the backward one
 	// the formula is
 
-	// S' = B'^-1 * S 
+	// S' = B'^-1 * S
 	// F = diag(S)^-1 B' diag(S')
 	//
 	// but for the special case of equal population size and symmetric matrix,
@@ -384,7 +384,7 @@ bool BackwardMigrator::apply(Population & pop) const
 			if (S[i] != S[i-1])
 				simple_case = false;
 	}
-	
+
 	size_t sz = m_rate.size();
 	// if not the simple case, we need to calculate rate...
 	matrixf migrationRate;

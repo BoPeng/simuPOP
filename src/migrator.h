@@ -4,10 +4,10 @@
  *  $Rev$
  *
  *  This file is part of simuPOP, a forward-time population genetics
- *  simulation environment. Please visit http://simupop.sourceforge.net
+ *  simulation environment. Please visit https://github.com/BoPeng/simuPOP
  *  for details.
  *
- *  Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+ *  Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -167,7 +167,7 @@ protected:
 };
 
 
-/** This operator migrates individuals between all available or specified 
+/** This operator migrates individuals between all available or specified
  *  subpopulations, according to a backward migration matrix. It differs from
  *  \c Migrator in how migration matrixes are interpreted. Due to the limit
  *  of this model, this operator does not support migration by information
@@ -180,7 +180,7 @@ protected:
  *  \c i to \c j, elements in a reverse migration matrix $m_{ij}$ is considered
  *  the probability (proportion or count) of individuals migrating from subpopulation
  *  \c j to \c i, namely the probability (proportion or count) of individuals
- *  originats from subpopulation \c j. 
+ *  originats from subpopulation \c j.
  *
  *  If migration is applied by probability, the row of the migration matrix
  *  corresponding to a destination subpopulation is intepreted as probabilities to
@@ -199,11 +199,11 @@ protected:
  *  be performed, the backward migration matrix describes the result of
  *  migration. The underlying forward migration matrix is calculated at
  *  each generation and is in theory not the same across generations.
- * 
+ *
  *  This operator calculates the corresponding forward migration matrix
  *  from backward matrix and current population size. This process is not
  *  always feasible so an error will raise if no valid ending population
- *  size or forward migration matrix could be determined. Please refer to 
+ *  size or forward migration matrix could be determined. Please refer to
  *  the simuPOP user's guide for an explanation of the theory behind forward
  *  and backward migration matrices.
  */

@@ -41,7 +41,7 @@ class MyDocParser(DocParser):
     def __init__(self, *args, **kwargs):
         DocParser.__init__(self, *args, **kwargs)
 
-  
+
     def mk_metadata_handler(self, name, mdname=None, arg='M'):
         if mdname is None:
             mdname = name
@@ -119,7 +119,7 @@ class MyDocParser(DocParser):
             return InlineNode('include', name)
         return handler
 
-        
+
     handle_small = mk_metadata_handler(None, '\\small', None, 'O')
     handle_ttfamily = mk_metadata_handler(None, '\\small', None, 'O')
     handle_textsf = mk_metadata_handler(None, '\\textsf', None, 'O')
@@ -216,10 +216,10 @@ class MyRestWriter(RestWriter):
 # $File: %s $
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -236,16 +236,16 @@ class MyRestWriter(RestWriter):
 #
 
 # This script is an example in the simuPOP user's guide. Please refer to
-# the user's guide (http://simupop.sourceforge.net/manual) for a detailed
+# the user's guide (https://github.com/BoPeng/simuPOP/manual) for a detailed
 # description of this example.
 #
 ''' % outfilename
                 print >> outfile, txt
             # insert a URL
             self.write('`Download %s <%s>`_\n' % (outfilename, outfilename))
-        else: 
+        else:
             RestWriter.visit_CommandNode(self, node)
-    
+
 def convert_file(infile, outfile, doraise=True, splitchap=True,
                  toctree=None, deflang=None, labelprefix=''):
     inf = codecs.open(infile, 'r', 'latin1')

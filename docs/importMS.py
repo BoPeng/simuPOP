@@ -4,10 +4,10 @@
 # $File: importMS.py $
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #
 
 # This script is an example in the simuPOP user's guide. Please refer to
-# the user's guide (http://simupop.sourceforge.net/manual) for a detailed
+# the user's guide (https://github.com/BoPeng/simuPOP/manual) for a detailed
 # description of this example.
 #
 
@@ -47,12 +47,11 @@ export(pop, format='ms', output='ms_subPop.txt', splitBy='subPop')
 # export all chromosomes, but limit to all males in subPop 1
 pop.setVirtualSplitter(sim.SexSplitter())
 export(pop, format='ms', output='ms_chrom.txt', splitBy='chrom', subPops=[(1,0)])
-# 
+#
 print(open('ms_chrom.txt').read())
 # import as haploid sequence
 pop = importPopulation(format='ms', filename='ms.txt')
-# import as diploid 
+# import as diploid
 pop = importPopulation(format='ms', filename='ms.txt', ploidy=2)
 # import as a single chromosome
 pop = importPopulation(format='ms', filename='ms_subPop.txt', mergeBy='subPop')
-

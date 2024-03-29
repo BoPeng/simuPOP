@@ -5,7 +5,7 @@ package:
 source:
   fn: simuPOP-1.1.7.tar.gz
   url: https://binstar.org/bpeng/simuPOP/1.1.7/download/simuPOP-1.1.7-src.tar.gz
-  md5: 
+  md5:
    #  patches:
    # List any patch files here
    # - fix.patch
@@ -52,7 +52,7 @@ test:
     # - nose
 
 about:
-  home: http://simupop.sourceforge.net
+  home: https://github.com/BoPeng/simuPOP
   license: GNU General Public License (GPL)
   summary: 'Forward-time population genetics simulation environment'
 

@@ -4,10 +4,10 @@
 # $File: virtualSubPop.py $
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #
 
 # This script is an example in the simuPOP user's guide. Please refer to
-# the user's guide (http://simupop.sourceforge.net/manual) for a detailed
+# the user's guide (https://github.com/BoPeng/simuPOP/manual) for a detailed
 # description of this example.
 #
 
@@ -33,7 +33,7 @@ import random
 pop = sim.Population(10, loci=[2, 3], infoFields='Sex')
 sim.initSex(pop)
 pop.setVirtualSplitter(sim.SexSplitter())
-# initialize male and females with different genotypes. 
+# initialize male and females with different genotypes.
 sim.initGenotype(pop, genotype=[0]*5, subPops=[(0, 0)])
 sim.initGenotype(pop, genotype=[1]*5, subPops=[(0, 1)])
 # set Sex information field to 0 for all males, and 1 for all females
@@ -41,4 +41,3 @@ pop.setIndInfo([sim.MALE], 'Sex', [0, 0])
 pop.setIndInfo([sim.FEMALE], 'Sex', [0, 1])
 # Print individual genotypes, followed by values at information field Sex
 sim.dump(pop, structure=False)
-

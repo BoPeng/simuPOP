@@ -4,10 +4,10 @@
 // $Rev$
 //
 // This file is part of simuPOP, a forward-time population genetics
-// simulation environment. Please visit http://simupop.sourceforge.net
+// simulation environment. Please visit https://github.com/BoPeng/simuPOP
 // for details.
 //
-// Copyright (C) 2004 - 2009 Bo Peng (bpeng@mdanderson.org)
+// Copyright (C) 2004 - 2009 Bo Peng (Bo.Peng@bcm.edu)
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -280,13 +280,13 @@ namespace std
 // when using pointers as vector values.
 //
 // Without this workaround, gcc will complain with the following:
-// 
-//      error: ‘type_name’ is not a member of ‘swig::traits<simuPOP::vspID>’
 //
-// In appears that SWIG is looking for a swig::traits<simuPOP::vspID> definition, whereas it 
+//      error: ï¿½type_nameï¿½ is not a member of ï¿½swig::traits<simuPOP::vspID>ï¿½
+//
+// In appears that SWIG is looking for a swig::traits<simuPOP::vspID> definition, whereas it
 // should be looking for swig::traits<simuPOP::vspID *>,
 // which SWIG does actually define.
-// 
+//
 // The easiest workaround is to just provide the definition that the compiler is looking for.
 // I dont think this will cause any side effects,
 // as from what i can tell, swig::traits<>::type_name is only used as diagnostic message when

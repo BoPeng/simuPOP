@@ -4,10 +4,10 @@
 # $File: newOperator.py $
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #
 
 # This script is an example in the simuPOP user's guide. Please refer to
-# the user's guide (http://simupop.sourceforge.net/manual) for a detailed
+# the user's guide (https://github.com/BoPeng/simuPOP/manual) for a detailed
 # description of this example.
 #
 
@@ -51,7 +51,7 @@ class dynaMutator(sim.PyOperator):
 
 pop = sim.Population(size=10000, loci=[2, 3])
 pop.evolve(
-    initOps=[ 
+    initOps=[
         sim.InitSex(),
         sim.InitGenotype(freq=[.99, .01], loci=[0, 2, 4]),
         sim.InitGenotype(freq=[.8, .2], loci=[1, 3])
@@ -64,5 +64,4 @@ pop.evolve(
             step=10),
     ],
     gen = 31
-)          
-
+)

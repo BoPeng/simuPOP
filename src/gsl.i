@@ -4,10 +4,10 @@
 // $Rev: 3106 $
 //
 // This file is part of simuPOP, a forward-time population genetics
-// simulation environment. Please visit http://simupop.sourceforge.net
+// simulation environment. Please visit https://github.com/BoPeng/simuPOP
 // for details.
 //
-// Copyright (C) 2004 - 2009 Bo Peng (bpeng@mdanderson.org)
+// Copyright (C) 2004 - 2009 Bo Peng (Bo.Peng@bcm.edu)
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -137,7 +137,7 @@ gsl_ran_binomial_pdf (const unsigned int k, const double p,
     {
       double P;
 
-      if (p == 0) 
+      if (p == 0)
         {
           P = (k == 0) ? 1 : 0;
         }
@@ -163,15 +163,15 @@ gsl_ran_beta_pdf (const double x, const double a, const double b)
     {
       return 0 ;
     }
-  else 
+  else
     {
       double p;
 
       double gab = gsl_sf_lngamma (a + b);
       double ga = gsl_sf_lngamma (a);
       double gb = gsl_sf_lngamma (b);
-      
-      if (x == 0.0 || x == 1.0) 
+
+      if (x == 0.0 || x == 1.0)
         {
           p = exp (gab - ga - gb) * pow (x, a - 1) * pow (1 - x, b - 1);
         }
@@ -189,7 +189,7 @@ double
 gsl_ran_poisson_pdf (const unsigned int k, const double mu)
 {
   double p;
-  double lf = gsl_sf_lnfact (k); 
+  double lf = gsl_sf_lnfact (k);
 
   p = exp (log (mu) * k - lf - mu);
   return p;
@@ -201,40 +201,40 @@ gsl_ran_poisson_pdf (const unsigned int k, const double mu)
     initialize();
 %}
 
-extern double gsl_cdf_gaussian_P(double x, double sigma); 
-extern double gsl_cdf_gaussian_Q(double x, double sigma); 
-extern double gsl_cdf_gaussian_Pinv(double P, double sigma); 
-extern double gsl_cdf_gaussian_Qinv(double Q, double sigma); 
-extern double gsl_cdf_ugaussian_P(double x); 
-extern double gsl_cdf_ugaussian_Q(double x); 
-extern double gsl_cdf_ugaussian_Pinv(double P); 
-extern double gsl_cdf_ugaussian_Qinv(double Q); 
+extern double gsl_cdf_gaussian_P(double x, double sigma);
+extern double gsl_cdf_gaussian_Q(double x, double sigma);
+extern double gsl_cdf_gaussian_Pinv(double P, double sigma);
+extern double gsl_cdf_gaussian_Qinv(double Q, double sigma);
+extern double gsl_cdf_ugaussian_P(double x);
+extern double gsl_cdf_ugaussian_Q(double x);
+extern double gsl_cdf_ugaussian_Pinv(double P);
+extern double gsl_cdf_ugaussian_Qinv(double Q);
 
-extern double gsl_cdf_exponential_P(double x, double mu); 
-extern double gsl_cdf_exponential_Q(double x, double mu); 
-extern double gsl_cdf_exponential_Pinv(double P, double mu); 
-extern double gsl_cdf_exponential_Qinv(double Q, double mu); 
+extern double gsl_cdf_exponential_P(double x, double mu);
+extern double gsl_cdf_exponential_Q(double x, double mu);
+extern double gsl_cdf_exponential_Pinv(double P, double mu);
+extern double gsl_cdf_exponential_Qinv(double Q, double mu);
 
-extern double gsl_cdf_chisq_P(double x, double nu); 
-extern double gsl_cdf_chisq_Q(double x, double nu); 
-extern double gsl_cdf_chisq_Pinv(double P, double nu); 
-extern double gsl_cdf_chisq_Qinv(double Q, double nu); 
+extern double gsl_cdf_chisq_P(double x, double nu);
+extern double gsl_cdf_chisq_Q(double x, double nu);
+extern double gsl_cdf_chisq_Pinv(double P, double nu);
+extern double gsl_cdf_chisq_Qinv(double Q, double nu);
 
-extern double gsl_cdf_gamma_P(double x, double a, double b); 
-extern double gsl_cdf_gamma_Q(double x, double a, double b); 
-extern double gsl_cdf_gamma_Pinv(double P, double a, double b); 
-extern double gsl_cdf_gamma_Qinv(double Q, double a, double b); 
+extern double gsl_cdf_gamma_P(double x, double a, double b);
+extern double gsl_cdf_gamma_Q(double x, double a, double b);
+extern double gsl_cdf_gamma_Pinv(double P, double a, double b);
+extern double gsl_cdf_gamma_Qinv(double Q, double a, double b);
 
-extern double gsl_cdf_binomial_P(unsigned int k, double p, unsigned int n); 
-extern double gsl_cdf_binomial_Q(unsigned int k, double p, unsigned int n); 
+extern double gsl_cdf_binomial_P(unsigned int k, double p, unsigned int n);
+extern double gsl_cdf_binomial_Q(unsigned int k, double p, unsigned int n);
 /* This function is copied into this interface file to avoid inclusion of other
    cdf functions. */
 /* extern double gsl_ran_binomial_pdf(unsigned int k, double p, unsigned int n); */
 
-extern double gsl_cdf_beta_P(double x, double a, double b); 
-extern double gsl_cdf_beta_Q(double x, double a, double b); 
-extern double gsl_cdf_beta_Pinv(double P, double a, double b); 
-extern double gsl_cdf_beta_Qinv(double Q, double a, double b); 
+extern double gsl_cdf_beta_P(double x, double a, double b);
+extern double gsl_cdf_beta_Q(double x, double a, double b);
+extern double gsl_cdf_beta_Pinv(double P, double a, double b);
+extern double gsl_cdf_beta_Qinv(double Q, double a, double b);
 
 extern double gsl_cdf_poisson_P(const unsigned int k, const double mu);
 extern double gsl_cdf_poisson_Q(const unsigned int k, const double mu);

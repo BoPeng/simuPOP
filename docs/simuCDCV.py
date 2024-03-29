@@ -4,10 +4,10 @@
 # $File: simuCDCV.py $
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #
 
 # This script is an example in the simuPOP user's guide. Please refer to
-# the user's guide (http://simupop.sourceforge.net/manual) for a detailed
+# the user's guide (https://github.com/BoPeng/simuPOP/manual) for a detailed
 # description of this example.
 #
 
@@ -63,7 +63,7 @@ options = [
      'type': 'integer',
      'description': 'Ending sim.population size (after sim.population expansion)',
      'validator': simuOpt.valueGT(0)
-    }, 
+    },
     {'name': 'G0',
      'default': 500,
      'label': 'Length of burn-in stage',
@@ -112,7 +112,7 @@ options = [
 ]
 
 def demo_model(type, N0=1000, N1=100000, G0=500, G1=500):
-    '''Return a demographic function 
+    '''Return a demographic function
     type: linear or exponential
     N0:   Initial sim.population size.
     N1:   Ending sim.population size.
@@ -125,13 +125,13 @@ def demo_model(type, N0=1000, N1=100000, G0=500, G1=500):
             return N0
         else:
             return N1
-    
+
     def exp_expansion(gen):
         if gen < G0:
             return N0
-        else:            
+        else:
             return int(N0 * math.exp((gen - G0) * rate))
-    
+
     if type == 'instant':
         return ins_expansion
     elif type == 'exponential':
@@ -145,7 +145,7 @@ class ne(sim.PyOperator):
     def __init__(self, loci, *args, **kwargs):
         self.loci = loci
         sim.PyOperator.__init__(self, func=self.calcNe, *args, **kwargs)
-    
+
     def calcNe(self, pop):
         sim.stat(pop, alleleFreq=self.loci)
         ne = {}
@@ -196,7 +196,7 @@ if __name__ == '__main__':
     par = simuOpt.Params(options, __doc__)
     if not par.getParam():
         sys.exit(1)
-    
+
     if not sum(par.spec) == 1:
         print('Initial allelic spectrum should add up to 1.')
         sys.exit(1)
@@ -204,5 +204,3 @@ if __name__ == '__main__':
     par.saveConfig('simuCDCV.cfg')
     #
     simuCDCV(*par.asList())
-
-

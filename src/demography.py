@@ -6,10 +6,10 @@
 # $Rev: 4792 $
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -133,11 +133,11 @@ def migr2DSteppingStoneRates(r, m, n, diagonal=False, circular=False):
     return rates
 
 class DemographicModel:
-    '''This class is the base class for all demographic models and 
+    '''This class is the base class for all demographic models and
     provides common interface and utility functions for derived classes. A
     demographic model is essentially a callable Python object that encapsulates
     required functions of a demographic model, to determine initial population
-    size (``Population(size=model.init_size, infoFields=model.info_fields)``, 
+    size (``Population(size=model.init_size, infoFields=model.info_fields)``,
     to determine size of offspring population during evolution (``subPopSize=model``
     of a mating scheme), and number of generations to evolve (``gen=model.num_gens``),
     although the first and last utility could be relaxed to for models that
@@ -154,11 +154,11 @@ class DemographicModel:
         the demographic model is first applied to, or a float number representing
         the proportion (can be larger than 1) of individuals for the whole or
         corresponding subpopulation. A ``None`` value will be assigned to
-        attribute ``init_size`` in such a case because the initial population 
+        attribute ``init_size`` in such a case because the initial population
         size is determined dynamically. In addition, whenever a population size
-        is allowed, a tuple of ``(size, name)`` is acceptable, which assigns 
+        is allowed, a tuple of ``(size, name)`` is acceptable, which assigns
         ``name`` to the corresponding subpopulation. ``numGens`` can be a
-        non-negative number or ``-1``, which allows the demographic model to 
+        non-negative number or ``-1``, which allows the demographic model to
         be determinated by a terminator. One or more operators (e.g. a migration
         operator or a terminator) could be passed (parameter ``ops``) and will
         be applied to the population. The demographic model will return ``[]``
@@ -219,7 +219,7 @@ class DemographicModel:
             # sz = [(100, 'name')]
             elif self._isNamedSize(x):
                 res.append(x[0])
-            # a group 
+            # a group
             # sz = [[100, 200], 300]
             # sz = [[(100, 'AS'), 200], 300]
             elif isinstance(x, (tuple, list)):
@@ -249,7 +249,7 @@ class DemographicModel:
             # sz = [(100, 'name')]
             elif self._isNamedSize(x):
                 res.append(x)
-            # a group 
+            # a group
             # sz = [[100, 200], 300]
             # sz = [[(100, 'AS'), 200], 300]
             elif isinstance(x, (tuple, list)):
@@ -272,7 +272,7 @@ class DemographicModel:
         '''
         # if size is None or size is [], return unchanged
         if not size:
-            return 
+            return
         named_size = self._convertToNamedSize(size)
         if pop.numSubPop() > 1:
             # merge subpopualtions
@@ -345,7 +345,7 @@ class DemographicModel:
                     names = [x[1] for x in named_size[idx]]
                     pop.splitSubPop(idx, new_size, names if any([x != '' for x in names]) else [])
         else:
-            # now, if the passed population does not have any subpopulation, 
+            # now, if the passed population does not have any subpopulation,
             # we can merge or split ...
             if len(named_size) == 1:
                 # integer is size
@@ -379,7 +379,7 @@ class DemographicModel:
     def _recordPopSize(self, pop):
         gen = pop.dvars().gen
         if (not hasattr(self, '_last_size')) or self._last_size != pop.subPopSizes():
-            print(('%d: %s' % (gen, 
+            print(('%d: %s' % (gen,
                 ', '.join(
                     ['%d%s' % (x, ' (%s)' % y if y else '') for x, y in \
                         zip(pop.subPopSizes(), pop.subPopNames())])
@@ -398,7 +398,7 @@ class DemographicModel:
                     self.pop_regions[n] = np.append(self.pop_regions[n],
                         np.array([[gen, sz, gen, sz+s]]))
                 else:
-                    self.pop_regions[n] = np.array([gen, sz, gen, sz+s], 
+                    self.pop_regions[n] = np.array([gen, sz, gen, sz+s],
                         dtype=np.uint64)
                 sz += s
         return True
@@ -434,7 +434,7 @@ class DemographicModel:
             gen=self.num_gens
         )
         self._recordPopSize(pop)
-        # 
+        #
         if self.draw_figure:
             fig = plt.figure()
             ax = fig.add_subplot(111)
@@ -466,7 +466,7 @@ class DemographicModel:
                 raise ValueError('Mismatch population size at generation %s (with starting gen %s): observed=%s, intended=%s' % \
                     (gen - param, param, pop.subPopSizes(), sz))
         return True
-        
+
     def _assertSize(self, sizes, initSize=[], startGen=0):
         '''This function is provided for testing purpose.
         '''
@@ -542,10 +542,10 @@ class DemographicModel:
         #   generation is allowed. This is because many demographic models depend on
         #   size of previous generations to determine new population size, which makes
         #   jumping forward impossible.
-        # 
+        #
         # In the case of multi-model, random access will not call fitSize for any
         # intermediate steps.
-        # 
+        #
         # the first time this demographic function is called
         self._use_cached = False
         if not hasattr(self, '_start_gen'):
@@ -587,9 +587,9 @@ class ExponentialGrowthModel(DemographicModel):
         will be resized to ``N0`` (split if necessary). Zero or negative growth
         rates are allowed. The model will automatically determine ``T``, ``r``
         or ``NT`` if one of them is unspecified. If all of them are specified,
-        ``NT`` is intepretted as carrying capacity of the model, namely the 
+        ``NT`` is intepretted as carrying capacity of the model, namely the
         population will keep contant after it reaches size ``NT``. Optionally,
-        one or more operators (e.g. a migrator) ``ops`` can be applied to 
+        one or more operators (e.g. a migrator) ``ops`` can be applied to
         population. '''
         DemographicModel.__init__(self, T, N0, ops, infoFields)
         #
@@ -661,7 +661,7 @@ class ExponentialGrowthModel(DemographicModel):
         if self._gen == self.num_gens:
             return []
         elif self.r is None:
-            return self._save_size(pop.dvars().gen, 
+            return self._save_size(pop.dvars().gen,
                 [self._expIntepolate(n0, nt, self.num_gens, self._gen)
                 for (n0, nt) in zip(self.init_size, self.NT)])
         else:
@@ -680,9 +680,9 @@ class LinearGrowthModel(DemographicModel):
         will be resized to ``N0`` (split if necessary). Zero or negative growth
         rates are allowed. The model will automatically determine ``T``, ``r``
         or ``NT`` if one of them is unspecified. If all of them are specified,
-        ``NT`` is intepretted as carrying capacity of the model, namely the 
+        ``NT`` is intepretted as carrying capacity of the model, namely the
         population will keep contant after it reaches size ``NT``. Optionally,
-        one or more operators (e.g. a migrator) ``ops`` can be applied to 
+        one or more operators (e.g. a migrator) ``ops`` can be applied to
         population. '''
         DemographicModel.__init__(self, T, N0, ops, infoFields)
         #
@@ -804,7 +804,7 @@ class InstantChangeModel(DemographicModel):
         #
         if self._use_cached:
             return self._cached_size(pop.dvars().gen)
-        # 
+        #
         if self._gen in self.G:
             sz = self.NG[self.G.index(self._gen)]
             self._fitToSize(pop, sz)
@@ -816,21 +816,21 @@ class InstantChangeModel(DemographicModel):
 
 
 class AdmixtureModel(DemographicModel):
-    '''An population admixture model that mimicks the admixing of two 
+    '''An population admixture model that mimicks the admixing of two
     subpopulations using either an HI (hybrid isolation) or CGF
     (continuous gene flow) model. In the HI model, an admixed population
     is created instantly from two or more subpopulation with
     specified proportions. In the CGF model, a population will be reduced
     to (1-alpha) N and accept alpha*N individuals from another population
     for a number of generations. Please see Long (1990) The Stnetic Structure
-    of Admixed Populations, Genetics for details. 
-    
+    of Admixed Populations, Genetics for details.
+
     This model is deprecated due to the introduction of event based
     implementation of admixture models (e.g. ``AdmixToNewPopAdmixture``
-    and ``ContinuousGeneFlowAdmixture events``). 
+    and ``ContinuousGeneFlowAdmixture events``).
     '''
     def __init__(self, T=None, N0=[], model=[], ops=[], infoFields=[]):
-        '''Define a population admixture model that mixed two 
+        '''Define a population admixture model that mixed two
         subpopulations. The population has an initial size of ``N0``
         which contains more than one subpopulations. The demographic
         model will evolve for ``T`` generations with admixture model
@@ -851,7 +851,7 @@ class AdmixtureModel(DemographicModel):
     def HI_size(self, N1, N2, mu):
         #
         #   N1         N2
-        # choose  
+        # choose
         #   N*mu       N*(1-mu)
         # so that
         #   N*mu < N1
@@ -904,7 +904,7 @@ class AdmixtureModel(DemographicModel):
             sz2 = pop.subPopSize(self.model[2])
             # requested number of individuals from sz2
             request = min(int(sz1 * (1-self.model[3]) + 0.5), sz2)
-            # we need to replace requested number of individuals in sz1 
+            # we need to replace requested number of individuals in sz1
             # with individuals in sz2
             #
             # step1, enlarge doner
@@ -955,7 +955,7 @@ class MultiStageModel(DemographicModel):
         for m in self.models:
             if hasattr(m, '_start_gen'):
                 del m._start_gen
-  
+
     def _advance(self, pop):
         self._model_idx += 1
         self._model_start_gen = pop.dvars().gen - self._start_gen
@@ -990,7 +990,7 @@ class MultiStageModel(DemographicModel):
         # There are three cases
         # 1. within the current model, a valid step is returned
         #   --> return
-        # 2. within the current model, a [] is returned by a 
+        # 2. within the current model, a [] is returned by a
         #   terminator.
         #   --> proceed to the next available model, call, and return
         # 3. at the end of the current model,
@@ -1013,10 +1013,10 @@ class MultiStageModel(DemographicModel):
         return self._save_size(pop.dvars().gen, sz)
 
 
-        
+
 class EventBasedModel(DemographicModel):
-    '''An event based demographic model in which the demographic changes are 
-    triggered by demographic events such as population growth, split, join, and 
+    '''An event based demographic model in which the demographic changes are
+    triggered by demographic events such as population growth, split, join, and
     admixture. The population size will be kept constant if no event is applied
     at a certain generation.
     '''
@@ -1043,11 +1043,11 @@ class DemographicEvent:
     def __init__(self, ops=[], output='', begin=0, end=-1, step=1, at=[],
         reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
         '''Create a demographic event that will be applied at specified
-        generations according to applicability parameters ``reps``, ``begin``, 
+        generations according to applicability parameters ``reps``, ``begin``,
         ``end``, ``step`` and ``at``. Parameter ``subPops`` is usually used
         to specify the subpopulations affected by the event. One or more simuPOP
         operators, if specified in ``ops``, will be applied when the event
-        happens. Parameters ``output`` and ``infoFields`` are currently ignored. 
+        happens. Parameters ``output`` and ``infoFields`` are currently ignored.
         '''
         if isinstance(ops, (list, tuple)):
             self.ops = ops
@@ -1064,7 +1064,7 @@ class DemographicEvent:
         self.reps = reps
         self.subPops = subPops
         self.infoFields = infoFields
-    
+
     def _applicable(self, pop):
         if '_gen' not in pop.vars() or '_num_gens' not in pop.vars():
             raise ValueError('Cannot apply to a population without variables _gen or _num_gens')
@@ -1142,7 +1142,7 @@ class DemographicEvent:
 class ResizeEvent(DemographicEvent):
     '''A demographic event that resize specified subpopulations'''
     def __init__(self, sizes=[], names=[], removeEmptySubPops=False,
-        ops=[], output='', begin=0, end=-1, 
+        ops=[], output='', begin=0, end=-1,
         step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
         '''A demographic event that resizes given subpopulations ``subPops`` to new
         ``sizes`` (integer type), or sizes proportional to original sizes (if a float
@@ -1203,7 +1203,7 @@ class ResizeEvent(DemographicEvent):
 class MergeEvent(DemographicEvent):
     '''A demographic event that merges one or more subpopulation to
     a single one.'''
-    def __init__(self, name='', ops=[], output='', begin=0, end=-1, 
+    def __init__(self, name='', ops=[], output='', begin=0, end=-1,
         step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
         '''A demographic event that merges subpopulations into a single subpopulation.
         The merged subpopulation will have the name of the first merged subpopulation
@@ -1232,7 +1232,7 @@ class MergeEvent(DemographicEvent):
 class SplitEvent(DemographicEvent):
     '''A demographic event that splits a specified population into two or
     more subpopulations.'''
-    def __init__(self, sizes=[], names=[], ops=[], output='', begin=0, end=-1, 
+    def __init__(self, sizes=[], names=[], ops=[], output='', begin=0, end=-1,
         step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
         '''A demographic event that splits a subpopulation specified by
         ``subPops`` to two or more subpopulations, with specified ``sizes``
@@ -1246,7 +1246,7 @@ class SplitEvent(DemographicEvent):
         self.names = names
         DemographicEvent.__init__(self, ops, output, begin, end, step, at, reps,
             subPops, infoFields)
-    
+
     def apply(self, pop):
         if not DemographicEvent.apply(self, pop):
             return False
@@ -1290,8 +1290,8 @@ class ExpansionEvent(DemographicEvent):
     parameter is called ``slopes``. Note that if both population
     size and ``r`` are small (e.g. ``N*r<1``),  the population might not expand
     as expected.'''
-    def __init__(self, rates=[], slopes=[], capacity=[], name='', 
-        ops=[], output='', begin=0, end=-1, 
+    def __init__(self, rates=[], slopes=[], capacity=[], name='',
+        ops=[], output='', begin=0, end=-1,
         step=1, at=[], reps=ALL_AVAIL, subPops=ALL_AVAIL, infoFields=[]):
         '''A demographic event that expands all or specified subpopulations
         (``subPops``) exponentially by a rate of ``rates``, or linearly by a slope
@@ -1311,7 +1311,7 @@ class ExpansionEvent(DemographicEvent):
         self.capacity = capacity
         DemographicEvent.__init__(self, ops, output, begin, end, step, at, reps,
             subPops, infoFields)
-    
+
     def apply(self, pop):
         if not self._applicable(pop):
             return True
@@ -1383,16 +1383,16 @@ class ExpansionEvent(DemographicEvent):
                      sz[sp] = min(sz[sp], self.capacity[idx])
                 else:
                      sz[sp] = min(sz[sp], self.capacity)
-        pop.dvars()._expected_size = sz 
+        pop.dvars()._expected_size = sz
         return True
 
 
 class AdmixtureEvent(DemographicEvent):
     '''This event implements a population admixture event that mix
-    individuals from specified subpopulations to either a new 
+    individuals from specified subpopulations to either a new
     subpopulation or an existing subpopulation.'''
     def __init__(self, sizes=[], toSubPop=None, name='',
-        ops=[], output='', begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL, 
+        ops=[], output='', begin=0, end=-1, step=1, at=[], reps=ALL_AVAIL,
         subPops=ALL_AVAIL, infoFields=[]):
         '''Create an admixed population by choosing individuals
         from all or specified subpopulations (``subPops``) and creating
@@ -1404,9 +1404,9 @@ class AdmixtureEvent(DemographicEvent):
         specified ``sizes``. Its size is maximized to have the largest
         number of individuals from the source population when a new population
         is created, or equal to the size of the existing destination population.
-        The parameter ``sizes`` should be a list of float numbers 
+        The parameter ``sizes`` should be a list of float numbers
         between 0 and 1, and add up to 1 (e.g. ``[0.4, 0.4, 0.2]``, although
-        this function ignores the last element and set it to 1 minus the 
+        this function ignores the last element and set it to 1 minus the
         sum of the other numbers). Alternatively, parameter ``sizes`` can
         be a list of numbers used to explicitly specify the size of admixed
         population and number of individuals from each source subpopulation.
@@ -1455,7 +1455,7 @@ class AdmixtureEvent(DemographicEvent):
         if self.numbers and len(subPops) != len(self.numbers):
             raise ValueError('Number of subpopulations and proportions mismatch.')
         #
-        # determine the maximum number of individuals that 
+        # determine the maximum number of individuals that
         # can be draw from each subpopulation
         if self.numbers:
             # if specific numbers are specified
@@ -1483,7 +1483,7 @@ class AdmixtureEvent(DemographicEvent):
                 raise ValueError('Proportion of one of the parental populations is negative or more than 1.')
             if sum(self.proportions) != 1.:
                 self.proportions[-1] = 1. - sum(self.proportions[:-1])
-            # 
+            #
             # create a new subpopulation
             if toSubPop is None:
                 # now determine the size ... try different source subpopulation
@@ -1535,9 +1535,9 @@ class AdmixtureEvent(DemographicEvent):
 
 class _OutOfAfricaModel_event(EventBasedModel):
     '''A dempgraphic model for the CHB, CEU, and YRI populations, as defined in
-    Gutenkunst 2009, Plos Genetics. The model is depicted in Figure 2, and the 
+    Gutenkunst 2009, Plos Genetics. The model is depicted in Figure 2, and the
     default parameters are listed in Table 1 of this paper. '''
-    def __init__(self, 
+    def __init__(self,
         T0,
         N_A=7300,
         N_AF=12300,
@@ -1550,9 +1550,9 @@ class _OutOfAfricaModel_event(EventBasedModel):
         m_AF_EU=0.00003,
         m_AF_AS=0.000019,
         m_EU_AS=0.000096,
-        T_AF=220000//25, 
-        T_B=140000//25, 
-        T_EU_AS=21200//25, 
+        T_AF=220000//25,
+        T_B=140000//25,
+        T_EU_AS=21200//25,
         ops=[],
         infoFields=[],
         outcome=['AF', 'EU', 'AS'],
@@ -1562,21 +1562,21 @@ class _OutOfAfricaModel_event(EventBasedModel):
         generations (required parameter). The ancient population ``A`` started at
         size ``N_A`` and expanded at ``T_AF`` generations from now, to pop ``AF``
         with size ``N_AF``. Pop ``B`` split from pop ``AF`` at ``T_B`` generations
-        from now, with size ``N_B``; Pop ``AF`` remains as ``N_AF`` individuals. 
+        from now, with size ``N_B``; Pop ``AF`` remains as ``N_AF`` individuals.
         Pop ``EU`` and  ``AS`` split from pop ``B`` at ``T_EU_AS`` generations
         from now; with size ``N_EU0`` individuals and ``N_ASO`` individuals,
         respectively. Pop ``EU`` grew exponentially with rate ``r_EU``; Pop
         ``AS`` grew exponentially with rate ``r_AS``. The ``YRI``, ``CEU`` and
         ``CHB`` samples are drawn from ``AF``, ``EU`` and ``AS`` populations
         respectively. Additional operators could be added to ``ops``. Information
-        fields required by these operators should be passed to ``infoFields``. If 
+        fields required by these operators should be passed to ``infoFields``. If
         a scaling factor ``scale`` is specified, all population sizes and
         generation numbers will be divided by a factor of ``scale``. This demographic
         model by default returns all populations (``AF``, ``EU``, ``AS``) but
         you can choose to keep only selected subpopulations using parameter
         ``outcome`` (e.g. ``outcome=['EU', 'AS']``).
 
-        This model merges all subpopulations if it is applied to an initial 
+        This model merges all subpopulations if it is applied to an initial
         population with multiple subpopulation.
         '''
         #
@@ -1587,7 +1587,7 @@ class _OutOfAfricaModel_event(EventBasedModel):
             outcome = [outcome]
         #
         scale = float(scale)
-        EventBasedModel.__init__(self, 
+        EventBasedModel.__init__(self,
             T = int(T0/scale),
             N0 = (int(N_A/scale), 'Ancestral'),
             infoFields = 'migrate_to',
@@ -1602,17 +1602,17 @@ class _OutOfAfricaModel_event(EventBasedModel):
                 DemographicEvent(
                     ops=Migrator(rate=[
                         [m_AF_B, 0],
-                        [0, m_AF_B]]), 
-                    begin=-int(T_B/scale), 
+                        [0, m_AF_B]]),
+                    begin=-int(T_B/scale),
                     end=-int(T_EU_AS/scale)
                 ),
                 # split EU AS from B
                 SplitEvent(at=-int(T_EU_AS/scale), subPops='B',
                     sizes=(int(N_EU0/scale), int(N_AS0/scale)),
                     names=('EU', 'AS')),
-                # exponential growth 
+                # exponential growth
                 ExpansionEvent(begin=-int(T_EU_AS/scale),
-                    subPops=('EU', 'AS'), 
+                    subPops=('EU', 'AS'),
                     rates=(r_EU*scale, r_AS*scale)),
                 # migration between AF, EU and AS
                 DemographicEvent(
@@ -1620,11 +1620,11 @@ class _OutOfAfricaModel_event(EventBasedModel):
                         [0, m_AF_EU, m_AF_AS],
                         [m_AF_EU, 0, m_EU_AS],
                         [m_AF_AS, m_EU_AS, 0]
-                        ]), 
+                        ]),
                     begin=-int(T_EU_AS/scale)
                 ),
                 # keep only selected populations
-                ResizeEvent(at=-1, 
+                ResizeEvent(at=-1,
                     sizes=[float('AF' in outcome),
                         float('EU' in outcome),
                         float('AS' in outcome)],
@@ -1635,9 +1635,9 @@ class _OutOfAfricaModel_event(EventBasedModel):
 
 class _OutOfAfricaModel_outcome(MultiStageModel):
     '''A dempgraphic model for the CHB, CEU, and YRI populations, as defined in
-    Gutenkunst 2009, Plos Genetics. The model is depicted in Figure 2, and the 
+    Gutenkunst 2009, Plos Genetics. The model is depicted in Figure 2, and the
     default parameters are listed in Table 1 of this paper. '''
-    def __init__(self, 
+    def __init__(self,
         T0,
         N_A=7300,
         N_AF=12300,
@@ -1650,9 +1650,9 @@ class _OutOfAfricaModel_outcome(MultiStageModel):
         m_AF_EU=0.00003,
         m_AF_AS=0.000019,
         m_EU_AS=0.000096,
-        T_AF=220000//25, 
-        T_B=140000//25, 
-        T_EU_AS=21200//25, 
+        T_AF=220000//25,
+        T_B=140000//25,
+        T_EU_AS=21200//25,
         ops=[],
         infoFields=[],
         outcome=['AF', 'EU', 'AS'],
@@ -1662,21 +1662,21 @@ class _OutOfAfricaModel_outcome(MultiStageModel):
         generations (required parameter). The ancient population ``A`` started at
         size ``N_A`` and expanded at ``T_AF`` generations from now, to pop ``AF``
         with size ``N_AF``. Pop ``B`` split from pop ``AF`` at ``T_B`` generations
-        from now, with size ``N_B``; Pop ``AF`` remains as ``N_AF`` individuals. 
+        from now, with size ``N_B``; Pop ``AF`` remains as ``N_AF`` individuals.
         Pop ``EU`` and  ``AS`` split from pop ``B`` at ``T_EU_AS`` generations
         from now; with size ``N_EU0`` individuals and ``N_ASO`` individuals,
         respectively. Pop ``EU`` grew exponentially with rate ``r_EU``; Pop
         ``AS`` grew exponentially with rate ``r_AS``. The ``YRI``, ``CEU`` and
         ``CHB`` samples are drawn from ``AF``, ``EU`` and ``AS`` populations
         respectively. Additional operators could be added to ``ops``. Information
-        fields required by these operators should be passed to ``infoFields``. If 
+        fields required by these operators should be passed to ``infoFields``. If
         a scaling factor ``scale`` is specified, all population sizes and
         generation numbers will be divided by a factor of ``scale``. This demographic
         model by default returns all populations (``AF``, ``EU``, ``AS``) but
         you can choose to keep only selected subpopulations using parameter
         ``outcome`` (e.g. ``outcome=['EU', 'AS']``).
 
-        This model merges all subpopulations if it is applied to an initial 
+        This model merges all subpopulations if it is applied to an initial
         population with multiple subpopulation.
         '''
         #
@@ -1698,7 +1698,7 @@ class _OutOfAfricaModel_outcome(MultiStageModel):
                     removeEmptySubPops=True)
             ]
         else:
-            finalStage = [] 
+            finalStage = []
         # for python 2.x and 3.x compatibility
         scale = float(scale)
         MultiStageModel.__init__(self, [
@@ -1707,7 +1707,7 @@ class _OutOfAfricaModel_outcome(MultiStageModel):
                 N0=(int(N_A/scale), 'Ancestral'),
                 # change population size twice, one at T_AF, one at T_B
                 G=[int((T0-T_AF)/scale)],
-                NG=[(int(N_AF/scale), 'AF')] 
+                NG=[(int(N_AF/scale), 'AF')]
             ),
             #
             # at T_B, split to population B from subpopulation 1
@@ -1721,7 +1721,7 @@ class _OutOfAfricaModel_outcome(MultiStageModel):
                 ),
             ExponentialGrowthModel(
                 T=int(T_EU_AS/scale),
-                N0=[None, 
+                N0=[None,
                     # split B into EU and AS at the beginning of this
                     # exponential growth stage
                     [(int(N_EU0/scale), 'EU'), (int(N_AS0/scale), 'AS')]],
@@ -1740,7 +1740,7 @@ OutOfAfricaModel = _OutOfAfricaModel_outcome
 
 class _SettlementOfNewWorldModel_event(EventBasedModel):
     '''A dempgraphic model for settlement of the new world of Americans, as defined
-    in Gutenkunst 2009, Plos Genetics. The model is depicted in Figure 3, and the 
+    in Gutenkunst 2009, Plos Genetics. The model is depicted in Figure 3, and the
     default parameters are listed in Table 2 of this paper. '''
     def __init__(self,
         T0,
@@ -1757,9 +1757,9 @@ class _SettlementOfNewWorldModel_event(EventBasedModel):
         m_AF_EU=0.00003,
         m_AF_AS=0.000019,
         m_EU_AS=0.0000135,
-        T_AF=220000//25, 
-        T_B=140000//25, 
-        T_EU_AS=26400//25, 
+        T_AF=220000//25,
+        T_B=140000//25,
+        T_EU_AS=26400//25,
         T_MX=21600//25,
         f_MX=0.48,
         ops=[],
@@ -1771,8 +1771,8 @@ class _SettlementOfNewWorldModel_event(EventBasedModel):
         generations. The ancient population ``A`` started at size ``N_A`` and
         expanded at ``T_AF`` generations from now, to pop ``AF`` with size ``N_AF``.
         Pop ``B`` split from pop ``AF`` at ``T_B`` generations from now, with
-        size ``N_B``; Pop ``AF`` remains as ``N_AF`` individuals. Pop ``EU`` and 
-        ``AS`` split from pop ``B`` at ``T_EU_AS`` generations from now; with 
+        size ``N_B``; Pop ``AF`` remains as ``N_AF`` individuals. Pop ``EU`` and
+        ``AS`` split from pop ``B`` at ``T_EU_AS`` generations from now; with
         size ``N_EU0`` individuals and ``N_ASO`` individuals, respectively. Pop
         ``EU`` grew exponentially with final population size ``N_EU``; Pop
         ``AS`` grew exponentially with final populaiton size ``N_AS``. Pop ``MX``
@@ -1783,7 +1783,7 @@ class _SettlementOfNewWorldModel_event(EventBasedModel):
         populations are removed, and the ``EU`` and ``MX`` populations are merged
         with ``f_MX`` proportion for ``MX``. The Mexican American<F19> sample could
         be sampled from the last single population. Additional operators could
-        be added to ``ops``. Information fields required by these operators 
+        be added to ``ops``. Information fields required by these operators
         should be passed to ``infoFields``. If a scaling factor ``scale``
         is specified, all population sizes and generation numbers will be divided by
         a factor of ``scale``. This demographic model by default only returns the
@@ -1814,17 +1814,17 @@ class _SettlementOfNewWorldModel_event(EventBasedModel):
                 DemographicEvent(
                     ops=Migrator(rate=[
                         [m_AF_B, 0],
-                        [0, m_AF_B]]), 
-                    begin=-int(T_B/scale), 
+                        [0, m_AF_B]]),
+                    begin=-int(T_B/scale),
                     end=-int(T_EU_AS/scale)
                 ),
                 # split EU AS from B
                 SplitEvent(at=-int(T_EU_AS/scale), subPops='B',
                     sizes=(int(N_EU0/scale), int(N_AS0/scale)),
                     names=('EU', 'AS')),
-                # exponential growth 
+                # exponential growth
                 ExpansionEvent(begin=-int(T_EU_AS/scale),
-                    subPops=('EU', 'AS'), 
+                    subPops=('EU', 'AS'),
                     rates=(r_EU*scale, r_AS*scale)),
                 # split MX from AS
                 SplitEvent(at=-int(T_MX/scale),
@@ -1842,7 +1842,7 @@ class _SettlementOfNewWorldModel_event(EventBasedModel):
                         [m_AF_EU, 0, m_EU_AS],
                         [m_AF_AS, m_EU_AS, 0]
                         ],
-                    subPops=['AF', 'EU', 'AS']), 
+                    subPops=['AF', 'EU', 'AS']),
                     begin=-int(T_EU_AS/scale),
                 ),
                 # admixture
@@ -1852,7 +1852,7 @@ class _SettlementOfNewWorldModel_event(EventBasedModel):
                     sizes=(1-f_MX, f_MX),
                     name='MXL'),
                 # keep only selected populations
-                ResizeEvent(at=-1, 
+                ResizeEvent(at=-1,
                     sizes=[float('AF' in outcome),
                         float('EU' in outcome),
                         float('AS' in outcome),
@@ -1864,7 +1864,7 @@ class _SettlementOfNewWorldModel_event(EventBasedModel):
 
 class _SettlementOfNewWorldModel_outcome(MultiStageModel):
     '''A dempgraphic model for settlement of the new world of Americans, as defined
-    in Gutenkunst 2009, Plos Genetics. The model is depicted in Figure 3, and the 
+    in Gutenkunst 2009, Plos Genetics. The model is depicted in Figure 3, and the
     default parameters are listed in Table 2 of this paper. '''
     def __init__(self,
         T0,
@@ -1881,9 +1881,9 @@ class _SettlementOfNewWorldModel_outcome(MultiStageModel):
         m_AF_EU=0.00003,
         m_AF_AS=0.000019,
         m_EU_AS=0.0000135,
-        T_AF=220000//25, 
-        T_B=140000//25, 
-        T_EU_AS=26400//25, 
+        T_AF=220000//25,
+        T_B=140000//25,
+        T_EU_AS=26400//25,
         T_MX=21600//25,
         f_MX=0.48,
         ops=[],
@@ -1895,8 +1895,8 @@ class _SettlementOfNewWorldModel_outcome(MultiStageModel):
         generations. The ancient population ``A`` started at size ``N_A`` and
         expanded at ``T_AF`` generations from now, to pop ``AF`` with size ``N_AF``.
         Pop ``B`` split from pop ``AF`` at ``T_B`` generations from now, with
-        size ``N_B``; Pop ``AF`` remains as ``N_AF`` individuals. Pop ``EU`` and 
-        ``AS`` split from pop ``B`` at ``T_EU_AS`` generations from now; with 
+        size ``N_B``; Pop ``AF`` remains as ``N_AF`` individuals. Pop ``EU`` and
+        ``AS`` split from pop ``B`` at ``T_EU_AS`` generations from now; with
         size ``N_EU0`` individuals and ``N_ASO`` individuals, respectively. Pop
         ``EU`` grew exponentially with final population size ``N_EU``; Pop
         ``AS`` grew exponentially with final populaiton size ``N_AS``. Pop ``MX``
@@ -1907,7 +1907,7 @@ class _SettlementOfNewWorldModel_outcome(MultiStageModel):
         populations are removed, and the ``EU`` and ``MX`` populations are merged
         with ``f_MX`` proportion for ``MX``. The Mexican American<F19> sample could
         be sampled from the last single population. Additional operators could
-        be added to ``ops``. Information fields required by these operators 
+        be added to ``ops``. Information fields required by these operators
         should be passed to ``infoFields``. If a scaling factor ``scale``
         is specified, all population sizes and generation numbers will be divided by
         a factor of ``scale``. This demographic model by default only returns the
@@ -1960,7 +1960,7 @@ class _SettlementOfNewWorldModel_outcome(MultiStageModel):
                 N0=(int(N_A/scale), 'Ancestral'),
                 # change population size twice, one at T_AF, one at T_B
                 G=[int((T0-T_AF)/scale)],
-                NG=[(int(N_AF/scale), 'AF')] 
+                NG=[(int(N_AF/scale), 'AF')]
             ),
             #
             # at T_B, split to population B from subpopulation 1
@@ -2001,7 +2001,7 @@ class _SettlementOfNewWorldModel_outcome(MultiStageModel):
                     [m_AF_EU, 0, m_EU_AS],
                     [m_AF_AS, m_EU_AS, 0]
                     ],
-                    # the last MX population does not involve in 
+                    # the last MX population does not involve in
                     # migration
                     subPops=[0, 1, 2],
                     toSubPops=[0, 1, 2])
@@ -2014,7 +2014,7 @@ class _SettlementOfNewWorldModel_outcome(MultiStageModel):
 SettlementOfNewWorldModel = _SettlementOfNewWorldModel_outcome
 
 class CosiModel(MultiStageModel):
-    '''A dempgraphic model for Africa, Asia and Europe, as described in 
+    '''A dempgraphic model for Africa, Asia and Europe, as described in
     Schaffner et al, Genome Research, 2005, and implemented in the coalescent
     simulator cosi.'''
     def __init__(self,
@@ -2048,7 +2048,7 @@ class CosiModel(MultiStageModel):
         the ``AF`` population at ``T_OoA`` generations ago. The ``OoA`` population
         split into two subpopulations ``AS`` and ``EU`` but keep the same size.
         At the generations of ``T_EU_exp``, ``T_AS_exp``, and ``T_AF_exp`` ago,
-        three populations expanded to modern population sizes of ``N_AF1``, 
+        three populations expanded to modern population sizes of ``N_AF1``,
         ``N_AS1`` and ``N_EU1`` exponentially, respectively. Migrations are
         allowed between ``AF`` and ``EU`` populations
         with rate ``m_AF_EU``, and between ``AF`` and ``AS`` with rate ``m_AF_AS``.
@@ -2057,7 +2057,7 @@ class CosiModel(MultiStageModel):
         They are supposed to happen 200 generations after population split and last
         for 200 generations. The intensity is parameterized in F, which is number
         of generations devided by twice the effective size during bottleneck.
-        So the bottleneck size is 100/F. 
+        So the bottleneck size is 100/F.
 
         This model merges all subpopulations if it is applied to a population with
         multiple subpopulation. Although parameters are configurable, we assume
@@ -2090,7 +2090,7 @@ class CosiModel(MultiStageModel):
                 # constant population size before the first one to expand
                 T=int((T0 - T_EU_AS)/scale),
                 N0=(int(N_A/scale), 'Ancestral'),
-                G=[ int((T0-T_AF)/scale), 
+                G=[ int((T0-T_AF)/scale),
                     int((T0-T_OoA)/scale),
                     int((T0-T_OoA+200)/scale),
                     int((T0-T_OoA+400)/scale)],
@@ -2114,7 +2114,7 @@ class CosiModel(MultiStageModel):
                     ],
                 ops=migr,
                 ),
-            # AS expend 
+            # AS expend
             ExponentialGrowthModel(
                 T=int((T_AS_exp-T_EU_exp)/scale),
                 N0=[None, (None, 'Modern Asian'), None],
@@ -2165,6 +2165,5 @@ if __name__ == '__main__':
     OutOfAfricaModel(10000).plot('OutOfAfrica.png')
     # Settlement of New World
     SettlementOfNewWorldModel(10000).plot('SettlementOfNewWorld.png')
-    # Cosi model 
+    # Cosi model
     CosiModel(20000).plot('Cosi.png')
-

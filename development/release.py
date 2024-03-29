@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-# make src and binary distribution on all platforms 
+# make src and binary distribution on all platforms
 # (currently mac, linux and solaris) as daily snapshot
 #
 # This is part of simuPOP
-# 
-# Bo Peng (bpeng@mdanderson.org)
+#
+# Bo Peng (Bo.Peng@bcm.edu)
 #
 
 import os
@@ -47,12 +47,12 @@ def setVersionRevision(release):
     execfile('simuPOP_version.py', globals(), ver)
     if release is None:
         release = ver['SIMUPOP_VER']
-    # 
+    #
     # write release file
     with open('simuPOP_version.py', 'w') as version_file:
         version_file.write('SIMUPOP_VER="{}"\nSIMUPOP_REV="{}"\n'
             .format(release, revision))
-    # 
+    #
     # update documents
     for filename in ['doc/userGuide.lyx', 'doc/refManual.lyx']:
         with open(filename) as manual:
@@ -116,7 +116,7 @@ def generateSWIGWrappers():
         (v1, v2, v3) < (2, 0, 4):
         print('Swig >= 2.0.4 is required for Python 3.2 or higher')
         sys.exit(1)
-    # generate header file 
+    # generate header file
     print("Generating external runtime header file src/swigpyrun.h...")
     run_command('%s %s src/swigpyrun.h' % (SWIG, SWIG_RUNTIME_FLAGS))
     # try the first option set with the first library
@@ -174,7 +174,7 @@ def uploadDocuments(ver, rev):
     run_command('make pdf')
     run_command('make dist_release')
     os.chdir(d)
-    
+
 
 
 def buildSourcePackage(ver):
@@ -193,7 +193,7 @@ def build_x86_64(ver):
     if not os.path.isfile(source):
         print 'Source package %s does not exist. Please run "build.py src" first' % source
         sys.exit(1)
-    # 
+    #
     # build
     d = os.getcwd()
     os.chdir(user_tmp_directory)
@@ -248,7 +248,7 @@ def build_remote(ver, remote_machine):
     if not os.path.isfile(source):
         print 'Source package %s does not exist. Please run "build.py src" first' % source
         sys.exit(1)
-    #   
+    #
     print 'Copying source package to remote machine ...'
     run_command("ssh %s '/bin/rm -rf temp &&  mkdir temp && /bin/rm -rf simuPOP'" % remote_machine)
     run_command('scp %s/simuPOP-%s-src.tar.gz %s:temp' % (download_directory, ver, remote_machine))
@@ -274,7 +274,7 @@ def createMacPackage(ver, pyver):
     temp_dir = os.path.expanduser('~/Temp/mpkg')
     if not os.path.isdir(temp_dir):
         os.makedirs(temp_dir)
-    # 
+    #
     src_dir = os.path.join(temp_dir, 'simuPOP-%s' % ver)
     if os.path.isdir(src_dir):
         shutil.rmtree(src_dir)
@@ -286,11 +286,11 @@ def createMacPackage(ver, pyver):
     os.chdir(temp_dir)
     # decompress
     run_command('tar -zxf simuPOP-%s-src.tar.gz' % ver)
-    # 
+    #
     os.chdir(src_dir)
     run_command('python3 setup.py bdist')
     os.chdir(old_dir)
-    # 
+    #
     # Move results to download directory
     dest_targz = os.path.join(download_directory, 'simuPOP-{}-py{}.tar.gz'.format(ver, pyver))
     if os.path.isdir(dest_targz):
@@ -346,7 +346,7 @@ def tagRelease(release):
         cmd = 'svn ci -m "automatic checkin on %s"' % time.asctime()
         run_command(cmd)
     run_command('svn update')
-    cmd = ('svn copy https://sourceforge.net/p/simupop/code/HEAD/tree/trunk ' + 
+    cmd = ('svn copy https://sourceforge.net/p/simupop/code/HEAD/tree/trunk ' +
          'https://sourceforge.net/p/simupop/code/HEAD/tree/trunk/tag/v%s') % release + \
         ' -m "Version %s released at %s"' % (release, time.asctime())
     print cmd
@@ -355,9 +355,9 @@ def tagRelease(release):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='''Create source distribution 
+    parser = argparse.ArgumentParser(description='''Create source distribution
         and binary installers for a simuPOP release. In addition to optional
-        parameters version and tag, extra parameters would be specified and 
+        parameters version and tag, extra parameters would be specified and
         will be passed directly to the 'python setup.py install' process. ''')
     parser.add_argument('--version',
         help='''Modify simuPOP_version.py to the specified version string and
@@ -365,7 +365,7 @@ if __name__ == '__main__':
     parser.add_argument('actions', nargs='*', default=[
         'build', 'src', 'doc', 'mac'],
         help='Actions to take to make the release.')
-    # go to the top source directory        
+    # go to the top source directory
     os.chdir('..')
     #
     args, argv = parser.parse_known_args()

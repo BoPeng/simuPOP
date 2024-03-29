@@ -4,10 +4,10 @@
  *  $Rev$
  *
  *  This file is part of simuPOP, a forward-time population genetics
- *  simulation environment. Please visit http://simupop.sourceforge.net
+ *  simulation environment. Please visit https://github.com/BoPeng/simuPOP
  *  for details.
  *
- *  Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+ *  Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -398,7 +398,7 @@ public:
 	/** Return the size of a subpopulation (<tt>subPopSize(sp)</tt>) or a
 	 *  virtual subpopulation (<tt>subPopSize([sp, vsp])</tt>) in the current
 	 *  generation (default) or a specified ancestral generation \e ancGen. If
-	 *  no \e subpop is given, it is the same as <tt>popSize(ancGen, sex)</tt>. 
+	 *  no \e subpop is given, it is the same as <tt>popSize(ancGen, sex)</tt>.
 	 *  Population and virtual subpopulation names can be used. This function
 	 *  by default returns number of all individuals (<tt>sex=ANY_SEX</tt>), but it
 	 *  will return number of males (if <tt>sex=MALE_ONLY</tt>), number of females
@@ -463,7 +463,7 @@ public:
 
 	/** Return the total number of individuals in all subpopulations of the
 	 *  current generation (default) or the an ancestral generation \e ancGen.
-	 *  This function by default returns number of all individuals 
+	 *  This function by default returns number of all individuals
 	 *  (<tt>sex=ANY_SEX</tt>), but it will return number of males  (if
 	 *  <tt>sex=MALE_ONLY</tt>), number of females (if <tt>sex=MALE_ONLY</tt>),
 	 *  and number of male/female pairs (if <tt>sex=PAIR_ONLY</tt>) which is

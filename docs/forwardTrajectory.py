@@ -4,10 +4,10 @@
 # $File: forwardTrajectory.py $
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #
 
 # This script is an example in the simuPOP user's guide. Please refer to
-# the user's guide (http://simupop.sourceforge.net/manual) for a detailed
+# the user's guide (https://github.com/BoPeng/simuPOP/manual) for a detailed
 # description of this example.
 #
 
@@ -36,7 +36,7 @@ from simuPOP.utils import Trajectory, simulateForwardTrajectory
 traj = simulateForwardTrajectory(N=[2000, 4000], fitness=[1, 0.99, 0.98],
     beginGen=0, endGen=100, beginFreq=[0.2, 0.3],
     endFreq=[[0.1, 0.11], [0.2, 0.21]])
-# 
+#
 #traj.plot('log/forwardTrajectory.png', set_ylim_top=0.5,
 #    plot_c_sp=['r', 'b'], set_title_label='Simulated Trajectory (forward-time)')
 pop = sim.Population(size=[2000, 4000], loci=10, infoFields='fitness')
@@ -58,4 +58,3 @@ pop.evolve(
     ],
     gen = 101
 )
-

@@ -4,10 +4,10 @@
 # $File: advancedVSP.py $
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #
 
 # This script is an example in the simuPOP user's guide. Please refer to
-# the user's guide (http://simupop.sourceforge.net/manual) for a detailed
+# the user's guide (https://github.com/BoPeng/simuPOP/manual) for a detailed
 # description of this example.
 #
 
@@ -67,4 +67,3 @@ pop.numVirtualSubPop()    # Number of defined VSPs
 pop.subPopName([0, 0])    # Each VSP has a name
 pop.subPopSize([0, 0])    # sim.MALE with value 0, 1, 2 at field x
 pop.subPopSize([1, 1])    # sim.FEMALE with value 0, 1 or 2 at field x
-

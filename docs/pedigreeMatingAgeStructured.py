@@ -4,10 +4,10 @@
 # $File: pedigreeMatingAgeStructured.py $
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #
 
 # This script is an example in the simuPOP user's guide. Please refer to
-# the user's guide (http://simupop.sourceforge.net/manual) for a detailed
+# the user's guide (https://github.com/BoPeng/simuPOP/manual) for a detailed
 # description of this example.
 #
 
@@ -33,7 +33,7 @@ import simuPOP as sim
 import random
 N = 10000
 pop = sim.Population(N, infoFields=['age', 'ind_id', 'father_id', 'mother_id'])
-# we simulate age 0, 1, 2, 3 
+# we simulate age 0, 1, 2, 3
 pop.setVirtualSplitter(sim.InfoSplitter(field='age', values=[0, 1, 2, 3]))
 pop.evolve(
     initOps=[
@@ -92,16 +92,15 @@ pop.evolve(
     initOps=sim.InitGenotype(freq=[0.4, 0.6]),
     # we do not need migration, or set number of offspring,
     # or demographic model, but we do need a genotype transmitter
-    matingScheme=sim.PedigreeMating(ped, 
+    matingScheme=sim.PedigreeMating(ped,
         ops=sim.IfElse(lambda mom: mom is None,
                 sim.CloneGenoTransmitter(),
                 sim.MendelianGenoTransmitter())
     ),
     gen=100
 )
-# 
+#
 print(pop.indInfo('ind_id')[:5])
 print([pop.individual(x).sex() for x in range(5)])
 # The pedigree object does not have population structure
 print(pop.subPopSizes())
-

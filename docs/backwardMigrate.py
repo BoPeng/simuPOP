@@ -4,10 +4,10 @@
 # $File: backwardMigrate.py $
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #
 
 # This script is an example in the simuPOP user's guide. Please refer to
-# the user's guide (http://simupop.sourceforge.net/manual) for a detailed
+# the user's guide (https://github.com/BoPeng/simuPOP/manual) for a detailed
 # description of this example.
 #
 
@@ -33,7 +33,7 @@ sim.turnOnDebug('DBG_MIGRATOR')
 pop = sim.Population(size=[10000, 5000, 8000], infoFields=['migrate_to', 'migrate_from'])
 def originOfInds(pop):
     print('Observed backward migration matrix at generation {}'.format(pop.dvars().gen))
-    for sp in range(pop.numSubPop()): 
+    for sp in range(pop.numSubPop()):
         # get source subpop for all individuals in subpopulation i
         origins = pop.indInfo('migrate_from', sp)
         spSize = pop.subPopSize(sp)
@@ -52,14 +52,13 @@ pop.evolve(
             [0.05, 0, 0.02],
             [0.02, 0.01, 0]
         ]),
-        # calculate and print observed backward migration matrix 
+        # calculate and print observed backward migration matrix
         sim.PyOperator(func=originOfInds),
         # calculate population size
         sim.Stat(popSize=True),
         # and print it
         sim.PyEval(r'"Pop size after migration: {}\n".format(", ".join([str(x) for x in subPopSize]))'),
-        ], 
+        ],
     matingScheme=sim.RandomMating(),
     gen = 5
-)        
-
+)

@@ -4,10 +4,10 @@
 # $File: countMutants.py $
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #
 
 # This script is an example in the simuPOP user's guide. Please refer to
-# the user's guide (http://simupop.sourceforge.net/manual) for a detailed
+# the user's guide (https://github.com/BoPeng/simuPOP/manual) for a detailed
 # description of this example.
 #
 
@@ -36,7 +36,7 @@ def countMutants(mutants):
     global counter
     for line in mutants.split('\n'):
         # a trailing \n will lead to an empty string
-        if not line:  
+        if not line:
             continue
         (gen, loc, ploidy, a1, a2, id) = line.split('\t')
         counter[int(loc)] += 1
@@ -61,4 +61,3 @@ pop.evolve(
     gen = 10
 )
 print(counter.items())
-

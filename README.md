@@ -25,6 +25,9 @@ The user guide and reference manual of simuPOP is available at http://bopeng.git
 
 ## Change Log since 1.1.7
 
+### simuPOP 1.1.14
+* [#114](https://github.com/BoPeng/simuPOP/issues/117) Fix compatibility with Python 3.11.
+
 ### simuPOP 1.1.13
 * [#114](https://github.com/BoPeng/simuPOP/issues/114) Allow negative weight of a heterogeneous mating scheme to generate less individuals than calculated.
 

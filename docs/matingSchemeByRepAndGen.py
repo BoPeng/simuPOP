@@ -4,10 +4,10 @@
 # $File: matingSchemeByRepAndGen.py $
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #
 
 # This script is an example in the simuPOP user's guide. Please refer to
-# the user's guide (http://simupop.sourceforge.net/manual) for a detailed
+# the user's guide (https://github.com/BoPeng/simuPOP/manual) for a detailed
 # description of this example.
 #
 
@@ -35,7 +35,7 @@ simu.evolve(
         sim.InitSex(),
         sim.InitGenotype(freq=[0.5, 0.5])
     ],
-    matingScheme=sim.ConditionalMating('rep == 0', 
+    matingScheme=sim.ConditionalMating('rep == 0',
         # the first replicate use standard random mating
         sim.RandomMating(),
         sim.ConditionalMating('rep == 1 and gen >= 5',
@@ -50,7 +50,6 @@ simu.evolve(
         sim.PyEval("'gen=%d' % gen", reps=0),
         sim.PyEval(r"'\t%d' % numOfMales"),
         sim.PyOutput('\n', reps=-1)
-    ],        
+    ],
     gen=10
 )
-

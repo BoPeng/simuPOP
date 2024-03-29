@@ -5,7 +5,7 @@ The :mod:`simuPOP.utils` module provides a few utility functions and classes.
 They do not belong to the simuPOP core but are distributed with simuPOP because
 they are frequently used and play an important role in some specialized
 simulation techniques. Please refer to the simuPOP online cookbook
-(``http://simupop.sourceforge.net/cookbook``) for more utility modules and
+(``https://github.com/BoPeng/simuPOP/cookbook``) for more utility modules and
 functions.
 
 
@@ -98,11 +98,11 @@ unlinked loci under different selection pressure.
    >>> simuOpt.setOptions(quiet=True)
    >>> import simuPOP as sim
    >>> from simuPOP.utils import Trajectory, simulateForwardTrajectory
-   >>> 
+   >>>
    >>> traj = simulateForwardTrajectory(N=[2000, 4000], fitness=[1, 0.99, 0.98],
    ...     beginGen=0, endGen=100, beginFreq=[0.2, 0.3],
    ...     endFreq=[[0.1, 0.11], [0.2, 0.21]])
-   >>> # 
+   >>> #
    >>> #traj.plot('log/forwardTrajectory.png', set_ylim_top=0.5,
    >>> #    plot_c_sp=['r', 'b'], set_title_label='Simulated Trajectory (forward-time)')
    >>> pop = sim.Population(size=[2000, 4000], loci=10, infoFields='fitness')
@@ -197,20 +197,20 @@ following evolutionary scenario:
    >>> def Nt(gen):
    ...     'An exponential sim.Population growth demographic model.'
    ...     return int((5000) * exp(.00115 * gen))
-   ... 
+   ...
    >>> def fitness(gen, sp):
    ...     'Constant positive selection pressure.'
    ...     return [1, 1.01, 1.02]
-   ... 
+   ...
    >>> # simulate a trajectory backward in time, from generation 1000
    >>> traj = simulateBackwardTrajectory(N=Nt, fitness=fitness, nLoci=2,
    ...      endGen=1000, endFreq=[0.1, 0.2])
    >>> # matplotlib syntax
    >>> #traj.plot('log/backTrajectory.png', set_ylim_top=0.3, set_ylim_bottom=0,
    >>> #        plot_c_loc=['r', 'b'], set_title_label='Simulated Trajectory (backward-time)')
-   >>> 
+   >>>
    >>> print('Trajectory simulated with length %s ' % len(traj.traj))
-   Trajectory simulated with length 834 
+   Trajectory simulated with length 834
    >>> pop = sim.Population(size=Nt(0), loci=[1]*2)
    >>> # save Trajectory function in the sim.population's local namespace
    >>> # so that the sim.PyEval operator can access it.
@@ -271,7 +271,7 @@ progress bar at an increment of 1 in this case.
    ...     pop.individual(idx).index = idx
    ...     # idx + 1 can be ignored in this case.
    ...     prog.update(idx + 1)
-   ... 
+   ...
    ....1....2....3....4....5....6....7....8....9.... Done.
 
    now exiting runScriptInteractively...
@@ -417,13 +417,13 @@ parameter ``adjust=-1`` to the ``importPopulation`` function.
    Number of ancestral populations: 0
 
    SubPopulation 0 (1), 2 Individuals:
-      0: MU 22211 | 11322 
-      1: MU 22222 | 23221 
+      0: MU 22211 | 11322
+      1: MU 22222 | 23221
    SubPopulation 1 (2), 4 Individuals:
-      2: MU 32211 | 11213 
-      3: MU 22322 | 22331 
-      4: MU 23322 | 22321 
-      5: MU 33223 | 33212 
+      2: MU 32211 | 11213
+      3: MU 22322 | 22331
+      4: MU 23322 | 22321
+      5: MU 33223 | 33212
 
 
    now exiting runScriptInteractively...
@@ -469,7 +469,7 @@ demonstrates how to use these parameters.
    >>> pop.setVirtualSplitter(sim.SexSplitter())
    >>> export(pop, format='ms', output='ms_chrom.txt', splitBy='chrom', subPops=[(1,0)])
    Exporting....1....2....3....4....5....6....7....8....9.... Done.
-   >>> # 
+   >>> #
    >>> print(open('ms_chrom.txt').read())
    simuPOP_export 20 2
    30164 48394 29292
@@ -524,7 +524,7 @@ demonstrates how to use these parameters.
 
    >>> # import as haploid sequence
    >>> pop = importPopulation(format='ms', filename='ms.txt')
-   >>> # import as diploid 
+   >>> # import as diploid
    >>> pop = importPopulation(format='ms', filename='ms.txt', ploidy=2)
    >>> # import as a single chromosome
    >>> pop = importPopulation(format='ms', filename='ms_subPop.txt', mergeBy='subPop')
@@ -618,5 +618,3 @@ different formats.
 
 **This function is now deprecated with the introduction of function
 **``export``** and operator **``Exporter``**.**
-
-

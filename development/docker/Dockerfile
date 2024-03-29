@@ -3,7 +3,7 @@
 
 FROM    ubuntu:latest
 
-MAINTAINER Bo Peng <bpeng@mdanderson.org>
+MAINTAINER Bo Peng <Bo.Peng@bcm.edu>
 
 RUN     apt-get update
 RUN     apt-get -y install swig gcc g++ build-essential bzip2 libbz2-dev libz-dev curl git

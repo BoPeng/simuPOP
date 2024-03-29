@@ -6,10 +6,10 @@
 # $Rev$
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -734,13 +734,13 @@ if __name__ == '__main__':
         name = "simuPOP",
         version = SIMUPOP_VER,
         author = "Bo Peng",
-        author_email = "bpeng@mdanderson.org",
+        author_email = "Bo.Peng@bcm.edu",
         maintainer = "Bo Peng",
-        maintainer_email = "bpeng@mdanderson.org",
-        url = "http://simupop.sourceforge.net",
+        maintainer_email = "Bo.Peng@bcm.edu",
+        url = "https://github.com/BoPeng/simuPOP",
         description = "Forward-time population genetics simulation environment",
         long_description = DESCRIPTION,
-        download_url = 'http://sourceforge.net/projects/simupop/files/simupop/',
+        download_url = 'https://pypi.org/project/simuPOP/#files',
         classifiers = [
             'Development Status :: 5 - Production/Stable',
             'Environment :: Console',

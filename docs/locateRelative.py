@@ -4,10 +4,10 @@
 # $File: locateRelative.py $
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #
 
 # This script is an example in the simuPOP user's guide. Please refer to
-# the user's guide (http://simupop.sourceforge.net/manual) for a detailed
+# the user's guide (https://github.com/BoPeng/simuPOP/manual) for a detailed
 # description of this example.
 #
 
@@ -54,7 +54,7 @@ ped.locateRelatives(sim.OUTBRED_SPOUSE, ['spouse'], sex=sim.FEMALE_ONLY)
 ped.locateRelatives(sim.COMMON_OFFSPRING, ['spouse'] + offFields)
 # trace offspring of offspring
 ped.traceRelatives([offFields, offFields], resultFields=grandOffFields)
-# 
+#
 IDs = ped.individualsWithRelatives(grandOffFields)
 # check on ID.
 grandFather = IDs[0]
@@ -90,4 +90,3 @@ len(famSz), max(famSz)
 ped.addInfoFields('ped_id')
 famSz = ped.identifyFamilies(pedField='ped_id', ancGens=[0,1])
 len(famSz), max(famSz)
-

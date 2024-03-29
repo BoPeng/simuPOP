@@ -6,10 +6,10 @@
 # $Rev$
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -296,7 +296,7 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
         ``None`` (no output) or a dictionary with keys ``True`` and ``False``.
 
     Parameters ``genoCode``, ``sexCode``, and ``affectionCode`` from version
-    1.0.0 have been renamed to ``genoFormatter``, ``sexFormatter`` and 
+    1.0.0 have been renamed to ``genoFormatter``, ``sexFormatter`` and
     ``affectionFormatter`` but can still be used.
     '''
     if moduleInfo()['debug']['DBG_COMPATIBILITY']:
@@ -546,7 +546,7 @@ class _tkProgressBar(_baseProgressBar):
         self.frame = tk.Frame(self.app, bd=0)
         self.canvas = tk.Canvas(self.frame, bd=0, width=self.width+40,
             height = self.height + 70, highlightthickness=0)
-        self.label = self.canvas.create_text(20, 20, 
+        self.label = self.canvas.create_text(20, 20,
             text='', anchor="w", fill=self.labelColor, font=('Verdana', 10))
         self.scale = self.canvas.create_rectangle(
             20, 50, self.width + 20, 50 + self.height, fill=self.fillColor)
@@ -642,7 +642,7 @@ class ProgressBar:
     '''The ``ProgressBar`` class defines a progress bar. This class will use a
     text-based progress bar that outputs progressing dots (.) with intermediate
     numbers (e.g. 5 for 50%) under a non-GUI mode (``gui=False``) or not displaying
-    any progress bar if ``gui='batch'``. In the GUI mode, a Tkinter or wxPython 
+    any progress bar if ``gui='batch'``. In the GUI mode, a Tkinter or wxPython
     progress dialog will be used (``gui=Tkinter``  or ``gui=wxPython``). The default
     mode is determined by the global gui mode of simuPOP
     (see also ``simuOpt.setOptions``).
@@ -652,7 +652,7 @@ class ProgressBar:
         progress = ProgressBar("Start simulation", 500)
         for i in range(500):
             # i+1 can be ignored if the progress bar is updated by 1 step
-            progress.update(i+1)   
+            progress.update(i+1)
         # if you would like to make sure the done message is displayed.
         progress.done()
     '''
@@ -738,7 +738,7 @@ class Trajectory:
         self.traj = {}
         self.endGen = endGen
         self.nLoci = nLoci
-    
+
     def _beginGen(self):
         '''Return starting generation of all trajectories'''
         return min(self.traj.keys())
@@ -750,7 +750,7 @@ class Trajectory:
             return [[0.] * self.nLoci]
         assert len(self.traj[gen][0]) == self.nLoci
         return self.traj[gen]
-    
+
     def freq(self, gen, subPop):
         '''Return frequencies of all loci in subpopulation *subPop* at
         generation *gen* of the simulated Trajectory. Allele frequencies are
@@ -800,7 +800,7 @@ class Trajectory:
                         mut.append((loc, gen + 1, sp))
         return mut
 
-    
+
     def mutators(self, loci, inds=0, allele=1, *args, **kwargs):
         '''Return a list of ``PointMutator`` operators that introduce mutants
         at the beginning of simulated trajectories. These mutators should be
@@ -837,7 +837,7 @@ class Trajectory:
             assert len(spFreq) == self.nLoci
             assert type(spFreq[0]) not in [type(()), type([])]
             self.traj[gen].append([x for x in spFreq])
- 
+
 
 class TrajectorySimulator:
     '''A Trajectory Simulator takes basic demographic and genetic (natural
@@ -856,7 +856,7 @@ class TrajectorySimulator:
 
     The result of a trajectory simulation is a trajectory object which can be
     used to direct the simulation of a special random mating process that
-    controls the evolution of one or more disease alleles so that allele 
+    controls the evolution of one or more disease alleles so that allele
     frequencies are consistent across replicate simulations. For more
     information about Trajectory simulation techniques and related controlled
     random mating scheme, please refer to the simuPOP user's guide, and Peng et
@@ -868,7 +868,7 @@ class TrajectorySimulator:
         (natural selection) parameters. Member functions *simuForward* and
         *simuBackward* can then be used to simulate trajectories within certain
         range of generations. This class accepts the following parameters
-        
+
         N
             Parameter *N* accepts either a constant number for population size
             (e.g. N=1000), a list of subpopulation sizes (e.g. N=[1000, 2000]),
@@ -883,7 +883,7 @@ class TrajectorySimulator:
         nLoci
             Number of unlinked loci for which trajectories of allele
             frequencies are simulated. We assume a diploid population with
-            diallelic loci. The Trajectory represents frequencies of a 
+            diallelic loci. The Trajectory represents frequencies of a
 
         fitness
             Parameter fitness can be ``None`` (no selection), a list of fitness
@@ -896,7 +896,7 @@ class TrajectorySimulator:
             genotype). The fitness function should accept generation number and
             a subpopulation index. The latter parameter allows, and is the only
             way to specify different fitness in each subpopulation.
-        
+
         logger
             A logging object (see Python module ``logging``) that can be used
             to output intermediate results with debug information.
@@ -917,7 +917,7 @@ class TrajectorySimulator:
         self.nLoci = nLoci
         self.maxMutAge = 0
         self.minMutAge = 0
-    
+
     def _Nt(self, gen):
         'Get Nt(gen) depending on the type of N'
         # _Nt() expects parameter gen
@@ -987,7 +987,7 @@ class TrajectorySimulator:
         a generation and subpopulation specific fitness value. The fitness
         value is then translated to 0, s1, s2. If interactions are involved,
         marginal fitness is calculated using allele frequency (``freq``) in
-        subpopulation *subPop*. 
+        subpopulation *subPop*.
         '''
         assert len(freq) == self.nLoci
         # _fitness() expects parameters gen and a subpopulation index
@@ -996,8 +996,8 @@ class TrajectorySimulator:
         else:
             fit = self.fitness
         s = []
-        # simplest case when fitness only depends on gen if defined in fitness func:      
-        # case 1: 3x self.nLoci no interaction 
+        # simplest case when fitness only depends on gen if defined in fitness func:
+        # case 1: 3x self.nLoci no interaction
         if len(fit) == 3 * self.nLoci:
             for i in range(self.nLoci):
                 if fit[3 * i] == 0:
@@ -1088,7 +1088,7 @@ class TrajectorySimulator:
                 b = 2 * s1 * x - 1 - s1
                 c = float(x)
                 b2_4ac = b * b - 4 * a * c
-            
+
                 if abs(a) < 1e-8:
                     y1 = float(-c) / float(b)
                     # y1 should be valid
@@ -1171,7 +1171,7 @@ class TrajectorySimulator:
             assert len(endingXt) == len(Nt)
             # set frequency at the end of this generation
             #if self.logger:
-            #    self.logger.debug('Gen=%d, xt=%s'  % (gen, endingXt))           
+            #    self.logger.debug('Gen=%d, xt=%s'  % (gen, endingXt))
             xt._setFreq(endingXt, gen)
             # and now we go to the next generation...
         # not we have a trajectory... is it valid?
@@ -1273,7 +1273,7 @@ class TrajectorySimulator:
             assert len(beginXt) == len(Nt)
             # set frequency at the end of this generation
             if self.logger:
-                self.logger.debug('Gen=%d, xt=%s'  % (gen - 1, beginXt)) 
+                self.logger.debug('Gen=%d, xt=%s'  % (gen - 1, beginXt))
             #
             xt._setFreq(beginXt, gen - 1)
             # check all loci and see if beginXt is 0
@@ -1316,7 +1316,7 @@ class TrajectorySimulator:
                 if self.logger:
                     self.logger.debug('Backward failed - Trajectory too long. gen = %d' % gen)
                 return (gen, beginXt)
-            
+
     def simuForward(self, beginGen, endGen, beginFreq, endFreq, maxAttempts=10000):
         '''Simulate trajectories of multiple disease susceptibility loci using a
         forward time approach. This function accepts allele frequencies of
@@ -1325,7 +1325,7 @@ class TrajectorySimulator:
         of these alleles (``endFreq``) at the end of generation ``endGen``.
         Depending on the number of loci and subpopulations, these parameters
         accept the following inputs:
-        
+
         beginGen
             Starting generation. The initial frequecies are considered as
             frequencies at the *beginning* of this generation.
@@ -1333,7 +1333,7 @@ class TrajectorySimulator:
         endGen
             Ending generation. The ending frequencies are considerd as
             frequencies at the *end* of this generation.
-            
+
         beginFreq
             The initial allele frequency of involved loci in all subpopulations.
             It can be a number (same frequency for all loci in all
@@ -1408,7 +1408,7 @@ class TrajectorySimulator:
             self.logger.info(('Simulation failed after %d attempts with average frequencies ' % failedCount) \
                 + str(self._avgOfNestedList(failedFreq)))
         return None
-    
+
     def simuBackward(self, endGen, endFreq, minMutAge=None, maxMutAge=None,
         maxAttempts = 1000):
         '''Simulate trajectories of multiple disease susceptibility loci using
@@ -1422,7 +1422,7 @@ class TrajectorySimulator:
         ..., ``loc0_sp1``, ``loc1_sp1``, ... and so on.
 
         This simulator will simulate a trajectory generation by generation and
-        restart if the disease allele got fixed (instead of lost), or if the 
+        restart if the disease allele got fixed (instead of lost), or if the
         length simulated Trajectory does not fall into *minMutAge* and
         *maxMutAge* (ignored if ``None`` is given). This simulator will return
         ``None`` if no valid Trajectory is found after ``maxAttempts`` attemps.
@@ -1446,7 +1446,7 @@ class TrajectorySimulator:
             self.maxMutAge = endGen
         else:
             self.maxMutAge = maxMutAge
-        
+
         if not self.maxMutAge >= self.minMutAge:
             raise ValueError('maxMutAge should >= minMutAge')
         if endGen == 0 and (isinstance(self.N, collections.Callable) or isinstance(self.fitness, collections.Callable)):
@@ -1543,7 +1543,7 @@ class StructureExporter:
         self.popFlag = popFlag
         self.locData = locData
         self.phenotype = phenotype
-    
+
     def export(self, pop, output, subPops, infoFields, gui):
         '''export in structure format '''
         # http://pritch.bsd.uchicago.edu/structure_software/release_versions/v2.3.4/structure_doc.pdf
@@ -1567,7 +1567,7 @@ class StructureExporter:
             if self.recessiveAlleles not in [0, 1]:
                 raise ValueError('Only 0 or 1 is acceptable for parameter revessiveAlleles')
             output('%d\n' % self.recessiveAlleles)
-        # 
+        #
         # third line: inter marker distance
         #
         if self.interMarkerDistances is True:
@@ -1585,7 +1585,7 @@ class StructureExporter:
             if self.phaseInformation not in [0, 1]:
                 raise ValueError('Only 0 or 1 is acceptable for parameter revessiveAlleles')
             output('%d\n' % self.phaseInformation)
-        # 
+        #
         # sixth line and later: genotype lines
         #
         # progress bar might be wrong with subPops parameter...
@@ -1652,7 +1652,7 @@ class GenePopExporter:
     def __init__(self, title=None, adjust=1):
         self.title = title.rstrip() if title is not None else None
         self.adjust = adjust
-    
+
     def export(self, pop, output, subPops, infoFields, gui):
         ''' Export in genepop format '''
         # http://genepop.curtin.edu.au/help_input.html
@@ -1680,7 +1680,7 @@ class GenePopExporter:
                 for loc in range(pop.numLoci(ch)):
                     names.append('ch%d-loc%d' % (ch + 1, loc + 1))
             output(', '.join(names) + '\n')
-        # 
+        #
         # output genotype
         #
         # progress bar might be wrong with subPops parameter...
@@ -1690,7 +1690,7 @@ class GenePopExporter:
         count = 0
         numLoci = pop.totNumLoci()
         for vsp in subPops:
-            # 
+            #
             # for each subpopulation, output pop
             #
             output('POP\n')
@@ -1738,7 +1738,7 @@ class GenePopImporter:
                 if line.lower().rstrip() == 'pop':
                     break
                 loci_names.extend([x.strip() for x in line.split(',')])
-            # 
+            #
             # read genotypes
             #
             popSize = [0]
@@ -1753,7 +1753,7 @@ class GenePopImporter:
                     continue
                 # increase pop size count
                 popSize[-1] = popSize[-1] + 1
-                # 
+                #
                 try:
                     # ignore ind name
                     name, geno = line.split(',', 1)
@@ -1778,26 +1778,26 @@ class GenePopImporter:
 #
 # FSTAT format
 #
-# The first line contains 4 numbers: the number of samples, np , the 
-# number of loci, nl, the highest number used to label an allele, nu, 
-# and a 1 if the code for alleles is a one digit number (1-9), a 2 if 
-# code for alleles is a 2 digit number (01-99) or a 3 if code for 
+# The first line contains 4 numbers: the number of samples, np , the
+# number of loci, nl, the highest number used to label an allele, nu,
+# and a 1 if the code for alleles is a one digit number (1-9), a 2 if
+# code for alleles is a 2 digit number (01-99) or a 3 if code for
 # alleles is a 3 digit number (001-999). These 4 numbers need to be
-# separated by any number of spaces. 
+# separated by any number of spaces.
 #
-# The first line is immediately followed by nl lines, each containing the 
-# name of a locus, in the order they will appear in the rest of the file. 
+# The first line is immediately followed by nl lines, each containing the
+# name of a locus, in the order they will appear in the rest of the file.
 #
-# On line nl+2, a series of numbers as follow: 
+# On line nl+2, a series of numbers as follow:
 # 1     0102   0103   0101  0203          0      0303
 #
 # The first number identifies the sample to which the individual belongs,
 # the second is the genotype of the individual at the first locus, coded
 # with a 2 digits number for each allele, the third is the genotype at the
 # second locus, until locus nl is entered (in the example above, nl=6).
-# Missing genotypes are encoded with 0. Note that 0001 or 0100 are not 
-# a valid format, that is, both alleles at a locus have to be known, 
-# otherwise, the genotype is considered as missing. No empty lines 
+# Missing genotypes are encoded with 0. Note that 0001 or 0100 are not
+# a valid format, that is, both alleles at a locus have to be known,
+# otherwise, the genotype is considered as missing. No empty lines
 # are needed between samples.
 #
 class FStatExporter:
@@ -1805,7 +1805,7 @@ class FStatExporter:
     def __init__(self, lociNames=None, adjust=1):
         self.lociNames = lociNames
         self.adjust = adjust
-    
+
     def export(self, pop, output, subPops, infoFields, gui):
         '''Export in FSTAT format
         '''
@@ -1885,7 +1885,7 @@ class FStatImporter:
                     if len(items) != nl + 1:
                         raise ValueError('Genotype line (%s) has incorrect number of items' % line)
                     subPopIndex.append(int(items[0]))
-                    # 
+                    #
                     # split genotype into pieces
                     geno = [x.strip() for x in items[1:]]
                     # get alleles (adjusted with self.adjust)
@@ -1897,7 +1897,7 @@ class FStatImporter:
                         raise ValueError('Incorrect number of genotype (%d expected)' % len(loci_names))
                 except Exception as e:
                     raise ValueError('Invalid input genotype line (%s). The file must not be in FSTAT format. %s' % (line, e))
-                    
+
         # subpop size?
         # count number of subpopulations
         subPopSize = [0] * (max(subPopIndex) + 1)
@@ -2024,7 +2024,7 @@ class PEDExporter:
         # change ped to a population again
         pop.removeInfoFields('ped_index')
         pop.asPopulation()
-        
+
 
     def export(self, pop, output, subPops, infoFields, gui):
         '''Export in PED format
@@ -2124,7 +2124,7 @@ class PhylipExporter:
                     # 90 - 189
                     # 190 - 289
                     #
-                    # length = 100, 
+                    # length = 100,
                     if nLoci > 90:
                         for line in range(((nLoci-90) // 100) + 1):
                             output(seq[(90 + line*100) : (190 + line*100)] + '\n')
@@ -2479,7 +2479,7 @@ class MSExporter:
     '''An exporter to export given population in MS format'''
     def __init__(self, splitBy=None):
         self.splitBy = splitBy
-    
+
     def export(self, pop, output, subPops, infoFields, gui):
         '''Export in MS format
         '''
@@ -2488,7 +2488,7 @@ class MSExporter:
             #
             # first line: command, nseq, nblocks
             #
-            stat(pop, popSize=True, alleleFreq=list(range(pop.numLoci(0))), vars=['alleleNum'], 
+            stat(pop, popSize=True, alleleFreq=list(range(pop.numLoci(0))), vars=['alleleNum'],
                 subPops=subPops)
             output('simuPOP_export %d 1\n' % (pop.dvars().popSize * pop.ploidy()))
             # some random random number seeds
@@ -2543,7 +2543,7 @@ class MSExporter:
             #
             # first line: command, nseq, nblocks
             #
-            stat(pop, popSize=True, alleleFreq=ALL_AVAIL, vars=['alleleNum'], 
+            stat(pop, popSize=True, alleleFreq=ALL_AVAIL, vars=['alleleNum'],
                 subPops=subPops)
             output('simuPOP_export %d %d\n' % (pop.dvars().popSize * pop.ploidy(), pop.numChrom()))
             # some random random number seeds
@@ -2674,7 +2674,7 @@ class Exporter(PyOperator):
         If set to True (default), output names of loci that are specified by parameter
         *lociNames* of the ``Population`` class. No names will be outputted if loci are
         anonymous. A list of loci names are acceptable which will be outputted directly.
-    
+
     recessiveAlleles
         If specified, value of this parameter will be outputted after the marker names
         line.
@@ -2692,7 +2692,7 @@ class Exporter(PyOperator):
 
     popData
         Output 1-based index of subpopulation if this parameter is set to true (default).
-    
+
     popFlag
         Output value of this parameter (0 or 1) after popData if this parameter specified.
 
@@ -2703,8 +2703,8 @@ class Exporter(PyOperator):
     phenotype
         Name of an information field with phenotype information of each individual. Default
         to None (no phenotype)
-    
-        
+
+
     Genotype information are always outputted. Alleles are coded the same way (0, 1, 2, etc)
     as they are stored in simuPOP.
 
@@ -2717,15 +2717,15 @@ class Exporter(PyOperator):
 
     adjust
         Adjust values of alleles by specified value (1 as default). This adjustment is
-        necessary in many cases because GENEPOP treats allele 0 as missing values, and 
+        necessary in many cases because GENEPOP treats allele 0 as missing values, and
         simuPOP treats allele 0 as a valid allele. Exporting alleles 0 and 1 as 1 and 2
         will allow GENEPOP to analyze simuPOP-exported files correctly.
 
     Because 0 is reserved as missing data in this format, allele A is outputted as A+adjust.
     simuPOP will use subpopulation names (if available) and 1-based individual index
     to output individual label (e.g. SubPop2-3). If parameter subPops is used to output
-    selected individuals, each subpop will be outputted as a separate subpopulation even 
-    if there are multiple virtual subpopulations from the same subpopulation. simuPOP 
+    selected individuals, each subpop will be outputted as a separate subpopulation even
+    if there are multiple virtual subpopulations from the same subpopulation. simuPOP
     currently only export diploid populations to this format.
 
     FSTAT (http://www2.unil.ch/popgen/softwares/fstat.htm). The fstat format accepts
@@ -2738,10 +2738,10 @@ class Exporter(PyOperator):
 
     adjust
         Adjust values of alleles by specified value (1 as default). This adjustment is
-        necessary in many cases because FSTAT treats allele 0 as missing values, and 
+        necessary in many cases because FSTAT treats allele 0 as missing values, and
         simuPOP treats allele 0 as a valid allele. Exporting alleles 0 and 1 as 1 and 2
         will allow FSTAT to analyze simuPOP-exported files correctly.
-        
+
     MAP (marker information format) output information about each loci. Each line of
     the map file describes a single marker and contains chromosome name, locus name,
     and position. Chromosome and loci names will be the names specified by parameters
@@ -2758,11 +2758,11 @@ class Exporter(PyOperator):
 
 
     PED (Linkage Pedigree pre MAKEPED format), with columns of family, individual,
-    father mother, gender, affection status and genotypes. The output should be 
+    father mother, gender, affection status and genotypes. The output should be
     acceptable by HaploView or plink, which provides more details of this format in
-    their documentation. If a population does not have ``ind_id``, ``father_id`` or 
-    ``mother_id``, this format will output individuals in specified (virtual) 
-    subpopulations in the current generation (parental generations are ignored) 
+    their documentation. If a population does not have ``ind_id``, ``father_id`` or
+    ``mother_id``, this format will output individuals in specified (virtual)
+    subpopulations in the current generation (parental generations are ignored)
     as unrelated individuals with 0, 0 as parent IDs. An incremental family
     ID will be assigned for each individual. If a population have ``ind_id``,
     ``father_id`` and ``mother_id``, parents will be recursively traced to separate
@@ -2800,9 +2800,9 @@ class Exporter(PyOperator):
         Adjust values of alleles by specified value (1 as default). This adjustment
         is necessary in many cases because LINKAGE/PED format treats allele 0 as
         missing values, and simuPOP treats allele 0 as a valid allele. You should set
-        this paremter to zero if you have already used alleles 1, 2, 3, 4 to model 
+        this paremter to zero if you have already used alleles 1, 2, 3, 4 to model
         A, C, T, and G alleles.
-        
+
     Phylip (Joseph Felsenstein's Phylip format). Phylip is generally used for nuclotide
     sequences and protein sequences. This makes this format suitable for simulations
     of haploid populations (ploidy=1) with nucleotide or protein sequences (number of
@@ -2815,7 +2815,7 @@ class Exporter(PyOperator):
     the following parameters:
 
     alleleNames
-        Names of alleles 0, 1, 2, ... as a single string (e.g. 'ACTG') or a list of 
+        Names of alleles 0, 1, 2, ... as a single string (e.g. 'ACTG') or a list of
         single-character strings (e.g. ['A', 'C', 'T', 'G']). If this parameter is
         unspecified (default), this program will try to use names of alleles
         specified in alleleNames parameter of a Population, and raise an error if no
@@ -2831,17 +2831,17 @@ class Exporter(PyOperator):
         output, each sequence consists of for the first line a name and 90 symbols
         starting from column 11, and subsequent lines of 100 symbols. The interleaved
         style have subsequent lines as separate blocks.
-        
+
     MS (output from Richard R. Hudson's MS or msHOT program). This format records
     genotypes of SNP markers at segregating site so all non-zero genotypes are
     recorded as 1. simuPOP by default outputs a single block of genotypes at
     all loci on the first chromosome, and for all individuals, unless parameter
     ``splitBy`` is specified to separate genotypes by chromosome or subpopulations.
-    
+
     splitBy:
-        simuPOP by default output segregating sites at all loci on the first 
+        simuPOP by default output segregating sites at all loci on the first
         chromosome for all individuals. If ``splitBy`` is set to ``'subPop'``,
-        genotypes for individuals in all or specified (parameter ``subPops``) 
+        genotypes for individuals in all or specified (parameter ``subPops``)
         subpopulations are outputted in separate blocks. The subpopulations should
         have the same number of individuals to produce blocks of the same number
         of sequences. Alternatively, ``splitBy`` can be set to ``chrom``, for
@@ -2849,14 +2849,14 @@ class Exporter(PyOperator):
 
 
     CSV (comma separated values). This is a general format that output genotypes in
-    comma (or tab etc) separated formats. The function form of this operator 
+    comma (or tab etc) separated formats. The function form of this operator
     ``export(format='csv')`` is similar to the now-deprecated ``saveCSV`` function,
     but its interface has been adjusted to match other formats supported by this
     operator. This format outputs a header (optiona), and one line for each individual
     with values of specified information fields, sex, affection status, and genotypes.
     All fields except for genotypes are optional. The output format is controlled by the
     following parameters:
-    
+
     infoFileds
         Information fields to be outputted. Default to none.
 
@@ -2905,10 +2905,10 @@ class Exporter(PyOperator):
     with a ``write`` function), any python function. Unless explicitly stated for
     a particular format, this operator exports individuals from the current
     generation if there are multiple ancestral generations in the population.
-    
+
     The Exporter class will make use of a progress bar to show the progress. The
     interface of the progress bar is by default determined by the global GUI status
-    but you can also set it to, for example, ``gui=False`` to forcefully use a 
+    but you can also set it to, for example, ``gui=False`` to forcefully use a
     text-based progress bar, or ``gui='batch'`` to suppress the progress bar.
     '''
     def __init__(self, format, output, begin=0, end=-1, step=1, at=[],
@@ -2983,7 +2983,7 @@ class Exporter(PyOperator):
                     else:
                         subPops.append(vsp)
         return subPops
-        
+
     def _export(self, pop):
         bin_mode = False
         if hasattr(self.output, '_with_output') and hasattr(self.output, '_with_mode'):
@@ -3064,7 +3064,7 @@ def importPopulation(format, filename, *args, **kwargs):
     parameters:
 
     alleleNames
-        Names of alleles 0, 1, 2, ... as a single string (e.g. 'ACTG') or a list of 
+        Names of alleles 0, 1, 2, ... as a single string (e.g. 'ACTG') or a list of
         single-character strings (e.g. ['A', 'C', 'T', 'G']). This will be used to
         translate symbols into numeric alleles in simuPOP. Allele names will continue
         to be used as allele names of the returned population.
@@ -3074,17 +3074,17 @@ def importPopulation(format, filename, *args, **kwargs):
         even number of sequences if ploidy=2 (haploid) is specified.
 
     MS (output from Richard R. Hudson's MS or msHOT program). The ms program generates
-    npop blocks of nseq haploid chromosomes for command starting with 
+    npop blocks of nseq haploid chromosomes for command starting with
     ``ms nsample nrepeat``. By default, the result is imported as a haploid
     population of size nsample. The population will have nrepeat subpopulations
     each with the same number of loci but different number of segregating sites.
     This behavior could be changed by the following parameters:
-    
+
     ploidy
         If ``ploidy`` is set to 2, the sequenences will be paired so the population
         will have ``nseq/2`` individuals. An error will be raised if an odd number
         of sequences are simulated.
-        
+
     mergeBy
         By default, replicate samples will be presented as subpopulations. All
         individuals have the same number of loci but individuals in different
@@ -3106,4 +3106,3 @@ def importPopulation(format, filename, *args, **kwargs):
 
 if __name__ == "__main__":
     pass
-

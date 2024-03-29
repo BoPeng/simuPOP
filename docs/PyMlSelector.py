@@ -4,10 +4,10 @@
 # $File: PyMlSelector.py $
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #
 
 # This script is an example in the simuPOP user's guide. Please refer to
-# the user's guide (http://simupop.sourceforge.net/manual) for a detailed
+# the user's guide (https://github.com/BoPeng/simuPOP/manual) for a detailed
 # description of this example.
 #
 
@@ -39,7 +39,7 @@ class GammaDistributedFitness:
         self.coefMap = {}
         self.alpha = alpha
         self.beta = beta
-     
+
     def __call__(self, loc, alleles):
         # because s is assigned for each locus, we need to make sure the
         # same s is used for fitness of genotypes 01 (1-s) and 11 (1-2s)
@@ -71,4 +71,3 @@ pop.evolve(
     gen = 201
 )
 print(''.join(open('sel.txt').readlines()[:5]))
-

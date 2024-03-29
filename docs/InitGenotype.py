@@ -4,10 +4,10 @@
 # $File: InitGenotype.py $
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #
 
 # This script is an example in the simuPOP user's guide. Please refer to
-# the user's guide (http://simupop.sourceforge.net/manual) for a detailed
+# the user's guide (https://github.com/BoPeng/simuPOP/manual) for a detailed
 # description of this example.
 #
 
@@ -52,7 +52,7 @@ printFreq(pop, range(5))
 pop = sim.Population(size=[2, 3], loci=[5, 7])
 sim.initGenotype(pop, genotype=[1]*5 + [2]*7 + [3]*5 +[4]*7)
 sim.dump(pop, structure=False)
-# 
+#
 # use virtual subpopulation
 pop = sim.Population(size=[2000, 3000], loci=[5, 7])
 pop.setVirtualSplitter(sim.SexSplitter())
@@ -71,7 +71,7 @@ import random
 sim.initGenotype(pop, freq=lambda : random.random())
 printFreq(pop, range(5))
 # initialize with loci specific frequency. here
-# lambda loc: 0.01*loc is equivalent to 
+# lambda loc: 0.01*loc is equivalent to
 # lambda loc: [0.01*loc, 1-0.01*loc]
 sim.initGenotype(pop,
     freq=lambda loc: 0.01*loc)
@@ -80,5 +80,3 @@ printFreq(pop, range(5))
 sim.initGenotype(pop,
     freq=lambda vsp: [[0.2, 0.8], [0.5, 0.5]][vsp[1]],
     subPops=[(0, 0), (0, 1)])
-
-

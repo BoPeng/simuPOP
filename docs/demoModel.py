@@ -4,10 +4,10 @@
 # $File: demoModel.py $
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,22 +24,22 @@
 #
 
 # This script is an example in the simuPOP user's guide. Please refer to
-# the user's guide (http://simupop.sourceforge.net/manual) for a detailed
+# the user's guide (https://github.com/BoPeng/simuPOP/manual) for a detailed
 # description of this example.
 #
 
 import simuPOP as sim
 from simuPOP.demography import *
 model = MultiStageModel([
-    InstantChangeModel(T=200, 
+    InstantChangeModel(T=200,
         # start with an ancestral population of size 1000
         N0=(1000, 'Ancestral'),
         # change population size at 50 and 60
-        G=[50, 60], 
+        G=[50, 60],
         # change to population size 200 and back to 1000
         NG=[(200, 'bottleneck'), (1000, 'Post-Bottleneck')]),
     ExponentialGrowthModel(
-        T=50, 
+        T=50,
         # split the population into two subpopulations
         N0=[(400, 'P1'), (600, 'P2')],
         # expand to size 4000 and 5000 respectively
@@ -62,10 +62,9 @@ pop.evolve(
 )
 # print out population size and frequency
 for idx, name in enumerate(pop.subPopNames()):
-    print('%s (%d): %.4f' % (name, pop.subPopSize(name), 
+    print('%s (%d): %.4f' % (name, pop.subPopSize(name),
         pop.dvars(idx).alleleFreq[0][0]))
 
 # get a visual presentation of the demographic model
 model.plot('log/demoModel.png',
     title='A bottleneck + exponential growth demographic model')
-

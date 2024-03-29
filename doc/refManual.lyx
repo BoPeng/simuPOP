@@ -9,8 +9,8 @@
 % file revision $Rev: 3372$
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
-{\bf Email: } \textsf{bpeng@mdanderson.org}\\
-{\bf URL: } \textsf{http://simupop.sourceforge.net} \\
+{\bf Email: } \textsf{Bo.Peng@bcm.edu}\\
+{\bf URL: } \textsf{https://github.com/BoPeng/simuPOP} \\
 {\bf Mailing List: } \textsf{simupop-list@lists.sourceforge.net}
 }
 \author{Bo Peng}
@@ -39,7 +39,7 @@ Last modified \\
 \subsectionfont{\color{TitleColor}}
 \subsubsectionfont{\color{TitleColor}}
 
-\newlength{\admonitionwidth} 
+\newlength{\admonitionwidth}
 \setlength{\admonitionwidth}{0.7\textwidth}
 \end_preamble
 \use_default_options false
@@ -149,7 +149,7 @@ status open
 
 
 \backslash
-vspace{7.5in} 
+vspace{7.5in}
 \end_layout
 
 \end_inset
@@ -163,14 +163,14 @@ status open
 
 \begin_layout Plain Layout
 
- 
+
 \backslash
-copyright{} 
+copyright{}
 \end_layout
 
 \end_inset
 
- 2004-2008 Bo Peng 
+ 2004-2008 Bo Peng
 \begin_inset ERT
 status open
 
@@ -178,11 +178,11 @@ status open
 
 
 \backslash
-vspace{.3cm} 
+vspace{.3cm}
 \backslash
-hrule 
+hrule
 \backslash
-vspace{0.1cm} 
+vspace{0.1cm}
 \end_layout
 
 \end_inset
@@ -221,7 +221,7 @@ simuPOP is a general-purpose individual-based forward-time population genetics
  arbitrary nonrandom mating schemes, virtual subpopulations, information
  fields and Python operators, to construct and study almost arbitrarily
  complex evolutionary scenarios.
- 
+
 \end_layout
 
 \begin_layout Abstract
@@ -243,16 +243,16 @@ simuPOP is provided as a number of Python modules, which consist of a large
 \begin_layout Abstract
 This document provides complete references to all classes and functions
  of simuPOP and its utility modules.
- Please refer to the 
+ Please refer to the
 \emph on
 simuPOP user's guide
 \emph default
  for a detailed introduction to simuPOP concepts, and a number of examples
  on how to use simuPOP to perform various simulations.
  All resources, including a pdf version of this guide and a mailing list
- can be found at the simuPOP homepage 
+ can be found at the simuPOP homepage
 \family typewriter
-http://simupop.sourceforge.net
+https://github.com/BoPeng/simuPOP
 \family default
 .
 \end_layout
@@ -267,11 +267,11 @@ How to cite simuPOP:
 \begin_layout Quote
 Bo Peng and Marek Kimmel (2005) simuPOP: a forward-time population genetics
  simulation environment.
- 
+
 \emph on
 bioinformatics
 \emph default
-, 
+,
 \series bold
 21
 \series default
@@ -281,11 +281,11 @@ bioinformatics
 \begin_layout Quote
 Bo Peng and Christopher Amos (2008) Forward-time simulations of nonrandom
  mating populations using simuPOP.
- 
+
 \emph on
 bioinformatics
 \emph default
-, 
+,
 \series bold
 24
 \series default
@@ -1298,7 +1298,7 @@ selection
 
 \end_inset
 
- 
+
 \end_layout
 
 \begin_layout Standard
@@ -1778,7 +1778,7 @@ Utility Modules
 \end_layout
 
 \begin_layout Section
-Module 
+Module
 \family typewriter
 simuOpt
 \end_layout
@@ -1807,7 +1807,7 @@ simuOptsetOptionsRef
 \end_layout
 
 \begin_layout Section
-Module 
+Module
 \family typewriter
 simuPOP.utils
 \end_layout
@@ -1899,7 +1899,7 @@ simuPOPutilsexportRef
 \end_layout
 
 \begin_layout Section
-Module 
+Module
 \family typewriter
 simuPOP.demography
 \end_layout
@@ -2047,7 +2047,7 @@ simuPOPdemographyCosiModelRef
 \end_layout
 
 \begin_layout Section
-Module 
+Module
 \family typewriter
 simuPOP.sampling
 \end_layout
@@ -2209,7 +2209,7 @@ simuPOPsamplingdrawCombinedSamplesRef
 \end_layout
 
 \begin_layout Section
-Module 
+Module
 \family typewriter
 simuPOP.gsl
 \end_layout

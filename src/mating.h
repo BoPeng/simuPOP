@@ -4,10 +4,10 @@
  *  $Rev$
  *
  *  This file is part of simuPOP, a forward-time population genetics
- *  simulation environment. Please visit http://simupop.sourceforge.net
+ *  simulation environment. Please visit https://github.com/BoPeng/simuPOP
  *  for details.
  *
- *  Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+ *  Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -1703,7 +1703,7 @@ public:
 	 *  of the weights and their respective parental (virtual) subpopulation
 	 *  sizes. If all weights are positive, the number of offspring produced by
 	 *  each mating scheme is proportional to these weights, except for mating
-	 *  schemes with zero parental population size (or no father, no mother, 
+	 *  schemes with zero parental population size (or no father, no mother,
 	 *  or no pairs, depending on value of parameter \c weightBy). Mating schemes
 	 *  with zero weight in this case will produce no offspring. If both
 	 *  negative and positive weights are present, negative weights are

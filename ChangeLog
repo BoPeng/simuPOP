@@ -29,14 +29,14 @@ BUG FIXES:
 
 Version 1.1.3 -- Rev 4915 (July 29, 2014)
 MAJOR NEW FEATURES:
-* Add a new mating scheme [[http://simupop.sourceforge.net/manual_svn/build/refManual_ch2_sec3.html#class-conditionalmating|ConditionalMating]] to apply different matings schemes to populations with different properties. ([[http://simupop.sourceforge.net/manual_svn/build/userGuide_ch6_sec1.html#conditional-mating-schemes|Example]]
+* Add a new mating scheme [[https://github.com/BoPeng/simuPOP/manual_svn/build/refManual_ch2_sec3.html#class-conditionalmating|ConditionalMating]] to apply different matings schemes to populations with different properties. ([[https://github.com/BoPeng/simuPOP/manual_svn/build/userGuide_ch6_sec1.html#conditional-mating-schemes|Example]]
 
 NEW FEATURES:
 * Support compiling simuPOP using clang under MacOSX Maverick
-* Allow function passed to PyMutator to accept parameter locus. 
+* Allow function passed to PyMutator to accept parameter locus.
 * Allow the use of varying recombination rates rates=[...] with loci=ALL_AVAIL in operator Recombinator.
 * Raise an error if a demographic function returns a negative population size.
-* Expose the chooseParents interface of parent [[http://simupop.sourceforge.net/manual_svn/build/refManual_ch2_sec3.html#class-sequentialparentchooser|choosers]] so that they could be used in PyParentsChooser. ([[http://simupop.sourceforge.net/manual_svn/build/userGuide_ch6_sec3.html#a-python-parent-chooser|Example]])
+* Expose the chooseParents interface of parent [[https://github.com/BoPeng/simuPOP/manual_svn/build/refManual_ch2_sec3.html#class-sequentialparentchooser|choosers]] so that they could be used in PyParentsChooser. ([[https://github.com/BoPeng/simuPOP/manual_svn/build/userGuide_ch6_sec3.html#a-python-parent-chooser|Example]])
 * Allow the passing of mutants (non-zero alleles) as a dictionary to user-provided function in call-back functions of PySelector, PyQuanTrait, and PyPenetrance. This can be more efficient for large genomes with few mutants.
 
 BUGS:
@@ -67,7 +67,7 @@ NEW FEATURE:
 	Ne_tempoFS_P1, Ne_tempoFS_P2, Ne_waples97_P1 and Ne_waples97_P2. Variables Ne_tempoFS and
 	Ne_waples97 are now deprecated.
   - A new file format to improve efficiency and reduce memory footprint of save/load of simuPOP populations.
-	
+
 BUG:
   - Fix setOption(version) for minor simuPOP releases with version string ending with a, b, etc.
   - Fix lociPos for positions that are very close to each other.
@@ -81,7 +81,7 @@ Major New Features:
 	Currently based on the moment method of Waples 1989, TempoFS method of Jorde
 	 & Ryman 2007, a LD-based method from Waples 2006, and an esimate of the
 	 demographic effectize size.
- 
+
 New Feature:
   - Rename PER_LOCI to PER_ALLELE in InitLineage. PER_LOCI can still be used for backward compatibility.
   - Allow empty value list in InitLineage. In this case, unique values will be provided for each case.
@@ -102,9 +102,9 @@ Major New Features:
 MAJOR BUG:
   - Fix a bug that prevents females from selected correctly during random mating. The bug
 	was introduced in simuPOP 1.0.6.
-	
+
 BUG:
-  - Quit with proper error message when Population.save fails to write 
+  - Quit with proper error message when Population.save fails to write
   - Fix a bug where applicability parameters in operators in parameter ops
 	for operators MlSelector and MlPenetrance are ignored.
   - Results from Stat(heteroFreq) are now set one by one, and not as a default dictionary
@@ -165,7 +165,7 @@ New features:
 
 BUG:
   - Fix a bug when population.removeLoci(keep=[]) fails to clear all loci.
-  - Fix a bug where populations saved in binary module on a 64 bit system cannot be 
+  - Fix a bug where populations saved in binary module on a 64 bit system cannot be
 	loaded under 32 bit systems.
   - Fix a bug in the handling of single input for list type when the parameter
 	is not processed using GUI.
@@ -176,7 +176,7 @@ New features:
   - Support parameter subPops in during mating operators so that different
 		operators can be applied to offspring with different opportunities.
   - Add operator DiscardIf to discard individuals if some condition is met.
-  - Callback functions for PyOperator must return either True or False. A 
+  - Callback functions for PyOperator must return either True or False. A
 		RuntimeError will be returned otherwise.
   - Allow simuOpt.valueOneOf(t1, t2, t3) in addition to simuOpt.valueOneOf(list).
   - Allow simuOpt.valueNot(value) in addition to simuOpt.valueNot(validator).
@@ -246,7 +246,7 @@ Regression (minor):
   - Statements specified in operator InfoEval will also change values of individual
 		information fields.
   - Mark validate, arg, longarg, chooseFrom, chooseOneOf in parameter definition
-        dictionary obsolete 
+        dictionary obsolete
   - Mark parameter revision in simuOpt.setOptions as obsolete.
 
 New features (minor):
@@ -274,7 +274,7 @@ New features (minor):
   - Support gcc < 4.0 even if those compilers do not support tr1.
   - Output warning for mismatch of genotype or haplotype length in operator InitGenotype.
   - Silently ignore alleles n or higher in a MatrixMutator and KAlleleMutator if their mutation rates
-		are undefined (e.g. mutation matrix only has n rows). An error was triggered in the 
+		are undefined (e.g. mutation matrix only has n rows). An error was triggered in the
 		previous version.
   - Add parameter size to simuOpt.valueIsList and simuOpt.valueListOf to allow validation
 		of sequences according to sequence length.
@@ -522,7 +522,7 @@ version 0.9.7 - Rev 2983 (Sep 26, 2009)
   - CHG: Rename class simuOpt.simuOpt to simuOpt.simuParam to avoid name conflict.
 
 version 0.9.6 - Rev 2849 (Aug 6, 2009)
-  - NEW: Add a global function closeOutput to close '>>' or '>>>' output files used 
+  - NEW: Add a global function closeOutput to close '>>' or '>>>' output files used
 		in the function form of an operator.
   - BUG: Fix a memory leak of LoadPopulation.
   - CHG: Rename function rng() to GetRNG() for consistent naming of functions.
@@ -530,7 +530,7 @@ version 0.9.6 - Rev 2849 (Aug 6, 2009)
 		population::individual, population::individuals, population::vars,
 		simulator::vars, individual::setGenotype, individual::genotype,
 		individual::allele, individual::setAllele, individual::alleleChar,
-		individual::info, individual::setInfo to one function with more complex 
+		individual::info, individual::setInfo to one function with more complex
 		input type and default parameter. This change allows keyword arguments for
 		all these functions.
   - CHG: the parameter order of function population::ancestor has been changed!
@@ -635,10 +635,10 @@ version 0.9.3 - (Rev 2601) Apr 3, 2009
   - NEW: (experimental) Add case/control association chisq test to stat.
   - NEW: (experimental) Add Tajima's pi statistics (mean pairwise difference) to
 		the stat() operator.
-		
+
 
 version 0.9.2 - (Rev 2472) Feb 20, 2009
-  - NEW: Allow populations in a simulator to have different genotype structure. 
+  - NEW: Allow populations in a simulator to have different genotype structure.
   - CHG: A simulator can no longer access genotypic structure information.
   - NEW: Add simulator::add to add new populations to a simulator.
   - CHG: Remove simulator::addInfoField and other functions because they can be
@@ -658,7 +658,7 @@ version 0.9.2 - (Rev 2472) Feb 20, 2009
   - NEW: Allow unordered lociPos specification in population(), lociNames will be
 		rearranged accordingly.
   - NEW: Allow single parameter to parameters loci, ploidy in initByValue and initByFreq.
-  - NEW: Remove parameter chrom from dumper(), allow single parameter input for 
+  - NEW: Remove parameter chrom from dumper(), allow single parameter input for
 		parameter loci in this operator.
   - NEW: Add pause operator to accept specified keys.
   - CHG: Remove rarely used parameters preStmts and postStmts from operators pyEval and
@@ -677,7 +677,7 @@ version 0.9.2 - (Rev 2472) Feb 20, 2009
 		splitSubPops.
   - CHG: population::splitSubPop can no longer split by proportion. Please use operator
 		splitSubPops and its function form SplitSubPops instead.
-		
+
 
 version 0.9.1 - (Rev 2330) Jan 13, 2009
   - NEW: Improve allele iterator so that stat(alleleFreq) can handle chromosome x and y.
@@ -733,7 +733,7 @@ version 0.9.0 - (Rev 2130) Dec 15, 2008 (tagged, but not publically released)
   - CHG: Remove intializer, spread and pyInit operators.
   - CHG: Add parameter initSex to initByFreq and initByValue.
   - NEW: Initializers now support virtual subpopulations.
-  - CHG: Recombiantor no longer supports recombination by sex, 
+  - CHG: Recombiantor no longer supports recombination by sex,
 		and haplodiploid chromosomes.
   - CHG: Recombinator now supports different types of chromosomes.
   - NEW: Add ops parameter to mating schemes.
@@ -839,7 +839,7 @@ version 0.8.6 - (Rev 1666) Jun 20, 2008
   - BUG: Fix a NuclearfamilySample bug regarding parameter minAffected.
   - NEW: separate sex initialization from initByFreq, initByValue and pyInit
 		and add a new operator initSex.
-  - BUG: Fix a iterator bug that affects populations with ancestralDepth > 1 
+  - BUG: Fix a iterator bug that affects populations with ancestralDepth > 1
 		during evolution.
   - CHG: Remove subpopulation specific virtual subpopulation. This is no longer
 		needed with combined virtual splitter.
@@ -886,7 +886,7 @@ version 0.8.4 - (Rev 1456) Mar 8, 2008
   - NEW: add combinedSplitter
 
 
-version 0.8.3 - (Rev 1412) Jan 17, 2008 
+version 0.8.3 - (Rev 1412) Jan 17, 2008
   - NEW: allow taggers to write pedigree files
   - NEW: introduce pedigreeParentsChooser to choose parents according to a given pedigree
   - NEW: introduce pedigreeMating to mate according to a given pedigree
@@ -913,12 +913,12 @@ version 0.8.2 - (Rev 1370) Nov 19, 2007
 version 0.8.1 - (Rev 1254) Oct 05, 2007
   - NEW: Allow len(pops) == 1 in MergePopulationsByLoci(pops) and
 	MergePopulations(pops)
-  - BUG: Use /dev/urandom for unix users. os.path.isfile('/dev/urandom') 
+  - BUG: Use /dev/urandom for unix users. os.path.isfile('/dev/urandom')
 		returns false even if this file does exist.
-  - BUG: Fix the handling of binary option in command line, and handling of short 
+  - BUG: Fix the handling of binary option in command line, and handling of short
 		arguments.
   - NEW: Use a checkbox for binary options in the parameter dialogs.
-  - NEW: make use of second to last inforFields passed to pyPenetrance 
+  - NEW: make use of second to last inforFields passed to pyPenetrance
 		and pySelector to pass specified information fields to user-defined
 		functions.
   - BUG: Fix a few functions in hapMapUtil.py
@@ -934,7 +934,7 @@ version 0.8.0 - (Rev 1215) Aug 14, 2007
   - NEW: Respect environmental variable GSL_RNG_TYPE for the choice of RNG
 
 version 0.7.11 - (Rev 1133) July 26, 2007
-  - NEW: add subPop(s) parameters to selectors, allowing different selection pressure 
+  - NEW: add subPop(s) parameters to selectors, allowing different selection pressure
 		in different subpopulations
   - NEW: add subPops parameter to intializers, working the same as subPop
   - NEW: extending pyIndOperator with handling of loci and infoFields
@@ -965,9 +965,9 @@ version 0.7.10 - (Rev 987) May 20, 2007
   - NEW: make sure alleleFreq[x][0] and alleleFreq[x][1] exist, even if there is no
 	    allele 1. This is avoid trouble in  binary form. (maybe not a good idea).
   - NEW: throw an exception when multiple selectors are applied at the same time.
-  - NEW: add population::mergePopulation, population::mergePopulationByLoci, 
+  - NEW: add population::mergePopulation, population::mergePopulationByLoci,
 		MergePopulations, MergePopulationsByLoci, population::resize
-  - NEW: add population::insertLoci, population::insertLocus, population::appendLoci, 
+  - NEW: add population::insertLoci, population::insertLocus, population::appendLoci,
 		population::appendLocus
   - NEW: add genoStruTrait::locusByName, genoStruTrait::lociByName
   - NEW: swig 1.3.32 compatibility
@@ -1028,7 +1028,7 @@ MPI modules:
   -NEW: add hasInfoField() function
   -NEW: MPI module pass 00, 01, 06 test scripts
   -NEW: Only head node can print to cout
-  
+
 
 version 0.7.6 - (Rev 674) Dec 25, 2006
   -NEW: change file format for binary modules, resulting much faster save/load.
@@ -1069,7 +1069,7 @@ version 0.7.4 - (Rev 518) Nov 5, 2006
   - NEW: significant performance improvement of mating schemes.
 	controlled randomMating: typically 150s => 90s
   - NEW: add instruction for using intel c++ compiler, which usually improve
-   performance by 20% to 30%.		
+   performance by 20% to 30%.
   - BUG: recombinator set sex in a wrong way.
   - NEW: experimental large pedigree sampling largePedigreeSample
   - NEW: experimental support for merlin/vc and merlin regression
@@ -1118,7 +1118,7 @@ version 0.7.1 - (Rev 378) - Aug 20, 2006
   - BUG: fix a random number generator bug on 64 bit machines.
   - NEW: random number seed is generated in a much better way, and is
 		retrievable.
-  - NEW: fix analComplexDisease.py which was not up to date with 
+  - NEW: fix analComplexDisease.py which was not up to date with
 		simuComplexDisease.py
 
 version 0.7.0 - (Release 0.6.15, July, 2006)
@@ -1139,19 +1139,19 @@ version 0.6.13 - (Rev 278) - Apr. 20, 2006
   - NEW: Add controlledMating that accept an generation only if allele
          frequency at specified locus/loci fail in specified range.
   - NEW: add test case for controlledMating. (No doc is avaiable yet.)
-  - NEW: implement trajectory simulation follows Slatkin 2001. This 
+  - NEW: implement trajectory simulation follows Slatkin 2001. This
          works better than methods from both selSim and geneArtisan.
-  - CHG: (internal change) abort the original template design. This 
+  - CHG: (internal change) abort the original template design. This
          will make the source less flexible but can dramatically improve
          development time.
   - CHG: add separator to simuOpt's parameter specification.
   - NEW: add controlledRandomMating and controlledBinomialSelection which
-         implement a quicker alternative to controlledMating. 
+         implement a quicker alternative to controlledMating.
   - CHG: simuComplexDisease.py has been re-written.
   - NEW: add TurnOnDebugWithName(name) and the ability to set SIMUDEBUG
          to turn on certain debug mode.
   - BUG: fixed a bug about s_shallowCopied flag of population.
-  - CHG: Remove starting allele and let all allele start from 0. tests 
+  - CHG: Remove starting allele and let all allele start from 0. tests
          and scripts have been modified. These changes can make binary
          and other modules behave the same.
   - CHG: (internal change) upgrade to boost 1.33.1. This allows me to use
@@ -1168,10 +1168,10 @@ version 0.6.13 - (Rev 278) - Apr. 20, 2006
   - NEW: let simuPOP handles file.txt.gz extensions directly. Using .gz will
          be equilivalent to compress=True (although compress=True does not
          add .gz extension to the filename supplied. )
-				 
 
-version 0.6.12 - (Rev 186) - Feb 18, 2006 
-  - CHG: 'not enough case/control' in caseControlSample now generates 
+
+version 0.6.12 - (Rev 186) - Feb 18, 2006
+  - CHG: 'not enough case/control' in caseControlSample now generates
          a warning message, rather than exception.
   - CHG: set the default sample saveAs format to 'auto', instead of 'bin'
          'bin' was used before 'auto' was introduced
@@ -1183,14 +1183,14 @@ version 0.6.12 - (Rev 186) - Feb 18, 2006
   - CHG: simuUtil/SaveLinkage: if pre is True, the output is filename.pre
          instead of filename.ped, which will be used when pre is False.
   - CHG: (internal cleaning) fitness is implemented differently.
-  - CHG: (internal cleaning) randomMating sex determination no longer use bt. 
+  - CHG: (internal cleaning) randomMating sex determination no longer use bt.
   - CHG: (internal cleaning) isMale class is replaced by a less fancier solution.
   - CHG: (internal) change the use of pointer to iterator, in preparation for
          compact presentation of binary alleles.
   - NEW: add a compilable (imcomplete) binary library. All alleles are 0 or 1
          and are stored internally as bits to save spaces.
-  - CHG: carray can now read/write binary allele. However, it can no longer 
-         be a standalone type. It should always be only a reference to a 
+  - CHG: carray can now read/write binary allele. However, it can no longer
+         be a standalone type. It should always be only a reference to a
          piece of memory. This simplifies the design since we do not have to
          worry about extending, slicing etc.
   - NEW: (important) addition of ba, baop modules for binary allele. Extensive
@@ -1212,8 +1212,8 @@ version 0.6.11 - (Rev 119) - Jan 19, 2006
   - NEW: check return value of pyPenetrance function to be within [0,1]
   - NEW: add operator continueIf, in addition to terminateIf
   - NEW: add 's' behavior to operator pause, which will invoke an interactive
-         python shell. Current population is by default exposed to the main 
-         dictionary as variable 'pop. This can be controled by parameter 
+         python shell. Current population is by default exposed to the main
+         dictionary as variable 'pop. This can be controled by parameter
          exposePop and popName.
   - TST: add test case test_opPause.py
   - NEW: add name parameter to population::exposeInfo and population::exposeAffectedness
@@ -1221,26 +1221,26 @@ version 0.6.11 - (Rev 119) - Jan 19, 2006
   - DOC: add full member function of population object list to reference manual
   - DOC: add genotypic structure function list to reference manual
   - DOC: add individual function list to refernce manual
-  - CHG: rename basicPentrance, basicSelector and basicQuanTrait to 
+  - CHG: rename basicPentrance, basicSelector and basicQuanTrait to
          mapPenetrance etc
   - NEW: add multi-locus support to mapPenetrance, maPenetrance (and selector,
-         quantrait) except for locus, you can specify loci, and a longer map 
+         quantrait) except for locus, you can specify loci, and a longer map
          or array of values.
   - NEW: pyOperator can now be a during-mating operator. Pass a python function
          func(pop, offspring, dad, mom, param) and set stage=DuringMating will do.
   - BUG: fix another memory leak problem when an internal population is exposed
-  - NEW: improve the efficiency of dynamic type finding of population and 
-         individual Decent performance boost for pyOperator, especially to 
+  - NEW: improve the efficiency of dynamic type finding of population and
+         individual Decent performance boost for pyOperator, especially to
          the DuringMating mode.
-  - NEW: use the new swig -external-runtime feature to generate swigpyrun.h, 
-         this allows me to relocate some utility functions from the interface 
+  - NEW: use the new swig -external-runtime feature to generate swigpyrun.h,
+         this allows me to relocate some utility functions from the interface
          file to utility.h
   - NEW: let simuCDCV.py also trace and display the change of total allele frequency.
   - NEW: add passOffspringOnly to pyOperator to speed up duringMating pyOperator.
   - DOC: add simuPOP coding convension to simuPOP reference manual
   - NEW: add simuOpt.valueOr, valueNot and valueAnd to simuOpt.py
   - NEW: give correct prompt for pause operator regarding exported population name
-  - BUG: fix a bug in affectedSibpairSample, which will generate the wrong 
+  - BUG: fix a bug in affectedSibpairSample, which will generate the wrong
          sample if an operator is used a second time (So AffectedSibpairSample
          is not affected).
 
@@ -1250,18 +1250,18 @@ version 0.6.10 (Rev90) - Dec, 20th, 2005
   - NEW: add mutationCount(loc) and mutationCounts() to muators to track
          the number of mutation event.
   - NEW: add atPloidy=[0] to pointMutator.
-  - CHG: replace lociDist and locusDist by lociPos and locusPos. This kind of term 
+  - CHG: replace lociDist and locusDist by lociPos and locusPos. This kind of term
          change should be done as soon as possible.
   - NEW: add simuRecHotSpot.py which is used to generate SNP sample that can be used
          to estimate recombination rate between markers.
   - TST: convert test_mutator.py to unittest framework.
   - NEW: add DBG_DEVEL for developer-level debug information.
-  - CHG: Make adjustment to how genotype structure is accessed from individual and 
+  - CHG: Make adjustment to how genotype structure is accessed from individual and
          limit the number of subpopulations to 2^31. Save 8 bytes (24->16) for each
-         individual without noticable performance penalty. 
+         individual without noticable performance penalty.
   - BUG: fix a tiny bug about optimization mode reporting
   - TST: test_population is better now, but still way to go.
-  - CHG: separate simuComplexDisease.py into simuComplexDisease.py and 
+  - CHG: separate simuComplexDisease.py into simuComplexDisease.py and
          analComplexDisease.py. The first script will run simulation and generate
          a population saved in binary format. The second script will run the old
          analyses (apply penetrance function, plot figures, apply genehunter etc.)
@@ -1273,17 +1273,17 @@ version 0.6.10 (Rev90) - Dec, 20th, 2005
 
 version 0.6.9 (Rev71) - Nov, 19th,  2005
   - add pyOperator, the ultimate hybrid operator, this will considerably simplify many
-    coomplicated tasks 
+    coomplicated tasks
   - start to convert all test cases to PyUnit. This means better test cases and more
     thorough testing. I expect that code 0.7.0 is a version with much less bugs due to
-    this change. 
+    this change.
   - fix a bug in initializer (parameter proportion)
   - fix a bug in recombinator concerning direct chrom copy.
   - remove autoconf, Makefile.icc stuff to avoid confusion.
   - fix a bug in migrator/MigrByCounts, which is introduced in 0.6.8
   - add subversion  revision number to doc and binary releases for
     better tracking of changes.
-  - fix windows binary import problem caused by mingw/msvcrt. Details please see 
+  - fix windows binary import problem caused by mingw/msvcrt. Details please see
     INSTALL.
   - fix a bug in AffectedSibpairSample with countOnly parameter. (Not able to
     handle None return.)
@@ -1295,30 +1295,30 @@ version 0.6.9 (Rev71) - Nov, 19th,  2005
 version 0.6.8 - Sep 21st, 2005
   - fix a reporting bug in simuCDCV.py
   - support sex chromosome and sex chromosome related mating, recombination issues.
-      -- sexChrom() in population::population(), 
+      -- sexChrom() in population::population(),
       -- stop recombination between XY of male individual
       -- determine sex in random mating by sex chromosome
-  - add parameters atPloidy, sex to initializers. Now, you can 
+  - add parameters atPloidy, sex to initializers. Now, you can
     initialize individuals at ploidy level and control assignment of sex.
     Now, with so many options, these initializers are overly complicated.
   - add support for sex-specific recombination rate. (parameter maleIntensity,
     maleRate, and maleAfterLoci.)
   - modify some features of simuComplexDisease.py
-  - release 0.6.8 and set up daily snapshots 
+  - release 0.6.8 and set up daily snapshots
 
 version 0.6.7 - Aug, 1st, 2005
   - Add help() infor for the function version of operators and member functions.
-  - use Walker's alias algorithm for weighted sampling. Random mating with 
+  - use Walker's alias algorithm for weighted sampling. Random mating with
     selection should be only slightly slower than without selection. The performance
     of simuCDCV.py increased by 15% using this algorithm. This method will use
     a lot of RAM when population size is large (8*N bytes).
   - add compiler info to Welcome message. (to see if it matches that of Python.)
-  - change the use of logfile in simuCDCV.py 
+  - change the use of logfile in simuCDCV.py
   - fix a bug in operator InitByFreq.
 
 version 0.6.6 - various GUI / wxPython improvements. Not released.
   - add wxGetParam. Will be used when wxPython is available.
-  - add wxPython version of listVars. Much better than the text version 
+  - add wxPython version of listVars. Much better than the text version
     when wxPython is available.
   - add some demographic functions in simuUtil.py
   - use grid for tkinter box
@@ -1328,7 +1328,7 @@ version 0.6.6 - various GUI / wxPython improvements. Not released.
   - stop using global variable gen. Add gen() function to individual population
     and "gen" to local variable space. (Avoid using modular level global variable)
     If this breaks anything, please let me know.
-  - Change penetrance from 1,1-s,1-2s to 1,1-s/2,1-s in simuComplexDisease.py and 
+  - Change penetrance from 1,1-s,1-2s to 1,1-s/2,1-s in simuComplexDisease.py and
     simuCDCV.py. This is more natural.
   - Add tooltip to the wxPython version of getParam.
 
@@ -1337,17 +1337,17 @@ version 0.6.5 - userfriendliness (simuPOP scripts). May 1st, 2005
   - streamline getParam, usage, help etc.
   - add scripts folder for common simupop templates
   - add quiet option to simuPOP to suppress initial input
-  - add tk support for easy inputing of variables. This is 
+  - add tk support for easy inputing of variables. This is
     a major enhancement for userfriendliness. A first glimpse of a GUI
   - fix a bug in saving shared variables. Exam saved format. Full backward
     compatibility should start from here.
   - simuComplexDisease.py. It uses almost all features of simuPOP
-  - remove headers support for object. They are not very useful and 
+  - remove headers support for object. They are not very useful and
     hard to use.
 
 version 0.6.4 - efficiency and usability. Not released
-  - savePopulation saves local variables as well. This is used to save special info like 
-    disease susceptibility loci. 
+  - savePopulation saves local variables as well. This is used to save special info like
+    disease susceptibility loci.
   - Label save population with max allowed allele number.
   - merge some parameters through python code. Now, parameters like rate
     can be either a number or an array. Same is true for value, indRange.
@@ -1363,21 +1363,21 @@ version 0.6.3 -  Ancestral populations  Apr. 5, 2005
   - add simuOpt to control simuPOP behavior, hide other modules
   - add pointMutator
   - change the meaning of rate in recombinator, add parameter intensity
-  - IMPORTANT: population can contain multiple generations. 
+  - IMPORTANT: population can contain multiple generations.
     add: population.pushAndDiscard (CPPONLY), Lots of work.
       parameter ancestry for population.__init__
       parameter ancestry for dumper
   - add SavePopulations and LoadPopulations function.
   - add stat(homoFreq and expHetero)
   - fix a small bug with end < 0 and step > 1
-  - add splitSubPop(ByProportion), mergeSubPops member functions, operators 
+  - add splitSubPop(ByProportion), mergeSubPops member functions, operators
       and functions.
   - make duringMating oeprators re-order automatically
   - add numOffspringsFunc, mode=MATE_NumOffsprings, MATE_GeometricDistribution etc
   - add affected sibpair sampling scheme
   - export to linkage format (affected sibpair samples)
   - export to randfam format
-  - test parentsTagger, successfully track pedigree info   
+  - test parentsTagger, successfully track pedigree info
 
 version 0.6.2 - better usage of vars  Mar, 23, 2005
   - variables are now population associated. (pop.evaluate(...)
@@ -1390,7 +1390,7 @@ version 0.6.2 - better usage of vars  Mar, 23, 2005
   - add newSubPopSizeFunc option to Mating schemes
   - change haploFreq to count all haplotypes.
   - add multi-allele Fst, LD etc. (average)
-  - fixes all memory leak and reference count problems 
+  - fixes all memory leak and reference count problems
   - save/load auto format according to file extension.
   - fix a small bug of unclosed files.
   - finsh LoadSimulatorFromFiles (uses in pair with savePopulation operator)
@@ -1425,28 +1425,28 @@ Version 0.5.9 - performance boost, dynamic population size  Dec. 12th, 2004
   - visualize migration
 
 Version 0.5.8 - selection Dec. 5nd, 2004
-  - add selection. 
+  - add selection.
   - better matings.
   - bug fixes
   - migration and selection examples
 
 version 0.5.7 -  serialization Nov. 24, 2004
-  - add serialization of simulator. Now I can save 
+  - add serialization of simulator. Now I can save
     population/simulator into a file and load it later.
   - text, xml and binary formats are supported. XML support
     is especially useful since the data can then be easily
     loaded into other applications.
 
 version 0.5.6 -  expression. Nov. 19, 2004
-  - better shared variable interface 
+  - better shared variable interface
   - (IMPORTANT!) implement a C/Matlab like language to calculate
     statistics. Terminator has been re-written. Many applicaitons
     are expected to be done easily.
   - add more functions (abs etc) to inline expression)
   - fixed some bugs.
-    
+
 Version 0.5.5, - more clean up,  more examples. Nov. 10, 2004
-  - clean the code. Use unsigned long when applicable. Elimilate all 
+  - clean the code. Use unsigned long when applicable. Elimilate all
     compiling warnings.
   - add some more test cases to cover all user features.
   - Some real examples
@@ -1471,28 +1471,28 @@ Version 0.5.3 Oct 10, 2004 -- some interesting new features
   - overhaul of operator's filename parser (can take shared var now)
   - provide binary distribution for linux, mac and solaris.
   - create a batch file to build win32 binary. (Much easier to use)
-    distribute win32 binary. 
-   
+    distribute win32 binary.
+
 Version 0.5.2  -- windows port, smaller distribution, better help()
   - help(class/function) now uses doxygen generated document.
   - distribute tools like .emacs.python.el and swig.xsl
   - remove all unnecessary files from boost and gsl distribution
     this is done by some perl scripts testing the usefulness of each file.
-  - ported to windows. see INSTALL.win32 for details 
+  - ported to windows. see INSTALL.win32 for details
     fixed two windows specific bugs.
   - make DEBUG the default library (optimized will be used less frequently.)
-   
+
 Version 0.5.1
   - better suport of GSL. add setRNG()
   - better debug debug(code) instead of debug(level)
   - better macOS support
-      
+
 Version 0.5
   - a working distribution with lots of test cases
   - ported to macOS, solaris
 
 Version 0.1 Friday 18, June 2004
-  
+
   - Customize doxygen and direct output to http://bp6.stat.rice.edu:8080/simuPOP
   - change README and make it doxygen mainpage
   - create todo list and many other documents
@@ -1502,5 +1502,3 @@ Version 0.1 Friday 18, June 2004
   - Population basic structure is finished with basic operations.
   - Operator start-every-end-at is implemented.
   - genetic drifting sample program went fine.
-   
-

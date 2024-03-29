@@ -6,10 +6,10 @@
 # $Rev$
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -154,7 +154,7 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
         parameter is not set (``None``), the optimized version will be used
         if environmental variable ``SIMUOPTIMIZED`` is defined. The standard
         version will be used otherwise.
-    
+
     gui
         Whether or not use graphical user interfaces, which graphical toolkit
         to use and how to process parameters in non-GUI mode. If this parameter
@@ -194,7 +194,7 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
 
     revision
         Obsolete with the introduction of parameter version.
-        
+
     numThreads
         Number of Threads that will be used to execute a simuPOP script. The
         values can be a positive number (number of threads) or 0 (all available
@@ -236,7 +236,7 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
                     'optimized' if optimized else 'standard'))
         simuOptions['Optimized'] = optimized
     elif optimized is not None:
-        raise TypeError('Parameter optimized can be either True or False.')        
+        raise TypeError('Parameter optimized can be either True or False.')
     # Graphical toolkit
     if gui in [True, False, 'wxPython', 'Tkinter', 'batch']:
         simuOptions['GUI'] = gui
@@ -274,4 +274,3 @@ def setOptions(alleleType=None, optimized=None, gui=None, quiet=None,
         raise TypeError('An integer number is expected for parameter numThreads.')
     if plotter is not None:
         sys.stderr.write('WARNING: plotter option is deprecated because of the removal of rpy/rpy2 support\n')
-

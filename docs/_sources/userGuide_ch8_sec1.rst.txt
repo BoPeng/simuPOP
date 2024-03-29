@@ -12,8 +12,6 @@ simple diseases become complex; while those of complex diseases remained simple.
 This example is a simplified version of the ``simuCDCV.py`` script that
 simulates this evolution process and observe the allelic spectra of both types
 of diseases. The complete script is available at
-http://simupop.sourceforge.net/cookbookthe simuPOP online cookbook. The results
+https://github.com/BoPeng/simuPOP/cookbookthe simuPOP online cookbook. The results
 are published in Peng2007, which has much more detailed discussion about the
 simulations, and the parameters used.
-
-

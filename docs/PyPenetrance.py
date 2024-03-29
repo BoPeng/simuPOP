@@ -4,10 +4,10 @@
 # $File: PyPenetrance.py $
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #
 
 # This script is an example in the simuPOP user's guide. Please refer to
-# the user's guide (http://simupop.sourceforge.net/manual) for a detailed
+# the user's guide (https://github.com/BoPeng/simuPOP/manual) for a detailed
 # description of this example.
 #
 
@@ -46,7 +46,7 @@ def penet(geno, smoking):
         v = 0.03   # case of aaBb
     elif geno[0] + geno[1] ==2 and geno[2] + geno[3] == 2:
         v = 0.05   # case of aabb
-    else:                
+    else:
         v = 0.01   # other cases
     if smoking:
         return v * 2
@@ -65,7 +65,7 @@ pop.evolve(
         sim.InitInfo(lambda : random.randint(0,1), infoFields='smoking'),
         # assign affection status
         sim.PyPenetrance(loci=[0, 1], func=penet),
-        sim.Stat(numOfAffected=True, subPops=[(0, sim.ALL_AVAIL)], 
+        sim.Stat(numOfAffected=True, subPops=[(0, sim.ALL_AVAIL)],
             vars='propOfAffected_sp', step=20),
         sim.PyEval(r"'Non-smoker: %.2f%%\tSmoker: %.2f%%\n' % "
             "(subPop[(0,0)]['propOfAffected']*100, subPop[(0,1)]['propOfAffected']*100)",
@@ -73,5 +73,3 @@ pop.evolve(
     ],
     gen = 50
 )
-
-

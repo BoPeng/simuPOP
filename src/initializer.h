@@ -4,10 +4,10 @@
  *  $Rev$
  *
  *  This file is part of simuPOP, a forward-time population genetics
- *  simulation environment. Please visit http://simupop.sourceforge.net
+ *  simulation environment. Please visit https://github.com/BoPeng/simuPOP
  *  for details.
  *
- *  Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+ *  Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -189,7 +189,7 @@ public:
 	 *  of each genotype, which can vary for each subpopulation but not each locus if
 	 *  the function form of parameters is used.
 
-	 *  If parameter \e haplotypes is specified, it should contain a list of 
+	 *  If parameter \e haplotypes is specified, it should contain a list of
 	 *  haplotypes (alleles on the same strand of chromosome) and parameter \e prob
 	 *  or \e prop specifies frequencies or proportions of each haplotype.
 

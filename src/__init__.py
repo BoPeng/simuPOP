@@ -6,10 +6,10 @@
 # $Rev$
 #
 # This file is part of simuPOP, a forward-time population genetics
-# simulation environment. Please visit http://simupop.sourceforge.net
+# simulation environment. Please visit https://github.com/BoPeng/simuPOP
 # for details.
 #
-# Copyright (C) 2004 - 2010 Bo Peng (bpeng@mdanderson.org)
+# Copyright (C) 2004 - 2010 Bo Peng (Bo.Peng@bcm.edu)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -340,7 +340,7 @@ else:
 
 __version__ = moduleInfo()['version']
 
-    
+
 if simuOptions['Version'] is not None:
     expMajor, expMinor, expRelease = [
         int(x) for x in re.match(r'^(\d+)\.(\d+)\.(\d+)',
@@ -385,7 +385,7 @@ if not simuOptions['Quiet']:
     # MaxAllele + 1 since 0 is one of the allelic states
     print("This is the %s %s allele version with %d maximum allelic states." % \
             ('optimized' if info['optimized'] else 'standard', info['alleleType'], info['maxAllele']+1), file=sys.stderr)
-    print("For more information, please visit http://simupop.sourceforge.net,", file=sys.stderr)
+    print("For more information, please visit https://github.com/BoPeng/simuPOP,", file=sys.stderr)
     print(
         "or email simupop-list@lists.sourceforge.net (subscription required).", file=sys.stderr)
     # Turn on general debug information when not in 'quiet' mode

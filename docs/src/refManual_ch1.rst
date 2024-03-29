@@ -36,7 +36,7 @@ Front Matter
    a detailed introduction to simuPOP concepts, and a number of examples on how to
    use simuPOP to perform various simulations. All resources, including a pdf
    version of this guide and a mailing list can be found at the simuPOP homepage
-   ``http://simupop.sourceforge.net``.
+   ``https://github.com/BoPeng/simuPOP``.
 
    **How to cite simuPOP:**
 
@@ -45,6 +45,3 @@ Front Matter
 
       Bo Peng and Christopher Amos (2008) Forward-time simulations of nonrandom mating
       populations using simuPOP. *bioinformatics*, **24** (11): 1408-1409.
-
-
-
