@@ -19,7 +19,7 @@ individual properties.
 
 .. _fig_life_cycle:
 
-.. figure:: /Users/bpeng1/simuPOP/simuPOP/doc/figures/evolve.png
+.. figure::  https://github.com/BoPeng/simuPOP/blob/master/doc/figures/evolve.png
    :width: 680
 
 
