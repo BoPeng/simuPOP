@@ -294,7 +294,7 @@ The script written in this style could be executed in a number of ways.
 
    .. _fig_simuCDCV_dialog:
 
-   .. figure:: /Users/bpeng1/simuPOP/simuPOP/doc/figures/simuCDCV.png
+   .. figure:: https://github.com/BoPeng/simuPOP/tree/master/doc/figures/simuCDCV.png
       :width: 5in
    
 
