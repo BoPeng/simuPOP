@@ -433,10 +433,10 @@ simuPOP is provided as a number of Python modules, which consist of a large
  It is the users’ responsibility to write a Python script to glue these
  pieces together and form a simulation.
  At a more user-friendly level, an increasing number of functions and scripts
- contributed by simuPOP users is available in the online simuPOP cookbook
+ contributed by simuPOP users is available in the examples folder within the online simuPOP cookbook
  (
 \family typewriter
-https://github.com/BoPeng/simuPOP/cookbook
+https://github.com/BoPeng/simuPOP-examples
 \family default
 ).
  They provide useful functions for different applications (e.g.
@@ -23634,7 +23634,7 @@ simuPOP.utils
  simulation techniques.
  Please refer to the simuPOP online cookbook (
 \family typewriter
-https://github.com/BoPeng/simuPOP/cookbook
+https://github.com/BoPeng/simuPOP-examples
 \family default
 ) for more utility modules and functions.
 \end_layout
@@ -26922,7 +26922,7 @@ simuCDCV.py
 \begin_inset CommandInset href
 LatexCommand href
 name "the simuPOP online cookbook"
-target "https://github.com/BoPeng/simuPOP/cookbook"
+target "https://github.com/BoPeng/simuPOP-examples"
 
 \end_inset
 
