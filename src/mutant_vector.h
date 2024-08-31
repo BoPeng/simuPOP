@@ -30,6 +30,9 @@
 
 #  include <map>
 #  include <iostream>
+#ifdef _MSC_VER
+typedef SSIZE_T ssize_t;
+#endif
 
 namespace simuPOP {
 
