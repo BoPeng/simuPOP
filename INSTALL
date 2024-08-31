@@ -1,1 +1,52 @@
-Please refer to https://github.com/BoPeng/simuPOP/Main/Download for detailed instructions.
+## Installation of simuPOP
+
+NOTE: The following instructions can be out of date due to the evolution of operating systens, Python, and
+the Python tool chain. Please [submit an issue](https://github.com/BoPeng/simuPOP/issues) if you fail to
+install simuPOP with the provided instructions, and/or submit a PR to update these instructions.
+
+### Install using conda
+
+If you have Anaconda installed, you can install simuPOP with command
+
+```
+conda install -c conda-forge simuPOP
+```
+
+### Compile from source
+
+If you are working with a development version of simuPOP or an unsupported platform, you may need to install simuPOP from source.
+Generally speaking, you will need a C/C++ compiler and zlib.
+
+#### Checkout the simuPOP source code
+
+Using any git client, checkout simuPOP from https://github.com/BoPeng/simuPOP.
+
+#### Linux
+
+Linux systems generally have gcc installed. To compile simuPOP from source, just run
+
+```
+python setup.py install
+```
+
+
+#### Windows
+
+You will need a C++ compiler from Visual Studio. A community version can be downloaded from Microsoft free of charge.
+After you have install MSVC, run
+
+```
+conda install -c conda-forge vs2022_win-64
+```
+to make VC available to conda, and
+
+```
+conda install -c conda-forge zlib
+```
+to install zlib.
+
+
+You can then compile simuPOP with command
+```
+python setup.py install
+```

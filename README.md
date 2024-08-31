@@ -11,6 +11,9 @@ simuPOP is part of the [conda-forge](https://conda-forge.github.io/), if you use
 conda install -c conda-forge simuPOP
 ```
 
+If you are working with a development version of simuPOP or an unsupported platform, you may need to install simuPOP from source. Please
+refer to [INSTALLATION](https://github.com/BoPeng/simuPOP/blob/master/INSTALL) for details.
+
 If you would like to use simuPOP with Python 2.5 - 2.7, please compile simuPOP from source, using either [simuPOP 1.1.7](https://pypi.python.org/pypi/simuPOP/1.1.7),
 or the [Python 2.x branch of simuPOP](https://github.com/BoPeng/simuPOP/tree/python2). Note that features that has been marked deprecated
 (e.g. `simuOpt.Param`, `simuPOP.plotting`) in simuPOP 1.1.7 and earlier are removed in simuPOP 1.1.8+, so simuPOP 1.1.7 would be your best
@@ -24,6 +27,9 @@ The user guide and reference manual of simuPOP is available at http://bopeng.git
 2. **Bioinformatics with Python Cookbook** by Tiago Antao, available at [Amazon](https://www.amazon.com/Bioinformatics-Python-Cookbook-Tiago-Antao/dp/1782175113)
 
 ## Change Log since 1.1.7
+
+### simuPOP 1.1.15
+* [#122](https://github.com/BoPeng/simuPOP/issues/122) Fix compatibility with Visual Studio 2022 under windows.
 
 ### simuPOP 1.1.14
 * [#114](https://github.com/BoPeng/simuPOP/issues/117) Fix compatibility with Python 3.11.
