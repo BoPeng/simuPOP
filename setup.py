@@ -477,7 +477,15 @@ if os.name == 'nt':
         if os.path.isdir(conda_lib):
             common_extra_include_dirs.append(os.path.join(conda_lib, 'include'))
             common_library_dirs.append(os.path.join(conda_lib, 'lib'))
+    for conda_var in ('CONDA_PREFIX', 'CONDA_PREFIX_1'):
+        if conda_var in os.environ:
+            conda_lib = os.path.join(os.environ[conda_var], 'Library')
+            if os.path.isdir(conda_lib):
+                common_extra_include_dirs.append(os.path.join(conda_lib, 'include'))
+                common_library_dirs.append(os.path.join(conda_lib, 'lib'))
+
     # msvc does not have O3 option, /GR is to fix a C4541 warning
+
     # /EHsc is for VC exception handling,
     # /wd4819 disables warning messages for non-unicode character in boost/uitlity/enable_if.hpp
     # /wd4996 disables warning messages for unsafe function call in boost/serialization

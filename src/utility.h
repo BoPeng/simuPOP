@@ -47,6 +47,10 @@
 
 extern "C" {
 #include "Python.h"
+
+#ifdef _MSC_VER
+typedef SSIZE_T ssize_t;
+#endif
 }
 
 #include "simuPOP_cfg.h"

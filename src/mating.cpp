@@ -1879,7 +1879,7 @@ bool HeteroMating::mate(Population &pop, Population &scratch)
 			if (fcmp_gt(w_neg[i], 0.))
 			{
 				// issue 114, allow parental subpopulation to be larger than offspring subpopulation.
-				vspSize[i] = std::min(all, static_cast<ULONG>(parentSize[i] * w_neg[i]));
+				vspSize[i] = std::min(all, static_cast<size_t>(parentSize[i] * w_neg[i]));
 				all -= vspSize[i];
 			}
 		}
