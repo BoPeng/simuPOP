@@ -213,7 +213,8 @@ typedef const unsigned char & ConstAlleleRef;
 
 // max allowed allele state
 extern const unsigned long ModuleMaxAllele;
-extern const unsigned long MaxRandomNumber;
+// extern const unsigned long MaxRandomNumber;
+inline constexpr unsigned long MaxRandomNumber = std::numeric_limits<int32_t>::max();
 
 #define PopSWIGType "simuPOP::Population *"
 #define IndSWIGType "simuPOP::Individual *"

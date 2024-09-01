@@ -1775,13 +1775,37 @@ void closeOutput(const string & output = string());
 class RNG_func
 {
 public:
+	typedef unsigned long int result_type;
+
 	RNG_func(gsl_rng * rng) : m_RNG(rng)
 	{
 
 	}
 
 
-	unsigned long int operator()(unsigned long int N) const
+#ifdef BOOST_COMPUTE_USE_CPP11
+	// somehow these functions needs to be static (callable from class), so
+	// min/max cannot change with the underlying m_RNG. However, we demand that
+	// RNGs generate full range of int to have a minimal range from 0 to
+	// MaxRandomNumber, so we can set the max to MaxRandomNumber.
+	constexpr static result_type min()
+	{
+		return 0;
+	}
+
+	constexpr static result_type max()
+	{
+		return MaxRandomNumber - 1;
+	}
+
+	result_type operator()()
+	{
+		return gsl_rng_uniform_int(m_RNG, MaxRandomNumber);
+	}
+
+#endif
+
+	result_type operator()(result_type N) const
 	{
 		return gsl_rng_uniform_int(m_RNG, N);
 	}
@@ -1981,7 +2005,12 @@ public:
 		// generator.
 		RNG_func rng(m_RNG);
 
+#ifdef BOOST_COMPUTE_USE_CPP11
+		std::shuffle(begin, end, rng);
+#else
 		std::random_shuffle(begin, end, rng);
+#endif
+
 	}
 
 

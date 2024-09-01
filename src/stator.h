@@ -37,7 +37,6 @@
 #include <numeric>
 using std::string;
 using std::count_if;
-using std::bind2nd;
 using std::equal;
 using std::greater;
 using std::min;

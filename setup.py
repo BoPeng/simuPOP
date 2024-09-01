@@ -79,7 +79,7 @@ else:
     fin, fout, ferr = (p.stdin, p.stdout, p.stderr)
     output = ferr.readlines()[-1].decode('utf8')
     try:
-        version = re.match('.*gcc version\s*(\d+).(\d+).(\d+).*', output).groups()
+        version = re.match(r'.*gcc version\s*(\d+).(\d+).(\d+).*', output).groups()
         if int(version[0]) < 4 or int(version[1]) < 2:
             print('Support for openMP is turned off because version %s.%s.%s of gcc does not support this feature' % version)
             USE_OPENMP = False
@@ -402,6 +402,8 @@ if not os.path.isdir('build'):
 
 COMMON_MACROS = [
     ('BOOST_UBLAS_NDEBUG', None),
+    ('BOOST_NO_CXX98_FUNCTION_BASE', None),
+    ('BOOST_COMPUTE_USE_CPP11', None),
     ('_HAS_ITERATOR_DEBUGGING', 0),
     ('BOOST_ALL_NO_LIB', None),
     ('NO_ZLIB', 0),
@@ -490,7 +492,7 @@ if os.name == 'nt':
     # /wd4819 disables warning messages for non-unicode character in boost/uitlity/enable_if.hpp
     # /wd4996 disables warning messages for unsafe function call in boost/serialization
     # /wd4068 disables warning messages for unknown pragma set by gcc
-    common_extra_compile_args = ['/O2', '/GR', '/EHsc', '/wd4819', '/wd4996', '/wd4068']
+    common_extra_compile_args = ['/O2', '/GR', '/EHsc', '/wd4819', '/wd4996', '/wd4068', '/std:c++17']
     # Enable openMP if USE_OPENMP = True
     if USE_OPENMP:
         if USE_ICC:
@@ -535,6 +537,7 @@ def try_compile(body='', ext='.cpp'):
             oldstderr = os.dup(sys.stderr.fileno())
             os.dup2(devnull.fileno(), sys.stderr.fileno())
             cc = new_compiler()
+            distutils.sysconfig.customize_compiler(cc)
             objects = cc.compile([fname], output_dir=tmpdir)
         except:
             return False
@@ -650,6 +653,7 @@ if __name__ == '__main__':
             # try to get
             print('Building static libraries')
             c = new_compiler(verbose=1)
+            distutils.sysconfig.customize_compiler(c)
             # -w suppress all warnings caused by the use of boost libraries
             objects = c.compile(LIB_FILES,
                 include_dirs=['gsl', 'gsl/specfunc', 'build', '.', boost_include_dir] + common_extra_include_dirs,

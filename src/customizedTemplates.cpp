@@ -63,7 +63,7 @@ template <typename T>
 PyObject *
 getarrayitem_template(struct arrayobject_template<T> * op, Py_ssize_t i)
 {
-	register struct arrayobject_template<T> * ap;
+	struct arrayobject_template<T> * ap;
 
 	assert(is_carrayobject_template<T>(op));
 	ap = (struct arrayobject_template<T> *)op;
@@ -77,7 +77,7 @@ template <>
 PyObject *
 getarrayitem_template<GenoIterator>(struct arrayobject_template<GenoIterator> * op, Py_ssize_t i)
 {
-	register struct arrayobject_template<GenoIterator> * ap;
+	struct arrayobject_template<GenoIterator> * ap;
 
 	assert(is_carrayobject_template<GenoIterator>(op));
 	ap = (struct arrayobject_template<GenoIterator> *)op;
@@ -746,7 +746,7 @@ template <typename T>
 PyObject *
 getarrayitem_template(PyObject * op, Py_ssize_t i)
 {
-	register struct arrayobject_template<T> * ap;
+	struct arrayobject_template<T> * ap;
 
 	assert(is_carrayobject_template<T>(op));
 	ap = (struct arrayobject_template<T> *)op;
@@ -1485,7 +1485,7 @@ template <>
 PyObject *
 getarrayitem_template<GenoIterator>(PyObject * op, Py_ssize_t i)
 {
-	register struct arrayobject_template<GenoIterator> * ap;
+	struct arrayobject_template<GenoIterator> * ap;
 
 	assert(is_carrayobject_template<GenoIterator>(op));
 	ap = (struct arrayobject_template<GenoIterator> *)op;

@@ -15,7 +15,8 @@ conda install -c conda-forge simuPOP
 ### Compile from source
 
 If you are working with a development version of simuPOP or an unsupported platform, you may need to install simuPOP from source.
-Generally speaking, you will need a C/C++ compiler and zlib.
+
+Generally speaking, you will need a recent C/C++ compiler that supports the `c++17` standard and zlib.
 
 #### Checkout the simuPOP source code
 
