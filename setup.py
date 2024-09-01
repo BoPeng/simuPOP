@@ -472,6 +472,20 @@ common_library_dirs = ['build']
 common_extra_link_args = []
 common_extra_include_dirs = []
 
+# for conda environment under all systems
+if 'CONDA_PREFIX' in os.environ:
+    common_extra_include_dirs.append(os.path.join(os.environ['CONDA_PREFIX'], 'include'))
+    common_library_dirs.append(os.path.join(os.environ['CONDA_PREFIX'], 'lib'))
+
+for conda_var in ('CONDA_PREFIX', 'CONDA_PREFIX_1'):
+    if conda_var in os.environ:
+        conda_lib = os.path.join(os.environ[conda_var], 'Library')
+        if os.path.isdir(conda_lib):
+            if os.path.join(conda_lib, 'include') not in common_extra_include_dirs:
+                common_extra_include_dirs.append(os.path.join(conda_lib, 'include'))
+            if os.path.join(conda_lib, 'lib') not in common_library_dirs:
+                common_library_dirs.append(os.path.join(conda_lib, 'lib'))
+
 if os.name == 'nt':
     #common_library_dirs.append('development/win32')
     if 'LOCALAPPDATA' in os.environ:
@@ -479,12 +493,6 @@ if os.name == 'nt':
         if os.path.isdir(conda_lib):
             common_extra_include_dirs.append(os.path.join(conda_lib, 'include'))
             common_library_dirs.append(os.path.join(conda_lib, 'lib'))
-    for conda_var in ('CONDA_PREFIX', 'CONDA_PREFIX_1'):
-        if conda_var in os.environ:
-            conda_lib = os.path.join(os.environ[conda_var], 'Library')
-            if os.path.isdir(conda_lib):
-                common_extra_include_dirs.append(os.path.join(conda_lib, 'include'))
-                common_library_dirs.append(os.path.join(conda_lib, 'lib'))
 
     # msvc does not have O3 option, /GR is to fix a C4541 warning
 
@@ -492,7 +500,8 @@ if os.name == 'nt':
     # /wd4819 disables warning messages for non-unicode character in boost/uitlity/enable_if.hpp
     # /wd4996 disables warning messages for unsafe function call in boost/serialization
     # /wd4068 disables warning messages for unknown pragma set by gcc
-    common_extra_compile_args = ['/O2', '/GR', '/EHsc', '/wd4819', '/wd4996', '/wd4068', '/std:c++17']
+    common_extra_compile_args = ['/O2', '/GR', '/EHsc', '/wd4819', '/wd4996', '/wd4068']
+    common_cpp_extra_compile_args = ['/std:c++17']
     # Enable openMP if USE_OPENMP = True
     if USE_OPENMP:
         if USE_ICC:
@@ -500,14 +509,13 @@ if os.name == 'nt':
         else:
             common_extra_compile_args.append('/openmp')
 else:
-    if 'CONDA_PREFIX' in os.environ:
-        common_extra_include_dirs.append(os.environ['CONDA_PREFIX'] + '/include')
-        common_library_dirs.append(os.environ['CONDA_PREFIX'] + 'lib')
     common_extra_compile_args = ['-O3', '-Wall', '-Wno-unknown-pragmas', '-Wno-unused-parameter']
+    common_cpp_extra_compile_args = []
     if is_maverick():
         #common_extra_link_args.append('-stdlib=libstdc++')
         #common_extra_include_dirs.append('/usr/include/c++/4.2.1')
         common_extra_compile_args.append('-Wno-error=unused-command-line-argument')
+        common_cpp_extra_compile_args.append('-std=c++17')
     if not USE_ICC:   # for gcc, turn on extra warning message
         common_extra_compile_args.append('-Wextra')
     if USE_OPENMP:
@@ -726,7 +734,7 @@ if __name__ == '__main__':
         EXT_MODULES.append(
             Extension('simuPOP._simuPOP_%s' % modu,
                 sources = info['src'],
-                extra_compile_args = common_extra_compile_args,
+                extra_compile_args = common_extra_compile_args + common_cpp_extra_compile_args,
                 include_dirs = info['include_dirs'] + ['src', 'build'],
                 library_dirs = common_library_dirs,
                 libraries = info['libraries'],

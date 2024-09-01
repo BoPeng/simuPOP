@@ -24,7 +24,15 @@ Using any git client, checkout simuPOP from https://github.com/BoPeng/simuPOP.
 
 #### Linux
 
-Linux systems generally have gcc installed. To compile simuPOP from source, just run
+Linux systems generally have gcc installed. To compile simuPOP from source, you need to
+
+first install libz and zlib.h
+```
+sudo apt-get install zlib1g
+conda install -c conda-forge zlib
+```
+
+then run
 
 ```
 python setup.py install
