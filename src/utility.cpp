@@ -3178,20 +3178,16 @@ void StreamProvider::closeOstream()
 				"Passed function object is invalid");
 			string str = dynamic_cast<ostringstream *>(m_filePtr)->str();
 			// in swingpyrun.h, the PyString_Check is defined to PyBytes_Check
-#if PY_VERSION_HEX >= 0x03000000
 			PyObject * arglist = NULL;
 			PyObject * pyResult = NULL;
 			if (m_mode == "b") {
 				arglist = Py_BuildValue("(S)", PyBytes_FromString(str.c_str()));
-				pyResult = PyEval_CallObject(m_func.func(), arglist);
+				pyResult = PyObject_CallObject(m_func.func(), arglist);
 			} else {
 				arglist = Py_BuildValue("(s)", str.c_str());
-				pyResult = PyEval_CallObject(m_func.func(), arglist);
+				pyResult = PyObject_CallObject(m_func.func(), arglist);
 			}
-#else
-			PyObject * arglist = Py_BuildValue("(s)", str.c_str());
-			PyObject * pyResult = PyEval_CallObject(m_func.func(), arglist);
-#endif
+
 			if (pyResult == NULL) {
 				PyErr_Print();
 				PyErr_Clear();

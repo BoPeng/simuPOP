@@ -98,7 +98,7 @@ if distutils.sysconfig.get_config_var('CC') is not None:
 # versions are not available, and will most likely work just fine.
 boost_versions = ['1_35_0', '1_36_0', '1_37_0', '1_38_0', '1_39_0', '1_40_0',
     '1_42_0', '1_43_0', '1_44_0', '1_45_0', '1_46_0', '1_46_1', '1_47_0',
-    '1_48_0', '1_62_0', '1_72_0', '1_74_0']
+    '1_48_0', '1_62_0', '1_72_0', '1_74_0', '1_86_0']
 invalid_boost_versions = ['1_41_0', '1_71_0']
 
 included_version = [x for x in boost_versions if os.path.isdir('boost_' + x)]

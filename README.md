@@ -28,6 +28,9 @@ The user guide and reference manual of simuPOP is available at http://bopeng.git
 
 ## Change Log since 1.1.7
 
+### simuPOP 1.1.17
+* Fix compatibility with Python 3.13 and latest version of Xcode on mac.
+
 ### simuPOP 1.1.16
 * [#103](https://github.com/BoPeng/simuPOP/issues/103) Fix compatibility with recent compilers with c++17 support, and fix conda-forge release.
 

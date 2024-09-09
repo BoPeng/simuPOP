@@ -376,7 +376,7 @@ public:
 		va_start(argptr, format);
 		PyObject * arglist = Py_VaBuildValue(const_cast<char *>(format), argptr);
 		va_end(argptr);
-		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
+		PyObject * pyResult = PyObject_CallObject(m_func.object(), arglist);
 
 		Py_XDECREF(arglist);
 		if (pyResult == NULL) {
@@ -394,7 +394,7 @@ public:
 	template <typename T>
 	T operator()(void converter(PyObject *, T &), PyObject * arglist) const
 	{
-		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
+		PyObject * pyResult = PyObject_CallObject(m_func.object(), arglist);
 
 		if (pyResult == NULL) {
 			PyErr_Print();
@@ -415,7 +415,7 @@ public:
 		va_start(argptr, format);
 		PyObject * arglist = Py_VaBuildValue(const_cast<char *>(format), argptr);
 		va_end(argptr);
-		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
+		PyObject * pyResult = PyObject_CallObject(m_func.object(), arglist);
 
 		Py_XDECREF(arglist);
 		if (pyResult == NULL) {
@@ -429,7 +429,7 @@ public:
 
 	PyObject * operator()(PyObject * args) const
 	{
-		PyObject * pyResult = PyEval_CallObject(m_func.object(), args);
+		PyObject * pyResult = PyObject_CallObject(m_func.object(), args);
 
 		if (pyResult == NULL) {
 			PyErr_Print();
