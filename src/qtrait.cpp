@@ -114,7 +114,7 @@ void PyQuanTrait::qtrait(Individual * ind, size_t gen, vectorf & traits) const
 		}
 	}
 
-	PyObject * res = PyEval_CallObject(m_func.func(), args);
+	PyObject * res = PyObject_CallObject(m_func.func(), args);
 	Py_XDECREF(args);
 
 	if (res == NULL) {
