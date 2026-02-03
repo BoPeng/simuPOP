@@ -57,7 +57,7 @@ from simuOpt import simuOptions
 
 from simuPOP import moduleInfo, MALE, FEMALE, Population, PointMutator, getRNG,\
     ALL_AVAIL, PyOperator, stat
-import collections
+from collections.abc import Callable
 
 def viewVars(var, gui=None):
     '''
@@ -358,7 +358,7 @@ def saveCSV(pop, filename='', infoFields=[], loci=ALL_AVAIL, header=True,
                 raise ValueError("genoFormatter cannot be empty")
             value = list(genoFormatter.values())[0]
         else:
-            if not isinstance(genoFormatter, collections.Callable):
+            if not isinstance(genoFormatter, Callable):
                 raise ValueError("genoFormatter should be a None, a dictionary or a callable function")
             value = genoFormatter(tuple([pop.individual(0).allele(0, p) for p in range(ploidy)]))
         try:
@@ -921,7 +921,7 @@ class TrajectorySimulator:
     def _Nt(self, gen):
         'Get Nt(gen) depending on the type of N'
         # _Nt() expects parameter gen
-        if isinstance(self.N, collections.Callable):
+        if isinstance(self.N, Callable):
             nt = self.N(gen)
             # the return value of a demographic function sometimes is not integer.
             if type(nt) in [int, int, float]:
@@ -991,7 +991,7 @@ class TrajectorySimulator:
         '''
         assert len(freq) == self.nLoci
         # _fitness() expects parameters gen and a subpopulation index
-        if isinstance(self.fitness, collections.Callable):
+        if isinstance(self.fitness, Callable):
             fit = self.fitness(gen, subPop)
         else:
             fit = self.fitness
@@ -1449,7 +1449,7 @@ class TrajectorySimulator:
 
         if not self.maxMutAge >= self.minMutAge:
             raise ValueError('maxMutAge should >= minMutAge')
-        if endGen == 0 and (isinstance(self.N, collections.Callable) or isinstance(self.fitness, collections.Callable)):
+        if endGen == 0 and (isinstance(self.N, Callable) or isinstance(self.fitness, Callable)):
             raise ValueError('endGen should be > 0 if N or fitness is defined in the form of function')
         if endGen > 0 and endGen < self.maxMutAge:
             raise ValueError('endGen should be >= maxMutAge')
@@ -2408,7 +2408,7 @@ class CSVExporter:
                 colPerGenotype = 1 if type(value) in [type(''), type(1), type(1)] else len(value)
                 _genoFunc = self._genoFromDict
             else:
-                if not isinstance(self.genoFormatter, collections.Callable):
+                if not isinstance(self.genoFormatter, Callable):
                     raise ValueError("genoFormatter should be a None, a dictionary or a callable function")
                 value = self.genoFormatter(tuple([pop.individual(0).allele(0, p) for p in range(ploidy)]))
                 colPerGenotype = 1 if type(value) in [type(''), type(1), type(1)] else len(value)
@@ -3003,7 +3003,7 @@ class Exporter(PyOperator):
             with open(output.lstrip('>'), mode) as out:
                 self.exporter.export(pop, out.write,
                     self._determineSubPops(pop), self.infoFields, gui=self.gui)
-        elif isinstance(self.output, collections.Callable):
+        elif isinstance(self.output, Callable):
             # it is a regular python function, call it with output
             if bin_mode:
                 self.exporter.export(pop, _binaryWriter(self.output),
