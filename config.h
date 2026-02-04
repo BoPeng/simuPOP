@@ -443,7 +443,7 @@
 #  define RETURN_IF_NULL(x) if (!x) { return ; }
 
 #else
-#  ifdef MACOSX
+#  if defined(MACOSX) || defined(__APPLE__)
 
 /* define if bool is a built-in type */
 #    define HAVE_BOOL
@@ -454,6 +454,10 @@
 /* Define to 1 if you have the declaration of `acosh', and to 0 if you don't.
  */
 #    define HAVE_DECL_ACOSH 1
+
+/* Define to 1 if you have the declaration of `asinh', and to 0 if you don't.
+ */
+#    define HAVE_DECL_ASINH 1
 
 /* Define to 1 if you have the declaration of `atanh', and to 0 if you don't.
  */

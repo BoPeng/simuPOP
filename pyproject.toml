@@ -1,0 +1,69 @@
+[build-system]
+requires = [
+    "scikit-build-core>=0.8",
+    "swig>=4.0",
+]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "simuPOP"
+dynamic = ["version"]
+description = "Forward-time population genetics simulation environment"
+readme = "README.md"
+license = {text = "GPL-3.0-or-later"}
+authors = [
+    {name = "Bo Peng", email = "Bo.Peng@bcm.edu"},
+]
+maintainers = [
+    {name = "Bo Peng", email = "Bo.Peng@bcm.edu"},
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU General Public License (GPL)",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: C++",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+requires-python = ">=3.9"
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/BoPeng/simuPOP"
+Documentation = "https://bopeng.github.io/simuPOP/"
+Repository = "https://github.com/BoPeng/simuPOP"
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[tool.scikit-build]
+cmake.version = ">=3.20"
+cmake.build-type = "Release"
+wheel.packages = ["src/simuPOP"]
+sdist.include = [
+    "src/",
+    "gsl/",
+    "CMakeLists.txt",
+    "cmake/",
+    "config.h",
+]
+
+[tool.scikit-build.cmake.define]
+# Can be overridden by user: cmake -DUSE_OPENMP=OFF
+USE_OPENMP = "ON"
+
+[tool.scikit-build.metadata.version]
+provider = "scikit_build_core.metadata.regex"
+input = "src/simuPOP/_version.py"
+regex = "__version__\\s*=\\s*['\"](?P<value>[^'\"]+)['\"]"
+
+[tool.pytest.ini_options]
+testpaths = ["test"]

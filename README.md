@@ -3,23 +3,35 @@ simulation environment. Please refer to the simuPOP homepage [https://bopeng.git
 
 ## Installation
 
-simuPOP is distributed under a GPL3 license. Starting from simuPOP 1.1.8, it supports only Python 3 (3.5 and up) on windows, mac and Linux systems.
+simuPOP is distributed under a GPL3 license. Starting from simuPOP 1.1.8, it supports only Python 3 (3.9 and up) on Windows, macOS and Linux systems.
 
-simuPOP is part of the [conda-forge](https://conda-forge.github.io/), if you use [Anaconda Python 3](https://www.continuum.io/downloads), you can install simuPOP with command
+### Install from conda-forge
+
+simuPOP is part of the [conda-forge](https://conda-forge.github.io/). If you use [Anaconda Python 3](https://www.continuum.io/downloads), you can install simuPOP with command
 
 ```
 conda install -c conda-forge simuPOP
 ```
 
-If you are working with a development version of simuPOP or an unsupported platform, you may need to install simuPOP from source. Please
-refer to [INSTALLATION](https://github.com/BoPeng/simuPOP/blob/master/INSTALL) for details.
+### Install from PyPI
 
-If you would like to use simuPOP with Python 2.5 - 2.7, please compile simuPOP from source, using either [simuPOP 1.1.7](https://pypi.python.org/pypi/simuPOP/1.1.7),
-or the [Python 2.x branch of simuPOP](https://github.com/BoPeng/simuPOP/tree/python2). Note that features that has been marked deprecated
-(e.g. `simuOpt.Param`, `simuPOP.plotting`) in simuPOP 1.1.7 and earlier are removed in simuPOP 1.1.8+, so simuPOP 1.1.7 would be your best
-bet for the execution of legendary simuPOP scripts.
+```
+pip install simuPOP
+```
 
-## Documenation
+### Install from source
+
+If you are working with a development version of simuPOP or an unsupported platform, you can install from source:
+
+```
+git clone https://github.com/BoPeng/simuPOP.git
+cd simuPOP
+pip install .
+```
+
+Please refer to [INSTALL](https://github.com/BoPeng/simuPOP/blob/master/INSTALL) for detailed instructions and platform-specific requirements.
+
+## Documentation
 
 The user guide and reference manual of simuPOP is available at http://bopeng.github.io/simuPOP/. simuPOP is also introduced in the following two books:
 
@@ -27,6 +39,11 @@ The user guide and reference manual of simuPOP is available at http://bopeng.git
 2. **Bioinformatics with Python Cookbook** by Tiago Antao, available at [Amazon](https://www.amazon.com/Bioinformatics-Python-Cookbook-Tiago-Antao/dp/1782175113)
 
 ## Change Log since 1.1.7
+
+### simuPOP 1.1.18
+* Modernize build system: migrate from setup.py to CMake + scikit-build-core (PEP 517 compliant)
+* Add multi-platform CI testing (Linux, macOS, Windows)
+* Move `simuOpt` module into the simuPOP package. Use `from simuPOP.simuOpt import setOptions` instead of `from simuOpt import setOptions`. The old import path still works but is deprecated.
 
 ### simuPOP 1.1.17
 * Fix compatibility with Python 3.13 and latest version of Xcode on mac.
