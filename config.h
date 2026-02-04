@@ -455,6 +455,10 @@
  */
 #    define HAVE_DECL_ACOSH 1
 
+/* Define to 1 if you have the declaration of `asinh', and to 0 if you don't.
+ */
+#    define HAVE_DECL_ASINH 1
+
 /* Define to 1 if you have the declaration of `atanh', and to 0 if you don't.
  */
 #    define HAVE_DECL_ATANH 1
