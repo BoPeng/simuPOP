@@ -43,6 +43,7 @@ The user guide and reference manual of simuPOP is available at http://bopeng.git
 ### simuPOP 1.1.18
 * Modernize build system: migrate from setup.py to CMake + scikit-build-core (PEP 517 compliant)
 * Add multi-platform CI testing (Linux, macOS, Windows)
+* Move `simuOpt` module into the simuPOP package. Use `from simuPOP.simuOpt import setOptions` instead of `from simuOpt import setOptions`. The old import path still works but is deprecated.
 
 ### simuPOP 1.1.17
 * Fix compatibility with Python 3.13 and latest version of Xcode on mac.

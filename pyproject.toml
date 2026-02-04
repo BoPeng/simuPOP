@@ -48,7 +48,6 @@ test = ["pytest"]
 cmake.version = ">=3.20"
 cmake.build-type = "Release"
 wheel.packages = ["src/simuPOP"]
-wheel.install-dir = "simuPOP"
 sdist.include = [
     "src/",
     "gsl/",
@@ -64,5 +63,8 @@ USE_OPENMP = "ON"
 
 [tool.scikit-build.metadata.version]
 provider = "scikit_build_core.metadata.regex"
-input = "src/_version.py"
+input = "src/simuPOP/_version.py"
 regex = "__version__\\s*=\\s*['\"](?P<value>[^'\"]+)['\"]"
+
+[tool.pytest.ini_options]
+testpaths = ["test"]

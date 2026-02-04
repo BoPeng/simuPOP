@@ -308,7 +308,7 @@ __all__ = [
 ]
 
 # get options
-from simuOpt import simuOptions
+from .simuOpt import simuOptions
 import os, sys, re
 
 if simuOptions['Optimized']:

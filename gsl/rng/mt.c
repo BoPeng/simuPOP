@@ -3,13 +3,13 @@
    published by the Free Software Foundation; either version 3 of the
    License, or (at your option) any later version.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   This program is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    General Public License for more details.  You should have received
-   a copy of the GNU General Public License along with this library; if
-   not, write to the Free Software Foundation, Inc., 51 Franklin Street,
-   Fifth Floor, Boston, MA 02110-1301, USA.
+   a copy of the GNU General Public License along with this program;
+   if not, write to the Free Foundation, Inc., 59 Temple Place, Suite
+   330, Boston, MA 02111-1307 USA
 
    Original implementation was copyright (C) 1997 Makoto Matsumoto and
    Takuji Nishimura. Coded by Takuji Nishimura, considering the
@@ -41,7 +41,7 @@
    The paper below has details of the algorithm.
 
    From: Makoto Matsumoto and Takuji Nishimura, "Mersenne Twister: A
-   623-dimensionally equidistributed uniform pseudorandom number
+   623-dimensionally equidistributerd uniform pseudorandom number
    generator". ACM Transactions on Modeling and Computer Simulation,
    Vol. 8, No. 1 (Jan. 1998), Pages 3-30
 
