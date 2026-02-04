@@ -13,10 +13,10 @@ rebuild:
 	cd doc; python runSampleCode.py; make dist_svn
 
 rebuild3:
-	python3 setup.py install
+	pip install .
 
 clean:
-	@rm -rf build
+	@rm -rf build _skbuild
 	@rm -f src/*wrap* src/simuPOP_*.py
 	@find . -name '*~' -exec rm -f {} \;
 	@find . -name '*.bak' -exec rm -f {} \;

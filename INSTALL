@@ -1,6 +1,6 @@
 ## Installation of simuPOP
 
-NOTE: The following instructions can be out of date due to the evolution of operating systens, Python, and
+NOTE: The following instructions can be out of date due to the evolution of operating systems, Python, and
 the Python tool chain. Please [submit an issue](https://github.com/BoPeng/simuPOP/issues) if you fail to
 install simuPOP with the provided instructions, and/or submit a PR to update these instructions.
 
@@ -12,50 +12,113 @@ If you have Anaconda installed, you can install simuPOP with command
 conda install -c conda-forge simuPOP
 ```
 
+### Install from PyPI
+
+```
+pip install simuPOP
+```
+
 ### Compile from source
 
 If you are working with a development version of simuPOP or an unsupported platform, you may need to install simuPOP from source.
 
-Generally speaking, you will need a recent C/C++ compiler that supports the `c++17` standard and zlib.
+#### Requirements
+
+- Python 3.9 or later
+- C/C++ compiler that supports the `c++17` standard
+- CMake 3.20 or later
+- SWIG 4.0 or later
+- zlib development headers
 
 #### Checkout the simuPOP source code
 
 Using any git client, checkout simuPOP from https://github.com/BoPeng/simuPOP.
 
+```
+git clone https://github.com/BoPeng/simuPOP.git
+cd simuPOP
+```
+
 #### Linux
 
-Linux systems generally have gcc installed. To compile simuPOP from source, you need to
+Linux systems generally have gcc installed. To compile simuPOP from source:
 
-first install libz and zlib.h
+1. Install system dependencies:
 ```
-sudo apt-get install zlib1g
-conda install -c conda-forge zlib
-```
-
-then run
-
-```
-python setup.py install
+sudo apt-get install zlib1g-dev cmake swig ninja-build
 ```
 
+2. Install Python build dependencies:
+```
+pip install scikit-build-core cmake ninja
+```
+
+3. Build and install:
+```
+pip install .
+```
+
+For development/editable install:
+```
+pip install -e .
+```
+
+#### macOS
+
+1. Install system dependencies via Homebrew:
+```
+brew install cmake swig libomp ninja
+```
+
+2. Install Python build dependencies:
+```
+pip install scikit-build-core cmake ninja
+```
+
+3. Build and install (set OpenMP path for CMake):
+```
+export OpenMP_ROOT=$(brew --prefix libomp)
+pip install .
+```
 
 #### Windows
 
 You will need a C++ compiler from Visual Studio. A community version can be downloaded from Microsoft free of charge.
-After you have install MSVC, run
+
+1. Install Visual Studio 2022 with C++ build tools
+
+2. Install SWIG (using Chocolatey or download from https://swig.org):
+```
+choco install swig
+```
+
+3. Install Python build dependencies:
+```
+pip install scikit-build-core cmake ninja
+```
+
+4. Build and install:
+```
+pip install .
+```
+
+### Build Options
+
+You can pass CMake options during build:
 
 ```
-conda install -c conda-forge vs2022_win-64
-```
-to make VC available to conda, and
+# Disable OpenMP support
+pip install . --config-settings=cmake.define.USE_OPENMP=OFF
 
+# Verbose build output
+pip install -v .
 ```
-conda install -c conda-forge zlib
-```
-to install zlib.
 
+### Troubleshooting
 
-You can then compile simuPOP with command
-```
-python setup.py install
-```
+If you encounter build errors:
+
+1. Ensure all dependencies are installed and accessible in your PATH
+2. Try a clean build by removing any existing `build/` directory
+3. Use verbose mode (`pip install -v .`) to see detailed build output
+4. Check that your compiler supports C++17
