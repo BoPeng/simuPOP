@@ -50,8 +50,8 @@ jobs:
       - name: Run tests (binary allele type)
         run: python ./test/run_tests.py binary -j2
 
-  build-macos:
-    runs-on: macos-latest
+  build-macos-intel:
+    runs-on: macos-13
     timeout-minutes: 90
     strategy:
       fail-fast: false
@@ -79,7 +79,44 @@ jobs:
 
       - name: Build and install simuPOP
         env:
-          # Help CMake find libomp on macOS
+          OpenMP_ROOT: /usr/local/opt/libomp
+        run: pip install -v .
+
+      - name: Run tests (short allele type)
+        run: python ./test/run_tests.py short -j2
+
+      - name: Run tests (binary allele type)
+        run: python ./test/run_tests.py binary -j2
+
+  build-macos-arm:
+    runs-on: macos-14
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install system dependencies
+        run: |
+          brew install swig libomp cmake ninja
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build scikit-build-core cmake ninja
+          pip install -r requirements.txt
+
+      - name: Build and install simuPOP
+        env:
           OpenMP_ROOT: /opt/homebrew/opt/libomp
         run: pip install -v .
 

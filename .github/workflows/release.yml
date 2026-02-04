@@ -1,0 +1,243 @@
+# Release workflow: build wheels for all platforms and upload to PyPI
+#
+# Triggers:
+#   - On GitHub release creation
+#   - Manual dispatch (workflow_dispatch)
+#
+# To release:
+#   1. Update version in src/simuPOP/_version.py
+#   2. Create a GitHub release with a tag like "v1.1.18"
+#   3. This workflow will automatically build and upload to PyPI
+
+name: Release to PyPI
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      upload_to_pypi:
+        description: 'Upload to PyPI (true/false)'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+permissions:
+  contents: read
+
+jobs:
+  # Build source distribution (only needs to run once)
+  build-sdist:
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build
+
+      - name: Build sdist
+        run: python -m build --sdist
+
+      - name: Upload sdist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdist
+          path: dist/*.tar.gz
+
+  # Build wheels on Linux
+  build-wheels-linux:
+    name: Build wheels on Linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install cibuildwheel
+        run: pip install cibuildwheel
+
+      - name: Build wheels
+        run: cibuildwheel --output-dir wheelhouse
+        env:
+          CIBW_BUILD: "cp39-manylinux_x86_64 cp310-manylinux_x86_64 cp311-manylinux_x86_64 cp312-manylinux_x86_64 cp313-manylinux_x86_64"
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
+          CIBW_BEFORE_ALL_LINUX: yum install -y zlib-devel
+          CIBW_BEFORE_BUILD: pip install scikit-build-core cmake ninja swig
+          CIBW_TEST_COMMAND: python -c "import simuPOP; print(simuPOP.moduleInfo())"
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-linux
+          path: wheelhouse/*.whl
+
+  # Build wheels on macOS (Intel)
+  build-wheels-macos-intel:
+    name: Build wheels on macOS (Intel)
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system dependencies
+        run: brew install libomp
+
+      - name: Install cibuildwheel
+        run: pip install cibuildwheel
+
+      - name: Build wheels
+        run: cibuildwheel --output-dir wheelhouse
+        env:
+          CIBW_BUILD: "cp39-macosx_x86_64 cp310-macosx_x86_64 cp311-macosx_x86_64 cp312-macosx_x86_64 cp313-macosx_x86_64"
+          CIBW_BEFORE_BUILD: pip install scikit-build-core cmake ninja swig
+          CIBW_ENVIRONMENT: OpenMP_ROOT=/usr/local/opt/libomp
+          CIBW_TEST_COMMAND: python -c "import simuPOP; print(simuPOP.moduleInfo())"
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-macos-intel
+          path: wheelhouse/*.whl
+
+  # Build wheels on macOS (Apple Silicon)
+  build-wheels-macos-arm:
+    name: Build wheels on macOS (Apple Silicon)
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system dependencies
+        run: brew install libomp
+
+      - name: Install cibuildwheel
+        run: pip install cibuildwheel
+
+      - name: Build wheels
+        run: cibuildwheel --output-dir wheelhouse
+        env:
+          CIBW_BUILD: "cp39-macosx_arm64 cp310-macosx_arm64 cp311-macosx_arm64 cp312-macosx_arm64 cp313-macosx_arm64"
+          CIBW_BEFORE_BUILD: pip install scikit-build-core cmake ninja swig
+          CIBW_ENVIRONMENT: OpenMP_ROOT=/opt/homebrew/opt/libomp
+          CIBW_TEST_COMMAND: python -c "import simuPOP; print(simuPOP.moduleInfo())"
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-macos-arm
+          path: wheelhouse/*.whl
+
+  # Build wheels on Windows
+  build-wheels-windows:
+    name: Build wheels on Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install zlib via vcpkg
+        run: vcpkg install zlib:x64-windows
+
+      - name: Install cibuildwheel
+        run: pip install cibuildwheel
+
+      - name: Build wheels
+        run: cibuildwheel --output-dir wheelhouse
+        env:
+          CIBW_BUILD: "cp39-win_amd64 cp310-win_amd64 cp311-win_amd64 cp312-win_amd64 cp313-win_amd64"
+          CIBW_BEFORE_BUILD: pip install scikit-build-core cmake ninja swig
+          CIBW_ENVIRONMENT: CMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+          CIBW_TEST_COMMAND: python -c "import simuPOP; print(simuPOP.moduleInfo())"
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-windows
+          path: wheelhouse/*.whl
+
+  # Upload to PyPI
+  upload-pypi:
+    name: Upload to PyPI
+    needs: [build-sdist, build-wheels-linux, build-wheels-macos-intel, build-wheels-macos-arm, build-wheels-windows]
+    runs-on: ubuntu-latest
+    # Only upload on release or manual trigger with upload_to_pypi=true
+    if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.upload_to_pypi == 'true')
+
+    environment:
+      name: pypi
+      url: https://pypi.org/project/simuPOP/
+
+    permissions:
+      id-token: write  # Required for trusted publishing
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: List distribution files
+        run: ls -la dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
+
+  # Optional: Upload to TestPyPI for testing
+  upload-testpypi:
+    name: Upload to TestPyPI
+    needs: [build-sdist, build-wheels-linux, build-wheels-macos-intel, build-wheels-macos-arm, build-wheels-windows]
+    runs-on: ubuntu-latest
+    # Only on manual trigger with upload_to_pypi=false (for testing)
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.upload_to_pypi == 'false'
+
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/project/simuPOP/
+
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: List distribution files
+        run: ls -la dist/
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          packages-dir: dist/

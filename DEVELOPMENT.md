@@ -146,17 +146,100 @@ pytest test/
 
 ## Release Process
 
-1. Update version in `src/simuPOP/_version.py`
-2. Build and test:
-   ```bash
-   python -m build
-   pip install dist/*.whl
-   pytest test/
+simuPOP uses GitHub Actions to automatically build and publish releases to PyPI.
+
+### One-Time Setup: Configure PyPI Trusted Publishing
+
+Before your first release, configure trusted publishing on PyPI:
+
+1. Go to https://pypi.org/manage/project/simuPOP/settings/publishing/
+2. Add a new trusted publisher:
+   - **Owner**: `BoPeng`
+   - **Repository**: `simuPOP`
+   - **Workflow name**: `release.yml`
+   - **Environment name**: `pypi`
+
+For testing releases on TestPyPI:
+1. Go to https://test.pypi.org/manage/project/simuPOP/settings/publishing/
+2. Add a trusted publisher with environment name `testpypi`
+
+### Creating a Release
+
+1. **Update the version** in `src/simuPOP/_version.py`:
+   ```python
+   __version__ = "1.1.19"
    ```
-3. Upload to PyPI:
+
+2. **Commit and push** the version change:
    ```bash
-   twine upload dist/*
+   git add src/simuPOP/_version.py
+   git commit -m "Bump version to 1.1.19"
+   git push
    ```
+
+3. **Create a GitHub Release**:
+   - Go to https://github.com/BoPeng/simuPOP/releases/new
+   - Create a new tag (e.g., `v1.1.19`)
+   - Add release notes describing changes
+   - Click "Publish release"
+
+4. **Automated build and upload**:
+   The release workflow will automatically:
+   - Build source distribution (sdist)
+   - Build wheels for all platforms:
+     - Linux x86_64 (Python 3.9-3.13)
+     - macOS Intel x86_64 (Python 3.9-3.13)
+     - macOS Apple Silicon arm64 (Python 3.9-3.13)
+     - Windows x64 (Python 3.9-3.13)
+   - Upload all artifacts to PyPI
+
+5. **Monitor the release**:
+   - Check workflow progress at https://github.com/BoPeng/simuPOP/actions
+   - Verify the release on https://pypi.org/project/simuPOP/
+
+### Manual Release (Testing)
+
+To test the release workflow without publishing to PyPI:
+
+1. Go to Actions → "Release to PyPI" → "Run workflow"
+2. Select `upload_to_pypi: false` to upload to TestPyPI instead
+3. Verify at https://test.pypi.org/project/simuPOP/
+
+### Local Build for Testing
+
+To build locally before releasing:
+
+```bash
+# Build sdist and wheel
+python -m build
+
+# Test the wheel
+pip install dist/*.whl
+python -c "import simuPOP; print(simuPOP.moduleInfo())"
+
+# Run tests
+python ./test/run_tests.py short
+```
+
+## Continuous Integration
+
+simuPOP uses GitHub Actions for CI/CD. Workflows are in `.github/workflows/`.
+
+### CI Workflow (`python-app.yml`)
+
+Runs on every push and pull request to `master`:
+
+| Job | Platform | Python Versions | Tests |
+|-----|----------|-----------------|-------|
+| `build-linux` | Ubuntu (x86_64) | 3.9, 3.10, 3.11, 3.12 | short, binary |
+| `build-macos-intel` | macOS 13 (x86_64) | 3.10, 3.11, 3.12 | short, binary |
+| `build-macos-arm` | macOS 14 (arm64) | 3.10, 3.11, 3.12 | short, binary |
+| `build-windows` | Windows (x64) | 3.10, 3.11, 3.12 | short, binary |
+| `full-tests-linux` | Ubuntu | 3.11 | all allele types |
+
+### Release Workflow (`release.yml`)
+
+Triggered by GitHub releases or manual dispatch. Builds wheels for all platforms and uploads to PyPI. See [Release Process](#release-process) for details.
 
 ## Platform-Specific Notes
 
