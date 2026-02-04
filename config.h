@@ -443,7 +443,7 @@
 #  define RETURN_IF_NULL(x) if (!x) { return ; }
 
 #else
-#  ifdef MACOSX
+#  if defined(MACOSX) || defined(__APPLE__)
 
 /* define if bool is a built-in type */
 #    define HAVE_BOOL
