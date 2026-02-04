@@ -555,7 +555,6 @@ install(FILES
     src/simuPOP/utils.py
     src/simuPOP/demography.py
     src/simuPOP/sampling.py
-    src/simuPOP/simuOpt.py
     DESTINATION simuPOP
 )
 
