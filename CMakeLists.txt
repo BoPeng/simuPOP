@@ -135,40 +135,13 @@ configure_file(
 )
 
 #------------------------------------------------------------------------------
-# Boost handling
+# Boost handling (vendored subset in src/boost)
 #------------------------------------------------------------------------------
-# Look for existing boost directories
-file(GLOB BOOST_DIRS "${CMAKE_SOURCE_DIR}/boost_*")
-list(FILTER BOOST_DIRS EXCLUDE REGEX ".*\\.tar\\.gz$")
-list(SORT BOOST_DIRS ORDER DESCENDING)
-
-if(BOOST_DIRS)
-    list(GET BOOST_DIRS 0 BOOST_DIR)
-    message(STATUS "Using Boost from: ${BOOST_DIR}")
-else()
-    # Download boost if not found
-    set(BOOST_VERSION "1_86_0")
-    set(BOOST_DOT_VERSION "1.86.0")
-    set(BOOST_DIR "${CMAKE_SOURCE_DIR}/boost_${BOOST_VERSION}")
-
-    if(NOT EXISTS ${BOOST_DIR})
-        message(STATUS "Downloading Boost ${BOOST_DOT_VERSION}...")
-        set(BOOST_URL "https://boostorg.jfrog.io/artifactory/main/release/${BOOST_DOT_VERSION}/source/boost_${BOOST_VERSION}.tar.gz")
-        file(DOWNLOAD ${BOOST_URL} "${CMAKE_SOURCE_DIR}/boost_${BOOST_VERSION}.tar.gz"
-             SHOW_PROGRESS
-             STATUS DOWNLOAD_STATUS)
-        list(GET DOWNLOAD_STATUS 0 STATUS_CODE)
-        if(NOT STATUS_CODE EQUAL 0)
-            message(FATAL_ERROR "Failed to download Boost")
-        endif()
-
-        message(STATUS "Extracting Boost...")
-        execute_process(
-            COMMAND ${CMAKE_COMMAND} -E tar xzf "boost_${BOOST_VERSION}.tar.gz"
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        )
-    endif()
+set(BOOST_DIR "${CMAKE_SOURCE_DIR}/src/boost")
+if(NOT EXISTS ${BOOST_DIR}/boost)
+    message(FATAL_ERROR "Boost not found at ${BOOST_DIR}. The vendored Boost subset should be in src/boost/")
 endif()
+message(STATUS "Using vendored Boost from: ${BOOST_DIR}")
 
 set(BOOST_INCLUDE_DIR ${BOOST_DIR})
 set(BOOST_SERIALIZATION_DIR ${BOOST_DIR}/libs/serialization/src)

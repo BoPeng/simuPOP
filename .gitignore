@@ -1,6 +1,6 @@
 *.swp
 __pycache__
-boost*
+/boost*
 build/
 dist/
 *.egg-info

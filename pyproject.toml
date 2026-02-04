@@ -51,7 +51,6 @@ wheel.packages = ["src/simuPOP"]
 sdist.include = [
     "src/",
     "gsl/",
-    "boost_1_86_0/",
     "CMakeLists.txt",
     "cmake/",
     "config.h",
