@@ -146,9 +146,9 @@ jobs:
       - name: Install SWIG
         run: choco install swig -y
 
-      - name: Install zlib via vcpkg
+      - name: Install zlib via vcpkg (static)
         run: |
-          vcpkg install zlib:x64-windows
+          vcpkg install zlib:x64-windows-static
 
       - name: Install Python dependencies
         run: |
@@ -159,7 +159,7 @@ jobs:
       - name: Build and install simuPOP
         run: |
           $toolchain = "$env:VCPKG_INSTALLATION_ROOT\scripts\buildsystems\vcpkg.cmake"
-          pip install -v . --config-settings=cmake.args="-DCMAKE_TOOLCHAIN_FILE=$toolchain"
+          pip install -v . --config-settings=cmake.args="-DCMAKE_TOOLCHAIN_FILE=$toolchain;-DVCPKG_TARGET_TRIPLET=x64-windows-static"
 
       - name: Run tests (short allele type)
         run: python ./test/run_tests.py short -j2

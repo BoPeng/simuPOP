@@ -161,8 +161,8 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install zlib via vcpkg
-        run: vcpkg install zlib:x64-windows
+      - name: Install zlib via vcpkg (static)
+        run: vcpkg install zlib:x64-windows-static
 
       - name: Install cibuildwheel
         run: pip install cibuildwheel
@@ -172,7 +172,7 @@ jobs:
         env:
           CIBW_BUILD: "cp39-win_amd64 cp310-win_amd64 cp311-win_amd64 cp312-win_amd64 cp313-win_amd64"
           CIBW_BEFORE_BUILD: pip install scikit-build-core cmake ninja swig
-          CIBW_ENVIRONMENT: CMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+          CIBW_ENVIRONMENT: CMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" CMAKE_ARGS="-DVCPKG_TARGET_TRIPLET=x64-windows-static"
           CIBW_TEST_COMMAND: python -c "import simuPOP; print(simuPOP.moduleInfo())"
 
       - name: Upload wheels
