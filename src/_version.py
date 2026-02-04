@@ -1,2 +1,2 @@
-__version__="1.1.17"
-__revision__="4682"
+__version__="1.1.18"
+__revision__="4688"

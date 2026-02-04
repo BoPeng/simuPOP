@@ -32,14 +32,16 @@
 #ifndef _SIMUPOP_CONFIG_H
 #define _SIMUPOP_CONFIG_H
 
-// include the sytem wide config.h
+// include the system wide config.h
 // Note: there is some strange #include problem if cmath is included later.
 #include <cmath>
 
 // for max allele etc.
 #include <limits>
 
-// under parent directory. Included with -I.. option.
+// Platform configuration header
+// When building with CMake, config.h is auto-generated with proper feature detection.
+// For legacy setup.py builds, the manual config.h in the project root is used.
 #include "config.h"
 
 const double MISSING_VALUE = 1.3579246e123;
