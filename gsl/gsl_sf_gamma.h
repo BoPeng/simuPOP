@@ -114,7 +114,7 @@ double gsl_sf_taylorcoeff(const int n, const double x);
 
 /* n!
  *
- * exceptions: GSL_EDOM, GSL_OVRFLW
+ * exceptions: GSL_EDOM, GSL_EOVRFLW
  */
 int gsl_sf_fact_e(const unsigned int n, gsl_sf_result * result);
 double gsl_sf_fact(const unsigned int n);
@@ -122,7 +122,7 @@ double gsl_sf_fact(const unsigned int n);
 
 /* n!! = n(n-2)(n-4) ... 
  *
- * exceptions: GSL_EDOM, GSL_OVRFLW
+ * exceptions: GSL_EDOM, GSL_EOVRFLW
  */
 int gsl_sf_doublefact_e(const unsigned int n, gsl_sf_result * result);
 double gsl_sf_doublefact(const unsigned int n);

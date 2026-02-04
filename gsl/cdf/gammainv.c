@@ -13,8 +13,8 @@
  * General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307, USA.
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
 #include <config.h>
@@ -81,9 +81,9 @@ gsl_cdf_gamma_Pinv (const double P, const double a, const double b)
     dP = P - gsl_cdf_gamma_P (x, a, 1.0);
     phi = gsl_ran_gamma_pdf (x, a, 1.0);
 
-	// adjusted by Bo Peng, make more attemps (from 32 to 320) to
-	// make gamma converge for large values of a. dP condition is
-	// also adjusted to make it possible to quite before n reach 320
+    // adjusted by Bo Peng, make more attempts (from 32 to 320) to
+    // make gamma converge for large values of a. dP condition is
+    // also adjusted to make it possible to quit before n reach 320
     if (fabs(dP) < GSL_SQRT_DBL_EPSILON * P || n++ > 320)
       goto end;
 
